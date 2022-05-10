@@ -4,15 +4,23 @@ public class Section {
 
     private final Long id;
     private final Long lineId;
-    private final Long upStationId;
-    private final Long downStationId;
+    private final Station upStation;
+    private final Station downStation;
     private final int distance;
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Section(Long id, Long lineId, Station upStation, Station downStation, int distance) {
         this.id = id;
         this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 }

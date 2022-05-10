@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -35,5 +36,21 @@ public class SectionDao {
                 sectionEntity.getDownStationId(), sectionEntity.getDistance())
                 .id(Objects.requireNonNull(keyHolder.getKey()).longValue())
                 .build();
+    }
+
+    public List<SectionEntity> findAllByLineId(Long lineId) {
+        String sql = "select * from SECTION where line_id = :lineId";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+
+        return namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
+                (rs, rowNum) -> new SectionEntity.Builder(
+                        rs.getLong("line_id"),
+                        rs.getLong("up_station_id"),
+                        rs.getLong("down_station_id"),
+                        rs.getInt("distance"))
+                        .id(rs.getLong("id"))
+                        .build());
     }
 }

@@ -7,6 +7,7 @@ import static wooteco.subway.fixture.StationFixture.getSavedStationId;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.response.LineWithStationsResponse;
 import wooteco.subway.dto.response.StationResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
@@ -139,14 +140,28 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
+
+        List<LineWithStationsResponse> resultLineWithStations = new ArrayList<>(response.jsonPath()
+                .getList(".", LineWithStationsResponse.class));
+
+        List<Long> resultLineIds = resultLineWithStations.stream()
+                .map(LineWithStationsResponse::getId)
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+
+        List<String> resultStationNames = resultLineWithStations.stream()
+                .map(LineWithStationsResponse::getStations)
+                .flatMap(List::stream)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(resultLineIds).containsAll(expectedLineIds),
+                () -> assertThat(resultStationNames).containsAll(List.of("상일동역", "아차산역", "강남역", "선릉역"))
+        );
     }
 
     @DisplayName("특정 노선을 조회한다.")
