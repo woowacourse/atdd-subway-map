@@ -24,16 +24,7 @@ public class StationService {
     }
 
     public void deleteStation(Long id) {
-        checkDuplicateId(id);
-
         stationDao.deleteById(id);
-    }
-
-    private void checkDuplicateId(Long id) {
-        stationDao.findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다."));
     }
 
     public List<StationResponse> findAll() {

@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -48,7 +49,11 @@ public class StationDao {
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM station WHERE id=?";
-        jdbcTemplate.update(sql, id);
+        var sql = "DELETE FROM station WHERE id=?";
+        var deletedRow = jdbcTemplate.update(sql, id);
+
+        if (deletedRow == 0) {
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다.");
+        }
     }
 }
