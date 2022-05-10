@@ -55,8 +55,8 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public int updateSection(Section section) {
         String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
-        return jdbcTemplate.update(sql, section.getId(), section.getUpStationId(), section.getDownStationId(),
-                section.getDistance(), section.getId());
+        return jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(),
+                section.getId());
     }
 
     @Override

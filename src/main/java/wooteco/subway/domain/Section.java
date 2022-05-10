@@ -8,6 +8,9 @@ public class Section {
     private int distance;
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        if (upStationId.equals(downStationId)) {
+            throw new IllegalArgumentException("상행역과 하행역이 일치합니다.");
+        }
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -25,6 +28,14 @@ public class Section {
 
     public Section(Section section, int distance) {
         this(section.getId(), section.getLineId(), section.getUpStationId(), section.getDownStationId(), distance);
+    }
+
+    public Section createDivideDownSection(Section section) {
+        return new Section(id, lineId, section.getDownStationId(), downStationId, distance - section.getDistance());
+    }
+
+    public Section createDivideUpSection(Section section) {
+        return new Section(id, lineId, upStationId, section.getUpStationId(), distance - section.getDistance());
     }
 
     public Long getId() {
@@ -47,7 +58,16 @@ public class Section {
         return distance;
     }
 
-    public void validate(Section section) {
+    public boolean isShorterThan(Section section) {
+        return distance < section.distance;
+    }
+
+    public boolean equalsUpStation(Section section) {
+        return upStationId.equals(section.getUpStationId());
+    }
+
+    public boolean equalsDownStation(Section section) {
+        return downStationId.equals(section.getDownStationId());
     }
 
     @Override
@@ -59,9 +79,5 @@ public class Section {
                 ", downStationId=" + downStationId +
                 ", distance=" + distance +
                 '}';
-    }
-
-    public boolean isLongerThan(int targetDistance) {
-        return distance > targetDistance;
     }
 }

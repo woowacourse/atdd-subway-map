@@ -1,6 +1,7 @@
 package wooteco.subway.mock;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +44,13 @@ public class MemorySectionDao implements SectionDao {
 
     @Override
     public int updateSection(Section updateSection) {
-        return 0;
+        sections.put(updateSection.getId(), updateSection);
+        return 1;
     }
 
     @Override
     public List<Section> findAll() {
-        return null;
+        return new ArrayList<>(sections.values());
     }
 
     public void clear() {

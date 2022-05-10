@@ -14,9 +14,8 @@ public class Sections {
     }
 
     public void validateAddable(Section section) {
-        checkSameStation(section);
-        checkExist(section);
         checkNoStations(section);
+        checkExist(section);
     }
 
     private void checkNoStations(Section section) {
@@ -29,12 +28,6 @@ public class Sections {
     private void checkExist(Section section) {
         if (allStationIds().containsAll(List.of(section.getUpStationId(), section.getDownStationId()))) {
             throw new IllegalArgumentException("이미 등록된 구간입니다.");
-        }
-    }
-
-    private void checkSameStation(Section section) {
-        if (section.getUpStationId().equals(section.getDownStationId())) {
-            throw new IllegalArgumentException("상행역과 하행역은 동일할 수 없습니다.");
         }
     }
 
@@ -63,36 +56,29 @@ public class Sections {
     }
 
     public Section add(Section section) {
-        // 1. 상행 일치
-        for (Section each : sections) {
-            if (each.getUpStationId().equals(section.getUpStationId())) {
-                if (section.isLongerThan(each.getDistance())) {
-                    throw new IllegalArgumentException("기존 구간보다 긴 역을 추가할 수 없습니다.");
-                }
-                return new Section(each.getId(), each.getLineId(), section.getDownStationId(), each.getDownStationId(),
-                        each.getDistance() - section.getDistance());
-            }
+        if (matchUpStation(section)) {
+            return sections.stream()
+                    .filter(section::equalsUpStation)
+                    .filter(section::isShorterThan)
+                    .findAny()
+                    .map(section::createDivideDownSection)
+                    .orElseThrow(() -> new IllegalArgumentException("기존 구간보다 긴 역을 추가할 수 없습니다."));
         }
 
-        // 2. 하행 일치
-        for (Section each : sections) {
-            if (each.getDownStationId().equals(section.getDownStationId())) {
-                if (section.isLongerThan(each.getDistance())) {
-                    throw new IllegalArgumentException("기존 구간보다 긴 역을 추가할 수 없습니다.");
-                }
-                return new Section(each.getId(), each.getLineId(), each.getUpStationId(), section.getUpStationId(),
-                        each.getDistance() - section.getDistance());
-            }
+        if (matchDownStation(section)) {
+            return sections.stream()
+                    .filter(section::equalsDownStation)
+                    .filter(section::isShorterThan)
+                    .findAny()
+                    .map(section::createDivideUpSection)
+                    .orElseThrow(() -> new IllegalArgumentException("기존 구간보다 긴 역을 추가할 수 없습니다."));
         }
-
-        // 3. 상행 종점
         for (Section each : sections) {
             if (each.getUpStationId().equals(section.getDownStationId())) {
                 return section;
             }
         }
 
-        // 4. 하행 종점
         for (Section each : sections) {
             if (each.getDownStationId().equals(section.getUpStationId())) {
                 return section;
@@ -101,4 +87,15 @@ public class Sections {
 
         throw new IllegalArgumentException("알 수 없는 오류로 추가할 수 없는 구간입니다.");
     }
+
+    private boolean matchUpStation(Section section) {
+        return sections.stream()
+                .anyMatch(section::equalsUpStation);
+    }
+
+    private boolean matchDownStation(Section section) {
+        return sections.stream()
+                .anyMatch(section::equalsDownStation);
+    }
+
 }
