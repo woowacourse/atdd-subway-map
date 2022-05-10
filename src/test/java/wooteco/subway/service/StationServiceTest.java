@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ class StationServiceTest {
     private final StationService stationService;
 
     @Autowired
-    public StationServiceTest(JdbcTemplate jdbcTemplate) {
-        this.stationService = new StationService(new StationDao(jdbcTemplate));
+    public StationServiceTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+        this.stationService = new StationService(new StationDao(jdbcTemplate, dataSource));
     }
 
     @Test

@@ -1,11 +1,12 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
 import java.util.List;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
@@ -13,9 +14,13 @@ import wooteco.subway.domain.Station;
 public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
+    public StationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("station")
+                .usingGeneratedKeyColumns("id");
     }
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> {
@@ -26,15 +31,9 @@ public class StationDao {
         return station;
     };
 
-    public Long save(Station station) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into STATION (name) values (?)";
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, station.getName());
-            return preparedStatement;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
+    public long save(Station station) {
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(station);
+        return simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 
     public List<Station> findAll() {
@@ -56,5 +55,4 @@ public class StationDao {
         String sql = "select exists (select * from STATION where name = (?))";
         return jdbcTemplate.queryForObject(sql, Boolean.class, station.getName());
     }
-
 }

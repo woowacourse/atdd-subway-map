@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,8 @@ class LineServiceTest {
     private final LineService lineService;
 
     @Autowired
-    public LineServiceTest(JdbcTemplate jdbcTemplate) {
-        this.lineService = new LineService(new LineDao(jdbcTemplate));
+    public LineServiceTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+        this.lineService = new LineService(new LineDao(jdbcTemplate, dataSource));
     }
 
     @Test
@@ -58,21 +59,11 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("중복된 노선 색깔 입력 시 예외 발생 테스트")
-    void validateDuplicationColorTest() {
-        lineService.save(new LineRequest("line1", "red", null, null, 0));
-
-        assertThatThrownBy(() -> lineService.save(new LineRequest("line2", "red", null, null, 0)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이미 존재하는 노선 색깔입니다.");
-    }
-
-    @Test
     @DisplayName("노선을 수정한다.")
     void updateTest() {
         LineResponse lineResponse = lineService.save(
                 new LineRequest("line1", "red", null, null, 0));
-        Long lineId = lineResponse.getId();
+        long lineId = lineResponse.getId();
 
         lineService.update(lineId, new LineRequest(
                 "line2", "yellow", null, null, 0));

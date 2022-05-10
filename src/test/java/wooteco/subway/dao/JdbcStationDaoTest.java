@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +19,14 @@ class JdbcStationDaoTest {
     private final StationDao stationDao;
 
     @Autowired
-    public JdbcStationDaoTest(JdbcTemplate jdbcTemplate) {
-        this.stationDao = new StationDao(jdbcTemplate);
+    public JdbcStationDaoTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+        this.stationDao = new StationDao(jdbcTemplate, dataSource);
     }
 
     @Test
     @DisplayName("지하철 역을 생성, 조회, 삭제한다.")
     void StationCRDTest() {
-        Long stationId = stationDao.save(new Station("선릉역"));
+        long stationId = stationDao.save(new Station("선릉역"));
 
         List<Station> stations1 = stationDao.findAll();
         assertThat(stations1).hasSize(1)

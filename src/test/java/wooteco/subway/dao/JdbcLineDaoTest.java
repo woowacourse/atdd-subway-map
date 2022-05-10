@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ class JdbcLineDaoTest {
     private final LineDao jdbcLineDao;
 
     @Autowired
-    public JdbcLineDaoTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcLineDao = new LineDao(jdbcTemplate);
+    public JdbcLineDaoTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+        this.jdbcLineDao = new LineDao(jdbcTemplate, dataSource);
     }
 
     @Test
