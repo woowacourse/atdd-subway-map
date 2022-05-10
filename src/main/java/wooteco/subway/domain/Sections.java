@@ -7,7 +7,14 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
+        validateEmpty(sections);
         this.sections = sections;
+    }
+
+    private void validateEmpty(List<Section> sections) {
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("구간이 존재하지 않습니다.");
+        }
     }
 
     public void validateSectionInLine(Section newSection) {
