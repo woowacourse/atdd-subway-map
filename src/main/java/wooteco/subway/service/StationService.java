@@ -43,6 +43,7 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<Station> findUpAndDownStations(final LineRequest lineRequest) {
         final Station upStation = stationDao.findById(lineRequest.getUpStationId())
             .orElseThrow(() -> new StationNotFoundException("[ERROR] 해당 이름의 지하철역이 존재하지 않습니다."));

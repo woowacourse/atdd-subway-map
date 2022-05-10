@@ -74,7 +74,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ## 지하철 노선 추가 API 수정
 
-- [ ] 노선 추가 시 3가지 정보를 추가로 입력 받음
+- [x] 노선 추가 시 3가지 정보를 추가로 입력 받음
     - upStationId: 상행 종점
     - downStationId: 하행 종점
     - distance: 두 종점간의 거리
@@ -83,8 +83,13 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ## 구간 관리 API 구현
 
-- [x] 구간 도메인 생성
-- [ ] 노선에 구간을 추가
+- [x] 구간/구간들 도메인 생성
+- [ ] 구간 등록
+    - [x] [예외]상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+    - [x] [예외]상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+    - [ ] [예외] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+    - [ ] [예외] 하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경
+- [x] 노선에 구간을 추가
 - [ ] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
 - [ ] 구간 제거
 - [ ] 구간 관리 API 스펙은 [API 문서v2](https://github.com/jinyoungchoi95/atdd-subway-map.git) 참고

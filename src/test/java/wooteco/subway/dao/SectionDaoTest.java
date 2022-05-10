@@ -55,7 +55,7 @@ class SectionDaoTest {
         final Section createdA = sectionDao.save(LINE_1_SECTION_A);
         final Section createdB = sectionDao.save(LINE_1_SECTION_B);
 
-        final List<Section> sections = sectionDao.findAllByLineId(lineId);
+        final List<Section> sections = sectionDao.findSectionStationsByLineId(lineId);
 
         assertThat(sections).isNotEmpty();
 
@@ -72,7 +72,7 @@ class SectionDaoTest {
 
         sectionDao.deleteAllByLineId(lineId);
 
-        assertThat(sectionDao.findAllByLineId(lineId)).isEmpty();
+        assertThat(sectionDao.findSectionStationsByLineId(lineId)).isEmpty();
         sectionDao.deleteById(createdA.getId());
         sectionDao.deleteById(createdB.getId());
     }

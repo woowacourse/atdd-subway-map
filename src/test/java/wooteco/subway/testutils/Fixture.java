@@ -20,4 +20,7 @@ public class Fixture {
     public static final Section LINE_1_SECTION_B = new Section(1L, 1L, 3L, 2);
     public static final Station STATION_선릉 = new Station("선릉역");
     public static final Station STATION_강남 = new Station("강남역");
+    public static final Station STATION_1_강남 = new Station(1L, "강남역");
+    public static final Station STATION_2_잠실 = new Station(2L, "잠실역");
+    public static final Station STATION_3_역삼 = new Station(3L, "역삼역");
 }

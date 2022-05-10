@@ -28,9 +28,9 @@ public class StationDaoTest {
     @Test
     @DisplayName("지하철역을 저장한다.")
     void save() {
-        final Station created = stationDao.save(Fixture.STATION_강남);
+        final Station created = stationDao.save(Fixture.STATION_1_강남);
 
-        assertThat(Fixture.STATION_강남.getId()).isEqualTo(Fixture.STATION_강남.getId());
+        assertThat(Fixture.STATION_1_강남.getId()).isEqualTo(Fixture.STATION_1_강남.getId());
 
         stationDao.deleteById(created.getId());
     }
@@ -50,7 +50,7 @@ public class StationDaoTest {
     @DisplayName("모든 지하철 역을 조회한다")
     void findAll() {
         final Station created_1 = stationDao.save(Fixture.STATION_선릉);
-        final Station created_2 = stationDao.save(Fixture.STATION_강남);
+        final Station created_2 = stationDao.save(Fixture.STATION_1_강남);
 
         assertThat(stationDao.findAll()).hasSize(2);
 
