@@ -1,7 +1,9 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.SectionRequest;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class Section {
@@ -32,6 +34,15 @@ public class Section {
                 savedLine.getId(),
                 lineRequest.getUpStationId(),
                 lineRequest.getDownStationId()
+        );
+    }
+
+    public static Section of(Line line, SectionRequest sectionRequest) {
+        return new Section(
+                sectionRequest.getDistance(),
+                line.getId(),
+                sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId()
         );
     }
 
@@ -79,5 +90,7 @@ public class Section {
         return section.downStationId.equals(this.downStationId);
     }
 
-
+//    public void isLastStop(Sections sections) {
+//        List<Long> LastStopId = sections.
+//    }
 }
