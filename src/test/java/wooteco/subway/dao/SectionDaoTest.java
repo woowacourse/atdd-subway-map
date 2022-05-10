@@ -37,7 +37,7 @@ class SectionDaoTest extends DaoTest {
 
     @Test
     void findAllByLineId_메서드는_lineId에_해당하는_모든_구간_데이터를_조회() {
-        List<SectionViewEntity> actual = dao.findAllByLineId2(1L);
+        List<SectionViewEntity> actual = dao.findAllByLineId(1L);
 
         List<SectionViewEntity> expected = List.of(
                 new SectionViewEntity(1L, STATION1, STATION2, 10),

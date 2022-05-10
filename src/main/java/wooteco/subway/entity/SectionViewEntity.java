@@ -19,6 +19,14 @@ public class SectionViewEntity {
         this.distance = distance;
     }
 
+    public StationEntity getUpStation() {
+        return upStation;
+    }
+
+    public StationEntity getDownStation() {
+        return downStation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

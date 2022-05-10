@@ -36,9 +36,7 @@ public class LineService2 {
     // TODO: sort stations in order &/or select with JOIN
     public LineResponse2 find(Long id) {
         LineEntity lineEntity = findExistingLine(id);
-        List<Long> stationIds = new Sections(sectionDao.findAllByLineId(id)).getStationIds();
-        List<StationEntity> stations = stationDao.findAllByIds(stationIds);
-
+        List<StationEntity> stations = new Sections(sectionDao.findAllByLineId(id)).getStations();
         return toLineResponse(lineEntity, stations);
     }
 

@@ -7,19 +7,19 @@ import java.util.Set;
 
 public class Sections {
 
-    private final List<SectionEntity> value;
+    private final List<SectionViewEntity> value;
 
-    public Sections(List<SectionEntity> value) {
+    public Sections(List<SectionViewEntity> value) {
         this.value = value;
     }
 
-    public List<Long> getStationIds() {
-        Set<Long> stationIds = new HashSet<>();
-        for (SectionEntity section : value) {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
+    public List<StationEntity> getStations() {
+        Set<StationEntity> stations = new HashSet<>();
+        for (SectionViewEntity section : value) {
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
         }
-        return new ArrayList<>(stationIds);
+        return new ArrayList<>(stations);
     }
 
     @Override
