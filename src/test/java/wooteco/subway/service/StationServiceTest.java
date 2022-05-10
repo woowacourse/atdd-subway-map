@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 
 @SpringBootTest
-@Sql("/schema.sql")
+@Sql("/testSchema.sql")
 class StationServiceTest {
 
     @Autowired

@@ -23,7 +23,7 @@ import wooteco.subway.dto.LineEditRequest;
 import wooteco.subway.dto.LineRequest;
 
 @SpringBootTest
-@Sql("/schema.sql")
+@Sql("/testSchema.sql")
 class LineServiceTest {
 
     @Autowired
