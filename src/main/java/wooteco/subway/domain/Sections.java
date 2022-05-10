@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import wooteco.subway.exception.NotFoundStationException;
 
 public class Sections {
 
@@ -11,13 +12,45 @@ public class Sections {
 
     public Sections(final LinkedList<Section> value) {
         validateSize(value);
-        this.value = value;
+        this.value = getSortedValue(value);
     }
 
     private void validateSize(final LinkedList<Section> value) {
         if (value.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 최소 한 개의 구간이 있어야 Sections 객체를 생성할 수 있습니다.");
         }
+    }
+
+    private LinkedList<Section> getSortedValue(final LinkedList<Section> sections) {
+        final LinkedList<Section> sortedValue = new LinkedList<>();
+        final Section firstSection = findFirstSection(sections);
+        sortedValue.add(firstSection);
+        for (int i = 0; i < sections.size() - 1; i++) {
+            final Section nextSection = findNextSection(sections, sortedValue.getLast());
+            sortedValue.add(nextSection);
+        }
+        return sortedValue;
+    }
+
+    private Section findFirstSection(final LinkedList<Section> sections) {
+        return sections.stream()
+                .filter(section -> isOnlyUpStation(sections, section.getUpStation()))
+                .findAny()
+                .orElseThrow(() -> new NotFoundStationException("[ERROR] 해당 구간이 존재하지 않습니다."));
+    }
+
+    private boolean isOnlyUpStation(final LinkedList<Section> sections, final Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().equals(station))
+                && sections.stream()
+                .anyMatch(section -> !section.getDownStation().equals(station));
+    }
+
+    private Section findNextSection(final LinkedList<Section> sections, final Section last) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(last.getDownStation()))
+                .findAny()
+                .orElseThrow(() -> new NotFoundStationException("[ERROR] 해당 구간이 존재하지 않습니다."));
     }
 
     public Sections(Section first) {
@@ -82,10 +115,7 @@ public class Sections {
     private SectionsUpdateResult splitInsertDownDirection(final Station newUpStation,
                                                           final Station newDownStation,
                                                           final Integer distance) {
-        final Section oldSection = value.stream()
-                .filter(section -> section.getUpStation().equals(newUpStation))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 구간이 존재하지 않습니다."));
+        final Section oldSection = findSectionThisUpStation(newUpStation);
         validateDistance(distance, oldSection);
         final int oldSectionIndex = value.indexOf(oldSection);
         final Section frontSection = Section.createWithoutId(newUpStation, newDownStation, distance);
@@ -124,10 +154,7 @@ public class Sections {
     private SectionsUpdateResult splitInsertUpDirection(final Station newUpStation,
                                                         final Station newDownStation,
                                                         final Integer distance) {
-        final Section oldSection = value.stream()
-                .filter(section -> section.getDownStation().equals(newDownStation))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 구간이 존재하지 않습니다."));
+        final Section oldSection = findSectionThisDownStation(newDownStation);
         validateDistance(distance, oldSection);
         final int oldSectionIndex = value.indexOf(oldSection);
         final Section frontSection = Section.createWithoutId(
@@ -156,5 +183,71 @@ public class Sections {
         addedSections.add(backSection);
 
         return new SectionsUpdateResult(deletedSections, addedSections);
+    }
+
+    public SectionsUpdateResult removeStation(final Station station) {
+        if (!isUpStation(station) && !isDownStation(station)) {
+            throw new NotFoundStationException("[ERROR] 해당 구간이 존재하지 않습니다.");
+        }
+        if (isUpStation(station) && isDownStation(station)) {
+            return removeStationBetween(station);
+        }
+        if (isUpStation(station)) {
+            return simpleRemoveFirst();
+        }
+        return simpleRemoveLast();
+    }
+
+    private SectionsUpdateResult removeStationBetween(final Station station) {
+        final List<Section> deletedSections = new ArrayList<>();
+        final List<Section> addedSections = new ArrayList<>();
+        final Section frontSection = findSectionThisDownStation(station);
+        final int sectionIndex = value.indexOf(frontSection);
+        value.remove(frontSection);
+        deletedSections.add(frontSection);
+
+        final Section backSection = findSectionThisUpStation(station);
+        value.remove(backSection);
+        deletedSections.add(backSection);
+
+        final Section newSection = mergeSection(frontSection, backSection);
+        value.add(sectionIndex, newSection);
+        addedSections.add(newSection);
+
+        return new SectionsUpdateResult(deletedSections, addedSections);
+    }
+
+    private Section findSectionThisUpStation(final Station station) {
+        return value.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findAny()
+                .orElseThrow(() -> new NotFoundStationException("[ERROR] 해당 구간이 존재하지 않습니다."));
+    }
+
+    private Section findSectionThisDownStation(final Station station) {
+        return value.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findAny()
+                .orElseThrow(() -> new NotFoundStationException("[ERROR] 해당 구간이 존재하지 않습니다."));
+    }
+
+    private Section mergeSection(final Section frontSection, final Section backSection) {
+        return Section.createWithoutId(
+                frontSection.getUpStation(),
+                backSection.getDownStation(),
+                frontSection.getDistance() + backSection.getDistance()
+        );
+    }
+
+    private SectionsUpdateResult simpleRemoveFirst() {
+        final List<Section> deletedSections = new ArrayList<>();
+        deletedSections.add(value.removeFirst());
+        return new SectionsUpdateResult(deletedSections, new ArrayList<>());
+    }
+
+    private SectionsUpdateResult simpleRemoveLast() {
+        final List<Section> deletedSections = new ArrayList<>();
+        deletedSections.add(value.removeLast());
+        return new SectionsUpdateResult(deletedSections, new ArrayList<>());
     }
 }

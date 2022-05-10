@@ -13,6 +13,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.mockDao.MockLineDao;
 import wooteco.subway.mockDao.MockSectionDao;
 import wooteco.subway.mockDao.MockStationDao;
+import wooteco.subway.repository.entity.LineEntity;
 
 class SectionServiceTest {
 
@@ -35,7 +36,7 @@ class SectionServiceTest {
     void resisterFirst() {
         final Long upStationId = Fixture.saveStation("선릉역");
         final Long downStationId = Fixture.saveStation("잠실역");
-        final Line line = lineService.register("2호선", "bg-green-600", upStationId, downStationId, 10);
+        final LineEntity line = lineDao.save(new LineEntity(null, "2호선", "bg-green-600"));
 
         final Section created = sectionService.resisterFirst(line.getId(), upStationId, downStationId, 10);
 
@@ -52,12 +53,11 @@ class SectionServiceTest {
         final Long upStationId = Fixture.saveStation("선릉역");
         final Long downStationId = Fixture.saveStation("잠실역");
         final Line line = lineService.register("2호선", "bg-green-600", upStationId, downStationId, 10);
-        sectionService.resisterFirst(line.getId(), upStationId, downStationId, 10);
 
         final Long newDownStationId = Fixture.saveStation("삼성역");
         sectionService.resister(line.getId(), upStationId, newDownStationId, 5);
 
         final Sections sections = sectionService.findSectionsByLineId(line.getId());
-        assertThat(sections.getValue().size()).isEqualTo(3);
+        assertThat(sections.getValue().size()).isEqualTo(2);
     }
 }
