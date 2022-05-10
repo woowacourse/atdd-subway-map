@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
@@ -41,11 +40,11 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @GetMapping("/{lineId}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
-        Line line = lineService.findById(lineId);
-        return ResponseEntity.ok().body(LineResponse.from(line));
-    }
+//    @GetMapping("/{lineId}")
+//    public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
+//        Line line = lineService.findById(lineId);
+//        return ResponseEntity.ok().body(LineResponse.from(line));
+//    }
 
     @PutMapping("/{lineId}")
     public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {

@@ -41,11 +41,10 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public Line findById(final Long lineId) {
-//        Line line = lineDao.findById(lineId);
-
-        // return new LineResponse(line.getId(), line.getName(), line.getColor(), stationService.findByLineId(line.getId());
-        return lineDao.findById(lineId);
+    public LineResponse findById(final Long lineId) {
+        Line line = lineDao.findById(lineId);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+                stationService.findByStationsId(sectionService.findAllStationByLineId(line.getId())));
     }
 
     public void update(final Line line) {

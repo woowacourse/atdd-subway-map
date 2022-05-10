@@ -44,6 +44,20 @@ class LineServiceTest {
                 .containsExactly(2L, "분당선", "bg-red-600");
     }
 
+    @Test
+    @DisplayName("노선 단건 조회 테스트 ")
+    void findById() {
+        // given
+        LineRequest 분당선 = new LineRequest("분당선", "bg-red-600", 1L, 2L, 10);
+        lineService.save(분당선);
+
+        //when
+        LineResponse response = lineService.findById(2L);
+
+        //then
+        assertThat(response).extracting("id", "name", "color")
+                .containsExactly(2L, "분당선", "bg-red-600");
+    }
 
 /*
     @Test
