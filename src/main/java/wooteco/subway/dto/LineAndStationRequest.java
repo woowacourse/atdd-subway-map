@@ -19,6 +19,14 @@ public class LineAndStationRequest {
         this.distance = distance;
     }
 
+    public LineRequest getLineRequest() {
+        return new LineRequest(name, color);
+    }
+
+    public SectionRequest getSectionRequest() {
+        return new SectionRequest(upStationId, downStationId, distance);
+    }
+
     public String getName() {
         return name;
     }

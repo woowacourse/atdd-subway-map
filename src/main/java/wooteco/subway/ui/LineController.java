@@ -36,10 +36,11 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineAndStationsResponse> createLine(
             @RequestBody LineAndStationRequest lineAndStationRequest) {
-        LineResponse lineResponse = lineService.create(lineAndStationRequest);
-        List<StationResponse> stationResponses = sectionService.create(lineResponse, lineAndStationRequest);
+        LineResponse lineResponse = lineService.create(lineAndStationRequest.getLineRequest());
+        long lineId = lineResponse.getId();
+        List<StationResponse> stationResponses = sectionService.create(lineId, lineAndStationRequest.getSectionRequest());
         LineAndStationsResponse lineAndStationsResponse = new LineAndStationsResponse(lineResponse, stationResponses);
-        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
+        return ResponseEntity.created(URI.create("/lines/" + lineId))
                 .body(lineAndStationsResponse);
     }
 

@@ -10,8 +10,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.SectionDto;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineAndStationRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @Service
@@ -25,8 +24,9 @@ public class SectionService {
         this.stationDao = stationDao;
     }
 
-    public List<StationResponse> create(LineResponse lineResponse, LineAndStationRequest lineAndStationRequest) {
-        SectionDto sectionDto = sectionDao.save(lineResponse.getId(), lineAndStationRequest.getUpStationId(), lineAndStationRequest.getDownStationId(), lineAndStationRequest.getDistance());
+    public List<StationResponse> create(long id, SectionRequest sectionRequest) {
+        SectionDto sectionDto = sectionDao.save(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
         Station upStation = getStation(sectionDto);
         Station downStation = getStation(sectionDto);
 

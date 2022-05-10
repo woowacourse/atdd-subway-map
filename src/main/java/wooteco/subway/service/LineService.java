@@ -23,10 +23,10 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse create(LineAndStationRequest lineAndStationRequest) {
+    public LineResponse create(LineRequest lineRequest) {
         Line line;
         try {
-            line = lineDao.save(lineAndStationRequest.getName(), lineAndStationRequest.getColor());
+            line = lineDao.save(lineRequest.getName(), lineRequest.getColor());
         } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException("이미 존재하는 노선입니다.");
         }
