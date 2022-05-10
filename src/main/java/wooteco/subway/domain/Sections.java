@@ -142,6 +142,7 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        validateDeletable();
         if (station.equals(findTopStation())) {
             sections.removeFirst();
             return;
@@ -160,6 +161,12 @@ public class Sections {
                 sections.add(i, combined);
                 return;
             }
+        }
+    }
+
+    private void validateDeletable() {
+        if (sections.size() < 2) {
+            throw new IllegalArgumentException("구간이 한 개 일 때는 역을 삭제할 수 없습니다.");
         }
     }
 

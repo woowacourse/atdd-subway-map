@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -292,7 +291,7 @@ class SectionsTest {
                         .isInstanceOf(IndexOutOfBoundsException.class)
         );
     }
-    
+
     @DisplayName("섞인 구간을 순서대로 정렬해 생성")
     @Test
     void 섞인_구간_정렬_생성() {

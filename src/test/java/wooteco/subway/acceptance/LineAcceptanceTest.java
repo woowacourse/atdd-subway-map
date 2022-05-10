@@ -41,7 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 예외 발생")
+    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 예외 발생")
     @Test
     void 존재하는_노선_이름_생성_예외() {
         // given
@@ -184,6 +184,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("추가할 수 없는 구간을 추가 시 예외가 발생한다")
+    @Test
+    void 구간_추가_예외() {
+        // given
+        Long 강남역Id = postStationThenReturnId("강남역");
+        Long 선릉역Id = postStationThenReturnId("선릉역");
+        Long 역삼역Id = postStationThenReturnId("역삼역");
+        LineRequest lineRequest = new LineRequest(
+                "2호선", "bg-green-600", 강남역Id, 선릉역Id, 3);
+        Long lineId = postToLines(lineRequest).jsonPath().getLong("id");
+
+        // when
+        SectionRequest request = new SectionRequest(역삼역Id, 선릉역Id, 5);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
     @DisplayName("구간을 삭제한다")
     @Test
     void 구간_삭제() {
@@ -213,6 +238,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("삭제할 수 없는 구간을 삭제할 시 예외 발생")
+    @Test
+    void 구간_삭제_예외() {
+        // given
+        Long 강남역Id = postStationThenReturnId("강남역");
+        Long 선릉역Id = postStationThenReturnId("선릉역");
+        LineRequest lineRequest = new LineRequest(
+                "2호선", "bg-green-600", 강남역Id, 선릉역Id, 3);
+        Long lineId = postToLines(lineRequest).jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + lineId + "/sections?stationId=" + 선릉역Id)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> postToLines(LineRequest lineRequest) {
