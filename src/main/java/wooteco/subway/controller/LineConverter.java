@@ -3,7 +3,7 @@ package wooteco.subway.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import wooteco.subway.dto.info.LineInfo;
+import wooteco.subway.dto.info.LineInfoToUpdate;
 import wooteco.subway.dto.info.RequestLineInfo;
 import wooteco.subway.dto.info.ResponseLineInfo;
 import wooteco.subway.dto.request.LineRequest;
@@ -11,12 +11,12 @@ import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
 
 public class LineConverter {
-    static LineInfo toInfo(LineRequest lineRequest) {
-        return new LineInfo(lineRequest.getName(), lineRequest.getColor());
+    static LineInfoToUpdate toInfo(LineRequest lineRequest) {
+        return new LineInfoToUpdate(lineRequest.getName(), lineRequest.getColor());
     }
 
-    static LineInfo toInfo(Long id, LineRequest lineRequest) {
-        return new LineInfo(id, lineRequest.getName(), lineRequest.getColor());
+    static LineInfoToUpdate toInfo(Long id, LineRequest lineRequest) {
+        return new LineInfoToUpdate(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     static RequestLineInfo toInfo2(LineRequest lineRequest) {
