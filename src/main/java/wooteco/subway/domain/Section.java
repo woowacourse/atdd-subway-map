@@ -23,6 +23,10 @@ public class Section {
         this(null, null, upStationId, downStationId, distance);
     }
 
+    public Section(Section section, int distance) {
+        this(section.getId(), section.getLineId(), section.getUpStationId(), section.getDownStationId(), distance);
+    }
+
     public Long getId() {
         return id;
     }
@@ -41,5 +45,23 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void validate(Section section) {
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
+    }
+
+    public boolean isLongerThan(int targetDistance) {
+        return distance > targetDistance;
     }
 }

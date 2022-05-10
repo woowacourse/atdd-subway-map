@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 public interface SectionDao {
 
@@ -9,5 +10,9 @@ public interface SectionDao {
 
     Section findById(Long id);
 
-    List<Section> findByLineId(Long lineId);
+    Sections findByLineId(Long lineId);
+
+    int updateSection(Section updateSection);
+
+    List<Section> findAll();
 }

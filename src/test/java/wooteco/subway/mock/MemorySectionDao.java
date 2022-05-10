@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 public class MemorySectionDao implements SectionDao {
     private static Long seq = 0L;
@@ -34,10 +35,20 @@ public class MemorySectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findByLineId(Long lineId) {
-        return sections.values().stream()
+    public Sections findByLineId(Long lineId) {
+        return new Sections(sections.values().stream()
                 .filter(it -> it.getLineId().equals(lineId))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public int updateSection(Section updateSection) {
+        return 0;
+    }
+
+    @Override
+    public List<Section> findAll() {
+        return null;
     }
 
     public void clear() {
