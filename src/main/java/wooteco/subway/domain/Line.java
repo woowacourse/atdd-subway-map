@@ -9,6 +9,7 @@ public class Line {
 
     public Line(Long id, String name, String color) {
         validateNameLength(name);
+        validateColorLength(color);
         this.id = id;
         this.name = name;
         this.color = color;
@@ -21,6 +22,12 @@ public class Line {
     private void validateNameLength(String name) {
         if (name.isBlank() || name.length() > 20) {
             throw new IllegalArgumentException("노선 이름은 최소 1글자이상 20글자 이하여야 합니다.");
+        }
+    }
+
+    private void validateColorLength(String color) {
+        if (color.isBlank() || color.length() > 30) {
+            throw new IllegalArgumentException("노선 색상은 최소 1글자이상 30글자 이하여야 합니다.");
         }
     }
 
