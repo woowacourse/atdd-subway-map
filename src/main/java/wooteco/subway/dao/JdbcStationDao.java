@@ -62,6 +62,16 @@ public class JdbcStationDao implements StationDao {
         }
     }
 
+    @Override
+    public Optional<Station> findById(Long id) {
+        final String sql = "SELECT * FROM station WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     private boolean isUpdated(int updatedCount) {
         return updatedCount == 1;
     }

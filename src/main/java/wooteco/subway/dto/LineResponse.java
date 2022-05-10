@@ -3,6 +3,7 @@ package wooteco.subway.dto;
 import java.util.List;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 public class LineResponse {
     private final Long id;
@@ -32,6 +33,16 @@ public class LineResponse {
             line.getColor()
         );
     }
+
+    public static LineResponse of(Line line, Section section) {
+        return new LineResponse(
+            line.getId(),
+            line.getName(),
+            line.getColor(),
+            List.of(StationResponse.from(section.getUpStation()), StationResponse.from(section.getDownStation()))
+        );
+    }
+
 
     public Long getId() {
         return id;

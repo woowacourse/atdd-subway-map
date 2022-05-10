@@ -17,6 +17,7 @@ import io.restassured.response.Response;
 import wooteco.subway.acceptance.fixture.SimpleRestAssured;
 import wooteco.subway.dto.ExceptionResponse;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
@@ -24,8 +25,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성한다.")
     public void createLine() {
         // given
-        Map<String, String> params =
-            Map.of("name", "신분당선", "color", "bg-red-600");
+        SimpleRestAssured.post("/stations", Map.of("name", "선정릉역"));
+        SimpleRestAssured.post("/stations", Map.of("name", "선릉역"));
+        Map<String, String> params = Map.of(
+            "name", "신분당선",
+            "color", "bg-red-600",
+            "upStationId", "1",
+            "downStationId", "2",
+            "distance", "10");
         // when
         final ExtractableResponse<Response> response = SimpleRestAssured.post("/lines", params);
         // then
@@ -76,11 +83,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 노선 목록을 조회한다.")
     void getLines() {
         /// given
-        Map<String, String> params1 = Map.of("name", "신분당선", "color", "bg-red-600");
-        Map<String, String> params2 = Map.of("name", "경의중앙선", "color", "bg-red-800");
-
-        ExtractableResponse<Response> createResponse1 = SimpleRestAssured.post("/lines", params1);
-        ExtractableResponse<Response> createResponse2 = SimpleRestAssured.post("/lines", params2);
+        final ExtractableResponse<Response> createResponse1 = setLineAsSaved("장한평역", "군자역", "5호선");
+        final ExtractableResponse<Response> createResponse2 = setLineAsSaved("선정릉역", "선릉역", "수인분당선");
 
         // when
         ExtractableResponse<Response> response = SimpleRestAssured.get("/lines");
@@ -102,8 +106,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("ID값으로 노선을 조회한다.")
     public void getLine() {
         // given
-        Map<String, String> params1 = Map.of("name", "신분당선", "color", "bg-red-600");
-        ExtractableResponse<Response> createdResponse = SimpleRestAssured.post("/lines", params1);
+        final ExtractableResponse<Response> createdResponse = setLineAsSaved("선정릉역", "선릉역", "수인분당선");
+
         // when
         final String uri = createdResponse.header("Location");
         final ExtractableResponse<Response> foundResponse = SimpleRestAssured.get(uri);
@@ -120,11 +124,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("존재하지 않는 ID값으로 노선을 조회할 수 없다.")
     public void getLine_throwExceptionWithInvalidId() {
-        // given
-        Map<String, String> params = Map.of("name", "신분당선", "color", "bg-red-600");
-        SimpleRestAssured.post("/lines", params);
-        // when
+        // given & when
+        setLineAsSaved("선정릉역", "선릉역", "수인분당선");
+
         final ExtractableResponse<Response> response = SimpleRestAssured.get("/lines/99");
+
         // then
         Assertions.assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
@@ -138,8 +142,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("ID값으로 노선을 수정한다.")
     public void modifyLine() {
         // given
-        Map<String, String> params1 = Map.of("name", "신분당선", "color", "bg-red-600");
-        ExtractableResponse<Response> createdResponse = SimpleRestAssured.post("/lines", params1);
+        final ExtractableResponse<Response> createdResponse = setLineAsSaved("선정릉역", "선릉역", "수인분당선");
 
         // when
         final Map<String, String> modificationParam =
@@ -174,8 +177,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("ID값으로 노선을 제거한다.")
     public void deleteLine() {
         // given
-        Map<String, String> params = Map.of("name", "신분당선", "color", "bg-red-600");
-        ExtractableResponse<Response> createdResponse = SimpleRestAssured.post("/lines", params);
+        final ExtractableResponse<Response> createdResponse = setLineAsSaved("선정릉역", "선릉역", "수인분당선");
+
         // when
         final String uri = createdResponse.header("Location");
         final ExtractableResponse<Response> deleteResponse = SimpleRestAssured.delete(uri);
@@ -200,6 +203,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .getMessage())
                 .contains("존재하지 않습니다")
         );
+    }
+
+    private ExtractableResponse<Response> setLineAsSaved(String upStationName, String downStationName,
+        String lineName) {
+        final Long upStationId = SimpleRestAssured.toObject(
+            SimpleRestAssured.post("/stations", Map.of("name", upStationName)), StationResponse.class).getId();
+
+        final Long downStationId = SimpleRestAssured.toObject(
+            SimpleRestAssured.post("/stations", Map.of("name", downStationName)), StationResponse.class).getId();
+        Map<String, String> params = Map.of(
+            "name", lineName,
+            "color", "bg-red-600",
+            "upStationId", upStationId + "",
+            "downStationId", downStationId + "",
+            "distance", "10");
+        // when
+        return SimpleRestAssured.post("/lines", params);
     }
 
 }
