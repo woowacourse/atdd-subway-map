@@ -25,7 +25,7 @@ public class Sections {
             final MatchingResult result = section.match(newSection);
             if (canAddStation(result)) {
                 add(section, newSection, result);
-                break;
+                return;
             }
         }
     }

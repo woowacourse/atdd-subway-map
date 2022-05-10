@@ -57,14 +57,6 @@ public class Section {
         return downStation;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public Section changeDownStationAndDistance(final Section newSection, final Station newStation) {
         return new Section(this.upStation, newStation, newSection.distance);
     }
