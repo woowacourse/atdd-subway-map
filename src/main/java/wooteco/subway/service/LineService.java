@@ -1,7 +1,9 @@
 package wooteco.subway.service;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,8 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.LineCreateRequest;
@@ -93,10 +97,22 @@ public class LineService {
     }
 
     private List<StationResponse> findStations(Long id) {
-        return stationDao.findByLineId(id)
-                .stream()
-                .map(StationResponse::from)
+        Sections sections = new Sections(sectionDao.findByLineId(id));
+        List<Long> ids = sections.getSortedStationIds();
+        Map<Long, String> nameInfo = initNameMap(id);
+
+        return ids.stream()
+                .map(it -> new StationResponse(it, nameInfo.get(it)))
                 .collect(Collectors.toList());
+    }
+
+    private Map<Long, String> initNameMap(Long id) {
+        List<Station> stations = stationDao.findByLineId(id);
+        Map<Long, String> map = new HashMap<>();
+        for (Station station : stations) {
+            map.put(station.getId(), station.getName());
+        }
+        return map;
     }
 
     @Transactional

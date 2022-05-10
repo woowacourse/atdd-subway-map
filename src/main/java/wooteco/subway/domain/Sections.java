@@ -1,13 +1,57 @@
 package wooteco.subway.domain;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class Sections {
+
     private final List<Section> value;
 
     public Sections(List<Section> value) {
         this.value = value;
+    }
+
+    public List<Long> getSortedStationIds() {
+        if(value.size() == 0) {
+            return new LinkedList<>();
+        }
+
+        List<Long> ids = new LinkedList<>();
+
+        Map<Long, Long> sectionMap = initByUpStationKey();
+        Long nowId = value.get(0).getDownStationId();
+        while (nowId != null) {
+            ids.add(0, nowId);
+            nowId = sectionMap.get(nowId);
+        }
+
+        sectionMap = initByDownStationKey();
+        nowId = value.get(0).getUpStationId();
+        while (nowId != null) {
+            ids.add(nowId);
+            nowId = sectionMap.get(nowId);
+        }
+
+        return ids;
+    }
+
+    private Map<Long, Long> initByUpStationKey() {
+        Map<Long, Long> map = new HashMap<>();
+        for (Section section : value) {
+            map.put(section.getUpStationId(), section.getDownStationId());
+        }
+        return map;
+    }
+
+    private Map<Long, Long> initByDownStationKey() {
+        Map<Long, Long> map = new HashMap<>();
+        for (Section section : value) {
+            map.put(section.getDownStationId(), section.getUpStationId());
+        }
+        return map;
     }
 
     /**
@@ -69,6 +113,12 @@ public class Sections {
                 .findFirst();
     }
 
+    /**
+     * 기존 구간을 삭제하는 메서드
+     *
+     * @param sectionId 삭제하고자 하는 구간의 id
+     * @return 데이터가 변경된 id
+     */
     public Optional<Section> delete(Long sectionId) {
         Section section = findBySectionId(sectionId);
         value.remove(section);
@@ -90,5 +140,12 @@ public class Sections {
 
     public List<Section> getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "value=" + value +
+                '}';
     }
 }

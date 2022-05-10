@@ -44,7 +44,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         savedId2 = insertLine("분당선", "bg-green-600");
 
         insertSection(savedId1, 1L, 2L);
-        insertSection(savedId2, 1L, 2L);
     }
 
     private Long insertLine(String name, String color) {
@@ -225,9 +224,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createSection() {
         //given
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 5);
+        String url = "/lines/" + savedId2 + "/sections";
 
         //when
-        ExtractableResponse<Response> response = RestAssuredUtil.post("/lines/2/sections", sectionRequest);
+        ExtractableResponse<Response> response = RestAssuredUtil.post(url, sectionRequest);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

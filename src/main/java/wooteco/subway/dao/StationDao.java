@@ -63,7 +63,7 @@ public class StationDao {
 
     public List<Station> findByLineId(Long id) {
         String sql = "select st.* "
-                + "from (select up_station_id ,down_station_id from section where line_id = :id) sc, station st "
+                + "from (select distinct up_station_id ,down_station_id from section where line_id = :id) sc, station st "
                 + "where sc.up_station_id = st.id OR sc.down_station_id = st.id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
         return jdbcTemplate.query(sql, source, eventRowMapper);

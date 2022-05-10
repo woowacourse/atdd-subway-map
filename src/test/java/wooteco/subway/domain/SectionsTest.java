@@ -15,10 +15,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class SectionsTest {
 
-    private static final Section section1 = new Section(1L, 1L, 3L, 1L, 10);
-    private static final Section section2 = new Section(2L, 1L, 2L, 3L, 10);
-    private static final Section section3 = new Section(3L, 1L, 4L, 2L, 10);
-    private static final Section section4 = new Section(4L, 1L, 5L, 4L, 10);
+    private final Section section1 = new Section(1L, 1L, 3L, 1L, 10);
+    private final Section section2 = new Section(2L, 1L, 2L, 3L, 10);
+    private final Section section3 = new Section(3L, 1L, 4L, 2L, 10);
+    private final Section section4 = new Section(4L, 1L, 5L, 4L, 10);
 
     private Sections sections;
 
@@ -65,5 +65,18 @@ class SectionsTest {
 
         // then
         assertThat(deletedSection.get()).isEqualTo(expected);
+    }
+
+    @DisplayName("station id 목록")
+    @Test
+    void select_sorted_ids() {
+        // given
+
+        // when
+        List<Long> ids = sections.getSortedStationIds();
+
+        // then
+        assertThat(ids).containsExactly(section1.getDownStationId(), section2.getDownStationId(),
+                section3.getDownStationId(), section4.getDownStationId(), section4.getUpStationId());
     }
 }
