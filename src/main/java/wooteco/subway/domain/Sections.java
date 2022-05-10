@@ -45,6 +45,18 @@ public class Sections {
             sections.add(section);
             return;
         }
+
+        if (sections.stream()
+                .anyMatch(it -> it.getUpStation().equals(section.getDownStation()))) {
+            final Section section1 = sections.stream()
+                    .filter(it -> it.getUpStation().equals(section.getDownStation()))
+                    .findFirst()
+                    .orElseThrow();
+            sections.remove(section1);
+            sections.add(section);
+            sections.add(section1);
+            return;
+        }
 //        sections.add(section);
     }
 

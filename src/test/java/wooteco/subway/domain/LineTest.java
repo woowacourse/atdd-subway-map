@@ -85,11 +85,34 @@ public class LineTest {
                 .findFirst()
                 .orElseThrow();
 
-        // a - b
-        // b - c
         assertAll(
                 () -> assertThat(section1.getDownStation()).isEqualTo(upStation2),
                 () -> assertThat(section2.getDownStation()).isEqualTo(downStation2)
+        );
+    }
+
+    @Test
+    @DisplayName("상행 종점 구간 등록")
+    void addSectionUpTerminal() {
+        //given
+        final Station newUpStation = new Station("신강남역");
+        final Section section = new Section(newUpStation, upStation, 3);
+        //when
+        line.addSection(section);
+        //then
+        final List<Section> sections = line.getSections();
+        final Section section1 = sections.stream()
+                .filter(it -> it.getDownStation().equals(upStation))
+                .findFirst()
+                .orElseThrow();
+        final Section section2 = sections.stream()
+                .filter(it -> it.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseThrow();
+
+        assertAll(
+                () -> assertThat(section1.getUpStation()).isEqualTo(newUpStation),
+                () -> assertThat(section2.getDownStation()).isEqualTo(downStation)
         );
     }
 }
