@@ -19,6 +19,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 
 @JdbcTest
+@Transactional
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class LineDaoTest {
 
@@ -34,10 +35,6 @@ public class LineDaoTest {
         lineDao = new LineDao(jdbcTemplate.getDataSource());
     }
 
-    @AfterEach
-    void reset() {
-        lineDao.deleteAll();
-    }
 
     @Test
     @DisplayName("노선을 저장한다.")
@@ -80,8 +77,8 @@ public class LineDaoTest {
     @DisplayName("입력된 id의 노선을 삭제한다")
     void deleteById() {
         LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
-        lineDao.save(lineRequest);
-        lineDao.deleteById(1L);
+        Line line = lineDao.save(lineRequest);
+        lineDao.deleteById(line.getId());
 
         assertThat(lineDao.findAll()).hasSize(0);
     }
@@ -90,11 +87,11 @@ public class LineDaoTest {
     @DisplayName("입력된 id의 노선을 수정한다.")
     void update() {
         LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
-        lineDao.save(lineRequest);
-        Line expected = new Line(1L, "분당선", "green");
+        Line line = lineDao.save(lineRequest);
+        Line expected = new Line(line.getId(), "분당선", "green");
 
         lineDao.update(expected);
 
-        assertThat(lineDao.findById(1L).orElseThrow()).isEqualTo(expected);
+        assertThat(lineDao.findById(line.getId()).orElseThrow().getName()).isEqualTo("분당선");
     }
 }
