@@ -100,10 +100,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("구간이 하나일경우 예외를 발생시킨다.")
-    void deleteSection_Exception() {
+    @DisplayName("삭제시 구간이 하나일경우 예외를 발생시킨다.")
+    void deleteSection_OneSectionException() {
         // given
         createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=2")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("삭제시 없는 구간일 경우 예외를 발생시킨다.")
+    void deleteSection_NoSectionException() {
+        // given
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
