@@ -20,41 +20,37 @@ import wooteco.subway.dto.StationResponse;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> getLineById(long expectId) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + expectId)
                 .then().log().all()
                 .extract();
-        return response;
     }
 
     private ExtractableResponse<Response> getLines() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .when()
                 .get("/lines")
                 .then().log().all()
                 .extract();
-        return response;
     }
 
     private ExtractableResponse<Response> putLine(long lineId, LineRequest lineRequest) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + lineId)
                 .then().log().all()
                 .extract();
-        return response;
     }
 
     private ExtractableResponse<Response> deleteLine(String uri) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
                 .extract();
-        return response;
     }
 
     @DisplayName("지하철 노선을 생성한다.")

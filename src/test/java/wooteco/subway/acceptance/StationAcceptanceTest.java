@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,21 +18,19 @@ import wooteco.subway.dto.StationResponse;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> getStations() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .when()
                 .get("/stations")
                 .then().log().all()
                 .extract();
-        return response;
     }
 
     private ExtractableResponse<Response> deleteStation(String uri) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
                 .extract();
-        return response;
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -90,7 +88,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<Long> expectedStationIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedStationIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultStationIds = response.jsonPath().getList(".", StationResponse.class).stream()
