@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public class Sections {
 
+    private static final int MINIMUM_SIZE = 1;
+
     private final List<Section> value;
 
     public Sections(final List<Section> value) {
@@ -37,6 +39,7 @@ public class Sections {
     }
 
     public void delete(final long stationId) {
+        validateSize();
         final Optional<Section> downSection = value.stream()
                 .filter(section -> section.getDownStation().getId() == stationId)
                 .findAny();
@@ -47,6 +50,13 @@ public class Sections {
 
         if (downSection.isEmpty() && upSection.isEmpty()) {
             throw new IllegalArgumentException("구간에 존재하지 않는 지하철 역입니다.");
+        }
+
+    }
+
+    private void validateSize() {
+        if (value.size() <= MINIMUM_SIZE) {
+            throw new IllegalArgumentException("구간이 " + value.size() + "개 이므로 삭제할 수 없습니다.");
         }
     }
 

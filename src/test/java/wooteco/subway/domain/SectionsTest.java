@@ -189,4 +189,12 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간에 존재하지 않는 지하철 역입니다.");
     }
+
+    @DisplayName("구간이 1개일 때 삭제를 시도할 경우 예외를 발생한다.")
+    @Test
+    void delete_throwsSectionsSizeException() {
+        assertThatThrownBy(() -> sections.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간이 1개 이므로 삭제할 수 없습니다.");
+    }
 }
