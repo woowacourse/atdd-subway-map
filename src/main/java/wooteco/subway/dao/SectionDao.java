@@ -60,16 +60,6 @@ public class SectionDao {
         return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, id);
     }
 
-    public Section findByUpStationId(Long lineId, Long upStationId) {
-        final String sql = SELECT_SECTION + "WHERE upStationId = ? AND lineId = ?;";
-        return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, upStationId, lineId);
-    }
-
-    public Section findByDownStationId(Long lineId, Long downStationId) {
-        final String sql = SELECT_SECTION + "WHERE downStationId = ? AND lineId = ?;";
-        return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, downStationId, lineId);
-    }
-
     public void delete(Long id) {
         final String sql = "DELETE FROM section WHERE id = ?";
         jdbcTemplate.update(sql, id);
@@ -78,5 +68,11 @@ public class SectionDao {
     public void deleteAllByLineId(Long lineId) {
         final String sql = "DELETE FROM section WHERE lineId = ?";
         jdbcTemplate.update(sql, lineId);
+    }
+
+    public void deleteAllBySections(List<Section> sections) {
+        final String sql = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.batchUpdate(sql, sections, sections.size(),
+                (statement, section) -> statement.setLong(1, section.getId()));
     }
 }

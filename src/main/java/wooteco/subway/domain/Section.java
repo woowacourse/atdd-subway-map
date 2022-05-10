@@ -22,23 +22,31 @@ public class Section {
         validateDistinctStation();
     }
 
-    public Section(Long lineId, Station upStation, Station downStation, int distance) {
-        this(0L, lineId, upStation, downStation, distance);
-    }
-
-    public static Section of(Section section, Station upStation, Station downStation) {
-        return new Section(section.getId(), section.getLineId(), upStation, downStation,
-                section.getDistance());
-    }
-
     private void validateDistinctStation() {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException(SAME_STATION_ERROR_MESSAGE);
         }
     }
 
+    public Section(Long lineId, Station upStation, Station downStation, int distance) {
+        this(0L, lineId, upStation, downStation, distance);
+    }
+
+    public boolean contains(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     public Section toReverse() {
         return new Section(id, lineId, downStation, upStation, distance);
+    }
+
+    public Section calculateRemainSection(Section section) {
+        if (section.getUpStation().equals(upStation)) {
+            return new Section(section.getLineId(), section.getDownStation(),
+                    downStation, distance - section.getDistance());
+        }
+        return new Section(section.getLineId(), upStation,
+                section.upStation, distance - section.getDistance());
     }
 
     public Long getId() {
@@ -67,15 +75,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public Section calculateRemainSection(Section section, boolean isUpAttach) {
-        if (isUpAttach) {
-            return new Section(section.getLineId(), section.getDownStation(),
-                    downStation, distance - section.getDistance());
-        }
-        return new Section(section.getLineId(), upStation,
-                section.upStation, distance - section.getDistance());
     }
 
     @Override

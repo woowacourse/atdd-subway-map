@@ -71,41 +71,6 @@ class SectionDaoTest {
                 .isEqualTo(List.of(section1, section2));
     }
 
-    @DisplayName("해당 지하철 노선 upStationId의 지하철 구간들을 조회한다.")
-    @Test
-    void findByUpStationId() {
-        Station station = stationDao.findById(stationDao.save(STATION));
-        Station station2 = stationDao.findById(stationDao.save(STATION_2));
-        Long lineId = lineDao.save(LINE);
-        Section section = new Section(lineId, station, station2, 10);
-        Long id = sectionDao.save(section);
-        Section resultSection = sectionDao.findByUpStationId(section.getLineId(), section.getUpStationId());
-        assertThat(resultSection)
-                .usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(section);
-    }
-
-    @DisplayName("해당 지하철 노선 downStationId의 지하철 구간들을 조회한다.")
-    @Test
-    void findByDownStationId() {
-        //given
-        Station station = stationDao.findById(stationDao.save(STATION));
-        Station station2 = stationDao.findById(stationDao.save(STATION_2));
-        Long lineId = lineDao.save(LINE);
-        Section section = new Section(lineId, station, station2, 10);
-        Long id = sectionDao.save(section);
-
-        //when
-        Section resultSection = sectionDao.findByUpStationId(section.getLineId(), section.getUpStationId());
-
-        //then
-        assertThat(resultSection)
-                .usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(section);
-    }
-
     @DisplayName("지하철 구간을 삭제한다.")
     @Test
     void delete() {

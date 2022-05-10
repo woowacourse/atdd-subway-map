@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
@@ -13,7 +14,6 @@ public class StationService {
     private static final String ALREADY_IN_STATION_ERROR_MESSAGE = "이미 해당 이름의 역이 있습니다.";
     private static final String NO_ID_ERROR_MESSAGE = "해당 아이디의 역이 없습니다.";
     private static final String ALREADY_IN_LINE_ERROR_MESSAGE = "지하철 노선에 해당 역이 등록되어있어 역을 삭제할 수 없습니다.";
-
 
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -52,12 +52,15 @@ public class StationService {
     }
 
     private void validateStationNotLinked(Long stationId) {
-        boolean isLinked = lineDao.findAll().stream()
-                .map(line -> new Sections(sectionDao.findAllByLineId(line.getId())))
-                .anyMatch(sections -> sections.calculateStations().contains(stationDao.findById(stationId)));
-        if (isLinked) {
-            throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
-        }
+        lineDao.findAll().stream()
+                .map(this::getSections)
+                .filter(sections -> !sections.findByStation(stationDao.findById(stationId)).isEmpty())
+                .findAny()
+                .ifPresent(section -> {throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);});
+    }
+
+    private Sections getSections(Line line) {
+        return new Sections(sectionDao.findAllByLineId(line.getId()));
     }
 
     private void validateID(Long id) {

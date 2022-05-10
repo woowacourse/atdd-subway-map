@@ -96,7 +96,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] section 외래키로 잇기, 연결된 section 먼저 삭제
 - [x] Sections에 서비스 로직 이동 및 테스트코드 이동
 - [x] SectionWithStation을 Section 도메인과 통합
-- [ ] 새로 만든 객체들의 테스트코드 수정
+- [ ] 새로 만든 도메인 객체들의 테스트코드 수정
 - [ ] 테스트코드 속도 개선
     - [ ] MockMVC 사용해 컨트롤러/서비스단 수정? -> 나중에
     - [ ] Drop table 대신 truncate 어쩌구 사용..
@@ -108,8 +108,24 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [ ] 예외처리 꼼꼼하게~ 수정^^ CustomException 써보거나 기존 쓸만한 Exception 적용
     - [ ] IllegalStateException, NoSuchElementException 등
     - [ ] sql 관련 Exception 검색 후 적용
+    - [ ] 예외메세지에 해당 역/노선 등 정보 제공
+    - [ ] 예외 클래스 만들어 예외메세지 템플릿으로 메세지 변경
 
-### 1단계 피드백
+### 3단계 피드백
+
+- [x] 한번에 delete 할 수 있는 메소드를 Dao에 생성
+- [ ] sectionDao에서 바로 station이 포함된 Section을 반환하도록 변경
+- [ ] MockMVC와 기존 RestAssured 비교해 공부, 더 좋은 방식으로 결정
+- [ ] checkStationExist 코드에서 hasStation 쿼리 한번으로 바뀌도록 새 StationDao 메소드 생성
+- [ ] 메서드 라인수가 긴거같아요. 검증과 생성을 명시적으로 더 나눠보면 어떨까요?
+- [ ] 어떤 부분은 검증을 먼저 해주고있는데요, 하나로 통일하면 어떨까요?
+- [ ] 존재하지 않는 id로 검색시 어떻게 될까요? -> 들어오는 서비스의 모든 파라미터 검증
+- [ ] update시 line만 넘겨주면 다시 조회를 하지 않아도 될거같은데 어떻게 생각하시나요?
+- [ ] executeMiddleSection의 기능을 save, execute로 분리
+- [ ] database 에러를 서비스 레이어에서 IllegalArgument로 변환해 던져주기
+- [ ] stream 문 개선
+
+### 1/2단계 피드백
 
 - [x] DAO 안에서 값 존재여부 검증
 - [x] 업데이트나 삭제에도 검증 추가
@@ -119,4 +135,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 사이즈가 0이어도 괜찮겠지만 해당 라인이름으로 검색시 조회가 되지않도록 하는게 더 나을 듯
 - [x] findAll()이 when이고 결과를 then에서 검증
 - [x] 에러 메세지도 같이 던져주기
-- [ ] SpringBootTest 사용 및 JdbcTest와 차이 공부
+- [x] SpringBootTest 사용 및 JdbcTest와 차이 공부

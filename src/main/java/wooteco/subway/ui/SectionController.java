@@ -29,7 +29,7 @@ public class SectionController {
 
     @DeleteMapping("/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-        sectionService.deleteSection(id, stationId);
+        sectionService.delete(id, stationId);
         return ResponseEntity.ok().build();
     }
 }
