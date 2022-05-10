@@ -12,9 +12,9 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public void save(final Long LineId, final SectionRequest sectionRequest) {
+    public void save(final Long lineId, final SectionRequest sectionRequest) {
         Section section = convertSection(sectionRequest);
-        sectionDao.save(LineId, section);
+        sectionDao.save(lineId, section);
     }
 
     private Section convertSection(final SectionRequest sectionRequest) {

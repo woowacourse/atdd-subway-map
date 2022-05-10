@@ -20,10 +20,12 @@ public class LineService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(final LineDao lineDao, final SectionDao sectionDao) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationDao stationDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     @Transactional
@@ -64,7 +66,13 @@ public class LineService {
     @Transactional
     public void delete(final Long id) {
         validateExistedLine(id);
+
+        List<Station> stations = lineDao.findStations(id);
         lineDao.delete(id);
+        sectionDao.delete(id);
+        for (Station station : stations) {
+            stationDao.delete(station.getId());
+        }
     }
 
     private void validateLine(final Line line) {

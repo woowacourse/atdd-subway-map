@@ -33,4 +33,18 @@ class SectionDaoTest {
 
         assertThat(count).isEqualTo(1);
     }
+
+    @DisplayName("특정 지하철 노선에 포함되어 있는 구간을 모두 삭제한다.")
+    @Test
+    void delete() {
+        // given
+        sectionDao.save(1L, new Section(1L, 2L, 10));
+
+        // when
+        sectionDao.delete(1L);
+
+        // then
+        Integer count = jdbcTemplate.queryForObject("select count(*) from SECTION where line_id = ?", Integer.class, 1L);
+        assertThat(count).isEqualTo(0);
+    }
 }

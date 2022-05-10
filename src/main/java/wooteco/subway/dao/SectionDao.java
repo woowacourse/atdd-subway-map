@@ -17,4 +17,9 @@ public class SectionDao {
         final String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
         jdbcTemplate.update(sql, lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
+
+    public void delete(final Long id) {
+        final String sql = "delete from SECTION where line_id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }
