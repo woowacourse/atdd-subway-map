@@ -3,12 +3,10 @@ package wooteco.subway.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
 import wooteco.subway.domain.Line;
 
 @Repository
@@ -25,7 +23,7 @@ public class LineDao {
         String name = line.getName();
         String color = line.getColor();
         jdbcTemplate.update((Connection conn) -> {
-            PreparedStatement pstmt = conn.prepareStatement(sql, new String[] {"id"});
+            PreparedStatement pstmt = conn.prepareStatement(sql, new String[]{"id"});
             pstmt.setString(1, name);
             pstmt.setString(2, color);
             return pstmt;
@@ -43,23 +41,20 @@ public class LineDao {
 
     public List<Line> findAll() {
         String sql = "SELECT id, name, color FROM LINE";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            Line line = new Line(
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Line(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("color")
-            );
-            return line;
-        });
+        ));
     }
 
     public Line find(Long id) {
         String sql = "SELECT id, name, color FROM LINE WHERE id =?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->new Line(
+        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Line(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("color")
-            ),id);
+        ), id);
     }
 
     public boolean existById(Long id) {
@@ -74,6 +69,6 @@ public class LineDao {
 
     public void delete(Long id) {
         String sql = "DELETE FROM LINE WHERE id =?";
-        jdbcTemplate.update(sql,id);
+        jdbcTemplate.update(sql, id);
     }
 }
