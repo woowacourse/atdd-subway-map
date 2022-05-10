@@ -42,10 +42,17 @@ public class SectionService {
         if (canSavingLastUpStation(lineId, section.getDownStationId())) {
             return true;
         }
+        if (canSavingLastDownStation(lineId, section.getUpStationId())) {
+            return true;
+        }
         return false;
     }
 
     private boolean canSavingLastUpStation(final Long lineId, final Long downStationId) {
         return sectionDao.existUpStation(lineId, downStationId);
+    }
+
+    private boolean canSavingLastDownStation(final Long lineId, final Long upStationId) {
+        return sectionDao.existDownStation(lineId, upStationId);
     }
 }

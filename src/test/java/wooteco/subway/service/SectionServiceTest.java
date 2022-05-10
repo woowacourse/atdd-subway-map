@@ -91,6 +91,25 @@ class SectionServiceTest {
         ).doesNotThrowAnyException();
     }
 
+    @DisplayName("구간 생성 시 하행 종점을 등록한다.")
+    @Test
+    void saveNewDownStation() {
+        // mocking
+        given(stationDao.existStationById(1L))
+                .willReturn(true);
+        given(stationDao.existStationById(2L))
+                .willReturn(true);
+        given(sectionDao.existUpStation(1L, 2L))
+                .willReturn(false);
+        given(sectionDao.existDownStation(1L, 1L))
+                .willReturn(true);
+
+        // when & then
+        assertThatCode(
+                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
+        ).doesNotThrowAnyException();
+    }
+
     @DisplayName("구간 생성 시 다른 구간과 연결되어 있지 않으면 예외가 발생한다.")
     @Test
     void saveNotConnectingStation() {
