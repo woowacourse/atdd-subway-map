@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.Set;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -81,7 +81,7 @@ class LineTest {
         line.addSection(section2);
 
         // then
-        Set<Section> sections = line.getSections();
+        List<Section> sections = line.getSections();
         assertThat(sections).containsOnly(
                 new Section(1L, station1, station3, 7),
                 new Section(2L, station3, station2, 3)
@@ -120,7 +120,7 @@ class LineTest {
         line.addSection(section2);
 
         // then
-        Set<Section> sections = line.getSections();
+        List<Section> sections = line.getSections();
         assertThat(sections).containsOnly(
                 new Section(1L, station1, station3, 3),
                 new Section(2L, station3, station2, 7)
@@ -159,7 +159,7 @@ class LineTest {
         line.addSection(section2);
 
         // then
-        Set<Section> sections = line.getSections();
+        List<Section> sections = line.getSections();
         assertThat(sections).containsOnly(
                 new Section(1L, station1, station2, 10),
                 new Section(2L, station3, station1, 10)
@@ -181,7 +181,7 @@ class LineTest {
         line.addSection(section2);
 
         // then
-        Set<Section> sections = line.getSections();
+        List<Section> sections = line.getSections();
         assertThat(sections).containsOnly(
                 new Section(1L, station1, station2, 10),
                 new Section(2L, station2, station3, 10)
@@ -205,7 +205,7 @@ class LineTest {
         line.removeStation(station3);
 
         // then
-        Set<Section> sections = line.getSections();
+        List<Section> sections = line.getSections();
         assertThat(sections).containsOnly(section1);
     }
 
@@ -226,7 +226,7 @@ class LineTest {
         line.removeStation(station3);
 
         // then
-        Set<Section> sections = line.getSections();
+        List<Section> sections = line.getSections();
         assertThat(sections).containsOnly(section1);
     }
 
@@ -283,7 +283,7 @@ class LineTest {
         line.removeStation(station2);
 
         // then
-        Set<Section> sections = line.getSections();
+        List<Section> sections = line.getSections();
         assertThat(sections).containsOnly(new Section(1L, station1, station3, 20));
     }
 }

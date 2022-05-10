@@ -13,6 +13,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.exception.NoSuchStationException;
 
@@ -68,5 +69,28 @@ public class LineService {
 
     public void deleteLineById(final Long id) {
         lineDao.deleteById(id);
+    }
+
+    public void addSection(final Long lineId, final SectionRequest sectionRequest) {
+        // line 초기화
+        Line line = lineDao.findById(lineId)
+                .orElseThrow(NoSuchLineException::new);
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        for (Section each : sections) {
+            line.addSection(each);
+        }
+
+        // section 초기화
+        Station upStation = stationDao.findById(sectionRequest.getUpStationId())
+                .orElseThrow(NoSuchLineException::new);
+        Station downStation = stationDao.findById(sectionRequest.getDownStationId())
+                .orElseThrow(NoSuchLineException::new);
+        Section section = sectionDao.save(lineId, new Section(upStation, downStation, sectionRequest.getDistance()));
+
+        // section 추가
+        line.addSection(section);
+
+        // section 정보 업데이트
+        sectionDao.batchUpdate(line.getSections());
     }
 }

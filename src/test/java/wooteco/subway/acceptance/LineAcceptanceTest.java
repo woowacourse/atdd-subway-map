@@ -17,10 +17,11 @@ import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
@@ -462,6 +463,40 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    /*
+    * given
+    * station1, station2를 상행종점, 하행종점으로 하는 line1이 등록되어 있다.
+    *
+    * when
+    * station2를 상행, station3을 하행으로 하는 거리 5짜리 구간을 등록한다.
+    *
+    * then
+    * 성공 응답을 반환한다.
+    * */
+    @DisplayName("구간을 추가한다")
+    @Test
+    void addSection() {
+        // given
+        long id1 = registerStationAndReturnId("station1");
+        long id2 = registerStationAndReturnId("station2");
+        String createdLinePath = registerLineAndReturnResponse("line", "color", id1, id2, 10).header("Location");
+
+        long id3 = registerStationAndReturnId("station3");
+        SectionRequest sectionRequest = new SectionRequest(id2, id3, 5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(sectionRequest)
+                .when().log().all()
+                .post(createdLinePath + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     private long registerStationAndReturnId(final String name) {
         StationRequest upStationRequest = new StationRequest(name);
         Response upStationResponse = RestAssured.given()
@@ -482,7 +517,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then().log().all()
+                .then()
                 .extract();
     }
 }

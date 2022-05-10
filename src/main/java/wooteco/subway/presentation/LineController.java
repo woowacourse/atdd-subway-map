@@ -15,6 +15,7 @@ import wooteco.subway.dao.application.LineService;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.dto.SectionRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -51,5 +52,11 @@ public class LineController {
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(id, sectionRequest);
+        return ResponseEntity.ok().build();
     }
 }

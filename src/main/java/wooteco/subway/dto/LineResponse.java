@@ -29,6 +29,7 @@ public class LineResponse {
 
         List<StationResponse> stations = new ArrayList<>();
 
+        // TODO: 2022/05/11 구간 사이에 있는 역이 두번 들어감
         for (Section section : sections) {
             stations.add(StationResponse.from(section.getUpStation()));
             stations.add(StationResponse.from(section.getDownStation()));

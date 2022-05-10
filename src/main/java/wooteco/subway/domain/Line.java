@@ -40,6 +40,13 @@ public class Line {
 
     // TODO: 2022/05/11 별도의 클래스로 분리할 수 있을까?
     public void addSection(final Section section) {
+
+        if (stations.size() == 0) {
+            sections.add(section);
+            stations.addAll(Set.of(section.getUpStation(), section.getDownStation()));
+            return;
+        }
+
         if (containsBothStationsIn(section)) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 등록되어 있습니다.");
         }
@@ -174,8 +181,8 @@ public class Line {
         return Collections.unmodifiableSet(stations);
     }
 
-    public Set<Section> getSections() {
-        return Collections.unmodifiableSet(sections);
+    public List<Section> getSections() {
+        return List.copyOf(sections);
     }
 
     @Override

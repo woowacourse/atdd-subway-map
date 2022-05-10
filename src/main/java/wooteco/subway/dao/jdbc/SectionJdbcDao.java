@@ -1,7 +1,9 @@
 package wooteco.subway.dao.jdbc;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -57,5 +59,24 @@ public class SectionJdbcDao implements SectionDao {
                 new Station(resultSet.getLong("down_station_id"), resultSet.getString("down_station_name")),
                 resultSet.getInt("distance")
         ), lineId);
+    }
+
+    @Override
+    public void batchUpdate(final List<Section> sections) {
+        final String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ? WHERE id = ?";
+        jdbcTemplate.batchUpdate(sql,
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(final PreparedStatement ps, final int i) throws SQLException {
+                        ps.setLong(1, sections.get(i).getUpStation().getId());
+                        ps.setLong(2, sections.get(i).getDownStation().getId());
+                        ps.setLong(3, sections.get(i).getId());
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return sections.size();
+                    }
+                });
     }
 }
