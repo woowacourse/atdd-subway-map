@@ -3,7 +3,6 @@ package wooteco.subway.domain;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
 
-import java.util.Comparator;
 import java.util.List;
 
 public class Section {
@@ -90,9 +89,18 @@ public class Section {
         return section.downStationId.equals(this.downStationId);
     }
 
-    public boolean canAddAsLastStop(Sections sections) {
-        List<Long> lastStopIds = sections.getLastStopStationIds();
+    public boolean canAddAsLastStation(Sections sections) {
+        List<Long> lastStopIds = sections.getLastStationIds();
 
         return lastStopIds.contains(upStationId) || lastStopIds.contains(downStationId);
+    }
+
+    public void canAddAsBetweenStation(Sections sections) {
+        List<Long> leftStationIds = sections.getUpStationIds();
+
+        // 구간이 추가할 수 있는 구간인가
+
+
+        // 구간 사이 거리가 추가할 수 있는 거리인가
     }
 }

@@ -19,9 +19,23 @@ class SectionsTest {
 
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        List<Long> lastStopStationIds = sections.getLastStopStationIds();
+        List<Long> lastStopStationIds = sections.getLastStationIds();
 
         assertThat(lastStopStationIds.size()).isEqualTo(2);
         assertThat(lastStopStationIds).isEqualTo(List.of(1L, 4L));
+    }
+
+    @DisplayName("노선 전체에서 상행 역 아이디만을 찾는다.")
+    @Test
+    void findUpStationIds() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        List<Long> upStationIds = sections.getUpStationIds();
+
+        assertThat(upStationIds).contains(1L, 2L, 3L);
     }
 }

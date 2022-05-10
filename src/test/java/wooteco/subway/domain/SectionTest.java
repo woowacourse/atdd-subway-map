@@ -56,7 +56,7 @@ class SectionTest {
 
         Section newSection = new Section(10, 2L, 4L, 5L);
 
-        boolean isLastStop = newSection.canAddAsLastStop(sections);
+        boolean isLastStop = newSection.canAddAsLastStation(sections);
 
         assertThat(isLastStop).isTrue();
     }
@@ -73,7 +73,7 @@ class SectionTest {
 
         Section newSection = new Section(10, 2L, 6L, 1L);
 
-        boolean isLastStop = newSection.canAddAsLastStop(sections);
+        boolean isLastStop = newSection.canAddAsLastStation(sections);
 
         assertThat(isLastStop).isTrue();
     }

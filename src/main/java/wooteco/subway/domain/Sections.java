@@ -21,7 +21,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public List<Long> getLastStopStationIds() {
+    public List<Long> getLastStationIds() {
         return sections.stream()
                 .map(section -> Arrays.asList(section.getUpStationId(), section.getDownStationId()))
                 .flatMap(Collection::stream)
@@ -29,6 +29,12 @@ public class Sections {
                 .entrySet().stream()
                 .filter(entry -> entry.getValue().size() == 1)
                 .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> getUpStationIds() {
+        return sections.stream()
+                .map(Section::getUpStationId)
                 .collect(Collectors.toList());
     }
 }

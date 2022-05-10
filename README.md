@@ -42,7 +42,7 @@
 ### 구간 관리 API 구현
 - [ ] 구간 등록
     - [ ] 요청) 구간 등록 시 3가지 정보를 입력받는다.
-        - [ ] upStationId, downStationId, distance
+        - [x] upStationId, downStationId, distance
     - [ ] 구간을 추가하며 상-하행 종점을 추가 할 수 있다.
     - [ ] A-C 존재 시 A-B 추가시 B-C 구간을 새로 만든다.(갈래길을 방지한다)
         - [ ] A-C 길이 7일 시, A-B가 길이4 면 새 구간 B-C의 길이는 3이다.
