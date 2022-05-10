@@ -7,6 +7,8 @@ public class Section {
     private int distance;
 
     public Section(Long id, Station upStation, Station downStation, int distance) {
+        validateUpAndDownAreDifferent(upStation, downStation);
+        validateDistance(distance);
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -14,25 +16,23 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
+        validateUpAndDownAreDifferent(upStation, downStation);
+        validateDistance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    private void validateUpAndDownAreDifferent(Station up, Station down) {
+        if (up.equals(down)) {
+            throw new IllegalArgumentException("구간의 상행역과 하행역은 달라야합니다.");
+        }
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    private void validateDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간 사이의 거리는 양수여야합니다.");
+        }
     }
 
     public boolean canConnect(Section section) {
@@ -66,5 +66,21 @@ public class Section {
 
     public boolean isSameId(Long id) {
         return this.id.equals(id);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }
