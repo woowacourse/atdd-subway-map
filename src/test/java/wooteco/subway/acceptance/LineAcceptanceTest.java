@@ -60,7 +60,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    @DisplayName("지하철 노선 전체를 조회한다.")
+    @DisplayName("지하철 노선을 모두 조회한다.")
     @Test
     void getLines() {
         /// given
@@ -127,7 +127,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse1 = requestLineCreation(lineRequest1);
 
         // when
-        ExtractableResponse<Response> response = requestLineUpdate(extractLocationFromHeader(createResponse1), lineRequest2);
+        ExtractableResponse<Response> response = requestLineUpdate(extractLocationFromHeader(createResponse1),
+                lineRequest2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -154,7 +155,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         requestLineCreation(lineRequest2);
 
         // when
-        ExtractableResponse<Response> response = requestLineUpdate(extractLocationFromHeader(createResponse1), lineRequest2);
+        ExtractableResponse<Response> response = requestLineUpdate(extractLocationFromHeader(createResponse1),
+                lineRequest2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

@@ -31,7 +31,8 @@ class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         StationResponse actualResponse = response.jsonPath().getObject(".", StationResponse.class);
-        StationResponse expectedResponse = StationResponse.of(gangnamStationRequest.toStation(extractIdFromHeader(response)));
+        StationResponse expectedResponse = StationResponse.of(
+                gangnamStationRequest.toStation(extractIdFromHeader(response)));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
