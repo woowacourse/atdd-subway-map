@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -20,6 +21,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public LineInfo save(LineInfo lineInfo) {
         validateNameDuplication(lineInfo.getName());
         Line line = new Line(lineInfo.getName(), lineInfo.getColor());

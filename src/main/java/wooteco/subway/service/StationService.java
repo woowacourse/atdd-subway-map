@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -20,6 +21,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationInfo save(StationInfo stationInfo) {
         if (stationDao.existByName(stationInfo.getName())) {
             throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_NAME);
