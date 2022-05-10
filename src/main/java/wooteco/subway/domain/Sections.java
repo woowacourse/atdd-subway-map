@@ -52,7 +52,7 @@ public class Sections {
             throw new IllegalArgumentException("해당 구간은 추가될 수 없습니다.");
         }
 
-        sectionWithSameUpStation.changeDownStation(section);
+        sectionWithSameUpStation.changeDownStationAndDistance(section);
     }
 
     private void validateSectionCanDividedWithSameDownStation(Section section) {
@@ -69,10 +69,17 @@ public class Sections {
             throw new IllegalArgumentException("해당 구간은 추가될 수 없습니다.");
         }
 
-        sectionWithSameDownStation.changeUpStation(section);
+        sectionWithSameDownStation.changeUpStationAndDistance(section);
     }
 
     public int size() {
         return sections.size();
+    }
+
+    public Section findById(long id) {
+        return sections.stream()
+            .filter(section -> section.isSameId(id))
+            .findFirst()
+            .orElse(null);
     }
 }

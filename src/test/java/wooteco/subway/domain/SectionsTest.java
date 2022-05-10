@@ -54,4 +54,18 @@ public class SectionsTest {
         assertThatThrownBy(() -> sections.add(sectionToAdd)).isInstanceOf(IllegalArgumentException.class)
             .hasMessage("해당 구간은 추가될 수 없습니다.");
     }
+
+    @DisplayName("기존에 있던 구간 내부에 구간 추가 시 기존 구간이 정상적으로 업데이트 되는지 테스트 한다.")
+    @Test
+    void addSection_withUpdateSection() {
+        Section section = new Section(1L, new Station(1L, "강남역"), new Station(2L, "선릉역"), 10);
+        Sections sections = new Sections(List.of(section));
+
+        Section sectionToAdd = new Section(2L, new Station(1L, "강남역"), new Station(3L, "역삼역"), 7);
+        sections.add(sectionToAdd);
+
+        Section resultSection = sections.findById(1L);
+        assertThat(resultSection.getDistance()).isEqualTo(3);
+        assertThat(resultSection.getDownStation()).isEqualTo(new Station(1L, "강남역"));
+    }
 }

@@ -1,14 +1,26 @@
 package wooteco.subway.domain;
 
 public class Section {
+    private Long id;
     private Station upStation;
     private Station downStation;
     private int distance;
+
+    public Section(Long id, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
 
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getUpStation() {
@@ -42,11 +54,17 @@ public class Section {
         return section.distance < this.distance;
     }
 
-    public void changeUpStation(Section section) {
+    public void changeUpStationAndDistance(Section section) {
         this.upStation = section.downStation;
+        this.distance -= section.distance;
     }
 
-    public void changeDownStation(Section section) {
+    public void changeDownStationAndDistance(Section section) {
         this.downStation = section.upStation;
+        this.distance -= section.distance;
+    }
+
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
     }
 }
