@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -45,6 +46,11 @@ public class SectionDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Section> findByLineId(Long lineId) {
+        String sql = "select id, line_id, up_station_id, down_station_id, distance from SECTION where line_id = :lineId";
+        return jdbcTemplate.query(sql, Map.of("lineId", lineId), generateMapper());
     }
 
     private RowMapper<Section> generateMapper() {
