@@ -9,11 +9,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class LineTest {
+public class SectionsTest {
 
-    Station upStation = new Station("강남역");
-    Station downStation = new Station("청계산입구역");
-    Line line;
+    private Station upStation = new Station("강남역");
+    private Station downStation = new Station("청계산입구역");
+    private Line line;
+    
     @BeforeEach
     void init(){
         line = new Line("신분당선", "빨간색", upStation, downStation, 7);
@@ -187,5 +188,14 @@ public class LineTest {
         //then
         assertThatThrownBy(() -> line.addSection(section))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+    
+    @Test
+    void deleteSection() {
+        //given
+        
+        //when
+        
+        //then
     }
 }
