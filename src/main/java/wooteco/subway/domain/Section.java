@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class Section {
+    private static final int EXACTLY_SAME_COUNT = 1;
+    private static final int LINEARLY_SAME_COUNT = 2;
+
     private Long id;
     private int distance;
     private Long lineId;
@@ -83,7 +86,7 @@ public class Section {
                 .filter(section -> isUpStationIdEquals(section) && isDownStationIdEquals(section))
                 .count();
 
-        return count == 1;
+        return count == EXACTLY_SAME_COUNT;
     }
 
     private boolean isLinearlyExistedIn(List<Section> sections) {
@@ -91,7 +94,7 @@ public class Section {
                 .filter(section -> isUpStationIdEquals(section) || isDownStationIdEquals(section))
                 .count();
 
-        return count == 2;
+        return count == LINEARLY_SAME_COUNT;
     }
 
     private boolean isUpStationIdEquals(Section section) {

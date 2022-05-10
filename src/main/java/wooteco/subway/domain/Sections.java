@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 public class Sections {
     private static final int MERGE_SECTION_SIZE = 2;
+    private static final int LAST_STATION_SIZE = 1;
 
     private final List<Section> sections;
 
@@ -26,7 +27,7 @@ public class Sections {
                 .flatMap(Collection::stream)
                 .collect(Collectors.groupingBy(it -> it))
                 .entrySet().stream()
-                .filter(entry -> entry.getValue().size() == 1)
+                .filter(entry -> entry.getValue().size() == LAST_STATION_SIZE)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
@@ -62,7 +63,7 @@ public class Sections {
     }
 
     public boolean isIntermediateStation() {
-        return sections.size() == 2;
+        return sections.size() == MERGE_SECTION_SIZE;
     }
 
     public Section mergeSections() {
