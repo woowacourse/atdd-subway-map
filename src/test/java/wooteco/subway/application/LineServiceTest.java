@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static wooteco.subway.application.ServiceFixture.강남역;
-import static wooteco.subway.application.ServiceFixture.경의중앙선;
 import static wooteco.subway.application.ServiceFixture.분당선;
 import static wooteco.subway.application.ServiceFixture.역삼역;
 
@@ -69,10 +68,11 @@ class LineServiceTest {
     @DisplayName("노선들을 조회한다.")
     void showLines() {
         //when
-        given(lineDao.findAll()).willReturn(List.of(분당선, 경의중앙선));
-        List<Line> lines = lineService.showLines();
+        given(lineDao.findAll()).willReturn(List.of(분당선));
+        given(stationDao.findByLineId(분당선.getId())).willReturn(List.of(강남역, 역삼역));
+        List<LineResponse> lines = lineService.showLines();
         //then
-        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines.get(0).getStations().size()).isEqualTo(2);
     }
 
     @Test
