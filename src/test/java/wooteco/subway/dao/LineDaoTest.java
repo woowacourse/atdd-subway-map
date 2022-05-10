@@ -1,33 +1,20 @@
 package wooteco.subway.dao;
 
-import org.junit.jupiter.api.BeforeEach;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.controller.AcceptanceTest;
 import wooteco.subway.domain.Line;
 
-import javax.sql.DataSource;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@JdbcTest
-public class LineDaoTest {
+public class LineDaoTest extends AcceptanceTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private DataSource dataSource;
     private LineDao lineDao;
 
     private Line line = new Line("신분당선", "red");
-
-    @BeforeEach
-    void setUp() {
-        lineDao = new LineDao(jdbcTemplate, dataSource);
-    }
 
     @DisplayName("노선을 등록한다.")
     @Test

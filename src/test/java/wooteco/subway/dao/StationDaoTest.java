@@ -1,33 +1,20 @@
 package wooteco.subway.dao;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.domain.Station;
-import wooteco.subway.exception.NotFoundException;
-
-import javax.sql.DataSource;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@JdbcTest
-class StationDaoTest {
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import wooteco.subway.controller.AcceptanceTest;
+import wooteco.subway.domain.Station;
+import wooteco.subway.exception.NotFoundException;
+
+class StationDaoTest extends AcceptanceTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private DataSource dataSource;
     private StationDao stationDao;
-
-    @BeforeEach
-    void setUp() {
-        stationDao = new StationDao(jdbcTemplate, dataSource);
-    }
 
     @DisplayName("역 정보를 저장한다.")
     @Test

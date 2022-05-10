@@ -1,34 +1,22 @@
 package wooteco.subway.dao;
 
-import javax.sql.DataSource;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.controller.AcceptanceTest;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
-@JdbcTest
-public class SectionDaoTest {
+public class SectionDaoTest extends AcceptanceTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private DataSource dataSource;
     private SectionDao sectionDao;
+    @Autowired
     private StationDao stationDao;
+    @Autowired
     private LineDao lineDao;
-
-    @BeforeEach
-    void setUp() {
-        sectionDao = new SectionDao(jdbcTemplate, dataSource);
-        stationDao = new StationDao(jdbcTemplate, dataSource);
-        lineDao = new LineDao(jdbcTemplate, dataSource);
-    }
 
     @DisplayName("구간 정보를 저장한다.")
     @Test

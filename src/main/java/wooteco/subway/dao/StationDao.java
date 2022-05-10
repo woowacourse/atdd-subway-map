@@ -1,5 +1,7 @@
 package wooteco.subway.dao;
 
+import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -48,6 +50,15 @@ public class StationDao {
     public void deleteById(Long id) {
         String SQL = "delete from station where id = ?";
         validateExistById(jdbcTemplate.update(SQL, id), id);
+    }
+
+    public Optional<Station> findById(Long stationId) {
+        String SQL = "select * from station where id = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(SQL, rowMapper(), stationId));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private void validateExistById(int updateQueryResult, Long id) {
