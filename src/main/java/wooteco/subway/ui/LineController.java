@@ -24,9 +24,8 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
-        Long lineId = lineService.save(lineCreateRequest);
-        LineResponse lineResponse = lineService.findById(lineId);
-        return ResponseEntity.created(URI.create("/lines/" + lineId)).body(lineResponse);
+        LineResponse lineResponse = lineService.save(lineCreateRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

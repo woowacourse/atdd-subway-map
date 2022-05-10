@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class LineService {
 
     private static final String DUPLICATE_LINE_NAME = "지하철 노선 이름이 중복될 수 없습니다.";
@@ -28,28 +30,29 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
-    public Long save(LineCreateRequest request) {
-        String name = request.getName();
-        if (lineDao.isExistName(name)) {
-            throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
-        }
+    public LineResponse save(LineCreateRequest request) {
+        validateName(request.getName());
 
-        Line line = lineDao.save(name, request.getColor());
+        Line line = lineDao.save(request.getName(), request.getColor());
         sectionService.save(line.getId(), new SectionRequest(request));
 
-        return line.getId();
+        List<Station> stations = List.of(
+                stationDao.findById(request.getUpStationId()),
+                stationDao.findById(request.getDownStationId())
+        );
+        return new LineResponse(line, stations);
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(line -> new LineResponse(line, stationDao.findByLineId(line.getId())))
+                .map(line -> new LineResponse(line, sectionService.findStationsByLineId(line.getId())))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-        List<Station> stations = stationDao.findByLineId(line.getId());
+        List<Station> stations = sectionService.findStationsByLineId(line.getId());
         return new LineResponse(line, stations);
     }
 
@@ -64,5 +67,11 @@ public class LineService {
         }
 
         lineDao.update(id, name, request.getColor());
+    }
+
+    private void validateName(String name) {
+        if (lineDao.isExistName(name)) {
+            throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
+        }
     }
 }
