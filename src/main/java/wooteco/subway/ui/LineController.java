@@ -29,28 +29,26 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
-        final Line newLine = lineService.save(lineRequest.getName(), lineRequest.getColor());
-
-        final LineResponse lineResponse = new LineResponse(newLine);
-
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+    public ResponseEntity<LineResponse> create2(@RequestBody LineRequest lineRequest) {
+        final LineResponse lineResponse = lineService
+                .save2(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(),
+                        lineRequest.getDownStationId(), lineRequest.getDistance());
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.showLines();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it))
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        final Line line = lineService.showLine(id);
-
-        return ResponseEntity.ok(new LineResponse(line));
+        final LineResponse lineResponse = lineService.showLine2(id);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping("/{id}")

@@ -36,6 +36,13 @@ public class Line {
         this.sections = new Sections(sections);
     }
 
+    public Line(Long id, String name, String color, List<Section> sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections(sections);
+    }
+
     public void addSection(Section section) {
         sections.addSection(section);
     }

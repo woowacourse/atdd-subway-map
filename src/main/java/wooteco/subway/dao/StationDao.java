@@ -57,4 +57,14 @@ public class StationDao {
             throw new IllegalArgumentException(NON_EXISTENT_ID_EXCEPTION);
         }
     }
+
+    public Station findById(Long id) {
+        final String sql = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+    }
+
+    public Station findByName(String name) {
+        final String sql = "SELECT * FROM station WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, stationRowMapper, name);
+    }
 }
