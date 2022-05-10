@@ -31,6 +31,11 @@ public class StationService {
         }
     }
 
+    public StationResponse getStation(Long id) {
+        Station station = stationDao.findById(id);
+        return new StationResponse(station.getId(), station.getName());
+    }
+
     public List<StationResponse> getStations() {
         List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()

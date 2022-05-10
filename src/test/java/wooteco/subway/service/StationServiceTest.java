@@ -57,4 +57,18 @@ public class StationServiceTest {
         boolean isDeleted = stationService.deleteStation(1L);
         assertThat(isDeleted).isTrue();
     }
+
+    @DisplayName("지하철역을 단일 조회한다.")
+    @Test
+    void getStation() {
+        doReturn(new Station(1L, "강남역"))
+                .when(jdbcStationDao).findById(1L);
+
+        StationResponse stationResponse = stationService.getStation(1L);
+
+        assertAll(
+                () -> stationResponse.getId().equals(1L),
+                () -> stationResponse.getName().equals("강남역")
+        );
+    }
 }
