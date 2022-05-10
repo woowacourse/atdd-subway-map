@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.Comparator;
 import java.util.Objects;
+import wooteco.subway.dto.request.LineRequest;
 
 public class Section implements Comparator<Section> {
 
@@ -15,16 +16,16 @@ public class Section implements Comparator<Section> {
     private final Long upStationId;
     private final Long downStationId;
 
-    public Section(final Line line) {
-        this(null, line.getId(), line.getUpStationId(), line.getDownStationId(), line.getDistance());
+    public Section(final Long id, final LineRequest lineRequest) {
+        this(null, id, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
     public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         this(null, lineId, upStationId, downStationId, distance);
     }
 
-    public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
-                   final int distance) {
+    public Section(final Long id, final Long lineId,
+                   final Long upStationId, final Long downStationId, final int distance) {
         validateStations(upStationId, downStationId);
         validateDistance(distance);
         this.id = id;

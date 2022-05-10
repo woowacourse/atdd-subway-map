@@ -6,6 +6,7 @@ import static wooteco.subway.testutils.Fixture.LINE_REQUEST_1호선;
 import static wooteco.subway.testutils.Fixture.LINE_REQUEST_분당선;
 import static wooteco.subway.testutils.Fixture.LINE_REQUEST_신분당선;
 import static wooteco.subway.testutils.Fixture.STATION_REQUEST_강남역;
+import static wooteco.subway.testutils.Fixture.STATION_REQUEST_역삼역;
 import static wooteco.subway.testutils.Fixture.STATION_REQUEST_잠실역;
 
 import io.restassured.RestAssured;
@@ -32,8 +33,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         AcceptanceTestUtil.requestPostStation(STATION_REQUEST_잠실역, "/stations");
         ExtractableResponse<Response> response = requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
-        System.out.println("response.body() = " + response.body());
-
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
@@ -45,19 +44,20 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 노선 목록을 조회한다.")
     void findAllLine() {
         //given
-        ExtractableResponse<Response> createResponse1 = requestPostLine(LINE_REQUEST_신분당선, "/lines");
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_강남역, "/stations");
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_잠실역, "/stations");
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_역삼역, "/stations");
 
-        ExtractableResponse<Response> createResponse2 = requestPostLine(LINE_REQUEST_분당선, "/lines");
+        requestPostLine(LINE_REQUEST_신분당선, "/lines");
+        requestPostLine(LINE_REQUEST_분당선, "/lines");
 
         //when
         ExtractableResponse<Response> response = requestGetLines("/lines");
-        List<Long> expectedLineIds = getExpectedLineIds(createResponse1, createResponse2);
-        List<Long> resultLineIds = getResultLineIds(response);
 
         //then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(resultLineIds).containsAll(expectedLineIds)
+            () -> assertThat(response.jsonPath().getList(".", LineResponse.class)).hasSize(2)
         );
     }
 

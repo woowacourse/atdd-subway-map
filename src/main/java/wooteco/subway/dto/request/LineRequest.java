@@ -55,7 +55,8 @@ public class LineRequest {
     }
 
     public Line toEntity(final Long id) {
-        return new Line(id, this.name, this.color, this.upStationId, this.downStationId, this.distance);
+//        return new Line(id, this.name, this.color, this.upStationId, this.downStationId, this.distance);
+        return new Line(id, this.name, this.color);
     }
 
     public Line toEntity() {
