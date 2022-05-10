@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Sections {
     private final List<Section> sections;
@@ -98,4 +99,42 @@ public class Sections {
                 .anyMatch(section::equalsDownStation);
     }
 
+    public void validateDeletable(Long stationId) {
+        if (sections.size() == 1) {
+            throw new IllegalStateException("상행 종점과 하행 종점밖에 존재하지 않아 구간을 삭제할 수 없습니다.");
+        }
+        if (!allStationIds().contains(stationId)) {
+            throw new IllegalArgumentException("노선 구간에 존재하지 않는 역입니다.");
+        }
+    }
+
+    public List<Section> delete(Long stationId) {
+        if (matchFirstUpStation(stationId)) {
+            return sections.stream()
+                    .filter(it -> it.equalsUpStation(stationId))
+                    .collect(Collectors.toList());
+        }
+
+        if (matchLastDownStation(stationId)) {
+            return sections.stream()
+                    .filter(it -> it.equalsDownStation(stationId))
+                    .collect(Collectors.toList());
+        }
+
+        return sections.stream()
+                .filter(it -> it.equalsUpStation(stationId) || it.equalsDownStation(stationId))
+                .collect(Collectors.toList());
+    }
+
+    private boolean matchFirstUpStation(Long stationId) {
+        List<Long> upStationIds = upStationIds();
+        upStationIds.removeAll(downStationIds());
+        return upStationIds.contains(stationId);
+    }
+
+    private boolean matchLastDownStation(Long stationId) {
+        List<Long> downStationIds = downStationIds();
+        downStationIds.removeAll(upStationIds());
+        return downStationIds.contains(stationId);
+    }
 }

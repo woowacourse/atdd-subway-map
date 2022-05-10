@@ -2,10 +2,12 @@ package wooteco.subway.ui;
 
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionRequest;
@@ -25,6 +27,12 @@ public class SectionController {
                                               @RequestBody @Valid SectionRequest sectionRequest) {
         sectionService.create(new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance()));
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.delete(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 }

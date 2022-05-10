@@ -75,4 +75,20 @@ public class SectionServiceTest {
     void addExtension() {
         sectionService.create(new Section(LINE_ID, third.getId(), second.getId(), 100));
     }
+
+    @Test
+    @DisplayName("역을 삭제할 수 있다.")
+    void deleteSection() {
+        sectionService.create(new Section(LINE_ID, second.getId(), third.getId(), 5));
+        sectionService.delete(LINE_ID, third.getId());
+    }
+
+    @Test
+    @DisplayName("구간이 하나밖에 없으면 삭제할 수 없다.")
+    void deleteOnlySection() {
+        Assertions.assertThatThrownBy(
+                        () -> sectionService.delete(LINE_ID, third.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("상행 종점과 하행 종점밖에 존재하지 않아 구간을 삭제할 수 없습니다.");
+    }
 }

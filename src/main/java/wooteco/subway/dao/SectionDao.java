@@ -8,11 +8,9 @@ public interface SectionDao {
 
     Section save(Section section);
 
-    Section findById(Long id);
-
     Sections findByLineId(Long lineId);
 
     int updateSection(Section updateSection);
 
-    List<Section> findAll();
+    void deleteSections(List<Section> sections);
 }

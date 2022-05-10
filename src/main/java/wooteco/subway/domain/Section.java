@@ -66,8 +66,24 @@ public class Section {
         return upStationId.equals(section.getUpStationId());
     }
 
+    public boolean equalsUpStation(Long stationId) {
+        return upStationId.equals(stationId);
+    }
+
     public boolean equalsDownStation(Section section) {
         return downStationId.equals(section.getDownStationId());
+    }
+
+    public boolean equalsDownStation(Long stationId) {
+        return downStationId.equals(stationId);
+    }
+
+    public Section merge(Section section) {
+        int totalDistance = distance + section.getDistance();
+        if (equalsDownStation(section.upStationId)) {
+            return new Section(lineId, upStationId, section.downStationId, totalDistance);
+        }
+        return new Section(lineId, section.upStationId, downStationId, totalDistance);
     }
 
     @Override

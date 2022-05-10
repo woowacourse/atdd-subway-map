@@ -31,11 +31,6 @@ public class MemorySectionDao implements SectionDao {
     }
 
     @Override
-    public Section findById(Long id) {
-        return sections.get(id);
-    }
-
-    @Override
     public Sections findByLineId(Long lineId) {
         return new Sections(sections.values().stream()
                 .filter(it -> it.getLineId().equals(lineId))
@@ -49,8 +44,10 @@ public class MemorySectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findAll() {
-        return new ArrayList<>(sections.values());
+    public void deleteSections(List<Section> sections) {
+        for (Section section : sections) {
+            sections.remove(section.getId());
+        }
     }
 
     public void clear() {

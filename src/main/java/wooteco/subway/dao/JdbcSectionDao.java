@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -41,12 +42,6 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Section findById(Long id) {
-        String sql = "SELECT * FROM SECTION WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
-    }
-
-    @Override
     public Sections findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id = ?";
         return new Sections(jdbcTemplate.query(sql, rowMapper, lineId));
@@ -60,8 +55,15 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findAll() {
-        String sql = "SELECT * FROM SECTION";
-        return jdbcTemplate.query(sql, rowMapper);
+    public void deleteSections(List<Section> sections) {
+        String sql = "DELETE FROM SECTION WHERE id = ?";
+        List<Object[]> batch = changeToObjects(sections);
+        jdbcTemplate.batchUpdate(sql, batch);
+    }
+
+    private List<Object[]> changeToObjects(List<Section> sections) {
+        return sections.stream()
+                .map(section -> new Object[]{section.getId()})
+                .collect(Collectors.toList());
     }
 }
