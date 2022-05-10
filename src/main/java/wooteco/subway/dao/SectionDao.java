@@ -47,7 +47,6 @@ public class SectionDao {
         return new Section(sectionId, section.getDistance(), section.getLineId(), section.getUpStationId(), section.getDownStationId());
     }
 
-    //이걸 이렇게 모두 다 조회해오는게 괜찮을까?
     public List<Section> findAll() {
         String sql = "SELECT * FROM section";
         return jdbcTemplate.query(sql, new MapSqlParameterSource(), rowMapper);

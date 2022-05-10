@@ -109,7 +109,6 @@ public class Section {
     }
 
     public SectionResult canAddAsBetweenStation(Sections sections) {
-        // 구간이 존재하고 && 거리가 되는지
         Optional<Section> upStationSection = sections.getExistedUpStationSection(upStationId);
 
         if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {

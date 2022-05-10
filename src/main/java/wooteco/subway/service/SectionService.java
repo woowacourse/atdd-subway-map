@@ -42,12 +42,11 @@ public class SectionService {
     public void add(Line line, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         Section section = Section.of(line, sectionRequest);
-        // 1. 종점에 추가 가능한가
         if (section.canAddAsLastStation(sections)) {
             save(section);
             return;
         }
-        // 2. 갈래길로 추가
+
         SectionResult result = section.canAddAsBetweenStation(sections);
         if (result.canAddAsBetweenStation()) {
             sectionDao.delete(result.getExistedSection());
