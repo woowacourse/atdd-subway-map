@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -22,16 +21,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine_created() {
-        // given
-        createStation("강남역");
-        createStation("사당역");
 
+        requestToCreateStation("강남역");
+        requestToCreateStation("사당역");
         // when
         ExtractableResponse<Response> response =
                 requestToCreateLine("신분당선", "red", "1", "2", "10");
 
+
         LineResponse lineResponse = response.jsonPath()
                 .getObject(".", LineResponse.class);
+        Long lineId = lineResponse.getId();
         List<StationResponse> stations = lineResponse.getStations();
 
         // then
@@ -52,8 +52,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine_badRequest() {
         // given
-        createStation("강남역");
-        createStation("사당역");
         requestToCreateLine("신분당선", "red", "1", "2", "10");
 
         // when
@@ -71,9 +69,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findAllLines() {
         //given
-        createStation("강남역");
-        createStation("사당역");
-        createStation("선릉역");
+        requestToCreateStation("강남역");
+        requestToCreateStation("사당역");
+        requestToCreateStation("선릉역");
         requestToCreateLine("신분당선", "red", "1", "2", "10");
         requestToCreateLine("4호선", "skyBlue", "2", "3", "6");
 
@@ -113,8 +111,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLine() {
         //given
-        createStation("강남역");
-        createStation("선릉역");
+        requestToCreateStation("강남역");
+        requestToCreateStation("선릉역");
 
         ExtractableResponse<Response> createResponse =
                 requestToCreateLine("신분당선", "red", "1", "2", "3");
@@ -140,8 +138,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         //given
-        createStation("강남역");
-        createStation("사당역");
+        requestToCreateStation("강남역");
+        requestToCreateStation("사당역");
 
         Long resultLineId =
                 requestToCreateLine("신분당선", "red", "1", "2", "10")
@@ -161,8 +159,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine_success() {
         //given
-        createStation("강남역");
-        createStation("사당역");
+        requestToCreateStation("강남역");
+        requestToCreateStation("사당역");
 
         Long resultLineId =
                 requestToCreateLine("신분당선", "red", "1", "2", "10")
@@ -190,11 +188,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private void createStation(String stationName) {
-        Map<String, String> param = new HashMap<>();
-        param.put("name", stationName);
+    private void requestToCreateStation(String stationName) {
         RestAssured.given().log().all()
-                .body(param)
+                .body(Map.of("name", stationName))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
