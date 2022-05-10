@@ -18,7 +18,7 @@ public interface LineDao {
 
     boolean existByColor(String color);
 
-    Line update(Line line);
+    void update(Line line);
 
     void deleteById(Long id);
 

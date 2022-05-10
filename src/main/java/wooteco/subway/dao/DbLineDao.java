@@ -79,12 +79,11 @@ public class DbLineDao implements LineDao {
     }
 
     @Override
-    public Line update(Line line) {
+    public void update(Line line) {
         jdbcTemplate.update("UPDATE LINE SET name = ?, color = ? WHERE id = ?",
                 line.getName(),
                 line.getColor(),
                 line.getId());
-        return line;
     }
 
     @Override

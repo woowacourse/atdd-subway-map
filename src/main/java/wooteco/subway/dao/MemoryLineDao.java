@@ -51,11 +51,10 @@ public class MemoryLineDao implements LineDao {
     }
 
     @Override
-    public Line update(Line line) {
+    public void update(Line line) {
         Line found = findById(line.getId()).get();
         lines.remove(found);
         lines.add(line);
-        return line;
     }
 
     @Override

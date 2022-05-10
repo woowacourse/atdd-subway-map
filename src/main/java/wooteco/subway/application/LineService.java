@@ -44,7 +44,9 @@ public class LineService {
             throw new DuplicateException();
         }
 
-        return lineDao.update(new Line(id, name, color));
+        lineDao.update(new Line(id, name, color));
+
+        return new Line(id, name, color);
     }
 
     private boolean isDuplicateName(Line line, String name) {
