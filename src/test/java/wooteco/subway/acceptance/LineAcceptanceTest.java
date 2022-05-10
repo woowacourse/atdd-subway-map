@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -13,86 +14,181 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineRequestV2;
+import wooteco.subway.dto.LineResponseV2;
+import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철 노선을 생성한다.")
+    /*
+     * given
+     * 상행 종점을 등록한다.
+     * 하행 종점을 등록한다.
+     *
+     * when
+     * 노선을 등록한다.
+     *
+     * then
+     * 등록된 노선 정보를 응답한다.
+     * */
+    @DisplayName("지하철 노선을 등록한다.")
     @Test
-    void createLine() {
+    void registerLine() {
         // given
-        LineRequest requestBody = new LineRequest("2호선", "초록색");
+        long upStationId = registerStationAndReturnId("서울역");
+        long downStationId = registerStationAndReturnId("시청");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(requestBody)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = registerLineAndReturnResponse(
+                "1호선", "파란색", upStationId, downStationId, 10);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("1호선"),
+                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("파란색")
+        );
+
+        List<Long> expectedStationIds = List.of(upStationId, downStationId);
+        List<Long> stationIds = response.body().jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(stationIds).containsAll(expectedStationIds);
     }
 
-    @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 생성한다.")
+    /*
+     * given
+     * 하행 종점만 등록되어 있다.
+     *
+     * when
+     * 노선을 등록한다.
+     *
+     * then
+     * 예외를 응답한다.
+     * */
+    @DisplayName("하행 종점역만 등록된 상태에서 노선을 등록한다.")
     @Test
-    void createLineWithDuplicateName() {
+    void registerLineWithNonExistLine() {
         // given
-        LineRequest previouslySaved = new LineRequest("2호선", "초록색");
-        LineRequest sameNameLineRequest = new LineRequest("2호선", "빨간색");
-        RestAssured.given().log().all()
-                .body(previouslySaved)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        long idWillBeDeleted = registerStationAndReturnId("서울역");
+        RestAssured.when()
+                .delete("/stations/" + idWillBeDeleted);
+
+        long downStationId = registerStationAndReturnId("시청");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(sameNameLineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = registerLineAndReturnResponse("1호선", "파란색", idWillBeDeleted,
+                downStationId, 10);
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+        );
     }
 
-    @DisplayName("기존에 존재하는 노선 색깔로 지하철 노선을 생성한다.")
+    /*
+     * given
+     * 상행역과 하행역이 등록되어 있다.
+     *
+     * when
+     * 역 사이 거리를 0으로 노선을 등록한다.
+     *
+     * then
+     * 예외를 응답한다.
+     * */
+    @DisplayName("역 사이 거리를 1 미만으로 노선을 등록한다.")
+    @Test
+    void registerLineWithDistanceZero() {
+        // given
+        long upStationId = registerStationAndReturnId("서울역");
+        long downStationId = registerStationAndReturnId("시청");
+
+        // when
+        ExtractableResponse<Response> response = registerLineAndReturnResponse("1호선", "파란색", upStationId, downStationId,
+                0);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+        );
+    }
+
+    /*
+     * given
+     * 노선이 등록되어 있다.
+     *
+     * when
+     * 기존에 등록된 노선과 같은 이름으로 노선을 등록한다.
+     *
+     * then
+     * 예외를 응답한다.
+     * */
+    @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 등록한다.")
+    @Test
+    void registerLineWithDuplicateName() {
+        // given
+        String lineName = "1호선";
+        long id1 = registerStationAndReturnId("서울역");
+        long id2 = registerStationAndReturnId("시청");
+        registerLineAndReturnResponse(lineName, "파란색", id1, id2, 10);
+
+        long upStationId = registerStationAndReturnId("사당");
+        long downStationId = registerStationAndReturnId("성수");
+
+        // when
+        ExtractableResponse<Response> response = registerLineAndReturnResponse(lineName, "초록색", upStationId,
+                downStationId, 10);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+        );
+    }
+
+    /*
+     * given
+     * 노선이 등록되어 있다.
+     *
+     * when
+     * 기존에 등록된 노선과 같은 색깔로 노선을 등록한다.
+     *
+     * then
+     * 예외를 응답한다.
+     * */
+    @DisplayName("기존에 존재하는 노선 색깔로 지하철 노선을 등록한다.")
     @Test
     void createLineWithDuplicateColor() {
         // given
-        LineRequest previouslySaved = new LineRequest("2호선", "초록색");
-        LineRequest sameColorLineRequest = new LineRequest("3호선", "초록색");
+        String lineColor = "파란색";
+        long id1 = registerStationAndReturnId("서울역");
+        long id2 = registerStationAndReturnId("시청");
+
+        LineRequestV2 lineRequest1 = new LineRequestV2("1호선", lineColor, id1, id2, 10);
         RestAssured.given().log().all()
-                .body(previouslySaved)
+                .body(lineRequest1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
 
+        long upStationId = registerStationAndReturnId("사당");
+        long downStationId = registerStationAndReturnId("성수");
+
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(sameColorLineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = registerLineAndReturnResponse("2호선", lineColor, upStationId,
+                downStationId, 10);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+        );
     }
 
     @DisplayName("지하철노선 목록을 조회한다.")
@@ -135,33 +231,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    /*
+     * given
+     * 지하철 노선이 등록되어 있다.
+     *
+     * when
+     * 지하철 노선을 조회한다.
+     *
+     * then
+     * 지하철 노선 단건을 응답한다.
+     * */
     @DisplayName("단건의 지하철 노선을 조회한다.")
     @Test
     void getLine() {
         /// given
-        LineRequest lineRequest = new LineRequest("2호선", "초록색");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-        long createdId = createResponse.body().jsonPath().getLong("id");
-        String uri = createResponse.header("Location");
+        long upStationId = registerStationAndReturnId("서울역");
+        long downStationId = registerStationAndReturnId("시청");
+        ExtractableResponse<Response> createResponse = registerLineAndReturnResponse(
+                "1호선", "파란색", upStationId, downStationId, 10);
+        long createdLineId = createResponse.body().jsonPath().getLong("id");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get(uri)
+                .get("/lines/" + createdLineId)
                 .then().log().all()
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getLong("id")).isEqualTo(createdId);
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineRequest.getName());
-        assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineRequest.getColor());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("1호선"),
+                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("파란색")
+        );
+
+        List<Long> expectedStationIds = List.of(upStationId, downStationId);
+        List<Long> stationIds = response.body().jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(stationIds).containsAll(expectedStationIds);
     }
 
     @DisplayName("존재하지 않는 노선을 조회한다.")
