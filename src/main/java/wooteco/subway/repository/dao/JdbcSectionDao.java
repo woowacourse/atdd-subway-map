@@ -1,6 +1,7 @@
 package wooteco.subway.repository.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -64,5 +65,23 @@ public class JdbcSectionDao implements SectionDao {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<SectionEntity> findByLineId(final Long lineId) {
+        final String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
+                + "FROM SECTION WHERE line_id = :lineId";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+        final SqlParameterSource source = new MapSqlParameterSource(params);
+        return jdbcTemplate.query(sql, source, rowMapper);
+    }
+
+    @Override
+    public void deleteById(final Long id) {
+        final String sql = "DELETE FROM SECTION WHERE id = :id";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        jdbcTemplate.update(sql, params);
     }
 }

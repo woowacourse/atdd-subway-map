@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,16 +29,13 @@ public class Sections {
         return Collections.unmodifiableList(value);
     }
 
-    public void addSection(final Station newUpStation, final Station newDownStation, final Integer distance) {
+    public SectionsUpdateResult addSection(final Station newUpStation, final Station newDownStation, final Integer distance) {
         validateStationRegistration(newUpStation, newDownStation);
 
-        // upStation이 등록돼있다.
         if (isResistedStation(newUpStation)) {
-            addDownDirectionSection(newUpStation, newDownStation, distance);
-            return;
+            return addDownDirectionSection(newUpStation, newDownStation, distance);
         }
-        // downStation이 등록돼있다.
-        addUpDirectionSection(newUpStation, newDownStation, distance);
+        return addUpDirectionSection(newUpStation, newDownStation, distance);
     }
 
     private void validateStationRegistration(final Station newUpStation, final Station newDownStation) {
@@ -58,16 +56,22 @@ public class Sections {
                 );
     }
 
-    private void addDownDirectionSection(final Station newUpStation,
+    private SectionsUpdateResult addDownDirectionSection(final Station newUpStation,
                                          final Station newDownStation,
                                         final Integer distance) {
-        // 들어온 upStation이 상행으로 등록되어있다. -> 상행으로 등록된 구간의 하행선과의 관계를 끊고 사이에 새 하행선을 삽입
         if (isUpStation(newUpStation)) {
-            splitInsertDownDirection(newUpStation, newDownStation, distance);
-            return;
+            return splitInsertDownDirection(newUpStation, newDownStation, distance);
         }
-        // 들어온 upStation이 상행으로 등록이 안돼있다(하행으로만 돼있다. 끝종점)
-        value.addLast(Section.createWithoutId(newUpStation, newDownStation, distance));
+        return simpleAddLast(newUpStation, newDownStation, distance);
+    }
+
+    private SectionsUpdateResult simpleAddLast(final Station newUpStation, final Station newDownStation, final Integer distance) {
+        final List<Section> addedSections = new ArrayList<>();
+        final Section section = Section.createWithoutId(newUpStation, newDownStation, distance);
+        value.addLast(section);
+        addedSections.add(section);
+
+        return new SectionsUpdateResult(new ArrayList<>(), addedSections);
     }
 
     private boolean isUpStation(final Station station) {
@@ -75,7 +79,9 @@ public class Sections {
                 .anyMatch(section -> section.getUpStation().equals(station));
     }
 
-    private void splitInsertDownDirection(final Station newUpStation, final Station newDownStation, final Integer distance) {
+    private SectionsUpdateResult splitInsertDownDirection(final Station newUpStation,
+                                                          final Station newDownStation,
+                                                          final Integer distance) {
         final Section oldSection = value.stream()
                 .filter(section -> section.getUpStation().equals(newUpStation))
                 .findAny()
@@ -88,18 +94,26 @@ public class Sections {
                 oldSection.getDownStation(),
                 oldSection.getDistance() - distance
         );
-        splitSection(oldSectionIndex, frontSection, backSection);
+        return splitSection(oldSectionIndex, frontSection, backSection);
     }
 
-    private void addUpDirectionSection(final Station newUpStation, final Station newDownStation,
-                                       final Integer distance) {
-        // 들어온 downStation이 하행으로 등록되어있다. -> 하행으로 등록된 구간의 상행선과 관계를 끊고 사이애 새 상행선을 삽입
+    private SectionsUpdateResult addUpDirectionSection(final Station newUpStation,
+                                                       final Station newDownStation,
+                                                       final Integer distance) {
         if (isDownStation(newDownStation)) {
-            splitInsertUpDirection(newUpStation, newDownStation, distance);
-            return;
+            return splitInsertUpDirection(newUpStation, newDownStation, distance);
         }
-        // 들어온 downStation이 하행으로 등록이 안돼있다(상행으로만 있다. 시작종점)
-        value.addFirst(Section.createWithoutId(newUpStation, newDownStation, distance));
+        return simpleAddFirst(newUpStation, newDownStation, distance);
+    }
+
+    private SectionsUpdateResult simpleAddFirst(final Station newUpStation,
+                                                final Station newDownStation,
+                                                final Integer distance) {
+        final List<Section> addedSections = new ArrayList<>();
+        final Section section = Section.createWithoutId(newUpStation, newDownStation, distance);
+        value.addFirst(section);
+        addedSections.add(section);
+        return new SectionsUpdateResult(new ArrayList<>(), addedSections);
     }
 
     private boolean isDownStation(final Station station) {
@@ -107,8 +121,9 @@ public class Sections {
                 .anyMatch(section -> section.getDownStation().equals(station));
     }
 
-    private void splitInsertUpDirection(final Station newUpStation, final Station newDownStation,
-                                        final Integer distance) {
+    private SectionsUpdateResult splitInsertUpDirection(final Station newUpStation,
+                                                        final Station newDownStation,
+                                                        final Integer distance) {
         final Section oldSection = value.stream()
                 .filter(section -> section.getDownStation().equals(newDownStation))
                 .findAny()
@@ -120,7 +135,7 @@ public class Sections {
                 newUpStation,
                 oldSection.getDistance() - distance);
         final Section backSection = Section.createWithoutId(newUpStation, newDownStation, distance);
-        splitSection(oldSectionIndex, frontSection, backSection);
+        return splitSection(oldSectionIndex, frontSection, backSection);
     }
 
     private void validateDistance(final Integer distance, final Section oldSection) {
@@ -129,9 +144,17 @@ public class Sections {
         }
     }
 
-    private void splitSection(final int oldSectionIndex, final Section frontSection, final Section backSection) {
-        value.remove(oldSectionIndex);
+    private SectionsUpdateResult splitSection(final int oldSectionIndex,
+                                              final Section frontSection,
+                                              final Section backSection) {
+        final List<Section> deletedSections = new ArrayList<>();
+        final List<Section> addedSections = new ArrayList<>();
+        deletedSections.add(value.remove(oldSectionIndex));
         value.add(oldSectionIndex, frontSection);
         value.add(oldSectionIndex + 1, backSection);
+        addedSections.add(frontSection);
+        addedSections.add(backSection);
+
+        return new SectionsUpdateResult(deletedSections, addedSections);
     }
 }

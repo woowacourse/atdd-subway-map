@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.entity.StationEntity;
 
@@ -44,5 +45,12 @@ public class StationService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void remove(final Long id) {
         stationDao.deleteById(id);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
+    public Station searchById(final Long id) {
+        final StationEntity stationEntity = stationDao.findById(id)
+                .orElseThrow(() -> new NotFoundStationException("[ERROR] 지하철 역을 찾을 수 없습니다."));
+        return new Station(stationEntity.getId(), stationEntity.getName());
     }
 }

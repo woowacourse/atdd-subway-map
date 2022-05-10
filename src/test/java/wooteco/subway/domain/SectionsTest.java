@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -19,14 +20,17 @@ class SectionsTest {
         final Station station4 = new Station(4L, "삼성역");
         final Section section1 = new Section(1L, station1, station2, 10);
         final Sections sections = new Sections(section1);
-
         sections.addSection(station2, station3, 10);
-        sections.addSection(station3, station4, 5);
+
+        final SectionsUpdateResult sectionsUpdateResult = sections.addSection(station3, station4, 5);
 
         final Section section2 = new Section(2L, station2, station3, 10);
         final Section section3 = new Section(3L, station3, station4, 5);
 
-        assertThat(sections.getValue()).isEqualTo(List.of(section1, section2, section3));
+        assertAll(
+                () -> assertThat(sections.getValue()).isEqualTo(List.of(section1, section2, section3)),
+                () -> assertThat(sectionsUpdateResult.getAddedSections().get(0)).isEqualTo(section3)
+        );
     }
 
     @Test
@@ -38,14 +42,17 @@ class SectionsTest {
         final Station station4 = new Station(4L, "삼성역");
         final Section section1 = new Section(1L, station2, station3, 10);
         final Sections sections = new Sections(section1);
-
         sections.addSection(station3, station4, 10);
-        sections.addSection(station1, station2, 5);
+
+        final SectionsUpdateResult sectionsUpdateResult = sections.addSection(station1, station2, 5);
 
         final Section section2 = new Section(2L, station3, station4, 10);
         final Section section3 = new Section(3L, station1, station2, 5);
 
-        assertThat(sections.getValue()).isEqualTo(List.of(section3, section1, section2));
+        assertAll(
+                () -> assertThat(sections.getValue()).isEqualTo(List.of(section3, section1, section2)),
+                () -> assertThat(sectionsUpdateResult.getAddedSections().get(0)).isEqualTo(section3)
+        );
     }
 
     @Test
@@ -57,14 +64,22 @@ class SectionsTest {
         final Station station4 = new Station(4L, "삼성역");
         final Section section1 = new Section(1L, station1, station2, 10);
         final Sections sections = new Sections(section1);
-
         sections.addSection(station2, station4, 10);
-        sections.addSection(station2, station3, 5);
+
+        final SectionsUpdateResult sectionsUpdateResult = sections.addSection(station2, station3, 5);
 
         final Section section2 = new Section(2L, station2, station3, 5);
         final Section section3 = new Section(3L, station3, station4, 5);
 
-        assertThat(sections.getValue()).isEqualTo(List.of(section1, section2, section3));
+        final Section deleted = new Section(null, station2, station4, 10);
+
+        assertAll(
+                () -> assertThat(sections.getValue()).isEqualTo(List.of(section1, section2, section3)),
+                () -> assertThat(sectionsUpdateResult.getAddedSections().get(0)).isEqualTo(section2),
+                () -> assertThat(sectionsUpdateResult.getAddedSections().get(1)).isEqualTo(section3),
+                () -> assertThat(sectionsUpdateResult.getDeletedSections().get(0)).isEqualTo(deleted)
+        );
+
     }
 
     @Test
@@ -76,14 +91,21 @@ class SectionsTest {
         final Station station4 = new Station(4L, "삼성역");
         final Section section1 = new Section(1L, station1, station2, 10);
         final Sections sections = new Sections(section1);
-
         sections.addSection(station2, station4, 10);
-        sections.addSection(station3, station4, 5);
+
+        final SectionsUpdateResult sectionsUpdateResult = sections.addSection(station3, station4, 5);
 
         final Section section2 = new Section(2L, station2, station3, 5);
         final Section section3 = new Section(3L, station3, station4, 5);
+        final Section deleted = new Section(null, station2, station4, 10);
 
-        assertThat(sections.getValue()).isEqualTo(List.of(section1, section2, section3));
+        assertAll(
+                () -> assertThat(sections.getValue()).isEqualTo(List.of(section1, section2, section3)),
+                () -> assertThat(sectionsUpdateResult.getAddedSections().get(0)).isEqualTo(section2),
+                () -> assertThat(sectionsUpdateResult.getAddedSections().get(1)).isEqualTo(section3),
+                () -> assertThat(sectionsUpdateResult.getDeletedSections().get(0)).isEqualTo(deleted)
+        );
+        ;
     }
 
     @Test
