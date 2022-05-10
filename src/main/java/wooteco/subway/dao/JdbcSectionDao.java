@@ -57,4 +57,19 @@ public class JdbcSectionDao {
         List<Section> sections = jdbcTemplate.query(sql, rowMapper, lineId);
         return new Sections(sections);
     }
+
+    public Section findByLineIdAndUpStationId(Long lineId, Long upStationId) {
+        String sql = "select * from section where line_id = ? and up_station_id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId);
+    }
+
+    public Section findByLineIdAndDownStationId(Long lineId, Long downStationId) {
+        String sql = "select * from section where line_id = ? and down_station_id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId);
+    }
+
+    public boolean deleteByLineIdAndUpStationId(Long lineId, Long upStationId) {
+        String sql = "delete from section where line_id = ? and up_station_id = ?";
+        return jdbcTemplate.update(sql, lineId, upStationId) == FUNCTION_SUCCESS;
+    }
 }

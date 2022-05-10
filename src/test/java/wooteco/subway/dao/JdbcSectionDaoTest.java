@@ -63,4 +63,28 @@ class JdbcSectionDaoTest {
         List<Section> sectionList = jdbcSectionDao.findByLineId(lineId).getSections();
         assertThat(sectionList.size()).isEqualTo(3);
     }
+
+    @DisplayName("지하철 호선과 상행역을 기준으로 구간을 조회한다.")
+    @Test
+    void findByLineIdAndUpStationId() {
+        Section section = new Section(lineId, 3L, 4L, 5);
+        jdbcSectionDao.save(section);
+
+        Section findSection = jdbcSectionDao.findByLineIdAndUpStationId(lineId, 3L);
+        assertThat(findSection.getDownStationId()).isEqualTo(4L);
+    }
+
+    @DisplayName("지하철 호선과 하행약을 기준으로 구간을 조회한다.")
+    @Test
+    void findByLineIdAndDownStationId() {
+        Section findSection = jdbcSectionDao.findByLineIdAndDownStationId(lineId, 3L);
+        assertThat(findSection.getUpStationId()).isEqualTo(2L);
+    }
+
+    @DisplayName("지하철 호선과 상행역을 기준으로 구간을 삭제한다.")
+    @Test
+    void deleteByLineIdAndUpStationId() {
+        boolean isDeleted = jdbcSectionDao.deleteByLineIdAndUpStationId(lineId, 2L);
+        assertThat(isDeleted).isTrue();
+    }
 }
