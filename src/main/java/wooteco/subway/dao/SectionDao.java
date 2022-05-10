@@ -7,8 +7,6 @@ import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.entity.SectionEntity;
 
@@ -42,16 +40,12 @@ public class SectionDao {
         return jdbcTemplate.query(sql, paramSource, ROW_MAPPER);
     }
 
-    public SectionEntity save(SectionEntity sectionEntity) {
+    public void save(SectionEntity sectionEntity) {
         final String sql = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) "
                 + "VALUES(:lineId, :upStationId, :downStationId, :distance)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(sectionEntity);
 
-        jdbcTemplate.update(sql, paramSource, keyHolder);
-        Number generatedId = keyHolder.getKey();
-        sectionEntity.setId(generatedId.longValue());
-        return sectionEntity;
+        jdbcTemplate.update(sql, paramSource);
     }
 
     public void deleteAllByLineId(Long lineId) {

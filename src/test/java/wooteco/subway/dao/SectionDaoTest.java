@@ -47,12 +47,13 @@ class SectionDaoTest extends DaoTest {
     class SaveTest {
 
         @Test
-        void 중복되지_않는_정보인_경우_생성된_섹션_반환() {
-            SectionEntity actual = dao.save(new SectionEntity(3L, 3L, 1L, 10));
+        void 중복되지_않는_정보인_경우_데이터_생성() {
+            dao.save(new SectionEntity(3L, 3L, 1L, 10));
 
-            SectionEntity expected = new SectionEntity(4L, 3L, 3L, 1L, 10);
+            boolean created = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM section WHERE "
+                    + "id = 4 AND line_id = 3 AND up_station_id = 3 AND down_station_id = 1 AND distance = 10", Integer.class) > 0;
 
-            assertThat(actual).isEqualTo(expected);
+            assertThat(created).isTrue();
         }
 
         @Test
