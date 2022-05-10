@@ -189,11 +189,16 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        List<String> resultStationNames = response.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getLong("id")).isEqualTo(id),
                 () -> assertThat(response.jsonPath().getString("name")).isEqualTo("5호선"),
-                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("rgb-purple-600")
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("rgb-purple-600"),
+                () -> assertThat(resultStationNames).containsExactly("상일동역", "아차산역")
         );
     }
 

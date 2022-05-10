@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.LineWithStationsResponse;
 import wooteco.subway.service.LineService;
 
@@ -37,7 +36,7 @@ public class LineController {
     }
 
     @GetMapping("/lines/{lineId}")
-    public LineResponse getLineById(@PathVariable Long lineId) {
+    public LineWithStationsResponse getLineById(@PathVariable Long lineId) {
         return lineService.findLineById(lineId);
     }
 

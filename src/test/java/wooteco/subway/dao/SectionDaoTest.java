@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import wooteco.subway.entity.SectionEntity;
 
 @JdbcTest
 class SectionDaoTest {
-    
+
     private final SectionDao sectionDao;
 
     @Autowired
@@ -34,5 +35,20 @@ class SectionDaoTest {
                 () -> assertThat(savedSectionEntity.getDownStationId()).isEqualTo(2L),
                 () -> assertThat(savedSectionEntity.getDistance()).isEqualTo(10)
         );
+    }
+
+    @DisplayName("구간을 해당하는 노선 아이디로 모두 조회한다.")
+    @Test
+    void findAllSectionByLineId() {
+        SectionEntity sectionEntity = new SectionEntity.Builder(1L, 1L, 2L, 10)
+                .build();
+        SectionEntity sectionEntity2 = new SectionEntity.Builder(1L, 2L, 3L, 8)
+                .build();
+        sectionDao.save(sectionEntity);
+        sectionDao.save(sectionEntity2);
+
+        List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(1L);
+
+        assertThat(sectionEntities).hasSize(2);
     }
 }

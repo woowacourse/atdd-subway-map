@@ -16,7 +16,6 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.LineWithStationsResponse;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.SectionEntity;
@@ -120,12 +119,12 @@ public class LineService {
         return new Sections(sections);
     }
 
-    public LineResponse findLineById(Long id) {
+    public LineWithStationsResponse findLineById(Long id) {
         Optional<LineEntity> wrappedLineEntity = lineDao.findById(id);
         checkLineExist(wrappedLineEntity);
         LineEntity lineEntity = wrappedLineEntity.get();
         Line line = getLine(lineEntity);
-        return LineResponse.of(line);
+        return LineWithStationsResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
