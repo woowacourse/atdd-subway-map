@@ -2,6 +2,11 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static wooteco.subway.testutils.Fixture.LINE_REQUEST_1호선;
+import static wooteco.subway.testutils.Fixture.LINE_REQUEST_분당선;
+import static wooteco.subway.testutils.Fixture.LINE_REQUEST_신분당선;
+import static wooteco.subway.testutils.Fixture.STATION_REQUEST_강남역;
+import static wooteco.subway.testutils.Fixture.STATION_REQUEST_잠실역;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -19,15 +24,15 @@ import wooteco.subway.dto.response.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final LineRequest LINE_REQUEST_신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-    private static final LineRequest LINE_REQUEST_분당선 = new LineRequest("분당선", "bg-red-601", 3L, 4L, 12);
-    private static final LineRequest LINE_REQUEST_1호선 = new LineRequest("1호선", "bg-red-602", 5L, 6L, 14);
-
     @Test
     @DisplayName("노선을 추가한다.")
     void createLine() {
-        // when
+        //given & when
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_강남역, "/stations");
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_잠실역, "/stations");
         ExtractableResponse<Response> response = requestPostLine(LINE_REQUEST_신분당선, "/lines");
+
+        System.out.println("response.body() = " + response.body());
 
         // then
         assertAll(
@@ -95,7 +100,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> requestPostLine(final LineRequest requestBody, final String URI) {
+    public ExtractableResponse<Response> requestPostLine(final LineRequest requestBody, final String URI) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(requestBody)
             .contentType(MediaType.APPLICATION_JSON_VALUE)

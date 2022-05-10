@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.testutils.Fixture.LINE_1_SECTION_A;
+import static wooteco.subway.testutils.Fixture.LINE_1_SECTION_B;
 
 import java.util.List;
 import javax.sql.DataSource;
@@ -13,9 +15,6 @@ import wooteco.subway.domain.Section;
 
 @JdbcTest
 class SectionDaoTest {
-
-    private static final Section LINE_1_SECTION_A = new Section(1L, 1L, 2L, 1);
-    private static final Section LINE_1_SECTION_B = new Section(1L, 1L, 3L, 2);
 
     @Autowired
     private DataSource dataSource;

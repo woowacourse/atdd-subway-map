@@ -1,8 +1,9 @@
 package wooteco.subway.domain;
 
+import java.util.Comparator;
 import java.util.Objects;
 
-public class Section {
+public class Section implements Comparator<Section> {
 
     private static final String ERROR_INVALID_DISTANCE = "[ERROR] 부적절한 거리가 입력되었습니다. 0보다 큰 거리를 입력해주세요.";
     private static final int INVALID_DISTANCE_STANDARD = 0;
@@ -13,6 +14,10 @@ public class Section {
     private final int distance;
     private final Long upStationId;
     private final Long downStationId;
+
+    public Section(final Line line) {
+        this(null, line.getId(), line.getUpStationId(), line.getDownStationId(), line.getDistance());
+    }
 
     public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         this(null, lineId, upStationId, downStationId, distance);
@@ -59,6 +64,11 @@ public class Section {
 
     public Long getDownStationId() {
         return downStationId;
+    }
+
+    @Override
+    public int compare(final Section section1, final Section section2) {
+        return Long.compare(section1.getId(), section2.getId());
     }
 
     @Override

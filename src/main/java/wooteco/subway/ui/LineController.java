@@ -13,24 +13,38 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
+import wooteco.subway.service.StationService;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
     private final LineService lineService;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineController(final LineService lineService) {
+    public LineController(final LineService lineService, final StationService stationService,
+                          final SectionService sectionService) {
         this.lineService = lineService;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping()
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         final Line createdLine = lineService.create(lineRequest);
-        LineResponse lineResponse = new LineResponse(createdLine);
+        final List<Station> stations = stationService.findStationsFrom(createdLine);
+        final List<StationResponse> stationResponses = stations
+            .stream()
+            .map(StationResponse::new)
+            .collect(Collectors.toList());
+        final LineResponse lineResponse = new LineResponse(createdLine, stationResponses);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
             .body(lineResponse);
     }
