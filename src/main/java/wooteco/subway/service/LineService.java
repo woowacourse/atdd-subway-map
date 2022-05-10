@@ -74,6 +74,7 @@ public class LineService {
     }
 
     public void update(Long id, Line line) {
+        validateDuplicateName(line);
         lineDao.update(id, line.getName(), line.getColor());
     }
 
