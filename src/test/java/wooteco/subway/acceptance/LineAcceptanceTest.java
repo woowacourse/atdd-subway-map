@@ -24,7 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineTest() {
         //given, when
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", null, null, 0);
+                "신분당선", "red", 1L, 2L, 0);
         ExtractableResponse<Response> response = extractPostResponse(lineRequest, "/lines");
 
         // then
@@ -38,7 +38,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateInfoTest() {
         // given
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", null, null, 0);
+                "신분당선", "red", 1L, 2L, 0);
         ExtractableResponse<Response> response = extractPostResponse(lineRequest, "/lines");
 
         // when
@@ -53,11 +53,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         LineRequest lineRequest1 = new LineRequest(
-                "신분당선", "red", null, null, 0);
+                "신분당선", "red", 1L, 2L, 0);
         ExtractableResponse<Response> createResponse1 = extractPostResponse(lineRequest1, "/lines");
 
         LineRequest lineRequest2 = new LineRequest(
-                "분당선", "green", null, null, 0);
+                "분당선", "green", 1L, 2L, 0);
         ExtractableResponse<Response> createResponse2 = extractPostResponse(lineRequest2, "/lines");
 
         // when
@@ -79,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", null, null, 0);
+                "신분당선", "red", 1L, 2L, 0);
         ExtractableResponse<Response> createResponse = extractPostResponse(lineRequest, "/lines");
 
         // when
@@ -95,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getStationByIdTest() {
         // given
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", null, null, 0);
+                "신분당선", "red", 1L, 2L, 0);
         ExtractableResponse<Response> createResponse = extractPostResponse(lineRequest, "/lines");
 
         // when
@@ -115,12 +115,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", null, null, 0);
+                "신분당선", "red", 1L, 2L, 0);
         ExtractableResponse<Response> createResponse = extractPostResponse(lineRequest, "/lines");
 
         // when, then
         LineRequest updateLineRequest = new LineRequest(
-                "분당선", "green", null, null, 0);
+                "분당선", "green", 1L, 2L, 0);
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> updateResponse = extractPutResponse(updateLineRequest, uri);

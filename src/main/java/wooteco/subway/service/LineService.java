@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -13,28 +17,34 @@ import wooteco.subway.dto.LineResponse;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(LineDao jdbcLineDao) {
+    public LineService(LineDao jdbcLineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = jdbcLineDao;
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     public LineResponse save(LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
         validateName(newLine);
-
         long lineId = lineDao.save(newLine);
-        return createLineResponse(lineDao.findById(lineId));
+
+        Section newSection = new Section(
+                lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        sectionDao.save(newSection);
+        return createLineResponse(lineId);
     }
 
     public List<LineResponse> findAll() {
         return lineDao.findAll().stream()
-                .map(it -> createLineResponse(it))
+                .map(it -> createLineResponse(it.getId()))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long lineId) {
-        Line line = lineDao.findById(lineId);
-        return createLineResponse(line);
+        return createLineResponse(lineId);
     }
 
     public void delete(Long lineId) {
@@ -48,8 +58,10 @@ public class LineService {
         lineDao.update(lineId, newLine);
     }
 
-    private LineResponse createLineResponse(Line newLine) {
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+    private LineResponse createLineResponse(long lineId) {
+        Line line = lineDao.findById(lineId);
+        List<Station> stations = stationDao.findByLineId(lineId);
+        return LineResponse.of(line, stations);
     }
 
     private void validateName(Line line) {
