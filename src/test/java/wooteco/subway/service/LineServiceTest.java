@@ -1,9 +1,7 @@
 package wooteco.subway.service;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import wooteco.subway.domain.Line;
@@ -14,11 +12,9 @@ import wooteco.subway.dto.LineResponse;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;

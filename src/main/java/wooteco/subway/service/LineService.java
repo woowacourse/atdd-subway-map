@@ -8,6 +8,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
@@ -79,5 +80,12 @@ public class LineService {
 
     public void deleteById(Long id) {
         lineDao.deleteById(id);
+    }
+
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+
+        sectionService.add(line, sectionRequest);
     }
 }

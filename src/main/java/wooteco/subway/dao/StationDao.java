@@ -54,7 +54,7 @@ public class StationDao {
     }
 
     public Optional<Station> findById(Long id) {
-        String sql = "SELECT id, name FROM station WHERE id=:id";
+        String sql = "SELECT id, name FROM station WHERE id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);

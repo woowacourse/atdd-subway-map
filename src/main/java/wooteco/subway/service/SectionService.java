@@ -2,13 +2,13 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionResult;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.dto.SectionRequest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SectionService {
@@ -24,20 +24,33 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
-
     private void validateSection(Section section) {
-        List<Section> sections = sectionDao.findAll();
+        List<Section> sections = sectionDao.findByLineId(section.getLineId());
         if (section.isExistedIn(sections)) {
-            throw new IllegalArgumentException("기존에 존재하는 노선은 등록할 수 없습니다.");
+            throw new IllegalArgumentException("기존에 존재하는 노선 구간은 등록할 수 없습니다.");
         }
     }
 
     public List<Long> getStationIds(Long lineId) {
-        List<Section> sections = sectionDao.findByLineId(lineId);
-        return sections.stream()
-                .map(section -> Arrays.asList(section.getUpStationId(), section.getDownStationId()))
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+
+        return sections.getDistinctStationIds();
+    }
+
+    public void add(Line line, SectionRequest sectionRequest) {
+        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
+        Section section = Section.of(line, sectionRequest);
+        // 1. 종점에 추가 가능한가
+        if (section.canAddAsLastStation(sections)) {
+            sectionDao.save(section);
+            return;
+        }
+        // 2. 갈래길로 추가
+        SectionResult result = section.canAddAsBetweenStation(sections);
+        if (result.canAddAsBetweenStation()) {
+            sectionDao.delete(result.getExistedSection());
+            sectionDao.save(result.getInsertedSection());
+            sectionDao.save(result.getGeneratedSection());
+        }
     }
 }
