@@ -7,9 +7,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 
+@Repository
 public class JdbcSectionDao {
 
     public static final int FUNCTION_SUCCESS = 1;

@@ -2,10 +2,12 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.StationResponse;
 
+@Service
 public class SectionService {
 
     private final StationService stationService;
