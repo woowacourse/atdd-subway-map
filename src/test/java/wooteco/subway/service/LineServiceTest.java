@@ -12,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.LineDaoImpl;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.SectionDaoImpl;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.line.LineFindResponse;
@@ -25,12 +27,14 @@ class LineServiceTest {
     private JdbcTemplate jdbcTemplate;
 
     private LineDao lineDao;
+    private SectionDao sectionDao;
     private LineService lineService;
 
     @BeforeEach
     void setUp() {
         lineDao = new LineDaoImpl(jdbcTemplate);
-        lineService = new LineService(lineDao);
+        sectionDao = new SectionDaoImpl(jdbcTemplate);
+        lineService = new LineService(lineDao, sectionDao);
 
         List<LineEntity> lineEntities = lineDao.findAll();
         List<Long> stationIds = lineEntities.stream()
@@ -45,7 +49,7 @@ class LineServiceTest {
     @Test
     void save() {
         // given
-        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
+        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L, 5);
 
         // when
         LineSaveResponse savedLine = lineService.save(line);
@@ -58,8 +62,8 @@ class LineServiceTest {
     @Test
     void validateDuplication() {
         // given
-        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
-        LineSaveRequest line2 = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
+        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L, 5);
+        LineSaveRequest line2 = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L, 5);
 
         // when
         lineService.save(line1);
@@ -73,8 +77,8 @@ class LineServiceTest {
     @Test
     void findAll() {
         // given
-        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
-        LineSaveRequest line2 = new LineSaveRequest("2호선", "bg-green-600", 1L, 2L);
+        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L, 5);
+        LineSaveRequest line2 = new LineSaveRequest("2호선", "bg-green-600", 1L, 2L, 5);
 
         // when
         lineService.save(line1);
@@ -94,7 +98,7 @@ class LineServiceTest {
     @Test
     void delete() {
         // given
-        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
+        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L, 5);
         LineSaveResponse savedLine = lineService.save(line);
 
         // when
@@ -114,7 +118,7 @@ class LineServiceTest {
     @Test
     void update() {
         // given
-        LineSaveRequest originLine = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
+        LineSaveRequest originLine = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L, 5);
         LineSaveResponse savedLine = lineService.save(originLine);
 
         // when

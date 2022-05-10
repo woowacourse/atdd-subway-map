@@ -7,12 +7,15 @@ public class LineSaveRequest {
     private final String color;
     private final Long upStationId;
     private final Long downStationId;
+    private final int distance;
 
-    public LineSaveRequest(String name, String color, Long upStationId, Long downStationId) {
+    public LineSaveRequest(String name, String color, Long upStationId, Long downStationId,
+        int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public String getName() {
@@ -29,5 +32,9 @@ public class LineSaveRequest {
 
     public Long getDownStationId() {
         return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

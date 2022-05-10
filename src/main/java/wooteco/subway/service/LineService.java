@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.service.dto.line.LineFindResponse;
 import wooteco.subway.service.dto.line.LineSaveRequest;
 import wooteco.subway.service.dto.line.LineSaveResponse;
@@ -14,15 +16,19 @@ import wooteco.subway.service.dto.line.LineSaveResponse;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     public LineSaveResponse save(LineSaveRequest lineSaveRequest) {
         validateDuplicationName(lineSaveRequest.getName());
         Line line = new Line(lineSaveRequest.getName(), lineSaveRequest.getColor());
         Long savedId = lineDao.save(line);
+        sectionDao.save(new Section(savedId, lineSaveRequest.getUpStationId(),
+            lineSaveRequest.getDownStationId(), lineSaveRequest.getDistance()));
         return new LineSaveResponse(savedId, line.getName(), line.getColor());
     }
 

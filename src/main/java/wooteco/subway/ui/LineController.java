@@ -33,7 +33,9 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
         LineSaveResponse lineSaveResponse = lineService.save(
-            new LineSaveRequest(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(), lineRequest.getDownStationId()));
+            new LineSaveRequest(lineRequest.getName(), lineRequest.getColor(),
+                lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance()));
         LineResponse lineResponse = new LineResponse(lineSaveResponse.getId(),
             lineSaveResponse.getName(), lineSaveResponse.getColor(),
             new ArrayList<>());
