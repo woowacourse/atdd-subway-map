@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -36,14 +35,10 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> save(Line line) {
-        try {
-            final SqlParameterSource param = new BeanPropertySqlParameterSource(line);
-            final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
-            return Optional.of(new Line(id, line.getName(), line.getColor()));
-        } catch (DuplicateKeyException ignored) {
-            return Optional.empty();
-        }
+    public Line save(Line line) {
+        final SqlParameterSource param = new BeanPropertySqlParameterSource(line);
+        final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
+        return new Line(id, line.getName(), line.getColor());
     }
 
     @Override
@@ -57,6 +52,16 @@ public class JdbcLineDao implements LineDao {
         final String sql = "SELECT * FROM line WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Line> findByName(String name) {
+        final String sql = "SELECT * FROM line WHERE name = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

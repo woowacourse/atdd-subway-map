@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,27 +23,17 @@ public class StationService {
     }
 
     public StationResponse save(StationRequest stationRequest) {
+        validateDistinct(stationRequest.getName());
         Station station = new Station(stationRequest.getName());
-        validateDistinct(station);
-        return StationResponse.from(saveOrThrow(station));
+        final Station savedStation = dao.save(station);
+        return StationResponse.from(savedStation);
     }
 
-    private void validateDistinct(Station station) {
-        final boolean isMatch = findNameMatchingStation(station);
-        if (isMatch) {
+    private void validateDistinct(String name) {
+        Optional<Station> station = dao.findByName(name);
+        if (station.isPresent()) {
             throw new RowDuplicatedException("이미 존재하는 역 이름입니다.");
         }
-    }
-
-    private boolean findNameMatchingStation(Station station) {
-        final List<Station> stations = dao.findAll();
-        return stations.stream()
-            .anyMatch(it -> Objects.equals(it.getName(), station.getName()));
-    }
-
-    private Station saveOrThrow(Station station) {
-        final Optional<Station> savedStation = dao.save(station);
-        return savedStation.orElseThrow(() -> new RowDuplicatedException("이미 존재하는 역 이름입니다."));
     }
 
     public List<StationResponse> findAll() {

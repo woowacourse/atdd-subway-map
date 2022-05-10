@@ -6,11 +6,13 @@ import java.util.Optional;
 import wooteco.subway.domain.Line;
 
 public interface LineDao {
-    Optional<Line> save(Line line);
+    Line save(Line line);
 
     List<Line> findAll();
 
     Optional<Line> findById(Long id);
+
+    Optional<Line> findByName(String name);
 
     boolean update(Line line);
 

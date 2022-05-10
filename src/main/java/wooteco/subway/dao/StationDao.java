@@ -6,9 +6,11 @@ import java.util.Optional;
 import wooteco.subway.domain.Station;
 
 public interface StationDao {
-    Optional<Station> save(Station station);
+    Station save(Station station);
 
     List<Station> findAll();
 
     boolean deleteById(Long id);
+
+    Optional<Station> findByName(String name);
 }

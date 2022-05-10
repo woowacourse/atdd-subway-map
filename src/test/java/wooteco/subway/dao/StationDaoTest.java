@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Station;
@@ -41,20 +42,22 @@ class StationDaoTest {
         // given
         Station station = new Station("청구역");
         // when
-        final Optional<Station> saved = dao.save(station);
+        final Station saved = dao.save(station);
         // then
-        assertThat(saved).isPresent();
+        assertThat(saved).isNotNull();
     }
 
     @Test
     @DisplayName("중복된 이름을 저장하는 경우 빈 Optional을 돌려준다.")
     public void save_throwsExceptionWithDuplicatedName() {
         // given
-        final Optional<Station> saved = dao.save(new Station("청구역"));
+        final Station station = new Station("청구역");
         // when
-        final Optional<Station> duplicated = dao.save(new Station("청구역"));
+        final Station saved = dao.save(station);
+
         // then
-        assertThat(duplicated).isEmpty();
+        assertThatExceptionOfType(DuplicateKeyException.class)
+            .isThrownBy(() -> dao.save(new Station("청구역")));
     }
 
     @Test
@@ -81,7 +84,7 @@ class StationDaoTest {
     @DisplayName("ID값으로 역을 삭제한다.")
     public void deleteById() {
         // given
-        final Station saved = dao.save(new Station(STATION_NAME)).orElseThrow(IllegalStateException::new);
+        final Station saved = dao.save(new Station(STATION_NAME));
         final Long id = saved.getId();
         // when
         final boolean isDeleted = dao.deleteById(id);

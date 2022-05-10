@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
@@ -42,20 +43,21 @@ class LineDaoTest {
         // given
         Line Line = new Line(LINE_NAME, LINE_COLOR);
         // when
-        final Optional<Line> saved = dao.save(Line);
+        final Line saved = dao.save(Line);
         // then
-        assertThat(saved).isPresent();
+        assertThat(saved).isNotNull();
     }
 
     @Test
-    @DisplayName("중복된 이름을 저장하는 경우 빈 Optional을 돌려준다.")
+    @DisplayName("중복된 이름을 저장하는 경우 예외가 발생한다.")
     public void save_throwsExceptionWithDuplicatedName() {
         // given
-        final Optional<Line> saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        final Line line = new Line(LINE_NAME, LINE_COLOR);
         // when
-        final Optional<Line> duplicated = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        final Line saved = dao.save(line);
         // then
-        assertThat(duplicated).isEmpty();
+        assertThatExceptionOfType(DuplicateKeyException.class)
+            .isThrownBy(() -> dao.save(new Line(LINE_NAME, LINE_COLOR)));
     }
 
     @Test
@@ -82,7 +84,7 @@ class LineDaoTest {
     @DisplayName("ID 값으로 노선을 조회한다")
     public void findById() {
         // given
-        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR)).orElseThrow(IllegalStateException::new);
+        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         final Optional<Line> foundLine = dao.findById(saved.getId());
         // then
@@ -104,7 +106,7 @@ class LineDaoTest {
     @DisplayName("노선 정보를 수정한다.")
     public void update() {
         // given
-        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR)).orElseThrow(IllegalStateException::new);
+        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         final boolean isUpdated = dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR));
         // then
@@ -127,7 +129,7 @@ class LineDaoTest {
     @DisplayName("ID값으로 노선을 삭제한다.")
     public void delete() {
         // given
-        Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR)).orElseThrow(IllegalStateException::new);
+        Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         final boolean isDeleted = dao.delete(saved.getId());
         // then

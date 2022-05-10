@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,29 +23,17 @@ public class LineService {
     }
 
     public LineResponse save(LineRequest lineRequest) {
+        validateDistinct(lineRequest.getName());
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        validateDistinct(line);
-        Line savedLine = saveOrThrow(line);
+        Line savedLine = dao.save(line);
         return LineResponse.from(savedLine);
     }
 
-    private Line saveOrThrow(Line line) {
-        final Optional<Line> savedLine = dao.save(line);
-        if (savedLine.isEmpty()) {
+    private void validateDistinct(String name) {
+        Optional<Line> line = dao.findByName(name);
+        if (line.isPresent()) {
             throw new RowDuplicatedException("이미 존재하는 노선 이름입니다.");
         }
-        return savedLine.get();
-    }
-
-    private void validateDistinct(Line line) {
-        final boolean isMatch = findNameMatchingLine(line);
-        if (isMatch) {
-            throw new RowDuplicatedException("이미 존재하는 노선 이름입니다.");
-        }
-    }
-
-    private boolean findNameMatchingLine(Line line) {
-        return dao.findAll().stream().anyMatch(it -> Objects.equals(it.getName(), line.getName()));
     }
 
     public List<LineResponse> findAll() {
