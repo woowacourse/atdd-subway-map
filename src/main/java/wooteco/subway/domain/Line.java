@@ -36,6 +36,7 @@ public class Line {
         this.color = color;
     }
 
+    // TODO: 2022/05/11 별도의 클래스로 분리할 수 있을까?
     public void addSection(final Section section) {
         if (containsBothStationsIn(section)) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 등록되어 있습니다.");
@@ -45,7 +46,7 @@ public class Line {
         }
 
         for (Section each : sections) {
-            changeSectionIfForkRoadCase(each, section);
+            rearrangeSectionIfForkRoadCase(each, section);
         }
 
         sections.add(section);
@@ -61,15 +62,14 @@ public class Line {
         return stations.containsAll(Set.of(section.getUpStation(), section.getDownStation()));
     }
 
-    private void changeSectionIfForkRoadCase(final Section existed, final Section added) {
+    private void rearrangeSectionIfForkRoadCase(final Section existed, final Section added) {
         if (isUpsideForkRoadCase(existed, added)) {
             checkValidDistance(existed, added);
-            transform(existed, added);
+            rearrangeUpside(existed, added);
         }
         if (isDownsideForkRoadCase(existed, added)) {
             checkValidDistance(existed, added);
-            existed.changeDownStation(added.getUpStation());
-            existed.changeDistance(existed.getDistance() - added.getDistance());
+            rearrangeDownside(existed, added);
         }
     }
 
@@ -87,7 +87,7 @@ public class Line {
         return added.getUpStation().equals(existed.getUpStation());
     }
 
-    private void transform(final Section existed, final Section added) {
+    private void rearrangeUpside(final Section existed, final Section added) {
         Station currentDownStation = existed.getDownStation();
         int currentDistance = existed.getDistance();
 
@@ -97,6 +97,11 @@ public class Line {
         added.changeUpStation(added.getDownStation());
         added.changeDownStation(currentDownStation);
         added.changeDistance(currentDistance - added.getDistance());
+    }
+
+    private void rearrangeDownside(final Section existed, final Section added) {
+        existed.changeDownStation(added.getUpStation());
+        existed.changeDistance(existed.getDistance() - added.getDistance());
     }
 
     public Long getId() {
