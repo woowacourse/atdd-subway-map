@@ -1,10 +1,12 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -18,6 +20,8 @@ import wooteco.subway.utils.exception.SectionCreateException;
 
 @Repository
 public class SectionRepository {
+
+    private static final int NO_ROW = 0;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -41,18 +45,32 @@ public class SectionRepository {
         }
     }
 
-
     public Section findById(final Long id) {
         String sql = "SELECT s.id as section_id, s.line_id, s.up_station_id, s.down_station_id, s.distance,"
-                + " st.name as up_station_name, sta.name as down_station_name "
+                + " us.name as up_station_name, ds.name as down_station_name "
                 + "FROM section as s "
-                + "LEFT JOIN station as st ON st.id = s.up_station_id "
-                + "LEFT JOIN station as sta ON sta.id = s.down_station_id "
+                + "LEFT JOIN station as us ON us.id = s.up_station_id "
+                + "LEFT JOIN station as ds ON ds.id = s.down_station_id "
                 + "WHERE s.id = :id";
 
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
             return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + id);
+        }
+    }
+
+    public List<Section> findByLineId(final Long id) {
+        String sql = "SELECT s.id as section_id, s.line_id, s.up_station_id, s.down_station_id, s.distance,"
+                + " us.name as up_station_name, ds.name as down_station_name "
+                + "FROM section as s "
+                + "LEFT JOIN station as us ON us.id = s.up_station_id "
+                + "LEFT JOIN station as ds ON ds.id = s.down_station_id "
+                + "WHERE s.line_id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        try {
+            return namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
         } catch (EmptyResultDataAccessException e) {
             throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + id);
         }
@@ -72,5 +90,17 @@ public class SectionRepository {
                     distance
             );
         });
+    }
+
+    public void update(final Section section) {
+        String sql = "UPDATE section SET "
+                + "up_station_id = :upStationId, down_station_id = :downStationId, distance := distance "
+                + "WHERE id = :id";
+
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(section);
+        int rowCounts = namedParameterJdbcTemplate.update(sql, parameters);
+        if (rowCounts == NO_ROW) {
+            throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + section.getId());
+        }
     }
 }

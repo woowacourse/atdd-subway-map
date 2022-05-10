@@ -65,7 +65,7 @@ public class Section {
     }
 
     public boolean isUpdate(final Section section) {
-        return id.equals(section.getId())
+        return section.getId().equals(id)
                 && !(isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation()));
     }
 
