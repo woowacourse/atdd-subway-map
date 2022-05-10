@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Section {
@@ -22,6 +24,45 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public List<Section> putBetweenUpStation(Section section) {
+        validateDistance(section);
+        Section upperSection = new Section(this.getLineId(), getUpStation(), section.getDownStation(), section.getDistance());
+        Section lowerSection = new Section(this.getLineId(), section.getDownStation(), getDownStation(),
+                getDistance() - section.getDistance());
+
+        ArrayList<Section> results = new ArrayList<>() {
+            {
+                add(upperSection);
+                add(lowerSection);
+            }
+        };
+
+        return results;
+    }
+
+    public List<Section> putBetweenDownStation(Section section) {
+        validateDistance(section);
+        Section upperSection = new Section(this.getLineId(), getDownStation(), section.getUpStation(),
+                section.getDistance());
+        Section lowerSection = new Section(this.getLineId(), section.getUpStation(), getUpStation(),
+                getDistance() - section.getDistance());
+
+        ArrayList<Section> results = new ArrayList<>() {
+            {
+                add(upperSection);
+                add(lowerSection);
+            }
+        };
+
+        return results;
+    }
+
+    private void validateDistance(Section section) {
+        if (this.distance <= section.getDistance()) {
+            throw new IllegalArgumentException("새로 등록되는 구간은 기존의 구간의 거리보다 같거나 커서는 안됩니다.");
+        }
     }
 
     @Override
@@ -78,6 +119,7 @@ public class Section {
         return "Section{" +
                 "upStation=" + upStation.getName() +
                 ", downStation=" + downStation.getName() +
+                ", distance = " + getDistance() +
                 '}';
     }
 }

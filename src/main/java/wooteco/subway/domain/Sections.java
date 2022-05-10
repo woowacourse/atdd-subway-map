@@ -52,6 +52,29 @@ public class Sections {
     }
 
     public void add(Section section) {
-        this.add(section);
+        sections.add(section);
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public Section findSectionWithUpperStation(Station upStation) {
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("상행 쪽의 역이 존재하지 않습니다."));
+    }
+
+    public void changeSectionWithNewSections(Section sectionWithUpperStation, List<Section> newAddedSections) {
+        sections.remove(sectionWithUpperStation);
+        sections.addAll(newAddedSections);
+    }
+
+    public Section findSectionWithLowerStation(Station downStation) {
+        return sections.stream()
+                .filter(it -> it.getDownStation().equals(downStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("하행 쪽의 역이 존재하지 않습니다."));
     }
 }

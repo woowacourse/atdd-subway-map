@@ -24,6 +24,12 @@ public class SectionService {
     }
 
     public Section createSection(Long lineId, SectionRequest sectionRequest) {
+        Section section = convertRequestToSection(lineId, sectionRequest);
+        SectionEntity saveEntity = sectionDao.save(section);
+        return new Section(saveEntity.getLineId(), section.getUpStation(), section.getDownStation(), saveEntity.getDistance());
+    }
+
+    private Section convertRequestToSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationDao.findById(sectionRequest.getUpStationId())
                 .orElseThrow(() -> new StationNotFoundException(
                         sectionRequest.getUpStationId()));
@@ -32,9 +38,7 @@ public class SectionService {
                 .orElseThrow(() -> new StationNotFoundException(
                         sectionRequest.getDownStationId()));
 
-        Section section = new Section(lineId, upStation, downStation,
+        return new Section(lineId, upStation, downStation,
                 sectionRequest.getDistance());
-        SectionEntity saveEntity = sectionDao.save(section);
-        return new Section(saveEntity.getLineId(), upStation, downStation, saveEntity.getDistance());
     }
 }

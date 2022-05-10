@@ -1,9 +1,7 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class Line {
     private Long id;
@@ -40,7 +38,7 @@ public class Line {
     public Section addSection(Section section) {
         validateCanAddSection(section);
         boolean upStationExist = sections.containsStation(section.getUpStation());
-        boolean downStationExist = sections.containsStation(section.getUpStation());
+        boolean downStationExist = sections.containsStation(section.getDownStation());
         // 상행 종점 등록 || 상행 구간 사이에 들어가기
         if (!upStationExist && downStationExist) {
             Station lineUpEndStation = sections.calculateUpStation();
@@ -49,8 +47,12 @@ public class Line {
                 sections.add(section);
                 return section;
             }
-            // TODO: 갈래길 방지 및 거리 validate (기존 section 갱신)
-
+            // TODO: 갈래길 방지 및 거리 validate  (기존 section 갱신)
+            // 기존에 노선에 있던 역을 하행 삼아 그 역 사이에 들어가기
+            Section sectionWithLowerStation = sections.findSectionWithLowerStation(section.getDownStation());
+            List<Section> newAddedSections = sectionWithLowerStation.putBetweenDownStation(section);
+            sections.changeSectionWithNewSections(sectionWithLowerStation, newAddedSections);
+            return section;
         }
 
         // 하행 종점 등록 || 하행 구간 사이에 들어가기
@@ -61,15 +63,20 @@ public class Line {
                 sections.add(section);
                 return section;
             }
-            // TODO: 갈래길 방지 및 거리 validate  (기존 section 갱신)
 
+            // TODO: 갈래길 방지 및 거리 validate (기존 section 갱신)
+            // 기존에 노선에 있던 역을 상행 삼아 그 역 사이에 들어가기
+            Section sectionWithUpperStation = sections.findSectionWithUpperStation(section.getUpStation());
+            List<Section> newAddedSections = sectionWithUpperStation.putBetweenUpStation(section);
+            sections.changeSectionWithNewSections(sectionWithUpperStation, newAddedSections);
+            return section;
         }
         return section;
     }
 
     private void validateCanAddSection(Section section) {
         boolean upStationExist = sections.containsStation(section.getUpStation());
-        boolean downStationExist = sections.containsStation(section.getUpStation());
+        boolean downStationExist = sections.containsStation(section.getDownStation());
         if (!upStationExist && !downStationExist) {
             throw new IllegalArgumentException(
                     String.format("%s와 %s 모두 존재하지 않아 구간을 등록할 수 없습니다.", section.getUpStationName(),
@@ -80,6 +87,11 @@ public class Line {
                     String.format("%s와 %s 이미 모두 등록 되어있어 구간을 등록할 수 없습니다.", section.getUpStationName(),
                             section.getDownStationName()));
         }
+    }
+
+    private void changeEndStations() {
+        this.upStation = sections.calculateUpStation();
+        this.downStation = sections.calculateDownStation();
     }
 
     @Override
@@ -112,10 +124,12 @@ public class Line {
     }
 
     public Station getUpStation() {
+        changeEndStations();
         return upStation;
     }
 
     public Station getDownStation() {
+        changeEndStations();
         return downStation;
     }
 
