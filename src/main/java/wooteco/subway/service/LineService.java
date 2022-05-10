@@ -58,6 +58,11 @@ public class LineService {
 
         final Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
 
+        final List<Section> sections1 = sections.getSections();
+        for (Section section : sections1) {
+            System.out.println("section.getId() = " + section.getId());
+        }
+
         return new LineResponse(line, sortedStations(sections));
     }
 
