@@ -9,12 +9,17 @@ import wooteco.subway.domain.Station;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class StationRepositoryTest {
+
+    private static final Long UP_STATION_ID = 1L;
+    private static final Long MIDDLE_STATION_ID = 2L;
+    private static final Long DOWN_STATION_ID = 3L;
 
     @Autowired
     private DataSource dataSource;
@@ -42,26 +47,21 @@ class StationRepositoryTest {
     @DisplayName("모든 역을 조회한다.")
     @Test
     void findAll() {
-        Station station1 = new Station(SILLIM_STATION);
-        stationRepository.save(station1);
-        Station station2 = new Station("신대방역");
-        stationRepository.save(station2);
-
         List<Station> stations = stationRepository.findAll();
-
+        List<Long> ids = stations.stream().map(Station::getId).collect(Collectors.toList());
         assertAll(
-                () -> assertThat(stations).hasSize(2),
-                () -> assertThat(stations).containsExactly(station1, station2)
+                () -> assertThat(stations).hasSize(3),
+                () -> assertThat(ids).containsExactly(UP_STATION_ID, MIDDLE_STATION_ID, DOWN_STATION_ID)
         );
+
     }
 
     @DisplayName("역을 삭제한다")
     @Test
     void deleteById() {
-        Station saveStation = stationRepository.save(new Station(SILLIM_STATION));
-        stationRepository.deleteById(saveStation.getId());
+        stationRepository.deleteById(MIDDLE_STATION_ID);
 
-        assertThat(stationRepository.findAll()).isEmpty();
+        assertThat(stationRepository.findAll()).hasSize(2);
     }
 
     @DisplayName("이름으로 역이 존재하는지 조회한다.")

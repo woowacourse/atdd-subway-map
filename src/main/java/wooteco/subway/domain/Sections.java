@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NoTerminalStationException;
+import wooteco.subway.utils.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,12 +37,28 @@ public class Sections {
         return terminalUpStation.getDownStation();
     }
 
-    public void checkDuplicateSection(Long upStationId, Long downStationId) {
-        sections.stream()
-                .filter(section -> section.getDownStation().getId().equals(downStationId) &&
-                        section.getUpStation().getId().equals(upStationId))
-                .forEach(section -> {
-                    throw new DuplicatedException("[ERROR] 이미 노선에 존재하는 구간입니다.");
-                });
+    public boolean isDuplicateSection(Long upStationId, Long downStationId) {
+        return sections.stream()
+                .anyMatch(section -> section.isSameUpDownStation(upStationId, downStationId));
+
+    }
+
+    public boolean isNonMatchStations(Long upStationId, Long downStationId) {
+        return sections.stream()
+                .noneMatch(section -> section.haveStationId(upStationId, downStationId));
+    }
+
+    public Section getSectionByUpStationId(Long upStationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId().equals(upStationId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("[ERROR] 상행 역을 찾을 수 없습니다."));
+    }
+
+    public Section getSectionByDownStationId(Long downStationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().getId().equals(downStationId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("[ERROR] 하행 역을 찾을 수 없습니다."));
     }
 }

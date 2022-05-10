@@ -12,7 +12,6 @@ import wooteco.subway.utils.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class SectionRepositoryImpl implements SectionRepository {
@@ -73,20 +72,32 @@ public class SectionRepositoryImpl implements SectionRepository {
     }
 
     @Override
-    public Optional<Section> findByUpStationIdWithLineId(Long upStationId, Long lineId) {
-        String sql = "SELECT * FROM section WHERE up_station_id = :up_station_id, line_id = :line_id";
+    public boolean existsByUpStationIdWithLineId(Long upStationId, Long lineId) {
+        String sql = "SELECT * FROM section WHERE up_station_id = :up_station_id and line_id = :line_id";
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("up_station_id", upStationId)
                 .addValue("line_id", lineId);
 
         List<Section> sections = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
-        return getOptional(sections);
+        return !sections.isEmpty();
     }
 
-    private Optional<Section> getOptional(List<Section> sections) {
-        if (sections.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(sections.get(0));
+    @Override
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM section WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        namedParameterJdbcTemplate.update(sql, parameters);
     }
+
+    @Override
+    public boolean existsByDownStationIdWithLineId(Long downStationId, Long lineId) {
+        String sql = "SELECT * FROM section WHERE down_station_id = :down_station_id and line_id = :line_id";
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("down_station_id", downStationId)
+                .addValue("line_id", lineId);
+
+        List<Section> sections = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
+        return !sections.isEmpty();
+    }
+
 }

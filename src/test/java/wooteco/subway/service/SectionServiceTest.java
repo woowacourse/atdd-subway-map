@@ -3,24 +3,31 @@ package wooteco.subway.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.*;
-import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.SectionRequest;
 import wooteco.subway.utils.exception.DuplicatedException;
+import wooteco.subway.utils.exception.NotFoundException;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class SectionServiceTest {
+
+    private static final Long LINE_ID = 1L;
+    private static final Long UP_STATION_ID = 1L;
+    private static final Long MIDDLE_STATION_ID = 2L;
+    private static final Long DOWN_STATION_ID = 3L;
 
     @Autowired
     private DataSource dataSource;
@@ -30,6 +37,7 @@ class SectionServiceTest {
     private StationRepository stationRepository;
     private LineRepository lineRepository;
 
+
     @BeforeEach
     void setUp() {
         sectionRepository = new SectionRepositoryImpl(dataSource);
@@ -38,52 +46,65 @@ class SectionServiceTest {
         sectionService = new SectionService(sectionRepository, stationRepository);
     }
 
-    @DisplayName("구간을 저장한다.")
+
+    @DisplayName("노선을 생성할때 구간을 생성한다.")
+    @Test
+    void init() {
+        Station newStation = stationRepository.save(new Station("신림역"));
+        SectionRequest sectionRequest = new SectionRequest(newStation.getId(), MIDDLE_STATION_ID, 2);
+        Section section = sectionService.init(LINE_ID, sectionRequest);
+
+        assertThat(section.getId()).isNotNull();
+    }
+
+    @DisplayName("종점에 구간을 추가한다.")
     @Test
     void create() {
+        //given
+        Station downStation = stationRepository.save(new Station("신도림역"));
+        SectionRequest sectionRequest = new SectionRequest(DOWN_STATION_ID, downStation.getId(), 5);
+        //when
+        sectionService.add(LINE_ID, sectionRequest);
+        List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
+        //then
+        assertThat(sections).hasSize(3);
+    }
+
+    @DisplayName("구간 사이에 구간이 추가될때 길이가 기존 구간보다 같거나 길면 예외가 발생한다.")
+    @ParameterizedTest
+    @ValueSource(ints = {5, 6})
+    void createFailure(int distance) {
+        Station downStation = stationRepository.save(new Station("신도림역"));
+        SectionRequest sectionRequest = new SectionRequest(MIDDLE_STATION_ID, downStation.getId(), distance);
+
+        assertThatThrownBy(
+                () -> sectionService.add(LINE_ID, sectionRequest)
+        ).isExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선에 존재하지 않는 역으로 구간을 저장하려고 하면 예외가 발생한다..")
+    @Test
+    void createFailureWhenNonStations() {
         Station upStation = stationRepository.save(new Station("신림역"));
         Station downStation = stationRepository.save(new Station("신도림역"));
-        LineRequest lineRequest = new LineRequest(
-                "분당선",
-                "bg-red-600",
-                upStation.getId(),
-                downStation.getId(),
-                5
-        );
 
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line savedLine = lineRepository.save(line);
-        SectionRequest sectionRequest = SectionRequest.from(lineRequest);
-        Section section = sectionService.create(savedLine.getId(), sectionRequest);
+        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 5);
 
-        assertAll(
-                () -> assertThat(section.getId()).isNotNull(),
-                () -> assertThat(section.getDistance()).isEqualTo(5),
-                () -> assertThat(section.getUpStation().getName()).isEqualTo("신림역")
-        );
+        Line line = lineRepository.findById(LINE_ID).get();
+        assertThatThrownBy(
+                () -> sectionService.add(line.getId(), sectionRequest)
+        ).isExactlyInstanceOf(NotFoundException.class);
+
     }
 
     @DisplayName("이미 존재하는 구간을 추가할 때 예외가 발생한다.")
     @Test
     void createFailureWhenDuplicate() {
-        Station upStation = stationRepository.save(new Station("신림역"));
-        Station downStation = stationRepository.save(new Station("신도림역"));
-        LineRequest lineRequest = new LineRequest(
-                "분당선",
-                "bg-red-600",
-                upStation.getId(),
-                downStation.getId(),
-                5
-        );
+        Line line = lineRepository.findById(LINE_ID).get();
+        SectionRequest sectionRequest = new SectionRequest(MIDDLE_STATION_ID, DOWN_STATION_ID, 5);
 
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line savedLine = lineRepository.save(line);
-        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 5);
-
-        sectionService.create(savedLine.getId(), sectionRequest);
         assertThatThrownBy(
-                () -> sectionService.create(savedLine.getId(), sectionRequest)
-        ).isInstanceOf(DuplicatedException.class);
-
+                () -> sectionService.add(line.getId(), sectionRequest)
+        ).isExactlyInstanceOf(DuplicatedException.class);
     }
 }

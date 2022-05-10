@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @JdbcTest
 public class LineRepositoryTest {
 
+    private static final long LINE_ID = 1L;
+
     @Autowired
     private DataSource dataSource;
 
@@ -49,8 +51,8 @@ public class LineRepositoryTest {
         List<Line> lines = lineRepository.findAll();
 
         assertAll(
-                () -> assertThat(lines).hasSize(2),
-                () -> assertThat(lines).containsExactly(saveLine1, saveLine2)
+                () -> assertThat(lines).hasSize(3),
+                () -> assertThat(lines).contains(saveLine1, saveLine2)
         );
     }
 
@@ -96,8 +98,7 @@ public class LineRepositoryTest {
     @DisplayName("노선을 삭제한다.")
     @Test
     void deleteById() {
-        Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        lineRepository.deleteById(saveLine.getId());
+        lineRepository.deleteById(LINE_ID);
 
         assertThat(lineRepository.findAll()).isEmpty();
     }

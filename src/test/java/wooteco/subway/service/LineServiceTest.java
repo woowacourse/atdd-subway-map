@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.*;
 import wooteco.subway.service.dto.LineRequest;
@@ -23,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @JdbcTest
 public class LineServiceTest {
 
+    private static final long LINE_ID = 1L;
     @Autowired
     private DataSource dataSource;
 
@@ -40,9 +40,6 @@ public class LineServiceTest {
         sectionRepository = new SectionRepositoryImpl(dataSource);
         lineService = new LineService(lineRepository, sectionService, sectionRepository);
         stationRepository = new StationRepositoryImpl(dataSource);
-        station1 = stationRepository.save(new Station("홍대입구역"));
-        station2 = stationRepository.save(new Station("신촌역"));
-
     }
 
     @DisplayName("노선을 생성한다.")
@@ -69,17 +66,11 @@ public class LineServiceTest {
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void showLines() {
-        Line line1 = lineRepository.save(new Line("분당선", "bg-red-600"));
-        Line line2 = lineRepository.save(new Line("신분당선", "bg-yellow-600"));
-        Station station3 = stationRepository.save(new Station("잠실역"));
-        Station station4 = stationRepository.save(new Station("선릉역"));
-        sectionRepository.save(new Section(line1.getId(), station1, station2, 10));
-        sectionRepository.save(new Section(line2.getId(), station3, station4, 10));
+
         List<LineResponse> lineResponses = lineService.getLines();
         assertAll(
-                () -> assertThat(lineResponses).hasSize(2),
-                () -> assertThat(lineResponses.get(0).getStations()).hasSize(2),
-                () -> assertThat(lineResponses.get(1).getStations()).hasSize(2)
+                () -> assertThat(lineResponses).hasSize(1),
+                () -> assertThat(lineResponses.get(0).getStations()).hasSize(3)
         );
     }
 
@@ -112,8 +103,7 @@ public class LineServiceTest {
     @DisplayName("노선을 제거 한다.")
     @Test
     void delete() {
-        Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
-        lineService.delete(line.getId());
+        lineService.delete(LINE_ID);
 
         assertThat(lineRepository.findAll()).isEmpty();
     }

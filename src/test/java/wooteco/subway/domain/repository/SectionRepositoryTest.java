@@ -5,25 +5,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 import javax.sql.DataSource;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@Sql("/data.sql")
 @JdbcTest
 class SectionRepositoryTest {
 
     private static final Long LINE_ID = 1L;
-    private static final Long TERMINAL_UP_STATION_ID = 1L;
-    private static final Long UP_STATION_ID = 2L;
+    private static final Long UP_STATION_ID = 1L;
+    private static final Long MIDDLE_STATION_ID = 2L;
     private static final Long DOWN_STATION_ID = 3L;
 
     @Autowired
@@ -64,10 +61,31 @@ class SectionRepositoryTest {
         List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
 
         assertAll(
-                () -> assertThat(sections.get(0).getUpStation().getId()).isEqualTo(TERMINAL_UP_STATION_ID),
-                () -> assertThat(sections.get(0).getDownStation().getId()).isEqualTo(UP_STATION_ID),
-                () -> assertThat(sections.get(1).getUpStation().getId()).isEqualTo(UP_STATION_ID),
+                () -> assertThat(sections.get(0).getUpStation().getId()).isEqualTo(UP_STATION_ID),
+                () -> assertThat(sections.get(0).getDownStation().getId()).isEqualTo(MIDDLE_STATION_ID),
+                () -> assertThat(sections.get(1).getUpStation().getId()).isEqualTo(MIDDLE_STATION_ID),
                 () -> assertThat(sections.get(1).getDownStation().getId()).isEqualTo(DOWN_STATION_ID)
         );
     }
+
+    @DisplayName("노선 식별자와 상행 식별자가 같은 구간이 있으면 true를 반환한다.")
+    @Test
+    void existsByUpStationIdWithLineId() {
+        assertThat(sectionRepository.existsByUpStationIdWithLineId(MIDDLE_STATION_ID, LINE_ID)).isTrue();
+    }
+
+    @DisplayName("노선 식별자와 하행 식별자가 같은 구간이 있으면 true를 반환한다.")
+    @Test
+    void existsByDownStationIdWithLineId() {
+        assertThat(sectionRepository.existsByDownStationIdWithLineId(DOWN_STATION_ID, LINE_ID)).isTrue();
+    }
+
+    @DisplayName("id에 해당하는 구간을 삭제한다.")
+    @Test
+    void deleteById() {
+        sectionRepository.deleteById(MIDDLE_STATION_ID);
+        List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
+        assertThat(sections).hasSize(1);
+    }
+
 }

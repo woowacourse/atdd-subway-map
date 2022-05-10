@@ -54,10 +54,8 @@ class StationServiceTest {
     @DisplayName("모든 역을 조회한다.")
     @Test
     void showStations() {
-        stationRepository.save(new Station("신림역"));
-        stationRepository.save(new Station("신대방역"));
         List<StationResponse> stationResponses = stationService.showStations();
-        assertThat(stationResponses).hasSize(2);
+        assertThat(stationResponses).hasSize(3);
     }
 
     @DisplayName("역을 삭제한다.")

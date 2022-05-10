@@ -8,7 +8,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.SectionRepository;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.service.dto.SectionRequest;
-import wooteco.subway.utils.exception.CannotCreateClassException;
+import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 
 @Transactional
@@ -24,33 +24,61 @@ public class SectionService {
         this.stationRepository = stationRepository;
     }
 
-    public Section create(Long lineId, SectionRequest sectionRequest) {
+    public void add(Long lineId, SectionRequest sectionRequest) {
 
         Sections sections = new Sections(sectionRepository.findAllByLineId(lineId));
-        sections.checkDuplicateSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
-                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getUpStationId())));
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
-                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getDownStationId())));
+        validateDuplicate(sectionRequest, sections);
+        validateNonMatchStations(sectionRequest, sections);
+        if (sectionRepository.existsByUpStationIdWithLineId(sectionRequest.getUpStationId(), lineId)) {
+            Section section = sections.getSectionByUpStationId(sectionRequest.getUpStationId());
+            sectionRepository.deleteById(section.getId());
 
-        Section section = Section.create(lineId, upStation, downStation, sectionRequest.getDistance());
-        Section findSection = sectionRepository.findByUpStationIdWithLineId(sectionRequest.getUpStationId(), lineId)
-                .orElseThrow(() -> new NotFoundException("[ERROR] 상행 역을 찾을 수 없습니다."));
-        validateDistance(sectionRequest, findSection);
-        //모든 station중 contain했을 때, 둘다 아니라면 예외
+            Station upStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow();
+            validateDistance(sectionRequest, section);
+            int dist = section.getDistance() - sectionRequest.getDistance();
+            sectionRepository.save(new Section(lineId, upStation, section.getDownStation(), dist));
+        }
+        if (sectionRepository.existsByDownStationIdWithLineId(sectionRequest.getDownStationId(), lineId)) {
+            Section section = sections.getSectionByDownStationId(sectionRequest.getDownStationId());
+            sectionRepository.deleteById(section.getId());
 
-        //TODO: request의 upStation이 기존의 upStation과 같을때, 기존보다 distance가 작다면
-        // new Section(새로운 downStation, 기존 downStation, 기존 섹션 길이 - 새로운 색션 길이)
-        // delete 기존 섹션 -> 새로운 섹션 save
+            Station downStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow();
+            validateDistance(sectionRequest, section);
+            int dist = section.getDistance() - sectionRequest.getDistance();
+            sectionRepository.save(new Section(lineId, section.getUpStation(), downStation, dist));
+        }
+        Section section = createMemorySection(sectionRequest, lineId);
+        sectionRepository.save(section);
+    }
 
-        //(1,3)(3,2)(2,5): (2,4)
-        return sectionRepository.save(section);
+    private void validateNonMatchStations(SectionRequest sectionRequest, Sections sections) {
+        if (sections.isNonMatchStations(sectionRequest.getUpStationId(), sectionRequest.getDownStationId())) {
+            throw new NotFoundException("[ERROR] 노선에 존재하는 역과 일치하는 역을 찾을수 없습니다.");
+        }
+    }
+
+    private void validateDuplicate(SectionRequest sectionRequest, Sections sections) {
+        if (sections.isDuplicateSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId())) {
+            throw new DuplicatedException("[ERROR] 이미 노선에 존재하는 구간입니다.");
+        }
     }
 
     private void validateDistance(SectionRequest sectionRequest, Section findSection) {
         if (findSection.isEqualsAndSmallerThan(sectionRequest.getDistance())) {
-            throw new CannotCreateClassException("[ERROR] 구간의 길이가 기존보다 크거나 같습니다.");
+            throw new IllegalArgumentException("[ERROR] 구간의 길이가 기존보다 크거나 같습니다.");
         }
     }
 
+    public Section init(Long lineId, SectionRequest sectionRequest) {
+        Section section = createMemorySection(sectionRequest, lineId);
+        return sectionRepository.save(section);
+    }
+
+    private Section createMemorySection(SectionRequest sectionRequest, Long lineId) {
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getUpStationId())));
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getDownStationId())));
+        return Section.create(lineId, upStation, downStation, sectionRequest.getDistance());
+    }
 }
