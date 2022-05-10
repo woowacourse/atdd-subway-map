@@ -25,30 +25,31 @@ class JdbcLineDaoTest {
     @BeforeEach
     void setUp() {
         lineDao = new JdbcLineDao(jdbcTemplate);
+
     }
 
     @Test
     @DisplayName("노선을 추가한다")
     void save() {
-        Line line = lineDao.create(new Line("1호선", "blue"));
+        Line line = lineDao.create(new Line("2호선", "bg-green-300"));
 
         assertAll(
-                () -> assertThat(line.getName()).isEqualTo("1호선"),
-                () -> assertThat(line.getColor()).isEqualTo("blue")
+                () -> assertThat(line.getName()).isEqualTo("2호선"),
+                () -> assertThat(line.getColor()).isEqualTo("bg-green-300")
         );
     }
 
     @Test
     @DisplayName("특정 노선 조회")
     void findById() {
-        Line line = lineDao.create(new Line("1호선", "blue"));
+        Line line = lineDao.create(new Line("2호선", "bg-green-300"));
         assertThat(lineDao.findById(line.getId())).isEqualTo(line);
     }
 
     @Test
     void findAll() {
-        Line line1 = lineDao.create(new Line("1호선", "blue"));
-        Line line2 = lineDao.create(new Line("2호선", "green"));
+        Line line1 = lineDao.create(new Line("1호선", "bg-blue-200"));
+        Line line2 = lineDao.create(new Line("2호선", "bg-green-300"));
 
         List<Line> lines = lineDao.findAll();
 
@@ -61,17 +62,17 @@ class JdbcLineDaoTest {
 
     @Test
     void updateById() {
-        Line savedLine = lineDao.create(new Line("1호선", "blue"));
+        Line savedLine = lineDao.create(new Line("1호선", "bg-blue-200"));
         Long id = savedLine.getId();
 
-        lineDao.update(id, "2호선", "black");
+        lineDao.update(id, "2호선", "bg-green-300");
 
-        assertThat(lineDao.findById(id)).isEqualTo(new Line(id, "2호선", "black"));
+        assertThat(lineDao.findById(id)).isEqualTo(new Line(id, "2호선", "bg-green-300"));
     }
 
     @Test
     void deleteById() {
-        Line line = lineDao.create(new Line("1호선", "blue"));
+        Line line = lineDao.create(new Line("1호선", "bg-blue-200"));
 
         lineDao.deleteById(line.getId());
 

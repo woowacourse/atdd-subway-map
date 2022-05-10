@@ -5,17 +5,17 @@ import wooteco.subway.service.dto.station.StationResponseDto;
 
 import java.util.List;
 
-public class LineResponseDTO {
+public class LineResponseDto {
 
     private Long id;
     private String name;
     private String color;
     private List<StationResponseDto> stations;
 
-    private LineResponseDTO() {
+    private LineResponseDto() {
     }
 
-    public LineResponseDTO(Line line, List<StationResponseDto> stations) {
+    public LineResponseDto(Line line, List<StationResponseDto> stations) {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();

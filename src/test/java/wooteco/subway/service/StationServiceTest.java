@@ -30,39 +30,46 @@ class StationServiceTest {
     @Test
     @DisplayName("지하철 역을 저장할 수 있다.")
     void saveStation() {
-        StationResponseDto stationResponseDTO = stationService.createStation("강남역");
-
-        Assertions.assertThat(stationResponseDTO.getName()).isEqualTo("강남역");
+        //given
+        //when
+        StationResponseDto stationResponseDTO = stationService.createStation("낙성대");
+        //then
+        Assertions.assertThat(stationResponseDTO.getName()).isEqualTo("낙성대");
     }
 
     @Test
     @DisplayName("중복된 지하철 역을 저장할 수 없다.")
     void NonSaveDuplicateStation() {
-        stationService.createStation("역삼역");
-
-        Assertions.assertThatThrownBy(() -> stationService.createStation("역삼역"))
+        //given
+        //when
+        stationService.createStation("낙성대");
+        //then
+        Assertions.assertThatThrownBy(() -> stationService.createStation("낙성대"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     @DisplayName("역 삭제 성공")
     void deleteStation() {
-        StationResponseDto stationResponseDTO = stationService.createStation("용문역");
-        Long id = stationResponseDTO.getId();
-
+        //given
+        Long id = stationService.createStation("낙성대").getId();
+        //when
         stationService.delete(id);
+        //then
         List<Long> ids = stationService.showStations()
                 .stream()
                 .map(StationResponseDto::getId)
                 .collect(Collectors.toList());
-
         Assertions.assertThat(ids).doesNotContain(id);
     }
 
     @Test
     @DisplayName("역 삭제 실패")
     void failDeleteStation() {
-        Assertions.assertThatThrownBy(() -> stationService.delete(1919L))
+        //given
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> stationService.delete(-1L))
                 .isInstanceOf(NoSuchElementException.class);
     }
 }

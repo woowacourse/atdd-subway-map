@@ -14,7 +14,6 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class JdbcSectionDaoTest {
@@ -31,32 +30,35 @@ class JdbcSectionDaoTest {
         stationDao = new JdbcStationDao(jdbcTemplate);
         lineDao = new JdbcLineDao(jdbcTemplate);
         sectionDao = new JdbcSectionDao(jdbcTemplate);
+
+        lineDao.create(new Line("2호선", "bg-green-300"));
+        stationDao.create(new Station("낙성대"));
+        stationDao.create(new Station("교대"));
+        stationDao.create(new Station("선릉"));
     }
 
     @Test
     @DisplayName("구간을 추가한다")
     void createSection(){
-        Section section = sectionDao.create(new Section(1L, 2L, 3L, 4));
-
-        assertAll(
-                () -> assertThat(section.getLineId()).isEqualTo(1L),
-                () -> assertThat(section.getUpStationId()).isEqualTo(2L),
-                () -> assertThat(section.getDownStationId()).isEqualTo(3L),
-                () -> assertThat(section.getDistance()).isEqualTo(4)
-        );
+        //given
+        //when
+        Section actual = sectionDao.create(new Section(1L, 1L, 2L, 10));
+        Section expected = new Section(1L, 1L, 1L, 2L, 10);
+        //then
+        assertThat(expected)
+                .usingRecursiveComparison()
+                .isEqualTo(actual);
     }
 
     @Test
     @DisplayName("구간을 삭제한다.")
     void deleteSection(){
         //given
-        Line line = lineDao.create(new Line("1호선", "blue"));
-        Station station1 = stationDao.create(new Station("구로"));
-        Station station2 = stationDao.create(new Station("신도림"));
-        Section section = sectionDao.create(new Section(line.getId(), station1.getId(), station2.getId(), 10));
+        Section section1 = sectionDao.create(new Section(1L, 1L, 2L, 10));
+        Section section2 = sectionDao.create(new Section(1L, 2L, 3L, 20));
         //when
-        sectionDao.delete(section.getId());
+        sectionDao.delete(section1.getId());
         //then
-        assertThat(sectionDao.existById(section.getId())).isFalse();
+        assertThat(sectionDao.existById(section1.getId())).isFalse();
     }
 }
