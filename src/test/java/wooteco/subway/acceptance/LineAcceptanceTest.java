@@ -25,9 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        Map<String, String> params = createParam("신분당선", "bg-red-600");
 
         // when
         ExtractableResponse<Response> response = createLine(params);

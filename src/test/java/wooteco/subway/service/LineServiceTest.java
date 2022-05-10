@@ -39,7 +39,7 @@ class LineServiceTest {
         String lineName = "신분당선";
         String lineColor = "bg-red-600";
         Line line = new Line(lineName, lineColor);
-        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor(), null, null, 0);
+        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor());
         given(lineDao.save(line)).willReturn(new Line(1L, lineName, lineColor));
 
         LineResponse actual = lineService.createLine(lineRequest);
@@ -57,7 +57,7 @@ class LineServiceTest {
         String lineName = "신분당선";
         String lineColor = "bg-red-600";
         Line line = new Line(lineName, lineColor);
-        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor(), null, null, 0);
+        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor());
 
         given(lineDao.findByName(lineName)).willReturn(Optional.of(line));
 
@@ -96,7 +96,7 @@ class LineServiceTest {
     @Test
     void updateLine() {
         Line newLine = new Line(1L, "분당선", "bg-yellow-600");
-        LineRequest lineRequest = new LineRequest(newLine.getName(), newLine.getColor(), null, null, 0);
+        LineRequest lineRequest = new LineRequest(newLine.getName(), newLine.getColor());
         given(lineDao.findById(1L)).willReturn(Optional.of(newLine));
 
         lineService.update(1L, lineRequest);
@@ -107,7 +107,7 @@ class LineServiceTest {
     @Test
     void update_throwsExceptionIfLineIdIsNotExisting() {
         Line line = new Line("분당선", "bg-yellow-600");
-        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor(), null, null, 0);
+        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor());
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))
                 .isInstanceOf(NotFoundIdException.class);
     }
