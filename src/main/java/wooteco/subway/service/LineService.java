@@ -158,9 +158,9 @@ public class LineService {
 
     public void deleteLine(Long id) {
         checkExistLineById(id);
-        lineDao.deleteById(id);
         final List<Section> sections = sectionDao.findByLineId(id);
         sectionDao.delete(sections);
+        lineDao.deleteById(id);
     }
 
     private void checkExistLineById(Long id) {
