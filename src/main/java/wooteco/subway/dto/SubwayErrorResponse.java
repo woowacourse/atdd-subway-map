@@ -1,8 +1,6 @@
 package wooteco.subway.dto;
 
 import java.util.stream.Collectors;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -28,13 +26,6 @@ public class SubwayErrorResponse {
                 .getFieldErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining(MESSAGE_JOINING_DELIMITER)));
-    }
-
-    public static SubwayErrorResponse from(ConstraintViolationException exception) {
-        return new SubwayErrorResponse(exception.getConstraintViolations()
-                .stream()
-                .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(MESSAGE_JOINING_DELIMITER)));
     }
 

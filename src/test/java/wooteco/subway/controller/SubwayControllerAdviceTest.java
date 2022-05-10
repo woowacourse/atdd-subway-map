@@ -2,7 +2,6 @@ package wooteco.subway.controller;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,17 +49,5 @@ class SubwayControllerAdviceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .body("message", allOf(containsString(nameNullErrorMessage), containsString(distanceNegativeErrorMessage)));
-    }
-
-    @Test
-    @DisplayName("Section삭제 시 RequestParam 양수가 아닌 값 요청할 경우 예외가 발생한다.")
-    void invalidNegativeStationIdDeleteSection() {
-        String errorMessage = "역의 id는 양수 값만 들어올 수 있습니다.";
-        RestAssured.given().log().all()
-                .when()
-                .delete("/lines/1/sections?stationId=-1")
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body("message", is(errorMessage));
     }
 }
