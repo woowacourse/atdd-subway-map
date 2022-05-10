@@ -1,0 +1,3 @@
+spring:
+  datasource:           # datasource 설정
+    driver-class-name: org.h2.Driver

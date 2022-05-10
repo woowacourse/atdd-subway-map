@@ -1,39 +1,28 @@
-<p align="center">
-    <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
-</p>
-<p align="center">
-  <a href="https://techcourse.woowahan.com/c/Dr6fhku7" alt="woowacourse subway">
-    <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fedu.nextstep.camp%2Fc%2FR89PYi5H">
-  </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/woowacourse/atdd-subway-map">
-</p>
-
-<br>
-
 # 지하철 노선도 미션
+
 스프링 과정 실습을 위한 지하철 노선도 애플리케이션
 
-<br>
+## 🚀 1단계 기능 요구 사항
 
-## 🚀 Getting Started
-### Usage
-#### application 구동
-```
-./gradlew bootRun
-```
-<br>
+### 1. 지하철 역 관리 API 기능 완성하기
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+- [x] 지하철 역을 등록할 수 있다.
+    - [x] [ERROR] 이미 등록된 이름의 지하철 역은 등록할 수 없다.
+- [x] 지하철 역을 조회할 수 있다.
+- [x] 지하철 역을 삭제할 수 있다.
 
-<br>
+### 2. 지하철 노선 관리 API 구현하기
 
-## 🐞 Bug Report
+- [x] 지하철 노선을 등록할 수 있다.
+    - [x] [ERROR] 이미 등록된 이름의 지하철 노선은 등록할 수 없다.
+- [x] 지하철 노선을 목록을 조회할 수 있다.
+- [x] 지하철 노선을 조회할 수 있다.
+    - [x] [ERROR] 존재하지 않는 지하철 노선은 조회할 수 없다.
+- [x] 지하철 노선을 수정할 수 있다.
+- [x] 지하철 노선을 삭제할 수 있다.
 
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
+## 🚀 2단계 기능 요구 사항
 
-<br>
+### 1. 스프링 JDBC 활용하여 H2 DB에 저장하기
 
-## 📝 License
-
-This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
+- [x] Dao에서 데이터를 DB에 저장한다.
