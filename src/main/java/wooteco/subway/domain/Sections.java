@@ -28,6 +28,7 @@ public class Sections {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있어 등록이 불가능합니다.");
         }
 
+        //상행 갈래길
         if (sections.stream()
                 .anyMatch(it -> it.getUpStation().equals(section.getUpStation()))) {
             final Section section1 = sections.stream()
@@ -43,6 +44,8 @@ public class Sections {
                     section1.getDistance() - section.getDistance()));
             return;
         }
+
+        //하행 갈래길
         if (sections.stream()
                 .anyMatch(it -> it.getDownStation().equals(section.getDownStation()))) {
             final Section section1 = sections.stream()
@@ -59,6 +62,7 @@ public class Sections {
             return;
         }
 
+        // 상행 종점 추가
         if (sections.stream()
                 .anyMatch(it -> it.getUpStation().equals(section.getDownStation()))) {
             final Section section1 = sections.stream()
@@ -71,6 +75,7 @@ public class Sections {
             return;
         }
 
+        // 하행 종점 추가
         if (sections.stream()
                 .anyMatch(it -> it.getDownStation().equals(section.getUpStation()))) {
             sections.add(section);
@@ -78,6 +83,20 @@ public class Sections {
         }
 
         throw new IllegalArgumentException("상행역과 하행역 둘 다 노선에 포함되어 있지 않아 등록이 불가합니다.");
+    }
+
+    public void deleteSection(Station station) {
+        if (sections.stream()
+                .anyMatch(it -> it.getUpStation().equals(station)) &&
+                sections.stream()
+                        .noneMatch(it -> it.getDownStation().equals(station))) {
+            final Section section = sections.stream()
+                    .filter(it -> it.getUpStation().equals(station))
+                    .findFirst()
+                    .orElseThrow();
+            sections.remove(section);
+            return;
+        }
     }
 
     public List<Station> getStations() {

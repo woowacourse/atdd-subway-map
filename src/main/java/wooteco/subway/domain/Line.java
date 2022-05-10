@@ -44,6 +44,10 @@ public class Line {
         sections.addSection(section);
     }
 
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
+    }
+
     public List<Station> getStations() {
         return sections.getStations();
     }
