@@ -112,7 +112,7 @@ public class Sections {
         for (Section section : sortedSections) {
             stationsId.add(section.getUpStationId());
         }
-        stationsId.add(sortedSections.get(sections.size() - 1).getDownStationId());
+        stationsId.add(sortedSections.get(sortedSections.size() - 1).getDownStationId());
 
         return stationsId;
     }

@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -37,8 +38,12 @@ public class LineService {
                 stationService.findByStationsId(sectionService.findAllStationByLineId(savedLine.getId())));
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
+    public List<LineResponse> findAll() {
+        List<Line> all = lineDao.findAll();
+        return all.stream()
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(),
+                        stationService.findByStationsId(sectionService.findAllStationByLineId(line.getId()))))
+                .collect(Collectors.toList());
     }
 
     public LineResponse findById(final Long lineId) {

@@ -1,17 +1,13 @@
 package wooteco.subway.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -29,16 +25,16 @@ public class LineController {
 //        Line line = lineService.save(lineRequest.toLine());
 //        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(LineResponse.from(line));
 //    }
-
-    @GetMapping
-    public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponse = lineService.findAll()
-                .stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(lineResponse);
-    }
+//
+//    @GetMapping
+//    public ResponseEntity<List<LineResponse>> showLines() {
+//        List<LineResponse> lineResponse = lineService.findAll()
+//                .stream()
+//                .map(LineResponse::from)
+//                .collect(Collectors.toList());
+//
+//        return ResponseEntity.ok().body(lineResponse);
+//    }
 
 //    @GetMapping("/{lineId}")
 //    public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {

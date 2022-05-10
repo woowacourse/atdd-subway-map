@@ -2,19 +2,19 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql("/sectionTestSchema.sql")
+@Sql("/lineTestSchema.sql")
 class LineServiceTest {
 
     @Autowired
@@ -41,7 +41,7 @@ class LineServiceTest {
 
         //then
         assertThat(response).extracting("id", "name", "color")
-                .containsExactly(2L, "분당선", "bg-red-600");
+                .containsExactly(1L, "분당선", "bg-red-600");
     }
 
     @Test
@@ -52,11 +52,28 @@ class LineServiceTest {
         lineService.save(분당선);
 
         //when
-        LineResponse response = lineService.findById(2L);
+        LineResponse response = lineService.findById(1L);
 
         //then
         assertThat(response).extracting("id", "name", "color")
-                .containsExactly(2L, "분당선", "bg-red-600");
+                .containsExactly(1L, "분당선", "bg-red-600");
+    }
+
+    @Test
+    @DisplayName("노선 전체 조회 테스트 ")
+    void findAll() {
+        // given
+        LineRequest 신분당선 = new LineRequest("신분당선", "yellow", 1L, 2L, 10);
+        LineRequest 분당선 = new LineRequest("분당선", "bg-red-600", 1L, 2L, 10);
+        lineService.save(신분당선);
+        lineService.save(분당선);
+
+        //when
+        List<LineResponse> response = lineService.findAll();
+
+        //then
+        assertThat(response).extracting("id", "name", "color")
+                .containsExactly(tuple(1L, "신분당선", "yellow"), tuple(2L, "분당선", "bg-red-600"));
     }
 
 /*
