@@ -36,7 +36,24 @@ public class SectionService {
     }
 
     public void deleteById(final Long lineId, final Long stationId) {
+        Sections sections = new Sections(sectionDao.getSectionByLineId(lineId));
+        sections.remove(stationId);
+
+        List<Section> stationIds = sections.getSectionContainsStation(stationId);
+        if (stationIds.size() == 1) {
+            sectionDao.deleteById(lineId, stationId);
+            return;
+        }
+
+        Section upSection = sections.getUpSection(stationId, stationIds);
+        Section downSection = sections.getDownSection(stationId, stationIds);
         sectionDao.deleteById(lineId, stationId);
+        sectionDao.save(
+                lineId,
+                downSection.getUpStationId(),
+                upSection.getDownStationId(),
+                downSection.getDistance() + upSection.getDistance()
+        );
     }
 
     public Sections getSections(final Long lineId) {
