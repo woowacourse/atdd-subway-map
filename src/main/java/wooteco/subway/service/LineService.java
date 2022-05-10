@@ -35,13 +35,11 @@ public class LineService {
         final Line line = new Line(lineRequestDto.getName(), lineRequestDto.getColor());
         try {
             final LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
-
             SectionRequestDto sectionRequestDto = new SectionRequestDto(lineRequestDto);
             final Station upStation = stationService.searchById(sectionRequestDto.getUpStationId());
             final Station downStation = stationService.searchById(sectionRequestDto.getDownStationId());
             final Section section = new Section(upStation, downStation, sectionRequestDto.getDistance());
             sectionDao.save(new SectionEntity(savedLineEntity.getId(), section));
-
             return savedLineEntity.generateLine();
         } catch (DuplicateKeyException exception) {
             throw new DuplicateLineNameException();
@@ -73,20 +71,46 @@ public class LineService {
         final Station downStation = stationService.searchById(sectionRequestDto.getDownStationId());
         final Section section = new Section(upStation, downStation, sectionRequestDto.getDistance());
         final Sections sections = new Sections(searchSectionsByLineId(line.getId()));
-        if (sections.isAddableOnMiddle(section)) {
-            // 구현해야함
+        if (sections.isAddableOnLine(section)) {
+            final Section overlapSection = sections.findOverlapSection(section);
+            registerSectionWhenOnLine(line.getId(), section, overlapSection);
             return;
         }
         sectionDao.save(new SectionEntity(lineId, section));
     }
 
+    private void registerSectionWhenOnLine(final Long lineId,
+                                           final Section section,
+                                           final Section overlapSection) {
+        if (overlapSection.isUpStationMatch(section.getUpStation())) {
+            final SectionEntity sectionEntity = new SectionEntity(
+                    overlapSection.getId(),
+                    lineId,
+                    section.getDownStation().getId(),
+                    overlapSection.getDownStation().getId(),
+                    overlapSection.getDistance() - section.getDistance());
+            sectionDao.update(sectionEntity);
+            sectionDao.save(new SectionEntity(lineId, section));
+            return;
+        }
+        final SectionEntity sectionEntity = new SectionEntity(
+                overlapSection.getId(),
+                lineId,
+                overlapSection.getUpStation().getId(),
+                section.getUpStation().getId(),
+                overlapSection.getDistance() - section.getDistance());
+        sectionDao.update(sectionEntity);
+        sectionDao.save(new SectionEntity(lineId, section));
+        return;
+    }
+
     public List<Section> searchSectionsByLineId(final Long lineId) {
         return sectionDao.findByLineId(lineId).stream()
-                .map(it -> new Section(
-                        it.getId(),
-                        stationService.searchById(it.getUpStationId()),
-                        stationService.searchById(it.getDownStationId()),
-                        it.getDistance()
+                .map(sectionEntity -> new Section(
+                        sectionEntity.getId(),
+                        stationService.searchById(sectionEntity.getUpStationId()),
+                        stationService.searchById(sectionEntity.getDownStationId()),
+                        sectionEntity.getDistance()
                 )).collect(Collectors.toList());
     }
 }

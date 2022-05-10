@@ -47,7 +47,17 @@ public class JdbcSectionDao {
                 + " where line_id = :lineId";
         final Map<String, Long> params = new HashMap<>();
         params.put("lineId", lineId);
-        SqlParameterSource source = new MapSqlParameterSource(params);
+        final SqlParameterSource source = new MapSqlParameterSource(params);
         return jdbcTemplate.query(sql, source, rowMapper);
+    }
+
+    public void update(final SectionEntity sectionEntity) {
+        final String sql = "update SECTION set"
+                + " up_station_id = :upStationId,"
+                + " down_station_id = :downStationId,"
+                + " distance = :distance"
+                + " where id = :id, line_id = :lineId";
+        final SqlParameterSource source = new BeanPropertySqlParameterSource(sectionEntity);
+        jdbcTemplate.update(sql, source);
     }
 }

@@ -15,11 +15,11 @@ public class Sections {
         this.sections = sections;
     }
 
-    public boolean isAddableOnMiddle(final Section section) {
-        final List<Station> stations = getStations();
-        validateAddableSection(section, stations);
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
+    public boolean isAddableOnLine(final Section section) {
+        final List<Station> stations = orderStations();
+        validateSectionForAdd(section, stations);
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
         if ((stations.contains(upStation) && !stations.contains(downStation)) ||
                 (!stations.contains(upStation) && stations.contains(downStation))) {
             return true;
@@ -27,18 +27,29 @@ public class Sections {
         return false;
     }
 
-    private void validateAddableSection(final Section section, final List<Station> stations) {
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-        if (!stations.contains(upStation) && !stations.contains(downStation)) {
-            throw new IllegalSectionException();
-        }
-        if (stations.contains(upStation) && stations.contains(downStation)) {
+    private void validateSectionForAdd(final Section section, final List<Station> stations) {
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
+        if ((!stations.contains(upStation) && !stations.contains(downStation)) ||
+                (stations.contains(upStation) && stations.contains(downStation))) {
             throw new IllegalSectionException();
         }
     }
 
-    public List<Station> getStations() {
+    public Section findOverlapSection(final Section section) {
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
+        final Section overlapSection = sections.stream()
+                .filter(it -> it.isContain(upStation) || it.isContain(downStation))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 겹치는 구간을 찾을 수 없습니다."));
+        if (overlapSection.getDistance() <= section.getDistance()) {
+            throw new IllegalSectionException();
+        }
+        return overlapSection;
+    }
+
+    public List<Station> orderStations() {
         final List<Station> stations = new ArrayList<>();
         final Station upTerminus = findUpTerminus();
         final Map<Station, Station> map = sections.stream()
@@ -47,9 +58,11 @@ public class Sections {
         return stations;
     }
 
-    private void collectStations(final Map<Station, Station> map, final List<Station> stations, final Station station) {
-        stations.add(station);
-        final Station nextStation = map.get(station);
+    private void collectStations(final Map<Station, Station> map,
+                                 final List<Station> stations,
+                                 final Station upTerminus) {
+        stations.add(upTerminus);
+        final Station nextStation = map.get(upTerminus);
         if (map.containsKey(nextStation)) {
             collectStations(map, stations, nextStation);
         }
@@ -59,7 +72,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> isUpTerminus(section.getUpStation()))
                 .map(Section::getUpStation)
-                .findFirst().orElseThrow(() -> new NoSuchElementException("[ERROR] 상행종점을 찾을 수 없습니다."));
+                .findFirst().orElseThrow(() -> new NoSuchElementException("[ERROR] 상행 종점을 찾을 수 없습니다."));
     }
 
     private boolean isUpTerminus(final Station upStation) {
