@@ -5,9 +5,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 @Service
 public class LineService {
@@ -16,9 +19,11 @@ public class LineService {
     static final String COLOR_DUPLICATE_EXCEPTION_MESSAGE = "색깔이 중복된 노선은 만들 수 없습니다.";
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
     }
 
     @Transactional
@@ -26,7 +31,16 @@ public class LineService {
         Line line = lineRequest.toEntity();
         validateRequest(line);
         Line newLine = lineDao.insert(line);
-        return new LineResponse(newLine);
+
+        Station upStation = stationDao.findById(lineRequest.getUpStationId());
+        Station downStation = stationDao.findById(lineRequest.getDownStationId());
+
+        StationResponse upStationResponse = new StationResponse(lineRequest.getUpStationId(), upStation.getName());
+        StationResponse downStationResponse = new StationResponse(lineRequest.getDownStationId(),
+                downStation.getName());
+
+        return new LineResponse(newLine.getId(), lineRequest.getName(), lineRequest.getColor(),
+                List.of(upStationResponse, downStationResponse));
     }
 
     private void validateRequest(Line line) {

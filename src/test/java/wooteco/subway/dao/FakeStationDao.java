@@ -39,6 +39,11 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
+    public Station findById(Long id) {
+        return stations.get(id);
+    }
+
+    @Override
     public void delete(Long id) {
         stations.remove(id);
     }
