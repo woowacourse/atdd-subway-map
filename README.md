@@ -78,10 +78,10 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ## 수정할 부분
 - [ ] dao test 시 deleteAll() 말고 다른 방법 사용
-- [ ] 이름에 대한 중복 처리를 도메인 로직으로 이동
+- [x] 이름에 대한 중복 처리를 도메인 로직으로 이동
 - 노선 추가 시
-  - [ ] upStaionId, downStaionId, distance 정보 추가 입력
-  - [ ] 두 종점간의 연결 정보를 이용해 구간(section) 정보도 함꼐 등록
+  - [x] upStaionId, downStaionId, distance 정보 추가 입력
+  - [x] 두 종점간의 연결 정보를 이용해 구간(section) 정보도 함께 등록
 
 ## 추가할 부분
 - 구간 관리

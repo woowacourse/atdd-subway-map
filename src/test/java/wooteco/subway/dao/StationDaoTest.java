@@ -45,16 +45,6 @@ public class StationDaoTest {
     }
 
     @Test
-    @DisplayName("중복된 역을 저장할 경우 예외를 발생시킨다.")
-    void save_duplicate() {
-        String expected = "선릉역";
-
-        assertThatThrownBy(() -> stationDao.save(expected))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 지하철역 이름입니다.");
-    }
-
-    @Test
     @DisplayName("모든 지하철 역을 조회한다")
     void findAll() {
         stationDao.save("잠실역");
