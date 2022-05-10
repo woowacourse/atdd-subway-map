@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,6 +60,37 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.save(duplicateLine))
                 .isInstanceOf(DuplicateNameException.class)
                 .hasMessageContaining("이미 등록된 지하철 노선이름 입니다.");
+    }
+
+    @DisplayName("노선 정보 전체를 조회한다.")
+    @Test
+    void findAll() {
+        LineRequest firstLine = new LineRequest("5호선", "green", 1L, 2L, 10);
+        LineRequest secondLine = new LineRequest("7호선", "red", 1L, 3L, 10);
+        lineService.save(firstLine);
+        lineService.save(secondLine);
+
+        List<LineResponse> lines = lineService.findLines();
+
+        assertThat(lines.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("노선 정보 조회")
+    void find() {
+        LineRequest line = new LineRequest("4호선", "red", 1L, 2L, 10);
+        LineResponse newLine = lineService.save(line);
+
+        assertThat(lineService.findLine(newLine.getId()).getName()).isEqualTo(line.getName());
+        assertThat(lineService.findLine(newLine.getId()).getColor()).isEqualTo(line.getColor());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노선정보 조회시 예외를 발생한다.")
+    void findNotExistLine() {
+        assertThatThrownBy(() -> lineService.findLine(12L))
+                .isInstanceOf(DataNotFoundException.class)
+                .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
     @Test

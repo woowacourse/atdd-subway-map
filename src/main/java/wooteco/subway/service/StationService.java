@@ -39,15 +39,6 @@ public class StationService {
                 .anyMatch(station -> station.getName().equals(stationRequest.getName()));
     }
 
-    public List<StationResponse> findStationsById(final Long upStationId, final Long downStationId) {
-        final Station upStation = stationDao.findById(upStationId);
-        final Station downStation = stationDao.findById(downStationId);
-        final StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
-        final StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
-
-        return List.of(upStationResponse, downStationResponse);
-    }
-
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()

@@ -33,7 +33,7 @@ public class LineController {
         LineResponse lineResponse = lineService.save(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
-    /*
+
     @GetMapping()
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findLines();
@@ -45,7 +45,7 @@ public class LineController {
         LineResponse lineResponse = lineService.findLine(id);
         return ResponseEntity.ok().body(lineResponse);
     }
-*/
+
     @PutMapping("/{id}")
     public ResponseEntity<Void> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);

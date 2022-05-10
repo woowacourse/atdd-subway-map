@@ -62,7 +62,6 @@ public class LineService {
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
         List<Station> stations = sections.getStations();
         return stations.stream()
-                .distinct()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
     }
@@ -74,24 +73,23 @@ public class LineService {
         return lineDao.update(id, line);
     }
 
-    /*
+
     public List<LineResponse> findLines() {
         final List<Line> lines = lineDao.findAll();
-
         return lines.stream()
-                .map(this::createLineResponse)
+                .map(line -> LineResponse.of(line, stationsOnLine(line.getId())))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLine(final Long id) {
         try {
             Line line = lineDao.findById(id);
-            return createLineResponse(line);
+            return LineResponse.of(line, stationsOnLine(line.getId()));
         } catch (EmptyResultDataAccessException e) {
             throw new DataNotFoundException("존재하지 않는 노선입니다.");
         }
     }
-     */
+
     public int deleteLine(final Long id) {
         validateExist(id);
         return lineDao.delete(id);

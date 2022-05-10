@@ -24,8 +24,8 @@ public class SectionDaoImpl implements SectionDao {
                 new Section(
                         rs.getLong("id"),
                         rs.getLong("line_id"),
-                        new Station(rs.getLong("up_station_id"), rs.getString("upstation.name")),
-                        new Station(rs.getLong("down_station_id"), rs.getString("downstation.name")),
+                        new Station(rs.getLong("up_station_id"), rs.getString("up_name")),
+                        new Station(rs.getLong("down_station_id"), rs.getString("dw_name")),
                         rs.getInt("distance"));
     }
 
@@ -47,10 +47,12 @@ public class SectionDaoImpl implements SectionDao {
 
     @Override
     public List<Section> findByLineId(long lineId) {
-        final String sql = "select * from section "
-                + "join station as upstation on upstation.id = section.up_station_id"
-                + "join station as downstation on downstation.id = section.down_station_id"
-                + "where line_id = (?)";
+        final String sql =
+                "select section.id as id, line_id, up_station_id, down_station_id, distance, "
+                        + "upstation.name as up_name, downstation.name as dw_name from section "
+                        + "join station as upstation on upstation.id = section.up_station_id "
+                        + "join station as downstation on downstation.id = section.down_station_id "
+                        + "where line_id = (?);";
         return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
     }
 }

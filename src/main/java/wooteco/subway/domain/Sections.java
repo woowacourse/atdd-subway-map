@@ -3,7 +3,6 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import wooteco.subway.dto.StationResponse;
 
 public class Sections {
 
@@ -19,6 +18,8 @@ public class Sections {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         }
-        return stations;
+        return stations.stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
