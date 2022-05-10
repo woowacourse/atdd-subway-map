@@ -94,4 +94,9 @@ public class LineService {
             throw new NoSuchElementException(NOT_EXIST_ERROR);
         }
     }
+
+    public void createSection(Long lineId, SectionRequest sectionRequest) {
+        checkLineExist(lineDao.findById(lineId));
+        sectionService.createSection(lineId, sectionRequest);
+    }
 }
