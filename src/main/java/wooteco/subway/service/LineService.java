@@ -21,7 +21,7 @@ public class LineService {
         validateNameDuplication(lineRequest.getName());
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        return LineResponse.of(newLine);
     }
 
     private void validateNameDuplication(String name) {
@@ -33,14 +33,14 @@ public class LineService {
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     public LineResponse find(Long id) {
         validateExistence(id);
         Line line = lineDao.find(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return LineResponse.of(line);
     }
 
     public void update(Long id, LineRequest lineRequest) {
