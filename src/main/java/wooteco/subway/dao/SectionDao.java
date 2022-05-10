@@ -71,22 +71,12 @@ public class SectionDao {
         jdbcTemplate.update(sql, paramSource);
     }
 
-    public void deleteByLineIdAndUpStationId(Long lineId, Long upStationId) {
-        final String sql = "DELETE FROM section "
-                + "WHERE line_id = :lineId AND up_station_id = :upStationId";
+    public void deleteAllByLineIdAndStationId(Long lineId, Long stationId) {
+        final String sql = "DELETE FROM section WHERE line_id = :lineId "
+                + "AND (up_station_id = :stationId OR down_station_id = :stationId)";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("lineId", lineId);
-        paramSource.addValue("upStationId", upStationId);
-
-        jdbcTemplate.update(sql, paramSource);
-    }
-
-    public void deleteByLineIdAndDownStationId(Long lineId, Long downStationId) {
-        final String sql = "DELETE FROM section "
-                + "WHERE line_id = :lineId AND down_station_id = :downStationId";
-        MapSqlParameterSource paramSource = new MapSqlParameterSource();
-        paramSource.addValue("lineId", lineId);
-        paramSource.addValue("downStationId", downStationId);
+        paramSource.addValue("stationId", stationId);
 
         jdbcTemplate.update(sql, paramSource);
     }

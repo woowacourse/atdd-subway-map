@@ -20,6 +20,7 @@ class SectionDaoTest extends DaoTest {
     private static final StationEntity STATION1 = new StationEntity(1L, "이미 존재하는 역 이름");
     private static final StationEntity STATION2 = new StationEntity(2L, "선릉역");
     private static final StationEntity STATION3 = new StationEntity(3L, "잠실역");
+
     @Autowired
     private SectionDao dao;
 
@@ -70,13 +71,23 @@ class SectionDaoTest extends DaoTest {
         }
     }
 
-    @DisplayName("deleteXXX 메서드들은 해당되는 데이터를 삭제한다")
+    @Test
+    void deleteAllByLineId_메서드는_노선에_해당되는_모든_구간_데이터를_삭제() {
+        dao.deleteAllByLineId(1L);
+
+        boolean exists = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM section WHERE line_id = 1", Integer.class) > 0;
+
+        assertThat(exists).isFalse();
+    }
+
+    @DisplayName("deleteAllByLineIdAndStationId 메서드들은 특정 지하철 역을 상행역 혹은 하행역으로 포함하는 구간을 모두 삭제한다")
     @Nested
-    class DeleteTest {
+    class DeleteAllByLineIdAndStationIdTest {
 
         @Test
-        void deleteAllByLineId_메서드는_노선에_해당되는_모든_구간_데이터를_삭제() {
-            dao.deleteAllByLineId(1L);
+        void deleteByLineIdAndUpStationId_메서드는_노선에서_상행역에_해당되는_데이터를_삭제() {
+            dao.deleteAllByLineIdAndStationId(1L, 2L);
 
             boolean exists = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM section WHERE line_id = 1", Integer.class) > 0;
@@ -85,35 +96,9 @@ class SectionDaoTest extends DaoTest {
         }
 
         @Test
-        void deleteByLineIdAndUpStationId_메서드는_노선에서_상행역에_해당되는_데이터를_삭제() {
-            dao.deleteByLineIdAndUpStationId(1L, 1L);
-
-            boolean exists = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM section WHERE id = 1", Integer.class) > 0;
-
-            assertThat(exists).isFalse();
-        }
-
-        @Test
-        void deleteByLineIdAndDownStationId_메서드는_노선에서_하행역에_해당되는_데이터를_삭제() {
-            dao.deleteByLineIdAndDownStationId(1L, 3L);
-
-            boolean exists = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM section "
-                    + "WHERE line_id = 1 AND id = 3", Integer.class) > 0;
-
-            assertThat(exists).isFalse();
-        }
-
-        @Test
-        void 존재하지_않는_상행역의_id가_입력되더라도_결과는_동일하므로_예외_미발생() {
+        void 존재하지_않는_노선_및_지하철역의_id가_입력되더라도_결과는_동일하므로_예외_미발생() {
             assertThatNoException()
-                    .isThrownBy(() -> dao.deleteByLineIdAndUpStationId(999L, 999L));
-        }
-
-        @Test
-        void 존재하지_않는_하행역의_id가_입력되더라도_결과는_동일하므로_예외_미발생() {
-            assertThatNoException()
-                    .isThrownBy(() -> dao.deleteByLineIdAndDownStationId(999L, 999L));
+                    .isThrownBy(() -> dao.deleteAllByLineIdAndStationId(999L, 999L));
         }
     }
 }
