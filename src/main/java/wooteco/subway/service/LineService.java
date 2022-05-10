@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.FullStationDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.SectionViewDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
@@ -32,15 +33,18 @@ public class LineService {
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
+    private final SectionViewDao sectionViewDao;
     private final FullStationDao fullStationDao;
 
     public LineService(LineDao lineDao,
                        StationDao stationDao,
                        SectionDao sectionDao,
+                       SectionViewDao sectionViewDao,
                        FullStationDao fullStationDao) {
         this.lineDao = lineDao;
         this.stationDao = stationDao;
         this.sectionDao = sectionDao;
+        this.sectionViewDao = sectionViewDao;
         this.fullStationDao = fullStationDao;
     }
 
@@ -58,7 +62,7 @@ public class LineService {
     // TODO: sort stations in order &/or select with JOIN
     public LineResponse find(Long id) {
         LineEntity lineEntity = findExistingLine(id);
-        List<StationEntity> stations = new Sections(sectionDao.findAllByLineId(id)).getStations();
+        List<StationEntity> stations = new Sections(sectionViewDao.findAllByLineId(id)).getStations();
         return toLineResponse(lineEntity, stations);
     }
 

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.SectionViewDao;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
@@ -31,7 +31,7 @@ class LineServiceTest extends ServiceTest {
     private LineDao lineDao;
 
     @Autowired
-    private SectionDao sectionDao;
+    private SectionViewDao sectionViewDao;
 
     @Test
     void findAll_메서드는_모든_데이터를_노선의_id_순서대로_조회() {
@@ -177,7 +177,7 @@ class LineServiceTest extends ServiceTest {
             service.delete(1L);
 
             boolean lineNotFound = lineDao.findById(1L).isEmpty();
-            List<?> sectionsConnectedToLine = sectionDao.findAllByLineId(1L);
+            List<?> sectionsConnectedToLine = sectionViewDao.findAllByLineId(1L);
 
             assertThat(lineNotFound).isTrue();
             assertThat(sectionsConnectedToLine).isEmpty();
