@@ -17,6 +17,8 @@ public interface SectionDao {
 
     Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId);
 
+    void deleteById(Long id);
+
     void deleteAllByLineId(Long id);
 
     void deleteByLineIdAndStationId(Long lineId, Long stationId);

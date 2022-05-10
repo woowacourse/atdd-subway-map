@@ -945,7 +945,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Sql(value = "/sql/InsertTwoSections.sql")
     @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 됨")
     @Test
-    void deleteSection() {
+    void deleteSectionTerminal() {
         /*
         이미 등록된 노선 아이디 : 1
         이미 등록된 역 아이디 : 1, 2, 3, 4
@@ -977,6 +977,44 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(stations).hasSize(2),
                 () -> assertThat(stations.get(0).getId()).isEqualTo(1L),
                 () -> assertThat(stations.get(1).getId()).isEqualTo(2L)
+        );
+    }
+
+    @Sql(value = "/sql/InsertTwoSections.sql")
+    @DisplayName("중간역이 제거될 경우 재배치를 함")
+    @Test
+    void deleteSectionWhenFork() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3, 4
+        구간 등록된 역 아이디 : (1, 2), (2, 3)
+        역 사이 거리 : 10, 10
+         */
+        // given
+        Long lineId = 1L;
+        Long stationId = 2L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+        List<Station> stations = findResponse.body().jsonPath().getList("stations", Station.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(3L)
         );
     }
 }

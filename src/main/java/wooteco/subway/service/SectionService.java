@@ -80,10 +80,31 @@ public class SectionService {
 
         if (sections.isTerminal(stationId)) {
             sectionDao.deleteByLineIdAndStationId(lineId, stationId);
+            return;
         }
+        deleteStationWhenForkSection(lineId, stationId);
     }
 
     private boolean containsIdInSections(Long stationId, Sections sections) {
         return sections.getSortedStationId().contains(stationId);
+    }
+
+    private void deleteStationWhenForkSection(Long lineId, Long stationId) {
+        Optional<Section> findUpStation = sectionDao.findByLineIdAndUpStationId(lineId, stationId);
+        Optional<Section> findDownStation = sectionDao.findByLineIdAndDownStationId(lineId, stationId);
+
+        if (findUpStation.isEmpty() || findDownStation.isEmpty()) {
+            throw new IllegalStateException("구간 정보가 잘못되었습니다.");
+        }
+
+        Section upStation = findUpStation.get();
+        Section downStation = findDownStation.get();
+
+        sectionDao.update(downStation.getId(), new Section(
+                lineId,
+                downStation.getUpStationId(),
+                upStation.getDownStationId(),
+                upStation.getDistance() + downStation.getDistance()));
+        sectionDao.deleteById(upStation.getId());
     }
 }
