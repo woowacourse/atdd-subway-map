@@ -145,10 +145,4 @@ class LineDaoTest {
         // then
         assertThat(isDeleted).isFalse();
     }
-
-    @AfterEach
-    void setDown() {
-        final String sql = "DELETE FROM line";
-        jdbcTemplate.update(sql);
-    }
 }

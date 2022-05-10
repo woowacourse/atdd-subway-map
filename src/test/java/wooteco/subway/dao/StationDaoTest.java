@@ -101,9 +101,4 @@ class StationDaoTest {
         // then
         assertThat(isDeleted).isFalse();
     }
-
-    @AfterEach
-    void setDown() {
-        jdbcTemplate.update("DELETE FROM station");
-    }
 }
