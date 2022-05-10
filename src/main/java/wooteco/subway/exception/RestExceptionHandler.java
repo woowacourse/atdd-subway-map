@@ -15,7 +15,8 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ErrorDto> handleException() {
+    public ResponseEntity<ErrorDto> handleException(Exception exception) {
+        exception.printStackTrace();
         return ResponseEntity.internalServerError().body(new ErrorDto("서버 내에 오류가 발생했습니다."));
     }
 }

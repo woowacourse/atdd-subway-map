@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
@@ -41,32 +43,43 @@ public class LineControllerTest {
     @MockBean
     private LineService lineService;
 
+    @BeforeEach
+    void init() {
+
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine() throws Exception {
+    void createLineV2() throws Exception {
         // given
-        LineRequest test = new LineRequest("test", "GREEN");
+        LineRequest test = new LineRequest("신림역", "GREEN", 1L, 2L, 5);
         given(lineService.save(any(LineRequest.class)))
-                .willReturn(LineResponse.of(new Line(1L, "test", "GREEN")));
-        // when
+                .willReturn(LineResponse.of(new Line(1L, "신림역", "GREEN"),
+                        List.of(new Station(1L, "신림역"), new Station(2L, "봉천역"))));
+        // when₩
         ResultActions perform = mockMvc.perform(post("/lines")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(test)));
         // then
         perform.andExpect(status().isCreated())
                 .andExpect(jsonPath("id").value(1))
-                .andExpect(jsonPath("name").value("test"))
+                .andExpect(jsonPath("name").value("신림역"))
                 .andExpect(jsonPath("color").value("GREEN"))
+                .andExpect(jsonPath("stations[0].id").value(1L))
+                .andExpect(jsonPath("stations[0].name").value("신림역"))
+                .andExpect(jsonPath("stations[1].id").value(2L))
+                .andExpect(jsonPath("stations[1].name").value("봉천역"))
                 .andExpect(header().stringValues("Location", "/lines/1"));
     }
+
 
     @DisplayName("지하철 노선 생성 시 이름이 중복된다면 에러를 응답한다.")
     @Test
     void createLine_duplication_exception() throws Exception {
         // given
-        LineRequest test = new LineRequest("test", "GREEN");
+        LineRequest test = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
         given(lineService.save(any(LineRequest.class)))
-                .willThrow(new IllegalArgumentException("test : 이름이 중복되는 지하철 노선이 존재합니다."));
+                .willThrow(new IllegalArgumentException("2호선 : 이름이 중복되는 지하철 노선이 존재합니다."));
         // when
         ResultActions perform = mockMvc.perform(post("/lines")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +87,7 @@ public class LineControllerTest {
         // then
         perform.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("message").value("test : 이름이 중복되는 지하철 노선이 존재합니다.")
+                jsonPath("message").value("2호선 : 이름이 중복되는 지하철 노선이 존재합니다.")
         );
     }
 
@@ -102,7 +115,6 @@ public class LineControllerTest {
         );
     }
 
-    //
     @DisplayName("id를 이용해 지하철 노선을 조회한다.")
     @Test
     void getLine() throws Exception {
@@ -167,7 +179,7 @@ public class LineControllerTest {
     @Test
     void updateLine() throws Exception {
         // given
-        LineRequest updateRequest = new LineRequest("9호선", "GREEN");
+        LineRequest updateRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -183,7 +195,7 @@ public class LineControllerTest {
     @Test
     void updateLine_noExistLine_Exception() throws Exception {
         // given
-        LineRequest updateRequest = new LineRequest("9호선", "GREEN");
+        LineRequest updateRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
         given(lineService.update(anyLong(), any(LineRequest.class)))
                 .willThrow(new IllegalArgumentException("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
         // when
@@ -201,9 +213,9 @@ public class LineControllerTest {
     @Test
     void updateLine_duplicateName_Exception() throws Exception {
         // given
-        LineRequest updateRequest = new LineRequest("9호선", "GREEN");
+        LineRequest updateRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
         given(lineService.update(anyLong(), any(LineRequest.class)))
-                .willThrow(new IllegalArgumentException("9호선 : 이름이 중복되는 지하철 노선이 존재합니다."));
+                .willThrow(new IllegalArgumentException("2호선 : 이름이 중복되는 지하철 노선이 존재합니다."));
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -211,7 +223,7 @@ public class LineControllerTest {
         // then
         perform.andExpectAll(
                 status().isBadRequest(),
-                jsonPath("message").value("9호선 : 이름이 중복되는 지하철 노선이 존재합니다.")
+                jsonPath("message").value("2호선 : 이름이 중복되는 지하철 노선이 존재합니다.")
         );
     }
 }

@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.StringFormat;
 
 @Service
@@ -16,9 +21,13 @@ public class LineService {
     private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "해당 ID의 지하철 노선이 존재하지 않습니다.";
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     public LineResponse save(LineRequest lineRequest) {
@@ -27,7 +36,15 @@ public class LineService {
                     StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
         Line newLine = lineDao.save(lineRequest.toEntity());
-        return LineResponse.of(newLine);
+        Station up = stationDao.findById(lineRequest.getUpStationId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+        Station down = stationDao.findById(lineRequest.getDownStationId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+
+        sectionDao.save(newLine.getId(), new Section(up, down, lineRequest.getDistance()));
+
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(),
+                List.of(new StationResponse(up), new StationResponse(down)));
     }
 
     public List<LineResponse> findAll() {

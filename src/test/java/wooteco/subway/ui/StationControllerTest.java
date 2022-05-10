@@ -48,7 +48,7 @@ public class StationControllerTest {
     void createStation() throws Exception {
         // given
         given(stationService.save(any(StationRequest.class)))
-                .willReturn(StationResponse.of(romaStation));
+                .willReturn(new StationResponse(romaStation));
         // when
         ResultActions perform = mockMvc.perform(post("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +85,7 @@ public class StationControllerTest {
         // given
         Station brownStation = new Station(2L, "brown");
         given(stationService.findAll())
-                .willReturn(List.of(StationResponse.of(romaStation), StationResponse.of(brownStation)));
+                .willReturn(List.of(new StationResponse(romaStation), new StationResponse(brownStation)));
         // when
         ResultActions perform = mockMvc.perform(get("/stations"));
         // then

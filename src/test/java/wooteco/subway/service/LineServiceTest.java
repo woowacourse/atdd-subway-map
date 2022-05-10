@@ -17,15 +17,26 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
 
     @Mock
     private LineDao lineDao;
+
+    @Mock
+    private SectionDao sectionDao;
+
+    @Mock
+    private StationDao stationDao;
 
     @InjectMocks
     private LineService lineService;
@@ -34,18 +45,29 @@ class LineServiceTest {
     @Test
     void save() {
         // given
-        LineRequest testRequest = new LineRequest("test", "GREEN");
+        LineRequest testRequest = new LineRequest("test", "GREEN", 1L, 2L, 5);
         when(lineDao.findByName("test"))
                 .thenReturn(Optional.empty());
         when(lineDao.save(any(Line.class)))
                 .thenReturn(new Line(1L, testRequest.getName(), testRequest.getColor()));
+        when(stationDao.findById(1L))
+                .thenReturn(Optional.of(new Station(1L, "신림역")));
+        when(stationDao.findById(2L))
+                .thenReturn(Optional.of(new Station(2L, "봉천역")));
         // when
         LineResponse result = lineService.save(testRequest);
         // then
+        List<StationResponse> stations = result.getStations();
         assertAll(
+                () -> verify(sectionDao).save(anyLong(), any(Section.class)),
                 () -> assertThat(result.getId()).isEqualTo(1),
                 () -> assertThat(result.getName()).isEqualTo("test"),
-                () -> assertThat(result.getColor()).isEqualTo("GREEN")
+                () -> assertThat(result.getColor()).isEqualTo("GREEN"),
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(stations.get(0).getName()).isEqualTo("신림역"),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(2L),
+                () -> assertThat(stations.get(1).getName()).isEqualTo("봉천역")
         );
     }
 
@@ -53,13 +75,13 @@ class LineServiceTest {
     @Test
     void save_duplication_exception() {
         // given
-        LineRequest testRequest = new LineRequest("test", "GREEN");
-        when(lineDao.findByName("test"))
+        LineRequest testRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
+        when(lineDao.findByName("2호선"))
                 .thenReturn(Optional.of(new Line(1L, testRequest.getName(), testRequest.getColor())));
         // then
         assertThatThrownBy(() -> lineService.save(testRequest))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("test : 이름이 중복되는 지하철 노선이 존재합니다.");
+                .hasMessage("2호선 : 이름이 중복되는 지하철 노선이 존재합니다.");
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -140,10 +162,10 @@ class LineServiceTest {
     @Test
     void update() {
         // given
-        LineRequest updateRequest = new LineRequest("after", "GREEN");
+        LineRequest updateRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
         when(lineDao.findById(1L))
-                .thenReturn(Optional.of(new Line(1L, "test", "GRAY")));
-        when(lineDao.findByName("after"))
+                .thenReturn(Optional.of(new Line(1L, "2호선", "GREEN")));
+        when(lineDao.findByName("2호선"))
                 .thenReturn(Optional.empty());
         // when
         lineService.update(1L, updateRequest);
@@ -155,7 +177,7 @@ class LineServiceTest {
     @Test
     void updateLine_noExistLine_Exception() {
         // given
-        LineRequest updateRequest = new LineRequest("9호선", "GREEN");
+        LineRequest updateRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
         when(lineDao.findById(1L))
                 .thenReturn(Optional.empty());
         // then
@@ -168,14 +190,14 @@ class LineServiceTest {
     @Test
     void updateLine_duplicateName_Exception() {
         // given
-        LineRequest updateRequest = new LineRequest("9호선", "GREEN");
+        LineRequest updateRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
         when(lineDao.findById(1L))
                 .thenReturn(Optional.of(new Line(1L, "11호선", "GRAY")));
-        when(lineDao.findByName("9호선"))
+        when(lineDao.findByName("2호선"))
                 .thenReturn(Optional.of(new Line(2L, "9호선", "BLUE")));
         // then
         assertThatThrownBy(() -> lineService.update(1L, updateRequest))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("9호선 : 이름이 중복되는 지하철 노선이 존재합니다.");
+                .hasMessage("2호선 : 이름이 중복되는 지하철 노선이 존재합니다.");
     }
 }

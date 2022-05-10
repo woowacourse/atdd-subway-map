@@ -18,7 +18,7 @@ public class Section {
     }
 
     public Section slice(Section insertSection) {
-        if (downStation.equals(insertSection.downStation)) {
+        if (isDownStation(insertSection.downStation)) {
             return new Section(upStation, insertSection.upStation, distance - insertSection.distance);
         }
         return new Section(insertSection.downStation, downStation, distance - insertSection.distance);
@@ -74,6 +74,18 @@ public class Section {
 
     public boolean isShortAndEqualDistanceThan(Section section) {
         return distance <= section.distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override

@@ -24,7 +24,6 @@ public class StationDao {
                 .withTableName("STATION")
                 .usingGeneratedKeyColumns("id");
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-
     }
 
     public Station save(Station station) {

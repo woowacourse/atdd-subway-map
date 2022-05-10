@@ -25,13 +25,13 @@ public class StationService {
         }
         Station station = stationRequest.toEntity();
         Station newStation = stationDao.save(station);
-        return StationResponse.of(newStation);
+        return new StationResponse(newStation);
     }
 
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(StationResponse::of)
+                .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
     }
 

@@ -78,11 +78,17 @@
            - 만일 A-B-C 에서 B 역을 제거할 경우 B가 포함된 `A-B`, `B-C`를 제거하고 `A-C` 구간을 새로 생성한다.
              - 이 때, 거리는 `A-B 구간의 거리 + B-C 구간의 거리`
 2. 지하철 노선 추가 API 수정 `POST /lines`
-   - [ ] 노선 추가 시 구간 정보를 함께 등록한다.
+   - [x] 노선 추가 시 구간 정보를 함께 등록한다.
      - 결과 상태 코드는 `200 OK` 이다.
      - `요청` json으로 name, color, upStationId, downStationId, distance를 받는다.
      - `응답` json으로 id, name, color, stations(station 리스트)를 반환한다.
      - stations의 요소는 station의 id, name을 각각 가진다.
+   - [ ] 노선 조회 시 노선에 해당하는 역 목록도 추가로 조회한다. `GET /lines/{id}`
+     - 결과 상태 코드는 `200 OK` 이다.
+     - `응답` id, name, color, stations(station의 리스트)를 반환한다.
+   - [ ] 노선 목록 조회 시 노선에 해당하는 역 목록도 추가로 조회한다. `GET /lines`
+     - 결과 상태 코드는 `200 OK` 이다.
+     - `응답` id, name, color, stations를 요소로 가지는 리스트를 반환한다.
 3. 구간 관리 API 구현
     - [ ] 구간 추가 기능 노선에 구간을 추가 (`POST /lines/{line_id}/sections`)
       - 결과 상태 코드는 `200 OK` 이다.
@@ -95,12 +101,6 @@
         - 거리도 새로 할당해주어야한다.
       - `예외` 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.
       - `예외` 상행역, 하행역 둘 중 하나도 노선에 포함되있지 않으면 추가할 수 없다.
-    - [ ] 노선 조회 시 노선에 해당하는 역 목록도 추가로 조회한다. `GET /lines/{id}`
-      - 결과 상태 코드는 `200 OK` 이다.
-      - `응답` id, name, color, stations(station의 리스트)를 반환한다.
-    - [ ] 노선 목록 조회 시 노선에 해당하는 역 목록도 추가로 조회한다. `GET /lines`
-      - 결과 상태 코드는 `200 OK` 이다.
-      - `응답` id, name, color, stations를 요소로 가지는 리스트를 반환한다.
     - [ ] 구간을 제거한다 (`DELETE /lines/{line_id}/sections?stationId={station_id})
       - 결과 상태 코드는 `200 OK` 이다. 
       - 구간에서 해당 station이 포함된 구간을 제거한다.
