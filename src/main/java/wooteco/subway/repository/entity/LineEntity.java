@@ -18,10 +18,6 @@ public class LineEntity {
         this(line.getId(), line.getName(), line.getColor());
     }
 
-    public Line generateLine() {
-        return new Line(id, name, color);
-    }
-
     public LineEntity fillId(final Long id) {
         return new LineEntity(id, name, color);
     }

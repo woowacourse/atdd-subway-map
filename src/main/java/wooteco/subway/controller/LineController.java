@@ -1,7 +1,6 @@
 package wooteco.subway.controller;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
@@ -31,17 +30,16 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponseDto> createLine(@RequestBody final LineRequestDto lineRequestDto) {
-        final Line newLine = lineService.registerLine(lineRequestDto);
-        final LineResponseDto lineResponseDto =
-                new LineResponseDto(newLine.getId(), newLine.getName(), newLine.getColor(), new ArrayList<>());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponseDto);
+        final Line line = lineService.registerLine(lineRequestDto);
+        final LineResponseDto lineResponseDto = LineResponseDto.of(line);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponseDto);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponseDto>> showLines() {
         final List<Line> lines = lineService.searchAllLines();
         final List<LineResponseDto> lineResponseDtos = lines.stream()
-                .map(line -> new LineResponseDto(line.getId(), line.getName(), line.getColor(), new ArrayList<>()))
+                .map(line -> LineResponseDto.of(line))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponseDtos);
     }
@@ -49,8 +47,8 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponseDto> showLine(@PathVariable final Long id) {
         final Line line = lineService.searchLineById(id);
-        return ResponseEntity.ok()
-                .body(new LineResponseDto(line.getId(), line.getName(), line.getColor(), new ArrayList<>()));
+        final LineResponseDto lineResponseDto = LineResponseDto.of(line);
+        return ResponseEntity.ok().body(lineResponseDto);
     }
 
     @PutMapping("/{id}")
@@ -67,8 +65,8 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity createSection(@PathVariable final Long lineId,
-                                        @RequestBody final SectionRequestDto sectionRequestDto) {
+    public ResponseEntity<Void> createSection(@PathVariable final Long lineId,
+                                              @RequestBody final SectionRequestDto sectionRequestDto) {
         lineService.registerSection(lineId, sectionRequestDto);
         return ResponseEntity.ok().build();
     }

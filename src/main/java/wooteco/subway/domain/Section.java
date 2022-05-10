@@ -40,13 +40,6 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public boolean isContain(final Station station) {
-        if (isUpStationMatch(station) || isDownStationMatch(station)) {
-            return true;
-        }
-        return false;
-    }
-
     public Long getId() {
         return id;
     }

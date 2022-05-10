@@ -23,14 +23,15 @@ public class StationService {
         final Station station = new Station(stationRequestDto.getName());
         try {
             final StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
-            return savedStationEntity.generateStation();
+            return new Station(savedStationEntity.getId(), savedStationEntity.getName());
         } catch (DuplicateKeyException exception) {
             throw new DuplicateStationNameException();
         }
     }
 
     public Station searchById(final Long id) {
-        return stationDao.findById(id).generateStation();
+        final StationEntity stationEntity = stationDao.findById(id);
+        return new Station(stationEntity.getId(), stationEntity.getName());
     }
 
     public List<Station> searchAll() {

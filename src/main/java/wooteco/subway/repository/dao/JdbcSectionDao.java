@@ -56,7 +56,7 @@ public class JdbcSectionDao {
                 + " up_station_id = :upStationId,"
                 + " down_station_id = :downStationId,"
                 + " distance = :distance"
-                + " where id = :id, line_id = :lineId";
+                + " where id = :id and line_id = :lineId";
         final SqlParameterSource source = new BeanPropertySqlParameterSource(sectionEntity);
         jdbcTemplate.update(sql, source);
     }
