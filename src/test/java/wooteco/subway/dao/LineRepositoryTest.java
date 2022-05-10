@@ -7,14 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import wooteco.subway.domain.Line;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 public class LineRepositoryTest extends RepositoryTest {
-
-    @Autowired
-    private LineRepository lineRepository;
 
     @DisplayName("노선을 저장한다.")
     @Test

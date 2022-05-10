@@ -7,15 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import wooteco.subway.domain.Station;
 import wooteco.subway.utils.exception.IdNotFoundException;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 class StationRepositoryTest extends RepositoryTest {
-
-    @Autowired
-    private StationRepository stationRepository;
 
     @DisplayName("역을 저장한다.")
     @Test
@@ -24,8 +20,8 @@ class StationRepositoryTest extends RepositoryTest {
         Station savedStation = stationRepository.save(station);
 
         assertAll(
-            () -> assertThat(savedStation.getId()).isNotNull(),
-            () -> assertThat(savedStation.isSameName(station.getName())).isTrue()
+                () -> assertThat(savedStation.getId()).isNotNull(),
+                () -> assertThat(savedStation.isSameName(station.getName())).isTrue()
         );
     }
 
