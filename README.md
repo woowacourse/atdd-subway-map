@@ -76,7 +76,6 @@
 - 상행선, 하행선을 반환할 수 있다.
 - 입력된 지하철역이 상행선인지 알려준다.
 
-
 ## 🚀 Getting Started
 ### Usage
 #### application 구동
