@@ -13,14 +13,6 @@ public class Line {
     private Line() {
     }
 
-    public Line(Long id, String name, String color) {
-        validateNameNotEmpty(name);
-        validateColorNotEmpty(color);
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
     public Line(String name, String color) {
         validateNameNotEmpty(name);
         validateColorNotEmpty(color);
@@ -28,21 +20,19 @@ public class Line {
         this.color = color;
     }
 
+    public Line(Long id, String name, String color) {
+        this(name, color);
+        this.id = id;
+    }
+
     public Line(String name, String color, Sections sections) {
-        validateNameNotEmpty(name);
-        validateColorNotEmpty(color);
-        this.name = name;
-        this.color = color;
+        this(name, color);
         this.sections = sections;
     }
 
     public Line(Long id, String name, String color, Sections sections) {
-        validateNameNotEmpty(name);
-        validateColorNotEmpty(color);
+        this(name, color, sections);
         this.id = id;
-        this.name = name;
-        this.color = color;
-        this.sections = sections;
     }
 
     public List<Station> getStations() {

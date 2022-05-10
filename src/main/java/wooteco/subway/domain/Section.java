@@ -10,21 +10,17 @@ public class Section {
     private final Station down;
     private final int distance;
 
-    public Section(Long id, Station up, Station down, int distance) {
-        validateStationsNotEqual(up, down);
-        validateDistanceIsNatural(distance);
-        this.id = id;
-        this.up = up;
-        this.down = down;
-        this.distance = distance;
-    }
-
     public Section(Station up, Station down, int distance) {
         validateStationsNotEqual(up, down);
         validateDistanceIsNatural(distance);
         this.up = up;
         this.down = down;
         this.distance = distance;
+    }
+
+    public Section(Long id, Station up, Station down, int distance) {
+        this(up, down, distance);
+        this.id = id;
     }
 
     public boolean isSameUpStation(Section section) {
