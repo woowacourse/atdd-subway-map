@@ -12,12 +12,12 @@ public class SectionsTest {
     @DisplayName("섹션들에서 역 id 찾기")
     void findStationIds() {
         // given
-        Section section1 = new Section(1, 2, 10);
-        Section section2 = new Section(2, 3, 10);
+        Section section1 = new Section(1L, 1L, 2L, 10);
+        Section section2 = new Section(1L, 2L, 3L, 10);
         Sections sections = Sections.of(section1, section2);
 
         // when
-        List<Long> ids = sections.findIds();
+        List<Long> ids = sections.findStationIds();
 
         // then
         assertThat(ids).containsOnly(1L, 2L, 3L);

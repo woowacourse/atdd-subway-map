@@ -18,8 +18,8 @@ class SectionTest {
     @DisplayName("구간을 다른 구간으로 쪼개기")
     void insert_divide() {
         // given
-        Section section = new Section(1L, 2L, 4);
-        Section sectionForDivide = new Section(1L, 3L, 1);
+        Section section = new Section(1L, 1L, 2L, 4);
+        Section sectionForDivide = new Section(1L, 1L, 3L, 1);
 
         // when
         List<Section> dividedSections = section.insert(sectionForDivide);
@@ -27,15 +27,15 @@ class SectionTest {
         // then
         assertThat(dividedSections).hasSize(2);
         assertThat(dividedSections)
-                .containsOnly(new Section(3L, 2L, 3), sectionForDivide);
+                .containsOnly(new Section(1L, 3L, 2L, 3), sectionForDivide);
     }
 
     @Test
     @DisplayName("구간을 다른 구간으로 연장하기")
     void insert_add() {
         // given
-        Section section = new Section(1L, 2L, 4);
-        Section sectionForAdd = new Section(2L, 3L, 1);
+        Section section = new Section(1L, 1L, 2L, 4);
+        Section sectionForAdd = new Section(1L, 2L, 3L, 1);
 
         // when
         List<Section> addedSections = section.insert(sectionForAdd);
@@ -50,8 +50,8 @@ class SectionTest {
     @DisplayName("연결할 역이 없는 경우 예외 생성하기")
     void insert_invalidNotMatch() {
         // given
-        Section section = new Section(1L, 2L, 4);
-        Section sectionForAdd = new Section(3L, 4L, 1);
+        Section section = new Section(1L, 1L, 2L, 4);
+        Section sectionForAdd = new Section(1L, 3L, 4L, 1);
 
         // when
         assertThatThrownBy(() -> section.insert(sectionForAdd))
@@ -63,8 +63,8 @@ class SectionTest {
     @DisplayName("삽입되는 구간이 쪼개지는 구간 길이보다 긴 경우 예외 생성하기")
     void insert_invalidDistance() {
         // given
-        Section section = new Section(1L, 2L, 4);
-        Section sectionForAdd = new Section(1L, 3L, 4);
+        Section section = new Section(1L, 1L, 2L, 4);
+        Section sectionForAdd = new Section(1L, 1L, 3L, 4);
 
         // when
         assertThatThrownBy(() -> section.insert(sectionForAdd))
@@ -76,8 +76,8 @@ class SectionTest {
     @DisplayName("같은 출발점과 도착점을 삽입하려는 경우 예외 생성하기")
     void insert_invalidSection() {
         // given
-        Section section = new Section(1L, 2L, 4);
-        Section sectionForAdd = new Section(1L, 2L, 5);
+        Section section = new Section(1L, 1L, 2L, 4);
+        Section sectionForAdd = new Section(1L, 1L, 2L, 5);
 
         // when
         assertThatThrownBy(() -> section.insert(sectionForAdd))
@@ -99,14 +99,14 @@ class SectionTest {
     private static Stream<Arguments> provideSectionsForMergeTest() {
         return Stream.of(
                 Arguments.of(
-                        new Section(1, 2, 4),
-                        new Section(2, 3, 5),
-                        new Section(1, 3, 9)
+                        new Section(1L,1L, 2L, 4),
+                        new Section(1L, 2L, 3L, 5),
+                        new Section(1L, 1L, 3L, 9)
                 ),
                 Arguments.of(
-                        new Section(2, 3, 5),
-                        new Section(1, 2, 4),
-                        new Section(1, 3, 9)
+                        new Section(1L, 2L, 3L, 5),
+                        new Section(1L, 1L, 2L, 4),
+                        new Section(1L, 1L, 3L, 9)
                 )
         );
     }
@@ -115,8 +115,8 @@ class SectionTest {
     @DisplayName("같은 출발점과 도착점을 합치려는 경우 예외 생성하기")
     void merge_invalidSameStations() {
         // given
-        Section section = new Section(1L, 2L, 4);
-        Section sectionForAdd = new Section(1L, 2L, 5);
+        Section section = new Section(1L, 1L, 2L, 4);
+        Section sectionForAdd = new Section(1L, 1L, 2L, 5);
 
         // then
         assertThatThrownBy(() -> section.merge(sectionForAdd))
@@ -128,8 +128,8 @@ class SectionTest {
     @DisplayName("연결되지 않는 두 구간을 합치려는 경우 예외 생성하기")
     void merge_invalidNotConnectedSections() {
         // given
-        Section section = new Section(1L, 2L, 4);
-        Section sectionForAdd = new Section(3L, 4L, 5);
+        Section section = new Section(1L, 1L, 2L, 4);
+        Section sectionForAdd = new Section(1L, 3L, 4L, 5);
 
         // then
         assertThatThrownBy(() -> section.merge(sectionForAdd))

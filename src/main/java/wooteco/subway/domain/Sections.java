@@ -17,7 +17,7 @@ public class Sections {
         return new Sections(Arrays.asList(sections));
     }
 
-    public List<Long> findIds() {
+    public List<Long> findStationIds() {
         Set<Long> ids = new HashSet<>();
         for (Section section : sections) {
             ids.add(section.getUpStationId());

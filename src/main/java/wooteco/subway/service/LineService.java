@@ -4,8 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.ExceptionMessage;
@@ -15,31 +20,51 @@ import wooteco.subway.exception.NotFoundException;
 public class LineService {
 
     private final LineDao lineDao;
+    private final JdbcSectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(final LineDao lineDao) {
+    public LineService(LineDao lineDao, JdbcSectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
-    public LineResponse create(final LineRequest request) {
-        Line line = new Line(request.getName(), request.getColor());
+    public LineResponse save(final LineRequest request) {
         try {
-            final Line savedLine = lineDao.save(line);
-            return LineResponse.of(savedLine);
+            Line savedLine = saveLine(request);
+            saveSection(savedLine.getId(), request);
+            List<Station> stations = getStationsByLine(savedLine);
+            return LineResponse.of(savedLine, stations);
         } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
         }
     }
 
+    private Line saveLine(LineRequest request) {
+        return lineDao.save(new Line(request.getName(), request.getColor()));
+    }
+
+    private void saveSection(Long lineId, LineRequest request) {
+        Section section = new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance());
+        sectionDao.save(section);
+    }
+
+    private List<Station> getStationsByLine(Line line) {
+        List<Section> sectionsPerLine = sectionDao.findByLineId(line.getId());
+        List<Long> stationIds = new Sections(sectionsPerLine).findStationIds();
+        return stationDao.findByIds(stationIds);
+    }
+
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(LineResponse::of)
+                .map(line -> LineResponse.of(line, getStationsByLine(line)))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         Line line = getLineFromDao(id);
-        return LineResponse.of(line);
+        return LineResponse.of(line, getStationsByLine(line));
     }
 
     private Line getLineFromDao(Long id) {

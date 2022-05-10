@@ -11,8 +11,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.ExceptionMessage;
@@ -22,6 +25,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final String LOCATION = "Location";
 
+    @Autowired
+    private StationDao stationDao;
+
     @Test
     @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
@@ -29,8 +35,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String lineName = "7호선";
         String lineColor = "bg-red-600";
 
+        Station 강남역 = stationDao.save(new Station("강남역"));
+        Station 노원역 = stationDao.save(new Station("노원역"));
+
         // when
-        LineRequest requestBody = new LineRequest(lineName, lineColor, null, null, 0);
+        LineRequest requestBody = new LineRequest(lineName, lineColor, 강남역.getId(), 노원역.getId(), 10);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(requestBody)
@@ -49,6 +58,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             assertThat(lineResponse.getId()).isNotNull();
             assertThat(lineResponse.getName()).isEqualTo(lineName);
             assertThat(lineResponse.getColor()).isEqualTo(lineColor);
+            assertThat(lineResponse.getStations()).hasSize(2);
         });
     }
 
@@ -60,7 +70,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String redColor = "bg-red-600";
         String blueColor = "bg-blue-600";
 
-        LineRequest lineRequest = new LineRequest(lineName, redColor, null, null, 0);
+        Station 강남역 = stationDao.save(new Station("강남역"));
+        Station 노원역 = stationDao.save(new Station("노원역"));
+
+        LineRequest lineRequest = new LineRequest(lineName, redColor, 노원역.getId(), 강남역.getId(), 10);
 
         RestAssured.given().log().all()
                 .body(lineRequest)
@@ -71,7 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        LineRequest duplicatedNameRequest = new LineRequest(lineName, blueColor, null, null, 0);
+        LineRequest duplicatedNameRequest = new LineRequest(lineName, blueColor, 노원역.getId(), 강남역.getId(), 10);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(duplicatedNameRequest)
@@ -92,7 +105,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        LineRequest requestBody1 = new LineRequest("7호선", "bg-green-600", null, null, 0);
+        Station 강남역 = stationDao.save(new Station("강남역"));
+        Station 노원역 = stationDao.save(new Station("노원역"));
+
+        LineRequest requestBody1 = new LineRequest("7호선", "bg-green-600", 강남역.getId(), 노원역.getId(), 10);
 
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(requestBody1)
@@ -102,7 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        LineRequest requestBody2 = new LineRequest("5호선", "bg-red-600", null, null, 0);
+        LineRequest requestBody2 = new LineRequest("5호선", "bg-red-600", 노원역.getId(), 강남역.getId(), 10);
 
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(requestBody2)
@@ -126,11 +142,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(this::getIdFromLineLocation)
                 .collect(Collectors.toList());
 
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+
+        List<Long> resultLineIds = lineResponses.stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
+        long validResponsesCount = lineResponses.stream()
+                .filter(it -> it.getStations().size() == 2)
+                .count();
+
         assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(validResponsesCount).isEqualTo(2);
     }
 
     private long getIdFromLineLocation(ExtractableResponse<Response> it) {
@@ -144,7 +167,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String lineName = "7호선";
         String lineColor = "bg-green-600";
 
-        LineRequest lineRequest = new LineRequest(lineName, lineColor, null, null, 0);
+        Station 강남역 = stationDao.save(new Station("강남역"));
+        Station 노원역 = stationDao.save(new Station("노원역"));
+
+        LineRequest lineRequest = new LineRequest(lineName, lineColor, 강남역.getId(), 노원역.getId(), 0);
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(lineRequest)
@@ -171,6 +197,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             assertThat(lineResponse.getId()).isEqualTo(id);
             assertThat(lineResponse.getName()).isEqualTo(lineName);
             assertThat(lineResponse.getColor()).isEqualTo(lineColor);
+            assertThat(lineResponse.getStations()).hasSize(2);
         });
     }
 
@@ -193,7 +220,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 정보를 수정한다.")
     void updateLine() {
         // given
-        LineRequest requestBody = new LineRequest("7호선", "bg-red-600", null, null, 0);
+        Station 강남역 = stationDao.save(new Station("강남역"));
+        Station 노원역 = stationDao.save(new Station("노원역"));
+
+        LineRequest requestBody = new LineRequest("7호선", "bg-red-600", 강남역.getId(), 노원역.getId(), 10);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(requestBody)
@@ -206,7 +236,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long id = getIdFromLineLocation(response);
 
         // when
-        LineRequest updateBody = new LineRequest("5호선", "bg-green-600", null, null, 0);
+        LineRequest updateBody = new LineRequest("5호선", "bg-green-600", null, null, 10);
 
         ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
                 .body(updateBody)
@@ -224,7 +254,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 정보를 삭제한다.")
     void deleteLine() {
         // given
-        LineRequest requestBody = new LineRequest("7호선", "bg-red-600", null, null, 0);
+        Station 강남역 = stationDao.save(new Station("강남역"));
+        Station 노원역 = stationDao.save(new Station("노원역"));
+
+        LineRequest requestBody = new LineRequest("7호선", "bg-red-600", 강남역.getId(), 노원역.getId(), 0);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(requestBody)

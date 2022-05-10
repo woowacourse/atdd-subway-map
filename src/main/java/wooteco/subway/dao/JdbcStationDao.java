@@ -67,7 +67,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public List<Station> findByIds(List<Integer> ids) {
+    public List<Station> findByIds(List<Long> ids) {
         SqlParameterSource parameters = new MapSqlParameterSource("ids", ids);
         String query = "SELECT * FROM station where id in (:ids)";
         return namedParameterJdbcTemplate.query(query, parameters, getRowMapper());

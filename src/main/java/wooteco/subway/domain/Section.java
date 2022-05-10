@@ -20,8 +20,12 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(long upStationId, long downStationId, int distance) {
-        this(null, null, upStationId, downStationId, distance);
+    public Section(Long line_id, Long upStationId, Long downStationId, int distance) {
+        this.id = null;
+        this.line_id = line_id;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public List<Section> insert(Section other) {
@@ -53,7 +57,7 @@ public class Section {
         if (this.distance <= other.distance) {
             throw new IllegalArgumentException(ExceptionMessage.INVALID_INSERT_SECTION_DISTANCE.getContent());
         }
-        Section dividedSection = new Section(other.downStationId, this.downStationId, this.distance - other.distance);
+        Section dividedSection = new Section(this.line_id, other.downStationId, this.downStationId, this.distance - other.distance);
         return List.of(other, dividedSection);
     }
 
@@ -66,10 +70,10 @@ public class Section {
         int mergedDistance = this.distance + other.distance;
 
         if (this.upStationId == other.downStationId) {
-            return new Section(other.upStationId, this.downStationId, mergedDistance);
+            return new Section(this.line_id, other.upStationId, this.downStationId, mergedDistance);
         }
         if (this.downStationId == other.upStationId) {
-            return new Section(this.upStationId, other.downStationId, mergedDistance);
+            return new Section(this.line_id, this.upStationId, other.downStationId, mergedDistance);
         }
         throw new IllegalArgumentException(ExceptionMessage.NOT_CONNECTED_SECTIONS.getContent());
     }

@@ -69,11 +69,11 @@ class StationDaoTest {
     @DisplayName("id들에 해당하는 역 모두 가져오기")
     void findByIds() {
         // given
-        stationDao.save(new Station("선릉"));
-        stationDao.save(new Station("잠실"));
+        Long gangNamId = stationDao.save(new Station("강남역")).getId();
+        Long jamSilId = stationDao.save(new Station("잠실역")).getId();
 
         // when
-        List<Station> stations = stationDao.findByIds(List.of(1,2));
+        List<Station> stations = stationDao.findByIds(List.of(gangNamId, jamSilId));
 
         // then
         assertThat(stations).hasSize(2);

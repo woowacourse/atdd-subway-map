@@ -11,5 +11,5 @@ public interface StationDao {
 
     Integer deleteById(Long id);
 
-    List<Station> findByIds(List<Integer> ids);
+    List<Station> findByIds(List<Long> ids);
 }
