@@ -30,6 +30,17 @@ class StationDaoTest extends DaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    void findAllByIds_메서드는_id_목록에_해당되는_모든_데이터를_조회() {
+        List<StationEntity> actual = dao.findAllByIds(List.of(1L, 3L));
+
+        List<StationEntity> expected = List.of(
+                new StationEntity(1L, "이미 존재하는 역 이름"),
+                new StationEntity(3L, "잠실역"));
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
     @DisplayName("findById 메서드는 id에 해당하는 데이터를 조회한다")
     @Nested
     class FindByIdTest {
