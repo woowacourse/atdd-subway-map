@@ -131,7 +131,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("상행역과 일치하는 역의 사이에 들어갈 때 더 큰 길이의 Section이면 생예외가 발생한다.")
+    @DisplayName("상행역과 일치하는 역의 사이에 들어갈 때 더 큰 길이의 Section이면 예외가 발생한다.")
     void addSectionBetweenEqualsUpStationExceptionByLargerDistance() {
         // given
         Station station1 = new Station(1L, "오리");
