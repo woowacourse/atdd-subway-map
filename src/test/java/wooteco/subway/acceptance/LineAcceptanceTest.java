@@ -16,6 +16,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -24,7 +25,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
+        StationRequest stationRequest = new StationRequest("강남역");
+
+        // when
+        ExtractableResponse<Response> response3 = RestAssured.given().log().all()
+            .body(stationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+
+        StationRequest stationRequest2 = new StationRequest("선릉역");
+
+        // when
+        ExtractableResponse<Response> response2 = RestAssured.given().log().all()
+            .body(stationRequest2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
