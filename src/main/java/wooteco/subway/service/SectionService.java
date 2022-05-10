@@ -48,11 +48,8 @@ public class SectionService {
     }
 
     private Long executeMiddleSection(Section inSection, boolean isUpAttach, Section baseSection) {
-        System.out.println("baseSection = " + baseSection);
-        System.out.println("inSection = " + inSection);
         validateDistance(baseSection.getDistance(), inSection.getDistance());
         Section remainSection = baseSection.calculateRemainSection(inSection, isUpAttach);
-        System.out.println("remainSection = " + remainSection);
         sectionDao.save(remainSection);
         sectionDao.delete(baseSection.getId());
         return sectionDao.save(inSection);
