@@ -90,7 +90,9 @@ public class Section {
         return section.downStationId.equals(this.downStationId);
     }
 
-//    public void isLastStop(Sections sections) {
-//        List<Long> LastStopId = sections.
-//    }
+    public boolean canAddAsLastStop(Sections sections) {
+        List<Long> lastStopIds = sections.getLastStopStationIds();
+
+        return lastStopIds.contains(upStationId) || lastStopIds.contains(downStationId);
+    }
 }

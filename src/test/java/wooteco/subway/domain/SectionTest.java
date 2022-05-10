@@ -43,7 +43,38 @@ class SectionTest {
 
         //then
         assertThat(existedIn).isTrue();
+    }
+
+    @DisplayName("section의 상행 종점역으로 추가가 가능하면 true 반환")
+    @Test
+    void isUpperLastStop() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        Section newSection = new Section(10, 2L, 4L, 5L);
+
+        boolean isLastStop = newSection.canAddAsLastStop(sections);
+
+        assertThat(isLastStop).isTrue();
+    }
 
 
+    @DisplayName("section의 하행 종점역으로 추가가 가능하면 true 반환")
+    @Test
+    void isLowerLastStop() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        Section newSection = new Section(10, 2L, 6L, 1L);
+
+        boolean isLastStop = newSection.canAddAsLastStop(sections);
+
+        assertThat(isLastStop).isTrue();
     }
 }
