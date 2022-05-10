@@ -20,39 +20,6 @@ public class Sections {
         sections.add(section);
     }
 
-    public void delete(Station station) {
-        final Long stationId = station.getId();
-
-        final Section previousSection = getPreviousSection(stationId);
-        final Section laterSection = getLaterSection(stationId);
-
-        deleteSection(previousSection, laterSection);
-    }
-
-    private void deleteSection(Section previousSection, Section laterSection) {
-        final int distance = previousSection.getDistance() + laterSection.getDistance();
-        final Section newSection = new Section(previousSection.getLineId(), previousSection.getUpStationId(),
-                laterSection.getDownStationId(), distance);
-
-        sections.add(newSection);
-        sections.remove(previousSection);
-        sections.remove(laterSection);
-    }
-
-    private Section getPreviousSection(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.getDownStationId().equals(stationId))
-                .findAny()
-                .orElseThrow(() -> new IllegalSectionException("삭제할 구간이 존재하지 않습니다."));
-    }
-
-    private Section getLaterSection(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.getUpStationId().equals(stationId))
-                .findAny()
-                .orElseThrow(() -> new IllegalSectionException("삭제할 구간이 존재하지 않습니다."));
-    }
-
     private void checkContainsSameSection(Section section) {
         for (Section existingSection : sections) {
             processSameSection(section, existingSection);
@@ -96,6 +63,46 @@ public class Sections {
                 .filter(s -> s.isContainStation(section))
                 .findAny()
                 .orElseThrow(() -> new IllegalSectionException("구간 등록이 불가능합니다."));
+    }
+
+    public void delete(Station station) {
+        validateDeletion();
+        final Long stationId = station.getId();
+
+        final Section previousSection = getPreviousSection(stationId);
+        final Section laterSection = getLaterSection(stationId);
+
+        deleteSection(previousSection, laterSection);
+    }
+
+    private void validateDeletion() {
+        if (sections.size() <= 1) {
+            throw new IllegalSectionException("구간을 제거할 수 없습니다.");
+        }
+    }
+
+    private Section getPreviousSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStationId().equals(stationId))
+                .findAny()
+                .orElseThrow(() -> new IllegalSectionException("삭제할 구간이 존재하지 않습니다."));
+    }
+
+    private Section getLaterSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(stationId))
+                .findAny()
+                .orElseThrow(() -> new IllegalSectionException("삭제할 구간이 존재하지 않습니다."));
+    }
+
+    private void deleteSection(Section previousSection, Section laterSection) {
+        final int distance = previousSection.getDistance() + laterSection.getDistance();
+        final Section newSection = new Section(previousSection.getLineId(), previousSection.getUpStationId(),
+                laterSection.getDownStationId(), distance);
+
+        sections.add(newSection);
+        sections.remove(previousSection);
+        sections.remove(laterSection);
     }
 
     public List<Section> getSections() {

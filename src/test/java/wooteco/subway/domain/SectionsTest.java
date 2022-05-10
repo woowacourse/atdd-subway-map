@@ -107,4 +107,18 @@ class SectionsTest {
         assertThat(section.getUpStationId()).isEqualTo(1L);
         assertThat(section.getDownStationId()).isEqualTo(3L);
     }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다.")
+    @Test
+    public void IllegalDeleteSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 3L, 7));
+        final Sections sections = new Sections(sectionList);
+
+        // when & then
+        final Station station = new Station(1L, "상행역");
+        assertThatThrownBy(() -> sections.delete(station))
+                .isInstanceOf(IllegalSectionException.class);
+    }
 }
