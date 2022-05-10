@@ -1,8 +1,11 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -122,5 +125,14 @@ public class Sections {
     public boolean hasSection(Section section) {
         return sections.stream()
             .anyMatch(it -> it.equals(section));
+    }
+
+    public List<Long> getStationIds() {
+        Set<Long> ids = new HashSet<>();
+        for (Section section : sections) {
+            ids.add(section.getUpStationId());
+            ids.add(section.getDownStationId());
+        }
+        return new ArrayList<>(ids);
     }
 }

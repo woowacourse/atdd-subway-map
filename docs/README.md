@@ -52,7 +52,7 @@
       - 결과 상태 코드는 `201 Created` 이다.
       - Location 헤더는 `/lines/{id}` 이다.
     - `응답` json으로 id, name, color, stations를 반환한다.
-  - [ ] 노선 목록 조회 `GET /lines`
+  - [x] 노선 목록 조회 `GET /lines`
     - 결과 상태 코드는 `200 OK` 이다.
     - `응답` json으로 id, name, color, stations를 가진 리스트를 반환한다.
   - [ ] 노선 조회 `GET /lines/{id}`

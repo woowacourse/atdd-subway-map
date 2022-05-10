@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
@@ -40,7 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createLineFixture(lineRequest1);
         // then
 
-        List<String> expectedStationNames = List.of("신설동역","용두역");
+        List<String> expectedStationNames = List.of("신설동역", "용두역");
         List<String> resultStationNames = response.jsonPath().getList("stations", StationResponse.class).stream()
             .map(StationResponse::getName)
             .collect(Collectors.toList());
@@ -83,6 +84,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
             .map(LineResponse::getId)
             .collect(Collectors.toList());
+        List<String> expectedStationNames = List.of("신설동역", "용두역");
+        List<StationResponse> resultStationNames = response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(LineResponse::getStations)
+            .collect(Collectors.toList()).get(0);
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -139,7 +144,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-//
+
+    //
     @DisplayName("중복된 이름으로 노선 수정 시 상태 코드 400을 반환한다.")
     @Test
     void updateLine_duplicateName_Exception() {

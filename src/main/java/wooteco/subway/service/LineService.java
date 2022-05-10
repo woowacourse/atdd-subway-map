@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -46,15 +48,25 @@ public class LineService {
         if (upStation.isEmpty() || downStation.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 지하철역입니다.");
         }
-        List<StationResponse> stationResponses = List.of(new StationResponse(upStation.get().getId(), upStation.get().getName()), new StationResponse(downStation.get().getId(), downStation.get().getName()));
+        List<StationResponse> stationResponses = List.of(new StationResponse(upStation.get().getId(), upStation.get().getName()),
+            new StationResponse(downStation.get().getId(), downStation.get().getName()));
         return new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(), stationResponses);
     }
 
     public List<LineResponse> showLines() {
+        List<LineResponse> responses = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
-        return lines.stream()
-            .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
-            .collect(Collectors.toList());
+        List<Station> stations = stationDao.findAll();
+
+        for (Line line : lines) {
+            Sections sections = sectionDao.findByLineId(line.getId());
+            List<Long> stationsIds = sections.getStationIds();
+            List<StationResponse> stationResponses = stations.stream().filter(station->stationsIds.contains(station.getId()))
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
+            responses.add(new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses));
+        }
+        return responses;
     }
 
     public LineResponse showLine(Long id) {
