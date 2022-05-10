@@ -13,7 +13,7 @@ public interface SectionDao {
 
     List<Section> findAllByLineId(Long lineId);
 
-    List<Section> findAllByStationId(Long id);
+    List<Section> findAllByStationId(Long stationId);
 
     Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId);
 
@@ -21,7 +21,7 @@ public interface SectionDao {
 
     void deleteById(Long id);
 
-    void deleteAllByLineId(Long id);
+    void deleteAllByLineId(Long lineId);
 
     void deleteByLineIdAndStationId(Long lineId, Long stationId);
 }

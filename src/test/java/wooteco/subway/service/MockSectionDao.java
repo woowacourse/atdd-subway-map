@@ -40,9 +40,10 @@ public class MockSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findAllByStationId(Long id) {
+    public List<Section> findAllByStationId(Long stationId) {
         return mockDb.values().stream()
-                .filter(section -> section.getUpStationId().equals(id) || section.getDownStationId().equals(id))
+                .filter(section ->
+                        section.getUpStationId().equals(stationId) || section.getDownStationId().equals(stationId))
                 .collect(Collectors.toList());
     }
 
@@ -68,9 +69,9 @@ public class MockSectionDao implements SectionDao {
     }
 
     @Override
-    public void deleteAllByLineId(Long id) {
+    public void deleteAllByLineId(Long lineId) {
         List<Section> sections = mockDb.values().stream()
-                .filter(section -> section.getLineId().equals(id))
+                .filter(section -> section.getLineId().equals(lineId))
                 .collect(Collectors.toList());
         for (Section section : sections) {
             mockDb.remove(section.getId());
