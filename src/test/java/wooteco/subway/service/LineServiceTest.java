@@ -41,8 +41,10 @@ class LineServiceTest {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("name", "red", 1L, 2L, 3);
         given(lineDao.isExistName("name")).willReturn(false);
         given(lineDao.save("name", "red")).willReturn(new Line(1L, "name", "red"));
+        given(stationDao.findById(1L)).willReturn(new Station(1L, "name1"));
+        given(stationDao.findById(2L)).willReturn(new Station(1L, "name2"));
 
-        assertThat(lineService.save(lineCreateRequest)).isEqualTo(1L);
+        assertThat(lineService.save(lineCreateRequest)).isNotNull();
     }
 
     @Test
@@ -61,8 +63,8 @@ class LineServiceTest {
     @DisplayName("지하철 노선 목록을 조회할 수 있다.")
     void findAll() {
         given(lineDao.findAll()).willReturn(List.of(new Line(1L, "name", "red"), new Line(2L, "name2", "blue")));
-        given(stationDao.findByLineId(1L)).willReturn(List.of(new Station(1L, "name1"), new Station(2L, "name2")));
-        given(stationDao.findByLineId(2L)).willReturn(List.of(new Station(3L, "name3"), new Station(4L, "name4")));
+        given(sectionService.findStationsByLineId(1L)).willReturn(List.of(new Station(1L, "name1"), new Station(2L, "name2")));
+        given(sectionService.findStationsByLineId(2L)).willReturn(List.of(new Station(3L, "name3"), new Station(4L, "name4")));
 
         List<LineResponse> lineResponse = lineService.findAll();
 
@@ -78,23 +80,29 @@ class LineServiceTest {
                 .map(LineResponse::getColor)
                 .collect(Collectors.toList());
 
-        List<String> stationNames = lineResponse.stream()
-                .flatMap(s -> s.getStations().stream())
-                .map(StationResponse::getName)
+        List<String> stationNames1 = lineResponse.get(0)
+                .getStations().stream()
+                .map(s -> s.getName())
+                .collect(Collectors.toList());
+
+        List<String> stationNames2 = lineResponse.get(1)
+                .getStations().stream()
+                .map(s -> s.getName())
                 .collect(Collectors.toList());
 
 
         assertThat(ids).containsOnly(1L, 2L);
         assertThat(lineNames).containsOnly("name", "name2");
         assertThat(colors).containsOnly("red", "blue");
-        assertThat(stationNames).containsOnly("name1", "name2", "name3", "name4");
+        assertThat(stationNames1).containsOnly("name1", "name2");
+        assertThat(stationNames2).containsOnly("name3", "name4");
     }
 
     @Test
     @DisplayName("지하철 노선을 조회할 수 있다.")
     void findById() {
         given(lineDao.findById(1L)).willReturn(new Line(1L, "name", "red"));
-        given(stationDao.findByLineId(1L)).willReturn(List.of(new Station(1L, "name1"), new Station(2L, "name2")));
+        given(sectionService.findStationsByLineId(1L)).willReturn(List.of(new Station(1L, "name1"), new Station(2L, "name2")));
 
         LineResponse response = lineService.findById(1L);
 

@@ -13,7 +13,7 @@ public class Section {
     private Long downStationId;
     private int distance;
 
-    private Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -30,6 +30,14 @@ public class Section {
                 sectionRequest.getDownStationId(),
                 sectionRequest.getDistance()
         );
+    }
+
+    public boolean isFront(Section section) {
+        return this.downStationId == section.upStationId;
+    }
+
+    public boolean isBack(Section section) {
+        return this.upStationId == section.downStationId;
     }
 
     public Long getId() {
