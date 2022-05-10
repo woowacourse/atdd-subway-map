@@ -45,6 +45,13 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
+    public int update(Section section) {
+        String sql = "update section set up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance where id = :id";
+        SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(section);
+        return namedParameterJdbcTemplate.update(sql, namedParameters);
+    }
+
+    @Override
     public List<Section> findByLineId(Long lineId) {
         String sql = "select * from section where line_id = :lineId";
         SqlParameterSource namedParameter = new MapSqlParameterSource("lineId", lineId);

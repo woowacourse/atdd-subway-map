@@ -37,6 +37,19 @@ public class SectionDaoImplTest {
                 .doesNotThrowAnyException();
     }
 
+    @DisplayName("구간을 변경한다.")
+    @Test
+    void update() {
+        sectionDao.update(new Section(1L, 1L, 3L, 2L, 5));
+
+        List<Section> sections = sectionDao.findByLineId(1L);
+
+        Section newSection = sections.get(0);
+
+        assertThat(newSection.getUpStationId()).isEqualTo(3L);
+        assertThat(newSection.getDownStationId()).isEqualTo(2L);
+    }
+
     @DisplayName("lineId 값에 해당하는 모든 구간의 정보를 가져온다.")
     @Test
     void findByLineId() {

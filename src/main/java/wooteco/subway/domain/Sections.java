@@ -55,6 +55,9 @@ public class Sections {
     }
 
     public void validateAddable(Section section) {
+        if (sections.size() == 0) {
+            return;
+        }
         checkDuplicateSection(section);
         checkExistingStation(section);
     }
