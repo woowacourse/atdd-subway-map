@@ -24,6 +24,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean contains(final Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     private void validateDistance(final int distance) {
         if (distance < 1) {
             throw new IllegalArgumentException("거리가 1 미만인 구간 정보는 생성할 수 없습니다.");

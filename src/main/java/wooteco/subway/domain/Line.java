@@ -2,8 +2,10 @@ package wooteco.subway.domain;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Line {
     private Long id;
@@ -52,6 +54,58 @@ public class Line {
         sections.add(section);
         stations.add(section.getUpStation());
         stations.add(section.getDownStation());
+    }
+
+    public void removeStation(final Station station) {
+        checkRemovable(station);
+
+        List<Section> sectionsThatContainsStation = sections.stream()
+                .filter(it -> it.contains(station))
+                .collect(Collectors.toList());
+
+        if (isLastStation(sectionsThatContainsStation)) {
+            removeLastStation(station, sectionsThatContainsStation);
+            return;
+        }
+        removeInterStation(station, sectionsThatContainsStation);
+    }
+
+    private void removeInterStation(final Station station, final List<Section> sectionsThatContainsStation) {
+        Section targetToUpdate = null;
+        Section targetToRemove = null;
+        Station downStationCandidate = null;
+        for (Section section : sectionsThatContainsStation) {
+            if (section.getDownStation().equals(station)) {
+                targetToUpdate = section;
+            }
+            if (section.getUpStation().equals(station)) {
+                targetToRemove = section;
+                downStationCandidate = section.getDownStation();
+            }
+        }
+        targetToUpdate.changeDownStation(downStationCandidate);
+        targetToUpdate.changeDistance(targetToUpdate.getDistance() + targetToRemove.getDistance());
+        stations.remove(station);
+        sections.remove(targetToRemove);
+    }
+
+    private boolean isLastStation(final List<Section> sectionsThatContainsStation) {
+        return sectionsThatContainsStation.size() == 1;
+    }
+
+    private void removeLastStation(final Station station, final List<Section> sectionsThatContainsStation) {
+        stations.remove(station);
+        sections.remove(sectionsThatContainsStation.get(0));
+    }
+
+    private void checkRemovable(final Station station) {
+        if (!stations.contains(station)) {
+            throw new IllegalArgumentException("제거하려는 역이 노선 내에 존재하지 않습니다.");
+        }
+
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서는 역을 제거할 수 없습니다.");
+        }
     }
 
     private boolean containsNeitherStationsIn(final Section section) {

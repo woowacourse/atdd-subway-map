@@ -1,8 +1,8 @@
 package wooteco.subway.domain;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.Set;
 import org.assertj.core.api.Assertions;
@@ -188,5 +188,102 @@ class LineTest {
         );
     }
 
+    @DisplayName("상행 종점을 제거한다.")
+    @Test
+    void removeUpStation() {
+        // given
+        Station station1 = new Station(1L, "station1");
+        Station station2 = new Station(2L, "station2");
+        Section section1 = new Section(1L, station1, station2, 10);
+        Line line = new Line(1L, "line", "color", section1);
 
+        Station station3 = new Station(3L, "station3");
+        Section section2 = new Section(2L, station3, station1, 10);
+        line.addSection(section2);
+
+        // when
+        line.removeStation(station3);
+
+        // then
+        Set<Section> sections = line.getSections();
+        assertThat(sections).containsOnly(section1);
+    }
+
+    @DisplayName("하행 종점을 제거한다.")
+    @Test
+    void removeDownStation() {
+        // given
+        Station station1 = new Station(1L, "station1");
+        Station station2 = new Station(2L, "station2");
+        Section section1 = new Section(1L, station1, station2, 10);
+        Line line = new Line(1L, "line", "color", section1);
+
+        Station station3 = new Station(3L, "station3");
+        Section section2 = new Section(2L, station2, station3, 10);
+        line.addSection(section2);
+
+        // when
+        line.removeStation(station3);
+
+        // then
+        Set<Section> sections = line.getSections();
+        assertThat(sections).containsOnly(section1);
+    }
+
+    @DisplayName("구간이 하나인 노선에서는 역을 제거할 수 없다.")
+    @Test
+    void cannotRemoveStationWhenSingleSection() {
+        // given
+        Station station1 = new Station(1L, "station1");
+        Station station2 = new Station(2L, "station2");
+        Section section1 = new Section(1L, station1, station2, 10);
+        Line line = new Line(1L, "line", "color", section1);
+
+        // when && then
+        assertAll(
+                () -> assertThatThrownBy(() -> line.removeStation(station1))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessageContaining("구간이 하나인 노선에서는 역을 제거할 수 없습니다."),
+                () -> assertThatThrownBy(() -> line.removeStation(station2))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessageContaining("구간이 하나인 노선에서는 역을 제거할 수 없습니다.")
+        );
+    }
+
+    @DisplayName("입력된 역이 노선 내에 존재하지 않는 경우 예외를 던진다.")
+    @Test
+    void cannotRemoveNonExistStation() {
+        // given
+        Station station1 = new Station(1L, "station1");
+        Station station2 = new Station(2L, "station2");
+        Section section1 = new Section(1L, station1, station2, 10);
+        Line line = new Line(1L, "line", "color", section1);
+
+        // when && then
+        Station station3 = new Station(3L, "station3");
+        assertThatThrownBy(() -> line.removeStation(station3))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("제거하려는 역이 노선 내에 존재하지 않습니다.");
+    }
+
+    @DisplayName("다른 역 사이에 있는 역을 제거할 경우 구간을 재배치한다.")
+    @Test
+    void removeInterStation() {
+        // given
+        Station station1 = new Station(1L, "station1");
+        Station station2 = new Station(2L, "station2");
+        Section section1 = new Section(1L, station1, station2, 10);
+        Line line = new Line(1L, "line", "color", section1);
+
+        Station station3 = new Station(3L, "station3");
+        Section section2 = new Section(2L, station2, station3, 10);
+        line.addSection(section2);
+
+        // when
+        line.removeStation(station2);
+
+        // then
+        Set<Section> sections = line.getSections();
+        assertThat(sections).containsOnly(new Section(1L, station1, station3, 20));
+    }
 }
