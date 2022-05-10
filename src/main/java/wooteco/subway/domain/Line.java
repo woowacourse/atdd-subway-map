@@ -7,7 +7,6 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private Sections sections;
 
     public Line() {
     }
@@ -35,9 +34,6 @@ public class Line {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
 
     @Override
     public boolean equals(Object o) {

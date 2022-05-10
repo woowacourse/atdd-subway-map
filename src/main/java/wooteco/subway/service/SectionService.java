@@ -38,6 +38,18 @@ public class SectionService {
           insertToBetweenSections(newSection);
       }
 
+    private boolean isStartOrEndOfSection(Section section, long id) {
+        boolean isFirst = sectionDao.findByUpStationId(section.getDownStationId(), id).isPresent();
+        boolean isLast = sectionDao.findByDownStationId(section.getUpStationId(), id).isPresent();
+        if(isFirst || isLast){
+            if(isBetweenStation(section, id)){
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
       private void insertToBetweenSections(Section newSection) {
           Section findSection = sectionDao.findBySameUpOrDownStation(newSection)
                   .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
@@ -59,18 +71,6 @@ public class SectionService {
               return;
           }
           sectionDao.updateDownStation(findSection, newSection);
-      }
-
-      private boolean isStartOrEndOfSection(Section section, long id) {
-          boolean isFirst = sectionDao.findByUpStationId(section.getDownStationId(), id).isPresent();
-          boolean isLast = sectionDao.findByDownStationId(section.getUpStationId(), id).isPresent();
-          if(isFirst || isLast){
-             if(isBetweenStation(section, id)){
-                 return false;
-             }
-              return true;
-          }
-          return false;
       }
 
       private boolean isBetweenStation(Section section, long id) {

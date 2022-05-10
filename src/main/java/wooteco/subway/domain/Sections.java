@@ -23,9 +23,7 @@ public class Sections {
         SectionWithStation firstSection = findFirstSection();
         stations.add(firstSection.getUpStation());
 
-        //station 첫번째 섹션의 downStation을 시작점으로 두기
         Station station = firstSection.getDownStation();
-        // while(현재 스테이션이 시작점인 섹션이 없을때까지)
         while(!isLastStation(station)){
             stations.add(station);
             station = findNextSection(station).getDownStation();
