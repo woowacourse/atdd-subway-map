@@ -1,18 +1,18 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.request;
 
 import javax.validation.constraints.NotBlank;
 
-public class LineRequest {
+public class UpdateLineRequest {
 
     @NotBlank
     private String name;
     @NotBlank
     private String color;
 
-    private LineRequest() {
+    private UpdateLineRequest() {
     }
 
-    public LineRequest(final String name, final String color) {
+    public UpdateLineRequest(final String name, final String color) {
         this.name = name;
         this.color = color;
     }

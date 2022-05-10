@@ -201,19 +201,5 @@ public class SectionsTest {
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("노선에 구간은 1개 이상이어야 합니다.");
         }
-
-        @Test
-        @DisplayName("1-2, 2-1 구간이 있을 때, 2 역을 삭제하면 예외를 발생시킨다.")
-        void exceptionRemoveSection2() {
-            // given
-            final Section section1 = new Section(1L, 1L, 2L, 10);
-            final Section section2 = new Section(1L, 2L, 3L, 10);
-            final Sections sections = new Sections(List.of(section1, section2));
-
-            // when & then
-            assertThatThrownBy(() -> sections.remove(2L))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("노선에 구간은 1개 이상이어야 합니다.");
-        }
     }
 }

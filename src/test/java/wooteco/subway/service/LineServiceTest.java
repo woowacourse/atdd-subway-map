@@ -27,8 +27,8 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.request.UpdateLineRequest;
+import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.dto.response.LineResponse;
@@ -146,7 +146,7 @@ class LineServiceTest {
         given(lineDao.find(id)).willReturn(new Line(id, name, color));
 
         // when
-        lineService.updateLine(id, new LineRequest(name, color));
+        lineService.updateLine(id, new UpdateLineRequest(name, color));
 
         // then
         verify(lineDao).update(id, name, color);

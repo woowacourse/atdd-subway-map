@@ -11,7 +11,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.request.CreateSectionRequest;
@@ -61,7 +61,7 @@ public class LineService {
         return findStations(line);
     }
 
-    public void updateLine(final Long id, final LineRequest request) {
+    public void updateLine(final Long id, final UpdateLineRequest request) {
         lineDao.find(id);
         lineDao.update(id, request.getName(), request.getColor());
     }

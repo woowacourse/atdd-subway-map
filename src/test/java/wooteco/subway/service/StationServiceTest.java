@@ -15,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.request.CreateStationRequest;
+import wooteco.subway.dto.response.StationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class StationServiceTest {
@@ -34,7 +34,7 @@ class StationServiceTest {
         final Long id = 1L;
         final String name = "한성대입구역";
         final Station savedStation= new Station(id, name);
-        final StationRequest request = new StationRequest(name);
+        final CreateStationRequest request = new CreateStationRequest(name);
 
         // mocking
         given(stationDao.save(any())).willReturn(id);

@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.exception.dto.ErrorResponse;
+import wooteco.subway.dto.response.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

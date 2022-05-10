@@ -28,7 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.dto.response.LineResponse;

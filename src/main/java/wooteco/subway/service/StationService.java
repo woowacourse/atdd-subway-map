@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.request.CreateStationRequest;
+import wooteco.subway.dto.response.StationResponse;
 
 @Service
 public class StationService {
@@ -17,7 +17,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse createStation(final StationRequest request) {
+    public StationResponse createStation(final CreateStationRequest request) {
         final Station station = new Station(request.getName());
         final Long id = stationDao.save(station);
         return new StationResponse(id, request.getName());
