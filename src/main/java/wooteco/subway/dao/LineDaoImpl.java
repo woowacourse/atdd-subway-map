@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DataNotFoundException;
 
 @Repository
 public class LineDaoImpl implements LineDao {
@@ -47,8 +49,12 @@ public class LineDaoImpl implements LineDao {
 
     @Override
     public Line findById(Long id) {
-        final String sql = "select * from line where id = (?)";
-        return jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
+        try {
+            final String sql = "select * from line where id = (?)";
+            return jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DataNotFoundException("존재하지 않는 노선입니다.");
+        }
     }
 
     @Override

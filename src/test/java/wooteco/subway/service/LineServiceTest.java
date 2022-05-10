@@ -2,7 +2,9 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,24 +64,35 @@ class LineServiceTest {
                 .hasMessageContaining("이미 등록된 지하철 노선이름 입니다.");
     }
 
-/*
-    @DisplayName("노선 정보 전체 조회")
+    @DisplayName("노선 정보 전체를 조회한다.")
     @Test
     void findAll() {
-        lineService.createLine(new LineRequest("5호선", "green"));
-        lineService.createLine(new LineRequest("7호선", "red"));
+        LineRequest firstLine = new LineRequest("5호선", "green", 1L, 2L, 10);
+        LineRequest secondLine = new LineRequest("7호선", "red", 1L, 3L, 10);
+        lineService.createLine(firstLine);
+        lineService.createLine(secondLine);
 
         List<LineResponse> lines = lineService.findLines();
-        lines.stream()
-                .filter(line -> line.getName().equals("5호선"))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("노선 정보가 없습니다."));
+
+        assertAll(
+                () -> assertThat(lines.get(0).getName()).isEqualTo(firstLine.getName()),
+                () -> assertThat(lines.get(0).getColor()).isEqualTo(firstLine.getColor()),
+                () -> assertThat(lines.get(0).getStations().get(0).getId()).isEqualTo(firstLine.getUpStationId()),
+                () -> assertThat(lines.get(0).getStations().get(1).getId()).isEqualTo(firstLine.getDownStationId())
+        );
+
+        assertAll(
+                () -> assertThat(lines.get(1).getName()).isEqualTo(secondLine.getName()),
+                () -> assertThat(lines.get(1).getColor()).isEqualTo(secondLine.getColor()),
+                () -> assertThat(lines.get(1).getStations().get(0).getId()).isEqualTo(secondLine.getUpStationId()),
+                () -> assertThat(lines.get(1).getStations().get(1).getId()).isEqualTo(secondLine.getDownStationId())
+        );
     }
 
     @Test
     @DisplayName("노선 정보 삭제")
     void delete() {
-        LineRequest line = new LineRequest("4호선", "red");
+        LineRequest line = new LineRequest("4호선", "red", 1L, 2L, 10);
         LineResponse newLine = lineService.createLine(line);
 
         assertThat(lineService.deleteLine(newLine.getId())).isEqualTo(1);
@@ -96,8 +109,8 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정보 업데이트")
     void update() {
-        LineRequest line = new LineRequest("11호선", "red");
-        LineRequest lineForUpdate = new LineRequest("신분당선", "red");
+        LineRequest line = new LineRequest("11호선", "red", 1L, 2L, 10);
+        LineRequest lineForUpdate = new LineRequest("신분당선", "red", 1L, 3L, 10);
 
         LineResponse newLine = lineService.createLine(line);
 
@@ -107,7 +120,7 @@ class LineServiceTest {
     @Test
     @DisplayName("중복되는 이름으로 노선이름 업데이트시 예외를 발생한다.")
     void updateNotExistLine() {
-        LineRequest line = new LineRequest("11호선", "red");
+        LineRequest line = new LineRequest("11호선", "red", 1L, 2L, 10);
         LineResponse newLine = lineService.createLine(line);
 
         assertThatThrownBy(() -> lineService.updateLine(newLine.getId(), line))
@@ -118,8 +131,8 @@ class LineServiceTest {
     @Test
     @DisplayName("존재하지 않는 노선정보 업데이트시 예외를 발생한다.")
     void updateDuplicateNameLine() {
-        LineRequest line = new LineRequest("11호선", "red");
-        LineRequest lineForUpdate = new LineRequest("11호선", "red");
+        LineRequest line = new LineRequest("11호선", "red", 1L, 2L, 10);
+        LineRequest lineForUpdate = new LineRequest("11호선", "red", 1L, 2L, 10);
 
         LineResponse newLine = lineService.createLine(line);
 
@@ -131,7 +144,7 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정보 조회")
     void find() {
-        LineRequest line = new LineRequest("4호선", "red");
+        LineRequest line = new LineRequest("4호선", "red", 1L, 2L, 10);
         LineResponse newLine = lineService.createLine(line);
 
         assertThat(lineService.findLine(newLine.getId()).getName()).isEqualTo(line.getName());
@@ -145,6 +158,4 @@ class LineServiceTest {
                 .isInstanceOf(DataNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
-
- */
 }

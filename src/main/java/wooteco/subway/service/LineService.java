@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -69,24 +70,45 @@ public class LineService {
                 .stream()
                 .anyMatch(line -> line.getName().equals(lineRequest.getName()));
     }
-/*
+
     public List<LineResponse> findLines() {
         final List<Line> lines = lineDao.findAll();
 
         return lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .map(this::createLineResponse)
                 .collect(Collectors.toList());
     }
+
+    private LineResponse createLineResponse(final Line line) {
+        List<Section> sections = sectionDao.findByLineId(line.getId());
+        List<StationResponse> stations = createStationResponses(sections);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+    }
+
+    private List<StationResponse> createStationResponses(final List<Section> sections) {
+        final List<StationResponse> stations = new ArrayList<>();
+        for (Section section : sections) {
+            final Station upStation = stationDao.findById(section.getUpStationId());
+            final Station downStation = stationDao.findById(section.getDownStationId());
+
+            stations.add(new StationResponse(upStation.getId(), upStation.getName()));
+            stations.add(new StationResponse(downStation.getId(), downStation.getName()));
+        }
+        return stations.stream()
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
 
     public LineResponse findLine(final Long id) {
         try {
             Line line = lineDao.findById(id);
-            return new LineResponse(line.getId(), line.getName(), line.getColor());
+            return createLineResponse(line);
         } catch (EmptyResultDataAccessException e) {
             throw new DataNotFoundException("존재하지 않는 노선입니다.");
         }
     }
-*/
+
     public int deleteLine(final Long id) {
         validateExist(id);
         return lineDao.delete(id);

@@ -3,8 +3,8 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
 public class FakeSectionDao implements SectionDao {
@@ -22,6 +22,13 @@ public class FakeSectionDao implements SectionDao {
         Section persistSection = createNewObject(section);
         sections.add(persistSection);
         return persistSection;
+    }
+
+    @Override
+    public List<Section> findByLineId(long lineId) {
+        return sections.stream()
+                .filter(section -> section.getLineId() == lineId)
+                .collect(Collectors.toList());
     }
 
     private Section createNewObject(Section section) {
