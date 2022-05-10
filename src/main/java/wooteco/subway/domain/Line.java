@@ -16,13 +16,11 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.sections = new Sections();
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections = new Sections();
     }
 
     public Long getId() {

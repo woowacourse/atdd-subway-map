@@ -147,4 +147,12 @@ public class SectionDao {
             return Optional.empty();
         }
     }
+
+    public void deleteById(long id, long lineId) {
+        String sql = "DELETE FROM section WHERE id = :id AND line_id = :lineId";
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("lineId", lineId);
+        namedParameterJdbcTemplate.update(sql, parameters);
+    }
 }

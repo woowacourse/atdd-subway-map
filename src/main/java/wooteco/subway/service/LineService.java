@@ -6,6 +6,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -135,5 +136,54 @@ public class LineService {
 
     private boolean isBetweenStation(Section section, long id) {
         return sectionDao.findByUpStationId(section.getUpStationId(), id).isPresent() || sectionDao.findByDownStationId(section.getDownStationId(), id).isPresent();
+    }
+
+    public void deleteSection(long stationId, long lineId) {
+
+        Station station = stationDao.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
+
+        List<Section> getSections = sectionDao.findByLine(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다."));
+        Sections sections = new Sections(getSections);
+
+        if(getSections.size() == 1){
+            throw new IllegalArgumentException("노선 내의 구간이 하나라면 삭제할 수 없습니댜.");
+        }
+
+        if(sections.isFirstStation(station)){
+            deleteFirstStation(stationId, lineId);
+        }
+
+        if(sections.isLastStation(station)){
+            deleteLastStation(stationId ,lineId);
+        }
+
+        deleteBetweenStation(stationId, lineId);
+    }
+
+    private void deleteBetweenStation(long stationId, long lineId) {
+        Section previousSection = sectionDao.findByDownStationId(stationId, lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
+        Section nextSection = sectionDao.findByUpStationId(stationId, lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
+
+        sectionDao.deleteById(previousSection.getId(), lineId);
+        sectionDao.deleteById(nextSection.getId(), lineId);
+        int distance = previousSection.getDistance() + nextSection.getDistance();
+        Section mergeSection = new Section(lineId, previousSection.getUpStationId(), nextSection.getDownStationId(), distance);
+        sectionDao.save(mergeSection);
+    }
+
+    private void deleteLastStation(long stationId, long lineId) {
+            Section section = sectionDao.findByDownStationId(stationId, lineId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
+            sectionDao.deleteById(section.getId(), section.getLineId());
+    }
+
+    private void deleteFirstStation(long stationId, long lineId) {
+            Section section = sectionDao.findByUpStationId(stationId, lineId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
+            sectionDao.deleteById(section.getId(), section.getLineId());
     }
 }
