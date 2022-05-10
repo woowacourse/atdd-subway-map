@@ -23,7 +23,7 @@ create table if not exists SECTION
     distance int,
     primary key(id),
     foreign key (line_id) references line (id)
-    );
+);
 
 
 create table if not exists STATION
@@ -33,4 +33,4 @@ create table if not exists STATION
     section_id bigint,
     primary key(id),
     foreign key (section_id) references section (id)
-    );
+);

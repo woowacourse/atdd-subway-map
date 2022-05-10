@@ -34,6 +34,17 @@ public class LineService {
     }
 
     public LineResponse create(LineRequest lineRequest) {
+        Line line = convertLineRequestToLine(lineRequest);
+        LineEntity newLine = lineDao.save(line);
+
+        sectionDao.save( new Section(newLine.getId(), line.getUpStation(), line.getDownStation(),
+                lineRequest.getDistance()));
+
+        List<StationResponse> stations = extractUniqueStationsFromSections(newLine);
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
+    }
+
+    private Line convertLineRequestToLine(LineRequest lineRequest) {
         Station upStation = stationDao.findById(lineRequest.getUpStationId())
                 .orElseThrow(() -> new StationNotFoundException(
                         lineRequest.getUpStationId()));
@@ -43,14 +54,7 @@ public class LineService {
 
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
                 lineRequest.getDistance());
-        LineEntity newLine = lineDao.save(line);
-
-        Section saveSection = new Section(newLine.getId(), upStation, downStation,
-                lineRequest.getDistance());
-
-        sectionDao.save(saveSection);
-        List<StationResponse> stations = extractUniqueStationsFromSections(newLine);
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
+        return line;
     }
 
     public List<LineResponse> findAll() {

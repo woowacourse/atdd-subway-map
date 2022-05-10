@@ -66,9 +66,10 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("상행 쪽의 역이 존재하지 않습니다."));
     }
 
-    public void changeSectionWithNewSections(Section sectionWithUpperStation, List<Section> newAddedSections) {
+    public Section changeSectionWithNewSections(Section sectionWithUpperStation, List<Section> newAddedSections) {
         sections.remove(sectionWithUpperStation);
         sections.addAll(newAddedSections);
+        return sectionWithUpperStation;
     }
 
     public Section findSectionWithLowerStation(Station downStation) {
@@ -76,5 +77,9 @@ public class Sections {
                 .filter(it -> it.getDownStation().equals(downStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("하행 쪽의 역이 존재하지 않습니다."));
+    }
+
+    public int size() {
+        return sections.size();
     }
 }

@@ -18,8 +18,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
@@ -35,10 +37,15 @@ class SectionControllerTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    SectionDao sectionDao;
+
     Station testStation1;
     Station testStation2;
     Station testStation3;
     Station testStation4;
+
+    Section section1;
+    Section section2;
 
     @BeforeEach
     public void setUp() {

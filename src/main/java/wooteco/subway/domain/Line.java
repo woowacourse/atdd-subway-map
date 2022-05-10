@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +26,8 @@ public class Line {
     }
 
     public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
-        this(id, name, color, upStation, downStation, distance, new Sections());
+        this(id, name, color, upStation, downStation, distance, new Sections(
+                Collections.singletonList(new Section(id, upStation, downStation, distance))));
     }
 
     public Line(String name, String color, Station upStation, Station downStation, Long distance) {
@@ -33,9 +36,11 @@ public class Line {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.sections = new Sections(
+                Collections.singletonList(new Section(id, upStation, downStation, distance)));
     }
 
-    public Section addSection(Section section) {
+    public List<Section> addSection(Section section) {
         validateCanAddSection(section);
         boolean upStationExist = sections.containsStation(section.getUpStation());
         boolean downStationExist = sections.containsStation(section.getDownStation());
@@ -45,14 +50,14 @@ public class Line {
             // 상행 종점 등록
             if (section.getDownStation().equals(lineUpEndStation)) {
                 sections.add(section);
-                return section;
+                return List.of(section);
             }
             // TODO: 갈래길 방지 및 거리 validate  (기존 section 갱신)
             // 기존에 노선에 있던 역을 하행 삼아 그 역 사이에 들어가기
             Section sectionWithLowerStation = sections.findSectionWithLowerStation(section.getDownStation());
             List<Section> newAddedSections = sectionWithLowerStation.putBetweenDownStation(section);
-            sections.changeSectionWithNewSections(sectionWithLowerStation, newAddedSections);
-            return section;
+            Section removedSection = sections.changeSectionWithNewSections(sectionWithLowerStation, newAddedSections);
+            return extractResultList(newAddedSections, removedSection);
         }
 
         // 하행 종점 등록 || 하행 구간 사이에 들어가기
@@ -61,17 +66,24 @@ public class Line {
             // 하행 종점 등록
             if (section.getUpStation().equals(lineDownEndStation)) {
                 sections.add(section);
-                return section;
+                return List.of(section);
             }
 
             // TODO: 갈래길 방지 및 거리 validate (기존 section 갱신)
             // 기존에 노선에 있던 역을 상행 삼아 그 역 사이에 들어가기
             Section sectionWithUpperStation = sections.findSectionWithUpperStation(section.getUpStation());
             List<Section> newAddedSections = sectionWithUpperStation.putBetweenUpStation(section);
-            sections.changeSectionWithNewSections(sectionWithUpperStation, newAddedSections);
-            return section;
+            Section removedSection = sections.changeSectionWithNewSections(sectionWithUpperStation, newAddedSections);
+            return extractResultList(newAddedSections, removedSection);
         }
-        return section;
+        throw new IllegalArgumentException("구간을 추가하지 못하는 예외가 발생하였습니다.");
+    }
+
+    private List<Section> extractResultList(List<Section> newAddedSections, Section removedSection) {
+        List<Section> resultList = new ArrayList<>();
+        resultList.addAll(newAddedSections);
+        resultList.add(removedSection);
+        return resultList;
     }
 
     private void validateCanAddSection(Section section) {
@@ -90,8 +102,10 @@ public class Line {
     }
 
     private void changeEndStations() {
-        this.upStation = sections.calculateUpStation();
-        this.downStation = sections.calculateDownStation();
+        if (sections.size() >= 2) {
+            this.upStation = sections.calculateUpStation();
+            this.downStation = sections.calculateDownStation();
+        }
     }
 
     @Override

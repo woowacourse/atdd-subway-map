@@ -41,12 +41,19 @@ public class SectionDao {
         }, keyHolder);
         long insertedId = keyHolder.getKey().longValue();
 
-        return new SectionEntity(insertedId, section.getLineId(), section.getUpStation().getId(), section.getDownStation().getId(),
+        return new SectionEntity(insertedId, section.getLineId(), section.getUpStation().getId(),
+                section.getDownStation().getId(),
                 section.getDistance());
     }
 
     public List<SectionEntity> findAllByLineId(Long lineId) {
         String sql = "select id, line_id, up_station_id, down_station_id, distance from section where line_id = (?)";
         return jdbcTemplate.query(sql, sectionRowMapper, lineId);
+    }
+
+    public Long deleteById(Long id) {
+        String sql = "delete from section where id = ?";
+        this.jdbcTemplate.update(sql, id);
+        return id;
     }
 }

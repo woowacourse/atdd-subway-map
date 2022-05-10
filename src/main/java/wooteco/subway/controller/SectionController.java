@@ -1,7 +1,6 @@
 package wooteco.subway.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +21,7 @@ public class SectionController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        sectionService.createSection(lineId, sectionRequest);
+        sectionService.insertSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 }

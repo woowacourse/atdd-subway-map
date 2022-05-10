@@ -3,26 +3,25 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.entity.LineEntity;
-import wooteco.subway.utils.exceptions.LineNotFoundException;
 
 @JdbcTest
 class LineDaoTest {
 
     private LineDao lineDao;
     private StationDao stationDao;
+    private SectionDao sectionDao;
 
     private Station station1;
     private Station station2;
@@ -32,6 +31,7 @@ class LineDaoTest {
     private Station station6;
 
     private Line testLine1;
+    private Line testLine1SameName;
     private Line testLine2;
     private Line testLine3;
 
@@ -39,7 +39,7 @@ class LineDaoTest {
     private LineDaoTest(JdbcTemplate jdbcTemplate) {
         this.lineDao = new LineDao(jdbcTemplate);
         this.stationDao = new StationDao(jdbcTemplate);
-
+        this.sectionDao = new SectionDao(jdbcTemplate);
     }
 
     @BeforeEach
@@ -51,23 +51,28 @@ class LineDaoTest {
         station5 = stationDao.save(new Station("종합운동장역"));
         station6 = stationDao.save(new Station("잠실새내역"));
 
-        testLine1 = new Line(1L, "testName", "black", station1, station2, 10L);
-        testLine2 = new Line(3L, "testName", "white", station3, station4, 10L);
-        testLine3 = new Line(5L, "testName3", "black", station5, station6, 10L);
+        testLine1 = new Line("testName", "black", station1, station2, 10L);
+        testLine1SameName = new Line("testName", "black", station1, station2, 10L);
+        testLine2 = new Line("testName2", "white", station3, station4, 10L);
+        testLine3 = new Line("testName3", "black", station5, station6, 10L);
     }
 
     @DisplayName("중복되는 노선 이름이 없을 때 성공적으로 저장되는지 테스트")
     @Test
     void save_success() {
-        LineEntity line = lineDao.save(testLine1);
-        assertThat(lineDao.findAll().size()).isEqualTo(1);
+        List<LineEntity> findLines = lineDao.findAll();
+        int beforeSize = findLines.size();
+
+        LineEntity line = lineDao.save(testLine2);
+
+        assertThat(lineDao.findAll().size()).isEqualTo(beforeSize + 1);
     }
 
     @DisplayName("중복되는 노선 이름이 있을 때 예외 반환 테스트")
     @Test
     void save_fail() {
         LineEntity line = lineDao.save(testLine1);
-        assertThatThrownBy(() -> lineDao.save(testLine2))
+        assertThatThrownBy(() -> lineDao.save(testLine1SameName))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
