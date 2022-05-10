@@ -79,7 +79,7 @@ class LineServiceTest {
         lineService.updateById(savedLine.getId(), request);
 
         // then
-        final Line updatedLine = fakeLineDao.findById(savedLine.getId());
+        final Line updatedLine = fakeLineDao.findById(savedLine.getId()).get();
         assertThat(updatedLine.getName()).isEqualTo(name);
         assertThat(updatedLine.getColor()).isEqualTo(color);
     }

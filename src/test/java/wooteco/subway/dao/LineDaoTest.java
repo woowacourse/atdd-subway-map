@@ -66,7 +66,7 @@ public class LineDaoTest {
         Line persistLine = lineDao.save(line7);
 
         // when
-        Line actual = lineDao.findById(persistLine.getId());
+        Line actual = lineDao.findById(persistLine.getId()).get();
 
         // then
         assertThat(actual).isEqualTo(persistLine);
@@ -81,7 +81,7 @@ public class LineDaoTest {
         // when
         final Line line = new Line("5호선", "bg-green-600");
         persistLine.update(line);
-        final Line updatedLine = lineDao.update(persistLine);
+        final Line updatedLine = lineDao.update(persistLine).get();
 
         // then
         assertThat(updatedLine).isEqualTo(line);
