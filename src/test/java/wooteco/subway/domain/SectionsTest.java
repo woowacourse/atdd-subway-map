@@ -40,6 +40,7 @@ class SectionsTest {
 			.containsExactly(1L, 2L, 3L, 4L, 5L);
 	}
 
+
 	@DisplayName("추가할 구간의 상행역, 하행역이 노선에 없으면 추가하지 못한다.")
 	@Test
 	void cannotAddSection() {

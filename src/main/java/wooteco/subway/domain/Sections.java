@@ -1,14 +1,15 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayDeque;
+import static java.util.stream.Collectors.*;
+
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -32,7 +33,7 @@ public class Sections {
 	private List<Section> findMatchStations(Section section) {
 		return values.stream()
 			.filter(each -> each.hasAnySameStation(section))
-			.collect(Collectors.toList());
+			.collect(toList());
 	}
 
 	private void validateMatchAnyStation(List<Section> matchSections) {
@@ -71,29 +72,43 @@ public class Sections {
 
 	public List<Station> sortStations() {
 		LinkedList<Station> sortedStations = new LinkedList<>();
-		Deque<Section> sections = new ArrayDeque<>(values);
-		Section section = sections.pop();
-		sortUpStream(sortedStations, section, sections);
-		sortDownStream(sortedStations, section, sections);
+		Section section = values.get(0);
+
+		fillDownStream(sortedStations, section);
+		fillUpStream(sortedStations, section);
+
 		return sortedStations;
 	}
 
-	private void sortUpStream(LinkedList<Station> sortedStations, Section section, Deque<Section> sections) {
-		Station upStation = section.getUpStation();
-		sortedStations.addFirst(upStation);
-		sections.stream()
-			.filter(each -> each.isDownStation(upStation))
-			.findAny()
-			.ifPresent(each -> sortUpStream(sortedStations, each, sections));
+	private void fillDownStream(LinkedList<Station> sortedStations, Section section) {
+		Map<Station, Station> toDownStations = toStationMap(
+			Section::getUpStation, Section::getDownStation);
+		addDownStream(sortedStations, toDownStations, section.getDownStation());
 	}
 
-	private void sortDownStream(LinkedList<Station> sortedStations, Section pickedSection, Deque<Section> sections) {
-		Station downStation = pickedSection.getDownStation();
-		sortedStations.addLast(downStation);
-		sections.stream()
-			.filter(each -> each.isUpStation(downStation))
-			.findAny()
-			.ifPresent(each -> sortDownStream(sortedStations, each, sections));
+	private void fillUpStream(LinkedList<Station> sortedStations, Section section) {
+		Map<Station, Station> toUpStations = toStationMap(
+			Section::getDownStation, Section::getUpStation);
+		addUpStream(sortedStations, toUpStations, section.getUpStation());
+	}
+
+	private Map<Station, Station> toStationMap(
+		Function<Section, Station> keyMapper,
+		Function<Section, Station> valueMapper) {
+		return values.stream()
+			.collect(toMap(keyMapper, valueMapper));
+	}
+
+	private void addDownStream(LinkedList<Station> sortedStations, Map<Station, Station> stations, Station station) {
+		sortedStations.addLast(station);
+		Optional.ofNullable(stations.get(station))
+			.ifPresent(value -> addDownStream(sortedStations, stations, value));
+	}
+
+	private void addUpStream(LinkedList<Station> sortedStations, Map<Station, Station> stations, Station station) {
+		sortedStations.addFirst(station);
+		Optional.ofNullable(stations.get(station))
+			.ifPresent(value -> addUpStream(sortedStations, stations, value));
 	}
 
 	public void executeEach(Consumer<Section> consumer) {
@@ -107,7 +122,7 @@ public class Sections {
 	public Sections deleteByStation(Long stationId) {
 		List<Section> sections = values.stream()
 			.filter(section -> section.matchAnyStation(stationId))
-			.collect(Collectors.toList());
+			.collect(toList());
 		sections.forEach(values::remove);
 		Sections resultSections = new Sections(sections);
 		addUpdatedSection(resultSections);
