@@ -4,10 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.*;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -15,7 +12,6 @@ import wooteco.subway.dto.StationResponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,52 +30,37 @@ public class LineService {
     public LineResponse create(LineRequest lineRequest) {
         Line line = lineDao.save(lineRequest);
         sectionDao.saveInitialSection(lineRequest, line.getId());
-        List<Section> sections = sectionDao.findByLine(line.getId())
-                .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), makeStations(sections));
-    }
-
-    private List<StationResponse> makeStations(List<Section> sections) {
-        List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
-            Station upStation = stationDao.findById(section.getUpStationId())
-                    .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
-            Station downStation = stationDao.findById(section.getDownStationId())
-                    .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
-
-            stations.add(upStation);
-            stations.add(downStation);
-        }
-
-        return stations.stream()
-                .distinct()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), makeSectionsToStations(line.getId()).sortStations());
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
 
         return lines.stream()
-                .map((line) -> new LineResponse(line.getId(), line.getName(), line.getColor(), findStationsByLine(line.getId())))
+                .map((line) -> new LineResponse(line.getId(), line.getName(), line.getColor(),makeSectionsToStations(line.getId()).sortStations()))
                 .collect(Collectors.toList());
     }
 
-
-    public List<StationResponse> findStationsByLine(long lineId){
-        List<Section> sections = sectionDao.findByLine(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다."));
-
-        return makeStations(sections);
-    }
-
-
-    public LineResponse findById(Long id) {
+    public LineResponse findById(long id) {
         Line line = lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다."));
-        List<Section> sections = sectionDao.findByLine(id)
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), makeSectionsToStations(id).sortStations());
+    }
+
+    private Sections makeSectionsToStations(long lineId) {
+        List<SectionWithStation> sections = new ArrayList<>();
+        List<Section> getSections = sectionDao.findByLine(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다."));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), makeStations(sections));
+
+        for (Section section : getSections) {
+            Station upStation = stationDao.findById(section.getUpStationId())
+                    .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
+            Station downStation = stationDao.findById(section.getDownStationId())
+                    .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
+            sections.add(SectionWithStation.of(section, upStation, downStation));
+        }
+
+        return new Sections(sections);
     }
 
     public void update(Long id, LineRequest lineRequest) {
@@ -143,13 +124,9 @@ public class LineService {
         Station station = stationDao.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
 
-        List<Section> getSections = sectionDao.findByLine(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다."));
-        Sections sections = new Sections(getSections);
 
-        if(getSections.size() == 1){
-            throw new IllegalArgumentException("노선 내의 구간이 하나라면 삭제할 수 없습니댜.");
-        }
+        Sections sections = makeSectionsToStations(lineId);
+        validateSectionSize(sections);
 
         if(sections.isFirstStation(station)){
             deleteFirstStation(stationId, lineId);
@@ -160,6 +137,12 @@ public class LineService {
         }
 
         deleteBetweenStation(stationId, lineId);
+    }
+
+    private void validateSectionSize(Sections sections) {
+        if(sections.isLessThanOneSection()){
+            throw new IllegalArgumentException("노선 내의 구간이 하나 이하라면 삭제할 수 없습니댜.");
+        }
     }
 
     private void deleteBetweenStation(long stationId, long lineId) {
