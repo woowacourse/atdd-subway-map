@@ -23,15 +23,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성하면 201 created를 반환하고 Location header에 url resource를 반환한다.")
     @Test
     void createLine() {
-        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
 
-        // when
         ExtractableResponse<Response> response = httpPostTest(params, "/lines");
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
