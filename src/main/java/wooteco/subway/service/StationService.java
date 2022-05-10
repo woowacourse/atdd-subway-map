@@ -43,6 +43,14 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    public Station findById(Long id) {
+        Optional<StationEntity> stationEntity = stationDao.findById(id);
+        if (stationEntity.isEmpty()) {
+            throw new NoSuchElementException(NOT_EXIST_ERROR);
+        }
+        return new Station(stationEntity.get().getId(), stationEntity.get().getName());
+    }
+
     public void deleteStation(Long id) {
         Optional<StationEntity> wrappedStationEntity = stationDao.findById(id);
         if (wrappedStationEntity.isEmpty()) {
