@@ -67,7 +67,7 @@ public class SectionService {
 
     private void updateDownStation(Long lineId, SectionRequest request, Optional<Section> sectionByDownStation) {
         Section section = sectionByDownStation.get();
-        int distance = request.getDistance() - section.getDistance();
+        int distance = section.getDistance() - request.getDistance();
         validateDistanceNegative(distance);
 
         sectionDao.update(section.getId(), new Section(

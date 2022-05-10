@@ -358,9 +358,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Sql(value = "/sql/InsertSections.sql")
-    @DisplayName("갈래길 방지로 구간을 등록한다.")
+    @DisplayName("상행선이 같은 갈래길 방지로 구간을 등록한다.")
     @Test
-    void addSectionBetweenStation() {
+    void addSectionBetweenUpStation() {
         /*
         이미 등록된 노선 아이디 : 1
         이미 등록된 역 아이디 : 1, 2, 3, 4
@@ -371,6 +371,49 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long lineId = 1L;
         Long paramUpStationId = 1L;
         Long paramDownStationId = 3L;
+        int paramDistance = 5;
+        SectionRequest params = new SectionRequest(paramUpStationId, paramDownStationId, paramDistance);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+        List<Station> stations = findResponse.body().jsonPath().getList("stations", Station.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stations).hasSize(3),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(3L),
+                () -> assertThat(stations.get(2).getId()).isEqualTo(2L)
+        );
+    }
+
+    @Sql(value = "/sql/InsertSections.sql")
+    @DisplayName("하행선이 같은 갈래길 방지로 구간을 등록한다.")
+    @Test
+    void addSectionBetweenDownStation() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3, 4
+        구간 등록된 역 아이디 : 1, 2
+        역 사이 거리 : 10
+         */
+        // given
+        Long lineId = 1L;
+        Long paramUpStationId = 3L;
+        Long paramDownStationId = 2L;
         int paramDistance = 5;
         SectionRequest params = new SectionRequest(paramUpStationId, paramDownStationId, paramDistance);
 
