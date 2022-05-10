@@ -170,36 +170,23 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
-//    @Test
-//    @DisplayName("등록된 노선을 삭제한다.")
-//    void delete() {
-//        //given
-//        Map<String, String> params = new HashMap<>();
-//        params.put("name", "신분당선");
-//        params.put("color", "bg-red-600");
-//        params.put("upStationId", "1");
-//        params.put("downStationId", "2");
-//        params.put("distance", "10");
-//
-//        RestAssured.given().log().all()
-//                .body(params)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when()
-//                .post("/lines")
-//                .then().log().all()
-//                .extract();
-//
-//        //when
-//        ExtractableResponse<Response> response = RestAssured.given().log().all()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when()
-//                .delete("/lines/1")
-//                .then().log().all()
-//                .extract();
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//    }
+    @Test
+    @DisplayName("등록된 노선을 삭제한다.")
+    void delete() {
+        //given
+        createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 
     private ExtractableResponse<Response> createLineResponse(LineRequest lineRequest) {
         createStationResponse(new StationRequest("강남역"));

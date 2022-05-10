@@ -85,11 +85,10 @@ public class LineService {
         lineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
-    /*
     public void delete(Long id) {
         lineDao.deleteById(id);
     }
-*/
+
     public void addSection(SectionRequest sectionRequest, long lineId) {
         Section newSection = new Section(sectionRequest, lineId);
         if(isStartOrEndOfSection(newSection, lineId)){
