@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class SectionsTest {
 
@@ -80,15 +81,16 @@ public class SectionsTest {
         );
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(ints = {5, 6})
     @DisplayName("추가하려는 구간 길이가 추가할 구간 사이 길이보다 크거나 같으면 예외를 던진다.")
-    void addSectionWithOverDistanceException() {
+    void addSectionWithOverDistanceException(int distance) {
         //given
         Section section = new Section(new Station("역삼"), new Station("강남"), 5);
         Sections sections = new Sections(section);
 
         //when
-        Section newSection = new Section(new Station("역삼"), new Station("서초"), 5);
+        Section newSection = new Section(new Station("역삼"), new Station("서초"), distance);
 
         //then
         assertThatThrownBy(() -> sections.add(newSection))
@@ -114,7 +116,8 @@ public class SectionsTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource(value = {"강남:선릉", "선릉:강남", "서초:선릉", "선릉:서초"}, delimiter = ':')
     @DisplayName("등록하려는 구간의 두 역이 이미 존재할 경우 등록할 수 없다(중간에 있는 두 역을 포함하는 경우).")
     void addOverlapTwoStationsInMiddle() {
         //given
@@ -133,9 +136,10 @@ public class SectionsTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource(value = {"역삼:선릉", "선릉:역삼"}, delimiter = ':')
     @DisplayName("등록하려는 구간의 두 역이 이미 존재할 경우 등록할 수 없다(상행 종점과 하행 종점 두 역을 포함하는 경우).")
-    void addOverlapWithTwoDestinations() {
+    void addOverlapWithTwoDestinations(String stationNameA, String stationNameB) {
         //given
         Section sectionA = new Section(new Station("역삼"), new Station("강남"), 5);
         Section sectionB = new Section(new Station("강남"), new Station("서초"), 5);
@@ -146,7 +150,7 @@ public class SectionsTest {
         sections.add(sectionC);
 
         //when, then
-        assertThatThrownBy(() -> sections.add(new Section(new Station("역삼"), new Station("선릉"), 4)))
+        assertThatThrownBy(() -> sections.add(new Section(new Station(stationNameA), new Station(stationNameB), 4)))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }
