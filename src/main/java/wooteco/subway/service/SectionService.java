@@ -9,6 +9,8 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionRequest;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class SectionService {
@@ -99,5 +101,57 @@ public class SectionService {
                 .filter(s -> s.getUpStationId().equals(upStationId))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void delete(Long lineId, Long stationId) {
+        if (!stationDao.hasStationByStationAndLineId(lineId, stationId)) {
+            throw new IllegalArgumentException("현재 라인에 존재하지 않는 역입니다.");
+        }
+        List<Section> sections = sectionDao.findAllByLineId(lineId);
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
+        }
+
+        // 상행선, 하행선인 경우
+        Optional<Section> sectionWithLastStation = checkAndExtractLastStation(stationId, sections);
+        if (sectionWithLastStation.isPresent()) {
+            sectionDao.deleteById(sectionWithLastStation.get().getId());
+            return;
+        }
+
+        // 중간 삭제인 경우
+        Section upSideStation = extractUpSideStation(stationId, sections);
+        Section downSideStation = extractDownSideStation(stationId, sections);
+        Section newSection = new Section(lineId, upSideStation.getUpStationId(), downSideStation.getDownStationId(),
+                upSideStation.getDistance() + downSideStation.getDistance());
+        sectionDao.deleteById(upSideStation.getId());
+        sectionDao.deleteById(downSideStation.getId());
+        sectionDao.insert(newSection);
+    }
+
+    private Optional<Section> checkAndExtractLastStation(Long stationId, List<Section> sections) {
+        if (isLastUpStation(sections, stationId)) {
+            return sections.stream()
+                    .filter(s -> s.getUpStationId().equals(stationId))
+                    .findFirst();
+        }
+        if (isLastDownStation(sections, stationId)) {
+            return sections.stream()
+                    .filter(s -> s.getDownStationId().equals(stationId))
+                    .findFirst();
+        }
+        return Optional.empty();
+    }
+
+    private Section extractUpSideStation(Long stationId, List<Section> sections) {
+        return sections.stream()
+                .filter(s -> s.getDownStationId().equals(stationId))
+                .findFirst().orElseThrow(NoSuchElementException::new);
+    }
+
+    private Section extractDownSideStation(Long stationId, List<Section> sections) {
+        return sections.stream()
+                .filter(s -> s.getUpStationId().equals(stationId))
+                .findFirst().orElseThrow(NoSuchElementException::new);
     }
 }

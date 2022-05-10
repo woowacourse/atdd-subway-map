@@ -20,14 +20,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(null, lineId, upStationId, downStationId, distance);
+    }
+
     private void validateHasSameStation(Long upStationId, Long downStationId) {
         if (upStationId.equals(downStationId)) {
             throw new IllegalArgumentException("상행역, 하행역은 다른 역이어야 합니다.");
         }
-    }
-
-    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this(null, lineId, upStationId, downStationId, distance);
     }
 
     public Long getId() {

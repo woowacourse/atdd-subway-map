@@ -153,4 +153,54 @@ class SectionServiceTest {
                     .hasMessageMatching("구간 사이의 거리는 0보다 커야합니다.");
         }
     }
+
+    @DisplayName("구간 삭제 테스트")
+    @Nested
+    class DeleteTest {
+
+        @DisplayName("상행 종점 역이 포함된 구간을 올바르게 삭제한다.")
+        @Test
+        void deleteSectionAtLastUpStation() {
+            sectionService.delete(savedLine.getId(), savedStation1.getId());
+
+            List<Section> changedSections = sectionDao.findAllByLineId(savedLine.getId());
+            assertThat(changedSections).hasSize(1);
+        }
+
+        @DisplayName("하행 종점 역이 포함된 구간을 올바르게 삭제한다.")
+        @Test
+        void deleteSectionAtLastDownStation() {
+            sectionService.delete(savedLine.getId(), savedStation3.getId());
+
+            List<Section> changedSections = sectionDao.findAllByLineId(savedLine.getId());
+            assertThat(changedSections).hasSize(1);
+        }
+
+        @DisplayName("중간 역이 포함된 구간을 올바르게 삭제한다.")
+        @Test
+        void deleteSectionAtMiddleStation() {
+            sectionService.delete(savedLine.getId(), savedStation2.getId());
+
+            List<Section> changedSections = sectionDao.findAllByLineId(savedLine.getId());
+            assertThat(changedSections).hasSize(1);
+        }
+
+        @DisplayName("구간이 하나만 남았을 경우 예외가 발생한다.")
+        @Test
+        void throwsExceptionWithOneRemainSection() {
+            sectionService.delete(savedLine.getId(), savedStation1.getId());
+
+            assertThatThrownBy(() -> sectionService.delete(savedLine.getId(), savedStation2.getId()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageMatching("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
+        }
+
+        @DisplayName("현재 라인에 존재하지 않는 역으로 삭제 시도시 예외가 발생한다.")
+        @Test
+        void throwsExceptionWithNotExistStationInLine() {
+            assertThatThrownBy(() -> sectionService.delete(savedLine.getId(), savedStation4.getId()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageMatching("현재 라인에 존재하지 않는 역입니다.");
+        }
+    }
 }
