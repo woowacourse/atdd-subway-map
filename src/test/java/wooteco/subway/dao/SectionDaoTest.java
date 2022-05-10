@@ -58,8 +58,8 @@ public class SectionDaoTest {
         long actualDownStationId = section.getDownStationId();
         int actualDistance = section.getDistance();
 
-        assertThat(actualUpStationId).isEqualTo(1L);
-        assertThat(actualDownStationId).isEqualTo(2L);
+        assertThat(actualUpStationId).isEqualTo(station1.getId());
+        assertThat(actualDownStationId).isEqualTo(station2.getId());
         assertThat(actualDistance).isEqualTo(10);
     }
 
