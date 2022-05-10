@@ -6,7 +6,10 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.request.SectionRequest;
 
 @Service
 public class SectionService {
@@ -27,5 +30,12 @@ public class SectionService {
             .map(id -> stationDao.findById(id).get())
             .sorted()
             .collect(Collectors.toList());
+    }
+
+    public void addSection(final Long lineId, final SectionRequest sectionRequest) {
+        final Section targetSection = sectionRequest.toEntity(lineId);
+        //객체 vs List객체 비교를 위해, 일급컬렉션 생성
+        //final List<Section> sectionList = sectionDao.findAllByLineId(lineId);
+        final Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
     }
 }
