@@ -3,17 +3,14 @@ package wooteco.subway.dao;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.utils.exception.IdNotFoundException;
@@ -95,10 +92,13 @@ public class SectionRepository {
 
     public void update(final Section section) {
         String sql = "UPDATE section SET "
-                + "up_station_id = :upStationId, down_station_id = :downStationId, distance := distance "
+                + "up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance "
                 + "WHERE id = :id";
 
-        SqlParameterSource parameters = new BeanPropertySqlParameterSource(section);
+        SqlParameterSource parameters = new MapSqlParameterSource("upStationId", section.getUpStation().getId())
+                .addValue("downStationId", section.getDownStation().getId())
+                .addValue("distance", section.getDistance())
+                .addValue("id", section.getId());
         int rowCounts = namedParameterJdbcTemplate.update(sql, parameters);
         if (rowCounts == NO_ROW) {
             throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + section.getId());

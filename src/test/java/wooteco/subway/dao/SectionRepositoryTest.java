@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.TestFixtures.동묘앞역;
 import static wooteco.subway.TestFixtures.신당역;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Section;
@@ -33,5 +34,15 @@ class SectionRepositoryTest extends RepositoryTest {
                 () -> assertThat(foundSection.getUpStation()).isEqualTo(saved_신당역),
                 () -> assertThat(foundSection.getDownStation()).isEqualTo(saved_동묘앞역)
         );
+    }
+
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    void deleteById() {
+        Station saved_신당역 = stationRepository.save(신당역);
+        Station saved_동묘앞역 = stationRepository.save(동묘앞역);
+        Section section = new Section(1L, saved_신당역, saved_동묘앞역, 5);
+        Long id = sectionRepository.save(section);
+        sectionRepository.deleteSections(List.of(section));
     }
 }

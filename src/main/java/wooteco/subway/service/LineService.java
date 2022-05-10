@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +65,16 @@ public class LineService {
 
     public LineResponse showLine(final Long id) {
         Line line = lineRepository.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), sortSections(line.getSections()));
+    }
+
+    private List<StationResponse> sortSections(final Sections sections) {
+        List<StationResponse> stationResponses = new ArrayList<>();
+        Station firstStation = sections.findFirstStation();
+        stationResponses.add(new StationResponse(firstStation));
+
+
+        return stationResponses;
     }
 
     @Transactional

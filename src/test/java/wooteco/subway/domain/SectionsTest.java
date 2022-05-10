@@ -123,6 +123,15 @@ public class SectionsTest {
                 .hasMessageContaining("더이상 구간을 삭제할 수 없습니다.");
     }
 
+    @DisplayName("첫번째 구간을 탐색한다.")
+    @Test
+    void findFirstStation() {
+        Sections sections = createInitialSections(신당역, 창신역);
+        sections.add(createSection(2L, 동묘앞역, 창신역, 2));
+
+        assertThat(sections.findFirstStation()).isEqualTo(신당역);
+    }
+
 
     private List<Section> getSections() {
         List<Section> initialSections = new ArrayList<>();

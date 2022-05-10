@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import wooteco.subway.utils.exception.SectionCreateException;
+import wooteco.subway.utils.exception.SubwayException;
 
 public class Sections {
 
@@ -33,18 +35,25 @@ public class Sections {
     }
 
     private void validateExistSection(final Station upStation, final Station downStation) {
-        Map<Station, Station> upToDownStations = values.stream()
-                .collect(toMap(Section::getUpStation, Section::getDownStation));
-        if (isSectionConnected(upToDownStations, upStation, downStation)
-                || isSectionConnected(upToDownStations, downStation, upStation)) {
+        if (isSectionConnected(upStation, downStation) || isSectionConnected(downStation, upStation)) {
             throw new SectionCreateException(SECTION_ALREADY_EXIST_MESSAGE);
         }
     }
 
-    private boolean isSectionConnected(final Map<Station, Station> upToDownStations,
-                                       final Station upStation,
-                                       final Station downStation) {
-        return upToDownStations.containsKey(upStation) && upToDownStations.containsValue(downStation);
+    private List<Station> getUpStations() {
+        return values.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getDownStations() {
+        return values.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+    }
+
+    private boolean isSectionConnected(final Station upStation, final Station downStation) {
+        return getUpStations().contains(upStation) && getDownStations().contains(downStation);
     }
 
     private void validateDuplicateSection(final Section section) {
@@ -122,5 +131,14 @@ public class Sections {
 
     public List<Section> getValues() {
         return List.copyOf(values);
+    }
+
+    public Station findFirstStation() {
+        List<Station> downStations = getDownStations();
+        return getUpStations().stream()
+                .filter(station -> !downStations.contains(station))
+                .findFirst()
+                .orElseThrow(() -> new SubwayException("[ERROR] 첫번째 구간을 찾을 수 없습니다."));
+
     }
 }

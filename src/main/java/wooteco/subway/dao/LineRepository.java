@@ -1,7 +1,9 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,6 +15,9 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.utils.exception.IdNotFoundException;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
@@ -50,13 +55,28 @@ public class LineRepository {
     }
 
     public Line findById(final Long id) {
-        String sql = "SELECT * FROM line WHERE id = :id";
+        String sql = "SELECT l.id as line_id, l.name, l.color, "
+                + "s.id as section_id, "
+                + "s.up_station_id, us.name as up_station_name, "
+                + "s.down_station_id, ds.name as down_station_name, s.distance "
+                + "FROM line as l "
+                + "LEFT JOIN section as s ON s.line_id = l.id "
+                + "LEFT JOIN station as us ON us.id = s.up_station_id "
+                + "LEFT JOIN station as ds ON ds.id = s.down_station_id "
+                + "WHERE l.id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        try {
-            return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
-        } catch (EmptyResultDataAccessException e) {
+        List<LineSection> lineSections = namedParameterJdbcTemplate.query(sql, parameters, joinRowMapper());
+        if (lineSections.isEmpty()) {
             throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + id);
         }
+        Line line = lineSections.get(0).getLine();
+        return new Line(line.getId(), line.getName(), line.getColor(), toSections(lineSections));
+    }
+
+    private Sections toSections(List<LineSection> lineSections) {
+        return new Sections(lineSections.stream()
+                .map(LineSection::getSection)
+                .collect(Collectors.toList()));
     }
 
     public Optional<Line> findByName(final String name) {
@@ -78,6 +98,27 @@ public class LineRepository {
         };
     }
 
+    private RowMapper<LineSection> joinRowMapper() {
+        return (resultSet, rowNum) -> {
+            long lineId = resultSet.getLong("line_id");
+            String name = resultSet.getString("name");
+            String color = resultSet.getString("color");
+            Line line = new Line(lineId, name, color);
+            long sectionId = resultSet.getLong("section_id");
+            long upStationId = resultSet.getLong("up_station_id");
+            long downStationId = resultSet.getLong("down_station_id");
+            String upStationName = resultSet.getString("up_station_name");
+            String downStationName = resultSet.getString("down_station_name");
+            int distance = resultSet.getInt("distance");
+            Section section = new Section(sectionId,
+                    lineId,
+                    new Station(upStationId, upStationName),
+                    new Station(downStationId, downStationName),
+                    distance);
+            return new LineSection(line, section);
+        };
+    }
+
     public void update(final Line line) {
         String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
         SqlParameterSource nameParameters = new BeanPropertySqlParameterSource(line);
@@ -96,6 +137,25 @@ public class LineRepository {
         int rowCounts = namedParameterJdbcTemplate.update(sql, parameters);
         if (rowCounts == NO_ROW) {
             throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + id);
+        }
+    }
+
+    static class LineSection {
+
+        private Line line;
+        private Section section;
+
+        public LineSection(Line line, Section section) {
+            this.line = line;
+            this.section = section;
+        }
+
+        public Line getLine() {
+            return line;
+        }
+
+        public Section getSection() {
+            return section;
         }
     }
 }
