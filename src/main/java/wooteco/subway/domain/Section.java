@@ -24,6 +24,25 @@ public class Section {
         return new Section(id, upStationId, downStationId, distance);
     }
 
+    public static Section of(Long upStationId, Long downStationId, int distance) {
+        validate(upStationId, downStationId, distance);
+        return new Section(0L, upStationId, downStationId, distance);
+    }
+
+    public boolean isSameUpStationId(Section section) {
+        return upStationId.equals(section.upStationId);
+    }
+
+    public boolean isSameDownStationId(Section section) {
+        return downStationId.equals(section.downStationId);
+    }
+
+    public void checkDistanceIsLongerThan(Section section) {
+        if (distance <= section.distance) {
+            throw new IllegalArgumentException("기존 역 사이보다 긴 길이를 등록할 수 없습니다.");
+        }
+    }
+
     private static void validate(Long upStationId, Long downStationId, int distance) {
         validateStationIds(upStationId, downStationId);
         validateDistance(distance);

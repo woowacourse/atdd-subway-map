@@ -37,8 +37,19 @@ public class SectionDao {
         return Section.of(id, upStationId, downStationId, distance);
     }
 
+    public void insert(Section section, Long lineId) {
+        simpleJdbcInsert.execute(
+                Map.of("LINE_ID", lineId, "UP_STATION_ID", section.getUpStationId(), "DOWN_STATION_ID",
+                        section.getDownStationId(), "DISTANCE", section.getDistance()));
+    }
+
     public List<Section> findByLineId(Long lineId) {
         final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
         return jdbcTemplate.query(sql, sectionRowMapper, lineId);
+    }
+
+    public void deleteById(Long id) {
+        final String sql = "DELETE FROM SECTION WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
