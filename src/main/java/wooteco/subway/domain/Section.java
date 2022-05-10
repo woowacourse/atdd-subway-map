@@ -12,7 +12,7 @@ public class Section {
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         validateHasSameStation(upStationId, downStationId);
-
+        validatePositiveDistance(distance);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -27,6 +27,12 @@ public class Section {
     private void validateHasSameStation(Long upStationId, Long downStationId) {
         if (upStationId.equals(downStationId)) {
             throw new IllegalArgumentException("상행역, 하행역은 다른 역이어야 합니다.");
+        }
+    }
+
+    private void validatePositiveDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간 사이의 거리는 0보다 커야합니다.");
         }
     }
 
