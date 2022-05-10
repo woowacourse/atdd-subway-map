@@ -54,13 +54,6 @@ public class StationDao {
         }
     }
 
-    public void deleteAll() {
-        String sql = "DROP TABLE station";
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-        String resetIdSql = "ALTER TABLE station ALTER COLUMN id RESTART WITH 1";
-        namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
-    }
-
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
         return namedParameterJdbcTemplate.query(sql, stationRowMapper);

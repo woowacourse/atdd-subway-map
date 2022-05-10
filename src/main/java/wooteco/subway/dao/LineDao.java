@@ -76,13 +76,6 @@ public class LineDao {
         }
     }
 
-    public void deleteAll() {
-        String sql = "TRUNCATE TABLE line";
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-        String resetIdSql = "ALTER TABLE line ALTER COLUMN id RESTART WITH 1";
-        namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
-    }
-
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
         return namedParameterJdbcTemplate.query(sql, lineRowMapper);

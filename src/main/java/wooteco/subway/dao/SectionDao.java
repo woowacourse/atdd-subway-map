@@ -87,13 +87,6 @@ public class SectionDao {
         }
     }
 
-    public void deleteAll() {
-        String sql = "TRUNCATE TABLE section";
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-        String resetIdSql = "ALTER TABLE section ALTER COLUMN id RESTART WITH 1";
-        namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
-    }
-
     public Optional<Section> findByUpStationId(long upStationId, long lineId) {
         try {
             String sql = "SELECT * FROM section WHERE line_id = :lineId AND up_station_id = :id";
