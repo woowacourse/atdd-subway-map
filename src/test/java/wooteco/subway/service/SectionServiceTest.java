@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,6 +61,10 @@ class SectionServiceTest {
         sectionService.delete(lineId, station2.getId());
 
         // then
-        assertThat(sectionDao.findAllByLineId(lineId)).hasSize(1);
+        assertThat(sectionDao.findAllByLineId(lineId)).hasSize(1)
+            .extracting(Section::getUpStation, Section::getDownStation)
+            .containsExactly(
+                    tuple(station1, station3)
+            );
     }
 }
