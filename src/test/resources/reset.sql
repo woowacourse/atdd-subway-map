@@ -1,0 +1,3 @@
+DELETE FROM station;
+DELETE FROM line;
+DELETE FROM section;
