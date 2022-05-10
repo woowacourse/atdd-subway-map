@@ -1,5 +1,7 @@
 package wooteco.subway.dao;
 
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,10 +24,12 @@ public class SectionDaoTest {
         sectionDao = new SectionDao(jdbcTemplate);
     }
 
-    @DisplayName("지하철 노선을 저장하고 찾는다.")
+    @DisplayName("지하철 구간을 저장하고 찾는다.")
     @Test
     void save() {
         Section section = new Section(1L, 1L, 2L, 10);
         sectionDao.save(section);
+
+        assertThat(sectionDao.findAllByLineId(1L)).hasSize(1);
     }
 }

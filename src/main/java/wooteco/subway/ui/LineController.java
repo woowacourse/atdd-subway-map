@@ -20,6 +20,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 import wooteco.subway.service.StationService;
 
 @RestController
@@ -27,19 +28,22 @@ import wooteco.subway.service.StationService;
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
     private final StationService stationService;
 
-    public LineController(LineService lineService, StationService stationService) {
+    public LineController(LineService lineService, SectionService sectionService, StationService stationService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
         this.stationService = stationService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineService.save(lineRequest.toEntity());
-        Station upStation = stationService.findById(lineRequest.getUpStationId());
-        Station downStation = stationService.findById(lineRequest.getDownStationId());
-        LineResponse lineResponse = LineResponse.of(line, upStation, downStation);
+        List<Station> stations = sectionService.findAllStationIdByLineId(line.getId()).stream()
+            .map(stationService::findById)
+            .collect(Collectors.toList());
+        LineResponse lineResponse = LineResponse.of(line, stations);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
