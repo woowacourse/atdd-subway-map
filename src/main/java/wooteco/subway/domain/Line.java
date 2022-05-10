@@ -8,8 +8,6 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private Station upStation;
-    private Station downStation;
     private final Set<Station> stations = new HashSet<>();
     private final Set<Section> sections = new HashSet<>();
 
@@ -28,10 +26,8 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = section.getUpStation();
-        this.downStation = section.getDownStation();
         sections.add(section);
-        stations.addAll(Set.of(upStation, downStation));
+        stations.addAll(Set.of(section.getUpStation(), section.getDownStation()));
     }
 
     public Long getId() {
