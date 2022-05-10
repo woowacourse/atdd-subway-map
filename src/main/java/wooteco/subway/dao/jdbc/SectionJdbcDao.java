@@ -2,6 +2,7 @@ package wooteco.subway.dao.jdbc;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -86,6 +87,42 @@ public class SectionJdbcDao implements SectionDao {
                 resultSet.getLong("down_station_id"),
                 resultSet.getInt("distance")
         ), lineId);
+    }
+
+    @Override
+    public Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId) {
+        final String sql = "SELECT * FROM SECTION WHERE line_id = (?) AND up_station_id = (?)";
+
+        try {
+            Section section = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Section(
+                    resultSet.getLong("id"),
+                    resultSet.getLong("line_id"),
+                    resultSet.getLong("up_station_id"),
+                    resultSet.getLong("down_station_id"),
+                    resultSet.getInt("distance")
+            ), lineId, upStationId);
+            return Optional.ofNullable(section);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId) {
+        final String sql = "SELECT * FROM SECTION WHERE line_id = (?) AND down_station_id = (?)";
+
+        try {
+            Section section = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Section(
+                    resultSet.getLong("id"),
+                    resultSet.getLong("line_id"),
+                    resultSet.getLong("up_station_id"),
+                    resultSet.getLong("down_station_id"),
+                    resultSet.getInt("distance")
+            ), lineId, downStationId);
+            return Optional.ofNullable(section);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override
