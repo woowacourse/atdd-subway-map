@@ -1,8 +1,6 @@
 package wooteco.subway.service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -12,6 +10,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -88,13 +87,9 @@ public class LineService {
     }
 
     private List<StationResponse> getStationResponsesByLineId(Long id) {
-        Set<Long> stationIds = new HashSet<>();
-        sectionDao.findAllByLineId(id).forEach(section -> {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
-        });
+        Sections sections = new Sections(sectionDao.findAllByLineId(id));
 
-        return stationIds.stream()
+        return sections.getSortedStationId().stream()
                 .map(stationDao::findById)
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
