@@ -1,0 +1,101 @@
+package wooteco.subway.domain;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+
+import java.util.List;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+
+class SectionsTest {
+
+    @DisplayName("구간 추가 기능")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestAppendSection() {
+        Section basedSection = new Section(1L, 1L, 3L, 7);
+        Sections sections = new Sections(List.of(basedSection));
+
+        return Stream.of(
+                dynamicTest("상행 종점을 등록한다.", () -> {
+                    Section appendSection = new Section(1L, 2L, 1L, 4);
+
+                    assertDoesNotThrow(() -> sections.append(appendSection));
+                }),
+
+                dynamicTest("상행 종점 등록 중 추가하기 위한 구간의 상행이 기존 구간에 존재하면 예외를 던진다.", () -> {
+                    Section appendSection = new Section(1L, 3L, 2L, 4);
+
+                    assertThatThrownBy(() -> sections.append(appendSection))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("하행 종점을 등록한다.", () -> {
+                    Section appendSection = new Section(1L, 3L, 4L, 3);
+
+                    assertDoesNotThrow(() -> sections.append(appendSection));
+                }),
+
+                dynamicTest("하행 종점 등록 중 추가하기 위한 구간의 하행이 기존 구간에 존재하면 예외를 던진다.", () -> {
+                    Section appendSection = new Section(1L, 4L, 1L, 3);
+
+                    assertThatThrownBy(() -> sections.append(appendSection))
+                            .isInstanceOf(IllegalArgumentException.class);
+                })
+        );
+    }
+
+    @DisplayName("갈래길 방지")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestForkedLoad() {
+        Section basedSection = new Section(1L, 1L, 3L, 7);
+        Sections sections = new Sections(List.of(basedSection));
+
+        return Stream.of(
+                dynamicTest("상행이 같은 구간이 추가될 때 기존 가장 앞단 구간의 길이 보다 작은 경우 추가한다.", () -> {
+                    Section appendSection = new Section(1L, 1L, 2L, 4);
+
+                    assertDoesNotThrow(() -> sections.append(appendSection));
+                }),
+
+                dynamicTest("상행이 같은 구간이 추가될 때 기존 가장 앞단 구간의 길이와 같거나 큰 경우 예외를 던진다.", () -> {
+                    Section appendSection = new Section(1L, 1L, 2L, 7);
+
+                    assertThatThrownBy(() -> sections.append(appendSection))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("하행이 같은 구간이 추가될 때 기존 가장 뒷단 구간의 길이 보다 작은 경우 추가한다.", () -> {
+                    Section appendSection = new Section(1L, 4L, 3L, 2);
+
+                    assertDoesNotThrow(() -> sections.append(appendSection));
+                }),
+
+                dynamicTest("하행이 같은 구간이 추가될 때 기존 가장 뒷간 구간의 길이와 같거나 큰 경우 예외를 던진다.", () -> {
+                    Section appendSection = new Section(1L, 4L, 3L, 7);
+
+                    assertThatThrownBy(() -> sections.append(appendSection))
+                            .isInstanceOf(IllegalArgumentException.class);
+                })
+        );
+    }
+
+    @DisplayName("상행역 하행역 중복 검증")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestDuplicateStation() {
+        Section basedSection1 = new Section(1L, 2L, 1L, 4);
+        Section basedSection2 = new Section(1L, 1L, 3L, 7);
+        Sections sections = new Sections(List.of(basedSection1, basedSection2));
+
+        return Stream.of(
+                dynamicTest("2 - 1 구간 등록 시 상행역과 하행역이 모두 중복이므로 예외를 던진다.", () -> {
+                    Section appendSection = new Section(1L, 2L, 1L, 3);
+
+                    assertThatThrownBy(() -> sections.append(appendSection))
+                            .isInstanceOf(IllegalArgumentException.class);
+                })
+        );
+    }
+}

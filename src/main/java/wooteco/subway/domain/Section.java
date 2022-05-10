@@ -20,6 +20,32 @@ public class Section {
         this(null, lineId, upStationId, downStationId, distance);
     }
 
+    public boolean existsStation(Long stationId) {
+        return upStationId.equals(stationId) || downStationId.equals(stationId);
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return upStationId.equals(section.upStationId);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return downStationId.equals(section.downStationId);
+    }
+
+    public boolean isSameUpAndDownStation(Section section) {
+        return upStationId.equals(section.upStationId) && downStationId.equals(section.downStationId);
+    }
+
+    public void changeUpStation(Section section) {
+        this.upStationId = section.downStationId;
+        this.distance -= section.distance;
+    }
+
+    public void changeDownStation(Section section) {
+        this.downStationId = section.upStationId;
+        this.distance -= section.distance;
+    }
+
     public Long getId() {
         return id;
     }
