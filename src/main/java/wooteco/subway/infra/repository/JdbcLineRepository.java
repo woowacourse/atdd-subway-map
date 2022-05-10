@@ -35,8 +35,8 @@ public class JdbcLineRepository implements LineRepository {
 
 //        sectionDao.findAll()
 //                .stream()
-//                .map(entity -> new Section())
-
+//                .map(entity -> new Section(entity.getId(), entity.getLineId(), entity.getUpStationId(), entity.getDownStationId(), en))
+//
         return null;
     }
 
