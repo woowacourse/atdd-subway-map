@@ -4,13 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.test_utils.HttpMethod;
 import wooteco.subway.test_utils.HttpUtils;
@@ -18,6 +23,20 @@ import wooteco.subway.test_utils.HttpUtils;
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("인수테스트 - /stations")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    @BeforeAll
+    void beforeAll() throws Exception {
+        try (Connection connection = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("setup_test_db.sql"));
+        }
+    }
+
+    @AfterEach
+    public void cleanse() throws Exception {
+        try (Connection connection = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("cleanse_test_db.sql"));
+        }
+    }
 
     @DisplayName("POST /stations - 지하철역 생성 테스트")
     @Nested
