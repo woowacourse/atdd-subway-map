@@ -1017,4 +1017,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(stations.get(1).getId()).isEqualTo(3L)
         );
     }
+
+    @Sql(value = "/sql/InsertSections.sql")
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+    @Test
+    void deleteSectionFailWhenLastSection() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3, 4
+        구간 등록된 역 아이디 : 1, 2
+        역 사이 거리 : 10
+         */
+        // given
+        Long lineId = 1L;
+        Long stationId = 2L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+        );
+    }
 }

@@ -10,6 +10,7 @@ import java.util.Set;
 public class Sections {
 
     private static final int FIRST_INDEX = 0;
+    private static final int MINIMUM_SIZE = 1;
 
     private final List<Section> sections;
 
@@ -71,5 +72,13 @@ public class Sections {
     private Long getDownStationId(List<Long> ids) {
         int lastIndex = ids.size() - 1;
         return ids.get(lastIndex);
+    }
+
+    public boolean isEmpty() {
+        return sections.isEmpty();
+    }
+
+    public boolean isMinimumSize() {
+        return sections.size() == MINIMUM_SIZE;
     }
 }

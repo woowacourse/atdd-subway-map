@@ -6,6 +6,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.exception.NoSuchSectionException;
 
 @Service
 public class SectionService {
@@ -74,9 +75,7 @@ public class SectionService {
 
     public void deleteStation(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        if (!containsIdInSections(stationId, sections)) {
-            return;
-        }
+        validateDeleteStation(stationId, sections);
 
         if (sections.isTerminal(stationId)) {
             sectionDao.deleteByLineIdAndStationId(lineId, stationId);
@@ -85,8 +84,13 @@ public class SectionService {
         deleteStationWhenForkSection(lineId, stationId);
     }
 
-    private boolean containsIdInSections(Long stationId, Sections sections) {
-        return sections.getSortedStationId().contains(stationId);
+    private void validateDeleteStation(Long stationId, Sections sections) {
+        if (!sections.getSortedStationId().contains(stationId)) {
+            throw new NoSuchSectionException();
+        }
+        if (sections.isEmpty() || sections.isMinimumSize()) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없음");
+        }
     }
 
     private void deleteStationWhenForkSection(Long lineId, Long stationId) {
