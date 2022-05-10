@@ -10,7 +10,7 @@ import wooteco.subway.service.SectionService;
 import wooteco.subway.service.dto.SectionRequest;
 
 @RestController
-@RequestMapping("/lines/{LineId}/sections")
+@RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
 
     private final SectionService sectionService;

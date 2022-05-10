@@ -1,20 +1,34 @@
 package wooteco.subway.service;
 
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.service.dto.SectionRequest;
 
 public class SectionService {
 
     private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public SectionService(SectionDao sectionDao) {
+    public SectionService(final SectionDao sectionDao, final StationDao stationDao) {
         this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     public void save(final Long lineId, final SectionRequest sectionRequest) {
+        validateStation(sectionRequest);
+
         Section section = convertSection(sectionRequest);
         sectionDao.save(lineId, section);
+    }
+
+    private void validateStation(final SectionRequest sectionRequest) {
+        if (!stationDao.existStationById(sectionRequest.getUpStationId())) {
+            throw new IllegalArgumentException("상행역이 존재하지 않습니다.");
+        }
+        if (!stationDao.existStationById(sectionRequest.getDownStationId())) {
+            throw new IllegalArgumentException("하행역이 존재하지 않습니다.");
+        }
     }
 
     private Section convertSection(final SectionRequest sectionRequest) {
