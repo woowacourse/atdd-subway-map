@@ -7,7 +7,7 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stationResponses;
+    private List<StationResponse> stations;
 
     private LineResponse() {
     }
@@ -22,7 +22,7 @@ public class LineResponse {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
-        this.stationResponses = List.copyOf(stationResponses);
+        this.stations = List.copyOf(stationResponses);
     }
 
     public Long getId() {
@@ -37,7 +37,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStationResponses() {
-        return stationResponses;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 }
