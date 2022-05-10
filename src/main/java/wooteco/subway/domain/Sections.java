@@ -15,7 +15,7 @@ public class Sections {
     }
 
     public List<Long> getSortedStationIds() {
-        if(value.size() == 0) {
+        if (value.size() == 0) {
             return new LinkedList<>();
         }
 
@@ -58,9 +58,9 @@ public class Sections {
      * 새로운 구간을 등록하는 메서드
      *
      * @param newSection 추가하고자 하는 구간
-     * @return 데이터가 변경된 Section의 List
+     * @return 데이터가 변경된 Section
      */
-    public List<Section> add(Section newSection) {
+    public Optional<Section> add(Section newSection) {
         for (Section section : value) {
             validSection(newSection, section);
 
@@ -72,7 +72,7 @@ public class Sections {
                 return connectWithDownStationId(newSection);
             }
         }
-        return List.of(newSection);
+        return Optional.empty();
     }
 
     private void validSection(Section newSection, Section section) {
@@ -81,14 +81,13 @@ public class Sections {
         }
     }
 
-    private List<Section> connectWithUpStationId(Section newSection) {
+    private Optional<Section> connectWithUpStationId(Section newSection) {
         Optional<Section> foundSection = findByUpStationId(newSection.getUpStationId());
         if (foundSection.isPresent()) {
             foundSection.get().updateUpStationId(newSection.getDownStationId());
             foundSection.get().reduceDistance(newSection.getDistance());
-            return List.of(newSection, foundSection.get());
         }
-        return List.of(newSection);
+        return foundSection;
     }
 
     private Optional<Section> findByUpStationId(Long id) {
@@ -97,14 +96,13 @@ public class Sections {
                 .findFirst();
     }
 
-    private List<Section> connectWithDownStationId(Section newSection) {
+    private Optional<Section> connectWithDownStationId(Section newSection) {
         Optional<Section> foundSection = findByDownStationId(newSection.getDownStationId());
         if (foundSection.isPresent()) {
             foundSection.get().updateDownStationId(newSection.getUpStationId());
             foundSection.get().reduceDistance(newSection.getDistance());
-            return List.of(newSection, foundSection.get());
         }
-        return List.of(newSection);
+        return foundSection;
     }
 
     private Optional<Section> findByDownStationId(Long id) {

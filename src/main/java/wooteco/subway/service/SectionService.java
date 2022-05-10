@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,19 +29,10 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
         Section newSection = sectionRequest.toEntity(lineId);
-        List<Section> needUpdateSections = sections.add(newSection);
+        Optional<Section> updateSection = sections.add(newSection);
 
-        for (Section section : needUpdateSections) {
-            saveOrUpdate(newSection, section);
-        }
-    }
-
-    private void saveOrUpdate(Section newSection, Section section) {
-        if (newSection.equals(section)) {
-            sectionDao.save(section);
-            return;
-        }
-        sectionDao.update(section);
+        sectionDao.save(newSection);
+        updateSection.ifPresent(sectionDao::update);
     }
 
     private void validRequest(Long lineId, SectionRequest sectionRequest) {
@@ -66,7 +56,7 @@ public class SectionService {
 
         sectionDao.deleteById(sectionId);
 
-        Optional<Section> deletedSection = sections.delete(sectionId);
-        deletedSection.ifPresent(section -> sectionDao.deleteById(section.getId()));
+        Optional<Section> updateSection = sections.delete(sectionId);
+        updateSection.ifPresent(sectionDao::update);
     }
 }

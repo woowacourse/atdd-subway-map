@@ -32,12 +32,11 @@ class SectionsTest {
     @MethodSource("parameterProvider")
     void add(Section newSection, Section updateSection) {
         // given
-        List<Section> expected = List.of(newSection, updateSection);
 
         // when
 
         // then
-        assertThat(sections.add(newSection)).isEqualTo(expected);
+        assertThat(sections.add(newSection).get()).isEqualTo(updateSection);
     }
 
     private static Stream<Arguments> parameterProvider() {
