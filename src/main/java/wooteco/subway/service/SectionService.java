@@ -51,6 +51,8 @@ public class SectionService {
             sectionDao.delete(result.getExistedSection());
             save(result.getInsertedSection());
             save(result.getGeneratedSection());
+            return;
         }
+        throw new IllegalArgumentException("추가할 수 없는 노선입니다.");
     }
 }
