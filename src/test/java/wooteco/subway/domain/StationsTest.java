@@ -18,4 +18,15 @@ public class StationsTest {
         Assertions.assertThatThrownBy(() -> stations.checkAbleToAdd(station))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("중복된 이름의 station을 추가하면 예외가 발생한다.")
+    @Test
+    void duplicatedName2() {
+        Station station1 = Station.of("강남역");
+        Stations stations = new Stations(Arrays.asList(station1));
+
+        Station station = Station.of("강남역");
+        Assertions.assertThatThrownBy(() -> stations.checkAbleToAdd(station))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
