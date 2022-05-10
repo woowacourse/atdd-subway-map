@@ -42,7 +42,7 @@ public class Fixture {
         return saved.getId();
     }
 
-    public static List<Long> save2Stations() {
+    public static List<Long> save2StationsRequest() {
         Map<String, String> stationParam1 = new HashMap<>();
         stationParam1.put("name", "선릉역");
         final StationResponseDto station1 = createStationRequest(stationParam1).jsonPath()

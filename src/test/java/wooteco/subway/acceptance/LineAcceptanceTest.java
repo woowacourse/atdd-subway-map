@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.response.LineResponseDto;
-import wooteco.subway.dto.response.StationResponseDto;
 
 @DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -26,7 +25,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        final List<Long> stationIds = save2Stations();
+        final List<Long> stationIds = save2StationsRequest();
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
@@ -46,7 +45,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        final List<Long> stationIds = save2Stations();
+        final List<Long> stationIds = save2StationsRequest();
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
@@ -66,7 +65,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         /// given
-        final List<Long> stationIds = save2Stations();
+        final List<Long> stationIds = save2StationsRequest();
         Map<String, String> lineParams1 = new HashMap<>();
         lineParams1.put("name", "2호선");
         lineParams1.put("color", "bg-green-600");
@@ -105,7 +104,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         /// given
-        final List<Long> stationIds = save2Stations();
+        final List<Long> stationIds = save2StationsRequest();
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
@@ -135,7 +134,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifyLine() {
         // given
-        final List<Long> stationIds = save2Stations();
+        final List<Long> stationIds = save2StationsRequest();
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
@@ -165,7 +164,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLine() {
         // given
-        final List<Long> stationIds = save2Stations();
+        final List<Long> stationIds = save2StationsRequest();
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
