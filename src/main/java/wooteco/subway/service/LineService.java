@@ -91,7 +91,14 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    public void resisterSection(final Long lineId, final Long upStationId, final Long downStationId, final Integer distance) {
+    public void resisterSection(final Long lineId,
+                                final Long upStationId,
+                                final Long downStationId,
+                                final Integer distance) {
         sectionService.resister(lineId, upStationId, downStationId, distance);
+    }
+
+    public void removeStation(final Long lineId, final Long stationId) {
+        sectionService.removeStation(lineId, stationId);
     }
 }

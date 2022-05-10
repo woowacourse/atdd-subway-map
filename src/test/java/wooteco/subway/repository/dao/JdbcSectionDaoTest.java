@@ -61,4 +61,26 @@ class JdbcSectionDaoTest {
                 () -> assertThat(find.getDistance()).isEqualTo(saved.getDistance())
         );
     }
+
+    @DisplayName("id로 구간을 삭제한다.")
+    @Test
+    void deleteById() {
+        final Station station1 = Station.createWithoutId("선릉역");
+        final StationEntity savedStation1 = stationDao.save(new StationEntity(station1));
+        final Station station2 = Station.createWithoutId("잠실역");
+        final StationEntity savedStation2 = stationDao.save(new StationEntity(station2));
+        final Section section = Section.createWithoutId(
+                new Station(savedStation1.getId(), savedStation1.getName()),
+                new Station(savedStation2.getId(), savedStation2.getName()),
+                10
+        );
+        final Line line = Line.createWithoutId("2호선", "bg-green-600");
+        final LineEntity lineEntity = lineDao.save(new LineEntity(line));
+        final SectionEntity saved = sectionDao.save(new SectionEntity(section, lineEntity.getId()));
+
+        sectionDao.deleteById(saved.getId());
+        final Optional<SectionEntity> empty = sectionDao.findById(saved.getId());
+
+        assertThat(empty.isEmpty()).isTrue();
+    }
 }

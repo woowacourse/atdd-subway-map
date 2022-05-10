@@ -10,6 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.mockDao.MockLineDao;
+import wooteco.subway.mockDao.MockSectionDao;
 import wooteco.subway.mockDao.MockStationDao;
 
 class StationServiceTest {
@@ -18,7 +20,9 @@ class StationServiceTest {
 
     @BeforeEach
     void initStore() {
+        MockLineDao.removeAll();
         MockStationDao.removeAll();
+        MockSectionDao.removeAll();
     }
 
     @DisplayName("역 이름을 입력받아서 해당 이름을 가진 역을 등록한다.")
