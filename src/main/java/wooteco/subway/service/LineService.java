@@ -108,12 +108,13 @@ public class LineService {
             throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
         }
 
-        if (!sections.existUpStation(upStation) && !sections.existDownStation(downStation)) {
+        if (!((sections.existUpStation(downStation) || sections.existDownStation(upStation))
+            && !sections.existUpStation(upStation) && !sections.existDownStation(downStation))) {
             throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
         }
 
         if (sections.existUpStation(upStation)) {
-            Section section = sections.findUpStation(upStation);
+            Section section = sections.findContainsUpStation(upStation);
             List<Section> split = section.splitFromUpStation(wait);
             sectionDao.update(split.get(BEFORE_SECTION));
             sectionDao.save(split.get(AFTER_SECTION));
@@ -121,7 +122,7 @@ public class LineService {
         }
 
         if (sections.existDownStation(downStation)) {
-            Section section = sections.findDownStation(downStation);
+            Section section = sections.findContainsDownStation(downStation);
             List<Section> split = section.splitFromDownStation(wait);
             sectionDao.update(split.get(BEFORE_SECTION));
             sectionDao.save(split.get(AFTER_SECTION));
@@ -129,6 +130,18 @@ public class LineService {
         }
 
         sectionDao.save(new Section(line, upStation, downStation, distance));
+    }
+
+    public void delete(Long lineId, Long stationId) {
+        Station station = stationDao.findById(stationId).orElseThrow();
+        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        Section upSection = sections.findContainsDownStation(station);
+        Section downSection = sections.findContainsUpStation(station);
+
+        sectionDao.save(new Section(findLine(lineId), upSection.getUpStation(), downSection.getDownStation(),
+            upSection.getDistance() + downSection.getDistance()));
+        sectionDao.deleteById(upSection.getId());
+        sectionDao.deleteById(downSection.getId());
     }
 }
 

@@ -62,4 +62,8 @@ public class SectionDao {
         jdbcTemplate.update(sql, id, downStationId, distance, sectionId);
     }
 
+    public void deleteById(Long id) {
+        String sql = "delete from section where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }

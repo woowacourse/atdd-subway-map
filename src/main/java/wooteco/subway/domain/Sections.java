@@ -24,14 +24,14 @@ public class Sections {
             .anyMatch(value -> value.getDownStation().equals(station));
     }
 
-    public Section findUpStation(Station station) {
+    public Section findContainsUpStation(Station station) {
         return values.stream()
             .filter(value -> value.getUpStation().equals(station))
             .findFirst()
             .orElseThrow();
     }
 
-    public Section findDownStation(Station station) {
+    public Section findContainsDownStation(Station station) {
         return values.stream()
             .filter(value -> value.getDownStation().equals(station))
             .findFirst()
