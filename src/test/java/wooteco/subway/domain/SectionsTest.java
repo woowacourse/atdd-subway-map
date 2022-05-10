@@ -84,4 +84,71 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간에 등록되지 않은 역입니다.");
     }
+
+    @Test
+    @DisplayName("노선 아이디와 역 아이디를 통해서 중간에 있는 구간을 제거할 수 있다.")
+    void deleteMiddleSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
+        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
+        Sections sections = new Sections(sectionList);
+
+        // when
+        sections.remove(1L, 2L);
+
+        // then
+        assertThat(sections.getSections()).hasSize(1)
+                .extracting("upStationId", "downStationId", "distance")
+                .containsExactly(
+                        tuple(1L, 3L, 10));
+    }
+
+    @Test
+    @DisplayName("노선 아이디와 역 아이디를 통해서 종점 구간을 제거할 수 있다.")
+    void deleteFinalSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
+        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
+        Sections sections = new Sections(sectionList);
+
+        // when
+        sections.remove(1L, 3L);
+
+        // then
+        assertThat(sections.getSections()).hasSize(1)
+                .extracting("upStationId", "downStationId", "distance")
+                .containsExactly(
+                        tuple(1L, 2L, 6));
+    }
+
+    @Test
+    @DisplayName("구간이 1개 이하일 경우 삭제를 하면 예외가 발생한다.")
+    void invalidSizeDeleteMiddleSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
+        Sections sections = new Sections(sectionList);
+
+        // when & then
+        assertThatThrownBy(() -> sections.remove(1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간은 1개 이상이 있어야 합니다.");
+    }
+
+    @Test
+    @DisplayName("등록된 구간들 중에 삭제할 역이 존재하지 않는 경우 예외가 발생한다.")
+    void invalidOfNoneStationNumber() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
+        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
+        Sections sections = new Sections(sectionList);
+
+        // when & then
+        assertThatThrownBy(() -> sections.remove(1L, 4L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 역과 관련된 구간이 존재하지 않습니다.");
+    }
 }

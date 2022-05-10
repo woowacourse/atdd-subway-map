@@ -1,12 +1,15 @@
 package wooteco.subway.domain;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sections {
 
-    private static final int FIRST_STATION = 0;
-    private static final int FIRST_STATION_INDEX = 0;
+    private static final int FIND_FIRST_SECTION_INDEX = 0;
+    private static final int FIND_SECOND_SECTION_INDEX = 1;
     private static final int DISTANCE_MINIMUM = 0;
+    private static final int SECTIONS_MINIMUM = 1;
+    private static final int FIND_FINAL_SECTION_SIZE = 1;
 
     private final List<Section> sections;
 
@@ -21,7 +24,6 @@ public class Sections {
             return;
         }
         saveMiddleSection(requestSection);
-
     }
 
     private void validateSection(Section requestSection) {
@@ -42,13 +44,13 @@ public class Sections {
     }
 
     private boolean validateFinalSection(Section requestSection) {
-        return (sections.get(FIRST_STATION).getUpStationId().equals(requestSection.getDownStationId())
+        return (sections.get(FIND_FIRST_SECTION_INDEX).getUpStationId().equals(requestSection.getDownStationId())
                 || sections.get(sections.size() - 1).getDownStationId().equals(requestSection.getUpStationId()));
     }
 
     private void saveFinalSection(Section requestSection) {
-        if (sections.get(FIRST_STATION).getUpStationId().equals(requestSection.getDownStationId())) {
-            sections.add(FIRST_STATION_INDEX, requestSection);
+        if (sections.get(FIND_FIRST_SECTION_INDEX).getUpStationId().equals(requestSection.getDownStationId())) {
+            sections.add(FIND_FIRST_SECTION_INDEX, requestSection);
             return;
         }
         sections.add(requestSection);
@@ -117,6 +119,51 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구역입니다."));
         return findSection;
     }
+
+    public void remove(Long lineId, Long stationId) {
+        validateSectionSize();
+        final List<Section> findSections = findIncludedByStationId(stationId);
+        validateFindSectionSize(findSections);
+        if (findSections.size() == FIND_FINAL_SECTION_SIZE) {
+            removeFinalSection(findSections);
+            return;
+        }
+        removeMiddleSection(lineId, findSections);
+    }
+    private void validateSectionSize() {
+        if (sections.size() == SECTIONS_MINIMUM) {
+            throw new IllegalArgumentException("구간은 1개 이상이 있어야 합니다.");
+        }
+    }
+
+    private List<Section> findIncludedByStationId(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(stationId)
+                        || section.getDownStationId().equals(stationId))
+                .collect(Collectors.toList());
+    }
+
+    private void validateFindSectionSize(List<Section> findSections) {
+        if (findSections.size() == 0) {
+            throw new IllegalArgumentException("해당 역과 관련된 구간이 존재하지 않습니다.");
+        }
+    }
+
+    private void removeFinalSection(List<Section> findSections) {
+        sections.removeAll(findSections);
+    }
+
+    private void removeMiddleSection(Long lineId, List<Section> findSections) {
+        final int updateDistance = findSections.get(FIND_FIRST_SECTION_INDEX).getDistance() + findSections.get(FIND_SECOND_SECTION_INDEX).getDistance();
+        final Section updateSection = new Section(
+                lineId, findSections.get(FIND_FIRST_SECTION_INDEX).getUpStationId(), findSections.get(FIND_SECOND_SECTION_INDEX).getDownStationId(), updateDistance);
+
+        final int index = sections.indexOf(findSections.get(FIND_FIRST_SECTION_INDEX));
+        sections.add(index, updateSection);
+        sections.removeAll(findSections);
+    }
+
+
 
     public List<Section> getSections() {
         return sections;
