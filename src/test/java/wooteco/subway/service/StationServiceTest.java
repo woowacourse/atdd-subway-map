@@ -69,10 +69,9 @@ class StationServiceTest {
     void deleteStation() {
         // given
         final long id = 1L;
-        final Station station = new Station(id, "신대방역");
 
         // mocking
-        given(stationDao.findById(id)).willReturn(station);
+        given(stationDao.existsById(id)).willReturn(true);
 
         // when
         stationService.deleteStation(id);

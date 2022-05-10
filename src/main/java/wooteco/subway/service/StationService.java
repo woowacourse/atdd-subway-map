@@ -7,6 +7,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.CreateStationRequest;
 import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class StationService {
@@ -32,7 +33,13 @@ public class StationService {
     }
 
     public void deleteStation(final Long id) {
-        stationDao.findById(id);
+        validateNotExistStation(id);
         stationDao.delete(id);
+    }
+
+    private void validateNotExistStation(Long id) {
+        if (!stationDao.existsById(id)) {
+            throw new NotFoundException("존재하지 않는 역(ID: " + id + ")입니다.");
+        }
     }
 }
