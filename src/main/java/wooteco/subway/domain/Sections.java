@@ -43,7 +43,7 @@ public class Sections {
         return sections.stream()
                 .anyMatch(section -> section.getUpStation().equals(station))
                 && sections.stream()
-                .anyMatch(section -> !section.getDownStation().equals(station));
+                .noneMatch(section -> section.getDownStation().equals(station));
     }
 
     private Section findNextSection(final LinkedList<Section> sections, final Section last) {
@@ -211,19 +211,14 @@ public class Sections {
 
     private SectionsUpdateResult removeStationBetween(final Station station) {
         final List<Section> deletedSections = new ArrayList<>();
-        final Section frontSection = removeOldFrontSection(station, deletedSections);
-        final Section backSection = removeOldBackSection(station, deletedSections);
-
-        final List<Section> addedSections = addNewMergedSection(frontSection, backSection);
-
-        return new SectionsUpdateResult(deletedSections, addedSections);
-    }
-
-    private Section removeOldFrontSection(final Station station, final List<Section> deletedSections) {
         final Section frontSection = findSectionThisDownStation(station);
+        final int sectionIndex = value.indexOf(frontSection);
         value.remove(frontSection);
         deletedSections.add(frontSection);
-        return frontSection;
+        final Section backSection = removeOldBackSection(station, deletedSections);
+
+        final List<Section> addedSections = addNewMergedSection(sectionIndex, frontSection, backSection);
+        return new SectionsUpdateResult(deletedSections, addedSections);
     }
 
     private Section removeOldBackSection(final Station station, final List<Section> deletedSections) {
@@ -233,10 +228,10 @@ public class Sections {
         return backSection;
     }
 
-    private List<Section> addNewMergedSection(final Section frontSection, final Section backSection) {
+    private List<Section> addNewMergedSection(final int sectionIndex, final Section frontSection, final Section backSection) {
         final List<Section> addedSections = new ArrayList<>();
         final Section newSection = mergeSection(frontSection, backSection);
-        value.add(value.indexOf(frontSection), newSection);
+        value.add(sectionIndex, newSection);
         addedSections.add(newSection);
         return addedSections;
     }
