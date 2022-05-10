@@ -33,8 +33,7 @@ public class LineService {
 
     public LineResponse create(final CreateLineRequest request) {
         final Long lineId = lineDao.save(request.toLine());
-        sectionDao.save(
-                new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        sectionDao.save(request.toSection(lineId));
         return show(lineId);
     }
 
@@ -72,26 +71,28 @@ public class LineService {
     }
 
     public void createSection(final Long lineId, final CreateSectionRequest request) {
+        validateCreateSection(lineId, request);
+        final Sections sections = sectionDao.findAllByLineId(lineId);
+        sections.add(request.toSection(lineId));
+        updateSections(lineId, sections);
+    }
+
+    private void validateCreateSection(final Long lineId, final CreateSectionRequest request) {
         validateNotExistLine(lineId);
         validateNotExistStation(request.getUpStationId());
         validateNotExistStation(request.getDownStationId());
-        final Sections sections = sectionDao.findAllByLineId(lineId);
-        sections.add(new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
-        sectionDao.deleteAllByLineId(lineId);
-        for (Section section : sections.getSections()) {
-            sectionDao.save(section);
-        }
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {
-        validateNotExistLine(lineId);
-        validateNotExistStation(stationId);
+        validateDeleteSection(lineId, stationId);
         final Sections sections = sectionDao.findAllByLineId(lineId);
         sections.remove(stationId);
-        sectionDao.deleteAllByLineId(lineId);
-        for (Section section : sections.getSections()) {
-            sectionDao.save(section);
-        }
+        updateSections(lineId, sections);
+    }
+
+    private void validateDeleteSection(Long lineId, Long stationId) {
+        validateNotExistLine(lineId);
+        validateNotExistStation(stationId);
     }
 
     private void validateNotExistLine(final Long id) {
@@ -103,6 +104,13 @@ public class LineService {
     private void validateNotExistStation(final Long id) {
         if (!stationDao.existsById(id)) {
             throw new NotFoundException("존재하지 않는 역(ID: " + id + ")입니다.");
+        }
+    }
+
+    private void updateSections(final Long lineId, final Sections sections) {
+        sectionDao.deleteAllByLineId(lineId);
+        for (Section section : sections.getSections()) {
+            sectionDao.save(section);
         }
     }
 }
