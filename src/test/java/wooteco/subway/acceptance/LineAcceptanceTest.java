@@ -517,6 +517,90 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
+
+    @Nested
+    @DisplayName("지하철 구간을 삭제한다.")
+    class DeleteSectionTest extends AcceptanceTest {
+
+        @Test
+        @DisplayName("구간을 삭제한다. - 성공 200")
+        void deleteSection1() {
+            // given
+            final Long stationId1 = createStation(HYEHWA);
+            final Long stationId2 = createStation(SINSA);
+            final Long stationId3 = createStation(GANGNAM);
+            final Long lineId = createLine(LINE_2, RED, stationId1, stationId2, 10);
+            createSection(lineId, stationId2, stationId3, 10);
+
+            // when
+            final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .delete("/lines/" + lineId + "/sections?stationId=" + stationId1)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        }
+
+        @Test
+        @DisplayName("없는 라인의 구간을 삭제한다. - 실패 404")
+        void deleteSections2() {
+            // given
+            final Long stationId = createStation(HYEHWA);
+
+            // when
+            final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .delete("/lines/" + 10L + "/sections?stationId=" + stationId)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
+        @DisplayName("없는 역의 구간을 삭제한다. - 실패 404")
+        void deleteSections3() {
+            // given
+            final Long stationId1 = createStation(HYEHWA);
+            final Long stationId2 = createStation(SINSA);
+            final Long stationId3 = createStation(GANGNAM);
+            final Long lineId = createLine(LINE_2, RED, stationId1, stationId2, 10);
+            createSection(lineId, stationId2, stationId3, 10);
+
+            // when
+            final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .delete("/lines/" + lineId + "/sections?stationId=" + 10L)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
+        @DisplayName("삭제할 수 없는 구간을 삭제한다. - 실패 400")
+        void deleteSections4() {
+            // given
+            final Long stationId1 = createStation(HYEHWA);
+            final Long stationId2 = createStation(SINSA);
+            final Long lineId = createLine(LINE_2, RED, stationId1, stationId2, 10);
+
+            // when
+            final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                    .when()
+                    .delete("/lines/" + lineId + "/sections?stationId=" + stationId1)
+                    .then().log().all()
+                    .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
     private Long createStation(final String name) {
         final Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -548,5 +632,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract()
                 .header("Location").split("/")[2]);
+    }
+
+    private void createSection(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
     }
 }

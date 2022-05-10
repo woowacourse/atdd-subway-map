@@ -120,4 +120,100 @@ public class SectionsTest {
 
         }
     }
+
+    @Nested
+    @DisplayName("지하철 구간을 추가한다.")
+    class RemoveSectionTest {
+
+        @Test
+        @DisplayName("1-2, 2-3 구간이 있을 때, 1 역을 삭제한다.")
+        void removeSection1() {
+            // given
+            final Section section1 = new Section(1L, 1L, 2L, 10);
+            final Section section2 = new Section(1L, 2L, 3L, 10);
+            final Sections sections = new Sections(List.of(section1, section2));
+
+            // when
+            sections.remove(1L);
+
+            // then
+            assertThat(sections.getSections()).containsOnly(section2);
+        }
+
+        @Test
+        @DisplayName("1-2, 2-3 구간이 있을 때, 3 역을 삭제한다.")
+        void removeSection2() {
+            // given
+            final Section section1 = new Section(1L, 1L, 2L, 10);
+            final Section section2 = new Section(1L, 2L, 3L, 10);
+            final Sections sections = new Sections(List.of(section1, section2));
+
+            // when
+            sections.remove(3L);
+
+            // then
+            assertThat(sections.getSections()).containsOnly(section1);
+        }
+
+        @Test
+        @DisplayName("1-2, 2-3, 3-4 구간이 있을 때, 2 역을 삭제한다.")
+        void removeSection3() {
+            // given
+            final Section section1 = new Section(1L, 1L, 2L, 10);
+            final Section section2 = new Section(1L, 2L, 3L, 10);
+            final Section section3 = new Section(1L, 3L, 4L, 10);
+            final Sections sections = new Sections(List.of(section1, section2,section3));
+
+            // when
+            sections.remove(2L);
+
+            // then
+            assertThat(sections.getSections()).containsOnly(new Section(1L, 1L, 3L, 20), section3);
+            assertThat(sections.getSections().get(1).getDistance()).isEqualTo(20);
+        }
+
+        @Test
+        @DisplayName("1-2, 2-3, 3-4 구간이 있을 때, 3 역을 삭제한다.")
+        void removeSection4() {
+            // given
+            final Section section1 = new Section(1L, 1L, 2L, 10);
+            final Section section2 = new Section(1L, 2L, 3L, 10);
+            final Section section3 = new Section(1L, 3L, 4L, 10);
+            final Sections sections = new Sections(List.of(section1, section2,section3));
+
+            // when
+            sections.remove(3L);
+
+            // then
+            assertThat(sections.getSections()).containsOnly(new Section(1L, 2L, 4L, 20), section1);
+            assertThat(sections.getSections().get(1).getDistance()).isEqualTo(20);
+        }
+
+        @Test
+        @DisplayName("1-2구간이 있을 때, 1 역을 삭제하면 예외를 발생시킨다.")
+        void exceptionRemoveSection1() {
+            // given
+            final Section section = new Section(1L, 1L, 2L, 10);
+            final Sections sections = new Sections(List.of(section));
+
+            // when & then
+            assertThatThrownBy(() -> sections.remove(1L))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("노선에 구간은 1개 이상이어야 합니다.");
+        }
+
+        @Test
+        @DisplayName("1-2, 2-1 구간이 있을 때, 2 역을 삭제하면 예외를 발생시킨다.")
+        void exceptionRemoveSection2() {
+            // given
+            final Section section1 = new Section(1L, 1L, 2L, 10);
+            final Section section2 = new Section(1L, 2L, 3L, 10);
+            final Sections sections = new Sections(List.of(section1, section2));
+
+            // when & then
+            assertThatThrownBy(() -> sections.remove(2L))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("노선에 구간은 1개 이상이어야 합니다.");
+        }
+    }
 }

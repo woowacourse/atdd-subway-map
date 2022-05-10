@@ -83,6 +83,17 @@ public class LineService {
         }
     }
 
+    public void deleteSection(final Long lineId, final Long stationId) {
+        validateNotExistLine(lineId);
+        validateNotExistStation(stationId);
+        final Sections sections = sectionDao.findAllByLineId(lineId);
+        sections.remove(stationId);
+        sectionDao.deleteAllByLineId(lineId);
+        for (Section section : sections.getSections()) {
+            sectionDao.save(section);
+        }
+    }
+
     private void validateNotExistLine(final Long id) {
         if (!lineDao.existsById(id)) {
             throw new NotFoundException("존재하지 않는 노선(ID: " + id + ")입니다.");

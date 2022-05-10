@@ -136,6 +136,83 @@ public class Sections {
                 .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
     }
 
+    public void remove(final Long stationId) {
+        if (isFirstStationId(stationId)) {
+            removeFirstSection(stationId);
+            return;
+        }
+        if (isLastStationId(stationId)) {
+            removeLastSection(stationId);
+            return;
+        }
+        removeBothSideSections(stationId);
+    }
+
+    private void removeBothSideSections(Long stationId) {
+        validateSize();
+        final Section upperSection = findSameDownStationIdSection(stationId);
+        final Section lowerSection = findSameUpStationIdSection(stationId);
+        final Section newSection = new Section(upperSection.getLineId(), upperSection.getUpStationId(),
+                lowerSection.getDownStationId(), upperSection.getDistance() + lowerSection.getDistance());
+        sections.remove(upperSection);
+        sections.remove(lowerSection);
+        sections.add(newSection);
+    }
+
+    private void removeLastSection(Long stationId) {
+        validateSizeWhenFirstOrLastSection();
+        final Section section = findSameDownStationIdSection(stationId);
+        sections.remove(section);
+    }
+
+    private void removeFirstSection(final Long stationId) {
+        validateSizeWhenFirstOrLastSection();
+        final Section section = findSameUpStationIdSection(stationId);
+        sections.remove(section);
+    }
+
+
+    private void validateSizeWhenFirstOrLastSection() {
+        if (sections.size() < 2) {
+            throw new IllegalArgumentException("노선에 구간은 1개 이상이어야 합니다.");
+        }
+    }
+
+    private void validateSize() {
+        if (sections.size() < 3) {
+            throw new IllegalArgumentException("노선에 구간은 1개 이상이어야 합니다.");
+        }
+    }
+
+    private boolean isFirstStationId(final Long stationId) {
+        return findFirstSection(findAnySection()).getUpStationId().equals(stationId);
+    }
+
+    private boolean isLastStationId(final Long stationId) {
+        return findLastSection(findAnySection()).getDownStationId().equals(stationId);
+    }
+
+    private Section findLastSection(final Section section) {
+        if (hasLowerSection(section)) {
+            return findLastSection(findLowerSection(section));
+        }
+        return section;
+    }
+
+    private Section findSameUpStationIdSection(final Long stationId) {
+        return sections.stream()
+                .filter(s -> s.getUpStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
+    }
+
+    private Section findSameDownStationIdSection(final Long stationId) {
+        return sections.stream()
+                .filter(s -> s.getDownStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
+    }
+
     public List<Section> getSections() {
         return sections;
     }

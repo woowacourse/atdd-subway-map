@@ -2,6 +2,7 @@ package wooteco.subway.ui;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -139,6 +140,19 @@ public class LineControllerTest {
         mockMvc.perform(post("/lines/" + lineId + "/sections")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestContent))
+                // then
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("지하철 구간을 삭제한다. - 성공 200")
+    void deleteSection_ok() throws Exception {
+        // given
+        final long lineId = 1L;
+        final long stationId = 1L;
+
+        // when
+        mockMvc.perform(delete("/lines/" + lineId + "/sections?stationId=" + stationId))
                 // then
                 .andExpect(status().isOk());
     }

@@ -189,4 +189,26 @@ class LineServiceTest {
         verify(sectionDao).save(new Section(1L, 1L, 1L, 2L, 10));
         verify(sectionDao).save(new Section(2L, 1L, 2L, 3L, 10));
     }
+
+    @Test
+    @DisplayName("지하철 구간을 삭제한다.")
+    void deleteSection() {
+        // given
+        final long lineId = 1L;
+        final long stationId = 1L;
+
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(true);
+        given(stationDao.existsById(any(Long.class))).willReturn(true);
+        given(sectionDao.findAllByLineId(lineId)).willReturn(
+                new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
+                        new Section(2L, 1L, 2L, 3L, 10))));
+
+        // when
+        lineService.deleteSection(lineId, stationId);
+
+        // then
+        verify(sectionDao).deleteAllByLineId(lineId);
+        verify(sectionDao).save(new Section(2L, 1L, 2L, 3L, 10));
+    }
 }
