@@ -42,6 +42,7 @@ public class LineRequest {
     }
 
     public LineEntity toLineEntity() {
-        return LineEntity.of(name, color);
+        return new LineEntity.Builder(name, color)
+                .build();
     }
 }

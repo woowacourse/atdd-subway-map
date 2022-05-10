@@ -26,25 +26,29 @@ public class LineService {
 
     public LineResponse createLine(LineRequest lineRequest) {
         LineEntity lineEntity = lineRequest.toLineEntity();
-        Optional<Line> wrappedStation = lineDao.findByName(lineRequest.getName());
-        if (wrappedStation.isPresent()) {
+        Optional<LineEntity> wrappedLineEntity = lineDao.findByName(lineRequest.getName());
+        if (wrappedLineEntity.isPresent()) {
             throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
         }
-        Line savedLine = lineDao.save(lineEntity);
+        LineEntity savedLineEntity = lineDao.save(lineEntity);
+        Line savedLine = new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
         return LineResponse.of(savedLine);
     }
 
     public List<LineResponse> findAllLines() {
-        List<Line> allLines = lineDao.findAll();
-        return allLines.stream()
+        List<LineEntity> allLineEntities = lineDao.findAll();
+        return allLineEntities.stream()
+                .map(lineEntity -> new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor()))
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(Long id) {
-        Optional<Line> wrappedLine = lineDao.findById(id);
-        checkLineExist(wrappedLine);
-        return LineResponse.of(wrappedLine.get());
+        Optional<LineEntity> wrappedLineEntity = lineDao.findById(id);
+        checkLineExist(wrappedLineEntity);
+        LineEntity lineEntity = wrappedLineEntity.get();
+        Line line = new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
+        return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
@@ -58,7 +62,7 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    private void checkLineExist(Optional<Line> wrappedLine) {
+    private void checkLineExist(Optional<LineEntity> wrappedLine) {
         if (wrappedLine.isEmpty()) {
             throw new NoSuchElementException(NOT_EXIST_ERROR);
         }
