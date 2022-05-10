@@ -60,12 +60,9 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        try {
-            Line line = lineDao.findById(id);
-            return new LineResponse(line);
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("해당 ID의 노선은 존재하지 않습니다.");
-        }
+        Line line = lineDao.findById(id);
+        return new LineResponse(line);
+
     }
 
     public List<LineResponse> findAll() {

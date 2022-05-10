@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -50,7 +51,8 @@ public class LineDao {
     public Line findById(Long id) {
         String selectSql = "select * from LINE where id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(selectSql, source, eventRowMapper);
+        Optional<Line> line = Optional.ofNullable(jdbcTemplate.queryForObject(selectSql, source, eventRowMapper));
+        return line.orElseThrow(() -> new IllegalStateException("노선이 존재하지 않습니다."));
     }
 
     public List<Line> findAll() {

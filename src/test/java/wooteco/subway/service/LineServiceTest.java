@@ -59,17 +59,6 @@ class LineServiceTest {
                 .hasMessage("중복된 Line 이 존재합니다.");
     }
 
-    @Test
-    @DisplayName("존재하지 않는 Id 를 조회한다.")
-    void findByIdException() {
-        //given
-        Long id = -1L;
-        //when
-
-        //then
-        assertThatThrownBy(() -> lineService.findById(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 ID의 노선은 존재하지 않습니다.");
-    }
+    
 
 }
