@@ -64,7 +64,7 @@ public class LineRepository {
                 .collect(Collectors.groupingBy(LineSection::getLine));
         List<Line> lines = groupByLine.keySet()
                 .stream()
-                .map(key -> new Line(key.getId(), key.getName(), key.getName(), toSections(groupByLine.get(key))))
+                .map(key -> new Line(key.getId(), key.getName(), key.getColor(), toSections(groupByLine.get(key))))
                 .collect(Collectors.toList());
         return lines;
     }
