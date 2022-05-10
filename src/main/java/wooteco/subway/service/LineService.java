@@ -1,30 +1,52 @@
 package wooteco.subway.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineRepository;
+import wooteco.subway.dao.SectionRepository;
+import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 @Service
 public class LineService {
 
     private final LineRepository lineRepository;
+    private final SectionRepository sectionRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository,
+                       StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineResponse create(final LineRequest lineRequest) {
         validateDuplicateName(lineRepository.findByName(lineRequest.getName()));
-        Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        Long id = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor(), new Sections(Collections.emptyList()));
+
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId());
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId());
+        Section section = new Section(line.getId(), upStation, downStation, lineRequest.getDistance());
+        sectionRepository.save(section);
+        return new LineResponse(line.getId(),
+                line.getName(),
+                line.getColor(),
+                List.of(new StationResponse(upStation),
+                        new StationResponse(downStation)));
     }
 
     private void validateDuplicateName(final Optional<Line> line) {

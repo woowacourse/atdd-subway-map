@@ -31,15 +31,14 @@ public class LineRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(final Line line) {
+    public Long save(final Line line) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", line.getName())
                 .addValue("color", line.getColor());
 
         try {
-            long id = simpleJdbcInsert.executeAndReturnKey(parameters)
+            return simpleJdbcInsert.executeAndReturnKey(parameters)
                     .longValue();
-            return new Line(id, line.getName(), line.getColor());
         } catch (DuplicateKeyException e) {
             throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE + line.getName());
         }

@@ -4,21 +4,27 @@ import java.util.Objects;
 
 public class Line {
 
-    private final Long id;
-    private final String name;
-    private final String color;
+    private Long id;
+    private String name;
+    private String color;
+    private Sections sections;
 
-    public Line(Long id, String name, String color) {
+    public Line(Long id, String name, String color, Sections sections) {
         this.id = id;
         if (Objects.isNull(name) || Objects.isNull(color)) {
             throw new IllegalArgumentException("[ERROR] 잘못된 입력값입니다.");
         }
         this.name = name;
         this.color = color;
+        this.sections = sections;
+    }
+
+    public Line(Long id, String name, String color) {
+        this(id, name, color, null);
     }
 
     public Line(String name, String color) {
-        this(null, name, color);
+        this(null, name, color, null);
     }
 
     public Long getId() {

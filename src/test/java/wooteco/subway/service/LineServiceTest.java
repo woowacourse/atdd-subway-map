@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineRepository;
+import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
@@ -26,10 +28,16 @@ public class LineServiceTest {
     @Autowired
     private LineRepository lineRepository;
 
+    @Autowired
+    private StationRepository stationRepository;
+
     @DisplayName("노선을 생성한다.")
     @Test
     void create() {
-        LineRequest lineRequest = new LineRequest("분당선", "bg-red-600");
+        Station 선릉역 = stationRepository.save(new Station("선릉역"));
+        Station 선정릉역 = stationRepository.save(new Station("선정릉역"));
+
+        LineRequest lineRequest = new LineRequest("분당선", "bg-red-600", 선릉역.getId(), 선정릉역.getId(), 5);
         LineResponse lineResponse = lineService.create(lineRequest);
 
         assertAll(
@@ -60,8 +68,8 @@ public class LineServiceTest {
     @DisplayName("노선을 조회한다.")
     @Test
     void showLine() {
-        Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
-        LineResponse lineResponse = lineService.showLine(line.getId());
+        Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
+        LineResponse lineResponse = lineService.showLine(id);
 
         assertAll(
             () -> assertThat(lineResponse.getName()).isEqualTo("분당선"),
@@ -72,10 +80,10 @@ public class LineServiceTest {
     @DisplayName("노선을 업데이트 한다.")
     @Test
     void update() {
-        Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
-        lineService.update(line.getId(), new LineRequest("신분당선", "bg-yellow-600"));
+        Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
+        lineService.update(id, new LineRequest("신분당선", "bg-yellow-600"));
 
-        Line findUpdateLine = lineRepository.findById(line.getId());
+        Line findUpdateLine = lineRepository.findById(id);
         assertAll(
             () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
             () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
@@ -86,8 +94,8 @@ public class LineServiceTest {
     @DisplayName("노선을 제거 한다.")
     @Test
     void delete() {
-        Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
-        lineService.delete(line.getId());
+        Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
+        lineService.delete(id);
 
         assertThat(lineRepository.findAll()).isEmpty();
     }
