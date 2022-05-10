@@ -24,13 +24,10 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
     private final SectionRepository sectionRepository;
-    private final LineDao lineDao;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository,
-                       LineDao lineDao) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.lineDao = lineDao;
         this.sectionRepository = sectionRepository;
     }
 
@@ -69,10 +66,6 @@ public class LineService {
     }
 
     public void addSection(Long id, SectionRequest request) {
-        // A - - C
-        // A - B - C
-        // 삭제 : A-C
-        // 추가 : A-B, B-C
         Line line = lineRepository.findById(id);
         Station up = stationRepository.findById(request.getUpStationId());
         Station down = stationRepository.findById(request.getDownStationId());
@@ -80,6 +73,10 @@ public class LineService {
 
         Sections before = new Sections(line.getSections());
         line.add(section);
+        deleteOldSectionsAndInsertNew(line, before);
+    }
+
+    private void deleteOldSectionsAndInsertNew(Line line, Sections before) {
         Sections after = new Sections(line.getSections());
         List<Section> deleteTargets = before.findDifferentSections(after);
         List<Section> insertTargets = after.findDifferentSections(before);
@@ -93,11 +90,10 @@ public class LineService {
                     new SectionRequest(updateTarget.getUp().getId(), updateTarget.getDown().getId(),
                             updateTarget.getDistance()));
         }
-
     }
 
     public void deleteById(Long id) {
-        lineDao.deleteById(id);
+        lineRepository.delete(id);
     }
 
     public void deleteSection(Long id, Long stationId) {
@@ -106,16 +102,6 @@ public class LineService {
 
         Sections before = new Sections(line.getSections());
         line.delete(station);
-        Sections after = new Sections(line.getSections());
-        List<Section> deleteTargets = before.findDifferentSections(after);
-        List<Section> insertTargets = after.findDifferentSections(before);
-
-        for (Section deleteTarget : deleteTargets) {
-            sectionRepository.delete(deleteTarget.getId());
-        }
-        for (Section updateTarget : insertTargets) {
-            sectionRepository.create(line.getId(),
-                    new SectionRequest(updateTarget.getUp().getId(), updateTarget.getDown().getId(), updateTarget.getDistance()));
-        }
+        deleteOldSectionsAndInsertNew(line, before);
     }
 }

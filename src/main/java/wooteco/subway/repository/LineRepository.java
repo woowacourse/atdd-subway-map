@@ -57,4 +57,8 @@ public class LineRepository {
     public void update(Line line) {
         lineDao.update(LineDto.from(line));
     }
+
+    public void delete(Long id) {
+        lineDao.deleteById(id);
+    }
 }

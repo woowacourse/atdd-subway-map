@@ -41,39 +41,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> postToLines(LineRequest lineRequest) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
-    private ExtractableResponse<Response> getLine(Long id) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + id)
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
-    private Long postStationThenReturnId(String name) {
-        StationRequest request = new StationRequest(name);
-        Long stationId = RestAssured.given()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract()
-                .jsonPath().getLong("id");
-        return stationId;
-    }
-
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 예외 발생")
     @Test
     void 존재하는_노선_이름_생성_예외() {
@@ -132,15 +99,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         Long 강남역Id = postStationThenReturnId("강남역");
         Long 선릉역Id = postStationThenReturnId("선릉역");
-        LineRequest lineRequest1 = new LineRequest(
+        LineRequest request = new LineRequest(
                 "2호선", "bg-green-600", 강남역Id, 선릉역Id, 3);
-        Long lineId = postToLines(lineRequest1).jsonPath().getLong("id");
+        Long lineId = postToLines(request).jsonPath().getLong("id");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + lineId)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = getLine(lineId);
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -250,5 +213,38 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> postToLines(LineRequest lineRequest) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        return response;
+    }
+
+    private ExtractableResponse<Response> getLine(Long id) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+        return response;
+    }
+
+    private Long postStationThenReturnId(String name) {
+        StationRequest request = new StationRequest(name);
+        Long stationId = RestAssured.given()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract()
+                .jsonPath().getLong("id");
+        return stationId;
     }
 }
