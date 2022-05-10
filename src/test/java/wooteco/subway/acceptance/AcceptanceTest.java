@@ -1,5 +1,7 @@
 package wooteco.subway.acceptance;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -16,5 +18,13 @@ public class AcceptanceTest {
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+    }
+
+    protected Long extractIdFromHeader(ExtractableResponse<Response> response) {
+        return Long.valueOf(extractLocationFromHeader(response).split("/")[2]);
+    }
+
+    protected String extractLocationFromHeader(ExtractableResponse<Response> createResponse) {
+        return createResponse.header("Location");
     }
 }

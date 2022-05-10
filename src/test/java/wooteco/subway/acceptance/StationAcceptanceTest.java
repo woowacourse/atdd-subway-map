@@ -30,8 +30,10 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestStationCreation(gangnamStationRequest);
 
         // then
+        StationResponse actualResponse = response.jsonPath().getObject(".", StationResponse.class);
+        StationResponse expectedResponse = StationResponse.of(gangnamStationRequest.toStation(extractIdFromHeader(response)));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하는 경우 상태코드 400 오류가 발생한다.")
@@ -72,14 +74,13 @@ class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        List<StationResponse> expectedStations = Stream.of(createResponse1, createResponse2)
+                .map(it -> it.jsonPath().getObject(".", StationResponse.class))
+                .collect(Collectors.toList());
+        List<StationResponse> actualStations = response.jsonPath().getList(".", StationResponse.class);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(actualStations).isEqualTo(expectedStations);
     }
 
     @DisplayName("지하철역을 제거한다.")
@@ -89,10 +90,9 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = requestStationCreation(gangnamStationRequest);
 
         // when
-        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete(uri)
+                .delete(extractLocationFromHeader(createResponse))
                 .then().log().all()
                 .extract();
 

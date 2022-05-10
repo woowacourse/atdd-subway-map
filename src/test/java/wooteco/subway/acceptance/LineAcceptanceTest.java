@@ -29,8 +29,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestLineCreation(lineRequest1);
 
         // then
+        LineResponse actualResponse = response.jsonPath().getObject(".", LineResponse.class);
+        LineResponse expectedResponse = LineResponse.of(lineRequest1.toLine(extractIdFromHeader(response)));
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성하는 경우 상태코드 400 오류가 발생한다.")
@@ -73,13 +76,11 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+        List<LineResponse> expectedResponse = Stream.of(createResponse1, createResponse2)
+                .map(it -> it.jsonPath().getObject(".", LineResponse.class))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        List<LineResponse> actualResponse = response.jsonPath().getList(".", LineResponse.class);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @DisplayName("id 값에 해당하는 지하철 노선을 조회한다.")
@@ -89,15 +90,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = requestLineCreation(lineRequest1);
 
         // when
-        ExtractableResponse<Response> response = requestLineByUri(createResponse.header("Location"));
+        ExtractableResponse<Response> response = requestLineByUri(extractLocationFromHeader(createResponse));
 
         // then
+        LineResponse actualResponse = response.jsonPath().getObject(".", LineResponse.class);
+        LineResponse expectedResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
-        assertThat(expectedLineId).isEqualTo(response.jsonPath().getLong("id"));
-        assertThat(createResponse.jsonPath().getLong("id")).isEqualTo(response.jsonPath().getLong("id"));
-        assertThat(createResponse.jsonPath().getString("name")).isEqualTo(response.jsonPath().getString("name"));
-        assertThat(createResponse.jsonPath().getString("color")).isEqualTo(response.jsonPath().getString("color"));
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 조회하는 경우 상태코드 404 오류가 발생한다.")
@@ -125,10 +125,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         /// given
         ExtractableResponse<Response> createResponse1 = requestLineCreation(lineRequest1);
-        String uri = createResponse1.header("Location");
 
         // when
-        ExtractableResponse<Response> response = requestLineUpdate(uri, lineRequest2);
+        ExtractableResponse<Response> response = requestLineUpdate(extractLocationFromHeader(createResponse1), lineRequest2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -151,12 +150,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     void updateLineWithDuplicateName() {
         /// given
         ExtractableResponse<Response> createResponse1 = requestLineCreation(lineRequest1);
-        String uri = createResponse1.header("Location");
 
         requestLineCreation(lineRequest2);
 
         // when
-        ExtractableResponse<Response> response = requestLineUpdate(uri, lineRequest2);
+        ExtractableResponse<Response> response = requestLineUpdate(extractLocationFromHeader(createResponse1), lineRequest2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -179,7 +177,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = requestLineCreation(lineRequest1);
 
         // when
-        ExtractableResponse<Response> response = requestLineDeletionByUri(createResponse.header("Location"));
+        ExtractableResponse<Response> response = requestLineDeletionByUri(extractLocationFromHeader(createResponse));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
