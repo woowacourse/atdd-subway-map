@@ -22,11 +22,21 @@ public class Sections {
 
     public void addSection(Section section) {
         if (sections.stream()
+                .anyMatch(it -> it.getUpStation().equals(section.getUpStation())) &&
+                sections.stream()
+                        .anyMatch(it -> it.getDownStation().equals(section.getDownStation()))) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있어 등록이 불가능합니다.");
+        }
+
+        if (sections.stream()
                 .anyMatch(it -> it.getUpStation().equals(section.getUpStation()))) {
             final Section section1 = sections.stream()
                     .filter(it -> it.getUpStation().equals(section.getUpStation()))
                     .findFirst()
                     .orElseThrow();
+            if (section1.getDistance() <= section.getDistance()) {
+                throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록이 불가합니다.");
+            }
             sections.remove(section1);
             sections.add(section);
             sections.add(new Section(section.getDownStation(), section1.getDownStation(),
@@ -39,6 +49,9 @@ public class Sections {
                     .filter(it -> it.getDownStation().equals(section.getDownStation()))
                     .findFirst()
                     .orElseThrow();
+            if (section1.getDistance() <= section.getDistance()) {
+                throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록이 불가합니다.");
+            }
             sections.remove(section1);
             sections.add(new Section(section1.getUpStation(), section.getUpStation(), section1.getDistance() - section
                     .getDistance()));
@@ -57,7 +70,11 @@ public class Sections {
             sections.add(section1);
             return;
         }
-//        sections.add(section);
+
+        if (sections.stream()
+                .anyMatch(it -> it.getDownStation().equals(section.getUpStation()))) {
+            sections.add(section);
+        }
     }
 
     public List<Station> getStations() {

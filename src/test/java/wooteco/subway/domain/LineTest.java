@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -114,5 +115,65 @@ public class LineTest {
                 () -> assertThat(section1.getUpStation()).isEqualTo(newUpStation),
                 () -> assertThat(section2.getDownStation()).isEqualTo(downStation)
         );
+    }
+
+    @Test
+    @DisplayName("하행 종점 구간 등록")
+    void addSectionDownTerminal() {
+        //given
+        final Station newDownStation = new Station("정자역");
+        final Section section = new Section(downStation, newDownStation, 10);
+        //when
+        line.addSection(section);
+        //then
+        final List<Section> sections = line.getSections();
+
+        final Section section1 = sections.stream()
+                .filter(it -> it.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseThrow();
+        final Section section2 = sections.stream()
+                .filter(it -> it.getUpStation().equals(downStation))
+                .findFirst()
+                .orElseThrow();
+
+        assertAll(
+                () -> assertThat(section1.getDownStation()).isEqualTo(downStation),
+                () -> assertThat(section2.getDownStation()).isEqualTo(newDownStation)
+        );
+    }
+
+    @Test
+    @DisplayName("역 사이에 구간을 등록할 때 원래 구간보다 길이가 크거나 같을 경우 예외 발생 - 상행 갈래길")
+    void distanceExceptionWithUpBranch() {
+        //given
+        final Station newUpStation = new Station("양재역");
+        final Section section = new Section(newUpStation, downStation, 7);
+
+        //then
+        assertThatThrownBy(() -> line.addSection(section))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("역 사이에 구간을 등록할 때 원래 구간보다 길이가 크거나 같을 경우 예외 발생 - 하행 갈래길")
+    void distanceExceptionWithDownBranch() {
+        //given
+        final Station newDownStation = new Station("양재역");
+        final Section section = new Section(upStation, newDownStation, 7);
+
+        //then
+        assertThatThrownBy(() -> line.addSection(section))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있으면 예외 발생")
+    void alreadyRegisteredException() {
+        //given
+        final Section section = new Section(upStation, downStation, 4);
+        //then
+        assertThatThrownBy(() -> line.addSection(section))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
