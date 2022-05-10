@@ -14,6 +14,7 @@ import wooteco.subway.dto.StationResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,13 +72,16 @@ public class LineService {
         return makeStations(sections);
     }
 
-    /*
-    public SimpleLineResponse findById(Long id) {
+
+    public LineResponse findById(Long id) {
         Line line = lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다."));
-        return new SimpleLineResponse(line);
+        List<Section> sections = sectionDao.findByLine(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다."));
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), makeStations(sections));
     }
 
+    /*
     public void update(Long id, SimpleLineRequest lineRequest) {
         lineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }

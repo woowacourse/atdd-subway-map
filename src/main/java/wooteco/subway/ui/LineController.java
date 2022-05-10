@@ -39,12 +39,13 @@ public class LineController {
         return ResponseEntity.ok(lineService.findAll());
     }
 
-    /*
+
    @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> findLineById(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.findById(id));
     }
 
+    /*
     @PutMapping("/lines/{id}")
     public void updateLine(@PathVariable Long id,@Valid @RequestBody LineRequest lineRequest) {
         lineService.update(id, lineRequest);

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -117,47 +118,36 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(line1, line2 ).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
-//
-//    @Test
-//    @DisplayName("등록된 노선들 중 입력된 id값과 일치하는 노선을 반환한다. ")
-//    void findLindById() {
-//        //given
-//        Map<String, String> params = new HashMap<>();
-//        params.put("name", "신분당선");
-//        params.put("color", "bg-red-600");
-//        params.put("upStationId", "1");
-//        params.put("downStationId", "2");
-//        params.put("distance", "10");
-//
-//        RestAssured.given().log().all()
-//                .body(params)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when()
-//                .post("/lines")
-//                .then().log().all()
-//                .extract();
-//
-//        //when
-//        ExtractableResponse<Response> response = RestAssured.given().log().all()
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when()
-//                .get("/lines/1")
-//                .then().log().all()
-//                .extract();
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-//    }
-//
+
+    @Test
+    @DisplayName("등록된 노선들 중 입력된 id값과 일치하는 노선을 반환한다. ")
+    void findLindById() {
+        //given
+        ExtractableResponse<Response> line = createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+    }
+
 //    @Test
 //    @DisplayName("등록된 노선을 수정한다.")
 //    void update() {
