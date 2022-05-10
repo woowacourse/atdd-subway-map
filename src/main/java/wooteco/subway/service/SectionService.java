@@ -67,26 +67,16 @@ public class SectionService {
     }
 
     private Section convertSectionRequestToSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationDao.findById(sectionRequest.getUpStationId())
-                .orElseThrow(() -> new StationNotFoundException(
-                        sectionRequest.getUpStationId()));
-
-        Station downStation = stationDao.findById(sectionRequest.getDownStationId())
-                .orElseThrow(() -> new StationNotFoundException(
-                        sectionRequest.getDownStationId()));
+        Station upStation = getStationFromId(sectionRequest.getUpStationId());
+        Station downStation = getStationFromId(sectionRequest.getDownStationId());
 
         return new Section(lineId, upStation, downStation,
                 sectionRequest.getDistance());
     }
 
     private Line convertLineEntityToLine(LineEntity lineEntity) {
-        Station upStation = stationDao.findById(lineEntity.getUpStationId())
-                .orElseThrow(() -> new StationNotFoundException(
-                        lineEntity.getUpStationId()));
-
-        Station downStation = stationDao.findById(lineEntity.getDownStationId())
-                .orElseThrow(() -> new StationNotFoundException(
-                        lineEntity.getDownStationId()));
+        Station upStation = getStationFromId(lineEntity.getUpStationId());
+        Station downStation = getStationFromId(lineEntity.getDownStationId());
 
         List<Section> sections = sectionDao.findAllByLineId(lineEntity.getId()).stream()
                 .map(this::convertSectionEntityToSection)
@@ -97,15 +87,16 @@ public class SectionService {
     }
 
     private Section convertSectionEntityToSection(SectionEntity sectionEntity) {
-        Station upStation = stationDao.findById(sectionEntity.getUpStationId())
-                .orElseThrow(() -> new StationNotFoundException(
-                        sectionEntity.getUpStationId()));
-
-        Station downStation = stationDao.findById(sectionEntity.getDownStationId())
-                .orElseThrow(() -> new StationNotFoundException(
-                        sectionEntity.getDownStationId()));
+        Station upStation = getStationFromId(sectionEntity.getUpStationId());
+        Station downStation = getStationFromId(sectionEntity.getDownStationId());
 
         return new Section(sectionEntity.getLineId(), upStation, downStation,
                 sectionEntity.getDistance());
+    }
+
+    private Station getStationFromId(Long upStationId) {
+        return stationDao.findById(upStationId)
+                .orElseThrow(() -> new StationNotFoundException(
+                        upStationId));
     }
 }
