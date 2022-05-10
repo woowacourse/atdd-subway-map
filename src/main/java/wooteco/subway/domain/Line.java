@@ -1,16 +1,15 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class Line {
     private Long id;
     private String name;
     private String color;
-    private List<Section> sections;
+//    private List<Section> sections;
+    private Sections sections;
 
     public Line(String name, String color) {
         this.name = name;
@@ -20,8 +19,9 @@ public class Line {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        sections = new ArrayList<>();
-        sections.add(new Section(upStation, downStation, distance));
+        this.sections = new Sections(upStation, downStation, distance);
+//        sections = new ArrayList<>();
+//        sections.add(new Section(upStation, downStation, distance));
     }
 
     public Line(Long id, String name, String color) {
@@ -30,35 +30,30 @@ public class Line {
         this.color = color;
     }
 
+    public Line(String name, String color, List<Section> sections) {
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections(sections);
+    }
+
     public void addSection(Section section) {
-        if (sections.stream()
-                .anyMatch(it -> it.getUpStation().equals(section.getUpStation()))){
-            final Section section1 = sections.stream()
-                    .filter(it -> it.getUpStation().equals(section.getUpStation()))
-                    .findFirst()
-                    .orElseThrow();
-            sections.remove(section1);
-            sections.add(section);
-            sections.add(new Section(section.getDownStation(), section1.getDownStation(),
-                    section1.getDistance() - section.getDistance()));
-            return;
-        }
-        sections.add(section);
+        sections.addSection(section);
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        }
-        return stations.stream()
-                .distinct()
-                .collect(Collectors.toList());
+//        List<Station> stations = new ArrayList<>();
+//        for (Section section : sections) {
+//            stations.add(section.getUpStation());
+//            stations.add(section.getDownStation());
+//        }
+//        return stations.stream()
+//                .distinct()
+//                .collect(Collectors.toList());
+        return sections.getStations();
     }
 
     public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
+        return Collections.unmodifiableList(sections.getSections());
     }
 
     public Long getId() {
