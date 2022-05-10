@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -9,12 +10,16 @@ public class Sections {
     private final List<Section> value;
 
     public Sections(final List<Section> value) {
-        this.value = value;
+        this.value = new ArrayList<>(value);
     }
 
     public void add(final Section section) {
         validateExist(section);
         validateSection(section);
+
+        if (!isBranched(section)) {
+            value.add(section);
+        }
     }
 
     public boolean isBranched(final Section other) {
@@ -74,5 +79,9 @@ public class Sections {
         if (!hasUpStation && !hasDownStation) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
         }
+    }
+
+    public List<Section> getSections() {
+        return value;
     }
 }
