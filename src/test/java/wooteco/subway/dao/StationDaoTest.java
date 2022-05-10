@@ -1,20 +1,18 @@
 package wooteco.subway.dao;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.util.List;
-
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
-
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Transactional
@@ -29,7 +27,7 @@ public class StationDaoTest {
     }
 
     @BeforeEach
-    void set(){
+    void set() {
         stationDao = new StationDao(jdbcTemplate.getDataSource());
     }
 

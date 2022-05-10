@@ -13,7 +13,7 @@ public class Sections {
         this.sections = sectionWithStations;
     }
 
-    public boolean isLastStation(Station station){
+    public boolean isLastStation(Station station) {
         return sections.stream()
                 .noneMatch(section -> section.getUpStation().equals(station));
     }
@@ -24,7 +24,7 @@ public class Sections {
         stations.add(firstSection.getUpStation());
 
         Station station = firstSection.getDownStation();
-        while(!isLastStation(station)){
+        while (!isLastStation(station)) {
             stations.add(station);
             station = findNextSection(station).getDownStation();
         }
@@ -56,7 +56,7 @@ public class Sections {
                 .orElse(sections.get(0));
     }
 
-    public boolean isFirstStation(Station station){
+    public boolean isFirstStation(Station station) {
         return sections.stream()
                 .noneMatch(section -> section.getDownStation().equals(station));
     }

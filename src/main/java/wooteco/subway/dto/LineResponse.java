@@ -1,8 +1,5 @@
 package wooteco.subway.dto;
 
-import wooteco.subway.domain.Line;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponse {

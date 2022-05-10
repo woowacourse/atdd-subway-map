@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 
 import java.util.Arrays;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -96,7 +94,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
 
         //when
-        LineRequest lineRequest = new LineRequest("3호선","yellow");
+        LineRequest lineRequest = new LineRequest("3호선", "yellow");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(lineRequest)

@@ -17,13 +17,13 @@ public class SectionController {
     }
 
     @PostMapping("/{id}/sections")
-       public void addSection(@Valid @RequestBody SectionRequest sectionRequest, @PathVariable long id) {
-           sectionService.addSection(sectionRequest, id);
-       }
+    public void addSection(@Valid @RequestBody SectionRequest sectionRequest, @PathVariable long id) {
+        sectionService.addSection(sectionRequest, id);
+    }
 
-       @DeleteMapping("{id}/sections")
-       public void deleteSection(@PathVariable long id, @RequestParam long stationId) {
-           sectionService.deleteSection(stationId, id);
-       }
+    @DeleteMapping("{id}/sections")
+    public void deleteSection(@PathVariable long id, @RequestParam long stationId) {
+        sectionService.deleteSection(stationId, id);
+    }
 
 }

@@ -16,6 +16,10 @@ public class SectionWithStation {
         this.distance = distance;
     }
 
+    public static SectionWithStation of(Section section, Station upStation, Station downStation) {
+        return new SectionWithStation(section.getId(), section.getLineId(), upStation, downStation, section.getDistance());
+    }
+
     public Long getId() {
         return id;
     }
@@ -34,9 +38,5 @@ public class SectionWithStation {
 
     public Station getUpStation() {
         return upStation;
-    }
-
-    public static SectionWithStation of(Section section, Station upStation, Station downStation){
-        return new SectionWithStation(section.getId(), section.getLineId(), upStation, downStation, section.getDistance());
     }
 }

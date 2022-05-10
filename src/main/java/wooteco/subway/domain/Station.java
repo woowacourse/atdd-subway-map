@@ -32,7 +32,7 @@ public class Station {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        Station station = (Station)o;
+        Station station = (Station) o;
         return name.equals(station.name);
     }
 
@@ -41,4 +41,3 @@ public class Station {
         return Objects.hash(name);
     }
 }
-

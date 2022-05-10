@@ -1,11 +1,9 @@
 package wooteco.subway.dao;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +13,6 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,7 +41,7 @@ public class SectionDaoTest {
         lineDao = new LineDao(jdbcTemplate.getDataSource());
         station1 = stationDao.save("강남역");
         station2 = stationDao.save("선릉역");
-        station3 =  stationDao.save("판교역");
+        station3 = stationDao.save("판교역");
     }
 
     @Test
@@ -143,9 +140,9 @@ public class SectionDaoTest {
         Line line = lineDao.save(lineRequest);
         Section section1 = new Section(line.getId(), station1.getId(), station3.getId(), 10);
         Section findSection = sectionDao.save(section1);
-        Section newSection =  new Section(line.getId(), station2.getId(), station3.getId(), 5);
+        Section newSection = new Section(line.getId(), station2.getId(), station3.getId(), 5);
 
-        sectionDao.updateDownStation(findSection,newSection);
+        sectionDao.updateDownStation(findSection, newSection);
         Section updatedSection = sectionDao.findById(findSection.getId()).get();
 
         assertThat(updatedSection.getDownStationId()).isEqualTo(station2.getId());
@@ -158,9 +155,9 @@ public class SectionDaoTest {
         Line line = lineDao.save(lineRequest);
         Section section1 = new Section(line.getId(), station1.getId(), station3.getId(), 10);
         Section findSection = sectionDao.save(section1);
-        Section newSection =  new Section(line.getId(), station1.getId(), station2.getId(), 5);
+        Section newSection = new Section(line.getId(), station1.getId(), station2.getId(), 5);
 
-        sectionDao.updateUpStation(findSection,newSection);
+        sectionDao.updateUpStation(findSection, newSection);
         Section updatedSection = sectionDao.findById(findSection.getId()).get();
 
         assertThat(updatedSection.getUpStationId()).isEqualTo(station2.getId());
@@ -173,9 +170,9 @@ public class SectionDaoTest {
         Line line = lineDao.save(lineRequest);
         Section section1 = new Section(line.getId(), station1.getId(), station3.getId(), 10);
         Section findSection = sectionDao.save(section1);
-        Section newSection =  new Section(line.getId(), station1.getId(), station2.getId(), 5);
+        Section newSection = new Section(line.getId(), station1.getId(), station2.getId(), 5);
 
-        sectionDao.updateDistance(findSection,newSection);
+        sectionDao.updateDistance(findSection, newSection);
         Section updatedSection = sectionDao.findById(findSection.getId()).get();
 
         assertThat(updatedSection.getDistance()).isEqualTo(5);
