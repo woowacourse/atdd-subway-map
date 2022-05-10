@@ -50,7 +50,7 @@ public class SectionDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public List<SectionWithStation> findAllSectionWithStationsByLineId(Long lineId) {
+    public List<SectionWithStation> findAllByLineId(Long lineId) {
         final String sql = "SELECT section.id, section.distance, "
                 + "up.id AS upStationId, up.name AS upStationName, "
                 + "down.id AS downStationId, down.name AS downStationName, "
@@ -60,11 +60,6 @@ public class SectionDao {
                 + "JOIN line ON line.id = section.lineId "
                 + "WHERE section.lineId = ?;";
         return jdbcTemplate.query(sql, SECTION_WITH_STATION_ROW_MAPPER, lineId);
-    }
-
-    public List<Section> findAllByLineId(Long lineId) {
-        final String sql = "SELECT * FROM section WHERE lineId = ?";
-        return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, lineId);
     }
 
     public Section findById(Long id) {

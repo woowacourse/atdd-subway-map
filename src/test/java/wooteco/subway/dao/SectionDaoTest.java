@@ -6,7 +6,6 @@ import static wooteco.subway.Fixtures.LINE;
 import static wooteco.subway.Fixtures.STATION;
 import static wooteco.subway.Fixtures.STATION_2;
 import static wooteco.subway.Fixtures.STATION_3;
-import static wooteco.subway.Fixtures.getSection;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,29 +48,6 @@ class SectionDaoTest {
                 .isEqualTo(new Section(lineId, stationId, stationId2, 10));
     }
 
-    @DisplayName("해당 지하철 노선 id의 지하철 구간들을 조회한다.")
-    @Test
-    void findAllByLineId() {
-        //given
-        Long stationId = stationDao.save(STATION);
-        Long stationId2 = stationDao.save(STATION_2);
-        Long stationId3 = stationDao.save(STATION_3);
-        Long lineId = lineDao.save(LINE);
-        Section section1 = new Section(lineId, stationId, stationId2, 10);
-        sectionDao.save(section1);
-        Section section2 = new Section(lineId, stationId2, stationId3, 10);
-        sectionDao.save(section2);
-
-        //when
-        List<Section> sections = sectionDao.findAllByLineId(lineId);
-
-        //then
-        assertThat(sections)
-                .usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(List.of(section1,section2));
-    }
-
     @DisplayName("해당 지하철 노선 id의 지하철 구간(역 정보 포함)들을 조회한다.")
     @Test
     void findAllSectionWithStationsByLineId() {
@@ -86,13 +62,13 @@ class SectionDaoTest {
         sectionDao.save(section2.toEntity());
 
         //when
-        List<SectionWithStation> sections = sectionDao.findAllSectionWithStationsByLineId(lineId);
+        List<SectionWithStation> sections = sectionDao.findAllByLineId(lineId);
 
         //then
         assertThat(sections)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(List.of(section1,section2));
+                .isEqualTo(List.of(section1, section2));
     }
 
     @DisplayName("해당 지하철 노선 upStationId의 지하철 구간들을 조회한다.")

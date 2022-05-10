@@ -53,7 +53,7 @@ public class StationService {
 
     private void validateStationNotLinked(Long stationId) {
         boolean isLinked = lineDao.findAll().stream()
-                .map(line -> new Sections(sectionDao.findAllSectionWithStationsByLineId(line.getId())))
+                .map(line -> new Sections(sectionDao.findAllByLineId(line.getId())))
                 .anyMatch(sections -> sections.calculateStations().contains(stationDao.findById(stationId)));
         if (isLinked) {
             throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);

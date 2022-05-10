@@ -25,7 +25,7 @@ public class SectionService {
 
     public Section save(Section section) {
         checkStationExist(section);
-        Sections sections = new Sections(sectionDao.findAllSectionWithStationsByLineId(section.getLineId()));
+        Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
         sections.validateSave(section);
         if (sections.isMiddleSection(section)) {
             boolean isUpAttach = sections.isMiddleUpAttachSection(section);
@@ -68,12 +68,12 @@ public class SectionService {
     }
 
     public List<Station> findStationsOfLine(Long lineId) {
-        return new Sections(sectionDao.findAllSectionWithStationsByLineId(lineId)).calculateStations();
+        return new Sections(sectionDao.findAllByLineId(lineId)).calculateStations();
     }
 
     public void deleteSection(Long lineId, Long stationId) {
         validateTwoMoreSections(lineId);
-        Sections sections = new Sections(sectionDao.findAllSectionWithStationsByLineId(lineId));
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         if (sections.isFirstUpStation(stationDao.findById(stationId)) || sections.isLastDownStation(stationDao.findById(stationId))) {
             deleteSideStation(lineId, stationId, sections);
             return;
