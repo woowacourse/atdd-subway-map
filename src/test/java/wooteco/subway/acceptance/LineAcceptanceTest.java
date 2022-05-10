@@ -19,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
@@ -267,6 +268,94 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
                 () -> assertThat(response.body().jsonPath().getString("message"))
                         .isEqualTo("존재하지 않는 역입니다")
+        );
+    }
+
+    @Sql(value = "/sql/InsertSections.sql")
+    @DisplayName("상행 종점 구간을 등록한다.")
+    @Test
+    void addSectionUpStation() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3
+        구간 등록된 역 아이디 : 1, 2
+        역 사이 거리 : 10
+         */
+        // given
+        Long lineId = 1L;
+        Long paramUpStationId = 3L;
+        Long paramDownStationId = 1L;
+        int paramDistance = 10;
+        SectionRequest params = new SectionRequest(paramUpStationId, paramDownStationId, paramDistance);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+        List<Station> stations = findResponse.body().jsonPath().getList("stations", Station.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stations).hasSize(3),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(3L),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(1L),
+                () -> assertThat(stations.get(2).getId()).isEqualTo(2L)
+        );
+    }
+
+    @Sql(value = "/sql/InsertSections.sql")
+    @DisplayName("하행 종점 구간을 등록한다.")
+    @Test
+    void addSectionDownStation() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3
+        구간 등록된 역 아이디 : 1, 2
+        역 사이 거리 : 10
+         */
+        // given
+        Long lineId = 1L;
+        Long paramUpStationId = 2L;
+        Long paramDownStationId = 3L;
+        int paramDistance = 10;
+        SectionRequest params = new SectionRequest(paramUpStationId, paramDownStationId, paramDistance);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+        List<Station> stations = findResponse.body().jsonPath().getList("stations", Station.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stations).hasSize(3),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(2L),
+                () -> assertThat(stations.get(2).getId()).isEqualTo(3L)
         );
     }
 
