@@ -53,6 +53,20 @@ public class LineService2 {
         return toLineResponse(line, stations);
     }
 
+    @Transactional
+    public void delete(Long id) {
+        validateExistingLine(id);
+        lineDao.deleteById(id);
+        sectionDao.deleteAllByLineId(id);
+    }
+
+    private void validateExistingLine(Long id) {
+        boolean isExistingLine = lineDao.findById(id).isPresent();
+        if (!isExistingLine) {
+            throw new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE);
+        }
+    }
+
     private void validateUniqueLineName(String name) {
         boolean isDuplicateName = lineDao.findByName(name).isPresent();
         if (isDuplicateName) {

@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.response.LineResponse2;
 import wooteco.subway.dto.response.StationResponse;
@@ -31,6 +33,12 @@ class LineService2Test extends ServiceTest {
 
     @Autowired
     private LineService2 service;
+
+    @Autowired
+    private LineDao lineDao;
+
+    @Autowired
+    private SectionDao sectionDao;
 
     @DisplayName("find 메서드는 특정 id에 해당되는 데이터를 조회한다")
     @Nested
@@ -89,6 +97,28 @@ class LineService2Test extends ServiceTest {
             CreateLineRequest noneExistingUpStationRequest = new CreateLineRequest(
                     VALID_LINE_NAME, COLOR, VALID_UP_STATION_ID, INVALID_ID, DISTANCE);
             assertThatThrownBy(() -> service.save(noneExistingUpStationRequest))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @DisplayName("delete 메서드는 노선과 모든 구간 데이터를 삭제한다")
+    @Nested
+    class DeleteTest {
+
+        @Test
+        void 존재하는_데이터의_id가_입력된_경우_삭제성공() {
+            service.delete(1L);
+
+            boolean lineNotFound = lineDao.findById(1L).isEmpty();
+            List<?> sectionsConnectedToLine = sectionDao.findAllByLineId(1L);
+
+            assertThat(lineNotFound).isTrue();
+            assertThat(sectionsConnectedToLine).isEmpty();
+        }
+
+        @Test
+        void 존재하지_않는_데이터의_id가_입력된_경우_예외발생() {
+            assertThatThrownBy(() -> service.delete(99999L))
                     .isInstanceOf(NotFoundException.class);
         }
     }
