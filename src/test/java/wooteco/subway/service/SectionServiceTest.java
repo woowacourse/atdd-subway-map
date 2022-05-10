@@ -75,7 +75,7 @@ public class SectionServiceTest {
         Station third = stationDao.save(new Station("선릉역"));
         sectionDao.save(new Section(LINE_ID, first.getId(), third.getId(), 10));
 
-        sectionService.create(new Section(LINE_ID, second.getId(), third.getId(), 10));
+        sectionService.create(new Section(LINE_ID, second.getId(), third.getId(), 5));
     }
 
     @Test
