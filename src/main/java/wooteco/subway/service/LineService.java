@@ -14,7 +14,9 @@ import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.DataLengthException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,6 +73,7 @@ public class LineService {
     private List<StationResponse> findStationByLineId(Line savedLine) {
         List<Station> stations = stationDao.findAllByLineId(savedLine.getId());
         return stations.stream()
+                .distinct()
                 .map(s -> new StationResponse(s.getId(), s.getName()))
                 .collect(Collectors.toList());
     }
@@ -91,6 +94,7 @@ public class LineService {
     private List<StationResponse> createStationResponseByLineId(Long lineId) {
         List<Station> stations = stationDao.findAllByLineId(lineId);
         return stations.stream()
+                .distinct()
                 .map(s -> new StationResponse(s.getId(), s.getName()))
                 .collect(Collectors.toList());
     }
