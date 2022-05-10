@@ -86,7 +86,8 @@ public class LineDaoTest {
 
         lineDao.update(updated);
 
-        final Line updateLine = lineDao.findById(created.getId()).orElseThrow();
+        final Line updateLine = lineDao.findById(created.getId())
+            .orElseThrow();
         assertThat(updateLine.getName()).isEqualTo(updateLine.getName());
 
         lineDao.deleteById(updateLine.getId());
