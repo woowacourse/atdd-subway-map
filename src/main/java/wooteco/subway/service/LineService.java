@@ -12,6 +12,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @Service
@@ -27,7 +28,7 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    public LineResponse save(LineRequest lineRequest) {
+    public LineResponse saveLine(LineRequest lineRequest) {
         validDuplicatedLine(lineRequest.getName(), lineRequest.getColor());
         Long id = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         Section section = new Section(id, lineRequest);
@@ -40,6 +41,30 @@ public class LineService {
         if (lineDao.existByName(name) || lineDao.existByColor(color)) {
             throw new IllegalArgumentException("중복된 Line 이 존재합니다.");
         }
+    }
+
+    public void saveSection(Long lineId, SectionRequest sectionRequest) {
+        sectionDao.save(new Section(lineId, sectionRequest));
+    }
+
+    public List<LineResponse> findLineAll() {
+        return lineDao.findAll().stream()
+                .map(this::findLineResponseByLine)
+                .collect(Collectors.toList());
+    }
+
+    public LineResponse findLineResponseById(Long id) {
+        Line line = lineDao.findById(id);
+        return findLineResponseByLine(line);
+    }
+
+    private LineResponse findLineResponseByLine(Line line) {
+        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
+        List<Long> stationIdsInOrder = sections.findStationIdsInOrder();
+        List<StationResponse> stationResponses = stationIdsInOrder.stream()
+                .map(id -> new StationResponse(stationDao.findById(id)))
+                .collect(Collectors.toUnmodifiableList());
+        return new LineResponse(line, stationResponses);
     }
 
     private List<StationResponse> findStationBySection(Section section) {
@@ -58,26 +83,6 @@ public class LineService {
     public void update(Long id, LineRequest lineRequest) {
         validDuplicatedLine(lineRequest.getName(), lineRequest.getColor());
         lineDao.update(id, lineRequest);
-    }
-
-    public LineResponse findById(Long id) {
-        Line line = lineDao.findById(id);
-        return findLineResponseByLine(line);
-    }
-
-    private LineResponse findLineResponseByLine(Line line) {
-        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
-        List<Long> stationIdsInOrder = sections.findStationIdsInOrder();
-        List<StationResponse> stationResponses = stationIdsInOrder.stream()
-                .map(id -> new StationResponse(stationDao.findById(id)))
-                .collect(Collectors.toUnmodifiableList());
-        return new LineResponse(line, stationResponses);
-    }
-
-    public List<LineResponse> findAll() {
-        return lineDao.findAll().stream()
-                .map(this::findLineResponseByLine)
-                .collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {

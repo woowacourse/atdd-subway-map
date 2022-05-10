@@ -40,7 +40,7 @@ class LineServiceTest {
         //when
         given(lineDao.existByName(any(String.class))).willReturn(true);
         //then
-        assertThatThrownBy(() -> lineService.save(new LineRequest(name, color)))
+        assertThatThrownBy(() -> lineService.saveLine(new LineRequest(name, color)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("중복된 Line 이 존재합니다.");
     }
@@ -54,11 +54,10 @@ class LineServiceTest {
         //when
         given(lineDao.existByColor(any(String.class))).willReturn(true);
         //then
-        assertThatThrownBy(() -> lineService.save(new LineRequest(name, color)))
+        assertThatThrownBy(() -> lineService.saveLine(new LineRequest(name, color)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("중복된 Line 이 존재합니다.");
     }
 
-    
 
 }

@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,6 +74,19 @@ class LineDaoTest {
         Line line = lineDao.findById(savedId);
         //then
         assertThat(line.getName()).isEqualTo("2호선");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id 를 이용하여 line 을 조회한다.")
+    void findByIdWhenNotFindLine() {
+        //given
+        Long id = -1L;
+        //when
+
+        //then
+        assertThatThrownBy(() -> lineDao.findById(id))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("노선이 존재하지 않습니다.");
     }
 
     @Test

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -26,9 +27,9 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> saveLine(@RequestBody LineRequest lineRequest) {
         validEmpty(lineRequest.getName(), lineRequest.getColor());
-        LineResponse response = lineService.save(lineRequest);
+        LineResponse response = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
@@ -38,14 +39,20 @@ public class LineController {
         }
     }
 
+    @PostMapping("/{line-id}/sections")
+    public void saveSection(@PathVariable(value = "line-id") Long lineId,
+                            @RequestBody SectionRequest sectionRequest) {
+        lineService.saveSection(lineId, sectionRequest);
+    }
+
     @GetMapping
-    public List<LineResponse> showLines() {
-        return lineService.findAll();
+    public List<LineResponse> fineLineAll() {
+        return lineService.findLineAll();
     }
 
     @GetMapping("/{id}")
-    public LineResponse findLine(@PathVariable Long id) {
-        return lineService.findById(id);
+    public LineResponse findLineById(@PathVariable Long id) {
+        return lineService.findLineResponseById(id);
     }
 
     @PutMapping("/{id}")
@@ -54,7 +61,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLineById(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

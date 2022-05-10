@@ -51,7 +51,7 @@ public class LineDao {
     public Line findById(Long id) {
         String selectSql = "select * from LINE where id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        Optional<Line> line = Optional.ofNullable(jdbcTemplate.queryForObject(selectSql, source, eventRowMapper));
+        Optional<Line> line = jdbcTemplate.query(selectSql, source, eventRowMapper).stream().findAny();
         return line.orElseThrow(() -> new IllegalStateException("노선이 존재하지 않습니다."));
     }
 
