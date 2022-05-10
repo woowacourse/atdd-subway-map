@@ -133,6 +133,7 @@ public class LineService {
 
     public void delete(Long id) {
         validateNotExists(id);
+        sectionDao.delete(id);
         lineDao.delete(id);
     }
 

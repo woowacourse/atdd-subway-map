@@ -50,4 +50,16 @@ public class FakeSectionDao implements SectionDao {
         sections.remove(section1);
         sections.put(section, lineId);
     }
+
+    @Override
+    public void delete(Long lineId) {
+        List<Section> sectionInDeleteLine = sections.entrySet().stream()
+            .filter(section2 -> section2.getValue().equals(lineId))
+            .map(section2 -> section2.getKey())
+            .collect(Collectors.toList());
+
+        for (Section section : sectionInDeleteLine) {
+            sections.remove(section);
+        }
+    }
 }
