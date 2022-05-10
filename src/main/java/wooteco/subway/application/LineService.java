@@ -34,7 +34,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public Line findById(Long id) {
         return lineDao.findById(id)
-            .orElseThrow(NotExistException::new);
+                .orElseThrow(NotExistException::new);
     }
 
     public Line update(Long id, String name, String color) {
@@ -52,7 +52,7 @@ public class LineService {
     }
 
     public void deleteById(Long id) {
-        if(!lineDao.existById(id)) {
+        if (!lineDao.existById(id)) {
             throw new NotExistException();
         }
         lineDao.deleteById(id);

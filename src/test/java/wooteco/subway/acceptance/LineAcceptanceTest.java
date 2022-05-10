@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.DbLineDao;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.*;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    private LineDao lineDao;
+    private DbLineDao lineDao;
 
     @BeforeEach
     void beforeEach() {

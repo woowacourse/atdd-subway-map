@@ -13,16 +13,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-class LineDaoTest {
+class DbLineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private LineDao lineDao;
+    private DbLineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new DbLineDao(jdbcTemplate);
     }
 
     @DisplayName("저장을 하고 리스트 및 단일 조회를 할 수 있다")

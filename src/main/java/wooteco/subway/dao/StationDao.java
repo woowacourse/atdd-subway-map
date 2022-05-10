@@ -1,73 +1,22 @@
 package wooteco.subway.dao;
 
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class StationDao {
+public interface StationDao {
+    long save(Station station);
 
-    private static final RowMapper<Station> ROW_MAPPER = (rs, rowNum) -> {
-        long id = rs.getLong("id");
-        String name = rs.getString("name");
-        return new Station(id, name);
-    };
-    private final JdbcTemplate jdbcTemplate;
+    List<Station> findAll();
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    Optional<Station> findById(Long id);
 
-    public long save(Station station) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+    boolean existById(Long id);
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection
-                    .prepareStatement("INSERT INTO STATION(name) VALUES(?)", new String[]{"id"});
-            ps.setString(1, station.getName());
-            return ps;
-        }, keyHolder);
+    boolean existByName(String name);
 
-        long savedStationId = keyHolder.getKey().longValue();
-        return savedStationId;
-    }
+    void deleteById(Long id);
 
-    public List<Station> findAll() {
-        return jdbcTemplate.query("SELECT id, name FROM STATION", ROW_MAPPER);
-    }
-
-    public Optional<Station> findById(Long id) {
-        try {
-            Station station = jdbcTemplate.queryForObject("SELECT id, name FROM STATION WHERE id = ?", ROW_MAPPER, id);
-            return Optional.of(station);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    public boolean existById(Long id) {
-        return findById(id).isPresent();
-    }
-
-    public boolean existByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "SELECT EXISTS (SELECT id FROM STATION WHERE name = ? LIMIT 1 ) AS `exists`",
-                Boolean.class, name);
-    }
-
-    public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM STATION WHERE id = ?", id);
-    }
-
-    public void deleteAll() {
-        jdbcTemplate.update("DELETE FROM STATION");
-    }
+    void deleteAll();
 }

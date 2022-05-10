@@ -5,10 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.MemoryLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.constant.BlankArgumentException;
 import wooteco.subway.exception.constant.DuplicateException;
@@ -17,11 +15,7 @@ import wooteco.subway.exception.constant.NotExistException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@JdbcTest
 public class LineServiceTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     private LineDao lineDao;
 
@@ -29,7 +23,7 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new MemoryLineDao();
         lineService = new LineService(lineDao);
     }
 

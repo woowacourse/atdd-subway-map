@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.DbStationDao;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    private StationDao stationDao;
+    private DbStationDao stationDao;
 
     @BeforeEach
     void beforeEach() {

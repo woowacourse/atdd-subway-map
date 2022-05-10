@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
     private ErrorResult handleExceptionToNotFound(Exception e) {
         return new ErrorResult(NOT_FOUND, e.getMessage());
     }
+
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler({DuplicateException.class, BlankArgumentException.class, DuplicateKeyException.class})
     private ErrorResult handleExceptionToBadRequest(Exception e) {
