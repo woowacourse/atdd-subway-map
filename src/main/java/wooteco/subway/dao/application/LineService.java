@@ -10,8 +10,9 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequestV2;
-import wooteco.subway.dto.LineResponseV2;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.exception.NoSuchStationException;
 
@@ -30,7 +31,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponseV2 createLine(final LineRequestV2 request) {
+    public LineResponse createLine(final LineRequest request) {
         Station upStation = stationDao.findById(request.getUpStationId())
                 .orElseThrow(NoSuchStationException::new);
 
@@ -41,23 +42,31 @@ public class LineService {
 
         Section createdSection = sectionDao.save(createdLine.getId(),
                 new Section(upStation, downStation, request.getDistance()));
-        return LineResponseV2.of(createdLine, createdSection);
+        return LineResponse.of(createdLine, createdSection);
     }
 
-    public LineResponseV2 findLine(final long id) {
+    public LineResponse findLine(final long id) {
         Line findLine = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
         List<Section> sections = sectionDao.findByLineId(findLine.getId());
-        return LineResponseV2.of(findLine, sections);
+        return LineResponse.of(findLine, sections);
     }
 
-    public List<LineResponseV2> findLines() {
-        List<LineResponseV2> result = new ArrayList<>();
+    public List<LineResponse> findLines() {
+        List<LineResponse> result = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
         for (Line line : lines) {
             List<Section> sectionsByLine = sectionDao.findByLineId(line.getId());
-            result.add(LineResponseV2.of(line, sectionsByLine));
+            result.add(LineResponse.of(line, sectionsByLine));
         }
         return result;
+    }
+
+    public void updateLine(final Long id, final LineUpdateRequest lineRequest) {
+        lineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+    }
+
+    public void deleteLineById(final Long id) {
+        lineDao.deleteById(id);
     }
 }

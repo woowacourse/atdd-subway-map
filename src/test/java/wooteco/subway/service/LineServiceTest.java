@@ -17,8 +17,8 @@ import wooteco.subway.dao.jdbc.SectionJdbcDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequestV2;
-import wooteco.subway.dto.LineResponseV2;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 
 class LineServiceTest {
@@ -43,11 +43,11 @@ class LineServiceTest {
         when(sectionDao.save(anyLong(), any(Section.class))).thenReturn(section);
 
         LineService sut = new LineService(stationDao, lineDao, sectionDao);
-        LineRequestV2 request = new LineRequestV2("1호선", "파란색", 1L, 2L, 10);
-        LineResponseV2 expect = new LineResponseV2(1L, "1호선", "파란색",
+        LineRequest request = new LineRequest("1호선", "파란색", 1L, 2L, 10);
+        LineResponse expect = new LineResponse(1L, "1호선", "파란색",
                 List.of(StationResponse.from(station1), StationResponse.from(station2)));
         // when
-        LineResponseV2 actual = sut.createLine(request);
+        LineResponse actual = sut.createLine(request);
 
         // then
         assertThat(actual).isEqualTo(expect);
@@ -66,10 +66,10 @@ class LineServiceTest {
         when(lineDao.findById(line.getId())).thenReturn(Optional.of(line));
         when(sectionDao.findByLineId(line.getId())).thenReturn(List.of(section));
 
-        LineResponseV2 expected = LineResponseV2.of(line, section);
+        LineResponse expected = LineResponse.of(line, section);
 
         // when
-        LineResponseV2 actual = sut.findLine(line.getId());
+        LineResponse actual = sut.findLine(line.getId());
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -93,9 +93,9 @@ class LineServiceTest {
         when(sectionDao.findByLineId(2L)).thenReturn(List.of(section2));
 
         // when
-        List<LineResponseV2> lines = sut.findLines();
+        List<LineResponse> lines = sut.findLines();
 
         // then
-        assertThat(lines).containsExactly(LineResponseV2.of(line1, section1), LineResponseV2.of(line2, section2));
+        assertThat(lines).containsExactly(LineResponse.of(line1, section1), LineResponse.of(line2, section2));
     }
 }
