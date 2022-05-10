@@ -32,6 +32,13 @@ public class Section {
         this(null, upStation, downStation, distance);
     }
 
+    public boolean isContain(final Station station) {
+        if (upStation.equals(station) || downStation.equals(station)) {
+            return true;
+        }
+        return false;
+    }
+
     public Long getId() {
         return id;
     }

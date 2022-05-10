@@ -8,6 +8,7 @@ public class Line {
     private final Long id;
     private final String name;
     private final String color;
+    // private final Sections sections;
 
     public Line(final Long id, final String name, final String color) {
         validateName(name);

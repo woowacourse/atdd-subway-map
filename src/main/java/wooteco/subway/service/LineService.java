@@ -6,6 +6,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.LineRequestDto;
 import wooteco.subway.dto.request.SectionRequestDto;
@@ -71,13 +72,12 @@ public class LineService {
         final Station upStation = stationService.searchById(sectionRequestDto.getUpStationId());
         final Station downStation = stationService.searchById(sectionRequestDto.getDownStationId());
         final Section section = new Section(upStation, downStation, sectionRequestDto.getDistance());
-//        final Sections sections = new Sections(line.getId());
-//        if (sections.isAddableOnMiddle(section)) {
-//
-//        }
-//        if (sections.isAddableToExtend(section)) {
-//            sectionDao.save(new SectionEntity(lineId, section));
-//        }
+        final Sections sections = new Sections(searchSectionsByLineId(line.getId()));
+        if (sections.isAddableOnMiddle(section)) {
+            // 구현해야함
+            return;
+        }
+        sectionDao.save(new SectionEntity(lineId, section));
     }
 
     public List<Section> searchSectionsByLineId(final Long lineId) {
