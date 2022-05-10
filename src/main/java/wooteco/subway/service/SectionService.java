@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -37,6 +38,7 @@ public class SectionService {
         return sections.getDistinctStationIds();
     }
 
+    @Transactional
     public void add(Line line, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         Section section = Section.of(line, sectionRequest);
@@ -54,5 +56,20 @@ public class SectionService {
             return;
         }
         throw new IllegalArgumentException("추가할 수 없는 노선입니다.");
+    }
+
+    @Transactional
+    public void delete(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        Sections sectionsToDelete = sections.getByStationId(stationId);
+
+        for (Section section : sectionsToDelete.getSections()) {
+            sectionDao.delete(section);
+        }
+
+        if (sectionsToDelete.isIntermediateStation()) {
+            Section section = sectionsToDelete.mergeSections();
+            sectionDao.save(section);
+        }
     }
 }

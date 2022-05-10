@@ -184,6 +184,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     // then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                     assertThat(response.header("Location")).isNotBlank();
+                }),
+
+                dynamicTest("[2호선 구간 삭제] 상행 종점을 삭제한다.", () -> {
+                    //when
+                    ExtractableResponse<Response> response = deleteSection(lineId.get(), station3.getId());
+
+                    //then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+
+                dynamicTest("[2호선 구간 삭제] 하행 종점을 삭제한다.", () -> {
+                    //when
+                    ExtractableResponse<Response> response = deleteSection(lineId.get(), station4.getId());
+
+                    //then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+
+                dynamicTest("[2호선 구간 삭제] 중간 지하철 역을 삭제한다.", () -> {
+                    //when
+                    ExtractableResponse<Response> response = deleteSection(lineId.get(), station6.getId());
+
+                    //then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 })
         );
     }
@@ -204,11 +228,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class)
+        List<Long> resultLineIds = getLResultLineIds(response);
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private List<Long> getLResultLineIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class)
                 .stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -291,5 +319,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("distance", distance);
 
         return post("/lines/"+lineId+"/sections", params);
+    }
+
+    private ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
+        return deleteWithQueryParam("/lines/"+lineId+"/sections", stationId);
     }
 }

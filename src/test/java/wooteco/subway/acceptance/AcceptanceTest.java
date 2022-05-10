@@ -49,6 +49,15 @@ public class AcceptanceTest {
                 .extract();
     }
 
+    protected ExtractableResponse<Response> deleteWithQueryParam(String uri, Long stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", stationId)
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
+
     protected ExtractableResponse<Response> put(String uri, Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)

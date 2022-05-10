@@ -88,4 +88,8 @@ public class LineService {
 
         sectionService.add(line, sectionRequest);
     }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        sectionService.delete(lineId, stationId);
+    }
 }

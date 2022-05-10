@@ -9,6 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
@@ -42,7 +43,7 @@ public class SectionServiceTest extends ServiceTest {
         Section existedSection2 = new Section(10, 2L, 2L, 3L);
 
 
-        given(sectionDao.findAll())
+        given(sectionDao.findByLineId(anyLong()))
                 .willReturn(List.of(existedSection1, existedSection2));
 
         //when & then
@@ -61,7 +62,7 @@ public class SectionServiceTest extends ServiceTest {
         Section existedSection2 = new Section(10, 2L, 2L, 3L);
 
 
-        given(sectionDao.findAll())
+        given(sectionDao.findByLineId(any()))
                 .willReturn(List.of(existedSection1, existedSection2));
 
         //when & then
