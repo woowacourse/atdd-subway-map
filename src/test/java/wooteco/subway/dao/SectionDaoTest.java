@@ -45,4 +45,20 @@ public class SectionDaoTest {
                 .isEqualTo(section);
     }
 
+    @DisplayName("노선을 받아서 구간을 조회한다.")
+    @Test
+    void findByLineId() {
+        Line line = lineDao.save(new Line("2호선", "green"));
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("역삼역"));
+        Section section = new Section(upStation, downStation, 1);
+        sectionDao.save(line, section);
+
+        Section persistSection = sectionDao.findAllByLineId(line).get(0);
+        
+        assertThat(persistSection).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(section);
+    }
+
 }
