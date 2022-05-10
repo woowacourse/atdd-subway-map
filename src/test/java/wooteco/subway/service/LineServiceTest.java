@@ -23,14 +23,14 @@ import wooteco.subway.dto.StationResponse;
 
 class LineServiceTest {
 
+    private final StationDao stationDao = mock(StationDao.class);
+    private final LineDao lineDao = mock(LineDao.class);
+    private final SectionJdbcDao sectionDao = mock(SectionJdbcDao.class);
+
     @DisplayName("노선을 성공적으로 등록한다.")
     @Test
     void registerLine() {
-        // given
-        StationDao stationDao = mock(StationDao.class);
-        LineDao lineDao = mock(LineDao.class);
-        SectionJdbcDao sectionDao = mock(SectionJdbcDao.class);
-
+        //given
         Station station1 = new Station(1L, "서울역");
         Station station2 = new Station(2L, "성수");
         when(stationDao.findById(anyLong())).thenReturn(Optional.of(station1));
@@ -51,5 +51,27 @@ class LineServiceTest {
 
         // then
         assertThat(actual).isEqualTo(expect);
+    }
+
+    @DisplayName("단건의 지하철 노선을 조회한다.")
+    @Test
+    void findLine() {
+        // given
+        LineService sut = new LineService(stationDao, lineDao, sectionDao);
+        Station station1 = new Station(1L, "서울역");
+        Station station2 = new Station(2L, "성수");
+        Line line = new Line(1L, "1호선", "파란색");
+        Section section = new Section(1L, station1, station2, 10);
+
+        when(lineDao.findById(line.getId())).thenReturn(Optional.of(line));
+        when(sectionDao.findByLineId(line.getId())).thenReturn(List.of(section));
+
+        LineResponseV2 expected = LineResponseV2.of(line, section);
+
+        // when
+        LineResponseV2 actual = sut.findLine(line.getId());
+
+        // then
+        assertThat(actual).isEqualTo(expected);
     }
 }
