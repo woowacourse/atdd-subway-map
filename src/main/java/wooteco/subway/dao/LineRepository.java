@@ -50,11 +50,6 @@ public class LineRepository {
     }
 
     public List<Line> findAll() {
-        String sql = "SELECT * FROM line";
-        return namedParameterJdbcTemplate.query(sql, rowMapper());
-    }
-
-    public Line findById(final Long id) {
         String sql = "SELECT l.id as line_id, l.name, l.color, "
                 + "s.id as section_id, "
                 + "s.up_station_id, us.name as up_station_name, "
@@ -62,15 +57,26 @@ public class LineRepository {
                 + "FROM line as l "
                 + "LEFT JOIN section as s ON s.line_id = l.id "
                 + "LEFT JOIN station as us ON us.id = s.up_station_id "
-                + "LEFT JOIN station as ds ON ds.id = s.down_station_id "
-                + "WHERE l.id = :id";
+                + "LEFT JOIN station as ds ON ds.id = s.down_station_id";
+
+        List<LineSection> lineSections = namedParameterJdbcTemplate.query(sql, joinRowMapper());
+        Map<Line, List<LineSection>> groupByLine = lineSections.stream()
+                .collect(Collectors.groupingBy(LineSection::getLine));
+        List<Line> lines = groupByLine.keySet()
+                .stream()
+                .map(key -> new Line(key.getId(), key.getName(), key.getName(), toSections(groupByLine.get(key))))
+                .collect(Collectors.toList());
+        return lines;
+    }
+
+    public Line findById(final Long id) {
+        String sql = "SELECT * FROM line WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        List<LineSection> lineSections = namedParameterJdbcTemplate.query(sql, parameters, joinRowMapper());
-        if (lineSections.isEmpty()) {
+        try {
+            return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
+        } catch (EmptyResultDataAccessException e) {
             throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + id);
         }
-        Line line = lineSections.get(0).getLine();
-        return new Line(line.getId(), line.getName(), line.getColor(), toSections(lineSections));
     }
 
     private Sections toSections(List<LineSection> lineSections) {

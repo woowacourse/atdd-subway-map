@@ -132,6 +132,14 @@ public class SectionsTest {
         assertThat(sections.findFirstStation()).isEqualTo(신당역);
     }
 
+    @DisplayName("다음 역을 탐색한다.")
+    @Test
+    void findNextStation() {
+        Sections sections = createInitialSections(신당역, 창신역);
+        sections.add(createSection(2L, 동묘앞역, 창신역, 2));
+
+        assertThat(sections.nextStation(신당역).get()).isEqualTo(동묘앞역);
+    }
 
     private List<Section> getSections() {
         List<Section> initialSections = new ArrayList<>();

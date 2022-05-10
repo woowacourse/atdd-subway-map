@@ -59,21 +59,28 @@ public class LineService {
     public List<LineResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(),
+                        sortSections(line.getSections())))
                 .collect(Collectors.toList());
     }
 
     public LineResponse showLine(final Long id) {
         Line line = lineRepository.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), sortSections(line.getSections()));
+        return new LineResponse(line.getId(),
+                line.getName(),
+                line.getColor(),
+                sortSections(new Sections(sectionRepository.findByLineId(id)))
+        );
     }
 
     private List<StationResponse> sortSections(final Sections sections) {
         List<StationResponse> stationResponses = new ArrayList<>();
         Station firstStation = sections.findFirstStation();
         stationResponses.add(new StationResponse(firstStation));
-
-
+        while (sections.nextStation(firstStation).isPresent()) {
+            firstStation = sections.nextStation(firstStation).get();
+            stationResponses.add(new StationResponse(firstStation));
+        }
         return stationResponses;
     }
 

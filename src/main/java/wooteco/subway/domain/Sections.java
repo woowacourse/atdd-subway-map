@@ -1,11 +1,9 @@
 package wooteco.subway.domain;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import wooteco.subway.utils.exception.SectionCreateException;
@@ -139,6 +137,20 @@ public class Sections {
                 .filter(station -> !downStations.contains(station))
                 .findFirst()
                 .orElseThrow(() -> new SubwayException("[ERROR] 첫번째 구간을 찾을 수 없습니다."));
+    }
 
+    public Optional<Station> nextStation(final Station station) {
+        return values.stream()
+                .filter(value -> value.isSameUpStation(station))
+                .map(Section::getDownStation)
+                .findFirst();
+
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "values=" + values +
+                '}';
     }
 }

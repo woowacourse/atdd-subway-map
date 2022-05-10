@@ -28,6 +28,10 @@ public class Line {
         this(null, name, color, null);
     }
 
+    public boolean isSameName(String name) {
+        return name.equals(this.name);
+    }
+
     public Long getId() {
         return id;
     }
@@ -61,7 +65,13 @@ public class Line {
         return Objects.hash(id);
     }
 
-    public boolean isSameName(String name) {
-        return name.equals(this.name);
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                '}';
     }
 }

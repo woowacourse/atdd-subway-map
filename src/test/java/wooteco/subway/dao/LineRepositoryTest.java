@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.TestFixtures.동묘앞역;
+import static wooteco.subway.TestFixtures.보문역;
 import static wooteco.subway.TestFixtures.신당역;
+import static wooteco.subway.TestFixtures.창신역;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -37,10 +39,19 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void findAll() {
+        Station saved_신당역 = stationRepository.save(신당역);
+        Station saved_동묘앞역 = stationRepository.save(동묘앞역);
         Line line1 = new Line("분당선", "bg-red-600");
-        lineRepository.save(line1);
+        Long id1 = lineRepository.save(line1);
+        Section section1 = new Section(id1, saved_신당역, saved_동묘앞역, 5);
+        sectionRepository.save(section1);
+
+        Station saved_보문역 = stationRepository.save(보문역);
+        Station saved_창신역 = stationRepository.save(창신역);
         Line line2 = new Line("신분당선", "bg-red-600");
-        lineRepository.save(line2);
+        Long id2 = lineRepository.save(line2);
+        Section section2 = new Section(id2, saved_보문역, saved_창신역, 5);
+        sectionRepository.save(section2);
 
         List<Line> lines = lineRepository.findAll();
         assertThat(lines).hasSize(2);
@@ -49,13 +60,12 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("노선을 조회한다.")
     @Test
     void findById() {
+        Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
         Station saved_신당역 = stationRepository.save(신당역);
         Station saved_동묘앞역 = stationRepository.save(동묘앞역);
-        Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
         Section section = new Section(id, saved_신당역, saved_동묘앞역, 5);
         sectionRepository.save(section);
         Line line = lineRepository.findById(id);
-
         assertThat(line.isSameName("분당선"));
     }
 
