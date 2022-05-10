@@ -100,4 +100,53 @@ public class SectionsTest {
             .hasMessage("[ERROR] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
 
     }
+
+    @DisplayName("상행 종점을 제거할 경우 다음에 오는 역이 종점이 된다.")
+    @Test
+    void removeUpStation() {
+        Section section = new Section(1L, 2L, 10);
+        long stationId = 1L;
+
+        sections.remove(stationId);
+        assertThat(sections.getSections().size()).isEqualTo(2);
+        assertThat(sections.hasSection(section)).isFalse();
+    }
+
+    @DisplayName("하행 종점을 제거할 경우 이전에 있는 역이 종점이 된다.")
+    @Test
+    void removeDownStation() {
+        Section section = new Section(3L, 4L, 10);
+        long stationId = 4L;
+
+        sections.remove(stationId);
+        assertThat(sections.getSections().size()).isEqualTo(2);
+        assertThat(sections.hasSection(section)).isFalse();
+    }
+
+    @DisplayName("구간 중간에 있는 역 제거할 경우 각 양 옆의 구간의 합으로 재배치된다.")
+    @Test
+    void removeWayPointStation() {
+        Section section1 = new Section(2L, 3L, 10);
+        Section section2 = new Section(1L, 2L, 10);
+        Section newSection = new Section(1L, 3L, 20);
+        long stationId = 2L;
+
+        sections.remove(stationId);
+        assertThat(sections.getSections().size()).isEqualTo(2);
+        assertThat(sections.hasSection(section1)).isFalse();
+        assertThat(sections.hasSection(section2)).isFalse();
+        assertThat(sections.hasSection(newSection)).isTrue();
+    }
+
+    @DisplayName("구간 목록에 하나의 구간이 존재하는 경우 삭제 시 예외가 발생한다.")
+    @Test
+    void removeOneSectionFail() {
+        Section section = new Section(1L, 6L, 10);
+        sections.remove(1L);
+        sections.remove(2L);
+
+        assertThatThrownBy(() -> sections.remove(3L))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("[ERROR] 최소 하나 이상의 구간이 존재하여야합니다.");
+    }
 }

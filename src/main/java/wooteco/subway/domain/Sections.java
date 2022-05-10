@@ -2,8 +2,11 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Sections {
+
+    private static final int SECTIONS_MINIMUM_SIZE = 1;
 
     private final List<Section> sections;
 
@@ -26,6 +29,29 @@ public class Sections {
         sections.add(section);
     }
 
+    public void remove(long stationId) {
+        Optional<Section> findSectionByUpStationId = sections.stream().filter(it -> it.findByUpStationId(stationId)).findFirst();
+        Optional<Section> findSectionByDownStationId = sections.stream().filter(it -> it.findByDownStationId(stationId)).findFirst();
+        validateExistStationId(findSectionByUpStationId, findSectionByDownStationId);
+        validateMinimumListSize();
+        if (findSectionByUpStationId.isPresent() && findSectionByDownStationId.isPresent()) {
+            removeWayPointSection(findSectionByUpStationId.get(), findSectionByDownStationId.get());
+            return;
+        }
+        if (findSectionByUpStationId.isPresent()) {
+            sections.remove(findSectionByUpStationId.get());
+            return;
+        }
+        sections.remove(findSectionByDownStationId.get());
+    }
+
+    private void removeWayPointSection(Section firstSection, Section secondSection) {
+        Section newSection = new Section(secondSection.getUpStationId(), firstSection.getDownStationId(), firstSection.getDistance() + secondSection.getDistance());
+        sections.remove(firstSection);
+        sections.remove(secondSection);
+        sections.add(newSection);
+    }
+
     private void validateAddSectionCondition(boolean existUpStation, boolean existDownStation) {
         if (existUpStation && existDownStation) {
             throw new IllegalArgumentException("[ERROR] 상,하행 Station이 구간에 모두 포함된 경우 추가할 수 없습니다.");
@@ -33,6 +59,22 @@ public class Sections {
         if (!existUpStation && !existDownStation) {
             throw new IllegalArgumentException("[ERROR] 상,하행 Station 모두 구간에 존재하지 않는다면 추가할 수 없습니다.");
         }
+    }
+
+    private boolean hasSameUpByDown(Section section) {
+        return sections.stream().anyMatch(it -> it.isSameUpByDown(section));
+    }
+
+    private boolean hasSameDownStation(Section section) {
+        return sections.stream().anyMatch(it -> it.isSameDownStation(section));
+    }
+
+    private boolean hasSameDownByUp(Section section) {
+        return sections.stream().anyMatch(it -> it.isSameDownByUp(section));
+    }
+
+    private boolean hasSameUpStation(Section section) {
+        return sections.stream().anyMatch(it -> it.isSameUpStation(section));
     }
 
     private void addSplitByUpStation(Section section) {
@@ -61,20 +103,16 @@ public class Sections {
         }
     }
 
-    private boolean hasSameUpByDown(Section section) {
-        return sections.stream().anyMatch(it -> it.isSameUpByDown(section));
+    private void validateMinimumListSize() {
+        if (sections.size() <= SECTIONS_MINIMUM_SIZE) {
+            throw new IllegalArgumentException("[ERROR] 최소 하나 이상의 구간이 존재하여야합니다.");
+        }
     }
 
-    private boolean hasSameDownStation(Section section) {
-        return sections.stream().anyMatch(it -> it.isSameDownStation(section));
-    }
-
-    private boolean hasSameDownByUp(Section section) {
-        return sections.stream().anyMatch(it -> it.isSameDownByUp(section));
-    }
-
-    private boolean hasSameUpStation(Section section) {
-        return sections.stream().anyMatch(it -> it.isSameUpStation(section));
+    private void validateExistStationId(Optional<Section> findSectionByUpStationId, Optional<Section> findSectionByDownStationId) {
+        if (findSectionByUpStationId.isEmpty() && findSectionByDownStationId.isEmpty()) {
+            throw new IllegalArgumentException("[ERROR] 구간으로 등록되지 않은 지하철역 정보입니다.");
+        }
     }
 
     public List<Section> getSections() {

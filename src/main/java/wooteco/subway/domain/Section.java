@@ -54,9 +54,12 @@ public class Section {
         return distance;
     }
 
-    public boolean isSameSection(Section section) {
-        return Objects.equals(upStationId, section.getUpStationId())
-            && Objects.equals(downStationId, section.getDownStationId());
+    public boolean findByUpStationId(Long id){
+        return upStationId.equals(id);
+    }
+
+    public boolean findByDownStationId(Long id){
+        return downStationId.equals(id);
     }
 
     public boolean isSameUpByDown(Section section) {
