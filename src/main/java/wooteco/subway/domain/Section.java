@@ -109,11 +109,11 @@ public class Section {
 
     public SectionResult canAddAsBetweenStation(Sections sections) {
         // 구간이 존재하고 && 거리가 되는지
-        Optional<Section> upStationSection = sections.getExistedSection(upStationId);
+        Optional<Section> upStationSection = sections.getExistedUpStationSection(upStationId);
         if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {
             return SectionResult.of(upStationSection.get(), this);
         }
-        Optional<Section> downStationSection = sections.getExistedSection(downStationId);
+        Optional<Section> downStationSection = sections.getExistedUpStationSection(downStationId);
         if (downStationSection.isPresent() && downStationSection.get().getDistance() > distance) {
             return SectionResult.of(downStationSection.get(), this);
         }

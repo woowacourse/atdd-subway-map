@@ -35,9 +35,15 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Section> getExistedSection(Long upStationId) {
+    public Optional<Section> getExistedUpStationSection(Long upStationId) {
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(upStationId))
+                .findFirst();
+    }
+
+    public Optional<Section> getExistedDownStationSection(Long downStationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStationId().equals(downStationId))
                 .findFirst();
     }
 }
