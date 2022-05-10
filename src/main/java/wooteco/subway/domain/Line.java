@@ -8,7 +8,6 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-//    private List<Section> sections;
     private Sections sections;
 
     public Line(String name, String color) {
@@ -20,8 +19,6 @@ public class Line {
         this.name = name;
         this.color = color;
         this.sections = new Sections(upStation, downStation, distance);
-//        sections = new ArrayList<>();
-//        sections.add(new Section(upStation, downStation, distance));
     }
 
     public Line(Long id, String name, String color) {
@@ -48,14 +45,6 @@ public class Line {
     }
 
     public List<Station> getStations() {
-//        List<Station> stations = new ArrayList<>();
-//        for (Section section : sections) {
-//            stations.add(section.getUpStation());
-//            stations.add(section.getDownStation());
-//        }
-//        return stations.stream()
-//                .distinct()
-//                .collect(Collectors.toList());
         return sections.getStations();
     }
 
