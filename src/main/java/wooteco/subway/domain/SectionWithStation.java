@@ -86,4 +86,8 @@ public class SectionWithStation {
                 ", distance=" + distance +
                 '}';
     }
+
+    public Section toEntity() {
+        return new Section(lineId, upStation.getId(), downStation.getId(), distance);
+    }
 }

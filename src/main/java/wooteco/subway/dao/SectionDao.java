@@ -9,6 +9,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionWithStation;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class SectionDao {
@@ -17,6 +19,13 @@ public class SectionDao {
             rs.getLong("lineId"),
             rs.getLong("upStationId"),
             rs.getLong("downStationId"),
+            rs.getInt("distance"));
+
+    private static final RowMapper<SectionWithStation> SECTION_WITH_STATION_ROW_MAPPER = (rs, rowNum) -> new SectionWithStation(
+            rs.getLong("id"),
+            rs.getLong("lineId"),
+            new Station(rs.getLong("upStationId"), rs.getString("upStationName")),
+            new Station(rs.getLong("downStationId"), rs.getString("downStationName")),
             rs.getInt("distance"));
 
     private final JdbcTemplate jdbcTemplate;
@@ -39,6 +48,18 @@ public class SectionDao {
             return preparedStatement;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public List<SectionWithStation> findAllSectionWithStationsByLineId(Long lineId) {
+        final String sql = "SELECT section.id, section.distance, "
+                + "up.id AS upStationId, up.name AS upStationName, "
+                + "down.id AS downStationId, down.name AS downStationName, "
+                + "line.id AS lineId, line.name AS lineName, line.color AS lineColor FROM section "
+                + "JOIN station AS up ON up.id = section.upStationId "
+                + "JOIN station AS down ON down.id = section.downStationId "
+                + "JOIN line ON line.id = section.lineId "
+                + "WHERE section.lineId = ?;";
+        return jdbcTemplate.query(sql, SECTION_WITH_STATION_ROW_MAPPER, lineId);
     }
 
     public List<Section> findAllByLineId(Long lineId) {

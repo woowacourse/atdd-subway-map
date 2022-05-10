@@ -1,17 +1,16 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionWithStation;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 @Service
 public class SectionService {
+    //TODO Sections로 서비스 로직(Dao 로직도) 이동 및 테스트코드 이동
     private static final String INVALID_STATION_ID_ERROR_MESSAGE = "구간 안에 존재하지 않는 아이디의 역이 있습니다.";
     private static final String SECTION_LENGTH_ERROR_MESSAGE = "새 구간의 길이가 기존 역 사이 길이보다 작아야 합니다.";
     private static final String ONE_LESS_SECTION_ERROR_MESSAGE = "해당 지하철 노선은 1개 이하의 구간을 가지고 있어 역을 삭제할 수 없습니다.";
@@ -26,7 +25,7 @@ public class SectionService {
 
     public Section save(Section section) {
         checkStationExist(section);
-        Sections sections = getSections(section.getLineId());
+        Sections sections = new Sections(sectionDao.findAllSectionWithStationsByLineId(section.getLineId()));
         sections.validateSave(section);
         if (sections.isMiddleSection(section)) {
             boolean isUpAttach = sections.isMiddleUpAttachSection(section);
@@ -69,21 +68,12 @@ public class SectionService {
     }
 
     public List<Station> findStationsOfLine(Long lineId) {
-        return getSections(lineId).calculateStations();
-    }
-
-    public Sections getSections(Long lineId) {
-        return new Sections(sectionDao.findAllByLineId(lineId).stream()
-                .map(section -> SectionWithStation.of(section,
-                        stationDao.findById(section.getUpStationId()),
-                        stationDao.findById(section.getDownStationId())))
-                .collect(Collectors.toList())
-        );
+        return new Sections(sectionDao.findAllSectionWithStationsByLineId(lineId)).calculateStations();
     }
 
     public void deleteSection(Long lineId, Long stationId) {
         validateTwoMoreSections(lineId);
-        Sections sections = getSections(lineId);
+        Sections sections = new Sections(sectionDao.findAllSectionWithStationsByLineId(lineId));
         if (sections.isFirstUpStation(stationDao.findById(stationId)) || sections.isLastDownStation(stationDao.findById(stationId))) {
             deleteSideStation(lineId, stationId, sections);
             return;

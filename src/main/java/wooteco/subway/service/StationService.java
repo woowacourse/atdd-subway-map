@@ -1,12 +1,10 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.SectionWithStation;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
@@ -55,20 +53,11 @@ public class StationService {
 
     private void validateStationNotLinked(Long stationId) {
         boolean isLinked = lineDao.findAll().stream()
-                .map(line -> getSections(line.getId()))
+                .map(line -> new Sections(sectionDao.findAllSectionWithStationsByLineId(line.getId())))
                 .anyMatch(sections -> sections.calculateStations().contains(stationDao.findById(stationId)));
         if (isLinked) {
             throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
         }
-    }
-
-    private Sections getSections(Long lineId) {
-        return new Sections(sectionDao.findAllByLineId(lineId).stream()
-                .map(section -> SectionWithStation.of(section,
-                        stationDao.findById(section.getUpStationId()),
-                        stationDao.findById(section.getDownStationId())))
-                .collect(Collectors.toList())
-        );
     }
 
     private void validateID(Long id) {
