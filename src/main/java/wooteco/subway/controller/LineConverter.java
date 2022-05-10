@@ -11,21 +11,12 @@ import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
 
 public class LineConverter {
-    static LineInfoToUpdate toInfo(LineRequest lineRequest) {
-        return new LineInfoToUpdate(lineRequest.getName(), lineRequest.getColor());
-    }
-
     static LineInfoToUpdate toInfo(Long id, LineRequest lineRequest) {
         return new LineInfoToUpdate(id, lineRequest.getName(), lineRequest.getColor());
     }
 
-    static RequestLineInfo toInfo2(LineRequest lineRequest) {
+    static RequestLineInfo toInfo(LineRequest lineRequest) {
         return new RequestLineInfo(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(),
-            lineRequest.getDownStationId(), lineRequest.getDistance());
-    }
-
-    static RequestLineInfo toInfo2(Long id, LineRequest lineRequest) {
-        return new RequestLineInfo(id, lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(),
             lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 

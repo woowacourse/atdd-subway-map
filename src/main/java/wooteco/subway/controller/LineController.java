@@ -32,7 +32,7 @@ public class LineController {
 
     @PostMapping()
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        RequestLineInfo lineInfo = LineConverter.toInfo2(lineRequest);
+        RequestLineInfo lineInfo = LineConverter.toInfo(lineRequest);
         LineResponse lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
