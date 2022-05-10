@@ -43,4 +43,15 @@ public class SectionsTest {
         assertThatThrownBy(() -> sections.add(sectionToAdd)).isInstanceOf(IllegalArgumentException.class)
             .hasMessage("해당 구간은 이미 이동 가능합니다.");
     }
+
+    @DisplayName("기존에 있던 구간 내부에 구간 추가 시 추가하려는 distance가 더 크면 에러를 응답한다.")
+    @Test
+    void addSection_withInnerSectionIsBigger() {
+        Section section = new Section(new Station(1L, "강남역"), new Station(2L, "선릉역"), 10);
+        Sections sections = new Sections(List.of(section));
+
+        Section sectionToAdd = new Section(new Station(1L, "강남역"), new Station(3L, "역삼역"), 11);
+        assertThatThrownBy(() -> sections.add(sectionToAdd)).isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("해당 구간은 추가될 수 없습니다.");
+    }
 }

@@ -37,4 +37,16 @@ public class Section {
     public boolean isSameDownStation(Section section) {
         return section.downStation.equals(this.downStation);
     }
+
+    public boolean canInsert(Section section) {
+        return section.distance < this.distance;
+    }
+
+    public void changeUpStation(Section section) {
+        this.upStation = section.downStation;
+    }
+
+    public void changeDownStation(Section section) {
+        this.downStation = section.upStation;
+    }
 }
