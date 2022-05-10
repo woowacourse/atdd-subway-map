@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sections {
+    private static final int MERGE_SECTION_SIZE = 2;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -57,5 +59,39 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public boolean isIntermediateStation() {
+        return sections.size() == 2;
+    }
+
+    public Section mergeSections() {
+        if (sections.size() != MERGE_SECTION_SIZE) {
+            throw new IllegalArgumentException("두 구간만 합칠 수 있습니다.");
+        }
+
+        int distance = calculateDistance();
+        List<Long> mergedIds = getMergedStationIds();
+
+        return new Section(distance, sections.get(0).getLineId(), mergedIds.get(0), mergedIds.get(1));
+    }
+
+    private List<Long> getMergedStationIds() {
+        Section section1 = sections.get(0);
+        Section section2 = sections.get(1);
+
+        if (section1.isEqualUpStationId(section2.getDownStationId())) {
+            return List.of(section2.getUpStationId(), section1.getDownStationId());
+        }
+        if (section2.isEqualUpStationId(section1.getDownStationId())) {
+            return List.of(section1.getUpStationId(), section2.getDownStationId());
+        }
+        throw new IllegalArgumentException("합칠 수 없는 구간입니다.");
+    }
+
+    private int calculateDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 }

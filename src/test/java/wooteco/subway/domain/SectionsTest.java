@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 리스트 관리 기능")
 class SectionsTest {
@@ -109,10 +111,40 @@ class SectionsTest {
         Sections sections = new Sections(List.of(section1, section2, section3));
 
         Sections actual = sections.getByStationId(2L);
-        Sections expected = new Sections(List.of(section2, section3));
 
         assertThat(actual.getSections().size()).isEqualTo(2);
         assertThat(actual.getSections()).isEqualTo(List.of(section2, section3));
     }
 
+    @DisplayName("세 개 이상의 구간은 합칠 수 없다.")
+    @Test
+    void cannotMergeMoreThanThreeSections() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        assertThatThrownBy(sections::mergeSections)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("두 구간만 합칠 수 있습니다.");
+    }
+
+    @DisplayName("두 개의 구간을 합친다.")
+    @Test
+    void mergeTwoSections() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+
+        Sections sections = new Sections(List.of(section2, section1));
+
+        Section section = sections.mergeSections();
+
+        assertAll(() -> {
+            assertThat(section.getDistance()).isEqualTo(20);
+            assertThat(section.getUpStationId()).isEqualTo(1L);
+            assertThat(section.getDownStationId()).isEqualTo(2L);
+            assertThat(section.getLineId()).isEqualTo(2);
+        });
+    }
 }
