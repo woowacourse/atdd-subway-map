@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.exception.NotFoundException;
@@ -30,17 +30,17 @@ public class LineService {
     }
 
     public LineResponse find(Long id) {
-        Line line = lineDao.findById(id)
+        LineEntity lineEntity = lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
-        return toLineResponse(line);
+        return toLineResponse(lineEntity);
     }
 
     @Transactional
     public LineResponse save(LineRequest lineRequest) {
         validateUniqueName(lineRequest.getName());
 
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        return toLineResponse(lineDao.save(line));
+        LineEntity lineEntity = new LineEntity(lineRequest.getName(), lineRequest.getColor());
+        return toLineResponse(lineDao.save(lineEntity));
     }
 
     @Transactional
@@ -48,8 +48,8 @@ public class LineService {
         validateExistingStation(id);
         validateUniqueName(lineRequest.getName());
 
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        lineDao.update(line);
+        LineEntity lineEntity = new LineEntity(id, lineRequest.getName(), lineRequest.getColor());
+        lineDao.update(lineEntity);
     }
 
     @Transactional
@@ -72,7 +72,7 @@ public class LineService {
         }
     }
 
-    private LineResponse toLineResponse(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+    private LineResponse toLineResponse(LineEntity lineEntity) {
+        return new LineResponse(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
     }
 }

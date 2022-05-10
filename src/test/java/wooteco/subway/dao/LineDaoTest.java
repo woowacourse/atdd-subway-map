@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 
 @SuppressWarnings("NonAsciiCharacters")
 class LineDaoTest extends DaoTest {
@@ -20,12 +20,12 @@ class LineDaoTest extends DaoTest {
 
     @Test
     void findAll_메서드는_모든_데이터를_조회() {
-        List<Line> actual = dao.findAll();
+        List<LineEntity> actual = dao.findAll();
 
-        List<Line> expected = List.of(
-                new Line(1L, "이미 존재하는 노선 이름", "노란색"),
-                new Line(2L, "신분당선", "빨간색"),
-                new Line(3L, "2호선", "초록색")
+        List<LineEntity> expected = List.of(
+                new LineEntity(1L, "이미 존재하는 노선 이름", "노란색"),
+                new LineEntity(2L, "신분당선", "빨간색"),
+                new LineEntity(3L, "2호선", "초록색")
         );
 
         assertThat(actual).isEqualTo(expected);
@@ -37,9 +37,9 @@ class LineDaoTest extends DaoTest {
 
         @Test
         void 존재하는_데이터의_id인_경우_해당_데이터가_담긴_Optional_반환() {
-            Line actual = dao.findById(1L).get();
+            LineEntity actual = dao.findById(1L).get();
 
-            Line expected = new Line(1L, "이미 존재하는 노선 이름", "노란색");
+            LineEntity expected = new LineEntity(1L, "이미 존재하는 노선 이름", "노란색");
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -58,9 +58,9 @@ class LineDaoTest extends DaoTest {
 
         @Test
         void 저장된_name인_경우_해당_데이터가_담긴_Optional_반환() {
-            Line actual = dao.findByName("이미 존재하는 노선 이름").get();
+            LineEntity actual = dao.findByName("이미 존재하는 노선 이름").get();
 
-            Line expected = new Line(1L, "이미 존재하는 노선 이름", "노란색");
+            LineEntity expected = new LineEntity(1L, "이미 존재하는 노선 이름", "노란색");
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -79,16 +79,16 @@ class LineDaoTest extends DaoTest {
 
         @Test
         void 중복되지_않는_이름인_경우_성공() {
-            Line actual = dao.save(new Line("새로운 노선", "분홍색"));
+            LineEntity actual = dao.save(new LineEntity("새로운 노선", "분홍색"));
 
-            Line expected = new Line(4L, "새로운 노선", "분홍색");
+            LineEntity expected = new LineEntity(4L, "새로운 노선", "분홍색");
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 중복되는_이름인_경우_예외발생() {
-            assertThatThrownBy(() -> dao.save(new Line("이미 존재하는 노선 이름", "노란색")))
+            assertThatThrownBy(() -> dao.save(new LineEntity("이미 존재하는 노선 이름", "노란색")))
                     .isInstanceOf(DataAccessException.class);
         }
     }
@@ -99,7 +99,7 @@ class LineDaoTest extends DaoTest {
 
         @Test
         void 중복되지_않는_이름으로_수정_가능() {
-            dao.update(new Line(1L, "새로운 노선 이름", "노란색"));
+            dao.update(new LineEntity(1L, "새로운 노선 이름", "노란색"));
 
             String actual = jdbcTemplate.queryForObject("SELECT name FROM line WHERE id = 1", String.class);
             String expected = "새로운 노선 이름";
@@ -109,7 +109,7 @@ class LineDaoTest extends DaoTest {
 
         @Test
         void 색상은_자유롭게_수정_가능() {
-            dao.update(new Line(1L, "이미 존재하는 노선 이름", "새로운 색상"));
+            dao.update(new LineEntity(1L, "이미 존재하는 노선 이름", "새로운 색상"));
 
             String actual = jdbcTemplate.queryForObject("SELECT color FROM line WHERE id = 1", String.class);
             String expected = "새로운 색상";
@@ -119,14 +119,14 @@ class LineDaoTest extends DaoTest {
 
         @Test
         void 중복되는_이름으로_수정하려는_경우_예외발생() {
-            assertThatThrownBy(() -> dao.update(new Line(2L, "이미 존재하는 노선 이름", "노란색")))
+            assertThatThrownBy(() -> dao.update(new LineEntity(2L, "이미 존재하는 노선 이름", "노란색")))
                     .isInstanceOf(DataAccessException.class);
         }
 
         @Test
         void 존재하지_않는_노선을_수정하려는_경우_예외_미발생() {
             assertThatNoException()
-                    .isThrownBy(() -> dao.update(new Line(999999999L, "새로운 노선 이름", "노란색")));
+                    .isThrownBy(() -> dao.update(new LineEntity(999999999L, "새로운 노선 이름", "노란색")));
         }
     }
 

@@ -9,13 +9,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Section;
+import wooteco.subway.entity.SectionEntity;
 
 @Repository
 public class SectionDao {
 
-    private static final RowMapper<Section> ROW_MAPPER = (resultSet, rowNum) ->
-            new Section(resultSet.getLong("id"),
+    private static final RowMapper<SectionEntity> ROW_MAPPER = (resultSet, rowNum) ->
+            new SectionEntity(resultSet.getLong("id"),
                     resultSet.getLong("line_id"),
                     resultSet.getLong("up_station_id"),
                     resultSet.getLong("down_station_id"),
@@ -27,7 +27,7 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Section> findAllByLineId(Long lineId) {
+    public List<SectionEntity> findAllByLineId(Long lineId) {
         final String sql = "SELECT * FROM section WHERE line_id = :lineId";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("lineId", lineId);
@@ -35,16 +35,16 @@ public class SectionDao {
         return jdbcTemplate.query(sql, paramSource, ROW_MAPPER);
     }
 
-    public Section save(Section section) {
+    public SectionEntity save(SectionEntity sectionEntity) {
         final String sql = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) "
                 + "VALUES(:lineId, :upStationId, :downStationId, :distance)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(section);
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(sectionEntity);
 
         jdbcTemplate.update(sql, paramSource, keyHolder);
         Number generatedId = keyHolder.getKey();
-        section.setId(generatedId.longValue());
-        return section;
+        sectionEntity.setId(generatedId.longValue());
+        return sectionEntity;
     }
 
     public void deleteAllByLineId(Long lineId) {

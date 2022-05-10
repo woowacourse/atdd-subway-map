@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import wooteco.subway.domain.Section;
+import wooteco.subway.entity.SectionEntity;
 
 @SuppressWarnings("NonAsciiCharacters")
 class SectionDaoTest extends DaoTest {
@@ -20,11 +20,11 @@ class SectionDaoTest extends DaoTest {
 
     @Test
     void findAllByLineId_메서드는_lineId에_해당하는_모든_구간_데이터를_조회() {
-        List<Section> actual = dao.findAllByLineId(1L);
+        List<SectionEntity> actual = dao.findAllByLineId(1L);
 
-        List<Section> expected = List.of(
-                new Section(1L, 1L, 1L, 2L, 10),
-                new Section(2L, 1L, 2L, 3L, 5)
+        List<SectionEntity> expected = List.of(
+                new SectionEntity(1L, 1L, 1L, 2L, 10),
+                new SectionEntity(2L, 1L, 2L, 3L, 5)
         );
 
         assertThat(actual).isEqualTo(expected);
@@ -36,16 +36,16 @@ class SectionDaoTest extends DaoTest {
 
         @Test
         void 중복되지_않는_정보인_경우_생성된_섹션_반환() {
-            Section actual = dao.save(new Section(1L, 3L, 1L, 10));
+            SectionEntity actual = dao.save(new SectionEntity(1L, 3L, 1L, 10));
 
-            Section expected = new Section(3L, 1L, 3L, 1L, 10);
+            SectionEntity expected = new SectionEntity(3L, 1L, 3L, 1L, 10);
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 중복되는_정보로_생성하려는_경우_예외발생() {
-            Section existingSection = new Section(1L, 1L, 2L, 10);
+            SectionEntity existingSection = new SectionEntity(1L, 1L, 2L, 10);
 
             assertThatThrownBy(() -> dao.save(existingSection))
                     .isInstanceOf(DataAccessException.class);

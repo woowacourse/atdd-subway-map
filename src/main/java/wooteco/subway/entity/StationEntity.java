@@ -1,19 +1,19 @@
-package wooteco.subway.domain;
+package wooteco.subway.entity;
 
 import java.util.Objects;
 
-public class Station {
+public class StationEntity {
 
     private final Long id;
     private final String name;
 
-    public Station(Long id, String name) {
+    public StationEntity(Long id, String name) {
         validateName(name);
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
+    public StationEntity(String name) {
         this(null, name);
     }
 
@@ -39,8 +39,8 @@ public class Station {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Station station = (Station) o;
-        return Objects.equals(id, station.id);
+        StationEntity stationEntity = (StationEntity) o;
+        return Objects.equals(id, stationEntity.id);
     }
 
     @Override
@@ -50,6 +50,6 @@ public class Station {
 
     @Override
     public String toString() {
-        return "Station{" + "id=" + id + ", name='" + name + '\'' + '}';
+        return "StationEntity{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
 }

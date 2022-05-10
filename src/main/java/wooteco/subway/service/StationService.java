@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.Station;
+import wooteco.subway.entity.StationEntity;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.dao.StationDao;
@@ -36,7 +36,7 @@ public class StationService {
         String stationName = stationRequest.getName();
         validateUniqueName(stationName);
 
-        Station savedStation = stationDao.save(new Station(stationName));
+        StationEntity savedStation = stationDao.save(new StationEntity(stationName));
         return new StationResponse(savedStation.getId(), savedStation.getName());
     }
 

@@ -1,8 +1,8 @@
-package wooteco.subway.domain;
+package wooteco.subway.entity;
 
 import java.util.Objects;
 
-public class Section {
+public class SectionEntity {
 
     private Long id;
     private final Long lineId;
@@ -10,11 +10,11 @@ public class Section {
     private final Long downStationId;
     private final int distance;
 
-    public Section(Long id,
-                   Long lineId,
-                   Long upStationId,
-                   Long downStationId,
-                   int distance) {
+    public SectionEntity(Long id,
+                         Long lineId,
+                         Long upStationId,
+                         Long downStationId,
+                         int distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -22,10 +22,10 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Long lineId,
-                   Long upStationId,
-                   Long downStationId,
-                   int distance) {
+    public SectionEntity(Long lineId,
+                         Long upStationId,
+                         Long downStationId,
+                         int distance) {
         this(null, lineId, upStationId, downStationId, distance);
     }
 
@@ -61,8 +61,8 @@ public class Section {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        SectionEntity sectionEntity = (SectionEntity) o;
+        return Objects.equals(id, sectionEntity.id);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class Section {
 
     @Override
     public String toString() {
-        return "Section{" +
+        return "SectionEntity{" +
                 "id=" + id +
                 ", lineId=" + lineId +
                 ", upStationId=" + upStationId +

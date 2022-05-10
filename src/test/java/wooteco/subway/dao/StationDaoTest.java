@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import wooteco.subway.domain.Station;
+import wooteco.subway.entity.StationEntity;
 
 @SuppressWarnings("NonAsciiCharacters")
 class StationDaoTest extends DaoTest {
@@ -20,12 +20,12 @@ class StationDaoTest extends DaoTest {
 
     @Test
     void findAll_메서드는_모든_데이터를_조회() {
-        List<Station> actual = dao.findAll();
+        List<StationEntity> actual = dao.findAll();
 
-        List<Station> expected = List.of(
-                new Station(1L, "이미 존재하는 역 이름"),
-                new Station(2L, "선릉역"),
-                new Station(3L, "잠실역"));
+        List<StationEntity> expected = List.of(
+                new StationEntity(1L, "이미 존재하는 역 이름"),
+                new StationEntity(2L, "선릉역"),
+                new StationEntity(3L, "잠실역"));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -36,9 +36,9 @@ class StationDaoTest extends DaoTest {
 
         @Test
         void 존재하는_데이터의_id인_경우_해당_데이터가_담긴_Optional_반환() {
-            Station actual = dao.findById(1L).get();
+            StationEntity actual = dao.findById(1L).get();
 
-            Station expected = new Station(1L, "이미 존재하는 역 이름");
+            StationEntity expected = new StationEntity(1L, "이미 존재하는 역 이름");
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -57,9 +57,9 @@ class StationDaoTest extends DaoTest {
 
         @Test
         void 저장된_name인_경우_해당_데이터가_담긴_Optional_반환() {
-            Station actual = dao.findByName("이미 존재하는 역 이름").get();
+            StationEntity actual = dao.findByName("이미 존재하는 역 이름").get();
 
-            Station expected = new Station(1L, "이미 존재하는 역 이름");
+            StationEntity expected = new StationEntity(1L, "이미 존재하는 역 이름");
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -78,16 +78,16 @@ class StationDaoTest extends DaoTest {
 
         @Test
         void 중복되지_않는_이름인_경우_저장_성공() {
-            Station actual = dao.save(new Station("새로운 지하철역"));
+            StationEntity actual = dao.save(new StationEntity("새로운 지하철역"));
 
-            Station expected = new Station(4L, "새로운 지하철역");
+            StationEntity expected = new StationEntity(4L, "새로운 지하철역");
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 중복되는_이름을_입력한_경우_예외발생() {
-            assertThatThrownBy(() -> dao.save(new Station("이미 존재하는 역 이름")))
+            assertThatThrownBy(() -> dao.save(new StationEntity("이미 존재하는 역 이름")))
                     .isInstanceOf(DataAccessException.class);
         }
     }

@@ -1,14 +1,14 @@
-package wooteco.subway.domain;
+package wooteco.subway.entity;
 
 import java.util.Objects;
 
-public class Line {
+public class LineEntity {
 
     private final Long id;
     private final String name;
     private final String color;
 
-    public Line(Long id, String name, String color) {
+    public LineEntity(Long id, String name, String color) {
         validateName(name);
         validateColor(color);
         this.id = id;
@@ -16,7 +16,7 @@ public class Line {
         this.color = color;
     }
 
-    public Line(String name, String color) {
+    public LineEntity(String name, String color) {
         this(null, name, color);
     }
 
@@ -52,8 +52,8 @@ public class Line {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Line line = (Line) o;
-        return Objects.equals(id, line.id);
+        LineEntity lineEntity = (LineEntity) o;
+        return Objects.equals(id, lineEntity.id);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class Line {
 
     @Override
     public String toString() {
-        return "Line{" +
+        return "LineEntity{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +

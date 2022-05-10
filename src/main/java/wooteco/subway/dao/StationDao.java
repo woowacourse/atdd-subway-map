@@ -11,13 +11,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
+import wooteco.subway.entity.StationEntity;
 
 @Repository
 public class StationDao {
 
-    private static final RowMapper<Station> ROW_MAPPER = (resultSet, rowNum) ->
-            new Station(resultSet.getLong("id"),
+    private static final RowMapper<StationEntity> ROW_MAPPER = (resultSet, rowNum) ->
+            new StationEntity(resultSet.getLong("id"),
                     resultSet.getString("name"));
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -26,13 +26,13 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         final String sql = "SELECT * FROM station";
 
         return jdbcTemplate.query(sql, new EmptySqlParameterSource(), ROW_MAPPER);
     }
 
-    public Optional<Station> findById(Long id) {
+    public Optional<StationEntity> findById(Long id) {
         final String sql = "SELECT * FROM station WHERE id = :id";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
@@ -42,7 +42,7 @@ public class StationDao {
                 .findFirst();
     }
 
-    public Optional<Station> findByName(String name) {
+    public Optional<StationEntity> findByName(String name) {
         final String sql = "SELECT * FROM station WHERE name = :name";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("name", name);
@@ -52,14 +52,14 @@ public class StationDao {
                 .findFirst();
     }
 
-    public Station save(Station station) {
+    public StationEntity save(StationEntity stationEntity) {
         final String sql = "INSERT INTO station(name) VALUES (:name)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(station);
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(stationEntity);
 
         jdbcTemplate.update(sql, paramSource, keyHolder);
         Number generatedId = keyHolder.getKey();
-        return new Station(generatedId.longValue(), station.getName());
+        return new StationEntity(generatedId.longValue(), stationEntity.getName());
     }
 
     public void deleteById(Long id) {
