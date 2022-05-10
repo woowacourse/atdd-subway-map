@@ -35,11 +35,19 @@ public class Section {
     }
 
     public boolean isSameDownStationId(Section section) {
-        return section.downStationId.equals(downStationId);
+        return isSameDownStationId(section.downStationId);
+    }
+
+    public boolean isSameDownStationId(Long id) {
+        return id.equals(downStationId);
     }
 
     public boolean isSameUpStationId(Section section) {
-        return section.upStationId.equals(upStationId);
+        return isSameUpStationId(section.upStationId);
+    }
+
+    public boolean isSameUpStationId(Long id) {
+        return id.equals(upStationId);
     }
 
     public void updateDownStationId(Long id) {

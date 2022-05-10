@@ -30,12 +30,16 @@ public class SectionService {
         List<Section> needUpdateSections = sections.add(newSection);
 
         for (Section section : needUpdateSections) {
-            if (newSection.equals(section)) {
-                sectionDao.save(section);
-                continue;
-            }
-            sectionDao.update(section);
+            executeSql(newSection, section);
         }
+    }
+
+    private void executeSql(Section newSection, Section section) {
+        if (newSection.equals(section)) {
+            sectionDao.save(section);
+            return;
+        }
+        sectionDao.update(section);
     }
 
     private void validRequest(SectionRequest sectionRequest) {

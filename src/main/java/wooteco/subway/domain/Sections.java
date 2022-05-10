@@ -21,23 +21,11 @@ public class Sections {
             validSection(newSection, section);
 
             if (newSection.canConnectWithUpStation(section)) {
-                Optional<Section> foundSection = findByUpStationId(newSection.getUpStationId());
-                if (foundSection.isPresent()) {
-                    foundSection.get().updateUpStationId(newSection.getDownStationId());
-                    foundSection.get().shortenDistance(newSection.getDistance());
-                    return List.of(newSection, foundSection.get());
-                }
-                break;
+                return connectWithUpStationId(newSection);
             }
 
             if (newSection.canConnectWithDownStation(section)) {
-                Optional<Section> foundSection = findByDownStationId(newSection.getDownStationId());
-                if (foundSection.isPresent()) {
-                    foundSection.get().updateDownStationId(newSection.getUpStationId());
-                    foundSection.get().shortenDistance(newSection.getDistance());
-                    return List.of(newSection, foundSection.get());
-                }
-                break;
+                return connectWithDownStationId(newSection);
             }
         }
         return List.of(newSection);
@@ -49,15 +37,35 @@ public class Sections {
         }
     }
 
+    private List<Section> connectWithUpStationId(Section newSection) {
+        Optional<Section> foundSection = findByUpStationId(newSection.getUpStationId());
+        if (foundSection.isPresent()) {
+            foundSection.get().updateUpStationId(newSection.getDownStationId());
+            foundSection.get().shortenDistance(newSection.getDistance());
+            return List.of(newSection, foundSection.get());
+        }
+        return List.of(newSection);
+    }
+
     private Optional<Section> findByUpStationId(Long id) {
         return value.stream()
-                .filter(other -> other.getUpStationId().equals(id))
+                .filter(other -> other.isSameUpStationId(id))
                 .findFirst();
+    }
+
+    private List<Section> connectWithDownStationId(Section newSection) {
+        Optional<Section> foundSection = findByDownStationId(newSection.getDownStationId());
+        if (foundSection.isPresent()) {
+            foundSection.get().updateDownStationId(newSection.getUpStationId());
+            foundSection.get().shortenDistance(newSection.getDistance());
+            return List.of(newSection, foundSection.get());
+        }
+        return List.of(newSection);
     }
 
     private Optional<Section> findByDownStationId(Long id) {
         return value.stream()
-                .filter(other -> other.getDownStationId().equals(id))
+                .filter(other -> other.isSameDownStationId(id))
                 .findFirst();
     }
 
