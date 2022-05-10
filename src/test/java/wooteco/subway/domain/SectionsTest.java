@@ -22,7 +22,6 @@ class SectionsTest {
 
         List<Section> values = created.getValues();
 
-
         assertThat(values.get(0).getUpStation().getName()).isEqualTo("노원");
         assertThat(values.get(0).getDownStation().getName()).isEqualTo("강남");
         assertThat(values.get(1).getUpStation().getName()).isEqualTo("강남");

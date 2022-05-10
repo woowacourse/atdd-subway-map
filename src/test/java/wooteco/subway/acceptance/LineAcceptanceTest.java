@@ -228,9 +228,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private long saveLineAndGetId(String name, String color) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", saveStationAndGetId("강남"));
+        params.put("downStationId", saveStationAndGetId("잠실"));
+        params.put("distance", 10);
+
         ExtractableResponse<Response> savedResponse = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)

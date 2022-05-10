@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -9,6 +11,13 @@ import wooteco.subway.domain.Section;
 
 @Repository
 public class SectionDao {
+
+    private static final RowMapper<SectionEntity> mapper = (rs, rowNum) -> new SectionEntity(
+        rs.getLong("id"),
+        rs.getLong("line_id"),
+        rs.getLong("up_station_id"),
+        rs.getLong("down_station_id"),
+        rs.getInt("distance"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -36,5 +45,10 @@ public class SectionDao {
             section.getDownStation(),
             section.getDistance()
         );
+    }
+
+    public List<SectionEntity> findByLineId(Long lineId) {
+        String sql = "select * from section where line_id = ?";
+        return jdbcTemplate.query(sql, mapper, lineId);
     }
 }

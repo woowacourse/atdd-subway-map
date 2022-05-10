@@ -5,9 +5,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.SectionEntity;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -35,7 +37,7 @@ public class LineService {
 
         Station upStation = stationDao.findById(lineRequest.getUpStationId())
             .orElseThrow(() -> new NotFoundException("조회하려는 상행역이 없습니다."));
-        Station downStation = stationDao.findById(lineRequest.getUpStationId())
+        Station downStation = stationDao.findById(lineRequest.getDownStationId())
             .orElseThrow(() -> new NotFoundException("조회하려는 하행역이 없습니다."));
 
         sectionDao.save(new Section(savedLine, upStation, downStation, lineRequest.getDistance()));
@@ -43,8 +45,9 @@ public class LineService {
         return LineResponse.of(savedLine, List.of(upStation, downStation));
     }
 
-    public LineResponse showById(Long id) {
-        return LineResponse.from(findBy(id));
+    public LineResponse showById(Long lineId) {
+        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        return LineResponse.of(findLineBy(lineId), sections.getStations());
     }
 
     public List<LineResponse> showAll() {
@@ -55,7 +58,7 @@ public class LineService {
 
     public void updateById(Long id, LineUpdateRequest request) {
         validateDuplicateNameAndColor(request.getName(), request.getColor());
-        Line line = findBy(id);
+        Line line = findLineBy(id);
         line.update(request.getName(), request.getColor());
         lineDao.modifyById(id, line);
     }
@@ -64,7 +67,7 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    private Line findBy(Long id) {
+    private Line findLineBy(Long id) {
         return lineDao.findById(id)
             .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
     }
@@ -74,4 +77,16 @@ public class LineService {
             throw new BadRequestException("노선이 이름과 색상은 중복될 수 없습니다.");
         }
     }
+
+    private List<Section> toSections(List<SectionEntity> entities) {
+        return entities.stream()
+            .map(entity -> new Section(
+                entity.getId(),
+                findLineBy(entity.getLineId()),
+                stationDao.findById(entity.getUpStationId()).orElseThrow(),
+                stationDao.findById(entity.getDownStationId()).orElseThrow(),
+                entity.getDistance()))
+            .collect(Collectors.toList());
+    }
 }
+
