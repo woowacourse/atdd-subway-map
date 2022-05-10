@@ -5,26 +5,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class LineTest {
+class SectionsTest {
+
+    private Station station1;
+    private Station station2;
+    private Station station3;
+    private Station station4;
+    private Station station5;
+    private Station station6;
+
+    private Section section1;
+    private Section section2;
+    private Section section3;
+    private Section section4;
+    private Section section5;
 
     private List<Section> sections = new ArrayList<>();
-
-    Station station1;
-    Station station2;
-    Station station3;
-    Station station4;
-    Station station5;
-    Station station6;
-
-    Section section1;
-    Section section2;
-    Section section3;
-    Section section4;
-    Section section5;
 
     @BeforeEach
     public void setUp() {
@@ -44,10 +43,18 @@ class LineTest {
     }
 
     @Test
+    void containsStation() {
+
+    }
+
+    @Test
     void calculateUpStation() {
-        Sections sections = new Sections(List.of(section1, section2, section3, section4, section5));
-        Line line = new Line(1L, "testLine", "color", station1, station6, 10L, sections);
-        Station station = sections.calculateUpStation();
+        Sections testSections = new Sections(sections);
+        Station station = testSections.calculateUpStation();
         assertThat(station).isEqualTo(station1);
+    }
+
+    @Test
+    void calculateDownStation() {
     }
 }
