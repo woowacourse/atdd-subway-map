@@ -34,7 +34,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하는 경우 상태코드 400 오류가 발생한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
@@ -57,7 +57,7 @@ class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역을 모두 조회한다.")
     @Test
     void getStations() {
         /// given

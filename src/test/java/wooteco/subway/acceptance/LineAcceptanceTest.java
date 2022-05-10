@@ -33,7 +33,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성하는 경우 상태코드 400 오류가 발생한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
@@ -82,7 +82,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("id 값에 해당하는 지하철 노선을 조회한다.")
     @Test
     void getLine() {
         /// given
@@ -100,7 +100,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(createResponse.jsonPath().getString("color")).isEqualTo(response.jsonPath().getString("color"));
     }
 
-    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @DisplayName("존재하지 않는 지하철 노선을 조회하는 경우 상태코드 404 오류가 발생한다.")
     @Test
     void getLineNotExists() {
         // given
@@ -134,7 +134,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
+    @DisplayName("존재하지 않는 지하철 노선을 수정하는 경우 상태코드 404 오류가 발생한다.")
     @Test
     void updateLineNotExists() {
         // given
@@ -146,7 +146,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 수정한다.")
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 수정하는 경우 상태코드 400 오류가 발생한다.")
     @Test
     void updateLineWithDuplicateName() {
         /// given
@@ -185,7 +185,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
+    @DisplayName("존재하지 않는 지하철 노선을 제거하는 경우 상태코드 404 오류가 발생한다.")
     @Test
     void deleteLineNotExists() {
         // given
