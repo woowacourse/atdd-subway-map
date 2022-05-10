@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
 import wooteco.subway.entity.StationEntity;
 
 @Repository
@@ -23,31 +22,33 @@ public class StationDao {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public Optional<Station> findById(Long id) {
+    public Optional<StationEntity> findById(Long id) {
         String sql = "select * from STATION where id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
-                (rs, rowNum) ->
-                        new Station(rs.getLong("id"), rs.getString("name")));
+        List<StationEntity> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
+                (rs, rowNum) -> new StationEntity.Builder(rs.getString("name"))
+                        .id(rs.getLong("id"))
+                        .build());
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public Optional<Station> findByName(String name) {
+    public Optional<StationEntity> findByName(String name) {
         String sql = "select * from STATION where name = :name";
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
 
-        List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
-                (rs, rowNum) ->
-                        new Station(rs.getLong("id"), rs.getString("name")));
+        List<StationEntity> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
+                (rs, rowNum) -> new StationEntity.Builder(rs.getString("name"))
+                        .id(rs.getLong("id"))
+                        .build());
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public Station save(StationEntity stationEntity) {
+    public StationEntity save(StationEntity stationEntity) {
         String sql = "insert into STATION (name) values (:name)";
 
         Map<String, Object> params = new HashMap<>();
@@ -55,14 +56,18 @@ public class StationDao {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
-        return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), stationEntity.getName());
+        return new StationEntity.Builder(stationEntity.getName())
+                .id(Objects.requireNonNull(keyHolder.getKey()).longValue())
+                .build();
     }
 
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         String sql = "select * from STATION";
 
         return namedParameterJdbcTemplate.query(sql,
-                (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
+                (rs, rowNum) -> new StationEntity.Builder(rs.getString("name"))
+                        .id(rs.getLong("id"))
+                        .build());
     }
 
     public int deleteById(Long id) {

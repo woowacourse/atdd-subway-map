@@ -26,24 +26,26 @@ public class StationService {
 
     public StationResponse createStation(StationRequest stationRequest) {
         StationEntity stationEntity = stationRequest.toEntity();
-        Optional<Station> wrappedStation = stationDao.findByName(stationRequest.getName());
-        if (wrappedStation.isPresent()) {
+        Optional<StationEntity> wrappedStationEntity = stationDao.findByName(stationRequest.getName());
+        if (wrappedStationEntity.isPresent()) {
             throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
         }
-        Station newStation = stationDao.save(stationEntity);
+        StationEntity newStationEntity = stationDao.save(stationEntity);
+        Station newStation = new Station(newStationEntity.getId(), newStationEntity.getName());
         return StationResponse.of(newStation);
     }
 
     public List<StationResponse> findAllStations() {
-        List<Station> stations = stationDao.findAll();
+        List<StationEntity> stations = stationDao.findAll();
         return stations.stream()
+                .map(stationEntity -> new Station(stationEntity.getId(), stationEntity.getName()))
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
     public void deleteStation(Long id) {
-        Optional<Station> wrappedStation = stationDao.findById(id);
-        if (wrappedStation.isEmpty()) {
+        Optional<StationEntity> wrappedStationEntity = stationDao.findById(id);
+        if (wrappedStationEntity.isEmpty()) {
             throw new NoSuchElementException(NOT_EXIST_ERROR);
         }
         stationDao.deleteById(id);

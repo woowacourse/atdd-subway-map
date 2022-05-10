@@ -10,6 +10,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.SectionEntity;
+import wooteco.subway.entity.StationEntity;
 
 @Service
 public class SectionService {
@@ -25,9 +26,9 @@ public class SectionService {
     }
 
     public List<StationResponse> createSection(Long lineId, SectionRequest sectionRequest) {
-        Optional<Station> upStation = stationDao.findById(sectionRequest.getUpStationId());
-        Optional<Station> downStation = stationDao.findById(sectionRequest.getDownStationId());
-        if (upStation.isEmpty() || downStation.isEmpty()) {
+        Optional<StationEntity> upStationEntity = stationDao.findById(sectionRequest.getUpStationId());
+        Optional<StationEntity> downStationEntity = stationDao.findById(sectionRequest.getDownStationId());
+        if (upStationEntity.isEmpty() || downStationEntity.isEmpty()) {
             throw new NoSuchElementException(NOT_EXIST_ERROR);
         }
 
@@ -36,6 +37,13 @@ public class SectionService {
                 .build();
         sectionDao.save(sectionEntity);
 
-        return List.of(StationResponse.of(upStation.get()), StationResponse.of(downStation.get()));
+        Station upStation = new Station(upStationEntity.get().getId(), upStationEntity.get().getName());
+        Station downStation = new Station(downStationEntity.get().getId(), downStationEntity.get().getName());
+
+        return List.of(StationResponse.of(upStation), StationResponse.of(downStation));
+    }
+
+    public List<StationResponse> findByLineId(Long lineId) {
+        return List.of();
     }
 }

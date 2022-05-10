@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import wooteco.subway.domain.Station;
 import wooteco.subway.entity.StationEntity;
 
 @JdbcTest
@@ -25,51 +24,55 @@ class StationDaoTest {
     @DisplayName("지하철역을 저장한다.")
     @Test
     void saveStation() {
-        StationEntity stationEntity = StationEntity.of("강남역");
-        Station savedStation = stationDao.save(stationEntity);
+        StationEntity stationEntity = new StationEntity.Builder("강남역")
+                .build();
+        StationEntity savedStationEntity = stationDao.save(stationEntity);
 
         assertAll(
-                () -> assertThat(savedStation.getId()).isNotZero(),
-                () -> assertThat(savedStation.getName()).isEqualTo("강남역")
+                () -> assertThat(savedStationEntity.getId()).isNotZero(),
+                () -> assertThat(savedStationEntity.getName()).isEqualTo("강남역")
         );
     }
 
     @DisplayName("특정 지하철역을 이름으로 조회한다.")
     @Test
     void findByName() {
-        StationEntity stationEntity = StationEntity.of("강남역");
+        StationEntity stationEntity = new StationEntity.Builder("강남역")
+                .build();
         stationDao.save(stationEntity);
-        Optional<Station> wrappedStation = stationDao.findByName("강남역");
-        assert (wrappedStation).isPresent();
+        Optional<StationEntity> wrappedStationEntity = stationDao.findByName("강남역");
+        assert (wrappedStationEntity).isPresent();
 
         assertAll(
-                () -> assertThat(wrappedStation.get().getId()).isNotZero(),
-                () -> assertThat(wrappedStation.get().getName()).isEqualTo("강남역")
+                () -> assertThat(wrappedStationEntity.get().getId()).isNotZero(),
+                () -> assertThat(wrappedStationEntity.get().getName()).isEqualTo("강남역")
         );
     }
 
     @DisplayName("특정 지하철역을 삭제한다.")
     @Test
     void deleteById() {
-        StationEntity stationEntity = StationEntity.of("강남역");
-        Station savedStation = stationDao.save(stationEntity);
-        stationDao.deleteById(savedStation.getId());
+        StationEntity stationEntity = new StationEntity.Builder("강남역")
+                .build();
+        StationEntity savedStationEntity = stationDao.save(stationEntity);
+        stationDao.deleteById(savedStationEntity.getId());
 
-        Optional<Station> wrappedStation = stationDao.findByName("강남역");
-        assertThat(wrappedStation).isEmpty();
+        Optional<StationEntity> wrappedStationEntity = stationDao.findByName("강남역");
+        assertThat(wrappedStationEntity).isEmpty();
     }
 
     @DisplayName("특정 지하철역을 아이디로 조회한다.")
     @Test
     void findById() {
-        StationEntity stationEntity = StationEntity.of("강남역");
-        Station savedStation = stationDao.save(stationEntity);
-        Optional<Station> wrappedStation = stationDao.findById(savedStation.getId());
-        assert (wrappedStation).isPresent();
+        StationEntity stationEntity = new StationEntity.Builder("강남역")
+                .build();
+        StationEntity savedStationEntity = stationDao.save(stationEntity);
+        Optional<StationEntity> wrappedStationEntity = stationDao.findById(savedStationEntity.getId());
+        assert (wrappedStationEntity).isPresent();
 
         assertAll(
-                () -> assertThat(wrappedStation.get().getId()).isEqualTo(savedStation.getId()),
-                () -> assertThat(wrappedStation.get().getName()).isEqualTo(savedStation.getName())
+                () -> assertThat(wrappedStationEntity.get().getId()).isEqualTo(savedStationEntity.getId()),
+                () -> assertThat(wrappedStationEntity.get().getName()).isEqualTo(savedStationEntity.getName())
         );
     }
 }

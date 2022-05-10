@@ -18,6 +18,7 @@ public class StationRequest {
     }
 
     public StationEntity toEntity() {
-        return StationEntity.of(name);
+        return new StationEntity.Builder(name)
+                .build();
     }
 }
