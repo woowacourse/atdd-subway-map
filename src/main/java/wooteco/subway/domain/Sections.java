@@ -149,7 +149,6 @@ public class Sections {
     }
 
     private void removeBothSideSections(Long stationId) {
-        validateSize();
         final Section upperSection = findSameDownStationIdSection(stationId);
         final Section lowerSection = findSameUpStationIdSection(stationId);
         final Section newSection = new Section(upperSection.getLineId(), upperSection.getUpStationId(),
@@ -159,7 +158,7 @@ public class Sections {
         sections.add(newSection);
     }
 
-    private void removeLastSection(Long stationId) {
+    private void removeLastSection(final Long stationId) {
         validateSizeWhenFirstOrLastSection();
         final Section section = findSameDownStationIdSection(stationId);
         sections.remove(section);
@@ -174,12 +173,6 @@ public class Sections {
 
     private void validateSizeWhenFirstOrLastSection() {
         if (sections.size() < 2) {
-            throw new IllegalArgumentException("노선에 구간은 1개 이상이어야 합니다.");
-        }
-    }
-
-    private void validateSize() {
-        if (sections.size() < 3) {
             throw new IllegalArgumentException("노선에 구간은 1개 이상이어야 합니다.");
         }
     }
