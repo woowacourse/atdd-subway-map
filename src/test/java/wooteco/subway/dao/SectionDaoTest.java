@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionWithStation;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
@@ -38,31 +37,32 @@ class SectionDaoTest {
     @DisplayName("지하철 구간을 저장한다.")
     @Test
     void save() {
-        Long stationId = stationDao.save(STATION);
-        Long stationId2 = stationDao.save(STATION_2);
+        Station station = stationDao.findById(stationDao.save(STATION));
+        Station station2 = stationDao.findById(stationDao.save(STATION_2));
         Long lineId = lineDao.save(LINE);
-        Long sectionId = sectionDao.save(new Section(lineId, stationId, stationId2, 10));
+        Section section = new Section(lineId, station, station2, 10);
+        Long sectionId = sectionDao.save(section);
         assertThat(sectionDao.findById(sectionId))
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(new Section(lineId, stationId, stationId2, 10));
+                .isEqualTo(section);
     }
 
     @DisplayName("해당 지하철 노선 id의 지하철 구간(역 정보 포함)들을 조회한다.")
     @Test
-    void findAllSectionWithStationsByLineId() {
+    void findAllSectionsByLineId() {
         //given
         Station station = stationDao.findById(stationDao.save(STATION));
         Station station2 = stationDao.findById(stationDao.save(STATION_2));
         Station station3 = stationDao.findById(stationDao.save(STATION_3));
         Long lineId = lineDao.save(LINE);
-        SectionWithStation section1 = new SectionWithStation(lineId, station, station2, 10);
-        sectionDao.save(section1.toEntity());
-        SectionWithStation section2 = new SectionWithStation(lineId, station2, station3, 10);
-        sectionDao.save(section2.toEntity());
+        Section section1 = new Section(lineId, station, station2, 10);
+        sectionDao.save(section1);
+        Section section2 = new Section(lineId, station2, station3, 10);
+        sectionDao.save(section2);
 
         //when
-        List<SectionWithStation> sections = sectionDao.findAllByLineId(lineId);
+        List<Section> sections = sectionDao.findAllByLineId(lineId);
 
         //then
         assertThat(sections)
@@ -74,46 +74,47 @@ class SectionDaoTest {
     @DisplayName("해당 지하철 노선 upStationId의 지하철 구간들을 조회한다.")
     @Test
     void findByUpStationId() {
-        Long stationId = stationDao.save(STATION);
-        Long stationId2 = stationDao.save(STATION_2);
+        Station station = stationDao.findById(stationDao.save(STATION));
+        Station station2 = stationDao.findById(stationDao.save(STATION_2));
         Long lineId = lineDao.save(LINE);
-        Section section1 = new Section(lineId, stationId, stationId2, 10);
-        Long id = sectionDao.save(section1);
-        Section section = sectionDao.findByUpStationId(section1.getLineId(), section1.getUpStationId());
-        assertThat(section)
+        Section section = new Section(lineId, station, station2, 10);
+        Long id = sectionDao.save(section);
+        Section resultSection = sectionDao.findByUpStationId(section.getLineId(), section.getUpStationId());
+        assertThat(resultSection)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(section1);
+                .isEqualTo(section);
     }
 
     @DisplayName("해당 지하철 노선 downStationId의 지하철 구간들을 조회한다.")
     @Test
     void findByDownStationId() {
         //given
-        Long stationId = stationDao.save(STATION);
-        Long stationId2 = stationDao.save(STATION_2);
+        Station station = stationDao.findById(stationDao.save(STATION));
+        Station station2 = stationDao.findById(stationDao.save(STATION_2));
         Long lineId = lineDao.save(LINE);
-        Section section1 = new Section(lineId, stationId, stationId2, 10);
-        sectionDao.save(section1);
+        Section section = new Section(lineId, station, station2, 10);
+        Long id = sectionDao.save(section);
 
         //when
-        Section section = sectionDao.findByDownStationId(section1.getLineId(), section1.getDownStationId());
+        Section resultSection = sectionDao.findByUpStationId(section.getLineId(), section.getUpStationId());
 
         //then
-        assertThat(section)
+        assertThat(resultSection)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(section1);
+                .isEqualTo(section);
     }
 
     @DisplayName("지하철 구간을 삭제한다.")
     @Test
     void delete() {
         //given
-        Long stationId = stationDao.save(STATION);
-        Long stationId2 = stationDao.save(STATION_2);
+        Station station = stationDao.findById(stationDao.save(STATION));
+        Station station2 = stationDao.findById(stationDao.save(STATION_2));
         Long lineId = lineDao.save(LINE);
-        Long id = sectionDao.save(new Section(lineId, stationId, stationId2, 10));
+        Section section = new Section(lineId, station, station2, 10);
+        Long id = sectionDao.save(section);
         assertThat(sectionDao.findById(id))
                 .isNotNull();
 
@@ -129,10 +130,11 @@ class SectionDaoTest {
     @Test
     void deleteAllByLineId() {
         //given
-        Long stationId = stationDao.save(STATION);
-        Long stationId2 = stationDao.save(STATION_2);
+        Station station = stationDao.findById(stationDao.save(STATION));
+        Station station2 = stationDao.findById(stationDao.save(STATION_2));
         Long lineId = lineDao.save(LINE);
-        sectionDao.save(new Section(lineId, stationId, stationId2, 10));
+        Section section = new Section(lineId, station, station2, 10);
+        Long id = sectionDao.save(section);
 
         //when
         sectionDao.deleteAllByLineId(lineId);

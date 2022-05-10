@@ -10,7 +10,7 @@ import wooteco.subway.domain.Station;
 
 @Service
 public class SectionService {
-    //TODO Sections로 서비스 로직(Dao 로직도) 이동 및 테스트코드 이동
+    // TODO Sections로 서비스 로직(Dao 로직도) 이동 및 테스트코드 이동
     private static final String INVALID_STATION_ID_ERROR_MESSAGE = "구간 안에 존재하지 않는 아이디의 역이 있습니다.";
     private static final String SECTION_LENGTH_ERROR_MESSAGE = "새 구간의 길이가 기존 역 사이 길이보다 작아야 합니다.";
     private static final String ONE_LESS_SECTION_ERROR_MESSAGE = "해당 지하철 노선은 1개 이하의 구간을 가지고 있어 역을 삭제할 수 없습니다.";
@@ -48,8 +48,12 @@ public class SectionService {
     }
 
     private Long executeMiddleSection(Section inSection, boolean isUpAttach, Section baseSection) {
+        System.out.println("baseSection = " + baseSection);
+        System.out.println("inSection = " + inSection);
         validateDistance(baseSection.getDistance(), inSection.getDistance());
-        sectionDao.save(baseSection.calculateRemainSection(inSection, isUpAttach));
+        Section remainSection = baseSection.calculateRemainSection(inSection, isUpAttach);
+        System.out.println("remainSection = " + remainSection);
+        sectionDao.save(remainSection);
         sectionDao.delete(baseSection.getId());
         return sectionDao.save(inSection);
     }
@@ -74,7 +78,8 @@ public class SectionService {
     public void deleteSection(Long lineId, Long stationId) {
         validateTwoMoreSections(lineId);
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        if (sections.isFirstUpStation(stationDao.findById(stationId)) || sections.isLastDownStation(stationDao.findById(stationId))) {
+        if (sections.isFirstUpStation(stationDao.findById(stationId)) || sections.isLastDownStation(
+                stationDao.findById(stationId))) {
             deleteSideStation(lineId, stationId, sections);
             return;
         }
@@ -103,7 +108,7 @@ public class SectionService {
         sectionDao.delete(upSection.getId());
         sectionDao.delete(downSection.getId());
         int distance = upSection.getDistance() + downSection.getDistance();
-        Section combinedSection = new Section(lineId, upSection.getUpStationId(), downSection.getDownStationId(),
+        Section combinedSection = new Section(lineId, upSection.getUpStation(), downSection.getDownStation(),
                 distance);
         sectionDao.save(combinedSection);
     }

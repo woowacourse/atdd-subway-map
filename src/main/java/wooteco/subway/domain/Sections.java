@@ -8,17 +8,17 @@ public class Sections {
     private static final String LINK_FAILURE_ERROR_MESSAGE = "해당 구간은 역과 연결될 수 없습니다.";
     private static final String NO_NEXT_SECTION_ERROR_MESSAGE = "해당 하행과 상행으로 연결되는 구간이 없습니다.";
 
-    private final List<SectionWithStation> sections;
+    private final List<Section> sections;
 
-    public Sections(List<SectionWithStation> sections) {
+    public Sections(List<Section> sections) {
         this.sections = sections;
     }
 
     public List<Station> calculateStations() {
         final List<Station> stations = new ArrayList<>();
-        final SectionWithStation firstSection = getFirstSection();
+        final Section firstSection = getFirstSection();
         stations.add(firstSection.getUpStation());
-        final SectionWithStation lastSection = executeToLastSection(stations, firstSection);
+        final Section lastSection = executeToLastSection(stations, firstSection);
         stations.add(lastSection.getDownStation());
         return stations;
     }
@@ -36,7 +36,7 @@ public class Sections {
 
     private void checkIsLinked(Section section) {
         if (sections.size() != 0
-                && hasNoStationId(section) && hasNoStationId(section.getReverseSection())) {
+                && hasNoStationId(section) && hasNoStationId(section.toReverse())) {
             throw new IllegalArgumentException(LINK_FAILURE_ERROR_MESSAGE);
         }
     }
@@ -55,7 +55,7 @@ public class Sections {
                 .anyMatch(section -> section.getDownStation().getId().equals(inSection.getDownStationId()));
     }
 
-    private SectionWithStation getFirstSection() {
+    private Section getFirstSection() {
         return sections.stream()
                 .filter(section -> isFirstUpStation(section.getUpStation()))
                 .findFirst().orElse(sections.get(0));
@@ -71,7 +71,7 @@ public class Sections {
                 .noneMatch(section -> section.getUpStation().equals(station));
     }
 
-    private SectionWithStation executeToLastSection(List<Station> stations, SectionWithStation nowSection) {
+    private Section executeToLastSection(List<Station> stations, Section nowSection) {
         while (isAnyLink(nowSection.getDownStation())) {
             stations.add(nowSection.getDownStation());
             nowSection = getNextSection(nowSection);
@@ -84,7 +84,7 @@ public class Sections {
                 .anyMatch(section -> section.getUpStation().equals(downStation));
     }
 
-    private SectionWithStation getNextSection(SectionWithStation nowSection) {
+    private Section getNextSection(Section nowSection) {
         return sections.stream()
                 .filter(section -> nowSection.getDownStation().equals(section.getUpStation()))
                 .findFirst()

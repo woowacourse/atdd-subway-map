@@ -3,62 +3,79 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Section {
+    private static final String SAME_STATION_ERROR_MESSAGE = "상행과 하행 역은 동일할 수 없습니다.";
     private Long id;
     private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
+    private Station upStation;
+    private Station downStation;
     private int distance;
 
     public Section() {
     }
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Section(Long id, Long lineId, Station upStation, Station downStation, int distance) {
         this.id = id;
         this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
+        validateDistinctStation();
     }
 
-    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    public Section(Long lineId, Station upStation, Station downStation, int distance) {
+        this(0L, lineId, upStation, downStation, distance);
     }
 
-    public Section calculateRemainSection(Section section, boolean isUpAttach) {
-        if (isUpAttach) {
-            return new Section(section.getLineId(), section.getDownStationId(),
-                    downStationId, distance - section.getDistance());
+    public static Section of(Section section, Station upStation, Station downStation) {
+        return new Section(section.getId(), section.getLineId(), upStation, downStation,
+                section.getDistance());
+    }
+
+    private void validateDistinctStation() {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException(SAME_STATION_ERROR_MESSAGE);
         }
-        return new Section(section.getLineId(), upStationId,
-                section.upStationId, distance - section.getDistance());
     }
 
-    public Section getReverseSection() {
-        return new Section(lineId, downStationId, upStationId,
-                distance);
+    public Section toReverse() {
+        return new Section(id, lineId, downStation, upStation, distance);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getLineId() {
         return lineId;
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
     public Long getUpStationId() {
-        return upStationId;
+        return upStation.getId();
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Long getDownStationId() {
-        return downStationId;
+        return downStation.getId();
     }
 
     public int getDistance() {
         return distance;
     }
 
-    public Long getId() {
-        return id;
+    public Section calculateRemainSection(Section section, boolean isUpAttach) {
+        if (isUpAttach) {
+            return new Section(section.getLineId(), section.getDownStation(),
+                    downStation, distance - section.getDistance());
+        }
+        return new Section(section.getLineId(), upStation,
+                section.upStation, distance - section.getDistance());
     }
 
     @Override
@@ -71,12 +88,22 @@ public class Section {
         }
         Section section = (Section) o;
         return distance == section.distance && Objects.equals(id, section.id) && lineId.equals(section.lineId)
-                && upStationId.equals(section.upStationId) && downStationId.equals(section.downStationId);
+                && upStation.equals(section.upStation) && downStation.equals(section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lineId, upStationId, downStationId, distance);
+        return Objects.hash(id, lineId, upStation, downStation, distance);
     }
 
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
 }

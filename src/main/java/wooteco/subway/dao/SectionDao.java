@@ -9,19 +9,19 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionWithStation;
 import wooteco.subway.domain.Station;
 
 @Repository
 public class SectionDao {
-    private static final RowMapper<Section> SECTION_ROW_MAPPER = (rs, rowNum) -> new Section(
-            rs.getLong("id"),
-            rs.getLong("lineId"),
-            rs.getLong("upStationId"),
-            rs.getLong("downStationId"),
-            rs.getInt("distance"));
+    private static final String SELECT_SECTION = "SELECT section.id, section.distance, "
+            + "up.id AS upStationId, up.name AS upStationName, "
+            + "down.id AS downStationId, down.name AS downStationName, "
+            + "line.id AS lineId, line.name AS lineName, line.color AS lineColor FROM section "
+            + "JOIN station AS up ON up.id = section.upStationId "
+            + "JOIN station AS down ON down.id = section.downStationId "
+            + "JOIN line ON line.id = section.lineId ";
 
-    private static final RowMapper<SectionWithStation> SECTION_WITH_STATION_ROW_MAPPER = (rs, rowNum) -> new SectionWithStation(
+    private static final RowMapper<Section> SECTION_ROW_MAPPER = (rs, rowNum) -> new Section(
             rs.getLong("id"),
             rs.getLong("lineId"),
             new Station(rs.getLong("upStationId"), rs.getString("upStationName")),
@@ -42,38 +42,31 @@ public class SectionDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setLong(1, section.getLineId());
-            preparedStatement.setLong(2, section.getUpStationId());
-            preparedStatement.setLong(3, section.getDownStationId());
+            preparedStatement.setLong(2, section.getUpStation().getId());
+            preparedStatement.setLong(3, section.getDownStation().getId());
             preparedStatement.setInt(4, section.getDistance());
             return preparedStatement;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public List<SectionWithStation> findAllByLineId(Long lineId) {
-        final String sql = "SELECT section.id, section.distance, "
-                + "up.id AS upStationId, up.name AS upStationName, "
-                + "down.id AS downStationId, down.name AS downStationName, "
-                + "line.id AS lineId, line.name AS lineName, line.color AS lineColor FROM section "
-                + "JOIN station AS up ON up.id = section.upStationId "
-                + "JOIN station AS down ON down.id = section.downStationId "
-                + "JOIN line ON line.id = section.lineId "
-                + "WHERE section.lineId = ?;";
-        return jdbcTemplate.query(sql, SECTION_WITH_STATION_ROW_MAPPER, lineId);
+    public List<Section> findAllByLineId(Long lineId) {
+        final String sql = SELECT_SECTION + "WHERE section.lineId = ?;";
+        return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, lineId);
     }
 
     public Section findById(Long id) {
-        final String sql = "SELECT * FROM section WHERE id = ?;";
+        final String sql = SELECT_SECTION + "WHERE section.id = ?;";
         return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, id);
     }
 
     public Section findByUpStationId(Long lineId, Long upStationId) {
-        final String sql = "SELECT * FROM section WHERE upStationId = ? AND lineId = ?;";
+        final String sql = SELECT_SECTION + "WHERE upStationId = ? AND lineId = ?;";
         return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, upStationId, lineId);
     }
 
     public Section findByDownStationId(Long lineId, Long downStationId) {
-        final String sql = "SELECT * FROM section WHERE downStationId = ? AND lineId = ?;";
+        final String sql = SELECT_SECTION + "WHERE downStationId = ? AND lineId = ?;";
         return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, downStationId, lineId);
     }
 

@@ -12,8 +12,8 @@ import static wooteco.subway.Fixtures.STATION;
 import static wooteco.subway.Fixtures.STATION_2;
 import static wooteco.subway.Fixtures.STATION_3;
 import static wooteco.subway.Fixtures.STATION_4;
-import static wooteco.subway.Fixtures.getSection;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +36,12 @@ class SectionServiceTest extends ServiceTest {
         stationService.save(STATION);
         stationService.save(STATION_2);
         lineService.save(LINE);
+
         Section resSection = sectionService.save(SECTION);
         assertThat(resSection)
-                .isEqualTo(getSection(resSection.getId(), SECTION));
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(SECTION);
     }
 
     @DisplayName("상행종점을 등록하고, 해당 지하철 노선 안의 역들을 조회할 수 있다.")
@@ -90,7 +93,11 @@ class SectionServiceTest extends ServiceTest {
 
         //when then
         assertThat(sectionService.findStationsOfLine(saveLine.getId()))
-                .containsExactly(saveStation, saveStation2, saveStation4, saveStation3);
+                .hasSize(4);
+        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(List.of(saveStation, saveStation2, saveStation4, saveStation3));
     }
 
     @DisplayName("중복된 구간을 등록할 수 없다.")
