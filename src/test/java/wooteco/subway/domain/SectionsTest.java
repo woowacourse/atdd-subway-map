@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 class SectionsTest {
@@ -95,7 +98,38 @@ class SectionsTest {
 
                     assertThatThrownBy(() -> sections.append(appendSection))
                             .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("1 - 3 구간 등록 시 상행역과 하행역이 모두 중복이므로 예외를 던진다.", () -> {
+                    Section appendSection = new Section(1L, 1L, 3L, 3);
+
+                    assertThatThrownBy(() -> sections.append(appendSection))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("상행역 하행역이 모두 포함되지 않는 경우 예외를 던진다.", () -> {
+                    Section appendSection = new Section(1L, 4L, 5L, 3);
+
+                    assertThatThrownBy(() -> sections.append(appendSection))
+                            .isInstanceOf(IllegalArgumentException.class);
                 })
+        );
+    }
+
+    @DisplayName("조회 시 상행역 부터 하행역 순으로 정렬한다.")
+    @Test
+    void 구간_조회() {
+        Section basedSection1 = new Section(1L, 2L, 1L, 4);
+        Section basedSection2 = new Section(1L, 1L, 3L, 7);
+        Section basedSection3 = new Section(1L, 4L, 2L, 7);
+        Sections sections = new Sections(List.of(basedSection1, basedSection2, basedSection3));
+
+        List<Section> value = sections.getValue();
+
+        assertAll(
+                () -> assertThat(value.get(0).getUpStationId()).isEqualTo(4),
+                () -> assertThat(value.get(1).getUpStationId()).isEqualTo(2),
+                () -> assertThat(value.get(2).getUpStationId()).isEqualTo(1)
         );
     }
 }

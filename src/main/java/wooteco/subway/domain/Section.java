@@ -36,6 +36,10 @@ public class Section {
         return upStationId.equals(section.upStationId) && downStationId.equals(section.downStationId);
     }
 
+    public boolean isConnect(Section section) {
+        return downStationId.equals(section.getUpStationId());
+    }
+
     public void changeUpStation(Section section) {
         this.upStationId = section.downStationId;
         this.distance -= section.distance;

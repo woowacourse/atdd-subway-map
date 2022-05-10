@@ -108,4 +108,27 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("일치하는 구간이 존재하지 않습니다."));
     }
+
+    public List<Section> getValue() {
+        List<Section> sections = new ArrayList<>();
+        Section firstSection = findByUpStationId(getUpStationId());
+
+        addSection(sections, firstSection);
+
+        return sections;
+    }
+
+    private void addSection(List<Section> sections, Section prevSection) {
+        sections.add(prevSection);
+
+        for (Section currentSection : value) {
+            checkConnect(sections, prevSection, currentSection);
+        }
+    }
+
+    private void checkConnect(List<Section> sections, Section prevSection, Section currentSection) {
+        if (prevSection.isConnect(currentSection)) {
+            addSection(sections, currentSection);
+        }
+    }
 }
