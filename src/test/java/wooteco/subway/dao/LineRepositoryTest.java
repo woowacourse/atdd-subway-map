@@ -24,7 +24,7 @@ public class LineRepositoryTest extends RepositoryTest {
 
         assertAll(
             () -> assertThat(savedLine.getId()).isNotNull(),
-            () -> assertThat(savedLine).isEqualTo(line)
+            () -> assertThat(savedLine.isSameName(line.getName())).isTrue()
         );
     }
 

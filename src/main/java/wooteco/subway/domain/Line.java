@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Line {
 
+    private final Long id;
     private final String name;
     private final String color;
-    private final Long id;
 
     public Line(Long id, String name, String color) {
         this.id = id;
@@ -42,12 +42,12 @@ public class Line {
             return false;
         }
         Line line = (Line) o;
-        return Objects.equals(name, line.name);
+        return Objects.equals(id, line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id);
     }
 
     public boolean isSameName(String name) {
