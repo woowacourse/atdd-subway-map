@@ -92,6 +92,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 삭제한다.")
     void delete() {
         //given
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_강남역, "/stations");
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_잠실역, "/stations");
         requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
         //when
