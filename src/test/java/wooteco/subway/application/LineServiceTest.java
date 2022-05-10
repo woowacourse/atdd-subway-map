@@ -18,6 +18,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 class LineServiceTest {
 
@@ -80,12 +81,18 @@ class LineServiceTest {
     void showLine() {
         //when
         given(lineDao.findById(any(Long.class))).willReturn(분당선);
-        Line line = lineService.showLine(1L);
+        given(stationDao.findByLineId(분당선.getId())).willReturn(List.of(강남역, 역삼역));
+        LineResponse lineResponse = lineService.showLine(1L);
         //then
         assertAll(
-                () -> assertThat(line.getId()).isEqualTo(1L),
-                () -> assertThat(line.getName()).isEqualTo("분당선"),
-                () -> assertThat(line.getColor()).isEqualTo("노랑이")
+                () -> assertThat(lineResponse.getId()).isEqualTo(1L),
+                () -> assertThat(lineResponse.getName()).isEqualTo("분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("노랑이"),
+                () -> {
+                    List<StationResponse> stations = lineResponse.getStations();
+                    assertThat(stations.size()).isEqualTo(2);
+                    assertThat(stations.get(0).getName()).isEqualTo("강남역");
+                }
         );
     }
 

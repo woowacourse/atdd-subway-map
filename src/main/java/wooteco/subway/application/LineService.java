@@ -49,9 +49,10 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public Line showLine(Long id) {
+    public LineResponse showLine(Long id) {
         checkExistsId(id);
-        return lineDao.findById(id);
+        Line line = lineDao.findById(id);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), getStations(line.getId()));
     }
 
     @Transactional
