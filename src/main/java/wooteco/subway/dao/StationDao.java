@@ -69,4 +69,13 @@ public class StationDao {
         }
         jdbcTemplate.update(sql, id);
     }
+
+    public Station findById(Long stationId) {
+        final String sql = "select id, name from station where id=?";
+        return jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")),
+                stationId
+        );
+    }
 }

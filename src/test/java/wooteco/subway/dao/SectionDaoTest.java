@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @JdbcTest
@@ -37,5 +38,23 @@ public class SectionDaoTest {
         assertDoesNotThrow(() -> {
             sectionDao.deleteById(1L, 1L);
         });
+    }
+
+    @Test
+    @DisplayName("LineId로 데이터를 가져오는 경우를 테스트한다")
+    public void getSectionsByLineIdTest() {
+        sectionDao.save(1L, 1L, 2L, 5);
+        sectionDao.save(1L, 1L, 3L, 3);
+
+        assertThat(sectionDao.getSectionByLineId(1L).size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("LineId에 해당하는 데이터가 없는 경우를 테스트한다")
+    public void getSectionsByLineIdNotTest() {
+        sectionDao.save(1L, 1L, 2L, 5);
+        sectionDao.save(1L, 1L, 3L, 3);
+
+        assertThat(sectionDao.getSectionByLineId(2L).size()).isEqualTo(0);
     }
 }

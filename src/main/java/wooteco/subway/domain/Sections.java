@@ -29,14 +29,12 @@ public class Sections {
 
     private void addMiddleSection(Section section, Section anotherSection) {
         this.sections.add(new Section(
-                0,
                 anotherSection.getLineId(),
                 anotherSection.getUpStationId(),
                 section.getDownStationId(),
                 section.getDistance()
         ));
         this.sections.add(new Section(
-                0,
                 anotherSection.getLineId(),
                 section.getDownStationId(),
                 anotherSection.getDownStationId(),

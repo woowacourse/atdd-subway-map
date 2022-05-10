@@ -14,15 +14,15 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-    @PostMapping("/lines/{lineNumber}/sections")
-    public ResponseEntity<Void> createSection(@RequestParam final Long lineNumber, @RequestBody final SectionRequest sectionRequest) {
-        sectionService.save(lineNumber, sectionRequest);
+    @PostMapping("/lines/{lineId}/sections")
+    public ResponseEntity<Void> createSection(@RequestParam final Long lineId, @RequestBody final SectionRequest sectionRequest) {
+        sectionService.save(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{lineNumber}/sections")
-    public ResponseEntity<Void> deleteSection(@RequestParam final Long lineNumber, @RequestParam final Long stationId) {
-        sectionService.deleteById(lineNumber, stationId);
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity<Void> deleteSection(@RequestParam final Long lineId, @RequestParam final Long stationId) {
+        sectionService.deleteById(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 }
