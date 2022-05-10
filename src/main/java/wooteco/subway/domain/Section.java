@@ -19,12 +19,19 @@ public class Section {
     }
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validDistance(distance);
         validStationsId(upStationId, downStationId);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    private void validDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간의 길이는 0보다 커야합니다.");
+        }
     }
 
     private void validStationsId(Long upStationId, Long downStationId) {
