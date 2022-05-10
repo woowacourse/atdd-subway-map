@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.dao.FakeLineDao;
-import wooteco.subway.dao.FakeSectionDao;
-import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -21,26 +21,27 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
+@SpringBootTest
+@Transactional
 class LineServiceTest {
 
     private Long upStationId;
     private Long downStationId;
 
-    private final LineDao lineDao = new FakeLineDao();
-    private final StationDao stationDao = new FakeStationDao();
-    private final SectionDao sectionDao = new FakeSectionDao();
-    private final LineService lineService = new LineService(lineDao, stationDao, sectionDao);
+    @Autowired
+    private LineDao lineDao;
+
+    @Autowired
+    private StationDao stationDao;
+
+    @Autowired
+    private SectionDao sectionDao;
+
+    private LineService lineService;
 
     @BeforeEach
     void setUp() {
-        List<Line> lines = lineDao.findAll();
-        List<Long> stationIds = lines.stream()
-            .map(Line::getId)
-            .collect(Collectors.toList());
-
-        for (Long stationId : stationIds) {
-            lineDao.deleteById(stationId);
-        }
+        lineService = new LineService(lineDao, stationDao, sectionDao);
 
         upStationId = stationDao.save(new Station("강남역")).getId();
         downStationId = stationDao.save(new Station("선릉역")).getId();
@@ -49,7 +50,7 @@ class LineServiceTest {
     @Test
     void save() {
         // given
-        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 1);
 
         // when
         LineResponse lineResponse = lineService.save(lineRequest);
@@ -73,7 +74,6 @@ class LineServiceTest {
 
         // then
         assertThatThrownBy(() -> lineService.save(lineRequest2))
-            .hasMessage("이미 존재하는 데이터 입니다.")
             .isInstanceOf(DuplicateKeyException.class);
     }
 
