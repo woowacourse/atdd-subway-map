@@ -1,8 +1,6 @@
 package wooteco.subway.service;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
