@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NoTerminalStationException;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    Station getTerminalDownStation() {
+    public Station getTerminalDownStation() {
         List<Station> upStations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
@@ -34,5 +35,14 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new NoTerminalStationException("[ERROR] 종점이 없습니다."));
         return terminalUpStation.getDownStation();
+    }
+
+    public void checkDuplicateSection(Long upStationId, Long downStationId) {
+        sections.stream()
+                .filter(section -> section.getDownStation().getId().equals(downStationId) &&
+                        section.getUpStation().getId().equals(upStationId))
+                .forEach(section -> {
+                    throw new DuplicatedException("[ERROR] 이미 노선에 존재하는 구간입니다.");
+                });
     }
 }

@@ -71,4 +71,22 @@ public class SectionRepositoryImpl implements SectionRepository {
         SqlParameterSource parameters = new MapSqlParameterSource("line_id", lineId);
         return namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
     }
+
+    @Override
+    public Optional<Section> findByUpStationIdWithLineId(Long upStationId, Long lineId) {
+        String sql = "SELECT * FROM section WHERE up_station_id = :up_station_id, line_id = :line_id";
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("up_station_id", upStationId)
+                .addValue("line_id", lineId);
+
+        List<Section> sections = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
+        return getOptional(sections);
+    }
+
+    private Optional<Section> getOptional(List<Section> sections) {
+        if (sections.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(sections.get(0));
+    }
 }

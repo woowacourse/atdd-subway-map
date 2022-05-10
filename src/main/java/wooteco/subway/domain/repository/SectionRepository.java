@@ -9,4 +9,6 @@ public interface SectionRepository {
     Section save(Section section);
 
     List<Section> findAllByLineId(Long lineId);
+
+    Optional<Section> findByUpStationIdWithLineId(Long upStationId, Long lineId);
 }

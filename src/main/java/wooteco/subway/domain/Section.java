@@ -25,6 +25,10 @@ public class Section {
         return new Section(lineId, upStation, downStation, distance);
     }
 
+    public boolean isEqualsAndSmallerThan(int distance) {
+        return this.distance <= distance;
+    }
+
     public Long getId() {
         return id;
     }
