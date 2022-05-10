@@ -71,6 +71,15 @@ public class StationDaoTest {
 
         assertThat(stationDao.findAll()).hasSize(0);
     }
+
+    @Test
+    @DisplayName("입력된 id의 지하철 역을 검색한다")
+    void findById() {
+        Station actualStation = new Station("선릉역");
+        Station expectedStation = stationDao.findById(1L).orElse(null);
+
+        assertThat(actualStation).isEqualTo(expectedStation);
+    }
 }
 
 
