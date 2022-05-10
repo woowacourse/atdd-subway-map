@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.SectionResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -110,6 +111,7 @@ public class Section {
     public SectionResult canAddAsBetweenStation(Sections sections) {
         // 구간이 존재하고 && 거리가 되는지
         Optional<Section> upStationSection = sections.getExistedUpStationSection(upStationId);
+
         if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {
             return SectionResult.of(upStationSection.get(), this);
         }

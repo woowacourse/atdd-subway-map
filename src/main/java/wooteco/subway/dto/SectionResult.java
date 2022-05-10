@@ -1,7 +1,6 @@
-package wooteco.subway.domain;
+package wooteco.subway.dto;
 
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 
 public class SectionResult {
     private boolean canAddAsBetweenStation;
@@ -24,7 +23,6 @@ public class SectionResult {
         Section generatedSection = Section.createBySections(existedSection, insertedSection);
         return new SectionResult(true, existedSection, insertedSection, generatedSection);
     }
-
 
     public boolean canAddAsBetweenStation() {
         return canAddAsBetweenStation;

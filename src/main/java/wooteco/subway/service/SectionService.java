@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionResult;
+import wooteco.subway.dto.SectionResult;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
 
