@@ -14,6 +14,14 @@ public class Distance {
         }
     }
 
+    public Distance subtract(Distance other) {
+        return new Distance(value - other.value);
+    }
+
+    public boolean isLessThan(Distance other) {
+        return value < other.value;
+    }
+
     public int getValue() {
         return value;
     }
