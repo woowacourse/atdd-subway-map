@@ -26,10 +26,6 @@ public class LineResponse {
         this(id, name, color, new ArrayList<>());
     }
 
-    public static LineResponse of(final Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
-    }
-
     public static LineResponse from(final Line line, final List<StationResponse> stationResponses) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }

@@ -39,7 +39,9 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        return convertLineResponses(lineDao.findAll());
+        return lineDao.findAll().stream()
+                .map(line -> find(line.getId()))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public LineResponse find(final Long id) {
@@ -94,12 +96,6 @@ public class LineService {
 
     private Section convertSection(final LineRequest lineRequest) {
         return new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-    }
-
-    private List<LineResponse> convertLineResponses(final List<Line> lines) {
-        return lines.stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
     }
 
     private List<StationResponse> convertStationResponses(final List<Station> stations) {
