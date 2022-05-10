@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionJdbcDao;
+import wooteco.subway.dao.jdbc.SectionJdbcDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dao.application.LineService;
 import wooteco.subway.domain.Line;

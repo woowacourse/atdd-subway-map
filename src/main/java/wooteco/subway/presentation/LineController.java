@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.application.LineService;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineRequestV2;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineResponseV2;
 import wooteco.subway.exception.NoSuchLineException;
 
 @RestController
@@ -23,15 +26,17 @@ import wooteco.subway.exception.NoSuchLineException;
 public class LineController {
 
     private final LineDao lineDao;
+    private final LineService lineService;
 
-    public LineController(final LineDao lineDao) {
+    public LineController(final LineDao lineDao, final LineService lineService) {
         this.lineDao = lineDao;
+        this.lineService = lineService;
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = LineResponse.from(lineDao.save(lineRequest.toLine()));
-        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+    public ResponseEntity<LineResponseV2> createLine(@RequestBody LineRequestV2 lineRequest) {
+        LineResponseV2 response = lineService.createLine(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
     @GetMapping

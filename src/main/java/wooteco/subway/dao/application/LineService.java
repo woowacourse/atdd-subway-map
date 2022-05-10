@@ -1,5 +1,6 @@
 package wooteco.subway.dao.application;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
@@ -12,6 +13,7 @@ import wooteco.subway.dto.LineRequestV2;
 import wooteco.subway.dto.LineResponseV2;
 import wooteco.subway.exception.NoSuchStationException;
 
+@Service
 public class LineService {
 
     private final StationDao stationDao;
