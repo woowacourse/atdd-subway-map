@@ -1,6 +1,6 @@
 package wooteco.subway.dao;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.jdbc.LineJdbcDao;
+import wooteco.subway.dao.jdbc.SectionJdbcDao;
 import wooteco.subway.dao.jdbc.StationJdbcDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -20,7 +21,7 @@ class SectionDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private SectionJdbcDao sectionDao;
+    private SectionDao sectionDao;
     private LineDao lineDao;
     private StationDao stationDao;
 

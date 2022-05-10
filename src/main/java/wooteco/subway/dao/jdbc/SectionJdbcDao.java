@@ -1,15 +1,18 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
-public class SectionJdbcDao {
+@Repository
+public class SectionJdbcDao implements SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -17,6 +20,7 @@ public class SectionJdbcDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Section save(final Long lineId, final Section section) {
         if (ObjectUtils.isEmpty(section)) {
             throw new IllegalArgumentException("passed section is null");
@@ -38,6 +42,7 @@ public class SectionJdbcDao {
                 section.getDistance());
     }
 
+    @Override
     public List<Section> findByLineId(final long lineId) {
         final String sql = "SELECT s.id, s.line_id, s.up_station_id, s.down_station_id, s.distance, "
                 + "us.name as up_station_name, ds.name as down_station_name "

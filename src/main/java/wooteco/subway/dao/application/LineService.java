@@ -2,7 +2,8 @@ package wooteco.subway.dao.application;
 
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionJdbcDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.jdbc.SectionJdbcDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -15,10 +16,10 @@ public class LineService {
 
     private final StationDao stationDao;
     private final LineDao lineDao;
-    private final SectionJdbcDao sectionDao;
+    private final SectionDao sectionDao;
 
     public LineService(final StationDao stationDao, final LineDao lineDao,
-                       final SectionJdbcDao sectionDao) {
+                       final SectionDao sectionDao) {
         this.stationDao = stationDao;
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
