@@ -68,6 +68,14 @@
 - [ ] 구간 등록 `POST /lineEntities/1/sections`
 - [ ] 구간 제거 `DELETE /lineEntities/1/sections?stationId=2`
 
+# domain
+> Sections
+- 구간들의 정렬된 리스트를 반환할 수 있다.
+
+> Section
+- 상행선, 하행선을 반환할 수 있다.
+- 입력된 지하철역이 상행선인지 알려준다.
+
 
 ## 🚀 Getting Started
 ### Usage
