@@ -5,21 +5,36 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineService(final LineDao lineDao) {
+    public LineService(final LineDao lineDao, SectionService sectionService,
+                       StationService stationService) {
         this.lineDao = lineDao;
+        this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
-    public Line save(final Line line) {
-        if (lineDao.existByName(line.getName())) {
+    public LineResponse save(final LineRequest lineRequest) {
+        if (lineDao.existByName(lineRequest.getName())) {
             throw new IllegalStateException("이미 존재하는 노선 이름입니다.");
         }
-        return lineDao.save(line);
+
+        Line savedLine = lineDao.save(lineRequest.toLine());
+        sectionService.save(savedLine.getId(),
+                new SectionRequest(lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                        lineRequest.getDistance()));
+
+        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(),
+                stationService.findByStationsId(sectionService.findAllStationByLineId(savedLine.getId())));
     }
 
     public List<Line> findAll() {
@@ -27,6 +42,9 @@ public class LineService {
     }
 
     public Line findById(final Long lineId) {
+//        Line line = lineDao.findById(lineId);
+
+        // return new LineResponse(line.getId(), line.getName(), line.getColor(), stationService.findByLineId(line.getId());
         return lineDao.findById(lineId);
     }
 

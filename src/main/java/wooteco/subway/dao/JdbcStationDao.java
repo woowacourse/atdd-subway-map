@@ -65,4 +65,10 @@ public class JdbcStationDao implements StationDao {
             throw new IllegalArgumentException("없는 station 입니다.");
         }
     }
+
+    @Override
+    public Station findById(Long id) {
+        final String sql = "SELECT * from STATION where id = (?)";
+        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+    }
 }
