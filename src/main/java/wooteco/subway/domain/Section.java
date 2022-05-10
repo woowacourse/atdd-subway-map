@@ -2,7 +2,6 @@ package wooteco.subway.domain;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class Section {
 
