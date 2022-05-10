@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -57,5 +58,16 @@ public class SectionDao {
         Map<String, Object> params = new HashMap<>();
         params.put("lineId", lineId);
         return jdbcTemplate.query(sql, new MapSqlParameterSource(params), rowMapper);
+    }
+
+    public void delete(Section section) {
+        String sql = "DELETE FROM section " +
+                "WHERE line_id = :lineId and up_station_id = :upStationId and down_station_id = :downStationId and distance = :distance";
+
+        int affected = jdbcTemplate.update(sql, new BeanPropertySqlParameterSource(section));
+
+        if (affected == 0) {
+            throw new IllegalArgumentException("구간 삭제 시 문제가 발생했습니다.");
+        }
     }
 }

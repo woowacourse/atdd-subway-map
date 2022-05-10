@@ -7,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class SectionDaoTest {
@@ -69,6 +70,22 @@ class SectionDaoTest {
 
         //then
         assertThat(sections.size()).isEqualTo(2);
+    }
+
+    @DisplayName("Section과 정보가 동일한 section을 삭제한다")
+    @Test
+    void deleteBySection() {
+        Section section1 = new Section(10, 1L, 1L, 3L);
+        Section section2 = new Section(10, 1L, 11L, 13L);
+        sectionDao.save(section1);
+        sectionDao.save(section2);
+
+        assertAll(() -> {
+            assertThatCode(() -> sectionDao.delete(section1))
+                    .doesNotThrowAnyException();
+
+            assertThat(sectionDao.findAll().size()).isOne();
+        });
     }
 
 }
