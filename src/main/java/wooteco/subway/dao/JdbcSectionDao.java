@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -56,8 +57,10 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Optional<Object> findAllByLineId(final Long lineId) {
-        throw new UnsupportedOperationException("JdbcSectionDao#findAllByLineId not implemented.");
+    public List<Section> findAllByLineId(final Long lineId) {
+        final String sql = "SELECT * FROM section WHERE line_id = :lineId";
+        final MapSqlParameterSource parameters = new MapSqlParameterSource("lineId", lineId);
+        return namedParameterJdbcTemplate.query(sql, parameters, getSectionRowMapper());
     }
 
     private RowMapper<Section> getSectionRowMapper() {

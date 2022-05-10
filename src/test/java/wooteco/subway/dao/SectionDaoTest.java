@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import javax.sql.DataSource;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import wooteco.subway.domain.Section;
 class SectionDaoTest {
 
     private static final Section SECTION_A = new Section(1L, 1L, 2L, 1);
+    private static final Section SECTION_B = new Section(2L, 1L, 3L, 2);
 
     @Autowired
     private DataSource dataSource;
@@ -50,11 +52,14 @@ class SectionDaoTest {
     @Test
     void findAllByLineId() {
         final Long lineId = 1L;
-        final Section expected = sectionDao.save(SECTION_A);
+        final Section createdA = sectionDao.save(SECTION_A);
+        final Section createdB = sectionDao.save(SECTION_B);
 
-        final Section actual = sectionDao.findAllByLineId(lineId).orElseThrow();
+        final List<Section> sections = sectionDao.findAllByLineId(lineId);
 
-        Assertions.assertThat(actual).isEqualTo(expected);
-        sectionDao.deleteById(expected.getId());
+        Assertions.assertThat(sections).isNotEmpty();
+
+        sectionDao.deleteById(createdA.getId());
+        sectionDao.deleteById(createdB.getId());
     }
 }
