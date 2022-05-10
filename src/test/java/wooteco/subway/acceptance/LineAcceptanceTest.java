@@ -10,24 +10,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final String LINE_PARAM_NAME_KEY = "name";
-    private static final String LINE_PARAM_COLOR_KEY = "color";
+    private static final LineRequest lineRequest1 = new LineRequest("2호선", "GREEN", 1L, 2L, 20);
+    private static final LineRequest lineRequest2 = new LineRequest("3호선", "ORANGE", 2L, 3L, 20);
+
+    @BeforeEach
+    void setup() {
+        createStationByMap(new StationRequest("신설동역"));
+        createStationByMap(new StationRequest("용두역"));
+        createStationByMap(new StationRequest("성수역"));
+    }
 
     @DisplayName("지하철 노선을 생성 성공 시 상태코드 201을 반환하고 Location 헤더에 주소를 전달한다.")
     @Test
     void createLine() {
         // given
-        ExtractableResponse<Response> response = createLineFixture("2호선", "GREEN");
+        ExtractableResponse<Response> response = createLineFixture(lineRequest1);
         // then
+
+        List<String> expectedStationNames = List.of("신설동역","용두역");
+        List<String> resultStationNames = response.jsonPath().getList("stations", StationResponse.class).stream()
+            .map(StationResponse::getName)
+            .collect(Collectors.toList());
+        assertThat(resultStationNames).containsAll(expectedStationNames);
         assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
         assertThat(response.jsonPath().getString("color")).isEqualTo("GREEN");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -38,9 +55,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        ExtractableResponse<Response> createResponse1 = createLineFixture("2호선", "GREEN");
+        ExtractableResponse<Response> createResponse1 = createLineFixture(lineRequest1);
         // when
-        ExtractableResponse<Response> createResponse2 = createLineFixture("2호선", "GREEN");
+        ExtractableResponse<Response> createResponse2 = createLineFixture(lineRequest1);
         // then
         assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -50,8 +67,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createLineFixture("2호선", "GREEN");
-        ExtractableResponse<Response> createResponse2 = createLineFixture("3호선", "ORANGE");
+        ExtractableResponse<Response> createResponse1 = createLineFixture(lineRequest1);
+        ExtractableResponse<Response> createResponse2 = createLineFixture(lineRequest2);
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -73,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineById() {
         /// given
-        ExtractableResponse<Response> createdResponse = createLineFixture("2호선", "GREEN");
+        ExtractableResponse<Response> createdResponse = createLineFixture(lineRequest1);
         String uri = createdResponse.header("Location");
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -90,13 +107,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        ExtractableResponse<Response> createdResponse = createLineFixture("2호선", "GREEN");
+        ExtractableResponse<Response> createdResponse = createLineFixture(lineRequest1);
         String uri = createdResponse.header("Location");
 
-        Map<String, String> updateParameter = generateLineParameter("3호선", "ORANGE");
+        LineRequest updateRequest = new LineRequest("3호선", "ORANGE");
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(updateParameter)
+            .body(updateRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .put(uri)
             .then().log().all()
@@ -109,12 +126,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine_noExistLine_Exception() {
         /// given
-        ExtractableResponse<Response> createdResponse1 = createLineFixture("2호선", "GREEN");
-        ExtractableResponse<Response> createdResponse2 = createLineFixture("3호선", "ORANGE");
-        Map<String, String> updateParam = generateLineParameter("4호선", "ORANGE");
+        ExtractableResponse<Response> createdResponse1 = createLineFixture(lineRequest1);
+        ExtractableResponse<Response> createdResponse2 = createLineFixture(lineRequest2);
+        LineRequest updateRequest = new LineRequest("4호선", "ORANGE");
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(updateParam)
+            .body(updateRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .put("/lines/10000")
             .then().log().all()
@@ -122,20 +139,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
+//
     @DisplayName("중복된 이름으로 노선 수정 시 상태 코드 400을 반환한다.")
     @Test
     void updateLine_duplicateName_Exception() {
         /// given
-        ExtractableResponse<Response> createdResponse1 = createLineFixture("2호선", "GREEN");
-        ExtractableResponse<Response> createdResponse2 = createLineFixture("3호선", "ORANGE");
+        ExtractableResponse<Response> createdResponse1 = createLineFixture(lineRequest1);
+        ExtractableResponse<Response> createdResponse2 = createLineFixture(lineRequest2);
 
         String uri = createdResponse2.header("Location");
 
-        Map<String, String> updateParameter = generateLineParameter("2호선", "BLUE");
+        LineRequest updateRequest = new LineRequest("2호선", "BLUE");
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(updateParameter)
+            .body(updateRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .put(uri)
             .then().log().all()
@@ -144,20 +161,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    //TODO: 중복 색깔 테스트 필요
     @DisplayName("중복된 색깔로 노선 수정 시 상태 코드 400을 반환한다.")
     @Test
     void updateLine_duplicateColor_Exception() {
         /// given
-        ExtractableResponse<Response> createdResponse1 = createLineFixture("2호선", "GREEN");
-        ExtractableResponse<Response> createdResponse2 = createLineFixture("3호선", "ORANGE");
+        ExtractableResponse<Response> createdResponse1 = createLineFixture(lineRequest1);
+        ExtractableResponse<Response> createdResponse2 = createLineFixture(lineRequest2);
 
         String uri = createdResponse2.header("Location");
 
-        Map<String, String> updateParameter = generateLineParameter("4호선", "GREEN");
+        LineRequest updateRequest = new LineRequest("4호선", "GREEN");
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(updateParameter)
+            .body(updateRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .put(uri)
             .then().log().all()
@@ -170,7 +186,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = createLineFixture("2호선", "GREEN");
+        ExtractableResponse<Response> createResponse = createLineFixture(lineRequest1);
         // when
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -195,18 +211,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private Map<String, String> generateLineParameter(String name, String color) {
-        Map<String, String> lineParameter = new HashMap<>();
-        lineParameter.put(LINE_PARAM_NAME_KEY, name);
-        lineParameter.put(LINE_PARAM_COLOR_KEY, color);
-        return lineParameter;
+
+    private ExtractableResponse<Response> createStationByMap(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+            .body(stationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
     }
 
-    private ExtractableResponse<Response> createLineFixture(String name, String color) {
-        Map<String, String> params = generateLineParameter(name, color);
+    private ExtractableResponse<Response> createLineFixture(LineRequest lineRequest) {
         // when
         return RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")

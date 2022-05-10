@@ -1,15 +1,16 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
-import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Sections;
 
+@Repository
 public class SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -31,12 +32,12 @@ public class SectionDao {
         }, keyHolder);
         long savedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        return new Section(savedId, section.getLineId(),section.getUpStationId(),section.getDownStationId(),section.getDistance());
+        return new Section(savedId, section.getLineId(), section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
-    public List<Section> findByLineId(long lineId) {
+    public Sections findByLineId(long lineId) {
         String sql = "select * from section where line_id = ?";
-        return jdbcTemplate.query(sql, rowMapper(), lineId);
+        return new Sections(jdbcTemplate.query(sql, rowMapper(), lineId));
     }
 
     private RowMapper<Section> rowMapper() {

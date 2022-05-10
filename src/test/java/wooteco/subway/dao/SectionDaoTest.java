@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 @Sql("/sql/schema-test.sql")
 @JdbcTest
@@ -50,9 +51,9 @@ public class SectionDaoTest {
         sectionDao.save(secondSection);
 
         long lineId = 1;
-        List<Section> sections = sectionDao.findByLineId(lineId);
+        Sections sections = sectionDao.findByLineId(lineId);
 
-        assertThat(sections.size()).isEqualTo(2);
+        assertThat(sections.getSections().size()).isEqualTo(2);
     }
 
     @DisplayName("구간을 제거한다.")
@@ -64,8 +65,8 @@ public class SectionDaoTest {
         Section savedLine = sectionDao.save(secondSection);
 
         sectionDao.delete(savedLine.getId());
-        List<Section> result = sectionDao.findByLineId(1L);
+        Sections result = sectionDao.findByLineId(1L);
 
-        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.getSections().size()).isEqualTo(1);
     }
 }

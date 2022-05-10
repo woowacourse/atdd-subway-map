@@ -1,13 +1,19 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 @Service
 public class LineService {
@@ -17,9 +23,13 @@ public class LineService {
     private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "해당하는 ID의 지하철 노선이 존재하지 않습니다.";
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     public LineResponse createLine(@RequestBody LineRequest lineRequest) {
@@ -29,8 +39,15 @@ public class LineService {
         if (isDuplicateColor(lineRequest.getColor())) {
             throw new IllegalArgumentException(LINE_DUPLICATION_COLOR_EXCEPTION_MESSAGE);
         }
-        Line newLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        Line createdLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Section createdSection = sectionDao.save(new Section(createdLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
+        Optional<Station> upStation = stationDao.findById(lineRequest.getUpStationId());
+        Optional<Station> downStation = stationDao.findById(lineRequest.getDownStationId());
+        if (upStation.isEmpty() || downStation.isEmpty()) {
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 지하철역입니다.");
+        }
+        List<StationResponse> stationResponses = List.of(new StationResponse(upStation.get().getId(), upStation.get().getName()), new StationResponse(downStation.get().getId(), downStation.get().getName()));
+        return new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(), stationResponses);
     }
 
     public List<LineResponse> showLines() {

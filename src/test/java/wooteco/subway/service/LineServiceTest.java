@@ -32,7 +32,7 @@ public class LineServiceTest {
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = new LineRequest("test", "GREEN");
+        LineRequest lineRequest = new LineRequest("test", "GREEN", 1L, 2L, 10);
         given(lineDao.findByName("test"))
             .willReturn(Optional.empty());
         given(lineDao.save(any(Line.class)))

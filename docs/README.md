@@ -47,7 +47,7 @@
     - upStationId : 상행 종점 
     - downStationId : 하행 종점 
     - distance 두 종점간의 거리
-  - [ ] 노선 등록 `POST /lines`
+  - [x] 노선 등록 `POST /lines`
     - `요청` json으로 name, color, upStationId, downStationId, distance를 전송한다.
       - 결과 상태 코드는 `201 Created` 이다.
       - Location 헤더는 `/lines/{id}` 이다.
