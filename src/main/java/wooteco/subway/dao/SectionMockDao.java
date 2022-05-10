@@ -28,6 +28,13 @@ public class SectionMockDao implements SectionDao {
     }
 
     @Override
+    public List<Section> findSectionsByLineId(Long lineId) {
+        return sections.stream()
+                .filter(section -> section.getLineId().equals(lineId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<Section> findAll() {
         return Collections.unmodifiableList(sections);
     }
@@ -48,7 +55,7 @@ public class SectionMockDao implements SectionDao {
     @Override
     public boolean existSectionByLineIdAndStationId(Long lineId, Long stationId) {
         return sections.stream()
-                .filter(section -> section.getId().equals(lineId))
+                .filter(section -> section.getLineId().equals(lineId))
                 .anyMatch(section -> section.getDownStationId().equals(stationId)
                         || section.getUpStationId().equals(stationId));
     }

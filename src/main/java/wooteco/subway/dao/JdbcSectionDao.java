@@ -46,6 +46,12 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
+    public List<Section> findSectionsByLineId(Long lineId) {
+        final String sql = "select id, line_id, up_station_id, down_station_id, distance from SECTION where line_id = ?";
+        return jdbcTemplate.query(sql, sectionRowMapper, lineId);
+    }
+
+    @Override
     public List<Section> findAll() {
         final String sql = "select id, line_id, up_station_id, down_station_id, distance from SECTION";
         return jdbcTemplate.query(sql, sectionRowMapper);

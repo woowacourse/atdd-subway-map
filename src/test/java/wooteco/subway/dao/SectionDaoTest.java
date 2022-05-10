@@ -36,6 +36,17 @@ public class SectionDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
+    @DisplayName("특정 노선의 지하철 구간 목록을 조회한다.")
+    @Test
+    void findSectionsByLineId() {
+        sectionDao.save(SECTION);
+        sectionDao.save(new Section(1L, 2L, 3L, 2));
+
+        List<Section> sections = sectionDao.findSectionsByLineId(1L);
+
+        assertThat(sections).hasSize(2);
+    }
+
     @DisplayName("지하철 구간의 전체 목록을 조회한다.")
     @Test
     void findAll() {
