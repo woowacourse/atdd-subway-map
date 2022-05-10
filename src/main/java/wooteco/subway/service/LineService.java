@@ -24,13 +24,11 @@ import wooteco.subway.repository.entity.StationEntity;
 public class LineService {
 
     private final LineDao lineDao;
-    private final StationDao stationDao;
-    private final SectionDao sectionDao;
+    private final SectionService sectionService;
 
-    public LineService(final LineDao lineDao, final StationDao stationDao, final SectionDao sectionDao) {
+    public LineService(final LineDao lineDao, final SectionService sectionService) {
         this.lineDao = lineDao;
-        this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
+        this.sectionService = sectionService;
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -44,23 +42,11 @@ public class LineService {
             final LineEntity lineEntity = new LineEntity(Line.createWithoutId(name, color));
             final LineEntity savedLineEntity = lineDao.save(lineEntity);
             final Line line = new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
-            saveSection(upStationId, downStationId, distance, line);
+            sectionService.resisterFirst(line.getId(), upStationId, downStationId, distance);
             return line;
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateNameException("[ERROR] 이미 존재하는 노선 이름입니다.");
         }
-    }
-
-    private void saveSection(final Long upStationId, final Long downStationId, final int distance, final Line line) {
-        final StationEntity upStationEntity = stationDao.findById(upStationId)
-                .orElseThrow(() -> new NotFoundStationException("[ERROR] 노선을 추가하는 도중 존재하지 않는 역으로 상행선을 지정했습니다."));
-        final StationEntity downStationEntity = stationDao.findById(upStationId)
-                .orElseThrow(() -> new NotFoundStationException("[ERROR] 노선을 추가하는 도중 존재하지 않는 역으로 하행선을 지정했습니다."));
-        final Station upStation = new Station(upStationId, upStationEntity.getName());
-        final Station downStation = new Station(downStationId, downStationEntity.getName());
-
-        final Section section = Section.createWithoutId(upStation, downStation, distance);
-        sectionDao.save(new SectionEntity(section, line.getId()));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
@@ -103,5 +89,9 @@ public class LineService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void remove(final Long id) {
         lineDao.deleteById(id);
+    }
+
+    public void resisterSection(final Long lineId, final Long upStationId, final Long downStationId, final Integer distance) {
+        sectionService.resister(lineId, upStationId, downStationId, distance);
     }
 }

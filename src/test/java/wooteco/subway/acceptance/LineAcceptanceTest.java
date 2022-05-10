@@ -25,7 +25,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        final List<Long> stationIds = save2StationsRequest();
+        final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
@@ -45,7 +45,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        final List<Long> stationIds = save2StationsRequest();
+        final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
@@ -65,7 +65,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         /// given
-        final List<Long> stationIds = save2StationsRequest();
+        final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
         Map<String, String> lineParams1 = new HashMap<>();
         lineParams1.put("name", "2호선");
         lineParams1.put("color", "bg-green-600");
@@ -104,7 +104,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         /// given
-        final List<Long> stationIds = save2StationsRequest();
+        final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
@@ -134,7 +134,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifyLine() {
         // given
-        final List<Long> stationIds = save2StationsRequest();
+        final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
@@ -164,7 +164,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLine() {
         // given
-        final List<Long> stationIds = save2StationsRequest();
+        final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
@@ -183,5 +183,40 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("노선에 새로운 구간을 추가한다.")
+    void addSection() {
+        // given
+        final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
+        Map<String, String> lineParams = new HashMap<>();
+        lineParams.put("name", "2호선");
+        lineParams.put("color", "bg-green-600");
+        lineParams.put("upStationId", stationIds.get(0).toString());
+        lineParams.put("downStationId", stationIds.get(1).toString());
+        lineParams.put("distance", "10");
+        ExtractableResponse<Response> lineCreateResponse = createLineRequest(lineParams);
+        final LineResponseDto createdLine = lineCreateResponse.jsonPath()
+                .getObject(".", LineResponseDto.class);
+
+        final List<Long> newStationIds = save2StationsRequest("삼성역", "봉은사역");
+
+        Map<String, String> sectionParams = new HashMap<>();
+        sectionParams.put("upStationId", stationIds.get(0).toString());
+        sectionParams.put("downStationId", newStationIds.get(0).toString());
+        sectionParams.put("distance", "5");
+
+        // when
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .body(sectionParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines/" + createdLine.getId() + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

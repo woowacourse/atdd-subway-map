@@ -22,7 +22,9 @@ class LineServiceTest {
     private final MockLineDao lineDao = new MockLineDao();
     private final MockStationDao stationDao = new MockStationDao();
     private final MockSectionDao sectionDao = new MockSectionDao();
-    private final LineService service = new LineService(lineDao, stationDao, sectionDao);
+    private final StationService stationService = new StationService(stationDao);
+    private final SectionService sectionService = new SectionService(sectionDao, stationService);
+    private final LineService lineService = new LineService(lineDao, sectionService);
 
 
     @BeforeEach
@@ -37,7 +39,7 @@ class LineServiceTest {
     void register() {
         final Long station1Id = Fixture.saveStation("선릉역");
         final Long station2Id = Fixture.saveStation("잠실역");
-        final Line created = service.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        final Line created = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
         assertAll(
                 () -> assertThat(created.getName()).isEqualTo("2호선"),
@@ -50,9 +52,9 @@ class LineServiceTest {
     void registerDuplicateName() {
         final Long station1Id = Fixture.saveStation("선릉역");
         final Long station2Id = Fixture.saveStation("잠실역");
-        service.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
-        assertThatThrownBy(() -> service.register("2호선", "bg-green-600", station1Id, station2Id, 10))
+        assertThatThrownBy(() -> lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10))
                 .isInstanceOf(DuplicateNameException.class)
                 .hasMessage("[ERROR] 이미 존재하는 노선 이름입니다.");
     }
@@ -62,11 +64,11 @@ class LineServiceTest {
     void searchAll() {
         final Long station1Id = Fixture.saveStation("선릉역");
         final Long station2Id = Fixture.saveStation("잠실역");
-        service.register("2호선", "bg-green-600", station1Id, station2Id, 10);
-        service.register("신분당선", "bg-red-600", station1Id, station2Id, 10);
-        service.register("분당선", "bg-yellow-600", station1Id, station2Id, 10);
+        lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        lineService.register("신분당선", "bg-red-600", station1Id, station2Id, 10);
+        lineService.register("분당선", "bg-yellow-600", station1Id, station2Id, 10);
 
-        List<Line> lines = service.searchAll();
+        List<Line> lines = lineService.searchAll();
         List<String> names = lines.stream()
                 .map(Line::getName)
                 .collect(Collectors.toList());
@@ -85,9 +87,9 @@ class LineServiceTest {
     void searchById() {
         final Long station1Id = Fixture.saveStation("선릉역");
         final Long station2Id = Fixture.saveStation("잠실역");
-        final Line savedLine = service.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        final Line savedLine = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
-        Line searchedLine = service.searchById(savedLine.getId());
+        Line searchedLine = lineService.searchById(savedLine.getId());
 
         assertAll(
                 () -> assertThat(searchedLine.getName()).isEqualTo(savedLine.getName()),
@@ -100,10 +102,10 @@ class LineServiceTest {
     void modify() {
         final Long station1Id = Fixture.saveStation("선릉역");
         final Long station2Id = Fixture.saveStation("잠실역");
-        final Line savedLine = service.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        final Line savedLine = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
-        service.modify(savedLine.getId(), "신분당선", "bg-red-600");
-        Line searchedLine = service.searchById(savedLine.getId());
+        lineService.modify(savedLine.getId(), "신분당선", "bg-red-600");
+        Line searchedLine = lineService.searchById(savedLine.getId());
 
         assertAll(
                 () -> assertThat(searchedLine.getName()).isEqualTo("신분당선"),
@@ -116,10 +118,10 @@ class LineServiceTest {
     void modifyMissingLine() {
         final Long station1Id = Fixture.saveStation("선릉역");
         final Long station2Id = Fixture.saveStation("잠실역");
-        final Line savedLine = service.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        final Line savedLine = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
-        service.remove(savedLine.getId());
-        assertThatThrownBy(() -> service.modify(savedLine.getId(), "신분당선", "bg-red-600"))
+        lineService.remove(savedLine.getId());
+        assertThatThrownBy(() -> lineService.modify(savedLine.getId(), "신분당선", "bg-red-600"))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("[ERROR] 노선이 존재하지 않습니다");
     }
@@ -129,11 +131,11 @@ class LineServiceTest {
     void removeById() {
         final Long station1Id = Fixture.saveStation("선릉역");
         final Long station2Id = Fixture.saveStation("잠실역");
-        service.register("2호선", "bg-green-600", station1Id, station2Id, 10);
-        Line line = service.register("신분당선", "bg-red-600", station1Id, station2Id, 10);
+        lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        Line line = lineService.register("신분당선", "bg-red-600", station1Id, station2Id, 10);
 
-        service.remove(line.getId());
+        lineService.remove(line.getId());
 
-        assertThat(service.searchAll().size()).isEqualTo(1);
+        assertThat(lineService.searchAll().size()).isEqualTo(1);
     }
 }
