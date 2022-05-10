@@ -74,8 +74,9 @@ class LineServiceTest {
                 .willReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> lineService.save(new LineRequest("신분당선", "bg-green-600", null, null, 0)))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(
+                () -> lineService.save(new LineRequest("신분당선", "bg-green-600", 1L, 2L, 10))
+        ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철 노선 이름이 중복됩니다.");
     }
 
@@ -94,8 +95,9 @@ class LineServiceTest {
                 .willReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> lineService.save(new LineRequest("다른분당선", "bg-red-600", null, null, 0)))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(
+                () -> lineService.save(new LineRequest("다른분당선", "bg-red-600", 1L, 2L, 10))
+        ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철 노선 색상이 중복됩니다.");
     }
 

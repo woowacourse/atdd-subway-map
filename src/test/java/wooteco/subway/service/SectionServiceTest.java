@@ -35,6 +35,8 @@ class SectionServiceTest {
                 .willReturn(true);
         given(stationDao.existStationById(2L))
                 .willReturn(true);
+        given(sectionDao.existUpStation(1L, 2L))
+                .willReturn(true);
 
         // when & then
         assertThatCode(
@@ -70,5 +72,40 @@ class SectionServiceTest {
                 () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
         ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("하행역이 존재하지 않습니다.");
+    }
+
+    @DisplayName("구간 생성 시 상행 종점을 등록한다.")
+    @Test
+    void saveNewUpStation() {
+        // mocking
+        given(stationDao.existStationById(1L))
+                .willReturn(true);
+        given(stationDao.existStationById(2L))
+                .willReturn(true);
+        given(sectionDao.existUpStation(1L, 2L))
+                .willReturn(true);
+
+        // when & then
+        assertThatCode(
+                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
+        ).doesNotThrowAnyException();
+    }
+
+    @DisplayName("구간 생성 시 다른 구간과 연결되어 있지 않으면 예외가 발생한다.")
+    @Test
+    void saveNotConnectingStation() {
+        // mocking
+        given(stationDao.existStationById(999L))
+                .willReturn(true);
+        given(stationDao.existStationById(888L))
+                .willReturn(true);
+        given(sectionDao.existUpStation(1L, 888L))
+                .willReturn(false);
+
+        // when & then
+        assertThatThrownBy(
+                () -> sectionService.save(1L, new SectionRequest(999L, 888L, 10))
+        ).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("현재 위치에 구간을 저장할 수 없습니다.");
     }
 }

@@ -19,6 +19,9 @@ public class SectionService {
         validateStation(sectionRequest);
 
         Section section = convertSection(sectionRequest);
+        if (!canSaving(lineId, section)) {
+            throw new IllegalArgumentException("현재 위치에 구간을 저장할 수 없습니다.");
+        }
         sectionDao.save(lineId, section);
     }
 
@@ -33,5 +36,16 @@ public class SectionService {
 
     private Section convertSection(final SectionRequest sectionRequest) {
         return new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+    }
+
+    private boolean canSaving(final Long lineId, final Section section) {
+        if (canSavingLastUpStation(lineId, section.getDownStationId())) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canSavingLastUpStation(final Long lineId, final Long downStationId) {
+        return sectionDao.existUpStation(lineId, downStationId);
     }
 }
