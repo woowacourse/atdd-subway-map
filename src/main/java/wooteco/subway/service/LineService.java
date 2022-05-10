@@ -7,10 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.StationResponse;
 
 @Service
 public class LineService {
@@ -40,9 +43,12 @@ public class LineService {
     }
 
     public LineResponse find(final Long id) {
-        return lineDao.find(id)
-                .map(LineResponse::of)
+        Line line = lineDao.find(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
+        List<Station> stations = lineDao.findStations(id);
+
+        List<StationResponse> stationResponses = convertStationResponses(stations);
+        return LineResponse.from(line, stationResponses);
     }
 
     @Transactional
@@ -93,6 +99,12 @@ public class LineService {
     private List<LineResponse> convertLineResponses(final List<Line> lines) {
         return lines.stream()
                 .map(LineResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    private List<StationResponse> convertStationResponses(final List<Station> stations) {
+        return stations.stream()
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 }
