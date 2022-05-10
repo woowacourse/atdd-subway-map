@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import wooteco.subway.exception.BothUpAndDownStationAlreadyExistsException;
 import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
 import wooteco.subway.exception.CanNotInsertSectionException;
+import wooteco.subway.exception.OnlyOneSectionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +97,41 @@ public class Sections {
         }
 
         return insertedSection.getUpStationId();
+    }
+
+    // TODO: 리팩토링
+    public void deleteStation(Long stationId) {
+        validateOnlyOneSection();
+
+        boolean isExistingSameUpStation = value.stream().anyMatch(section -> section.getUpStationId().equals(stationId));
+        boolean isExistingSameDownStation = value.stream().anyMatch(section -> section.getDownStationId().equals(stationId));
+
+        // 구간 목록의 상행역을 제거
+        if (isExistingSameUpStation && !isExistingSameDownStation) {
+            value.remove(value.stream().filter(section -> section.getUpStationId().equals(stationId)).findAny().get());
+        }
+
+        // 구간 목록의 하행역을 제거
+        if (!isExistingSameUpStation && isExistingSameDownStation) {
+            value.remove(value.stream().filter(section -> section.getDownStationId().equals(stationId)).findAny().get());
+        }
+
+        // 구간 목록의 중간역을 제거
+        if (isExistingSameUpStation && isExistingSameDownStation) {
+            Section leftSection = value.stream().filter(section -> section.getDownStationId().equals(stationId)).findAny().get();
+            Section rightSection = value.stream().filter(section -> section.getUpStationId().equals(stationId)).findAny().get();
+
+            Section newSection = new Section(leftSection.getUpStationId(), rightSection.getDownStationId(), leftSection.addDistance(rightSection));
+            value.remove(leftSection);
+            value.remove(rightSection);
+            value.add(newSection);
+        }
+    }
+
+    private void validateOnlyOneSection() {
+        if (value.size() == 1) {
+            throw new OnlyOneSectionException();
+        }
     }
 
     public List<Section> getValue() {

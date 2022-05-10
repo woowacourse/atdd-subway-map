@@ -55,6 +55,10 @@ public class Section {
         return stationIds.size() < 4;
     }
 
+    public Distance addDistance(Section other) {
+        return distance.add(other.distance);
+    }
+
     public Distance subtractDistance(Section other) {
         return distance.subtract(other.distance);
     }

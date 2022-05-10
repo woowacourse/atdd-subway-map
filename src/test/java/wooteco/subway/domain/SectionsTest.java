@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.BothUpAndDownStationAlreadyExistsException;
 import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
 import wooteco.subway.exception.CanNotInsertSectionException;
+import wooteco.subway.exception.OnlyOneSectionException;
 
 import java.util.List;
 
@@ -125,5 +126,64 @@ class SectionsTest {
         // when & then
         assertThatThrownBy(() -> sections.addSection(newSection))
                 .isInstanceOf(BothUpAndDownStationDoNotExistException.class);
+    }
+
+    @DisplayName("구간 목록의 상행역을 제거할 수 있다.")
+    @Test
+    void deleteStation_upStation() {
+        // given
+        sections.addSection(new Section(2L, 3L, new Distance(10)));
+        sections.addSection(new Section(3L, 4L, new Distance(10)));
+
+        // when
+        sections.deleteStation(1L);
+
+        // then
+        assertThat(sections.getValue()).containsAll(List.of(
+                new Section(2L, 3L, new Distance(10)),
+                new Section(3L, 4L, new Distance(10))
+        ));
+    }
+
+
+    @DisplayName("구간 목록의 하행역을 제거할 수 있다.")
+    @Test
+    void deleteStation_downStation() {
+        // given
+        sections.addSection(new Section(2L, 3L, new Distance(10)));
+        sections.addSection(new Section(3L, 4L, new Distance(10)));
+
+        // when
+        sections.deleteStation(4L);
+
+        // then
+        assertThat(sections.getValue()).containsAll(List.of(
+                new Section(1L, 2L, new Distance(10)),
+                new Section(2L, 3L, new Distance(10))
+        ));
+    }
+
+    @DisplayName("구간 목록의 중간역을 제거할 수 있다.")
+    @Test
+    void deleteStation_betweenStation() {
+        // given
+        sections.addSection(new Section(2L, 3L, new Distance(10)));
+        sections.addSection(new Section(3L, 4L, new Distance(10)));
+
+        // when
+        sections.deleteStation(3L);
+
+        // then
+        assertThat(sections.getValue()).containsAll(List.of(
+                new Section(1L, 2L, new Distance(10)),
+                new Section(2L, 4L, new Distance(20))
+        ));
+    }
+
+    @DisplayName("구간이 단 하나인 구간 목록에서 구간 제거를 하면 예외가 발생한다.")
+    @Test
+    void deleteStation_throwsExceptionIfSectionsSizeIsOne() {
+        assertThatThrownBy(() -> sections.deleteStation(1L))
+                .isInstanceOf(OnlyOneSectionException.class);
     }
 }

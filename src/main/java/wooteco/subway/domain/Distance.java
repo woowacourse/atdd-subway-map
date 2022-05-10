@@ -14,6 +14,10 @@ public class Distance {
         }
     }
 
+    public Distance add(Distance other) {
+        return new Distance(value + other.value);
+    }
+
     public Distance subtract(Distance other) {
         return new Distance(value - other.value);
     }
