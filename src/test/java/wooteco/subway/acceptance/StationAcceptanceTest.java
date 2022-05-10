@@ -1,19 +1,23 @@
 package wooteco.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
@@ -144,5 +148,22 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .delete("stations/1")
             .then().log().all()
             .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("name을 지정하지 않고 요청하면 bad request 예외를 반환해야 한다.")
+    void emptyName() {
+        StationRequest stationRequest = new StationRequest(null);
+        creatStationRequest(stationRequest)
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ValidatableResponse creatStationRequest(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(stationRequest)
+            .when()
+            .post("/stations")
+            .then().log().all();
     }
 }
