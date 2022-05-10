@@ -8,13 +8,15 @@ public class Line {
     private String name;
     private String color;
 
+    private long sectionId = 0;
+
     public Line() {
     }
 
     public Line(String name, String color) {
-        this(0L, name, color);
+        this.name = name;
+        this.color = color;
     }
-
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
