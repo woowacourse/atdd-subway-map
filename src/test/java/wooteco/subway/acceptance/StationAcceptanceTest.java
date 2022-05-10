@@ -2,17 +2,15 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
@@ -20,8 +18,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        StationRequest params = new StationRequest("강남역");
 
         ExtractableResponse<Response> response = httpPostTest(params, "/stations");
 
@@ -32,8 +29,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        StationRequest params = new StationRequest("강남역");
         httpPostTest(params, "/stations");
 
         ExtractableResponse<Response> response = httpPostTest(params, "/stations");
@@ -43,12 +39,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
+        StationRequest params1 = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse1 = httpPostTest(params1, "/stations");
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
+        StationRequest params2 = new StationRequest("역삼역");
         ExtractableResponse<Response> createResponse2 = httpPostTest(params2, "/stations");
 
         ExtractableResponse<Response> response = httpGetTest("/stations");
@@ -65,8 +59,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        StationRequest params = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse = httpPostTest(params, "/stations");
 
         String uri = createResponse.header("Location");
