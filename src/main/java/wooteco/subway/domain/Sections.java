@@ -117,7 +117,6 @@ public class Sections {
 
         List<Section> sortedSections = new ArrayList<>();
         sortedSections.add(firstSection);
-        copySections.remove(firstSection);
 
         concatenateSection(sortedSections, copySections);
         
@@ -133,11 +132,11 @@ public class Sections {
 
     private boolean isFirst(Long upStationId) {
         return sections.stream()
-                .anyMatch(section -> upStationId.equals(section.getDownStationId()));
+                .noneMatch(section -> upStationId.equals(section.getDownStationId()));
     }
 
     private void concatenateSection(List<Section> sortedSections, List<Section> copySections) {
-        while (!copySections.isEmpty()) {
+        while (sortedSections.size() != copySections.size()) {
             final Section lastSection = sortedSections.get(sortedSections.size() - 1);
             final Long lastDownStationId = lastSection.getDownStationId();
 
@@ -147,15 +146,13 @@ public class Sections {
 
     private void checkAndConcatenate(List<Section> sortedSections, List<Section> copySections, Long lastDownStationId) {
         for (Section section : copySections) {
-            moveOneByOne(sortedSections, copySections, lastDownStationId, section);
+            moveOneByOne(sortedSections, lastDownStationId, section);
         }
     }
 
-    private void moveOneByOne(List<Section> sortedSections, List<Section> copySections, Long lastDownStationId,
-                              Section section) {
+    private void moveOneByOne(List<Section> sortedSections, Long lastDownStationId, Section section) {
         if (section.getUpStationId().equals(lastDownStationId)) {
             sortedSections.add(section);
-            copySections.remove(section);
         }
     }
 }

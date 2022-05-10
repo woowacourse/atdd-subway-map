@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ class SectionsTest {
         // given
         List<Section> sectionList = new ArrayList<>();
         sectionList.add(new Section(1L, 1L, 2L, 3L, 4));
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 3));
+        sectionList.add(new Section(2L, 1L, 1L, 2L, 3));
         final Sections sections = new Sections(sectionList);
 
         // when & then
@@ -93,7 +94,7 @@ class SectionsTest {
         // given
         List<Section> sectionList = new ArrayList<>();
         sectionList.add(new Section(1L, 1L, 1L, 2L, 3));
-        sectionList.add(new Section(1L, 1L, 2L, 3L, 4));
+        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
         final Sections sections = new Sections(sectionList);
 
         // when
@@ -120,5 +121,30 @@ class SectionsTest {
         final Station station = new Station(1L, "상행역");
         assertThatThrownBy(() -> sections.delete(station))
                 .isInstanceOf(IllegalSectionException.class);
+    }
+
+    @DisplayName("상행부터 하행의 순서로 정렬된 구간들을 구할 수 있다.")
+    @Test
+    public void sortedSection() {
+        //given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 4L, 5L, 3));
+        sectionList.add(new Section(2L, 1L, 1L, 2L, 3));
+        sectionList.add(new Section(3L, 1L, 3L, 4L, 4));
+        sectionList.add(new Section(4L, 1L, 2L, 3L, 4));
+        final Sections sections = new Sections(sectionList);
+
+        //when
+        final List<Section> sortedSections = sections.getSortedSection();
+
+        //then
+        assertThat(sortedSections).hasSize(4)
+                .extracting("upStationId", "downStationId")
+                .containsExactly(
+                        tuple(1L, 2L),
+                        tuple(2L, 3L),
+                        tuple(3L, 4L),
+                        tuple(4L, 5L)
+                );
     }
 }
