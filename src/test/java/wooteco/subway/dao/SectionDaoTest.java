@@ -58,4 +58,19 @@ public class SectionDaoTest {
 
         assertThat(sections.size()).isEqualTo(3);
     }
+
+    @Test
+    @DisplayName("특정 lineId에 해당되는 section을 모두 삭제한다.")
+    void delete() {
+        Section section1 = Section.of(lineId, 1L, 2L, 3);
+        Section section2 = Section.of(lineId, 2L, 3L, 3);
+        Section section3 = Section.of(lineId, 3L, 4L, 3);
+        sectionDao.save(section1);
+        sectionDao.save(section2);
+        sectionDao.save(section3);
+
+        sectionDao.delete(lineId);
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        assertThat(sections.size()).isEqualTo(0);
+    }
 }
