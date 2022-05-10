@@ -20,18 +20,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.LineResponse;
 
+@Transactional
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setStations() {
         insert(getStationRequest("name1"), "/stations");
-         insert(getStationRequest("name2"), "/stations");
+        insert(getStationRequest("name2"), "/stations");
         insert(getStationRequest("name3"), "/stations");
         insert(getStationRequest("name4"), "/stations");
-
     }
 
     @Test
@@ -116,7 +117,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
-
 
 
     @DisplayName("지하철 노선을 수정한다.")

@@ -7,6 +7,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 
 public class AcceptanceTestFixture {
@@ -16,6 +17,9 @@ public class AcceptanceTestFixture {
     public static final LineRequest.Post line2Post = new LineRequest.Post("2호선", "green", 3L, 4L, 10);
     public static final LineRequest.Put line2Put = new LineRequest.Put("2호선", "blue");
 
+    public static final SectionRequest sectionBetweenOneAndTwo = new SectionRequest(1L, 2L, 10);
+    public static final SectionRequest sectionBetweenTwoAndThree = new SectionRequest(2L, 3L, 10);
+    public static final SectionRequest sectionBetweenThreeAndFour = new SectionRequest(3L, 4L, 10);
 
     public static String getLineRequest(LineRequest.Put lineRequestPut) {
         try {
@@ -36,6 +40,14 @@ public class AcceptanceTestFixture {
     public static String getStationRequest(String name) {
         try {
             return objectMapper.writeValueAsString(new StationRequest(name));
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("JsonParsing 에러가 발생하였습니다");
+        }
+    }
+
+    public static String getSectionRequest(SectionRequest sectionRequest) {
+        try {
+            return objectMapper.writeValueAsString(sectionRequest);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("JsonParsing 에러가 발생하였습니다");
         }
@@ -72,6 +84,15 @@ public class AcceptanceTestFixture {
     public static ExtractableResponse<Response> delete(String path) {
         return RestAssured.given().log().all()
                 .when()
+                .delete(path)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> delete(String path, Long stationId) {
+        return RestAssured.given().log().all()
+                .when()
+                .param("stationId", stationId)
                 .delete(path)
                 .then().log().all()
                 .extract();

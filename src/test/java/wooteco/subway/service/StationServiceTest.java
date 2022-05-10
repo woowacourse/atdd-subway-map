@@ -59,7 +59,7 @@ class StationServiceTest {
                 .collect(Collectors.toList());
 
         //then
-        assertThat(responseNames).containsOnly("선릉", "잠실");
+        assertThat(responseNames).contains("선릉", "잠실");
     }
 
     @Test
