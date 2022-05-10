@@ -1,14 +1,17 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Section;
 
 @Repository
-public class SectionDaoImpl implements SectionDao{
+public class SectionDaoImpl implements SectionDao {
 
 
     private final JdbcTemplate jdbcTemplate;
@@ -32,5 +35,28 @@ public class SectionDaoImpl implements SectionDao{
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    @Override
+    public List<SectionEntity> findByLineId(Long lineId) {
+        final String sql = "SELECT * FROM section WHERE line_id = ?";
+        return jdbcTemplate.query(sql, sectionMapper(), lineId);
+    }
+
+    private RowMapper<SectionEntity> sectionMapper() {
+        return (resultSet, rowNum) -> new SectionEntity(
+            resultSet.getLong("id"),
+            resultSet.getLong("line_id"),
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id"),
+            resultSet.getInt("distance")
+        );
+    }
+
+    @Override
+    public boolean update(Long sectionId, Long downStationId, int distance) {
+        final String sql = "UPDATE section SET up_station_id = ?, distance = ? where id = ?";
+        int updateSize = jdbcTemplate.update(sql, downStationId, distance, sectionId);
+        return updateSize != 0;
     }
 }
