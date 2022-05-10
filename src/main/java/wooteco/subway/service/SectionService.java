@@ -23,7 +23,6 @@ public class SectionService {
         this.stationDao = stationDao;
     }
 
-    @Transactional
     public void saveInitialSection(LineRequest lineRequest, Line line) {
         sectionDao.saveInitialSection(lineRequest, line.getId());
     }
