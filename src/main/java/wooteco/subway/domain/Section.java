@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
 
     private final Station upStation;
@@ -12,14 +14,32 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(final Section section) {
+        this(section.upStation, section.downStation, section.distance);
+    }
+
     public MatchingResult match(final Section newSection) {
         if (isSameSection(newSection)) {
             return MatchingResult.SAME_SECTION;
         }
-        if (canAddToLeft(newSection)) {
+        if (this.downStation.equals(newSection.downStation)) {
             return MatchingResult.ADD_TO_LEFT;
         }
-        if (canAddToRight(newSection)) {
+        if (this.upStation.equals(newSection.upStation)) {
+            return MatchingResult.ADD_TO_RIGHT;
+        }
+        return MatchingResult.NO_MATCHED;
+    }
+
+    public MatchingResult matchStartStation(final Section newSection) {
+        if (this.upStation.equals(newSection.downStation)) {
+            return MatchingResult.ADD_TO_LEFT;
+        }
+        return MatchingResult.NO_MATCHED;
+    }
+
+    public MatchingResult matchEndStation(final Section newSection) {
+        if (this.downStation.equals(newSection.upStation)) {
             return MatchingResult.ADD_TO_RIGHT;
         }
         return MatchingResult.NO_MATCHED;
@@ -30,17 +50,37 @@ public class Section {
                 && downStation.equals(newSection.downStation);
     }
 
-    private boolean canAddToLeft(final Section newSection) {
-        return upStation.equals(newSection.downStation)
-                ^ downStation.equals(newSection.downStation);
-    }
-
-    private boolean canAddToRight(final Section newSection) {
-        return upStation.equals(newSection.upStation)
-                ^ downStation.equals(newSection.upStation);
-    }
-
     public boolean isDistanceLongerThan(final Section newSection) {
         return this.distance > newSection.distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int calculateDistanceDifference(final Section newSection) {
+        return this.distance - newSection.distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation)
+                && Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation);
     }
 }

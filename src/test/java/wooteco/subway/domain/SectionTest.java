@@ -15,16 +15,46 @@ public class SectionTest {
     @ParameterizedTest(name = "{index} {displayName} upStation={0} downStation={1} expectedMatchingResult={2}")
     @MethodSource("provideStationAndMatchingResult")
     void matching_Station(final Section newSection, final MatchingResult expectedMatchingResult) {
-        final Section section = SectionFactory.from("1a2b3");
+        final Section section = SectionFactory.from("ab3");
         assertThat(section.match(newSection)).isEqualTo(expectedMatchingResult);
     }
 
     private static Stream<Arguments> provideStationAndMatchingResult() {
         return Stream.of(
-                Arguments.of(SectionFactory.from("1a3c3"), MatchingResult.ADD_TO_RIGHT),
-                Arguments.of(SectionFactory.from("3c2b3"), MatchingResult.ADD_TO_LEFT),
-                Arguments.of(SectionFactory.from("1a2b3"), MatchingResult.SAME_SECTION),
-                Arguments.of(SectionFactory.from("3c4d3"), MatchingResult.NO_MATCHED)
+                Arguments.of(SectionFactory.from("ac3"), MatchingResult.ADD_TO_RIGHT),
+                Arguments.of(SectionFactory.from("cb3"), MatchingResult.ADD_TO_LEFT),
+                Arguments.of(SectionFactory.from("ab3"), MatchingResult.SAME_SECTION),
+                Arguments.of(SectionFactory.from("cd3"), MatchingResult.NO_MATCHED)
+        );
+    }
+
+    @DisplayName("기존 섹션의 출발역과 다른 섹션의 도착역이 같은지를 판단해야 한다.")
+    @ParameterizedTest(name = "{index} {displayName} newSection={0} expectedMatchingResult={1}")
+    @MethodSource("provideMatchingStartStationSource")
+    void matching_Start_Station(final Section newSection, final MatchingResult expectedMatchingResult) {
+        final Section section = SectionFactory.from("ab3");
+        assertThat(section.matchStartStation(newSection)).isEqualTo(expectedMatchingResult);
+    }
+
+    private static Stream<Arguments> provideMatchingStartStationSource() {
+        return Stream.of(
+                Arguments.of(SectionFactory.from("ca3"), MatchingResult.ADD_TO_LEFT),
+                Arguments.of(SectionFactory.from("cb3"), MatchingResult.NO_MATCHED)
+        );
+    }
+
+    @DisplayName("기존 섹션의 도착역과 다른 섹션의 출발역이 같은지를 판단해야 한다.")
+    @ParameterizedTest(name = "{index} {displayName} newSection={0} expectedMatchingResult={1}")
+    @MethodSource("provideMatchingEndStationSource")
+    void matching_End_Station(final Section newSection, final MatchingResult expectedMatchingResult) {
+        final Section section = SectionFactory.from("ab3");
+        assertThat(section.matchEndStation(newSection)).isEqualTo(expectedMatchingResult);
+    }
+
+    private static Stream<Arguments> provideMatchingEndStationSource() {
+        return Stream.of(
+                Arguments.of(SectionFactory.from("ba3"), MatchingResult.ADD_TO_RIGHT),
+                Arguments.of(SectionFactory.from("cb3"), MatchingResult.NO_MATCHED)
         );
     }
 
@@ -38,8 +68,8 @@ public class SectionTest {
 
     private static Stream<Arguments> provideStationAndDistanceCompareResult() {
         return Stream.of(
-                Arguments.of(SectionFactory.from("1a3c3"), 4, true),
-                Arguments.of(SectionFactory.from("1a3c3"), 3, false)
+                Arguments.of(SectionFactory.from("ac3"), 4, true),
+                Arguments.of(SectionFactory.from("ac3"), 3, false)
         );
     }
 
