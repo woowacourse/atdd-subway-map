@@ -83,10 +83,9 @@ class SectionDaoTest {
     void update() {
         final Section section1 = new Section(station1, station2, 10, line.getId());
         final Station station3 = stationDao.save(new Station("광나루역"));
-
         final Section savedSection = sectionDao.save(section1);
-
         final Section newSection = new Section(station1, station3, 5, line.getId());
+
         sectionDao.update(savedSection.getId(), newSection);
 
         final Optional<Section> updatedSection = sectionDao.findAllByLineId(line.getId())
@@ -98,5 +97,16 @@ class SectionDaoTest {
         assertThat(updatedSection.get()).usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(newSection);
+    }
+
+    @DisplayName("특정 구간을 삭제한다.")
+    @Test
+    void delete() {
+        final Section section1 = new Section(station1, station2, 10, line.getId());
+        final Section savedSection = sectionDao.save(section1);
+
+        sectionDao.deleteById(savedSection.getId());
+
+        assertThat(sectionDao.findAllByLineId(savedSection.getLineId()).size()).isZero();
     }
 }

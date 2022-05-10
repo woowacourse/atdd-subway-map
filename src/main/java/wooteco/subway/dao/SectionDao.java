@@ -82,4 +82,12 @@ public class SectionDao {
 
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
     }
+
+    public void deleteById(final Long id) {
+        final String sql = "DELETE FROM SECTION WHERE id=:id";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
+    }
 }
