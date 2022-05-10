@@ -19,6 +19,16 @@ import wooteco.subway.dto.StationResponse;
 
 public class StationAcceptanceTest extends AcceptanceTest {
 
+     static ExtractableResponse<Response> postStations(StationRequest request) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
     @Test
     @DisplayName("지하철역을 생성한다.")
     void createStation() {
@@ -26,13 +36,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest request = new StationRequest("강남역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = postStations(request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -45,13 +49,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         StationRequest request = new StationRequest("강남역");
 
-        RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        postStations(request);
 
         // when, then
         RestAssured.given().log().all()
@@ -70,23 +68,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         StationRequest request1 = new StationRequest("강남역");
 
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(request1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = postStations(request1);
 
         StationRequest request2 = new StationRequest("역삼역");
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(request2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = postStations(request2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -112,13 +98,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         StationRequest request = new StationRequest("강남역");
 
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = postStations(request);
 
         // when, then
         String uri = createResponse.header("Location");

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineAndStationRequest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -19,8 +20,8 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineResponse create(LineRequest lineRequest) {
-        Line line = lineDao.save(lineRequest.getName(), lineRequest.getColor());
+    public LineResponse create(LineAndStationRequest lineAndStationRequest) {
+        Line line = lineDao.save(lineAndStationRequest.getName(), lineAndStationRequest.getColor());
         return new LineResponse(line);
     }
 

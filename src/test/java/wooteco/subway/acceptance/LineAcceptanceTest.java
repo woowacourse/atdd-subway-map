@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -14,25 +15,38 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineAndStationRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
 
 class LineAcceptanceTest extends AcceptanceTest {
 
-    @Test
-    @DisplayName("노선을 생성한다.")
-    void createLine() {
-        // given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+    @BeforeEach
+    void set() {
+        StationRequest upStationRequest = new StationRequest("강남역");
+        StationAcceptanceTest.postStations(upStationRequest);
+        StationRequest downStationRequest = new StationRequest("선릉역");
+        StationAcceptanceTest.postStations(downStationRequest);
+    }
 
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+    private ExtractableResponse<Response> postLines(LineAndStationRequest request) {
+        return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    @Test
+    @DisplayName("노선을 생성한다.")
+    void createLine() {
+        // given
+        LineAndStationRequest request = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
+
+        // when
+        ExtractableResponse<Response> response = postLines(request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -43,25 +57,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("모든 노선을 조회한다.")
     void findAllLine() {
         //given
-        LineRequest request1 = new LineRequest("신분당선", "bg-red-600");
+        LineAndStationRequest request1 = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
+        ExtractableResponse<Response> createResponse1 = postLines(request1);
 
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(request1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        LineRequest request2 = new LineRequest("분당선", "bg-green-600");
-
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(request2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        LineAndStationRequest request2 = new LineAndStationRequest("분당선", "bg-green-600", 1L, 2L, 5);
+        ExtractableResponse<Response> createResponse2 = postLines(request2);
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -85,15 +85,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("id별 노선을 조회한다.")
     void findLindById() {
         //given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        LineAndStationRequest request = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
 
-        RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        postLines(request);
 
         //when, then
         RestAssured.given().log().all()
@@ -108,18 +102,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 수정한다.")
     void update() {
         //given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        LineAndStationRequest request = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
 
-        RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        postLines(request);
 
         //when, then
-        LineRequest changeRequest = new LineRequest("1호선", "bg-red-600");
+        LineAndStationRequest changeRequest = new LineAndStationRequest("1호선", "bg-red-600", 1L, 2L, 5);
 
         RestAssured.given().log().all()
                 .body(changeRequest)
@@ -134,15 +122,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 삭제한다.")
     void delete() {
         //given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        LineAndStationRequest request = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
 
-        RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        postLines(request);
 
         //when, then
         RestAssured.given().log().all()
