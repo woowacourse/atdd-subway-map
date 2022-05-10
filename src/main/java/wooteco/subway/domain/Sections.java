@@ -177,7 +177,7 @@ public class Sections {
 
     private void validateEqualsOrLargerDistance(final Section section, final Section updatedSection) {
         if (updatedSection.isEqualsOrLargerDistance(section)) {
-            throw new IllegalStateException("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
+            throw new IllegalStateException("기존 길이보다 길거나 같은 구간은 중간에 추가될 수 없습니다.");
         }
     }
 

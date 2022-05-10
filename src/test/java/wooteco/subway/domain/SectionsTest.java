@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SectionsTest {
 
@@ -130,20 +132,21 @@ class SectionsTest {
         assertThat(sections).isEqualTo(expectedSections);
     }
 
-    @Test
-    @DisplayName("상행역과 일치하는 역의 사이에 들어갈 때 더 큰 길이의 Section이면 예외가 발생한다.")
-    void addSectionBetweenEqualsUpStationExceptionByLargerDistance() {
+    @ParameterizedTest
+    @ValueSource(ints = {2, 3})
+    @DisplayName("상행역과 일치하는 역의 사이에 들어갈 때 더 크거나 같은 길이의 Section이면 예외가 발생한다.")
+    void addSectionBetweenEqualsUpStationExceptionByEqualsOrLargerDistance(int distance) {
         // given
         Station station1 = new Station(1L, "오리");
         Station station2 = new Station(2L, "배카라");
         Station station3 = new Station(3L, "오카라");
-        Section addSection = new Section(1L, 1L, station1, station2, 3);
+        Section addSection = new Section(1L, 1L, station1, station2, distance);
         Sections sections = new Sections(List.of(new Section(2L, 1L, station1, station3, 2)));
 
         // when & then
         assertThatThrownBy(() -> sections.addSection(addSection))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
+                .hasMessage("기존 길이보다 길거나 같은 구간은 중간에 추가될 수 없습니다.");
     }
 
     @Test
@@ -166,20 +169,21 @@ class SectionsTest {
         assertThat(sections).isEqualTo(expectedSections);
     }
 
-    @Test
-    @DisplayName("하행역과 일치하는 역의 사이에 들어갈 때 더 큰 길이의 Section이면 예외가 발생한다.")
-    void addSectionBetweenEqualsDownStationExceptionByLargerDistance() {
+    @ParameterizedTest
+    @ValueSource(ints = {2, 3})
+    @DisplayName("하행역과 일치하는 역의 사이에 들어갈 때 더 크거나 같은 길이의 Section이면 예외가 발생한다.")
+    void addSectionBetweenEqualsDownStationExceptionByEqualsOrLargerDistance(int distance) {
         // given
         Station station1 = new Station(1L, "오리");
         Station station2 = new Station(2L, "배카라");
         Station station3 = new Station(3L, "오카라");
-        Section addSection = new Section(1L, 1L, station2, station3, 3);
+        Section addSection = new Section(1L, 1L, station2, station3, distance);
         Sections sections = new Sections(List.of(new Section(2L, 1L, station1, station3, 2)));
 
         // when & then
         assertThatThrownBy(() -> sections.addSection(addSection))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
+                .hasMessage("기존 길이보다 길거나 같은 구간은 중간에 추가될 수 없습니다.");
     }
 
     @Test
