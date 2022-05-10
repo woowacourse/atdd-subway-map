@@ -41,12 +41,10 @@ public class LineService {
 
         checkExistAllStations(upStationId, downStationId);
 
-        Line line = new Line(name, color);
-        Long lineId = lineDao.save(line);
+        Long lineId = lineDao.save(new Line(name, color));
         sectionDao.save(new Section(lineId, upStationId, downStationId, distance));
-        List<StationResponse> stations = getStationResponsesByLineId(lineId);
 
-        return new LineResponse(lineId, line.getName(), line.getColor(), stations);
+        return new LineResponse(lineId, name, color, getStationResponsesByLineId(lineId));
     }
 
     private void checkExistAllStations(Long upStationId, Long downStationId) {
@@ -61,6 +59,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
+
         return lines.stream()
                 .map(it -> new LineResponse(
                         it.getId(), it.getName(), it.getColor(), getStationResponsesByLineId(it.getId())))
@@ -70,14 +69,13 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-        List<StationResponse> stations = getStationResponsesByLineId(id);
 
-        return new LineResponse(id, line.getName(), line.getColor(), stations);
+        return new LineResponse(id, line.getName(), line.getColor(), getStationResponsesByLineId(id));
     }
 
     @Transactional
     public void update(Long id, LineRequest lineRequest) {
-        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
+        lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
     }
 
     @Transactional

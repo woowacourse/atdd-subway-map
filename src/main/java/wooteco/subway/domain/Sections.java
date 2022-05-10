@@ -43,7 +43,7 @@ public class Sections {
 
     public void checkHasStation(Long upStationId, Long downStationId) {
         List<Long> allStationId = getAllStationId();
-        if (!allStationId.contains(upStationId) && !getAllStationId().contains(downStationId)) {
+        if (!allStationId.contains(upStationId) && !allStationId.contains(downStationId)) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
         }
     }
@@ -59,17 +59,17 @@ public class Sections {
 
     public boolean isTerminal(Long stationId) {
         List<Long> sortedStationId = getSortedStationId();
-        Long upStationId = getUpStationId(sortedStationId);
-        Long downStationId = getDownStationId(sortedStationId);
+        Long upStationId = getFirst(sortedStationId);
+        Long downStationId = getLast(sortedStationId);
 
         return stationId.equals(upStationId) || stationId.equals(downStationId);
     }
 
-    private Long getUpStationId(List<Long> ids) {
+    private Long getFirst(List<Long> ids) {
         return ids.get(FIRST_INDEX);
     }
 
-    private Long getDownStationId(List<Long> ids) {
+    private Long getLast(List<Long> ids) {
         int lastIndex = ids.size() - 1;
         return ids.get(lastIndex);
     }

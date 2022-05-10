@@ -27,14 +27,15 @@ public class StationService {
 
     @Transactional
     public StationResponse save(StationRequest request) {
-        Station station = new Station(request.getName());
-        Long id = stationDao.save(station);
-        return new StationResponse(id, station.getName());
+        Long id = stationDao.save(new Station(request.getName()));
+
+        return new StationResponse(id, request.getName());
     }
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
+
         return stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
@@ -42,14 +43,11 @@ public class StationService {
 
     @Transactional
     public void deleteById(Long id) {
-        List<Section> sections = sectionDao.findAllByStationId(id);
-        Set<Long> lineIds = sections.stream()
+        Set<Long> lineIds = sectionDao.findAllByStationId(id).stream()
                 .map(Section::getLineId)
                 .collect(Collectors.toSet());
 
-        for (Long lineId : lineIds) {
-            sectionService.deleteStation(lineId, id);
-        }
+        lineIds.forEach(lineId -> sectionService.deleteStation(lineId, id));
         stationDao.deleteById(id);
     }
 }

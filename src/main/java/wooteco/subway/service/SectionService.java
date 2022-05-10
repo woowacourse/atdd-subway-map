@@ -45,31 +45,39 @@ public class SectionService {
         }
 
         if (sectionByUpStation.isPresent()) {
-            Section section = sectionByUpStation.get();
-            int distance = section.getDistance() - request.getDistance();
-            validateDistance(distance);
-
-            sectionDao.update(section.getId(), new Section(
-                    lineId,
-                    request.getDownStationId(),
-                    section.getDownStationId(),
-                    distance));
+            updateUpStation(lineId, request, sectionByUpStation);
             return;
         }
         if (sectionByDownStation.isPresent()) {
-            Section section = sectionByDownStation.get();
-            int distance = request.getDistance() - section.getDistance();
-            validateDistance(distance);
-
-            sectionDao.update(section.getId(), new Section(
-                    lineId,
-                    section.getUpStationId(),
-                    request.getUpStationId(),
-                    distance));
+            updateDownStation(lineId, request, sectionByDownStation);
         }
     }
 
-    private void validateDistance(int distance) {
+    private void updateUpStation(Long lineId, SectionRequest request, Optional<Section> sectionByUpStation) {
+        Section section = sectionByUpStation.get();
+        int distance = section.getDistance() - request.getDistance();
+        validateDistanceNegative(distance);
+
+        sectionDao.update(section.getId(), new Section(
+                lineId,
+                request.getDownStationId(),
+                section.getDownStationId(),
+                distance));
+    }
+
+    private void updateDownStation(Long lineId, SectionRequest request, Optional<Section> sectionByDownStation) {
+        Section section = sectionByDownStation.get();
+        int distance = request.getDistance() - section.getDistance();
+        validateDistanceNegative(distance);
+
+        sectionDao.update(section.getId(), new Section(
+                lineId,
+                section.getUpStationId(),
+                request.getUpStationId(),
+                distance));
+    }
+
+    private void validateDistanceNegative(int distance) {
         if (distance <= 0) {
             throw new IllegalArgumentException("역 사이 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
         }
