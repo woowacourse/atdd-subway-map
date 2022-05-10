@@ -9,7 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.dao.FakeLineDao;
+import wooteco.subway.repository.exception.DuplicateLineColorException;
+import wooteco.subway.repository.exception.DuplicateLineNameException;
 import wooteco.subway.service.dto.line.LineRequestDto;
 import wooteco.subway.service.dto.line.LineResponseDto;
 
@@ -19,10 +22,11 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.lineService = new LineService(new FakeLineDao());
+        LineRepository lineRepository = new LineRepository(new FakeLineDao());
+        this.lineService = new LineService(lineRepository);
     }
 
-    @DisplayName("지하철 노선을 저장한다.")
+    @DisplayName("지하철노선을 저장한다.")
     @Test
     void create() {
         LineResponseDto line = lineService.create("신분당선", "bg-red-600");
@@ -31,17 +35,27 @@ class LineServiceTest {
         assertThat(line.getColor()).isEqualTo("bg-red-600");
     }
 
-    @DisplayName("이미 존재하는 이름으로 지하철 노선을 생성할 수 없다.")
+    @DisplayName("이미 존재하는 이름으로 지하철노선을 생성할 수 없다.")
     @Test
     void duplicateNameException() {
-        lineService.create("신분당선", "bg-red-600");
-
-        assertThatThrownBy(() -> lineService.create("신분당선", "bg-blue-600"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 이름의 지하철 노선이 이미 존재합니다");
+        String name = "신분당선";
+        lineService.create(name, "bg-red-600");
+        assertThatThrownBy(() -> lineService.create(name, "bg-blue-600"))
+                .isInstanceOf(DuplicateLineNameException.class)
+                .hasMessageContaining("해당 이름의 지하철노선은 이미 존재합니다");
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
+    @DisplayName("이미 존재하는 색상으로 지하철노선을 생성할 수 없다.")
+    @Test
+    void duplicateColorException() {
+        String color = "color";
+        lineService.create("신분당선", color);
+        assertThatThrownBy(() -> lineService.create("분당선", color))
+                .isInstanceOf(DuplicateLineColorException.class)
+                .hasMessageContaining("해당 색상의 지하철노선은 이미 존재합니다");
+    }
+
+    @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void findAll() {
         lineService.create("신분당선", "bg-red-600");
@@ -51,7 +65,7 @@ class LineServiceTest {
         assertThat(lines).hasSize(3);
     }
 
-    @DisplayName("id로 지하철 노선을 조회한다.")
+    @DisplayName("지하철노선을 조회한다.")
     @Test
     void findOne() {
         LineResponseDto line = lineService.create("신분당선", "bg-red-600");
@@ -61,7 +75,7 @@ class LineServiceTest {
         assertThat(foundLine.getColor()).isEqualTo(line.getColor());
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
+    @DisplayName("지하철노선을 수정한다.")
     @Test
     void update() {
         LineResponseDto line = lineService.create("신분당선", "bg-red-600");
@@ -74,7 +88,7 @@ class LineServiceTest {
         assertThat(updatedLine.getColor()).isEqualTo("bg-blue-600");
     }
 
-    @DisplayName("id로 지하철 노선을 삭제한다.")
+    @DisplayName("지하철노선을 삭제한다.")
     @Test
     void remove() {
         LineResponseDto line = lineService.create("신분당선", "bg-red-600");

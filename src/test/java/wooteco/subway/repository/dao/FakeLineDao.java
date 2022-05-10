@@ -3,6 +3,7 @@ package wooteco.subway.repository.dao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import wooteco.subway.domain.line.Line;
 
@@ -24,11 +25,11 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         return lines.stream()
                 .filter(line -> id.equals(line.getId()))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("해당 id에 맞는 지하철 노선이 없습니다."));
+                .map(line -> new Line(line.getId(), line.getName(), line.getColor()))
+                .findAny();
     }
 
     @Override
@@ -45,12 +46,18 @@ public class FakeLineDao implements LineDao {
 
     @Override
     public void update(Long id, String name, String color) {
-        lines.remove(findById(id));
-        lines.add(new Line(id, name, color));
+        Line line = lines.stream()
+                .filter(it -> id.equals(it.getId()))
+                .findAny()
+                .get();
+        line.update(name, color);
     }
 
     @Override
     public void remove(Long id) {
-        lines.remove(findById(id));
+        lines.remove(lines.stream()
+                .filter(line -> id.equals(line.getId()))
+                .findAny()
+                .get());
     }
 }

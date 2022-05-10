@@ -1,10 +1,10 @@
 package wooteco.subway.repository.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,14 +28,14 @@ class JdbcLineDaoTest {
         this.lineDao = new JdbcLineDao(dataSource);
     }
 
-    @DisplayName("지하철 노선을 저장한다.")
+    @DisplayName("지하철노선을 저장한다.")
     @Test
     void save() {
         Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
         assertThat(lineId).isGreaterThan(0);
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
+    @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void findAll() {
         List<Line> lines = List.of(
@@ -48,20 +48,19 @@ class JdbcLineDaoTest {
         assertThat(foundLines).hasSize(3);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철노선을 조회한다.")
     @Test
     void findById() {
         Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
-        Line foundLine = lineDao.findById(lineId);
-        assertThat(foundLine.getId()).isEqualTo(lineId);
+        Optional<Line> line = lineDao.findById(lineId);
+        assertThat(line.isPresent()).isTrue();
     }
 
-    @DisplayName("없는 지하철 노선을 조회하면 예외가 발생한다.")
+    @DisplayName("존재하지 않는 지하철노선을 조회한다.")
     @Test
-    void noSuchLineExceptionDuringFind() {
-        assertThatThrownBy(() -> lineDao.findById(1L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당 id에 맞는 지하철 노선이 없습니다.");
+    void findWithNonexistentId() {
+        Optional<Line> line = lineDao.findById(1L);
+        assertThat(line.isEmpty()).isTrue();
     }
 
     @DisplayName("지하철 노선 정보를 수정한다.")
@@ -69,11 +68,16 @@ class JdbcLineDaoTest {
     void update() {
         Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
         lineDao.update(lineId, "분당선", "bg-blue-600");
-        Line updatedLine = lineDao.findById(lineId);
+        Optional<Line> updatedLine = lineDao.findById(lineId);
 
-        assertThat(updatedLine.getId()).isEqualTo(lineId);
-        assertThat(updatedLine.getName()).isEqualTo("분당선");
-        assertThat(updatedLine.getColor()).isEqualTo("bg-blue-600");
+        assertAll(() -> {
+            assertThat(updatedLine.isPresent()).isTrue();
+
+            Line line = updatedLine.get();
+            assertThat(line.getId()).isEqualTo(lineId);
+            assertThat(line.getName()).isEqualTo("분당선");
+            assertThat(line.getColor()).isEqualTo("bg-blue-600");
+        });
     }
 
     @DisplayName("지하철 노선을 삭제한다.")

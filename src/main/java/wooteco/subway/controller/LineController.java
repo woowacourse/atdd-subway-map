@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.controller.dto.ControllerDtoAssembler;
 import wooteco.subway.controller.dto.line.LineRequest;
 import wooteco.subway.controller.dto.line.LineResponse;
+import wooteco.subway.repository.exception.DuplicateLineColorException;
+import wooteco.subway.repository.exception.DuplicateLineNameException;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -66,8 +68,8 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler
-    public ResponseEntity<String> handle(IllegalArgumentException exception) {
+    @ExceptionHandler({DuplicateLineNameException.class, DuplicateLineColorException.class})
+    public ResponseEntity<String> handle(RuntimeException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 }

@@ -57,7 +57,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("해당 이름의 지하철 노선이 이미 존재합니다");
+            assertThat(response.body().asString()).contains("해당 이름의 지하철노선은 이미 존재합니다");
         });
     }
 
@@ -78,7 +78,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("해당 색상의 지하철 노선이 이미 존재합니다");
+            assertThat(response.body().asString()).contains("해당 색상의 지하철노선은 이미 존재합니다");
         });
     }
 
