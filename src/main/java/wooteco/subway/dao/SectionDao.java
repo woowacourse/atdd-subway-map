@@ -51,4 +51,15 @@ public class SectionDao {
         String sql = "select * from section where line_id = ?";
         return jdbcTemplate.query(sql, mapper, lineId);
     }
+
+    public void update(Section section) {
+        String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
+        Long id = section.getUpStation().getId();
+        Long downStationId = section.getDownStation().getId();
+        int distance = section.getDistance();
+        Long sectionId = section.getId();
+
+        jdbcTemplate.update(sql, id, downStationId, distance, sectionId);
+    }
+
 }

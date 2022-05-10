@@ -14,6 +14,30 @@ public class Sections {
         values = sort(new ArrayList<>(sections));
     }
 
+    public boolean existUpStation(Station station) {
+        return values.stream()
+            .anyMatch(value -> value.getUpStation().equals(station));
+    }
+
+    public boolean existDownStation(Station station) {
+        return values.stream()
+            .anyMatch(value -> value.getDownStation().equals(station));
+    }
+
+    public Section findUpStation(Station station) {
+        return values.stream()
+            .filter(value -> value.getUpStation().equals(station))
+            .findFirst()
+            .orElseThrow();
+    }
+
+    public Section findDownStation(Station station) {
+        return values.stream()
+            .filter(value -> value.getDownStation().equals(station))
+            .findFirst()
+            .orElseThrow();
+    }
+
     private List<Section> sort(List<Section> sections) {
         List<Section> values = new ArrayList<>();
         Station firstStation = findFirstStation(sections);

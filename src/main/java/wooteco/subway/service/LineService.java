@@ -14,12 +14,15 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.BadRequestException;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class LineService {
 
+    private static final int BEFORE_SECTION = 0;
+    private static final int AFTER_SECTION = 1;
     private final LineDao lineDao;
     private final StationDao stationDao;
     private final SectionDao sectionDao;
@@ -46,7 +49,7 @@ public class LineService {
     }
 
     public LineResponse showById(Long lineId) {
-        return LineResponse.of(findLineBy(lineId), getStations(lineId));
+        return LineResponse.of(findLine(lineId), getStations(lineId));
     }
 
     public List<LineResponse> showAll() {
@@ -57,7 +60,7 @@ public class LineService {
 
     public void updateById(Long id, LineUpdateRequest request) {
         validateDuplicateNameAndColor(request.getName(), request.getColor());
-        Line line = findLineBy(id);
+        Line line = findLine(id);
         line.update(request.getName(), request.getColor());
         lineDao.modifyById(id, line);
     }
@@ -66,7 +69,7 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    private Line findLineBy(Long id) {
+    private Line findLine(Long id) {
         return lineDao.findById(id)
             .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
     }
@@ -86,11 +89,38 @@ public class LineService {
         return entities.stream()
             .map(entity -> new Section(
                 entity.getId(),
-                findLineBy(entity.getLineId()),
+                findLine(entity.getLineId()),
                 stationDao.findById(entity.getUpStationId()).orElseThrow(),
                 stationDao.findById(entity.getDownStationId()).orElseThrow(),
                 entity.getDistance()))
             .collect(Collectors.toList());
+    }
+
+    public void createSection(Long lineId, SectionRequest request) {
+        Line line = findLine(lineId);
+        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        Station upStation = stationDao.findById(request.getUpStationId()).orElseThrow();
+        Station downStation = stationDao.findById(request.getDownStationId()).orElseThrow();
+        int distance = request.getDistance();
+        Section wait = new Section(line, upStation, downStation, distance);
+
+        if (sections.existUpStation(upStation)) {
+            Section section = sections.findUpStation(upStation);
+            List<Section> split = section.splitFromUpStation(wait);
+            sectionDao.update(split.get(BEFORE_SECTION));
+            sectionDao.save(split.get(AFTER_SECTION));
+            return;
+        }
+
+        if (sections.existDownStation(downStation)) {
+            Section section = sections.findDownStation(downStation);
+            List<Section> split = section.splitFromDownStation(wait);
+            sectionDao.update(split.get(BEFORE_SECTION));
+            sectionDao.save(split.get(AFTER_SECTION));
+            return;
+        }
+
+        sectionDao.save(new Section(line, upStation, downStation, distance));
     }
 }
 

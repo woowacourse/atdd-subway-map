@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.List;
+
 public class Section {
 
     private static final int MIN_DISTANCE = 1;
@@ -23,18 +25,30 @@ public class Section {
         this(null, line, upStation, downStation, distance);
     }
 
+    public List<Section> splitFromUpStation(Section other) {
+        validateShortDistance(other.distance);
+        Section start = new Section(id, line, upStation, other.downStation, other.distance);
+        Section end = new Section(line, other.downStation, downStation, distance - other.distance);
+        return List.of(start, end);
+    }
+
+    public List<Section> splitFromDownStation(Section other) {
+        validateShortDistance(other.distance);
+        Section start = new Section(id, line, upStation, other.upStation, distance - other.distance);
+        Section end = new Section(line, other.upStation, downStation, other.distance);
+        return List.of(start, end);
+    }
+
     private void validate(int distance) {
         if (distance < MIN_DISTANCE) {
             throw new IllegalArgumentException("거리는 1이상이어야 합니다.");
         }
     }
 
-    public boolean hasUpSection(Section other) {
-        return upStation.equals(other.upStation);
-    }
-
-    public boolean hasDownSection(Section other) {
-        return downStation.equals(other.upStation);
+    private void validateShortDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException("거리가 큽니다.");
+        }
     }
 
     public Long getId() {
