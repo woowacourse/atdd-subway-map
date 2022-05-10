@@ -20,13 +20,14 @@ public class StationService {
     public StationResponse createStation(final CreateStationRequest request) {
         final Station station = new Station(request.getName());
         final Long id = stationDao.save(station);
-        return new StationResponse(id, request.getName());
+        final Station savedStation = stationDao.findById(id);
+        return StationResponse.from(savedStation);
     }
 
     public List<StationResponse> showStations() {
         final List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
 
