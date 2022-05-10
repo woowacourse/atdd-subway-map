@@ -10,23 +10,7 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void add(Section newSection) {
-        if (!sections.isEmpty()) {
-            validateSectionInLine(newSection);
-
-            if (!includeUpStation(newSection.getDownStationId()) && includeDownStation(newSection.getDownStationId())) {
-                validateSectionDistance(newSection);
-                // update
-            }
-            if (includeUpStation(newSection.getUpStationId()) && !includeDownStation(newSection.getUpStationId())) {
-                validateSectionDistance(newSection);
-                // update
-            }
-        }
-        sections.add(newSection);
-    }
-
-    private void validateSectionInLine(Section newSection) {
+    public void validateSectionInLine(Section newSection) {
         boolean existUpStation = existStationByStationId(newSection.getUpStationId());
         boolean existDownStation = existStationByStationId(newSection.getDownStationId());
 
@@ -60,17 +44,40 @@ public class Sections {
         }
     }
 
-    private void validateSectionDistance(Section newSection) {
-        if (newSection.getDistance() >= getExistDistance(newSection)) {
+    public void validateSectionDistance(Section newSection) {
+        if (newSection.getDistance() >= getExistSection(newSection).getDistance()) {
             throw new IllegalArgumentException("구간의 길이는 기존 역 사이의 길이보다 작아야합니다.");
         }
     }
 
-    private int getExistDistance(Section newSection) {
+    private Section getExistSection(Section newSection) {
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(newSection.getUpStationId()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구간입니다."))
-                .getDistance();
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구간입니다."));
+    }
+
+    public Section getUpdatedSection(Section newSection) {
+        Section existSection = getExistSection(newSection);
+        int newDistance = existSection.getDistance() - newSection.getDistance();
+
+        if (!includeUpStation(newSection.getDownStationId()) && includeDownStation(newSection.getDownStationId())) {
+            return new Section(existSection.getId(), existSection.getUpStationId(),
+                    newSection.getUpStationId(), newDistance);
+        }
+
+        return new Section(existSection.getId(), newSection.getDownStationId(),
+                existSection.getDownStationId(), newDistance);
+    }
+
+    public boolean isRequireUpdate(Section newSection) {
+        if (!includeUpStation(newSection.getDownStationId()) && includeDownStation(newSection.getDownStationId())) {
+            return true;
+        }
+        return includeUpStation(newSection.getUpStationId()) && !includeDownStation(newSection.getUpStationId());
+    }
+
+    public boolean isEmpty() {
+        return sections.isEmpty();
     }
 }
