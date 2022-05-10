@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import wooteco.subway.dto.SectionRequest;
 
 public class Sections {
 
@@ -12,8 +13,6 @@ public class Sections {
         this.sections = sections;
     }
 
-    // 1-3, 3-2, 2-4 하나의 section을 기준으로 up-id와 down-id가 같이 않은 하나의 섹션을 찾으면 됨
-// => 만약 순환일 땐 어떻게 하지 1-3, 3-2, 2-1일틴데
     public List<Long> findStationIdsInOrder() {
         List<Long> stationIds = new ArrayList<>();
         Long downStationId = 0L;
@@ -42,4 +41,23 @@ public class Sections {
         return stationIds;
     }
 
+    public void validNonLinkSection(SectionRequest sectionRequest) {
+        long linkedSectionCount = sections.stream()
+                .filter(section -> section.getUpStationId().equals(sectionRequest.getDownStationId())
+                        || section.getDownStationId().equals(sectionRequest.getUpStationId()))
+                .count();
+        if (linkedSectionCount == 0) {
+            throw new IllegalArgumentException("연결할 section 이 존재하지 않습니다.");
+        }
+    }
+
+    public void validSameStations(SectionRequest sectionRequest) {
+        long linkedSectionCount = sections.stream()
+                .filter(section -> section.getUpStationId().equals(sectionRequest.getUpStationId())
+                        && section.getDownStationId().equals(sectionRequest.getDownStationId()))
+                .count();
+        if (linkedSectionCount > 0) {
+            throw new IllegalArgumentException("상행역과 하행역이 노선에 이미 존재합니다.");
+        }
+    }
 }

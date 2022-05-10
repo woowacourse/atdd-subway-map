@@ -43,8 +43,28 @@ public class LineService {
         }
     }
 
+    private List<StationResponse> findStationBySection(Section section) {
+        List<Station> stations = findBySection(section);
+        return stations.stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> findBySection(Section section) {
+        Station upStation = stationDao.findById(section.getUpStationId());
+        Station downStation = stationDao.findById(section.getDownStationId());
+        return List.of(upStation, downStation);
+    }
+
     public void saveSection(Long lineId, SectionRequest sectionRequest) {
+        validSection(lineId, sectionRequest);
         sectionDao.save(new Section(lineId, sectionRequest));
+    }
+
+    private void validSection(Long lineId, SectionRequest sectionRequest) {
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        sections.validSameStations(sectionRequest);
+        sections.validNonLinkSection(sectionRequest);
     }
 
     public List<LineResponse> findLineAll() {
@@ -65,19 +85,6 @@ public class LineService {
                 .map(id -> new StationResponse(stationDao.findById(id)))
                 .collect(Collectors.toUnmodifiableList());
         return new LineResponse(line, stationResponses);
-    }
-
-    private List<StationResponse> findStationBySection(Section section) {
-        List<Station> stations = findBySection(section);
-        return stations.stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
-    }
-
-    private List<Station> findBySection(Section section) {
-        Station upStation = stationDao.findById(section.getUpStationId());
-        Station downStation = stationDao.findById(section.getDownStationId());
-        return List.of(upStation, downStation);
     }
 
     public void update(Long id, LineRequest lineRequest) {
