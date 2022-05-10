@@ -20,7 +20,7 @@ public class StationService {
 
     public StationResponse save(StationRequest stationRequest) {
         validateNameDuplication(stationRequest);
-        Station station = new Station(stationRequest.getName());
+        Station station = stationRequest.toStation();
         Station newStation = stationDao.save(station);
         return StationResponse.of(newStation);
     }

@@ -20,7 +20,7 @@ public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
         validateNameDuplication(lineRequest.getName());
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toLine();
         Line newLine = lineDao.save(line);
         return LineResponse.of(newLine);
     }
@@ -47,7 +47,7 @@ public class LineService {
     public void update(Long id, LineRequest lineRequest) {
         validateExistence(id);
         validateNameDuplication(lineRequest.getName());
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toLine(id);
         lineDao.update(line);
     }
 
