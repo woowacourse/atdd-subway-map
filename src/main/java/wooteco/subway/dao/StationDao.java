@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import wooteco.subway.domain.Station;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,11 +29,13 @@ public class StationDao {
         return createNewObject(station);
     }
 
-    public void checkDuplication(Station station) {
-        String sql = String.format("select count(*) from STATION where name = '%s'", station.getName());
+    public Optional<Station> getStationsHavingName(String name) {
+        String sql = String.format("select * from Station where name = '%s'", name);
 
-        if (jdbcTemplate.queryForObject(sql, Integer.class) > 0) {
-            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
+        try{
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new StationMapper()));
+        }catch(EmptyResultDataAccessException e){
+            return Optional.empty();
         }
     }
 
@@ -40,7 +44,7 @@ public class StationDao {
         return jdbcTemplate.query(sql, new StationMapper());
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = "delete from STATION where id = ?";
         jdbcTemplate.update(sql, id);
     }
@@ -62,7 +66,11 @@ public class StationDao {
         return jdbcTemplate.queryForObject(sql, new StationMapper());
     }
 
-    public List<Station> findByIdIn(List<String> stringIds) {
+    public List<Station> findByIdIn(Set<Long> ids) {
+        List<String> stringIds = ids.stream()
+                .map(id -> Long.toString(id))
+                .collect(Collectors.toList());
+
         String sql = String.format("select * from STATION where id in (%s)", String.join(", ", stringIds));
         return jdbcTemplate.query(sql, new StationMapper());
     }

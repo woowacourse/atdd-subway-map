@@ -119,28 +119,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-
     @DisplayName("구간을 제거한다.")
     @Test
     void deleteSection() {
         // given
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "1호선");
-        params.put("color", "red");
-        params.put("upStationId", 1L);
-        params.put("downStationId", 2L);
+        params.put("upStationId", 2L);
+        params.put("downStationId", 3L);
         params.put("distance", 10);
 
-        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+        // when
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post("/lines/1/sections")
                 .then().log().all()
                 .extract();
 
         // when
-        String uri = deleteResponse.header("Location");
+        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)

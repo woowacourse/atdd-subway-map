@@ -1,9 +1,10 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.dto.SectionRequest;
 
 import java.util.*;
 
@@ -15,6 +16,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public void save(Section section) {
         checkAndFixOverLappingBy(section);
         sectionDao.save(section);
@@ -37,10 +39,12 @@ public class SectionService {
         if (Objects.equals(existedSection.getUpStationId(), newSection.getUpStationId())) {
             return new Section(id, lineId, newSection.getDownStationId(), existedSection.getDownStationId(), revisedDistance);
         }
+
         return new Section(id, lineId, existedSection.getUpStationId(), newSection.getUpStationId(), revisedDistance);
     }
 
-    public void checkValidAndSave(Section section) {
+    public void checkValidAndSave(Long lineId, SectionRequest sectionRequest) {
+        Section section = sectionRequest.toSection(lineId);
         checkSavable(section);
         save(section);
     }
@@ -108,17 +112,5 @@ public class SectionService {
     private void createConnectedSection(Long lineId, Section upSection, Section downSection) {
         sectionDao.save(new Section(lineId, upSection.getUpStationId(), downSection.getDownStationId(),
                 upSection.getDistance() + downSection.getDistance()));
-    }
-
-    public Set<Long> findStationIdsIn(Line line) {
-        List<Section> sections = sectionDao.findSectionsIn(line);
-
-        Set<Long> stationIds = new HashSet<>();
-        for (Section section : sections) {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
-        }
-
-        return stationIds;
     }
 }
