@@ -9,4 +9,6 @@ public interface SectionDao {
     void save(Long lineId, Section section);
 
     List<SectionEntity> findByLine(Long lineId);
+
+    void update(Long sectionId, Section section);
 }

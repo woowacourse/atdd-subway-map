@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.SectionEntity;
 
 @JdbcTest
 public class JdbcSectionDaoTest {
@@ -35,5 +36,19 @@ public class JdbcSectionDaoTest {
         sectionDao.save(lineId, section);
 
         assertThat(sectionDao.findByLine(1L).size()).isEqualTo(1);
+    }
+
+    @DisplayName("지하철 구간을 수정한다.")
+    @Test
+    void update() {
+        Long lineId = 1L;
+        Station station1 = new Station(1L, "선릉역");
+        Station station2 = new Station(2L, "강남역");
+        Section section = new Section(station1, station2, 10);
+
+        sectionDao.save(lineId, section);
+        SectionEntity sectionEntity = sectionDao.findByLine(lineId).get(0);
+        Section newSection = new Section(lineId, new Station(3L, "역삼역"), station2, 11);
+        sectionDao.update(sectionEntity.getId(), newSection);
     }
 }

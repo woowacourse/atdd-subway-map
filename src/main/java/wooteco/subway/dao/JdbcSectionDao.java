@@ -27,10 +27,18 @@ public class JdbcSectionDao implements SectionDao {
     public List<SectionEntity> findByLine(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id = ?";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new SectionEntity(
+            resultSet.getLong("id"),
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),
             resultSet.getLong("down_station_id"),
             resultSet.getInt("distance")
         ), lineId);
+    }
+
+    @Override
+    public void update(Long sectionId, Section section) {
+        String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
+        jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(),
+            sectionId);
     }
 }
