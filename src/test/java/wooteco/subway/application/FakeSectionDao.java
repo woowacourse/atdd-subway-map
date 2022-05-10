@@ -13,4 +13,10 @@ public class FakeSectionDao implements SectionDao<Section> {
     public Section save(Section Section) {
         return new Section(new Line(), 강남역, 역삼역, 5);
     }
+
+    @Override
+    public int deleteSection(Long lineId, Long stationId) {
+
+        throw new IllegalArgumentException("사용하지 않는 메서드입니다");
+    }
 }

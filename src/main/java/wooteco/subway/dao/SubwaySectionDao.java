@@ -31,4 +31,11 @@ public class SubwaySectionDao implements SectionDao<Section> {
         return new Section(number.longValue(), section.getLine(), section.getUpStation(), section.getDownStation(),
                 section.getDistance());
     }
+
+    @Override
+    public int deleteSection(Long lineId, Long stationId) {
+        String sql = "DELETE FROM section "
+                + "WHERE line_id=? AND (up_station_id=? OR down_station_id=?)";
+        return jdbcTemplate.update(sql, lineId, stationId, stationId);
+    }
 }
