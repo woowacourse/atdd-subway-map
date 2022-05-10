@@ -11,9 +11,10 @@ import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
 
 public class AcceptanceTestUtil {
-    public static ExtractableResponse<Response> requestPostStation(final StationRequest requestBody, final String URI) {
+    public static ExtractableResponse<Response> requestPostStation(final StationRequest stationRequest,
+                                                                   final String URI) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(requestBody)
+            .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(URI)

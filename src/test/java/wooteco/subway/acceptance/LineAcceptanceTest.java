@@ -12,9 +12,6 @@ import static wooteco.subway.testutils.Fixture.STATION_REQUEST_잠실역;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -65,6 +62,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("단일 노선을 조회한다.")
     void findLineById() {
         //given
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_강남역, "/stations");
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_잠실역, "/stations");
         requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
         //when
@@ -100,9 +99,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    public ExtractableResponse<Response> requestPostLine(final LineRequest requestBody, final String URI) {
+    public ExtractableResponse<Response> requestPostLine(final LineRequest lineRequest, final String URI) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(requestBody)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(URI)
@@ -120,9 +119,9 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> requestPutLine(final LineRequest requestBody, final String URI) {
+    private ExtractableResponse<Response> requestPutLine(final LineRequest lineRequest, final String URI) {
         return RestAssured.given().log().all()
-            .body(requestBody)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put(URI)
@@ -138,18 +137,5 @@ class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         return response;
-    }
-
-    private List<Long> getExpectedLineIds(final ExtractableResponse<Response> createResponse1,
-                                          final ExtractableResponse<Response> createResponse2) {
-        return Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
-    }
-
-    private List<Long> getResultLineIds(final ExtractableResponse<Response> response) {
-        return response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
     }
 }

@@ -56,7 +56,8 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findLineById(@PathVariable Long id) {
         final Line targetLine = lineService.findById(id);
-        final LineResponse lineResponse = new LineResponse(targetLine);
+        final LineResponse lineResponse = new LineResponse(targetLine,
+            sectionService.findUniqueStationsByLineId(targetLine.getId()));
         return ResponseEntity.ok(lineResponse);
     }
 
