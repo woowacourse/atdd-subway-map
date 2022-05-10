@@ -3,7 +3,7 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.service.dto.station.StationResponseDTO;
+import wooteco.subway.service.dto.station.StationResponseDto;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -18,11 +18,11 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponseDTO createStation(String name) {
+    public StationResponseDto createStation(String name) {
         validateExistName(name);
         Station station = stationDao.create(new Station(name));
 
-        return new StationResponseDTO(station);
+        return new StationResponseDto(station);
     }
 
     private void validateExistName(String name) {
@@ -31,9 +31,9 @@ public class StationService {
         }
     }
 
-    public List<StationResponseDTO> showStations() {
+    public List<StationResponseDto> showStations() {
         return stationDao.findAll().stream()
-                .map(StationResponseDTO::new)
+                .map(StationResponseDto::new)
                 .collect(Collectors.toList());
     }
 

@@ -7,14 +7,14 @@ import wooteco.subway.controller.dto.station.StationResponse;
 import wooteco.subway.service.dto.line.LineRequestDTO;
 import wooteco.subway.service.dto.line.LineResponseDTO;
 import wooteco.subway.service.dto.section.SectionRequestDto;
-import wooteco.subway.service.dto.station.StationResponseDTO;
+import wooteco.subway.service.dto.station.StationResponseDto;
 
 public class ControllerDtoAssembler {
 
     private ControllerDtoAssembler() {
     }
 
-    public static StationResponse stationResponseByDTO(StationResponseDTO stationResponseDTO){
+    public static StationResponse stationResponseByDTO(StationResponseDto stationResponseDTO){
         return new StationResponse(stationResponseDTO.getId(), stationResponseDTO.getName());
     }
 
@@ -23,7 +23,7 @@ public class ControllerDtoAssembler {
     }
 
     public static LineRequestDTO lineRequestDTO(LineRequest lineRequest) {
-        return new LineRequestDTO(lineRequest.getName(), lineRequest.getColor());
+        return new LineRequestDTO(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
     public static SectionRequestDto sectionRequestDto(Long lineId, SectionRequest sectionRequest) {

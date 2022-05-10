@@ -3,9 +3,14 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.service.dto.line.LineRequestDTO;
 import wooteco.subway.service.dto.line.LineResponseDTO;
+import wooteco.subway.service.dto.station.StationResponseDto;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,16 +20,20 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     @Transactional(readOnly = true)
     public LineResponseDTO findById(Long id) {
         validateNonFoundId(id);
 
-        return new LineResponseDTO(lineDao.findById(id));
+        return makeLineResponseDto(lineDao.findById(id));
     }
 
     private void validateNonFoundId(Long id) {
@@ -38,15 +47,30 @@ public class LineService {
         List<Line> lines = lineDao.findAll();
 
         return lines.stream()
-                .map(LineResponseDTO::new)
+                .map(this::makeLineResponseDto)
                 .collect(Collectors.toList());
     }
 
     public LineResponseDTO create(LineRequestDTO lineRequestDTO) {
         validateDuplicate(lineRequestDTO);
         Line line = lineDao.create(new Line(lineRequestDTO.getName(), lineRequestDTO.getColor()));
+        Section newSection = new Section(line.getId(), lineRequestDTO.getUpStationId(), lineRequestDTO.getDownStationId(), lineRequestDTO.getDistance());
+        Sections sections = new Sections(sectionDao.findAllByLineId(newSection.getLineId()));
+        sections.validateAddNewSection(newSection);
+        sectionDao.create(newSection);
 
-        return new LineResponseDTO(line);
+        return makeLineResponseDto(line);
+    }
+
+    private LineResponseDTO makeLineResponseDto(Line line) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(line.getId()));
+        List<Long> stationIds = sections.getStationIds();
+        List<StationResponseDto> stations = stationDao.findAll().stream()
+                .filter(it -> stationIds.contains(it.getId()))
+                .map(StationResponseDto::new)
+                .collect(Collectors.toList());
+
+        return new LineResponseDTO(line, stations);
     }
 
     private void validateDuplicate(LineRequestDTO lineRequestDTO) {

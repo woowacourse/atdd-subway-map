@@ -39,7 +39,7 @@ class JdbcSectionDaoTest {
         Section section = sectionDao.create(new Section(1L, 2L, 3L, 4));
 
         assertAll(
-                () -> assertThat(section.getId()).isEqualTo(1L),
+                () -> assertThat(section.getLineId()).isEqualTo(1L),
                 () -> assertThat(section.getUpStationId()).isEqualTo(2L),
                 () -> assertThat(section.getDownStationId()).isEqualTo(3L),
                 () -> assertThat(section.getDistance()).isEqualTo(4)

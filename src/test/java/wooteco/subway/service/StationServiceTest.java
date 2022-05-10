@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.jdbc.JdbcStationDao;
-import wooteco.subway.service.dto.station.StationResponseDTO;
+import wooteco.subway.service.dto.station.StationResponseDto;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,7 +30,7 @@ class StationServiceTest {
     @Test
     @DisplayName("지하철 역을 저장할 수 있다.")
     void saveStation() {
-        StationResponseDTO stationResponseDTO = stationService.createStation("강남역");
+        StationResponseDto stationResponseDTO = stationService.createStation("강남역");
 
         Assertions.assertThat(stationResponseDTO.getName()).isEqualTo("강남역");
     }
@@ -47,13 +47,13 @@ class StationServiceTest {
     @Test
     @DisplayName("역 삭제 성공")
     void deleteStation() {
-        StationResponseDTO stationResponseDTO = stationService.createStation("용문역");
+        StationResponseDto stationResponseDTO = stationService.createStation("용문역");
         Long id = stationResponseDTO.getId();
 
         stationService.delete(id);
         List<Long> ids = stationService.showStations()
                 .stream()
-                .map(StationResponseDTO::getId)
+                .map(StationResponseDto::getId)
                 .collect(Collectors.toList());
 
         Assertions.assertThat(ids).doesNotContain(id);

@@ -12,10 +12,6 @@ public class LineRequestDTO {
     public LineRequestDTO() {
     }
 
-    public LineRequestDTO(String name, String color) {
-        this(name, color, DEFAULT_VALUE, DEFAULT_VALUE, 0);
-    }
-
     public LineRequestDTO(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;

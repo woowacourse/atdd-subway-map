@@ -25,12 +25,10 @@ public class LineAcceptance extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> request = new HashMap<>();
-        request.put("name", "1호선");
-        request.put("color", "blue");
+        Map<String, String> params = makeParamsLine("1호선", "blue", 1L, 2L, 10);
 
         // when
-        ExtractableResponse<Response> response = createPostLineResponse(request);
+        ExtractableResponse<Response> response = createPostLineResponse(params);
 
         // then
         assertAll(
@@ -45,9 +43,7 @@ public class LineAcceptance extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> request = new HashMap<>();
-        request.put("name", "1호선");
-        request.put("color", "blue");
+        Map<String, String> request = makeParamsLine("1호선", "blue", 1L, 2L, 10);
 
         // when
         createPostLineResponse(request);
@@ -61,9 +57,7 @@ public class LineAcceptance extends AcceptanceTest {
     @Test
     void showLine() {
         /// given
-        Map<String, String> request = new HashMap<>();
-        request.put("name", "1호선");
-        request.put("color", "blue");
+        Map<String, String> request = makeParamsLine("1호선", "blue", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse = createPostLineResponse(request);
         String id = createResponse.header("Location").split("/")[2];
 
@@ -81,12 +75,8 @@ public class LineAcceptance extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "1호선");
-        params1.put("color", "blue");
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "2");
-        params2.put("color", "green");
+        Map<String, String> params1 = makeParamsLine("1호선", "blue", 1L, 2L, 10);
+        Map<String, String> params2 = makeParamsLine("2호선", "green", 2L, 3L, 10);
         ExtractableResponse<Response> createResponse1 = createPostLineResponse(params1);
         ExtractableResponse<Response> createResponse2 = createPostLineResponse(params2);
 
@@ -106,12 +96,8 @@ public class LineAcceptance extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        Map<String, String> originParams = new HashMap<>();
-        originParams.put("name", "1호선");
-        originParams.put("color", "blue");
-        Map<String, String> newParams = new HashMap<>();
-        newParams.put("name", "2호선");
-        newParams.put("color", "green");
+        Map<String, String> originParams = makeParamsLine("1호선", "blue", 1L, 2L, 10);
+        Map<String, String> newParams = makeParamsLine("2호선", "green", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> createResponse = createPostLineResponse(originParams);
@@ -126,15 +112,9 @@ public class LineAcceptance extends AcceptanceTest {
     @Test
     void failUpdateLine() {
         /// given
-        Map<String, String> originParams1 = new HashMap<>();
-        originParams1.put("name", "1호선");
-        originParams1.put("color", "blue");
-        Map<String, String> originParams2 = new HashMap<>();
-        originParams2.put("name", "2호선");
-        originParams2.put("color", "green");
-        Map<String, String> newParams = new HashMap<>();
-        newParams.put("name", "1호선");
-        newParams.put("color", "blue");
+        Map<String, String> originParams1 = makeParamsLine("1호선", "blue", 1L, 2L, 10);
+        Map<String, String> originParams2 = makeParamsLine("2호선", "green", 1L, 2L, 10);
+        Map<String, String> newParams = makeParamsLine("1호선", "blue", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> createResponse1 = createPostLineResponse(originParams1);
@@ -150,9 +130,7 @@ public class LineAcceptance extends AcceptanceTest {
     @Test
     void deleteLine() {
         /// given
-        Map<String, String> originParams = new HashMap<>();
-        originParams.put("name", "1호선");
-        originParams.put("color", "blue");
+        Map<String, String> originParams = makeParamsLine("1호선", "blue", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> createResponse = createPostLineResponse(originParams);
@@ -237,6 +215,16 @@ public class LineAcceptance extends AcceptanceTest {
                 .delete("/lines/" + id)
                 .then().log().all()
                 .extract();
+    }
+
+    private Map<String, String> makeParamsLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(distance));
+        return params;
     }
 }
 
