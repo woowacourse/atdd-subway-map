@@ -17,6 +17,12 @@ public class LineRequest {
     private LineRequest() {
     }
 
+    // 수정시 id는 pathVariable로 옴
+    public LineRequest(final String name, final String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public LineRequest(final String name,
                        final String color,
                        final Long upStationId,
@@ -24,9 +30,10 @@ public class LineRequest {
                        final int distance) {
         Objects.requireNonNull(name, ERROR_NULL);
         Objects.requireNonNull(color, ERROR_NULL);
-        Objects.requireNonNull(upStationId, ERROR_NULL);
-        Objects.requireNonNull(downStationId, ERROR_NULL);
-        Objects.requireNonNull(distance, ERROR_NULL);
+//        Objects.requireNonNull(upStationId, ERROR_NULL);
+//        Objects.requireNonNull(downStationId, ERROR_NULL);
+//        Objects.requireNonNull(distance, ERROR_NULL);
+        // -> null 허용 + 수정용 필드 2개만 받는 생성자 추가 생성(수정시 id는 pathVariable로 옴)
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
@@ -54,8 +61,9 @@ public class LineRequest {
         return distance;
     }
 
+    // TODO 수정용  toEntity(id)를 만들러 올땐, LineReuqest에 upStationId + downStationId + distance는 null일 것이다.
+    // -> null 허용 + 수정용 필드 3개만 받는 생성자 추가 생성
     public Line toEntity(final Long id) {
-//        return new Line(id, this.name, this.color, this.upStationId, this.downStationId, this.distance);
         return new Line(id, this.name, this.color);
     }
 
