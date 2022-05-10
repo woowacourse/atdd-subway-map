@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,10 +56,32 @@ public class SectionDaoTest {
         sectionDao.save(line, section);
 
         Section persistSection = sectionDao.findAllByLineId(line).get(0);
-        
+
         assertThat(persistSection).usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(section);
+    }
+
+    @DisplayName("노선 구간 중 해당하는 역을 포함하는 구간을 모두 제거한다.")
+    @Test
+    void delete() {
+        Line line = lineDao.save(new Line("2호선", "green"));
+        Station station1 = stationDao.save(new Station("강남역"));
+        Station station2 = stationDao.save(new Station("역삼역"));
+        Station station3 = stationDao.save(new Station("선릉역"));
+        Section section1 = new Section(station1, station2, 1);
+        Section section2 = new Section(station2, station3, 1);
+        sectionDao.save(line, section1);
+        sectionDao.save(line, section2);
+
+        sectionDao.deleteByLineIdAndStationId(line, station3);
+
+        List<Section> sections = sectionDao.findAllByLineId(line);
+
+        assertThat(sections.size()).isEqualTo(1);
+        assertThat(sections.get(0)).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(section1);
     }
 
 }

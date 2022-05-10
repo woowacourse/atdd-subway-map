@@ -50,4 +50,11 @@ public class SectionDao {
         return jdbcTemplate.query(sql, parameters, SECTION_MAPPER);
     }
 
+    public void deleteByLineIdAndStationId(Line line, Station station) {
+        String sql = "DELETE FROM SECTION WHERE line_id = :line_id AND (up_station_id = :station_id OR down_station_id = :station_id)";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("line_id", line.getId())
+                .addValue("station_id", station.getId());
+        jdbcTemplate.update(sql, parameters);
+    }
+
 }
