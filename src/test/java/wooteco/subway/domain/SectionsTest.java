@@ -3,6 +3,8 @@ package wooteco.subway.domain;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -151,6 +153,90 @@ public class SectionsTest {
 
         //when, then
         assertThatThrownBy(() -> sections.add(new Section(new Station(stationNameA), new Station(stationNameB), 4)))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("구간이 한 개인 경우 삭제할 수 없다.")
+    void deleteWithOneSection() {
+        //given
+        Section section = new Section(new Station("역삼"), new Station("강남"), 5);
+        Sections sections = new Sections(section);
+
+        //when, then
+        assertThatThrownBy(() -> sections.delete(new Station("역삼")))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("구간이 하나인 경우 삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("상행 종점을 삭제한다.")
+    void deleteUpDestination() {
+        //given
+        Section sectionA = new Section(new Station("역삼"), new Station("강남"), 5);
+        Section sectionB = new Section(new Station("강남"), new Station("서초"), 5);
+        Section sectionC = new Section(new Station("서초"), new Station("선릉"), 5);
+
+        Sections sections = new Sections(sectionA);
+        sections.add(sectionB);
+        sections.add(sectionC);
+
+        //when
+        sections.delete(new Station("역삼"));
+
+        //then
+        assertThat(sections.getUpDestination()).isEqualTo(new Station("강남"));
+    }
+
+    @Test
+    @DisplayName("하행 종점을 삭제한다.")
+    void deleteDownDestination() {
+        //given
+        Section sectionA = new Section(new Station("역삼"), new Station("강남"), 5);
+        Section sectionB = new Section(new Station("강남"), new Station("서초"), 5);
+        Section sectionC = new Section(new Station("서초"), new Station("선릉"), 5);
+
+        Sections sections = new Sections(sectionA);
+        sections.add(sectionB);
+        sections.add(sectionC);
+
+        //when
+        sections.delete(new Station("선릉"));
+
+        //then
+        assertThat(sections.getDownDestination()).isEqualTo(new Station("서초"));
+    }
+
+    @Test
+    @DisplayName("구간의 중간에 있는 역을 삭제한다.")
+    void deleteStationInMiddle() {
+        //given
+        Section sectionA = new Section(new Station("역삼"), new Station("강남"), 5);
+        Section sectionB = new Section(new Station("강남"), new Station("서초"), 5);
+        Section sectionC = new Section(new Station("서초"), new Station("선릉"), 5);
+
+        Sections sections = new Sections(sectionA);
+        sections.add(sectionB);
+        sections.add(sectionC);
+
+        //when
+        sections.delete(new Station("서초"));
+
+        //then
+        assertThat(sections.getValues()).isEqualTo(List.of(sectionA,
+            new Section(new Station("강남"), new Station("선릉"), 10)
+        ));
+    }
+
+    @Test
+    @DisplayName("삭제할 역이 목록에 존재하지 않을 경우 예외를 던진다.")
+    void deleteWithStationNotExists() {
+        //given
+        Section section = new Section(new Station("역삼"), new Station("강남"), 5);
+        Sections sections = new Sections(section);
+
+        //when, then
+        assertThatThrownBy(() -> sections.delete(new Station("서초")))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }
