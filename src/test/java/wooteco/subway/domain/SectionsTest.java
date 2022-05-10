@@ -2,7 +2,7 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -257,22 +257,19 @@ class SectionsTest {
         Station topStation = new Station(1L, "오리");
         Station middleStation = new Station(2L, "배카라");
         Station bottomStation = new Station(3L, "오카라");
+
         Section topSection = new Section(1L, 1L, topStation, middleStation, 3);
         Section bottomSection = new Section(2L, 1L, middleStation, bottomStation, 4);
-
         Sections sections = new Sections(List.of(topSection, bottomSection));
 
         // when
         sections.removeSection(middleStation);
-        Section section = sections.getSections().get(0);
 
         // then
-        assertAll(
-                () -> assertThat(sections.getSections()).hasSize(1),
-                () -> assertThat(section.getUpStation()).isEqualTo(topStation),
-                () -> assertThat(section.getDownStation()).isEqualTo(bottomStation),
-                () -> assertThat(section.getDistance()).isEqualTo(7),
-                () -> assertThat(section.getId()).isEqualTo(topSection.getId())
-        );
+        assertThat(sections.getSections()).hasSize(1)
+                .extracting(Section::getId, Section::getUpStation, Section::getDownStation, Section::getDistance)
+                .containsExactly(
+                        tuple(topSection.getId(), topStation, bottomStation, 7)
+                );
     }
 }

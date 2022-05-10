@@ -147,12 +147,10 @@ class SectionTest {
         // when
         Section updatedSection = section.createMiddleSectionByDownStationSection(middleSection);
 
-        assertAll(
-                () -> assertThat(updatedSection.getUpStation()).isEqualTo(station2),
-                () -> assertThat(updatedSection.getDownStation()).isEqualTo(station3),
-                () -> assertThat(updatedSection.getDistance()).isEqualTo(7),
-                () -> assertThat(updatedSection).isEqualTo(section)
-        );
+        // then
+        assertThat(updatedSection)
+                .usingRecursiveComparison()
+                .isEqualTo(new Section(1L, 1L, station2, station3, 7));
     }
 
     @Test
@@ -168,12 +166,10 @@ class SectionTest {
         // when
         Section updatedSection = section.createMiddleSectionByUpStationSection(middleSection);
 
-        assertAll(
-                () -> assertThat(updatedSection.getUpStation()).isEqualTo(station1),
-                () -> assertThat(updatedSection.getDownStation()).isEqualTo(station2),
-                () -> assertThat(updatedSection.getDistance()).isEqualTo(7),
-                () -> assertThat(updatedSection).isEqualTo(section)
-        );
+        // then
+        assertThat(updatedSection)
+                .usingRecursiveComparison()
+                .isEqualTo(new Section(1L, 1L, station1, station2, 7));
     }
 
     @Test
@@ -189,11 +185,9 @@ class SectionTest {
         // when
         Section updatedSection = section.createExtensionSection(middleSection);
 
-        assertAll(
-                () -> assertThat(updatedSection.getUpStation()).isEqualTo(station1),
-                () -> assertThat(updatedSection.getDownStation()).isEqualTo(station3),
-                () -> assertThat(updatedSection.getDistance()).isEqualTo(13),
-                () -> assertThat(updatedSection).isEqualTo(section)
-        );
+        // then
+        assertThat(updatedSection)
+                .usingRecursiveComparison()
+                .isEqualTo(new Section(1L, 1L, station1, station3, 13));
     }
 }
