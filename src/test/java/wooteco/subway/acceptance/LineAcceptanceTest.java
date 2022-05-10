@@ -23,9 +23,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.ui.dto.LineCreateRequest;
 import wooteco.subway.ui.dto.LineRequest;
-import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.ui.dto.SectionRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -261,5 +262,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
+    }
+
+    @DisplayName("구간 생성")
+    @Test
+    void createSection() {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(savedId2, 1L, 2L, 5);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/2/sections")
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

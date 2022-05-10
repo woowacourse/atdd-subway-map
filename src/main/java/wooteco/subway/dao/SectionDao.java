@@ -11,7 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
-import wooteco.subway.ui.dto.SectionRequest;
 
 @Repository
 public class SectionDao {
@@ -36,12 +35,24 @@ public class SectionDao {
         return jdbcTemplate.query(sql, source, eventRowMapper);
     }
 
-    public Long save(SectionRequest section) {
+    public Long save(Section section) {
         String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) "
                 + "values (:lineId, :upStationId, :downStationId, :distance)";
         SqlParameterSource source = new BeanPropertySqlParameterSource(section);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public void update(Section section) {
+        String sql = "update SECTION set down_station_id = :downStationId, up_station_id = :upStationId, distance = :distance where id = :id";
+
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("id", section.getId());
+        source.addValue("upStationId", section.getUpStationId());
+        source.addValue("downStationId", section.getDownStationId());
+        source.addValue("distance", section.getDistance());
+
+        jdbcTemplate.update(sql, source);
     }
 }

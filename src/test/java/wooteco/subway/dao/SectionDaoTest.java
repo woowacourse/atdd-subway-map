@@ -23,9 +23,9 @@ class SectionDaoTest {
         SectionRequest section = new SectionRequest(1L, 1L, 2L, 10);
 
         // when
-        Long id = sectionDao.save(section);
+        Long id = sectionDao.save(section.toEntity());
 
         // then
-        assertThat(id).isEqualTo(1L);
+        assertThat(id).isEqualTo(2L);
     }
 }

@@ -42,6 +42,12 @@ public class LineDao {
         return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
     }
 
+    public boolean existsById(Long id) {
+        String sql = "select exists (select 1 from LINE where id = :id)";
+        SqlParameterSource source = new MapSqlParameterSource("id", id);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
+    }
+
     public Line findById(Long id) {
         String sql = "select * from LINE where id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);

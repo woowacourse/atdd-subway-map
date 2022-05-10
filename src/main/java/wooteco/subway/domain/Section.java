@@ -34,6 +34,14 @@ public class Section {
         this.distance -= distance;
     }
 
+    public boolean isSameDownStationId(Section section) {
+        return section.downStationId.equals(downStationId);
+    }
+
+    public boolean isSameUpStationId(Section section) {
+        return section.upStationId.equals(upStationId);
+    }
+
     public void updateDownStationId(Long id) {
         this.downStationId = id;
     }

@@ -10,7 +10,6 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.LineCreateRequest;
@@ -42,10 +41,7 @@ public class LineService {
         Long lineId = lineDao.save(line);
 
         SectionRequest sectionRequest = SectionRequest.from(lineId, line);
-        Long sectionId = sectionDao.save(sectionRequest);
-
-        Section section = sectionRequest.toEntity(sectionId);
-        section.validSection();
+        sectionDao.save(sectionRequest.toEntity());
 
         List<StationResponse> stations = generateStationResponses(line.getDownStationId(), line.getUpStationId());
         return new LineResponse(lineId, line.getName(), line.getColor(), stations);

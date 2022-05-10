@@ -18,6 +18,8 @@ public class Sections {
      */
     public List<Section> add(Section newSection) {
         for (Section section : value) {
+            validSection(newSection, section);
+
             if (newSection.canConnectWithUpStation(section)) {
                 Optional<Section> foundSection = findByUpStationId(newSection.getUpStationId());
                 if (foundSection.isPresent()) {
@@ -39,6 +41,12 @@ public class Sections {
             }
         }
         return List.of(newSection);
+    }
+
+    private void validSection(Section newSection, Section section) {
+        if (newSection.isSameDownStationId(section) && newSection.isSameUpStationId(section)) {
+            throw new IllegalArgumentException("해당 구간은 이미 등록되어 있습니다.");
+        }
     }
 
     private Optional<Section> findByUpStationId(Long id) {
