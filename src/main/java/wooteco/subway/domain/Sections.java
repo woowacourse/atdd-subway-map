@@ -74,6 +74,44 @@ public class Sections {
         }
     }
 
+    public void delete(Station station) {
+        List<Section> removableSection = findRemovableSections(station);
+        validateIncludingStation(removableSection);
+        validateSectionSize();
+
+        if (removableSection.size() == 2) {
+            removeInMiddle(station, removableSection);
+        }
+        sections.remove(removableSection.get(0));
+    }
+
+    private List<Section> findRemovableSections(Station station) {
+        return sections.stream()
+                .filter(sec -> sec.haveStation(station))
+                .collect(Collectors.toList());
+    }
+
+    private void removeInMiddle(Station station, List<Section> removableSection) {
+        Section section1 = removableSection.get(0);
+        Section section2 = removableSection.get(1);
+
+        sections.add(section1.combine(section2, station));
+        sections.remove(section1);
+        sections.remove(section2);
+    }
+
+    private void validateIncludingStation(List<Section> removableSection) {
+        if (removableSection.isEmpty()) {
+            throw new IllegalArgumentException("지우려는 역이 노선에 포함되어 있어야합니다.");
+        }
+    }
+
+    private void validateSectionSize() {
+        if (sections.size() == 1) {
+            throw new IllegalStateException("구간이 오직 하나인 노선에서 역을 제거할 수 없습니다.");
+        }
+    }
+
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }

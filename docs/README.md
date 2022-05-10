@@ -55,7 +55,7 @@
      - 필드 : upStation, downStation, distance
        - `예외` 거리는 0 또는 음수이면 안된다.
        - `예외` upStation, downStation은 null이면 안된다.
-   - [ ] Sections 도메인
+   - [x] Sections 도메인
      - Sections 도메인의 역할 : 하나의 노선에 존재하는 구간들을 표현해준다.
      - 필드 : List<Sectoin> sections
        - sections는 적어도 하나의 Section을 가지고 있어야 한다.
@@ -67,7 +67,7 @@
          - `예외` 구간 사이에 추가할 경우 기존 역 사이의 길이보다 크거나 같으면 예외를 발생시킨다.
          - 삽입 한 뒤에 `C-B 간의 거리`는 `A-B 간의 거리 - A-C간의 거리`가 된다.
          - A - B 에 A-C 를 추가하는 것 뿐만아니라 C-B 를 추가하는 것도 가능해야한다.
-     - [ ] 구간을 제거한다.
+     - [x] 구간을 제거한다.
        - Station을 입력받아 해당 Station이 포함된 구간을 제거한다.
          - `예외` 제거하려는 Station이 포함된 Section이 존재하지 않는 경우 예외를 발생시킨다.
          - `예외` sections의 사이즈가 1일 때 제거하려고 하면 예외를 발생시킨다.

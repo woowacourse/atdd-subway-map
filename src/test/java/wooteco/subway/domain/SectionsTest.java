@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 
 public class SectionsTest {
 
-    private final Station sinlimStation = new Station("신림역");
-    private final Station bongcheonStation = new Station("봉천역");
-    private final Station jamsilStation = new Station("잠실역");
-    private final Station nakseongdaeStation = new Station("낙성대역");
+    private final Station 신림역 = new Station("신림역");
+    private final Station 봉천역 = new Station("봉천역");
+    private final Station 잠실역 = new Station("잠실역");
+    private final Station 낙성대역 = new Station("낙성대역");
 
     @DisplayName("구간은 하나 이상 존재해야 합니다.")
     @Test
@@ -25,9 +25,9 @@ public class SectionsTest {
     @DisplayName("상행역, 하행역 둘 중 하나도 노선에 포함되지 않는 경우 예외를 발생시킨다.")
     @Test
     void insert_noStationException() {
-        Sections sections = new Sections(new Section(sinlimStation, bongcheonStation, 5));
+        Sections sections = new Sections(new Section(신림역, 봉천역, 5));
 
-        assertThatThrownBy(() -> sections.insert(new Section(jamsilStation, nakseongdaeStation, 5)))
+        assertThatThrownBy(() -> sections.insert(new Section(잠실역, 낙성대역, 5)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역 또는 하행역이 노선에 포함되어 있어야합니다.");
     }
@@ -35,9 +35,9 @@ public class SectionsTest {
     @DisplayName("기존에 노선에 해당 상행역, 하행역이 이미 등록되어 있다면 구간을 등록할 수 없다.")
     @Test
     void insert_sameStationsException() {
-        Sections sections = new Sections(new Section(sinlimStation, bongcheonStation, 5));
+        Sections sections = new Sections(new Section(신림역, 봉천역, 5));
 
-        assertThatThrownBy(() -> sections.insert(new Section(sinlimStation, bongcheonStation, 5)))
+        assertThatThrownBy(() -> sections.insert(new Section(신림역, 봉천역, 5)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 구간은 기존 노선에 이미 등록되어있습니다.");
     }
@@ -46,8 +46,8 @@ public class SectionsTest {
     @Test
     void insert_frontOrBack() {
         // given
-        Section section = new Section(sinlimStation, bongcheonStation, 5);
-        Section newSection = new Section(jamsilStation, sinlimStation, 5);
+        Section section = new Section(신림역, 봉천역, 5);
+        Section newSection = new Section(잠실역, 신림역, 5);
         Sections sections = new Sections(section);
         // when
         sections.insert(newSection);
@@ -61,9 +61,9 @@ public class SectionsTest {
     @Test
     void insertMiddle_upStation() {
         // given
-        Section section = new Section(sinlimStation, bongcheonStation, 5);
-        Section section2 = new Section(bongcheonStation, nakseongdaeStation, 7);
-        Section newSection = new Section(bongcheonStation, jamsilStation, 3);
+        Section section = new Section(신림역, 봉천역, 5);
+        Section section2 = new Section(봉천역, 낙성대역, 7);
+        Section newSection = new Section(봉천역, 잠실역, 3);
 
         Sections sections = new Sections(List.of(section, section2));
         // when
@@ -73,16 +73,16 @@ public class SectionsTest {
         assertThat(results.size()).isEqualTo(3);
         assertThat(results).contains(
                 section,
-                new Section(bongcheonStation, jamsilStation, 3),
-                new Section(jamsilStation, nakseongdaeStation, 4));
+                new Section(봉천역, 잠실역, 3),
+                new Section(잠실역, 낙성대역, 4));
     }
 
     @DisplayName("새로운 구간이 기존에 존재하는 구간 중간에 삽입하는 경우 - downStation 일치")
     @Test
     void insertMiddle_downStation() {
         // given
-        Section section = new Section(sinlimStation, bongcheonStation, 5);
-        Section newSection = new Section(nakseongdaeStation, bongcheonStation, 3);
+        Section section = new Section(신림역, 봉천역, 5);
+        Section newSection = new Section(낙성대역, 봉천역, 3);
         Sections sections = new Sections(section);
         // when
         sections.insert(newSection);
@@ -90,20 +90,98 @@ public class SectionsTest {
         List<Section> results = sections.getSections();
         assertThat(results.size()).isEqualTo(2);
         assertThat(results).contains(
-                new Section(sinlimStation, nakseongdaeStation, 2),
+                new Section(신림역, 낙성대역, 2),
                 newSection);
+    }
+
+    // a - b - c
+    @DisplayName("새로운 구간이 기존에 존재하는 구간 중간에 삽입하는 경우 - 여러개일 경우")
+    @Test
+    void insertMiddle_compose() {
+        // given
+        Section section = new Section(신림역, 봉천역, 5);
+        Section section2 = new Section(봉천역, 낙성대역, 5);
+        Sections sections = new Sections(List.of(section, section2));
+        // when
+        Section newSection = new Section(봉천역, 잠실역, 3);
+        sections.insert(newSection);
+        // then
+        List<Section> results = sections.getSections();
+        assertThat(results).contains(
+                section,
+                newSection,
+                new Section(잠실역, 낙성대역, 2)
+        );
     }
 
     @DisplayName("역 사이에 구간을 등록할 경우 기존 역 구간 길이보다 짧아야한다.")
     @Test
     void insertMiddle_distanceException() {
         // given
-        Section section = new Section(bongcheonStation, nakseongdaeStation, 5);
-        Section newSection = new Section(bongcheonStation, jamsilStation, 7);
+        Section section = new Section(봉천역, 낙성대역, 5);
+        Section newSection = new Section(봉천역, 잠실역, 7);
         Sections sections = new Sections(section);
         // then
         assertThatThrownBy(() -> sections.insert(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역 사이에 구간을 등록할 경우 기존 역 구간 길이보다 짧아야 합니다.");
+    }
+
+    @DisplayName("제거하려는 Station이 포함된 Section이 존재하지 않는 경우 예외를 발생시킨다.")
+    @Test
+    void delete_noStationException() {
+        // given
+        Section section = new Section(봉천역, 낙성대역, 5);
+        Section section2 = new Section(낙성대역, 신림역, 5);
+        Sections sections = new Sections(section);
+        sections.insert(section2);
+        // then
+        assertThatThrownBy(() -> sections.delete(잠실역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지우려는 역이 노선에 포함되어 있어야합니다.");
+    }
+
+    @DisplayName("제거하려는 구간의 사이즈가 1이면 예외를 발생시킨다.")
+    @Test
+    void delete_onlyOneSection() {
+        // given
+        Section section = new Section(봉천역, 낙성대역, 5);
+        Sections sections = new Sections(section);
+        // then
+        assertThatThrownBy(() -> sections.delete(낙성대역))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("구간이 오직 하나인 노선에서 역을 제거할 수 없습니다.");
+    }
+
+    @DisplayName("구간에서 맨 앞 혹은 맨 뒤 역을 제거한다.")
+    @Test
+    void delete() {
+        // given
+        Section section = new Section(봉천역, 낙성대역, 5);
+        Section section2 = new Section(낙성대역, 신림역, 5);
+        Sections sections = new Sections(List.of(section, section2));
+        // when
+        sections.delete(봉천역);
+        // then
+        List<Section> results = sections.getSections();
+        assertThat(results).contains(
+                new Section(낙성대역, 신림역, 5)
+        );
+    }
+
+    @DisplayName("구간 사이에 있는 역을 제거한다.")
+    @Test
+    void deleteMiddleStation() {
+        // given
+        Section section = new Section(봉천역, 낙성대역, 5);
+        Section section2 = new Section(낙성대역, 신림역, 5);
+        Sections sections = new Sections(List.of(section, section2));
+        // when
+        sections.delete(낙성대역);
+        // then
+        List<Section> results = sections.getSections();
+        assertThat(results).contains(
+                new Section(봉천역, 신림역, 10)
+        );
     }
 }

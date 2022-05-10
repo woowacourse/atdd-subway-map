@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 
 public class SectionTest {
 
-    private final Station sinlimStation = new Station("신림역");
-    private final Station bongcheonStation = new Station("봉천역");
-    private final Station nakseongdaeStation = new Station("낙성대역");
-    private final Station seouldaeStation = new Station("서울대입구역");
+    private final Station 신림역 = new Station("신림역");
+    private final Station 봉천역 = new Station("봉천역");
+    private final Station 낙성대역 = new Station("낙성대역");
+    private final Station 서울대입구역 = new Station("서울대입구역");
 
     @DisplayName("Section에 들어오는 Station은 null일 수 없다.")
     @Test
@@ -31,9 +31,9 @@ public class SectionTest {
     @DisplayName("Section에 하나라도 상행 혹은 하행으로 등록된 Station이 존재하는지 확인한다.")
     @Test
     void haveAnyStation() {
-        Section section = new Section(sinlimStation, bongcheonStation, 5);
-        Section section2 = new Section(bongcheonStation, nakseongdaeStation, 5);
-        Section section3 = new Section(nakseongdaeStation, seouldaeStation, 5);
+        Section section = new Section(신림역, 봉천역, 5);
+        Section section2 = new Section(봉천역, 낙성대역, 5);
+        Section section3 = new Section(낙성대역, 서울대입구역, 5);
 
         assertThat(section.haveAnyStation(section2)).isTrue();
         assertThat(section.haveAnyStation(section3)).isFalse();
@@ -42,8 +42,8 @@ public class SectionTest {
     @DisplayName("구간이 삽입하려는 구간의 upStation을 포함하고 있는지 확인한다.")
     @Test
     void haveUpStation() {
-        Section section = new Section(sinlimStation, bongcheonStation, 5);
-        Section insertSection = new Section(sinlimStation, nakseongdaeStation, 5);
+        Section section = new Section(신림역, 봉천역, 5);
+        Section insertSection = new Section(신림역, 낙성대역, 5);
 
         assertThat(section.haveUpStation(insertSection)).isTrue();
     }
@@ -51,8 +51,8 @@ public class SectionTest {
     @DisplayName("구간이 삽입하려는 구간의 downStation을 포함하고 있는지 확인한다.")
     @Test
     void haveDownStation() {
-        Section section = new Section(sinlimStation, bongcheonStation, 5);
-        Section insertSection = new Section(nakseongdaeStation, sinlimStation, 5);
+        Section section = new Section(신림역, 봉천역, 5);
+        Section insertSection = new Section(낙성대역, 신림역, 5);
 
         assertThat(section.haveDownStation(insertSection)).isTrue();
     }
@@ -60,13 +60,13 @@ public class SectionTest {
     @DisplayName("구간이 같은 upStation 혹은 downStation을 가지는지 확인한다.")
     @Test
     void isSameUpOrDownStation() {
-        Section section = new Section(sinlimStation, bongcheonStation, 5);
-        Section insertSection = new Section(sinlimStation, seouldaeStation, 3);
+        Section section = new Section(신림역, 봉천역, 5);
+        Section insertSection = new Section(신림역, 서울대입구역, 3);
 
         assertThat(section.isSameUpOrDownStation(insertSection)).isTrue();
 
-        Section section2 = new Section(sinlimStation, bongcheonStation, 5);
-        Section insertSection2 = new Section(nakseongdaeStation, bongcheonStation, 3);
+        Section section2 = new Section(신림역, 봉천역, 5);
+        Section insertSection2 = new Section(낙성대역, 봉천역, 3);
 
         assertThat(section2.isSameUpOrDownStation(insertSection2)).isTrue();
     }
@@ -74,9 +74,38 @@ public class SectionTest {
     @DisplayName("구간이 더 짧거나 같은지 확인한다")
     @Test
     void isShortAndEqualDistanceThan() {
-        Section section = new Section(sinlimStation, bongcheonStation, 2);
-        Section another = new Section(sinlimStation, bongcheonStation, 3);
+        Section section = new Section(신림역, 봉천역, 2);
+        Section another = new Section(신림역, 봉천역, 3);
 
         assertThat(section.isShortAndEqualDistanceThan(another)).isTrue();
+    }
+
+    @DisplayName("역이 해당 구간에 들어있는지 확인한다.")
+    @Test
+    void haveStation() {
+        Section section = new Section(신림역, 봉천역, 5);
+        assertThat(section.haveStation(신림역)).isTrue();
+        assertThat(section.haveStation(낙성대역)).isFalse();
+    }
+
+    @DisplayName("겹치는 역이 존재하는 두 구간을 합친다.")
+    @Test
+    void combine() {
+        Section section = new Section(신림역, 봉천역, 5);
+        Section section2 = new Section(봉천역, 낙성대역, 5);
+
+        Section result = section.combine(section2, 봉천역);
+        assertThat(result).isEqualTo(new Section(신림역, 낙성대역, 10));
+    }
+
+    @DisplayName("겹치는 역을 지정해주지 않고 두 구간을 합치려할 떄 예외를 발생시킨다.")
+    @Test
+    void combine_noConnectedStation() {
+        Section section = new Section(신림역, 봉천역, 5);
+        Section section2 = new Section(서울대입구역, 낙성대역, 5);
+
+        assertThatThrownBy(() -> section.combine(section2, 서울대입구역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("양쪽 구간에 겹치는 역을 올바르게 지정해야합니다.");
     }
 }
