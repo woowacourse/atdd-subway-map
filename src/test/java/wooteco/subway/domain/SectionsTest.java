@@ -179,4 +179,14 @@ class SectionsTest {
                 () -> assertThat(addedSection.get().getDistance()).isEqualTo(5)
         );
     }
+
+    @DisplayName("존재하지 않는 구간에 대해 삭제를 시도할 경우 예외를 발생한다.")
+    @Test
+    void delete_throwsNotFoundException() {
+        final long stationId = 3L;
+
+        assertThatThrownBy(() -> sections.delete(stationId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간에 존재하지 않는 지하철 역입니다.");
+    }
 }
