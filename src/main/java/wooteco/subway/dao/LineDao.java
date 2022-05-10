@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.dao.DuplicateKeyException;
@@ -49,6 +48,7 @@ public class LineDao {
 
     public Line findById(Long id) {
         var sql = "SELECT * FROM line WHERE id=?";
+
         try {
             return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
         } catch (EmptyResultDataAccessException e) {
