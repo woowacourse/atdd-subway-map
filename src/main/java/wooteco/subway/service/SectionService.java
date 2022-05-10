@@ -26,10 +26,13 @@ public class SectionService {
     }
 
     public Section create(Long lineId, SectionRequest sectionRequest) {
-        //TODO: validateExist >> 노선에 해당 section이 있다면 추가 불가능
+
         List<Section> sections = sectionRepository.findAllByLineId(lineId);
         validateDuplicate(sectionRequest, sections);
-
+        // (1, 3), (5, 7), (3, 5), (7, 8)
+        //
+        //TODO: 역이 홀수면 종점, 상행이랑 상행이랑 같을 때,
+        //TODO: request의 상행 id가 하행이랑 일치하고 상행 이랑 일치한게 없을때 -> 맨 끝
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getUpStationId())));
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
