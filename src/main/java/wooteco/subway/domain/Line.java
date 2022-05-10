@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.DataLengthException;
+
 import java.util.Objects;
 
 public class Line {
@@ -13,9 +15,19 @@ public class Line {
     }
 
     public Line(Long id, String name, String color) {
+        validateDataSize(name, color);
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    private void validateDataSize(String name, String color) {
+        if (name.isEmpty() || name.length() > 255) {
+            throw new DataLengthException("노선 이름이 빈 값이거나 최대 범위를 초과했습니다.");
+        }
+        if (color.isEmpty() || color.length() > 20) {
+            throw new DataLengthException("노선 색이 빈 값이거나 최대 범위를 초과했습니다.");
+        }
     }
 
     public Long getId() {

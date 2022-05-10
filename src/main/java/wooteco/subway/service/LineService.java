@@ -12,11 +12,8 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.AccessNoneDataException;
-import wooteco.subway.exception.DataLengthException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,28 +31,16 @@ public class LineService {
 
     @Transactional
     public LineResponse create(LineRequest request) {
-        validateDataSize(request.getName(), request.getColor());
-        validateExistStation(request.getUpStationId(), request.getDownStationId());
-        validatePositiveDistance(request.getDistance());
-
         Line line = new Line(request.getName(), request.getColor());
         Line savedLine = lineDao.insert(line);
 
+        validateExistStation(request.getUpStationId(), request.getDownStationId());
         Section section = new Section(savedLine.getId(),
                 request.getUpStationId(), request.getDownStationId(), request.getDistance());
         sectionDao.insert(section);
 
-        List<StationResponse> stationResponses = findStationByLineId(savedLine);
+        List<StationResponse> stationResponses = finAllStationsByLineId(savedLine);
         return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), stationResponses);
-    }
-
-    private void validateDataSize(String name, String color) {
-        if (name.isEmpty() || name.length() > 255) {
-            throw new DataLengthException("노선 이름이 빈 값이거나 최대 범위를 초과했습니다.");
-        }
-        if (color.isEmpty() || color.length() > 20) {
-            throw new DataLengthException("노선 색이 빈 값이거나 최대 범위를 초과했습니다.");
-        }
     }
 
     private void validateExistStation(Long upStationId, Long downStationId) {
@@ -64,13 +49,7 @@ public class LineService {
         }
     }
 
-    private void validatePositiveDistance(int distance) {
-        if (distance <= 0) {
-            throw new IllegalArgumentException("구간 사이의 거리는 0보다 커야합니다.");
-        }
-    }
-
-    private List<StationResponse> findStationByLineId(Line savedLine) {
+    private List<StationResponse> finAllStationsByLineId(Line savedLine) {
         List<Station> stations = stationDao.findAllByLineId(savedLine.getId());
         return stations.stream()
                 .distinct()

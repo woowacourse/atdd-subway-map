@@ -11,7 +11,6 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 import javax.sql.DataSource;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
