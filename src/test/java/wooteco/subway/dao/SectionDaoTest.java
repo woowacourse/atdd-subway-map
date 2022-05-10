@@ -2,10 +2,14 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.DynamicTest.*;
 
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,9 +50,9 @@ class SectionDaoTest {
         );
     }
 
-    @DisplayName("노선 별 구간을 조회한다.")
-    @Test
-    void 노선별_구간조회() {
+    @DisplayName("노선 조작 기능")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestFromStream() {
         Line line = generateLine("2호선", "bg-green-600");
         Station upStation1 = generateStation("선릉역");
         Station downStation1 = generateStation("잠실역");
@@ -59,9 +63,20 @@ class SectionDaoTest {
         sectionDao.save(new Section(line.getId(), upStation1.getId(), downStation1.getId(), distance1));
         sectionDao.save(new Section(line.getId(), upStation2.getId(), downStation2.getId(), distance2));
 
-        List<Section> sections = sectionDao.findByLineId(line.getId());
+        return Stream.of(
+                dynamicTest("노선 별 구간을 조회한다.", () -> {
+                    List<Section> sections = sectionDao.findByLineId(line.getId());
 
-        assertThat(sections.size()).isEqualTo(2);
+                    assertThat(sections.size()).isEqualTo(2);
+                }),
+
+                dynamicTest("노선 별 구간을 삭제한다.", () -> {
+                    sectionDao.deleteByLineId(line.getId());
+
+                    List<Section> sections = sectionDao.findByLineId(line.getId());
+                    assertThat(sections.size()).isEqualTo(0);
+                })
+        );
     }
 
     private Line generateLine(String name, String color) {
