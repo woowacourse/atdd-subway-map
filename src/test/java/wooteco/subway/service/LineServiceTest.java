@@ -184,8 +184,6 @@ class LineServiceTest {
         lineService.createSection(lineId, new CreateSectionRequest(2L, 3L, 10));
 
         // then
-        verify(sectionDao).deleteAllByLineId(lineId);
-        verify(sectionDao).save(new Section(1L, 1L, 1L, 2L, 10));
         verify(sectionDao).save(new Section(2L, 1L, 2L, 3L, 10));
     }
 
@@ -207,7 +205,6 @@ class LineServiceTest {
         lineService.deleteSection(lineId, stationId);
 
         // then
-        verify(sectionDao).deleteAllByLineId(lineId);
-        verify(sectionDao).save(new Section(2L, 1L, 2L, 3L, 10));
+        verify(sectionDao).deleteById(1L);
     }
 }

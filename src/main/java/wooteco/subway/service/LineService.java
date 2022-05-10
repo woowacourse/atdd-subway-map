@@ -79,9 +79,12 @@ public class LineService {
 
     public void createSection(final Long lineId, final CreateSectionRequest request) {
         validateCreateSection(lineId, request);
-        final Sections sections = sectionDao.findAllByLineId(lineId);
-        sections.add(request.toSection(lineId));
-        updateSections(lineId, sections);
+        final Sections originSections = sectionDao.findAllByLineId(lineId);
+        final Sections newSections = new Sections(originSections.getSections());
+        newSections.add(request.toSection(lineId));
+
+        deleteOldSections(originSections, newSections);
+        saveNewSections(originSections, newSections);
     }
 
     private void validateCreateSection(final Long lineId, final CreateSectionRequest request) {
@@ -90,11 +93,28 @@ public class LineService {
         validateNotExistStation(request.getDownStationId());
     }
 
+    private void deleteOldSections(final Sections originSections, final Sections newSections) {
+        final List<Section> differentSections = originSections.findDifferentSections(newSections);
+        for (Section section : differentSections) {
+            sectionDao.deleteById(section.getId());
+        }
+    }
+
+    private void saveNewSections(final Sections originSections, final Sections newSections) {
+        final List<Section> differentSections = newSections.findDifferentSections(originSections);
+        for (Section section : differentSections) {
+            sectionDao.save(section);
+        }
+    }
+
     public void deleteSection(final Long lineId, final Long stationId) {
         validateDeleteSection(lineId, stationId);
-        final Sections sections = sectionDao.findAllByLineId(lineId);
-        sections.remove(stationId);
-        updateSections(lineId, sections);
+        final Sections originSections = sectionDao.findAllByLineId(lineId);
+        final Sections newSections = new Sections(originSections.getSections());
+        newSections.remove(stationId);
+
+        deleteOldSections(originSections, newSections);
+        saveNewSections(originSections, newSections);
     }
 
     private void validateDeleteSection(Long lineId, Long stationId) {
@@ -111,13 +131,6 @@ public class LineService {
     private void validateNotExistStation(final Long id) {
         if (!stationDao.existsById(id)) {
             throw new NotFoundStationException();
-        }
-    }
-
-    private void updateSections(final Long lineId, final Sections sections) {
-        sectionDao.deleteAllByLineId(lineId);
-        for (Section section : sections.getSections()) {
-            sectionDao.save(section);
         }
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import wooteco.subway.exception.notfound.NotFoundSectionException;
 
 public class Sections {
@@ -137,6 +138,12 @@ public class Sections {
         if (sections.size() < 2) {
             throw new IllegalArgumentException("노선에 구간은 1개 이상이어야 합니다.");
         }
+    }
+
+    public List<Section> findDifferentSections(final Sections sections) {
+        return this.sections.stream()
+                .filter(s -> !sections.getSections().contains(s))
+                .collect(Collectors.toList());
     }
 
     public List<Section> getSections() {
