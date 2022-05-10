@@ -1,5 +1,7 @@
 package wooteco.subway.dto;
 
+import wooteco.subway.util.NullChecker;
+
 public class StationRequest {
     private String name;
 
@@ -7,6 +9,7 @@ public class StationRequest {
     }
 
     public StationRequest(String name) {
+        NullChecker.validateInputsNotNull(name);
         this.name = name;
     }
 

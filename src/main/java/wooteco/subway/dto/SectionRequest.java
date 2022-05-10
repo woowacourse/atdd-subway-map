@@ -1,5 +1,7 @@
 package wooteco.subway.dto;
 
+import wooteco.subway.util.NullChecker;
+
 public class SectionRequest {
     private Long upStationId;
     private Long downStationId;
@@ -9,6 +11,7 @@ public class SectionRequest {
     }
 
     public SectionRequest(Long upStationId, Long downStationId, int distance) {
+        NullChecker.validateInputsNotNull(upStationId, downStationId, distance);
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
