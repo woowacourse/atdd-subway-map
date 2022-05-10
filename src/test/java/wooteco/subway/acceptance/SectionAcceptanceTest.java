@@ -100,9 +100,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         findSectionsByCreateLine(1L,
+                new StationResponse(7L, 성수.getName()),
                 new StationResponse(1L, 건대입구.getName()),
-                new StationResponse(4L, 강남.getName()),
-                new StationResponse(7L, 성수.getName())
+                new StationResponse(4L, 강남.getName())
         );
     }
 

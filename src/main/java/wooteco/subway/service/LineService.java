@@ -13,7 +13,10 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -123,26 +126,27 @@ public class LineService {
 
     private LineResponse makeLineResponseByLine(Line line) {
         final List<Section> sections = sectionDao.findByLineId(line.getId());
-        final List<Station> stations = findStationsBySections(sections);
+        final List<Station> stations = sortStations(line.getId(), sections);
 
         final List<StationResponse> stationResponses = makeStationResponseByStation(stations);
-        final Comparator<StationResponse> comparator = (o1, o2) -> Long.valueOf(o1.getId() - o2.getId()).intValue();
-        stationResponses.sort(comparator);
-
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
-    private List<Station> findStationsBySections(List<Section> sections) {
+    private List<Station> sortStations(Long lineId, List<Section> sections) {
         final List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
-            final Station upStation = findByStationId(section.getUpStationId());
-            final Station downStation = findByStationId(section.getDownStationId());
-            stations.add(upStation);
-            stations.add(downStation);
-        }
-        return stations.stream()
-                .distinct()
-                .collect(Collectors.toUnmodifiableList());
+        final Section upSection = sections.stream()
+                .filter(it -> sectionDao.findByDownStationId(lineId, it.getUpStationId()).isEmpty())
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("구간 내 존재하는 역 조회에 오류가 발생했습니다."));
+        stationDao.findById(upSection.getUpStationId()).ifPresent(stations::add);
+        addDownSectionToSort(lineId, upSection, stations);
+        return stations;
+    }
+
+    private void addDownSectionToSort(Long lineId, Section upSection, final List<Station> stations) {
+        stationDao.findById(upSection.getDownStationId()).ifPresent(stations::add);
+        final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, upSection.getDownStationId());
+        downSection.ifPresent(section -> addDownSectionToSort(lineId, section, stations));
     }
 
     private List<StationResponse> makeStationResponseByStation(List<Station> stations) {
