@@ -37,4 +37,12 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isConnectedSection(final Section otherSection) {
+        return contain(otherSection.upStation) || contain(otherSection.downStation);
+    }
+
+    private boolean contain(final Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
 }
