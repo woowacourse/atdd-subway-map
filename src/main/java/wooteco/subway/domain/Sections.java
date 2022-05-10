@@ -44,12 +44,12 @@ public class Sections {
     }
 
     private void validateIncludeSection(Section requestSection) {
-        final boolean upStation = sections.stream()
+        final boolean isExistUpStation = sections.stream()
                 .anyMatch(section -> section.getDownStationId().equals(requestSection.getDownStationId()));
-        final boolean downStation = sections.stream()
+        final boolean isExistDownStation = sections.stream()
                 .anyMatch(section -> section.getUpStationId().equals(requestSection.getUpStationId()));
 
-        if (upStation == true && downStation == true) {
+        if (isExistUpStation == true && isExistDownStation == true) {
             throw new IllegalArgumentException("이미 연결되어 있는 구간입니다.");
         }
     }
