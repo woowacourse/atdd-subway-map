@@ -176,6 +176,29 @@ class SectionJdbcDaoTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoSections.sql")
+    @DisplayName("모든 구간에서 역 id를 찾는다")
+    @Test
+    void findAllByStationId() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3, 4
+        구간 등록된 역 아이디 : (1, 2), (2, 3)
+        역 사이 거리 : 10, 10
+         */
+        // given
+
+        // when
+        List<Section> actual = sectionDao.findAllByStationId(2L);
+
+        // then
+        assertAll(
+                () -> assertThat(actual).hasSize(2),
+                () -> assertThat(actual.get(0).getUpStationId()).isEqualTo(1L),
+                () -> assertThat(actual.get(1).getDownStationId()).isEqualTo(3L)
+        );
+    }
+
     @Sql(value = "/sql/InsertTwoStationAndOneLine.sql")
     @DisplayName("특정 Line id를 가지는 모든 구간을 제거한다.")
     @Test

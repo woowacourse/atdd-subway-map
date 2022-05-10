@@ -13,6 +13,8 @@ public interface SectionDao {
 
     List<Section> findAllByLineId(Long lineId);
 
+    List<Section> findAllByStationId(Long id);
+
     Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId);
 
     Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId);

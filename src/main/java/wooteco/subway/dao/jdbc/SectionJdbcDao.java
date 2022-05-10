@@ -90,6 +90,19 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
+    public List<Section> findAllByStationId(Long stationId) {
+        final String sql = "SELECT * FROM SECTION WHERE up_station_id = (?) OR down_station_id = (?)";
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Section(
+                resultSet.getLong("id"),
+                resultSet.getLong("line_id"),
+                resultSet.getLong("up_station_id"),
+                resultSet.getLong("down_station_id"),
+                resultSet.getInt("distance")
+        ), stationId, stationId);
+    }
+
+    @Override
     public Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId) {
         final String sql = "SELECT * FROM SECTION WHERE line_id = (?) AND up_station_id = (?)";
 

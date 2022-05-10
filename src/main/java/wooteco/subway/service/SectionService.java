@@ -94,21 +94,21 @@ public class SectionService {
     }
 
     private void deleteStationWhenForkSection(Long lineId, Long stationId) {
-        Optional<Section> findUpStation = sectionDao.findByLineIdAndUpStationId(lineId, stationId);
-        Optional<Section> findDownStation = sectionDao.findByLineIdAndDownStationId(lineId, stationId);
+        Optional<Section> findUpSection = sectionDao.findByLineIdAndUpStationId(lineId, stationId);
+        Optional<Section> findDownSection = sectionDao.findByLineIdAndDownStationId(lineId, stationId);
 
-        if (findUpStation.isEmpty() || findDownStation.isEmpty()) {
+        if (findUpSection.isEmpty() || findDownSection.isEmpty()) {
             throw new IllegalStateException("구간 정보가 잘못되었습니다.");
         }
 
-        Section upStation = findUpStation.get();
-        Section downStation = findDownStation.get();
+        Section upSection = findUpSection.get();
+        Section downSection = findDownSection.get();
 
-        sectionDao.update(downStation.getId(), new Section(
+        sectionDao.update(downSection.getId(), new Section(
                 lineId,
-                downStation.getUpStationId(),
-                upStation.getDownStationId(),
-                upStation.getDistance() + downStation.getDistance()));
-        sectionDao.deleteById(upStation.getId());
+                downSection.getUpStationId(),
+                upSection.getDownStationId(),
+                upSection.getDistance() + downSection.getDistance()));
+        sectionDao.deleteById(upSection.getId());
     }
 }

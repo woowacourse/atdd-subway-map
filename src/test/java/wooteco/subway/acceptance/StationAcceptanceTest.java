@@ -17,6 +17,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
@@ -188,5 +190,37 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Sql(value = "/sql/InsertTwoSections.sql")
+    @DisplayName("구간 등록된 지하철역을 제거하면 구간에서도 제거한다")
+    @Test
+    void deleteStationWithSection() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3, 4
+        구간 등록된 역 아이디 : (1, 2), (2, 3)
+        역 사이 거리 : 10, 10
+         */
+        // given
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/2")
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> findLineResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+        List<Station> stations = findLineResponse.body().jsonPath().getList("stations", Station.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(stations).hasSize(2)
+        );
     }
 }
