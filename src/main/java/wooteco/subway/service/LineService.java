@@ -3,10 +3,10 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequestDto;
+import wooteco.subway.dto.request.SectionRequestDto;
 import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.repository.dao.LineDao;
@@ -17,14 +17,18 @@ public class LineService {
 
     private final LineDao lineDao;
 
-    public LineService(final LineDao lineDao) {
+    private final SectionService sectionService;
+
+    public LineService(final LineDao lineDao, final SectionService sectionService) {
         this.lineDao = lineDao;
+        this.sectionService = sectionService;
     }
 
     public Line register(final LineRequestDto lineRequestDto) {
         final Line line = new Line(lineRequestDto.getName(), lineRequestDto.getColor());
         try {
             final LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
+            sectionService.registerWhenRegisterLine(line, new SectionRequestDto(lineRequestDto));
             return savedLineEntity.generateLine();
         } catch (DuplicateKeyException exception) {
             throw new DuplicateLineNameException();
@@ -32,13 +36,9 @@ public class LineService {
     }
 
     public Line searchById(final Long id) {
-        try {
-            return lineDao.findById(id)
-                    .orElseThrow(() -> new NoSuchLineException())
-                    .generateLine();
-        } catch (EmptyResultDataAccessException exception) {
-            throw new NoSuchLineException();
-        }
+        return lineDao.findById(id)
+                .orElseThrow(() -> new NoSuchLineException())
+                .generateLine();
     }
 
     public List<Line> searchAll() {

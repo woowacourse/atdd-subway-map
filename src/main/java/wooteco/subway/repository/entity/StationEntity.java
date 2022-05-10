@@ -13,12 +13,15 @@ public class StationEntity {
     }
 
     public StationEntity(final Station station) {
-        this.id = station.getId();
-        this.name = station.getName();
+        this(station.getId(), station.getName());
     }
 
     public Station generateStation() {
         return new Station(id, name);
+    }
+
+    public StationEntity fillId(final Long id) {
+        return new StationEntity(id, name);
     }
 
     public Long getId() {

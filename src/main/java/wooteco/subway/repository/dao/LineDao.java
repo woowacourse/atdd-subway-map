@@ -10,8 +10,6 @@ public interface LineDao {
 
     List<LineEntity> findAll();
 
-    Optional<LineEntity> findByName(final String name);
-
     Optional<LineEntity> findById(final Long id);
 
     void deleteById(final Long id);

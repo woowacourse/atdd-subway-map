@@ -10,8 +10,6 @@ public interface StationDao {
 
     List<StationEntity> findAll();
 
-    Optional<StationEntity> findByName(final String name);
-
     Optional<StationEntity> findById(final Long id);
 
     void deleteById(final Long id);

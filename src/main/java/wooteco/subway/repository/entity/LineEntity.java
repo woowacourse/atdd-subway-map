@@ -15,13 +15,15 @@ public class LineEntity {
     }
 
     public LineEntity(final Line line) {
-        this.id = line.getId();
-        this.name = line.getName();
-        this.color = line.getColor();
+        this(line.getId(), line.getName(), line.getColor());
     }
 
     public Line generateLine() {
         return new Line(id, name, color);
+    }
+
+    public LineEntity fillId(final Long id) {
+        return new LineEntity(id, name, color);
     }
 
     public Long getId() {
