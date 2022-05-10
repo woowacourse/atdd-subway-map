@@ -22,10 +22,8 @@ public class LineDao {
     }
 
     public Line save(final Line line) {
-        final String sql = "insert into Line (name, color, upStationId, downStationId, distance) values (?, ?, ?, ?, ?)";
-        final Section section = line.getSection();
-        jdbcTemplate.update(sql, line.getName(), line.getColor(), section.getUpStationId(),
-                section.getDownStationId(), section.getDistance());
+        final String sql = "insert into Line (name, color) values (?, ?)";
+        jdbcTemplate.update(sql, line.getName(), line.getColor());
         return includeIdIn(line);
     }
 
@@ -42,8 +40,7 @@ public class LineDao {
     private Line includeIdIn(final Line line) {
         final String sql = "select max(id) from Line";
         final Long id = jdbcTemplate.queryForObject(sql, Long.class);
-        return new Line(id, line.getName(), line.getColor(),
-                line.getSection());
+        return new Line(id, line.getName(), line.getColor());
     }
 
     public Line findById(final Long id) {
@@ -63,8 +60,7 @@ public class LineDao {
 
     private static class LineMapper implements RowMapper<Line> {
         public Line mapRow(final ResultSet rs, final int rowCnt) throws SQLException {
-            return new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color"),
-                    new Section(rs.getLong("upStationId"), rs.getLong("downStationId"), rs.getInt("distance")));
+            return new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color"));
         }
     }
 }

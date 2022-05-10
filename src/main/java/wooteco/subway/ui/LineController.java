@@ -26,24 +26,23 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
-        final Line newLine = lineService.create(lineRequest);
+        final Line newLine = lineService.create(lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
-                .body(new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(),
-                        sectionService.getBothOfStations(newLine.getSection())));
+                .body(new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), sectionService.getStationsByLineId(newLine.getId())));
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<LineResponse> showLines() {
         final List<Line> lines = lineService.findAll();
         return lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), sectionService.getBothOfStations(it.getSection())))
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), sectionService.getStationsByLineId(it.getId())))
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/lines/{id}")
     public LineResponse searchLine(@PathVariable final Long id) {
         final Line line = lineService.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.getBothOfStations(line.getSection()));
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.getStationsByLineId(line.getId()));
     }
 
     @PutMapping("/lines/{id}")

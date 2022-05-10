@@ -50,9 +50,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
-        params.put("upStationId", 1L);
-        params.put("downStationId", 2L);
-        params.put("distance", 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -75,9 +72,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
-        params.put("upStationId", 1);
-        params.put("downStationId", 2);
-        params.put("distance", 10);
 
         RestAssured.given().log().all()
                 .body(params)
@@ -108,9 +102,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params1 = new HashMap<>();
         params1.put("name", "1호선");
         params1.put("color", "red");
-        params1.put("upStationId", 1);
-        params1.put("downStationId", 2);
-        params1.put("distance", 10);
 
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
@@ -123,9 +114,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params2 = new HashMap<>();
         params2.put("name", "2호선");
         params2.put("color", "blue");
-        params2.put("upStationId", 1);
-        params2.put("downStationId", 2);
-        params2.put("distance", 12);
 
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
@@ -160,9 +148,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
-        params.put("upStationId", 1);
-        params.put("downStationId", 2);
-        params.put("distance", 10);
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
@@ -191,9 +176,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
-        params.put("upStationId", 1);
-        params.put("downStationId", 2);
-        params.put("distance", 10);
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
@@ -225,9 +207,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
-        params.put("upStationId", 1);
-        params.put("downStationId", 2);
-        params.put("distance", 10);
 
         RestAssured.given().log().all()
                 .body(params)

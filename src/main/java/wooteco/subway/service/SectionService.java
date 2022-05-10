@@ -31,4 +31,8 @@ public class SectionService {
     public void deleteSectionByStationIdInLineId(final Long lineId, final Long stationId) {
         sectionDao.delete(lineId, stationId);
     }
+
+    public List<Station> getStationsByLineId(Long id) {
+        return null;
+    }
 }

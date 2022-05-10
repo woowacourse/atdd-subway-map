@@ -4,17 +4,15 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private Section section;
 
-    public Line(final String name, final String color, final Section section) {
-        this(null, name, color, section);
+    public Line(final String name, final String color) {
+        this(null, name, color);
     }
 
-    public Line(final Long id, final String name, final String color, final Section section) {
+    public Line(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.section = section;
     }
 
     public String getName() {
@@ -27,9 +25,5 @@ public class Line {
 
     public Long getId() {
         return id;
-    }
-
-    public Section getSection() {
-        return section;
     }
 }
