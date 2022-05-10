@@ -15,6 +15,20 @@
 
 <br>
 
+## 🔧 기능 요구 사항
+### 1단계
+1. 지하철 역, 노선 관리 API 기능 완성하기
+   - 추가 기능: 지하철역, 노선 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
+   - API에 대한 스펙은 API 문서v1를 참고 : https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0%EC%97%AD_%EB%AA%A9%EB%A1%9D
+2. End to End 테스트 작성하기
+
+### 2단계
+1. 스프링 JDBC 활용하여 H2 DB에 저장하기
+2. H2 DB를 통해 저장된 값 확인하기
+3. 스프링 빈 활용하기
+
+<br>
+
 ## 🚀 Getting Started
 ### Usage
 #### application 구동
