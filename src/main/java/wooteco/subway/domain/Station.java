@@ -4,6 +4,8 @@ import wooteco.subway.exception.DataLengthException;
 
 import java.util.Objects;
 
+import static wooteco.subway.constants.Constant.STATION_NAME_LENGTH;
+
 public class Station {
 
     private final Long id;
@@ -20,7 +22,7 @@ public class Station {
     }
 
     private void validateDataSize(String name) {
-        if (name.isEmpty() || name.length() > 255) {
+        if (name.isEmpty() || name.length() > STATION_NAME_LENGTH) {
             throw new DataLengthException("역 이름이 빈 값이거나 최대 범위를 초과했습니다.");
         }
     }

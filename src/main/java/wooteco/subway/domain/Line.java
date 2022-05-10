@@ -4,6 +4,9 @@ import wooteco.subway.exception.DataLengthException;
 
 import java.util.Objects;
 
+import static wooteco.subway.constants.Constant.LINE_COLOR_LENGTH;
+import static wooteco.subway.constants.Constant.LINE_NAME_LENGTH;
+
 public class Line {
 
     private final Long id;
@@ -22,10 +25,10 @@ public class Line {
     }
 
     private void validateDataSize(String name, String color) {
-        if (name.isEmpty() || name.length() > 255) {
+        if (name.isEmpty() || name.length() > LINE_NAME_LENGTH) {
             throw new DataLengthException("노선 이름이 빈 값이거나 최대 범위를 초과했습니다.");
         }
-        if (color.isEmpty() || color.length() > 20) {
+        if (color.isEmpty() || color.length() > LINE_COLOR_LENGTH) {
             throw new DataLengthException("노선 색이 빈 값이거나 최대 범위를 초과했습니다.");
         }
     }
