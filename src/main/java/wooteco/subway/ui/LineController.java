@@ -29,16 +29,6 @@ public class LineController {
                 .body(lineResponse);
     }
 
-    @PostMapping("/lines/{id}/sections")
-    public void addSection(@Valid  @RequestBody SectionRequest sectionRequest, @PathVariable long id) {
-        lineService.addSection(sectionRequest, id);
-    }
-
-    @DeleteMapping("/lines/{id}/sections")
-    public void deleteSection(@PathVariable long id, @RequestParam long stationId) {
-        lineService.deleteSection(stationId, id);
-    }
-
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> findAllLine() {
         return ResponseEntity.ok(lineService.findAll());
