@@ -35,26 +35,29 @@ public class Sections {
         }
 
         value.add(section);
-
     }
 
     public void delete(final long stationId) {
         validateSize();
-        final Optional<Section> downSection = value.stream()
+        final Optional<Section> targetOnDownSection = value.stream()
                 .filter(section -> section.getDownStation().getId() == stationId)
                 .findAny();
 
-        final Optional<Section> upSection = value.stream()
+        final Optional<Section> targetOnUpSection = value.stream()
                 .filter(section -> section.getUpStation().getId() == stationId)
                 .findAny();
 
-        if (downSection.isEmpty() && upSection.isEmpty()) {
+        if (targetOnDownSection.isEmpty() && targetOnUpSection.isEmpty()) {
             throw new IllegalArgumentException("구간에 존재하지 않는 지하철 역입니다.");
         }
 
-        if (downSection.isPresent() ^ upSection.isPresent()) {
-            downSection.ifPresent(value::remove);
-            upSection.ifPresent(value::remove);
+        targetOnDownSection.ifPresent(value::remove);
+        targetOnUpSection.ifPresent(value::remove);
+
+        if (targetOnDownSection.isPresent() && targetOnUpSection.isPresent()) {
+            final Section upSection = targetOnUpSection.get();
+            final Section downSection = targetOnDownSection.get();
+            value.add(downSection.mergeSection(upSection));
         }
     }
 

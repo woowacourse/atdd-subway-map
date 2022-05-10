@@ -56,6 +56,14 @@ public class Section {
         return new Section(this.id, section.downStation, this.downStation, calculateDistance(section), this.lineId);
     }
 
+    public Section mergeSection(final Section section) {
+        return new Section(this.id, this.upStation, section.downStation, mergeDistance(section), this.lineId);
+    }
+
+    private int mergeDistance(final Section section) {
+        return this.distance + section.distance;
+    }
+
     @Override
     public String toString() {
         return "Section{" +
