@@ -30,4 +30,16 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("연결 할 수 있는 상행역 또는 하행역이 없습니다.");
     }
+
+    @DisplayName("입력한 구간의 상행역과 하행역이 이미 모두 연결되어 있으면 예외를 발생한다.")
+    @Test
+    void addSection_already_connect_exception() {
+        final Station firstStation = new Station(1L, "1번역");
+        final Station secondStation = new Station(2L, "2번역");
+        final Section section = new Section(1L, firstStation, secondStation, 10);
+
+        assertThatThrownBy(() -> sections.addSection(section))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("입력한 구간의 상행역과 하행역이 이미 모두 연결되어 있습니다.");
+    }
 }

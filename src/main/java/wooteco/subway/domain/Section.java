@@ -45,4 +45,12 @@ public class Section {
     private boolean contain(final Station station) {
         return this.upStation.equals(station) || this.downStation.equals(station);
     }
+
+    public boolean equalsWithUpStation(final Section otherSection) {
+        return this.upStation.equals(otherSection.upStation) || this.upStation.equals(otherSection.downStation);
+    }
+
+    public boolean equalsWithDownStation(final Section otherSection) {
+        return this.downStation.equals(otherSection.upStation) || this.downStation.equals(otherSection.downStation);
+    }
 }
