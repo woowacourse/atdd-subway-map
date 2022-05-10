@@ -77,4 +77,15 @@ public class StationDao {
         MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         namedParameterJdbcTemplate.update(sql, parameters);
     }
+
+    public Optional<Station> findById(long id) {
+        String sql = "SELECT * FROM station WHERE id = :id";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        try {
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, stationRowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
 }

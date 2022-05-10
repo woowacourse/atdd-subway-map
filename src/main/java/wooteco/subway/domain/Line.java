@@ -1,11 +1,13 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Line {
     private Long id;
     private String name;
     private String color;
+    private Sections sections;
 
     public Line() {
     }
@@ -14,11 +16,13 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
     }
 
     public Long getId() {
@@ -31,6 +35,10 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     @Override

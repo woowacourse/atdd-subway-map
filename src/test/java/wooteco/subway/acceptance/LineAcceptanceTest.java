@@ -19,35 +19,28 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SimpleLineResponse;
+import wooteco.subway.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-
-    @Autowired
-    private StationDao stationDao;
-
-    @BeforeEach
-    void set() {
-        stationDao.save("강남역");
-        stationDao.save("선릉역");
-    }
 
     @Test
     @DisplayName("새로운 노선을 생성한다.")
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "10");
+        createStationResponse(new StationRequest("강남역"));
+        createStationResponse(new StationRequest("선릉역"));
+        LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -57,6 +50,65 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("새로운 구간을 추가한다.(맨앞)")
+    void addSection_First() {
+        // given
+        createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
+        SectionRequest sectionRequest = new SectionRequest(3L, 1L, 5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("새로운 구간을 추가한다.(사이)")
+    void addSection_Middle() {
+        // given
+        createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("새로운 구간을 추가한다.(맨뒤)")
+    void addSection_End() {
+        // given
+        createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
 //    @Test
@@ -207,4 +259,28 @@ class LineAcceptanceTest extends AcceptanceTest {
 //        // then
 //        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 //    }
+
+    private ExtractableResponse<Response> createLineResponse(LineRequest lineRequest) {
+        createStationResponse(new StationRequest("강남역"));
+        createStationResponse(new StationRequest("선릉역"));
+        createStationResponse(new StationRequest("잠실역"));
+
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createStationResponse(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
 }

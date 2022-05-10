@@ -40,10 +40,10 @@ public class LineDao {
 
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
-        int distance = lineRequest.getDistance();
 
         checkDuplicateName(name);
-        SqlParameterSource parameters = new MapSqlParameterSource("name", name)
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", name)
                 .addValue("color", color);
 
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
