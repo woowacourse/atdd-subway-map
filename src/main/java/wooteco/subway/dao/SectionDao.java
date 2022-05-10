@@ -37,6 +37,10 @@ public class SectionDao {
         return Section.of(id, section);
     }
 
+    public void saveAll(List<Section> sections) {
+        sections.forEach(this::save);
+    }
+
     public List<Section> findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id = :lineId";
         SqlParameterSource parameters = new MapSqlParameterSource("lineId", lineId);
