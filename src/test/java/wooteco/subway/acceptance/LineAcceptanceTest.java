@@ -277,7 +277,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionUpStation() {
         /*
         이미 등록된 노선 아이디 : 1
-        이미 등록된 역 아이디 : 1, 2, 3
+        이미 등록된 역 아이디 : 1, 2, 3, 4
         구간 등록된 역 아이디 : 1, 2
         역 사이 거리 : 10
          */
@@ -321,7 +321,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionDownStation() {
         /*
         이미 등록된 노선 아이디 : 1
-        이미 등록된 역 아이디 : 1, 2, 3
+        이미 등록된 역 아이디 : 1, 2, 3, 4
         구간 등록된 역 아이디 : 1, 2
         역 사이 거리 : 10
          */
@@ -365,7 +365,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionBetweenStation() {
         /*
         이미 등록된 노선 아이디 : 1
-        이미 등록된 역 아이디 : 1, 2, 3
+        이미 등록된 역 아이디 : 1, 2, 3, 4
         구간 등록된 역 아이디 : 1, 2
         역 사이 거리 : 10
          */
@@ -409,7 +409,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionBetweenStationFailOverDistance() {
         /*
         이미 등록된 노선 아이디 : 1
-        이미 등록된 역 아이디 : 1, 2, 3
+        이미 등록된 역 아이디 : 1, 2, 3, 4
         구간 등록된 역 아이디 : 1, 2
         역 사이 거리 : 10
          */
@@ -443,7 +443,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionBetweenStationFailAlreadyRegisteredUpAndDown() {
         /*
         이미 등록된 노선 아이디 : 1
-        이미 등록된 역 아이디 : 1, 2, 3
+        이미 등록된 역 아이디 : 1, 2, 3, 4
         구간 등록된 역 아이디 : 1, 2
         역 사이 거리 : 10
          */
