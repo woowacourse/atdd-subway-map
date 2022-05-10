@@ -18,13 +18,21 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
+    public boolean equalAllStation(final Long lineId, final Section section) {
+        final String sql = "select exists " +
+                "(select * from SECTION where line_id = ? and up_station_id = ? and down_station_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, section.getUpStationId(), section.getDownStationId());
+    }
+
     public boolean existUpStation(final Long lineId, final Long stationId) {
-        final String sql = "select exists (select * from SECTION where line_id = ? and up_station_id = ?)";
+        final String sql = "select exists " +
+                "(select * from SECTION where line_id = ? and up_station_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
     }
 
     public boolean existDownStation(final Long lineId, final Long stationId) {
-        final String sql = "select exists (select * from SECTION where line_id = ? and down_station_id = ?)";
+        final String sql = "select exists " +
+                "(select * from SECTION where line_id = ? and down_station_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
     }
 

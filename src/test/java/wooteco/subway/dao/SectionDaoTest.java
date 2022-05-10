@@ -34,6 +34,16 @@ class SectionDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
+    @DisplayName("특정 지하철 노선에 구간의 상행역과 하행역이 모두 일치하면 true 를 반환한다.")
+    @Test
+    void equalAllStation() {
+        // given
+        sectionDao.save(1L, new Section(1L, 2L, 10));
+
+        // when & then
+        assertThat(sectionDao.equalAllStation(1L, new Section(1L, 2L, 10))).isTrue();
+    }
+
     @DisplayName("특정 지하철 노선에 특정 상행역 아이디가 존재하면 true 를 반환한다.")
     @Test
     void existUpStation() {
