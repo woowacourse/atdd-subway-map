@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionTest {
 
@@ -76,5 +77,35 @@ class SectionTest {
         boolean isLastStop = newSection.canAddAsLastStation(sections);
 
         assertThat(isLastStop).isTrue();
+    }
+
+    @DisplayName("[상행]기존에 존재하던 구간과 요청한 구간으로 새 구간을 만든다.")
+    @Test
+    void createUpSectionBySections() {
+        Section existed = new Section(10, 2L, 5L, 4L);
+        Section inserted = new Section(4, 2L, 5L, 6L);
+
+        Section generated = Section.createBySections(existed, inserted);
+
+        assertAll(() -> {
+            assertThat(generated.getDistance()).isEqualTo(6);
+            assertThat(generated.getUpStationId()).isEqualTo(6L);
+            assertThat(generated.getDownStationId()).isEqualTo(4L);
+        });
+    }
+
+    @DisplayName("[하행]기존에 존재하던 구간과 요청한 구간으로 새 구간을 만든다.")
+    @Test
+    void createDownSectionBySections() {
+        Section existed = new Section(10, 2L, 5L, 4L);
+        Section inserted = new Section(4, 2L, 6L, 4L);
+
+        Section generated = Section.createBySections(existed, inserted);
+
+        assertAll(() -> {
+            assertThat(generated.getDistance()).isEqualTo(6);
+            assertThat(generated.getUpStationId()).isEqualTo(5L);
+            assertThat(generated.getDownStationId()).isEqualTo(6L);
+        });
     }
 }

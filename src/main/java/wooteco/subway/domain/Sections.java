@@ -1,9 +1,6 @@
 package wooteco.subway.domain;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -36,5 +33,11 @@ public class Sections {
         return sections.stream()
                 .map(Section::getUpStationId)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Section> getExistedSection(Long upStationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(upStationId))
+                .findFirst();
     }
 }

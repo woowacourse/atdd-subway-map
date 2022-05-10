@@ -4,6 +4,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Section {
     private Long id;
@@ -43,6 +44,17 @@ public class Section {
                 sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId()
         );
+    }
+
+    public static Section createBySections(Section existedSection, Section insertedSection) {
+        int generatedDistance = existedSection.getDistance() - insertedSection.distance;
+        if (existedSection.upStationId.equals(insertedSection.upStationId)) {
+            return new Section(generatedDistance, existedSection.getLineId(), insertedSection.downStationId, existedSection.downStationId);
+        }
+        if (existedSection.downStationId.equals(insertedSection.downStationId)) {
+            return new Section(generatedDistance, existedSection.getLineId(), existedSection.upStationId, insertedSection.upStationId);
+        }
+        throw new IllegalArgumentException("만들 수 없는 구간입니다.");
     }
 
     public Long getLineId() {
@@ -95,12 +107,20 @@ public class Section {
         return lastStopIds.contains(upStationId) || lastStopIds.contains(downStationId);
     }
 
-    public void canAddAsBetweenStation(Sections sections) {
-        List<Long> leftStationIds = sections.getUpStationIds();
+    public SectionResult canAddAsBetweenStation(Sections sections) {
+        // 구간이 존재하고 && 거리가 되는지
+        Optional<Section> upStationSection = sections.getExistedSection(upStationId);
+        if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {
+            return SectionResult.of(upStationSection.get(), this);
+        }
+        Optional<Section> downStationSection = sections.getExistedSection(downStationId);
+        if (downStationSection.isPresent() && downStationSection.get().getDistance() > distance) {
+            return SectionResult.of(downStationSection.get(), this);
+        }
+        return new SectionResult(false);
+    }
 
-        // 구간이 추가할 수 있는 구간인가
+    private void calculateDistance() {
 
-
-        // 구간 사이 거리가 추가할 수 있는 거리인가
     }
 }
