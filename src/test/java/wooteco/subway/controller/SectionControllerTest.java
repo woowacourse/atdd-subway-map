@@ -29,7 +29,6 @@ import wooteco.subway.dto.SectionRequest;
 @Sql("classpath:test-schema.sql")
 class SectionControllerTest {
 
-
     @LocalServerPort
     int port;
 
@@ -38,16 +37,21 @@ class SectionControllerTest {
 
     Station testStation1;
     Station testStation2;
+    Station testStation3;
+    Station testStation4;
 
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
         StationDao stationDao = new StationDao(jdbcTemplate);
+
         testStation1 = stationDao.save(new Station("testStation1"));
         testStation2 = stationDao.save(new Station("testStation2"));
+        testStation3 = stationDao.save(new Station("testStation3"));
+        testStation4 = stationDao.save(new Station("testStation4"));
 
         LineDao lineDao = new LineDao(jdbcTemplate);
-        lineDao.save(new Line("testLine", "color", 10L));
+        lineDao.save(new Line("testLine", "color", testStation3, testStation4, 10L));
     }
 
     @DisplayName("구간을 저장한다")

@@ -7,6 +7,8 @@ create table if not exists LINE
 (
     id bigint auto_increment not null,
     name varchar(255) not null unique,
+    up_station_id bigint not null,
+    down_station_id bigint not null,
     color varchar(20) not null,
     distance int,
     primary key(id)

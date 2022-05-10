@@ -7,10 +7,12 @@ create table if not exists LINE
 (
     id bigint auto_increment not null,
     name varchar(255) not null unique,
+    up_station_id bigint not null,
+    down_station_id bigint not null,
     color varchar(20) not null,
     distance int,
     primary key(id)
-);
+    );
 
 create table if not exists SECTION
 (
@@ -21,7 +23,7 @@ create table if not exists SECTION
     distance int,
     primary key(id),
     foreign key (line_id) references line (id)
-);
+    );
 
 
 create table if not exists STATION
@@ -31,5 +33,4 @@ create table if not exists STATION
     section_id bigint,
     primary key(id),
     foreign key (section_id) references section (id)
-);
-
+    );
