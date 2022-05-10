@@ -53,7 +53,7 @@ class LineServiceTest extends ServiceTest {
     class FindTest {
 
         @Test
-        void 구간_정보를_포함한_노선의_모든_정보_조회() {
+        void 구간_정보를_포함한_노선의_모든_지하철역_정보를_정렬하여_조회() {
             LineResponse actual = service.find(2L);
 
             LineResponse expected = new LineResponse(2L, "신분당선", "빨간색",

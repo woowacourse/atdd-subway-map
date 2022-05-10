@@ -31,6 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final List<StationResponse> STATION_RESPONSE_1_2 = List.of(STATION_1, STATION_2);
     private static final List<StationResponse> STATION_RESPONSE_1_2_3 = List.of(STATION_1, STATION_2, STATION_3);
     private static final List<StationResponse> STATION_RESPONSE_1_3 = List.of(STATION_1, STATION_3);
+    private static final List<StationResponse> STATION_RESPONSE_3_1 = List.of(STATION_3, STATION_1);
 
     @BeforeAll
     void setup() throws Exception {
@@ -133,7 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         void 성공시_200_OK() {
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines/1");
             LineResponse actualBody = extractSingleLineResponseBody(response);
-            LineResponse expectedBody = new LineResponse(1L, "1호선", "노란색", STATION_RESPONSE_1_3);
+            LineResponse expectedBody = new LineResponse(1L, "1호선", "노란색", STATION_RESPONSE_3_1);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(actualBody).isEqualTo(expectedBody);

@@ -31,6 +31,10 @@ public class StationEntity {
         return name;
     }
 
+    public boolean hasIdOf(Long id) {
+        return id.equals(this.id);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -19,7 +19,7 @@ import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.FullStationEntity;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.SectionEntity;
-import wooteco.subway.entity.Sections;
+import wooteco.subway.entity.SectionViews;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
 
@@ -59,11 +59,10 @@ public class LineService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    // TODO: sort stations in order &/or select with JOIN
     public LineResponse find(Long id) {
         LineEntity lineEntity = findExistingLine(id);
-        List<StationEntity> stations = new Sections(sectionViewDao.findAllByLineId(id)).getStations();
-        return toLineResponse(lineEntity, stations);
+        SectionViews sections = SectionViews.of(sectionViewDao.findAllByLineId(id));
+        return toLineResponse(lineEntity, sections.getSortedStationsList());
     }
 
     @Transactional
