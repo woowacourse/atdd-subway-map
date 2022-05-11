@@ -25,8 +25,7 @@ public class SectionService {
     }
 
     public void save(Long lineId, SectionRequest sectionRequest) {
-        stationDao.findById(sectionRequest.getUpStationId());
-        stationDao.findById(sectionRequest.getDownStationId());
+        validateSectionRequest(sectionRequest);
 
         Section section = Section.of(lineId, sectionRequest);
         sectionDao.save(section);
@@ -45,11 +44,19 @@ public class SectionService {
     }
 
     public void add(long lineId, SectionRequest sectionRequest) {
-        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        validateSectionRequest(sectionRequest);
 
-        if (sections.isTerminus(sectionRequest.getUpStationId(), sectionRequest.getDownStationId())) {
-            save(lineId, sectionRequest);
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        Section target = Section.of(lineId, sectionRequest);
+
+        if (sections.isTerminus(target)) {
+            sectionDao.save(target);
             return;
         }
+    }
+
+    private void validateSectionRequest(SectionRequest request) {
+        stationDao.findById(request.getUpStationId());
+        stationDao.findById(request.getDownStationId());
     }
 }

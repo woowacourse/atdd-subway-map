@@ -60,4 +60,36 @@ class SectionTest {
 
         assertThat(source.isBack(target)).isFalse();
     }
+
+    @Test
+    @DisplayName("upStationId와 같다면 true 반환")
+    void isSameUpStationWhenTrue() {
+        Section section = new Section(1L, 1L, 1L, 2L, 5);
+
+        assertThat(section.isSameUpStation(1L)).isTrue();
+    }
+
+    @Test
+    @DisplayName("upStationId와 다르다면 false 반환")
+    void isSameUpStationWhenFalse() {
+        Section section = new Section(1L, 1L, 1L, 2L, 5);
+
+        assertThat(section.isSameUpStation(3L)).isFalse();
+    }
+
+    @Test
+    @DisplayName("downStationId와 같다면 true 반환")
+    void isSameDownStationWhenTrue() {
+        Section section = new Section(1L, 1L, 1L, 2L, 5);
+
+        assertThat(section.isSameDownStation(2L)).isTrue();
+    }
+
+    @Test
+    @DisplayName("upStationId와 다르다면 false 반환")
+    void isSameDownStationWhenFalse() {
+        Section section = new Section(1L, 1L, 1L, 2L, 5);
+
+        assertThat(section.isSameDownStation(5L)).isFalse();
+    }
 }

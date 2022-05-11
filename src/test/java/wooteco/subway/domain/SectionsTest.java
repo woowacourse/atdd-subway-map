@@ -31,7 +31,7 @@ class SectionsTest {
                 new Section(1L, 1L, 3L, 4L, 5),
                 new Section(1L, 1L, 2L, 3L, 5)
         ));
-        boolean result = sections.isTerminus(1L, 2L);
+        boolean result = sections.isTerminus(new Section(1L, 1L, 1L, 2L, 5));
 
         assertThat(result).isTrue();
     }
@@ -43,7 +43,7 @@ class SectionsTest {
                 new Section(1L, 1L, 1L, 2L, 5),
                 new Section(1L, 1L, 2L, 3L, 5)
         ));
-        boolean result = sections.isTerminus(3L, 4L);
+        boolean result = sections.isTerminus(new Section(1L, 1L, 3L, 4L, 5));
 
         assertThat(result).isTrue();
     }
@@ -56,7 +56,7 @@ class SectionsTest {
                 new Section(1L, 1L, 3L, 4L, 5),
                 new Section(1L, 1L, 2L, 3L, 5)
         ));
-        boolean result = sections.isTerminus(5L, 6L);
+        boolean result = sections.isTerminus(new Section(1L, 1L, 5L, 6L, 5));
 
         assertThat(result).isFalse();
     }
