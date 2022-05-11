@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
+    private static final int MINIMUM_SECTIONS_COUNT = 1;
+
     private final List<Section> sections;
 
     public Sections(final List<Section> sections) {
@@ -24,6 +26,10 @@ public class Sections {
         addStationInSection(existSection, section);
     }
 
+    public void delete(final Long stationId) {
+        validateStationCount();
+    }
+
     private void validateSection(final Section section) {
         List<Long> stationIds = getStationIdsInSection();
         if (hasAllStation(section, stationIds)) {
@@ -34,26 +40,10 @@ public class Sections {
         }
     }
 
-    private List<Long> getStationIdsInSection() {
-        List<Long> allStationIds = new ArrayList<>();
-        allStationIds.addAll(getUpStationIds());
-        allStationIds.addAll(getDownStationIds());
-
-        return allStationIds.stream()
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    private List<Long> getUpStationIds() {
-        return sections.stream()
-                    .map(Section::getUpStationId)
-                    .collect(Collectors.toList());
-    }
-
-    private List<Long> getDownStationIds() {
-        return sections.stream()
-                .map(Section::getDownStationId)
-                .collect(Collectors.toList());
+    private void validateStationCount() {
+        if (sections.size() == MINIMUM_SECTIONS_COUNT) {
+            throw new IllegalArgumentException("노선에 구간이 하나만 존재하기 때문에 삭제할 수 없습니다.");
+        }
     }
 
     private boolean hasAllStation(final Section section, final List<Long> stationIds) {
@@ -70,6 +60,28 @@ public class Sections {
         sections.remove(existSection);
         sections.add(section);
         sections.add(replacedSection);
+    }
+
+    private List<Long> getStationIdsInSection() {
+        List<Long> allStationIds = new ArrayList<>();
+        allStationIds.addAll(getUpStationIds());
+        allStationIds.addAll(getDownStationIds());
+
+        return allStationIds.stream()
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> getUpStationIds() {
+        return sections.stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> getDownStationIds() {
+        return sections.stream()
+                .map(Section::getDownStationId)
+                .collect(Collectors.toList());
     }
 
     private Section getExistSection(Section section) {

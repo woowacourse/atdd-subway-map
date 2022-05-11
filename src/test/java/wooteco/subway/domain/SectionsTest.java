@@ -102,4 +102,16 @@ class SectionsTest {
                 () -> assertThat(sections.getSections()).contains(new Section(9L, 2L, 5))
         );
     }
+
+    @DisplayName("구간을 삭제할 경우 노선에 구간이 하나만 존재할 경우 예외가 발생한다.")
+    @Test
+    void deleteOnlyOneSection() {
+        // given
+        Sections sections = new Sections(List.of(new Section(1L, 2L, 10)));
+
+        // when & then
+        assertThatThrownBy(() -> sections.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선에 구간이 하나만 존재하기 때문에 삭제할 수 없습니다.");
+    }
 }
