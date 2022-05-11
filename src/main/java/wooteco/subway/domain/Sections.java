@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
 import wooteco.subway.exception.BothUpAndDownStationExistException;
 import wooteco.subway.exception.CanNotInsertSectionException;
@@ -37,7 +38,6 @@ public class Sections {
         return newSections;
     }
 
-    // TODO: 구간 삽입 로직 리팩토링
     public void addSection(Section newSection) {
         validateBothStationsExisting(newSection);
         validateBothStationsNotExisting(newSection);
@@ -75,6 +75,7 @@ public class Sections {
 
     private void insertSection(Section newSection) {
         Section baseSection = findBaseSection(newSection);
+
         validateDistanceOnInserting(baseSection, newSection);
 
         Section shortenedBaseSection = shortenBaseSection(baseSection, newSection);
@@ -110,39 +111,17 @@ public class Sections {
         return new Section(baseUp, newUp, shortenedDistance);
     }
 
-    // TODO: 리팩토링
     public void deleteStation(Long stationId) {
         validateHasSingleSection();
 
-        boolean isExistingSameUpStation = sections.stream()
-                .anyMatch(section -> section.getUpStationId().equals(stationId));
-        boolean isExistingSameDownStation = sections.stream()
-                .anyMatch(section -> section.getDownStationId().equals(stationId));
+        Optional<Section> upSection = getUpSection(stationId);
+        Optional<Section> downSection = getDownSection(stationId);
 
-        // 구간 목록의 상행역을 제거
-        if (isExistingSameUpStation && !isExistingSameDownStation) {
-            sections.remove(
-                    sections.stream().filter(section -> section.getUpStationId().equals(stationId)).findAny().get());
-        }
+        upSection.ifPresent(sections::remove);
+        downSection.ifPresent(sections::remove);
 
-        // 구간 목록의 하행역을 제거
-        if (!isExistingSameUpStation && isExistingSameDownStation) {
-            sections.remove(
-                    sections.stream().filter(section -> section.getDownStationId().equals(stationId)).findAny().get());
-        }
-
-        // 구간 목록의 중간역을 제거
-        if (isExistingSameUpStation && isExistingSameDownStation) {
-            Section leftSection = sections.stream().filter(section -> section.getDownStationId().equals(stationId))
-                    .findAny().get();
-            Section rightSection = sections.stream().filter(section -> section.getUpStationId().equals(stationId))
-                    .findAny().get();
-
-            Section newSection = new Section(leftSection.getUpStationId(), rightSection.getDownStationId(),
-                    leftSection.addDistance(rightSection));
-            sections.remove(leftSection);
-            sections.remove(rightSection);
-            sections.add(newSection);
+        if (upSection.isPresent() && downSection.isPresent()) {
+            addMergedSection(upSection.get(), downSection.get());
         }
     }
 
@@ -150,6 +129,23 @@ public class Sections {
         if (sections.size() == 1) {
             throw new OnlyOneSectionException();
         }
+    }
+
+    private Optional<Section> getUpSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.hasStationIdAsDownStation(stationId))
+                .findAny();
+    }
+
+    private Optional<Section> getDownSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.hasStationIdAsUpStation(stationId))
+                .findAny();
+    }
+
+    private void addMergedSection(Section upSection, Section downSection) {
+        Section mergedSection = Section.merge(upSection, downSection);
+        sections.add(mergedSection);
     }
 
     public List<Section> getValue() {

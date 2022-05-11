@@ -25,6 +25,10 @@ public class Section {
         this(id, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
+    public static Section merge(Section upSection, Section downSection) {
+        return new Section(upSection.upStationId, downSection.downStationId, upSection.addDistance(downSection));
+    }
+
     public boolean isUpStationSame(Section other) {
         return upStationId.equals(other.upStationId);
     }
@@ -45,6 +49,18 @@ public class Section {
         HashSet<Long> stationIds = new HashSet<>(
                 List.of(upStationId, downStationId, other.upStationId, other.downStationId));
         return stationIds.size() < 4;
+    }
+
+    public boolean hasStationIdAsUpStation(Long stationId) {
+        return upStationId.equals(stationId);
+    }
+
+    public boolean hasStationIdAsDownStation(Long stationId) {
+        return downStationId.equals(stationId);
+    }
+
+    public boolean hasStationId(Long stationId) {
+        return hasStationIdAsUpStation(stationId) || hasStationIdAsDownStation(stationId);
     }
 
     public Distance addDistance(Section other) {
