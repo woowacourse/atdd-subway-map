@@ -53,4 +53,4 @@
 4. 웹 환경을 구성한다.
    - [x] Dao를 이용해 DB에 구간 정보를 저장한다.
    - [x] Service Layer를 추가해 비즈니스 로직을 처리한다.
-   - [ ] Presentation Layer를 통해 API 기능을 추가한다.
+   - [x] Presentation Layer를 통해 API 기능을 추가한다.
