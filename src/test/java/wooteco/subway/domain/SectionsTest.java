@@ -15,9 +15,10 @@ public class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        Section section1 = new Section(1L, 1L, 2L, 10);
+        Section section1 = new Section(1L, 4L, 2L, 10);
         Section section2 = new Section(1L, 2L, 3L, 10);
-        sections = Sections.of(section2, section1);
+        Section section3 = new Section(1L, 3L, 1L, 10);
+        sections = Sections.of(section2, section1, section3);
     }
 
     @Test
@@ -27,7 +28,7 @@ public class SectionsTest {
         List<Long> ids = sections.getSortedStationId();
 
         // then
-        assertThat(ids).containsOnly(1L, 2L, 3L);
+        assertThat(ids).containsExactly(4L, 2L, 3L, 1L);
     }
 
     @Test

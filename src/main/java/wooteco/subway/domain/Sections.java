@@ -2,7 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -96,7 +96,7 @@ public class Sections {
     }
 
     private List<Long> getSortedStationId(List<Section> sections) {
-        Set<Long> distinctIds = new HashSet<>();
+        Set<Long> distinctIds = new LinkedHashSet<>();
         for (Section section : sections) {
             distinctIds.add(section.getUpStationId());
             distinctIds.add(section.getDownStationId());
