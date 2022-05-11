@@ -24,7 +24,8 @@ public class LineService {
     private final StationService stationService;
     private final SectionService sectionService;
 
-    public LineService(final LineDao lineDao, final StationService stationService,
+    public LineService(final LineDao lineDao,
+                       final StationService stationService,
                        final SectionService sectionService) {
         this.lineDao = lineDao;
         this.stationService = stationService;

@@ -67,7 +67,8 @@ public class Sections {
         return Collections.unmodifiableList(value);
     }
 
-    public SectionsUpdateResult addSection(final Station newUpStation, final Station newDownStation,
+    public SectionsUpdateResult addSection(final Station newUpStation,
+                                           final Station newDownStation,
                                            final Integer distance) {
         validateStationRegistration(newUpStation, newDownStation);
 
@@ -104,7 +105,8 @@ public class Sections {
         return simpleAddLast(newUpStation, newDownStation, distance);
     }
 
-    private SectionsUpdateResult simpleAddLast(final Station newUpStation, final Station newDownStation,
+    private SectionsUpdateResult simpleAddLast(final Station newUpStation,
+                                               final Station newDownStation,
                                                final Integer distance) {
         final List<Section> addedSections = new ArrayList<>();
         final Section section = Section.createWithoutId(newUpStation, newDownStation, distance);
@@ -235,7 +237,8 @@ public class Sections {
         return backSection;
     }
 
-    private List<Section> addNewMergedSection(final int sectionIndex, final Section frontSection,
+    private List<Section> addNewMergedSection(final int sectionIndex,
+                                              final Section frontSection,
                                               final Section backSection) {
         final List<Section> addedSections = new ArrayList<>();
         final Section newSection = mergeSection(frontSection, backSection);

@@ -14,7 +14,7 @@ public class LineResponseDto {
     public LineResponseDto() {
     }
 
-    public LineResponseDto(Long id, String name, String color, final List<Station> stations) {
+    public LineResponseDto(final Long id, final String name, final String color, final List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
