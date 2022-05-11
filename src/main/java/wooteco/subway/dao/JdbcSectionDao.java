@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,9 +20,9 @@ public class JdbcSectionDao implements SectionDao{
     private final StationDao stationDao;
 
     private RowMapper<SectionEntity> stationRowMapper = (resultSet, rowNum) -> new SectionEntity(
-            resultSet.getLong("lineId"),
-            resultSet.getLong("upStationId"),
-            resultSet.getLong("downStationId"),
+            resultSet.getLong("line_id"),
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id"),
             resultSet.getInt("distance")
     );
 
@@ -64,6 +66,26 @@ public class JdbcSectionDao implements SectionDao{
                     stationDao.findById(sectionEntity.getUpStationId()),
                     stationDao.findById(sectionEntity.getDownStationId()),
                     sectionEntity.getDistance());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<Section> findByLineId(Long id) {
+        try {
+            final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
+            List<SectionEntity> sectionEntity = jdbcTemplate.query(sql, stationRowMapper, id);
+            List<Section> sections = new ArrayList<>();
+            for (SectionEntity entity : sectionEntity) {
+                sections.add(new Section(entity.getId(),
+                        lineDao.findById(entity.getLineId()),
+                        stationDao.findById(entity.getUpStationId()),
+                        stationDao.findById(entity.getDownStationId()),
+                        entity.getDistance()));
+            }
+
+            return sections;
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

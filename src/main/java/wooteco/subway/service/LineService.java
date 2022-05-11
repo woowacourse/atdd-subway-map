@@ -1,7 +1,9 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -47,10 +49,34 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
-        final List<Line> lines = lineDao.findAll();
-        return lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
-                .collect(Collectors.toUnmodifiableList());
+        List<Line> lines = lineDao.findAll();
+
+        List<LineResponse> responses = new ArrayList<>();
+        for (Line line : lines) {
+            List<Section> sections = sectionDao.findByLineId(line.getId());
+            Map<Long, Long> map = new HashMap<>();
+            for (Section section : sections) {
+                Station upStation = section.getUpStation();
+                Station downStation = section.getDownStation();
+                map.put(upStation.getId(), downStation.getId());
+            }
+
+            List<Long> keys = new ArrayList<>(map.keySet());
+            List<Long> values = new ArrayList<>(map.values());
+
+            Long upStationId = keys.stream()
+                    .filter(key -> !values.contains(key))
+                    .findFirst()
+                    .orElseThrow();
+            Long downStationId = values.stream()
+                    .filter(value -> !keys.contains(value))
+                    .findFirst()
+                    .orElseThrow();
+
+            responses.add(LineResponse.of(line, stationDao.findById(upStationId), stationDao.findById(downStationId)));
+        }
+
+        return responses;
     }
 
     @Transactional(readOnly = true)

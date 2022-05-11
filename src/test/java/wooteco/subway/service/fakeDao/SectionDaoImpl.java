@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
@@ -39,6 +40,13 @@ public class SectionDaoImpl implements SectionDao {
                 .filter(section -> section.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
+    }
+
+    @Override
+    public List<Section> findByLineId(Long id) {
+        return sections.stream()
+                .filter(section -> section.getLine().getId() == id)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     private Section createNewObject(Section section) {

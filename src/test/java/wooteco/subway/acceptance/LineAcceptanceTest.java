@@ -1,11 +1,15 @@
 package wooteco.subway.acceptance;
 
 import static wooteco.subway.acceptance.util.RestAssuredUtils.checkProperResponseStatus;
+import static wooteco.subway.acceptance.util.RestAssuredUtils.checkSameResponseIds;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.createData;
+import static wooteco.subway.acceptance.util.RestAssuredUtils.getData;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.getLocationId;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,16 +22,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private String lineName = "신분당선";
     private String lineColor = "bg-red-600";
-    private Long upStationId = 1L;
-    private Long downStationId = 2L;
     private int distance = 10;
 
     @DisplayName("지하철노선을 생성한다.")
     @Test
     void create() {
         // given
-        ExtractableResponse<Response> createStation1 = createData("/stations", new Station("지하철역이름"));
-        ExtractableResponse<Response> createStation2 = createData("/stations", new Station("또다른지하철역이름"));
+        ExtractableResponse<Response> createStation1 = createData("/stations", new Station("지하철역"));
+        ExtractableResponse<Response> createStation2 = createData("/stations", new Station("새로운지하철역"));
         final LineRequest lineRequest = new LineRequest(lineName, lineColor, getLocationId(createStation1), getLocationId(createStation2), distance);
 
         // when
@@ -53,23 +55,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
         checkProperResponseStatus(createResponse, HttpStatus.BAD_REQUEST);
     }
 
-    /*
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void getLines() {
-        /// given
-        ExtractableResponse<Response> response1 = createData("/lines", new Line(lineName, lineColor));
-        ExtractableResponse<Response> response2 = createData("/lines", new Line("분당선", "bg-green-600"));
+        ExtractableResponse<Response> createStation1 = createData("/stations", new Station("지하철역"));
+        ExtractableResponse<Response> createStation2 = createData("/stations", new Station("새로운지하철역"));
+        final LineRequest lineRequest1 = new LineRequest(lineName, lineColor, getLocationId(createStation1), getLocationId(createStation2), distance);
+        ExtractableResponse<Response> createResponse1 = createData("/lines", lineRequest1);
+
+        ExtractableResponse<Response> createStation3 = createData("/stations", new Station("또다른지하철역"));
+        final LineRequest lineRequest2 = new LineRequest("분당선", "bg-green-600", getLocationId(createStation1), getLocationId(createStation3), distance);
+        ExtractableResponse<Response> createResponse2 = createData("/lines", lineRequest2);
 
         // when
         ExtractableResponse<Response> getLinesResponse = getData("/lines");
 
         // then
         checkProperResponseStatus(getLinesResponse, HttpStatus.OK);
-        List<ExtractableResponse<Response>> responses = Arrays.asList(response1, response2);
+        List<ExtractableResponse<Response>> responses = Arrays.asList(createResponse1, createResponse2);
         checkSameResponseIds(getLinesResponse, responses);
     }
 
+    /*
     @DisplayName("지하철 단일 노선을 조회한다.")
     @Test
     void getLineById() {
