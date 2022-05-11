@@ -28,4 +28,32 @@ public class Sections {
     private void addDownStationsId(List<Long> ids) {
         sections.forEach(section -> ids.add(section.getDownStationId()));
     }
+
+    public Section getSameUpStationSection(Section section) {
+        return getSameUpStationSection(section.getUpStationId());
+    }
+
+    public Section getSameDownStationSection(Section section) {
+        return getSameDownStationSection(section.getDownStationId());
+    }
+
+    public Section getSameUpStationSection(Long stationId) {
+        return sections.stream()
+            .filter(it -> it.isSameUpStation(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+    }
+
+    public Section getSameDownStationSection(Long stationId) {
+        return sections.stream()
+            .filter(it -> it.isSameDownStation(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+    }
+
+    public void validateDeletableSize() {
+        if (sections.size() == 1) {
+            throw new IllegalStateException("구간이 하나 남아서 삭제 할 수 없음");
+        }
+    }
 }

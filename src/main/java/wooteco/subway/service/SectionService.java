@@ -27,66 +27,11 @@ public class SectionService {
     }
 
     public void save(Section section) {
-        List<Section> sections = sectionDao.findAllByLineId(section.getLineId());
-        SectionLinks sectionLinks = createStations(sections);
+        List<Section> savedSections = sectionDao.findAllByLineId(section.getLineId());
+        SectionLinks sectionLinks = createStations(savedSections);
+        Sections sections = new Sections(savedSections);
         sectionLinks.validateAddableSection(section);
-        if (sectionLinks.isEndSection(section)) {
-            sectionDao.save(section);
-            return;
-        }
-        if (sectionLinks.isExistUpStation(section.getUpStationId())) {
-            Section findSection = getSameUpSection(section.getUpStationId(), sections);
-            validateDistance(section, findSection);
-            sectionDao.updateByUpStationId(section);
-            saveNewDownSection(section, findSection);
-            return;
-        }
-        if (sectionLinks.isExistDownStation(section.getDownStationId())) {
-            Section findSection = getSameDownSection(section.getDownStationId(), sections);
-            validateDistance(section, findSection);
-            sectionDao.updateByDownStationId(section);
-            saveNewUpSection(section, findSection);
-        }
-    }
-
-    private void saveNewUpSection(Section section, Section findSection) {
-        Section newSection = new Section(
-            section.getLineId(),
-            section.getUpStationId(),
-            findSection.getUpStationId(),
-            findSection.getDistance() - section.getDistance()
-        );
-        sectionDao.save(newSection);
-    }
-
-    private void saveNewDownSection(Section section, Section findSection) {
-        Section newSection = new Section(
-            section.getLineId(),
-            section.getDownStationId(),
-            findSection.getDownStationId(),
-            findSection.getDistance() - section.getDistance()
-        );
-        sectionDao.save(newSection);
-    }
-
-    private void validateDistance(Section section, Section existingSection) {
-        if (!existingSection.isLong(section)) {
-            throw new IllegalStateException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
-        }
-    }
-
-    private Section getSameUpSection(Long id, List<Section> sections) {
-        return sections.stream()
-            .filter(it -> it.getUpStationId().equals(id))
-            .findFirst()
-            .get();
-    }
-
-    private Section getSameDownSection(Long id, List<Section> sections) {
-        return sections.stream()
-            .filter(it -> it.getDownStationId().equals(id))
-            .findFirst()
-            .get();
+        updateSection(section, sectionLinks, sections);
     }
 
     private SectionLinks createStations(List<Section> sections) {
@@ -97,12 +42,39 @@ public class SectionService {
         return new SectionLinks(stationIds);
     }
 
+    private void updateSection(Section section, SectionLinks sectionLinks, Sections sections) {
+        if (sectionLinks.isEndSection(section)) {
+            sectionDao.save(section);
+            return;
+        }
+        if (sectionLinks.isExistUpStation(section.getUpStationId())) {
+            Section findSection = sections.getSameUpStationSection(section);
+            validateDistance(section, findSection);
+            sectionDao.updateByUpStationId(section);
+            sectionDao.save(findSection.createExceptUpSection(section));
+            return;
+        }
+        if (sectionLinks.isExistDownStation(section.getDownStationId())) {
+            Section findSection = sections.getSameDownStationSection(section);
+            validateDistance(section, findSection);
+            sectionDao.updateByDownStationId(section);
+            sectionDao.save(findSection.createExceptDownSection(section));
+        }
+    }
+
+    private void validateDistance(Section section, Section existingSection) {
+        if (!existingSection.isLong(section)) {
+            throw new IllegalStateException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+        }
+    }
+
     public void delete(Long lineId, Long stationId) {
         List<Section> lineSections = sectionDao.findAllByLineId(lineId);
         SectionLinks sectionLinks = createStations(lineSections);
-        validateSectionsSize(lineSections);
+        Sections sections = new Sections(lineSections);
+        sections.validateDeletableSize();
         if (sectionLinks.isExistUpStation(stationId) && sectionLinks.isExistDownStation(stationId)) {
-            deleteAndSaveSections(lineId, stationId, lineSections);
+            deleteAndSaveSections(lineId, stationId, sections);
             return;
         }
         if (sectionLinks.isEndStation(stationId)) {
@@ -112,17 +84,15 @@ public class SectionService {
         throw new NoSuchElementException("구간이 존재하지 않음");
     }
 
-    private void deleteAndSaveSections(Long lineId, Long stationId, List<Section> lineSections) {
-        Section upSection = getSameUpSection(stationId, lineSections);
-        Section downSection = getSameDownSection(stationId, lineSections);
+    private void deleteAndSaveSections(Long lineId, Long stationId, Sections sections) {
+        Section upSection = sections.getSameUpStationSection(stationId);
+        Section downSection = sections.getSameDownStationSection(stationId);
         sectionDao.delete(lineId, stationId);
-        sectionDao.save(new Section(lineId, downSection.getUpStationId(), upSection.getDownStationId(),
-            upSection.getDistance() + downSection.getDistance()));
-    }
-
-    private void validateSectionsSize(List<Section> lineSections) {
-        if (lineSections.size() == 1) {
-            throw new IllegalStateException("구간이 하나 남아서 삭제 할 수 없음");
-        }
+        sectionDao.save(new Section(
+            lineId,
+            downSection.getUpStationId(),
+            upSection.getDownStationId(),
+            upSection.getDistance() + downSection.getDistance()
+        ));
     }
 }

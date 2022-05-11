@@ -27,6 +27,32 @@ public class Section {
         return this.distance > section.distance;
     }
 
+    public boolean isSameUpStation(Long upStationId) {
+        return this.upStationId.equals(upStationId);
+    }
+
+    public boolean isSameDownStation(Long downStationId) {
+        return this.downStationId.equals(downStationId);
+    }
+
+    public Section createExceptDownSection(Section section) {
+        return new Section(
+            lineId,
+            upStationId,
+            section.upStationId,
+            distance - section.getDistance()
+        );
+    }
+
+    public Section createExceptUpSection(Section section) {
+        return new Section(
+            lineId,
+            section.downStationId,
+            downStationId,
+            distance - section.getDistance()
+        );
+    }
+
     public Long getId() {
         return id;
     }
