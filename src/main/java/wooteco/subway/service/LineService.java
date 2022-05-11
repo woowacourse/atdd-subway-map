@@ -179,7 +179,11 @@ public class LineService {
         line.deleteSections(station);
         final Optional<Section> upSection = sectionDao.findByDownStationId(lineId, stationId);
         final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, stationId);
-        checkFinalAndDeleteSections(upSection, downSection);
+        upSection.ifPresent((up -> downSection.ifPresent(down -> updateDownSectionByDeletion(up, down))));
+        if (upSection.isEmpty() || downSection.isEmpty()) {
+            upSection.ifPresent(deleteFinalSection());
+            downSection.ifPresent(deleteFinalSection());
+        }
     }
 
     private Line loadLine(Long lineId) {
@@ -189,32 +193,15 @@ public class LineService {
         return new Line(findLine.getId(), findLine.getName(), findLine.getColor(), sections);
     }
 
-    private void checkFinalAndDeleteSections(Optional<Section> upSection, Optional<Section> downSection) {
-        if (upSection.isEmpty() || downSection.isEmpty()) {
-            upSection.ifPresent(deleteFinalSection());
-            downSection.ifPresent(deleteFinalSection());
-            return;
-        }
-        upSection.ifPresent(deleteAndMergeSections(downSection));
+    private void updateDownSectionByDeletion(Section upSection, Section downSection) {
+        sectionDao.delete(List.of(upSection));
+        sectionDao.updateUpStation(downSection.getId(), upSection.getUpStationId(),
+                upSection.getDistance() + downSection.getDistance());
     }
 
     private Consumer<Section> deleteFinalSection() {
         return section -> {
             sectionDao.delete(List.of(section));
-        };
-    }
-
-    private Consumer<Section> deleteAndMergeSections(Optional<Section> downSection) {
-        return upSection -> {
-            downSection.ifPresent(updateDownSectionByDeletion(upSection));
-        };
-    }
-
-    private Consumer<Section> updateDownSectionByDeletion(Section upSection) {
-        return downSection -> {
-            sectionDao.delete(List.of(upSection));
-            sectionDao.updateUpStation(downSection.getId(), upSection.getUpStationId(),
-                    upSection.getDistance() + downSection.getDistance());
         };
     }
 }
