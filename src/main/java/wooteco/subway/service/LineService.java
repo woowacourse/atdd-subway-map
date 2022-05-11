@@ -49,10 +49,10 @@ public class LineService {
     }
 
     public List<LineFindResponse> findAll() {
-        Map<Long, Station> stations = findStation();
+        Map<Long, Station> stations = findAllStations();
         return lineDao.findAll().stream()
             .map(i -> new LineFindResponse(i.getId(), i.getName(), i.getColor(),
-                findStation(i.getId(), stations)))
+                getSortedStationsByLineId(i.getId(), stations)))
             .collect(Collectors.toList());
     }
 
@@ -61,12 +61,12 @@ public class LineService {
         return new StationResponse(station.getId(), station.getName());
     }
 
-    private Map<Long, Station> findStation() {
+    private Map<Long, Station> findAllStations() {
         return stationDao.findAll().stream()
             .collect(Collectors.toMap(Station::getId, i -> new Station(i.getName())));
     }
 
-    private List<Station> findStation(Long lineId, Map<Long, Station> stations) {
+    private List<Station> getSortedStationsByLineId(Long lineId, Map<Long, Station> stations) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         List<Long> stationIds = sections.sortedStationId();
 
@@ -81,5 +81,19 @@ public class LineService {
 
     public boolean updateById(Long id, Line line) {
         return lineDao.updateById(id, line);
+    }
+
+    public LineFindResponse findById(Long id) {
+        Line line = lineDao.findById(id).get();
+        List<Station> stations = findSortedStationByLineId(line.getId());
+        return new LineFindResponse(line.getId(), line.getName(), line.getColor(), stations);
+    }
+
+    private List<Station> findSortedStationByLineId(Long lineId) {
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Long> stationIds = sections.sortedStationId();
+        return stationIds.stream()
+            .map(stationDao::findById)
+            .collect(Collectors.toList());
     }
 }

@@ -2,8 +2,10 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Sections {
     private final List<Section> sections;
@@ -70,15 +72,14 @@ public class Sections {
     }
 
     public List<Long> sortedStationId() {
-        List<Long> stationIds = new ArrayList<>();
+        Set<Long> stationIds = new HashSet<>();
         Map<Long, Long> sectionIds = getSectionId();
-        Long upStationId = findUpStationId();
 
-        for (int i = 0; i < sectionIds.size(); i++) {
-            stationIds.add(upStationId);
-            upStationId = sectionIds.get(upStationId);
+        for (Long sectionUpStationId : sectionIds.keySet()) {
+            stationIds.add(sectionUpStationId);
+            stationIds.add(sectionIds.get(sectionUpStationId));
         }
 
-        return stationIds;
+        return new ArrayList<>(stationIds);
     }
 }

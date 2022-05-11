@@ -20,6 +20,7 @@ import wooteco.subway.service.dto.line.LineSaveRequest;
 import wooteco.subway.service.dto.line.LineSaveResponse;
 import wooteco.subway.ui.dto.LineRequest;
 import wooteco.subway.ui.dto.LineResponse;
+import wooteco.subway.ui.dto.StationResponse;
 
 @RestController
 public class LineController {
@@ -49,6 +50,17 @@ public class LineController {
         List<LineResponse> lineResponses = lines.stream()
             .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), new ArrayList<>()))
             .collect(Collectors.toList());
+        return ResponseEntity.ok().body(lineResponses);
+    }
+
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
+        LineFindResponse line = lineService.findById(id);
+        List<StationResponse> stations = line.getStations().stream()
+            .map(i -> new StationResponse(i.getId(), i.getName()))
+            .collect(Collectors.toList());
+        LineResponse lineResponses = new LineResponse(line.getId(), line.getName(), line.getColor(),
+            stations);
         return ResponseEntity.ok().body(lineResponses);
     }
 

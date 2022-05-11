@@ -192,6 +192,36 @@ class LineAcceptanceTest extends AcceptanceTest {
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
+    @Test
+    @DisplayName("존재하지 않는 노선을 수정한다. 상태코드는 204이어야 한다.")
+    void updateLineById() {
+        // given
+        LineRequest lineRequest1 = new LineRequest("3호선", "bg-orange-600", 1L, 2L, 4);
+
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(lineRequest1)
+            .when()
+            .put("/lines/1")
+            .then().log().all()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노선을 수정한다. 상태코드는 204이어야 한다.")
+    void findLineById() {
+        // given
+        Long lineId = saveLine();
+
+        // when
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/" + lineId)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value());
+    }
+
     Long createStation(String name) {
         // given
         Map<String, String> params = new HashMap<>();
@@ -206,6 +236,26 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
+        return Long.parseLong(uri.split("/")[2]);
+    }
+
+    Long saveLine() {
+        // given
+        Long station1 = createStation("강남역");
+        Long station2 = createStation("역삼역");
+        LineRequest lineRequest = new LineRequest("3호선", "bg-orange-600", station1, station2, 4);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .statusCode(HttpStatus.CREATED.value())
+            .extract();
+
+        String uri = response.header("Location");
         return Long.parseLong(uri.split("/")[2]);
     }
 }

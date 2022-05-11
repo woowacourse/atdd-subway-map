@@ -150,4 +150,17 @@ class LineServiceTest {
         // then
         assertThat(lineEntity.getName()).isEqualTo(newLineEntity.getName());
     }
+
+    @Test
+    void findById() {
+        // given
+        Station station1 = stationDao.save(new Station("강남역"));
+        Station station2 = stationDao.save(new Station("역삼역"));
+        LineSaveRequest originLine = new LineSaveRequest("1호선", "bg-red-600", station1.getId(),
+            station2.getId(), 5);
+        LineSaveResponse savedLine = lineService.save(originLine);
+
+        lineService.findById(savedLine.getId());
+    }
+
 }
