@@ -40,17 +40,23 @@ public class Sections {
 
     private List<Section> sort(List<Section> sections) {
         List<Section> values = new ArrayList<>();
-        Station firstStation = findFirstStation(sections);
+        Station next = findFirstStation(sections);
         while (values.size() != sections.size()) {
-            for (Section section : sections) {
-                if (section.getUpStation().equals(firstStation)) {
-                    values.add(section);
-                    firstStation = section.getDownStation();
-                }
-            }
+            next = findNext(sections, values, next);
         }
         return values;
     }
+
+    private Station findNext(List<Section> sections, List<Section> values, Station next) {
+        for (Section section : sections) {
+            if (section.getUpStation().equals(next)) {
+                values.add(section);
+                return section.getDownStation();
+            }
+        }
+        throw new IllegalArgumentException("다음 역을 찾을 수 없습니다.");
+    }
+
 
     private Station findFirstStation(List<Section> sections) {
         List<Station> upStations = createUpStations(sections);
@@ -60,6 +66,38 @@ public class Sections {
                 .filter(upStation -> !downStations.contains(upStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("시작 구간을 찾을 수 없습니다."));
+    }
+
+    public List<Section> splitSection(Station upStation, Station downStation, Section target) {
+        if (existUpStation(upStation)) {
+            Section section = findContainsUpStation(upStation);
+            return section.splitFromUpStation(target);
+        }
+
+        if (existDownStation(downStation)) {
+            Section section = findContainsDownStation(downStation);
+            return section.splitFromDownStation(target);
+        }
+        return List.of(target);
+    }
+
+    public List<Section> margeSection(Station target, Line line) {
+        if (existUpStation(target) && !existDownStation(target)) {
+            return List.of(findContainsUpStation(target));
+        }
+        if (existDownStation(target) && !existUpStation(target)) {
+            return List.of(findContainsDownStation(target));
+        }
+
+        return marge(target, line);
+    }
+
+    private List<Section> marge(Station target, Line line) {
+        Section upSection = findContainsDownStation(target);
+        Section downSection = findContainsUpStation(target);
+        Section resultSection = new Section(line, upSection.getUpStation(), downSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance());
+        return List.of(resultSection, upSection, downSection);
     }
 
     private List<Station> createDownStations(List<Section> sections) {
@@ -74,6 +112,12 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public void validateHasSameSection(Station upStation, Station downStation) {
+        if (existUpStation(upStation) && existDownStation(downStation)) {
+            throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
+        }
+    }
+
     public List<Station> getStations() {
         Set<Station> stations = new LinkedHashSet<>();
         for (Section value : values) {
@@ -85,5 +129,16 @@ public class Sections {
 
     public List<Section> getValues() {
         return List.copyOf(values);
+    }
+
+    public void validateContainsStation(Station upStation, Station downStation) {
+        if (!hasStationFrontOrBack(upStation, downStation)
+                && !existUpStation(upStation) && !existDownStation(downStation)) {
+            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
+        }
+    }
+
+    public boolean hasStationFrontOrBack(Station upStation, Station downStation) {
+        return existUpStation(downStation) || existDownStation(upStation);
     }
 }

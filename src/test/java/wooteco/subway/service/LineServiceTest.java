@@ -15,6 +15,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.SectionEntity;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -94,7 +95,6 @@ class LineServiceTest {
         assertThat(lineService.showById(lineResponse.getId()).getStations().size()).isEqualTo(3);
     }
 
-
     @Test
     @DisplayName("구간 사이에 역을 추가한다.")
     void addSectionBetweenSection() {
@@ -116,6 +116,36 @@ class LineServiceTest {
         assertThat(result.get(1).getDistance()).isEqualTo(60);
     }
 
+    @Test
+    @DisplayName("구간 사이에 역을 추가한다. 강남-양재-광교 -> 강남-양재-판교-광교")
+    void addSectionInSection() {
+        Station 강남 = stationDao.save(new Station("강남"));
+        Station 양재 = stationDao.save(new Station("양재"));
+        Station 광교 = stationDao.save(new Station("광교"));
+        Station 판교 = stationDao.save(new Station("판교"));
+        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        sectionDao.save(new Section(신분당선, 강남, 광교, 10));
+        SectionRequest sectionRequest1 = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest1);
+
+        SectionRequest sectionRequest2 = new SectionRequest(양재.getId(), 판교.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest2);
+
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(신분당선.getId());
+        SectionEntity 구간2 = findSectionEntity(양재, sectionEntities);
+        SectionEntity 구간3 = findSectionEntity(판교, sectionEntities);
+        assertThat(구간2.getDownStationId()).isEqualTo(판교.getId());
+        assertThat(구간2.getDistance()).isEqualTo(4);
+        assertThat(구간3.getDownStationId()).isEqualTo(광교.getId());
+        assertThat(구간3.getDistance()).isEqualTo(2);
+    }
+
+    private SectionEntity findSectionEntity(Station startStation, List<SectionEntity> sectionEntities) {
+        return sectionEntities.stream()
+                .filter(entity -> entity.getUpStationId().equals(startStation.getId()))
+                .findFirst()
+                .get();
+    }
 
     @Test
     @DisplayName("맨 앞 역을 삭제한다. ")
