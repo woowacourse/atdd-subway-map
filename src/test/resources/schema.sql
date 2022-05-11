@@ -63,12 +63,5 @@ create table if not exists SECTION
     key
 (
     id
-),
-    foreign key
-(
-    line_id
-) references line
-(
-    id
-) on delete cascade
+)
     );
