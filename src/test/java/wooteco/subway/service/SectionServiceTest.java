@@ -25,7 +25,7 @@ class SectionServiceTest {
         final FakeStationDao fakeStationDao = new FakeStationDao();
         sectionService = new SectionService(fakeSectionDao);
         lineService = new LineService(new FakeLineDao(), fakeSectionDao, fakeStationDao);
-        stationService = new StationService(fakeStationDao);
+        stationService = new StationService(fakeStationDao, fakeSectionDao);
     }
 
     @DisplayName("구간을 등록할 수 있다.")

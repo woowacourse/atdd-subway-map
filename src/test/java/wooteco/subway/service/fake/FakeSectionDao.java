@@ -54,6 +54,11 @@ public class FakeSectionDao implements SectionDao {
         this.sections.addAll(sections);
     }
 
+    @Override
+    public List<Section> findAll() {
+        return sections;
+    }
+
     private static Section createNewObject(Section section) {
         Field field = ReflectionUtils.findField(Section.class, "id");
         field.setAccessible(true);

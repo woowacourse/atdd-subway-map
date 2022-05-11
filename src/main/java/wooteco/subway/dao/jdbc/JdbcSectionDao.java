@@ -55,6 +55,13 @@ public class JdbcSectionDao implements SectionDao {
         jdbcTemplate.batchUpdate(sql, parameters);
     }
 
+    @Override
+    public List<Section> findAll() {
+        final String sql = "SELECT * FROM `section`";
+
+        return jdbcTemplate.query(sql, SECTION_ROW_MAPPER);
+    }
+
     private List<Object[]> generateParameters(List<Section> sections) {
         return sections.stream()
                 .map(section -> generateParameter(section))

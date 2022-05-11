@@ -14,4 +14,6 @@ public interface SectionDao {
     int deleteByLineId(Long lineId);
 
     void saveAll(List<Section> sections);
+
+    List<Section> findAll();
 }

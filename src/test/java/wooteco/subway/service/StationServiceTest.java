@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DuplicateKeyException;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.service.fake.FakeSectionDao;
 import wooteco.subway.service.fake.FakeStationDao;
 
 class StationServiceTest {
@@ -19,7 +20,7 @@ class StationServiceTest {
 
     @BeforeEach
     void setUp() {
-        stationService = new StationService(new FakeStationDao());
+        stationService = new StationService(new FakeStationDao(), new FakeSectionDao());
     }
 
     @Test
