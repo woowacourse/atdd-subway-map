@@ -53,27 +53,10 @@ public class LineService {
 
         List<LineResponse> responses = new ArrayList<>();
         for (Line line : lines) {
-            List<Section> sections = sectionDao.findByLineId(line.getId());
-            Map<Long, Long> map = new HashMap<>();
-            for (Section section : sections) {
-                Station upStation = section.getUpStation();
-                Station downStation = section.getDownStation();
-                map.put(upStation.getId(), downStation.getId());
-            }
-
-            List<Long> keys = new ArrayList<>(map.keySet());
-            List<Long> values = new ArrayList<>(map.values());
-
-            Long upStationId = keys.stream()
-                    .filter(key -> !values.contains(key))
-                    .findFirst()
-                    .orElseThrow();
-            Long downStationId = values.stream()
-                    .filter(value -> !keys.contains(value))
-                    .findFirst()
-                    .orElseThrow();
-
-            responses.add(LineResponse.of(line, stationDao.findById(upStationId), stationDao.findById(downStationId)));
+            Map<Long, Long> sections = getSections(line);
+            responses.add(LineResponse.of(line,
+                    stationDao.findById(getUpStationId(sections)),
+                    stationDao.findById(getDownStationId(sections))));
         }
 
         return responses;
@@ -83,7 +66,11 @@ public class LineService {
     public LineResponse findLine(Long id) {
         checkExistLine(id);
         final Line line = lineDao.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        Map<Long, Long> sections = getSections(line);
+
+        return LineResponse.of(line,
+                stationDao.findById(getUpStationId(sections)),
+                stationDao.findById(getDownStationId(sections)));
     }
 
     public void updateLine(Long id, String name, String color) {
@@ -113,5 +100,32 @@ public class LineService {
         if (lineDao.hasLine(lineRequest.getName())) {
             throw new IllegalArgumentException("같은 이름의 노선이 존재합니다.");
         }
+    }    private Map<Long, Long> getSections(Line line) {
+        List<Section> sections = sectionDao.findByLineId(line.getId());
+        Map<Long, Long> map = new HashMap<>();
+        for (Section section : sections) {
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+            map.put(upStation.getId(), downStation.getId());
+        }
+        return map;
+    }
+
+    private Long getUpStationId(Map<Long, Long> sections) {
+        List<Long> keys = new ArrayList<>(sections.keySet());
+        List<Long> values = new ArrayList<>(sections.values());
+        return keys.stream()
+                .filter(key -> !values.contains(key))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private Long getDownStationId(Map<Long, Long> sections) {
+        List<Long> keys = new ArrayList<>(sections.keySet());
+        List<Long> values = new ArrayList<>(sections.values());
+        return values.stream()
+                .filter(value -> !keys.contains(value))
+                .findFirst()
+                .orElseThrow();
     }
 }
