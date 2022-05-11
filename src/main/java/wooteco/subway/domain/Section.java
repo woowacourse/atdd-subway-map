@@ -82,6 +82,4 @@ public class Section {
     public int getDistance() {
         return distance;
     }
-
-
 }
