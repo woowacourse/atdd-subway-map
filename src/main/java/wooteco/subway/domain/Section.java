@@ -41,12 +41,10 @@ public class Section {
     }
 
     public Section calculateRemainSection(Section section) {
-        if (section.getUpStation().equals(upStation)) {
-            return new Section(section.getLineId(), section.getDownStation(),
-                    downStation, distance - section.getDistance());
+        if (section.upStation.equals(upStation)) {
+            return new Section(lineId, section.downStation, downStation, distance - section.distance);
         }
-        return new Section(section.getLineId(), upStation,
-                section.upStation, distance - section.getDistance());
+        return new Section(lineId, upStation, section.upStation, distance - section.distance);
     }
 
     public Long getId() {

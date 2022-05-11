@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -25,6 +26,7 @@ public class SectionService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public Section save(Section section) {
         checkLineExist(section.getLineId());
         checkStationsExist(section);
@@ -46,18 +48,17 @@ public class SectionService {
         return new Sections(sectionDao.findAllByLineId(lineId)).calculateStations();
     }
 
+    @Transactional
     public void delete(Long lineId, Long stationId) {
         checkLineExist(lineId);
         checkStationExist(stationId);
         Sections sections = Sections.forDelete(sectionDao.findAllByLineId(lineId));
         Station station = stationDao.findById(stationId);
         sections.findSide(station).ifPresentOrElse(section -> sectionDao.delete(section.getId()),
-                () -> deleteMiddleStation(sections, station));
-    }
-
-    private void deleteMiddleStation(Sections sections, Station station) {
-        sectionDao.deleteAllBySections(sections.findLinks(station));
-        sectionDao.save(sections.calculateCombinedSection(station));
+                () -> {
+                    sectionDao.deleteAllBySections(sections.findLinks(station));
+                    sectionDao.save(sections.calculateCombinedSection(station));
+                });
     }
 
     private void checkSectionExist(Long id) {

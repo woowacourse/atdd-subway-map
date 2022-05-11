@@ -13,6 +13,8 @@ public class Sections {
     private static final String NO_UP_STATION_ERROR_MESSAGE = "해당 상행역의 구간이 없습니다";
     private static final String NO_DOWN_STATION_ERROR_MESSAGE = "해당 하행역의 구간이 없습니다";
     private static final String SECTION_LENGTH_ERROR_MESSAGE = "새 구간의 길이가 기존 역 사이 길이보다 작아야 합니다.";
+    private static final int COMBINED_UP_STATION_INDEX = 0;
+    private static final int COMBINED_DOWN_STATION_INDEX = 2;
 
 
     private final List<Section> sections;
@@ -38,7 +40,6 @@ public class Sections {
             throw new IllegalArgumentException(ONE_LESS_SECTION_ERROR_MESSAGE);
         }
         return result;
-
     }
 
     public List<Station> calculateStations() {
@@ -56,7 +57,9 @@ public class Sections {
         List<Section> combinedSections = findLinks(middleStation);
         List<Station> combined = new Sections(combinedSections).calculateStations();
         int distance = combinedSections.stream().map(Section::getDistance).reduce(Integer::sum).orElseThrow();
-        return new Section(sections.get(0).getLineId(), combined.get(0), combined.get(2), distance);
+        return new Section(sections.get(0).getLineId(),
+                combined.get(COMBINED_UP_STATION_INDEX),
+                combined.get(COMBINED_DOWN_STATION_INDEX), distance);
     }
 
     public List<Section> findLinks(Station station) {
@@ -101,6 +104,11 @@ public class Sections {
         return sections.stream().filter(section -> isFirst(section.getUpStation())).findFirst().orElse(sections.get(0));
     }
 
+    private Station getNext(Station now) {
+        return sections.stream().filter(section -> now.equals(section.getUpStation())).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(NO_NEXT_SECTION_ERROR_MESSAGE)).getDownStation();
+    }
+
     private boolean hasNoStation(Section section) {
         return !hasUpStation(section) && !hasDownStation(section);
     }
@@ -110,7 +118,8 @@ public class Sections {
     }
 
     private boolean hasDownStation(Section inSection) {
-        return sections.stream().anyMatch(section -> section.getDownStationId().equals(inSection.getDownStationId()));
+        return sections.stream()
+                .anyMatch(section -> section.getDownStationId().equals(inSection.getDownStationId()));
     }
 
     private Section findByUpStation(Station station) {
@@ -124,23 +133,22 @@ public class Sections {
     }
 
     private boolean isMiddleUpAttach(Section inSection) {
-        return sections.stream().anyMatch(section -> section.getUpStation().equals(inSection.getUpStation()));
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().equals(inSection.getUpStation()));
     }
 
     private boolean isMiddleDownAttach(Section inSection) {
-        return sections.stream().anyMatch(section -> section.getDownStation().equals(inSection.getDownStation()));
+        return sections.stream()
+                .anyMatch(section -> section.getDownStation().equals(inSection.getDownStation()));
     }
 
     private boolean isFirst(Station station) {
-        return sections.stream().noneMatch(section -> section.getDownStation().equals(station));
+        return sections.stream()
+                .noneMatch(section -> section.getDownStation().equals(station));
     }
 
     private boolean isLast(Station station) {
-        return sections.stream().noneMatch(section -> section.getUpStation().equals(station));
-    }
-
-    private Station getNext(Station now) {
-        return sections.stream().filter(section -> now.equals(section.getUpStation())).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(NO_NEXT_SECTION_ERROR_MESSAGE)).getDownStation();
+        return sections.stream()
+                .noneMatch(section -> section.getUpStation().equals(station));
     }
 }

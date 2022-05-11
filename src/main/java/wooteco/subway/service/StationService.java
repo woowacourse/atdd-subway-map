@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -25,6 +26,7 @@ public class StationService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public Station save(Station station) {
         validateUniqueName(station.getName());
         Long id = stationDao.save(station);
@@ -46,6 +48,7 @@ public class StationService {
         return stationDao.findAll();
     }
 
+    @Transactional
     public void delete(Long id) {
         checkStationExist(id);
         validateStationNotLinked(id);

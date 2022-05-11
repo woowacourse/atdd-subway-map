@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
@@ -19,6 +20,7 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public Line save(Line line) {
         validateUniqueName(line.getName());
         Long id = lineDao.save(line);
@@ -34,11 +36,13 @@ public class LineService {
         return lineDao.findById(id);
     }
 
+    @Transactional
     public void update(Long id, Line line) {
         validateID(id);
         lineDao.update(id, line);
     }
 
+    @Transactional
     public void delete(Long id) {
         validateID(id);
         sectionDao.deleteAllByLineId(id);
