@@ -106,11 +106,43 @@ public class SectionsTest {
         assertThat(allStations.get(allStations.size() - 1)).isEqualTo(station);
     }
 
+    @DisplayName("노선의 중간역을 삭제할 경우 구간이 합쳐진다.")
+    @Test
+    void delete_middle() {
+        Station station = new Station(3L, "새로운역");
+        Section section = new Section(station, downTermination, 3);
+        sections.add(section);
+        sections.delete(station);
+
+        LinkedList<Section> resultSections = sections.getSections();
+        List<Station> allStations = sections.getAllStations();
+
+        assertAll(
+                () -> assertThat(resultSections).hasSize(1),
+                () -> assertThat(resultSections.get(0).getDistance()).isEqualTo(10),
+                () -> assertThat(allStations).containsOnly(upTermination, downTermination)
+        );
+    }
+
     @DisplayName("노선에 구간이 하나 뿐일 때 삭제하면 예외가 발생한다.")
     @Test
     void delete_only_one_section() {
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(() -> sections.delete(downTermination))
                 .withMessageContaining("하나 뿐");
+    }
+
+    @DisplayName("노선에 없는 역을 삭제하면 예외가 발생한다.")
+    @Test
+    void delete_no_such_station() {
+        Station station = new Station(3L, "새로운역");
+        Section section = new Section(station, downTermination, 3);
+        sections.add(section);
+
+        Station otherStation = new Station(4L, "또다른역");
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> sections.delete(otherStation))
+                .withMessageContaining("존재하지 않습니다");
     }
 }

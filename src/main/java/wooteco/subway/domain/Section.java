@@ -34,7 +34,7 @@ public class Section {
         if (!direction) {
             downStation = section.upStation;
         }
-        distance = distance - section.distance;
+        distance -= section.distance;
     }
 
     private void checkStations(Section section) {
@@ -47,6 +47,11 @@ public class Section {
         if (section.distance >= distance) {
             throw new IllegalArgumentException("기존 구간보다 거리가 길어 추가할 수 없습니다.");
         }
+    }
+
+    public void mergeWith(Section section) {
+        downStation = section.downStation;
+        distance += section.distance;
     }
 
     boolean hasSameUpStationWith(Section section) {

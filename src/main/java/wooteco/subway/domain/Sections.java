@@ -58,7 +58,17 @@ public class Sections {
         if (station.equals(getDownTermination())) {
             return sections.removeLast();
         }
-        return null;
+        return mergeAndDelete(station);
+    }
+
+    private Section mergeAndDelete(Station station) {
+        Section originalSection = findSection((section) -> section.isDownStation(station));
+        if (originalSection == null) {
+            throw new IllegalArgumentException("해당 역은 노선에 존재하지 않습니다.");
+        }
+        int mergingIndex = sections.indexOf(originalSection) + 1;
+        originalSection.mergeWith(sections.get(mergingIndex));
+        return sections.remove(mergingIndex);
     }
 
     private void checkSize() {
