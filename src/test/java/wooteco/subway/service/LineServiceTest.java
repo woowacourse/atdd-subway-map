@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,15 +52,17 @@ class LineServiceTest {
         Station upStation = stationDao.save(new Station("강남역"));
         Station downStation = stationDao.save(new Station("역삼역"));
         LineRequest lineRequest = new LineRequest("2호선", "초록색", upStation.getId(), downStation.getId(), 1);
-        List<StationResponse> stationResponses = Stream.of(upStation, downStation)
-                .map(StationResponse::new)
-                .collect(Collectors.toUnmodifiableList());
 
         LineResponse actual = lineService.create(lineRequest);
-        LineResponse expected = new LineResponse(actual.getId(), lineRequest.getName(), lineRequest.getColor(),
-                stationResponses);
+        List<StationResponse> actualStations = actual.getStations();
 
-        assertEquals(expected, actual);
+        assertThat(actual.getId()).isNotNull();
+        assertThat(actual.getName()).isEqualTo(lineRequest.getName());
+        assertThat(actualStations).extracting(StationResponse::getId, StationResponse::getName)
+                .containsOnly(
+                        tuple(upStation.getId(), upStation.getName()),
+                        tuple(downStation.getId(), downStation.getName())
+                );
     }
 
     @Disabled
