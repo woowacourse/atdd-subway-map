@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.line;
 
 import java.util.List;
 import wooteco.subway.domain.Line;

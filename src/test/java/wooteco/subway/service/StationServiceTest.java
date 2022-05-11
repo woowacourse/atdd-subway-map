@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.StationMockDao;
+import wooteco.subway.dao.station.StationMockDao;
 import wooteco.subway.domain.Station;
 
 class StationServiceTest {

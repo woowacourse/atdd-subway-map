@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.section;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

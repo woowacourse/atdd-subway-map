@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.station;
 
 import java.sql.PreparedStatement;
 import java.util.List;

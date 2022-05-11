@@ -7,8 +7,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.SectionMockDao;
-import wooteco.subway.dao.StationMockDao;
+import wooteco.subway.dao.section.SectionMockDao;
+import wooteco.subway.dao.station.StationMockDao;
 import wooteco.subway.domain.Section;
 
 public class SectionServiceTest {

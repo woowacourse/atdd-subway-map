@@ -2,8 +2,8 @@ package wooteco.subway.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.line.LineDao;
+import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
