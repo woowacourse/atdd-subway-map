@@ -22,17 +22,16 @@ public class SectionService {
     }
 
     public void createSection(Long lineId, SectionRequest sectionRequest) {
-        checkStationExist(sectionRequest.getUpStationId());
-        checkStationExist(sectionRequest.getDownStationId());
+        Station upStation = getStation(sectionRequest.getUpStationId());
+        Station downStation = getStation(sectionRequest.getDownStationId());
+
+        Sections sections = getSectionsByLineId(lineId);
+        sections.checkAddSection(upStation, downStation, sectionRequest.getDistance());
 
         SectionEntity sectionEntity = new SectionEntity.Builder(lineId, sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(), sectionRequest.getDistance())
                 .build();
         sectionDao.save(sectionEntity);
-    }
-
-    private void checkStationExist(Long stationId) {
-        stationService.findById(stationId);
     }
 
     public List<Station> getOrderedStations(Long lineId) {
@@ -42,7 +41,10 @@ public class SectionService {
 
     private Sections getSectionsByLineId(Long lineId) {
         List<Section> sections = new ArrayList<>();
-        for (SectionEntity sectionEntity : sectionDao.findAllByLineId(lineId)) {
+
+        List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(lineId);
+
+        for (SectionEntity sectionEntity : sectionEntities) {
             Station upStation = getStation(sectionEntity.getUpStationId());
             Station downStation = getStation(sectionEntity.getDownStationId());
 

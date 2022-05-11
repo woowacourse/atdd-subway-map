@@ -24,8 +24,8 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorMessageResponse> handleException() {
-        ErrorMessageResponse errorMessageResponse = new ErrorMessageResponse(INTERNAL_EXCEPTION_MESSAGE);
+    public ResponseEntity<ErrorMessageResponse> handleException(Exception e) {
+        ErrorMessageResponse errorMessageResponse = new ErrorMessageResponse(e.getMessage());
         return ResponseEntity.internalServerError().body(errorMessageResponse);
     }
 }
