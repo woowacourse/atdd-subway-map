@@ -50,8 +50,20 @@ public class SectionService {
     }
 
     private void validateStations(long id, long upStationId, long downStationId) {
+        checkBothExist(id, upStationId, downStationId);
+        checkBothDoNotExist(id, upStationId, downStationId);
+    }
+
+    private void checkBothExist(long id, long upStationId, long downStationId) {
         if (sectionDao.findByUpStationAndDownStation(id, upStationId, downStationId).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
+        }
+    }
+
+    private void checkBothDoNotExist(long id, long upStationId, long downStationId) {
+        if (sectionDao.findDistanceByUpStationId(id, upStationId).isEmpty() && sectionDao.findDistanceByDownStationId(
+                id, downStationId).isEmpty()) {
+            throw new IllegalArgumentException("상행역과 하행역 모두 존재하지 않습니다.");
         }
     }
 

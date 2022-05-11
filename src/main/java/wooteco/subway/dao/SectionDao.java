@@ -40,14 +40,14 @@ public class SectionDao {
         return findDistanceByDownStationId(lineId, downStationId);
     }
 
-    private Optional<Integer> findDistanceByUpStationId(long lineId, long upStationId) {
+    public Optional<Integer> findDistanceByUpStationId(long lineId, long upStationId) {
         String sql = "SELECT distance FROM section WHERE line_id = :lineId AND up_station_id = :upStationId";
         SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
                 .addValue("lineId", lineId);
         return getDistance(sql, parameterSource);
     }
 
-    private Optional<Integer> findDistanceByDownStationId(long lineId, long downStationId) {
+    public Optional<Integer> findDistanceByDownStationId(long lineId, long downStationId) {
         String sql = "SELECT distance FROM section WHERE line_id = :lineId AND down_station_id = :downStationId";
         SqlParameterSource parameterSource = new MapSqlParameterSource("downStationId", downStationId)
                 .addValue("lineId", lineId);

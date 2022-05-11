@@ -54,7 +54,7 @@ public class SectionServiceTest {
 
     @Test
     @DisplayName("이미 존재하는 구간을 추가하면 예외를 반환한다.")
-    void create_inValidStations_bothExists() {
+    void create_inValidStations_bothExist() {
         sectionDao.save(1L, 1L, 2L, 5);
 
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 3);
@@ -62,5 +62,15 @@ public class SectionServiceTest {
         assertThatThrownBy(() -> sectionService.create(1L, sectionRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 구간입니다.");
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역이 모두 존재하지 않는 구간을 추가하면 예외를 반환한다.")
+    void create_inValidStations_bothDoNotExist() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 3);
+
+        assertThatThrownBy(() -> sectionService.create(1L, sectionRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역 모두 존재하지 않습니다.");
     }
 }
