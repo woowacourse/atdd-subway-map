@@ -53,10 +53,4 @@ public class LineService {
             throw new DuplicateNameException("이미 존재하는 노선입니다.");
         }
     }
-
-    private void validateExist(final Long id) {
-        if (!lineDao.existById(id)) {
-            throw new DataNotFoundException("대상 노선 ID가 존재하지 않습니다.");
-        }
-    }
 }

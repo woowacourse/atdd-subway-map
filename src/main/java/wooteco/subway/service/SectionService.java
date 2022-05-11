@@ -36,7 +36,7 @@ public class SectionService {
         sections.add(newSection);
 
         lineSections.add(newSection);
-        List<Section> sectionsToUpdate = sections.extract(lineSections);
+        List<Section> sectionsToUpdate = sections.getDeletedSections(lineSections);
         for (Section sectionToUpdate : sectionsToUpdate) {
             sectionDao.update(sectionToUpdate.getId(), sectionToUpdate);
         }

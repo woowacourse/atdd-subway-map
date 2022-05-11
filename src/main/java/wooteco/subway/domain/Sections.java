@@ -30,7 +30,7 @@ public class Sections {
         value.add(section);
     }
 
-    public List<Section> extract(final List<Section> sections) {
+    public List<Section> getDeletedSections(final List<Section> sections) {
         List<Section> origin = new ArrayList<>(value);
         origin.removeAll(sections);
         return origin;
@@ -75,12 +75,6 @@ public class Sections {
         return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation))
                 .distinct()
                 .collect(Collectors.toList());
-    }
-
-    public boolean isBranched(final Section other) {
-        final Optional<Section> upSection = findUpSection(other);
-        final Optional<Section> downSection = findDownSection(other);
-        return upSection.isPresent() || downSection.isPresent();
     }
 
     private void update(final Section source, final Section target) {
