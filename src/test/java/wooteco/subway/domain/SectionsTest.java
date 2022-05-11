@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +20,7 @@ class SectionsTest {
     private final Long lineId = 1L;
     private final Section first = new Section(1L, lineId, 2L, 3L, 8);
     private final Section second = new Section(2L, lineId, 3L, 4L, 8);
-    private final Sections sections = new Sections(new ArrayList<>(Arrays.asList(first, second)));
+    private final Sections sections = new Sections(new ArrayList<>(Arrays.asList(second, first)));
 
     @DisplayName("이미 존재하는 역들로 이루어진 구간을 추가하려고 하면 예외를 발생시킨다.")
     @ParameterizedTest
@@ -80,6 +81,15 @@ class SectionsTest {
                 .doesNotThrowAnyException();
     }
 
+    @DisplayName("다른 Sections를 받아, 자신과 다른 Section들을 반환한다.")
+    @Test
+    void findDifferentSections() {
+        Section third = new Section(3L, lineId, 4L, 5L, 8);
+        Sections another = new Sections(Arrays.asList(second, third));
+
+        assertThat(sections.findDifferentSections(another)).isEqualTo(Collections.singletonList(first));
+    }
+
     @DisplayName("동일한 상행선을 기준으로 구간 사이에 새로운 구간을 추가할 수 있다.")
     @Test
     void addBetweenBasedOnUpStation() {
@@ -102,5 +112,21 @@ class SectionsTest {
         final Sections updated = sections.connect(newSection);
 
         assertThat(updated).isEqualTo(expected);
+    }
+
+    @DisplayName("상행역의 id를 반환한다.")
+    @Test
+    void findUpStationId() {
+        Long upStationId = sections.findUpStationId();
+
+        assertThat(upStationId).isEqualTo(2L);
+    }
+
+    @DisplayName("하행역의 id를 반환한다.")
+    @Test
+    void findDownStationId() {
+        Long upStationId = sections.findDownStationId();
+
+        assertThat(upStationId).isEqualTo(4L);
     }
 }
