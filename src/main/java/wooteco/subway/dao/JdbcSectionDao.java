@@ -75,6 +75,14 @@ public class JdbcSectionDao {
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
     }
 
+    public Sections findByLineIdAndStationIds(Long lineId, Long upStationId, Long downStationId) {
+        String sql = "select * from section where line_id = ? and ("
+                + "up_station_id = ? or up_station_id = ? or down_station_id = ? or down_station_id = ?"
+                + ")";
+        List<Section> sections = jdbcTemplate.query(sql, rowMapper, lineId, upStationId, downStationId, upStationId, downStationId);
+        return new Sections(sections);
+    }
+
     public boolean updateDownStationIdByLineIdAndUpStationId(Long lineId, Long upStationId, Long downStationId) {
         String sql = "update section set down_station_id = ? where line_id = ? and up_station_id = ?";
         return jdbcTemplate.update(sql, downStationId, lineId, upStationId) == FUNCTION_SUCCESS;

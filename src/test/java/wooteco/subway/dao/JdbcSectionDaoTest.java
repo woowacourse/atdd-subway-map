@@ -146,4 +146,16 @@ class JdbcSectionDaoTest {
         boolean isExist = jdbcSectionDao.isExistByLineIdAndDownStationId(lineId, 4L);
         assertThat(isExist).isTrue();
     }
+
+    @DisplayName("해당 라인과 지하철역 2개에 관련된 구간들을 조회한다.")
+    @Test
+    void  findByLineIdAndStationIds() {
+        Section section1 = new Section(lineId, 3L, 4L, 5);
+        jdbcSectionDao.save(section1);
+        Section section2 = new Section(lineId, 4L, 5L, 5);
+        jdbcSectionDao.save(section2);
+
+        Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, 4L, 6L);
+        assertThat(sections.getSections().size()).isEqualTo(2);
+    }
 }
