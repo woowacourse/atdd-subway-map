@@ -7,13 +7,13 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.IllegalSectionException;
 
-public class Sections {
+public class SectionsOnTheLine {
 
     public static final int SINGLE_COUNT = 1;
 
     private final List<Section> sections;
 
-    public Sections(final List<Section> sections) {
+    public SectionsOnTheLine(final List<Section> sections) {
         this.sections = new ArrayList<>(sections);
     }
 

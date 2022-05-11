@@ -1,13 +1,12 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.SectionsOnTheLine;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.LineRequestDto;
 import wooteco.subway.dto.request.SectionRequestDto;
@@ -50,7 +49,7 @@ public class LineService {
 
     public Line searchLineById(final Long id) {
         final LineEntity lineEntity = lineDao.findById(id);
-        final List<Station> stations = new Sections(searchSectionsByLineId(id)).lineUpStations();
+        final List<Station> stations = new SectionsOnTheLine(searchSectionsByLineId(id)).lineUpStations();
         return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), stations);
     }
 
@@ -59,7 +58,7 @@ public class LineService {
                 .stream()
                 .map(lineEntity -> {
                     final Long id = lineEntity.getId();
-                    final List<Station> stations = new Sections(searchSectionsByLineId(id)).lineUpStations();
+                    final List<Station> stations = new SectionsOnTheLine(searchSectionsByLineId(id)).lineUpStations();
                     return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), stations);
                 }).collect(Collectors.toList());
     }
@@ -77,9 +76,9 @@ public class LineService {
         final Station upStation = stationService.searchById(sectionRequestDto.getUpStationId());
         final Station downStation = stationService.searchById(sectionRequestDto.getDownStationId());
         final Section section = new Section(upStation, downStation, sectionRequestDto.getDistance());
-        final Sections sections = new Sections(searchSectionsByLineId(line.getId()));
-        if (sections.isAddableOnTheLine(section)) {
-            final Section overlapSection = sections.findOverlapSection(section);
+        final SectionsOnTheLine sectionsOnTheLine = new SectionsOnTheLine(searchSectionsByLineId(line.getId()));
+        if (sectionsOnTheLine.isAddableOnTheLine(section)) {
+            final Section overlapSection = sectionsOnTheLine.findOverlapSection(section);
             registerSectionWhenOnLine(line.getId(), section, overlapSection);
             return;
         }
@@ -122,14 +121,14 @@ public class LineService {
     public void removeSection(final Long lineId, final Long stationId) {
         final Line line = searchLineById(lineId);
         final Station station = stationService.searchById(stationId);
-        final Sections sections = new Sections(searchSectionsByLineId(line.getId()));
-        validateRemoveSection(station, sections);
-        if (sections.isTerminus(station)) {
+        final SectionsOnTheLine sectionsOnTheLine = new SectionsOnTheLine(searchSectionsByLineId(line.getId()));
+        validateRemoveSection(station, sectionsOnTheLine);
+        if (sectionsOnTheLine.isTerminus(station)) {
             sectionDao.deleteByLineIdAndStationId(line.getId(), station.getId());
             return;
         }
-        Section upperSection = sections.findByDownStation(station);
-        Section lowerSection = sections.findByUpStation(station);
+        Section upperSection = sectionsOnTheLine.findByDownStation(station);
+        Section lowerSection = sectionsOnTheLine.findByUpStation(station);
         Section section = new Section(
                 upperSection.getUpStation(),
                 lowerSection.getDownStation(),
@@ -139,8 +138,8 @@ public class LineService {
         sectionDao.save(new SectionEntity(line.getId(), section));
     }
 
-    private void validateRemoveSection(final Station station, final Sections sections) {
-        if (!sections.contains(station) || sections.hasSingleSection()) {
+    private void validateRemoveSection(final Station station, final SectionsOnTheLine sectionsOnTheLine) {
+        if (!sectionsOnTheLine.contains(station) || sectionsOnTheLine.hasSingleSection()) {
             throw new CanNotDeleteException();
         }
     }

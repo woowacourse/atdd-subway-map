@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.repository.entity.SectionEntity;
 
 @Repository
-public class JdbcSectionDao {
+public class JdbcSectionDao implements SectionDao {
 
     private static final RowMapper<SectionEntity> rowMapper = (resultSet, rowNum) -> new SectionEntity(
             resultSet.getLong("id"),
@@ -31,6 +31,7 @@ public class JdbcSectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public SectionEntity save(final SectionEntity sectionEntity) {
         final String sql = "insert into SECTION(line_id, up_station_id, down_station_id, distance)"
                 + " values(:lineId, :upStationId, :downStationId, :distance)";
@@ -41,6 +42,7 @@ public class JdbcSectionDao {
         return sectionEntity.fillId(id);
     }
 
+    @Override
     public List<SectionEntity> findByLineId(final Long lineId) {
         final String sql = "select id, line_id, up_station_id, down_station_id, distance"
                 + " from SECTION"
@@ -51,6 +53,18 @@ public class JdbcSectionDao {
         return jdbcTemplate.query(sql, source, rowMapper);
     }
 
+    @Override
+    public List<SectionEntity> findByStationId(final Long stationId) {
+        final String sql = "select id, line_id, up_station_id, down_station_id, distance"
+                + " from SECTION"
+                + " where up_station_id = :stationId or down_station_id = :stationId";
+        final Map<String, Long> params = new HashMap<>();
+        params.put("stationId", stationId);
+        final SqlParameterSource source = new MapSqlParameterSource(params);
+        return jdbcTemplate.query(sql, source, rowMapper);
+    }
+
+    @Override
     public void update(final SectionEntity sectionEntity) {
         final String sql = "update SECTION set"
                 + " up_station_id = :upStationId,"
@@ -61,6 +75,7 @@ public class JdbcSectionDao {
         jdbcTemplate.update(sql, source);
     }
 
+    @Override
     public void deleteByLineIdAndStationId(final Long lineId, final Long stationId) {
         final String sql = "delete from SECTION"
                 + " where line_id = :lineId"
