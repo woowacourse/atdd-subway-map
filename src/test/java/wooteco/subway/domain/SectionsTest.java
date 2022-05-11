@@ -202,4 +202,18 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간이 1개 이므로 삭제할 수 없습니다.");
     }
+
+    @DisplayName("종점 구간을 삭제한다.")
+    @ParameterizedTest
+    @ValueSource(longs = {2, 3})
+    void deleteEndSection(final long stationId) {
+
+        final Station station = new Station(3L, "광나루역");
+        final Section newSection = new Section(2L, station, station1, 10, 1L);
+        final Sections newSections = new Sections(List.of(section, newSection));
+
+        newSections.delete(stationId);
+
+        assertThat(newSections.getSections().size()).isOne();
+    }
 }
