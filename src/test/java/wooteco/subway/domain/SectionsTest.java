@@ -72,20 +72,6 @@ class SectionsTest {
         assertThat(sections.isNonMatchStations(4L, 5L)).isTrue();
     }
 
-    @DisplayName("구간들 중에서 상행역을 같는 구간을 찾는다.")
-    @Test
-    void getSectionByUpStationId() {
-        Section section = sections.getSectionByUpStationId(middleStation.getId());
-        assertThat(section.getUpStation()).isEqualTo(middleStation);
-    }
-
-    @DisplayName("구간들 중에서 하행역을 같는 구간을 찾는다.")
-    @Test
-    void getSectionByDownStationId() {
-        Section section = sections.getSectionByDownStationId(downStation.getId());
-        assertThat(section.getDownStation()).isEqualTo(downStation);
-    }
-
     @DisplayName("종점이 아닌 구간 중 해당하는 구간을 찾는다.")
     @Test
     void findTargetWithNotTerminal(){

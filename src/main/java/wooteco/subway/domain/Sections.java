@@ -61,20 +61,6 @@ public class Sections {
                 .noneMatch(section -> section.haveStationId(upStationId, downStationId));
     }
 
-    public Section getSectionByUpStationId(Long upStationId) {
-        return sections.stream()
-                .filter(section -> section.getUpStation().getId().equals(upStationId))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("[ERROR] 상행 역을 찾을 수 없습니다."));
-    }
-
-    public Section getSectionByDownStationId(Long downStationId) {
-        return sections.stream()
-                .filter(section -> section.getDownStation().getId().equals(downStationId))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("[ERROR] 하행 역을 찾을 수 없습니다."));
-    }
-
     public List<Section> delete(Station station) {
         validateMinSize();
         List<Section> bucket = new LinkedList<>();
