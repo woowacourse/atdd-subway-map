@@ -70,33 +70,6 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    private Line findLine(Long id) {
-        return lineDao.findById(id)
-            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
-    }
-
-    private List<Station> getStations(Long lineId) {
-        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
-        return sections.getStations();
-    }
-
-    private void validateDuplicateNameAndColor(String name, String color) {
-        if (lineDao.existByNameAndColor(name, color)) {
-            throw new BadRequestException("노선이 이름과 색상은 중복될 수 없습니다.");
-        }
-    }
-
-    private List<Section> toSections(List<SectionEntity> entities) {
-        return entities.stream()
-            .map(entity -> new Section(
-                entity.getId(),
-                findLine(entity.getLineId()),
-                stationDao.findById(entity.getUpStationId()).orElseThrow(),
-                stationDao.findById(entity.getDownStationId()).orElseThrow(),
-                entity.getDistance()))
-            .collect(Collectors.toList());
-    }
-
     public void createSection(Long lineId, SectionRequest request) {
         Line line = findLine(lineId);
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
@@ -138,6 +111,33 @@ public class LineService {
         for (Section removedSection : removedSections) {
             sectionDao.deleteById(removedSection.getId());
         }
+    }
+
+    private Line findLine(Long id) {
+        return lineDao.findById(id)
+            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
+    }
+
+    private List<Station> getStations(Long lineId) {
+        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        return sections.getStations();
+    }
+
+    private void validateDuplicateNameAndColor(String name, String color) {
+        if (lineDao.existByNameAndColor(name, color)) {
+            throw new BadRequestException("노선이 이름과 색상은 중복될 수 없습니다.");
+        }
+    }
+
+    private List<Section> toSections(List<SectionEntity> entities) {
+        return entities.stream()
+            .map(entity -> new Section(
+                entity.getId(),
+                findLine(entity.getLineId()),
+                stationDao.findById(entity.getUpStationId()).orElseThrow(),
+                stationDao.findById(entity.getDownStationId()).orElseThrow(),
+                entity.getDistance()))
+            .collect(Collectors.toList());
     }
 }
 

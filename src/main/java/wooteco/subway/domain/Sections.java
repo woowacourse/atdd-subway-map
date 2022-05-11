@@ -14,14 +14,32 @@ public class Sections {
         values = sort(new ArrayList<>(sections));
     }
 
-    public boolean existUpStation(Station station) {
-        return values.stream()
-            .anyMatch(value -> value.isEqualToUpStation(station));
+    public List<Section> add(Section section) {
+        if (containsSection(section)) {
+            throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
+        }
+
+        if (hasNotAnyStation(section)) {
+            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
+        }
+
+        if (existUpStation(section.getUpStation())) {
+            Section findSection = findContainsUpStation(section.getUpStation());
+            return findSection.splitFromUpStation(section);
+        }
+
+        if (existDownStation(section.getDownStation())) {
+            Section findSection = findContainsDownStation(section.getDownStation());
+            return findSection.splitFromDownStation(section);
+        }
+
+        return findSection(section);
     }
 
-    public boolean existDownStation(Station station) {
+    public List<Section> deleteStation(Station station) {
         return values.stream()
-            .anyMatch(value -> value.getDownStation().equals(station));
+            .filter(value -> value.getUpStation().equals(station) || value.getDownStation().equals(station))
+            .collect(Collectors.toList());
     }
 
     public Section findContainsUpStation(Station station) {
@@ -53,12 +71,6 @@ public class Sections {
         return values;
     }
 
-    public List<Section> deleteStation(Station station) {
-        return values.stream()
-            .filter(value -> value.getUpStation().equals(station) || value.getDownStation().equals(station))
-            .collect(Collectors.toList());
-    }
-
     private Station findFirstStation(List<Section> sections) {
         List<Station> upStations = createUpStations(sections);
         List<Station> downStations = createDownStations(sections);
@@ -81,39 +93,14 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public List<Station> getStations() {
-        Set<Station> stations = new LinkedHashSet<>();
-        for (Section value : values) {
-            stations.add(value.getUpStation());
-            stations.add(value.getDownStation());
-        }
-        return List.copyOf(stations);
+    private boolean existUpStation(Station station) {
+        return values.stream()
+            .anyMatch(value -> value.isEqualToUpStation(station));
     }
 
-    public List<Section> getValues() {
-        return List.copyOf(values);
-    }
-
-    public List<Section> add(Section section) {
-        if (containsSection(section)) {
-            throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
-        }
-
-        if (hasNotAnyStation(section)) {
-            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
-        }
-
-        if (existUpStation(section.getUpStation())) {
-            Section findSection = findContainsUpStation(section.getUpStation());
-            return findSection.splitFromUpStation(section);
-        }
-
-        if (existDownStation(section.getDownStation())) {
-            Section findSection = findContainsDownStation(section.getDownStation());
-            return findSection.splitFromDownStation(section);
-        }
-
-        return findSection(section);
+    private boolean existDownStation(Station station) {
+        return values.stream()
+            .anyMatch(value -> value.isEqualToDownStation(station));
     }
 
     private List<Section> findSection(Section section) {
@@ -132,4 +119,17 @@ public class Sections {
             .anyMatch(value -> value.equals(section));
     }
 
+
+    public List<Station> getStations() {
+        Set<Station> stations = new LinkedHashSet<>();
+        for (Section value : values) {
+            stations.add(value.getUpStation());
+            stations.add(value.getDownStation());
+        }
+        return List.copyOf(stations);
+    }
+
+    public List<Section> getValues() {
+        return List.copyOf(values);
+    }
 }
