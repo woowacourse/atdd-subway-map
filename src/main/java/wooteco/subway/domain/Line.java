@@ -10,6 +10,13 @@ public class Line {
     private String color;
     private Sections sections;
 
+    public Line(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections(upStation, downStation, distance);
+    }
+
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;

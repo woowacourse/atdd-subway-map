@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.Fixture.강남역;
+import static wooteco.subway.Fixture.청계산입구역;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +27,7 @@ class LineDaoTest {
 
     @Test
     void save() {
-        final Line createdLine = lineDao.save(new Line("8호선", "핑크"));
+        final Line createdLine = lineDao.save(new Line("8호선", "핑크", 강남역, 청계산입구역, 1));
         assertThat(createdLine.getId()).isEqualTo(4L);
     }
 
@@ -51,7 +53,7 @@ class LineDaoTest {
 
     @Test
     void findById() {
-        Line line = new Line("2호선", "초록이");
+        Line line = new Line("2호선", "초록이", 강남역, 청계산입구역, 1);
         final Line createdLine = lineDao.save(line);
 
         final Line foundLine = lineDao.findById(createdLine.getId());
