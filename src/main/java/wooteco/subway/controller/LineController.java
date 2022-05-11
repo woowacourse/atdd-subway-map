@@ -41,7 +41,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<ResponseLineInfo> lineInfos = lineService.findAll();
         List<LineResponse> lineResponses = lineInfos.stream()
-            .map(info -> LineConverter.toResponse(info))
+            .map(LineConverter::toResponse)
             .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
