@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -63,6 +64,22 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 requestToConnectNewSection(1L, upStationId, downStationId, "8");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간을 삭제할 수 있다.")
+    @ParameterizedTest
+    @ValueSource(longs = {2, 3, 4})
+    void delete(Long stationId) {
+        requestToConnectNewSection(1L, "3", "4", "2");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> requestToConnectNewSection(Long lineId, String upStationId,
