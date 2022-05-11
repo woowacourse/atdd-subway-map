@@ -55,7 +55,7 @@ public class SectionDaoTest {
         Section section = new Section(upStation, downStation, 1);
         sectionDao.save(line, section);
 
-        Section persistSection = sectionDao.findAllByLineId(line).get(0);
+        Section persistSection = sectionDao.findAllByLine(line).get(0);
 
         assertThat(persistSection).usingRecursiveComparison()
                 .ignoringFields("id")
@@ -74,9 +74,9 @@ public class SectionDaoTest {
         sectionDao.save(line, section1);
         sectionDao.save(line, section2);
 
-        sectionDao.deleteByLineIdAndStationId(line, station3);
+        sectionDao.deleteByLineAndStation(line, station3);
 
-        List<Section> sections = sectionDao.findAllByLineId(line);
+        List<Section> sections = sectionDao.findAllByLine(line);
 
         assertThat(sections.size()).isEqualTo(1);
         assertThat(sections.get(0)).usingRecursiveComparison()
