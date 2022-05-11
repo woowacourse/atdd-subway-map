@@ -18,12 +18,12 @@ public class AcceptanceTest {
     int port;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         RestAssured.port = port;
     }
 
     @AfterEach
-    public void afterEach() {
+    void afterEach() {
         jdbcTemplate.execute("DELETE FROM section");
         jdbcTemplate.execute("DELETE FROM station");
         jdbcTemplate.execute("DELETE FROM line");
