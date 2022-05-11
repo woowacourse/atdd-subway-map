@@ -35,9 +35,16 @@ public class SectionService {
         Sections sections = new Sections(findAllByLineId(lineId));
         List<Long> stationIds = sections.findStationIds();
         List<Station> stations = stationDao.findAll();
-        return stations.stream()
-                .filter(station -> stationIds.contains(station.getId()))
+        return stationIds.stream()
+                .map(id -> getStationById(stations, id))
                 .collect(Collectors.toList());
+    }
+
+    private Station getStationById(List<Station> stations, Long id) {
+        return stations.stream()
+                .filter(station -> station.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("지하철역을 찾을 수 없습니다."));
     }
 
     public List<Section> findAllByLineId(Long lineId) {
