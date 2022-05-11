@@ -39,7 +39,8 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(new LineDao(jdbcTemplate), new SectionDao(jdbcTemplate));
+        lineService = new LineService(new LineDao(jdbcTemplate), new StationDao(jdbcTemplate),
+                new SectionDao(jdbcTemplate));
         stationService = new StationService(new StationDao(jdbcTemplate));
 
         createdStation1 = stationService.createStation(new StationRequest("선릉역"));

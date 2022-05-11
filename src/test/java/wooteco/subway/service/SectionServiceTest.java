@@ -44,7 +44,8 @@ class SectionServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(new LineDao(jdbcTemplate), new SectionDao(jdbcTemplate));
+        lineService = new LineService(new LineDao(jdbcTemplate), new StationDao(jdbcTemplate),
+                new SectionDao(jdbcTemplate));
         stationService = new StationService(new StationDao(jdbcTemplate));
         sectionService = new SectionService(new SectionDao(jdbcTemplate));
 
