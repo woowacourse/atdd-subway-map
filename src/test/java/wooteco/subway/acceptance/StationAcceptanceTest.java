@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,26 +52,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        /// given
-        Map<String, String> firstCreateParam = new HashMap<>();
-        firstCreateParam.put("name", "강남역");
-        ExtractableResponse<Response> firstCreateResponse = post("/stations", firstCreateParam);
-
-        Map<String, String> secondCreateParam = new HashMap<>();
-        secondCreateParam.put("name", "역삼역");
-        ExtractableResponse<Response> secondCreateResponse = post("/stations", secondCreateParam);
+        // given
+        Long station1 = postStationAndGetId("구의역");
+        Long station2 = postStationAndGetId("선릉역");
 
         // when
         ExtractableResponse<Response> response = get("/stations");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(firstCreateResponse, secondCreateResponse)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
+        List<Long> expectedLineIds = List.of(station1, station2);
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -97,6 +90,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = delete("/stations/1");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @DisplayName("구간에 포함되어있는 지하철역을 제거한다.")
+    @Test
+    void deleteStationInSection() {
+        // given
+        Long upStation = postStationAndGetId("구의역");
+        Long downStation = postStationAndGetId("선릉역");
+        Long line = postLineAndGetId("2호선", "green", upStation, downStation, 10);
+
+        // when
+        ExtractableResponse<Response> response = delete("/stations/" + upStation);
 
         // then
         assertThat(response.statusCode()).isEqualTo(400);

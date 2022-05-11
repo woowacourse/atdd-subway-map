@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.StationRequest;
@@ -19,12 +20,14 @@ import static org.mockito.BDDMockito.given;
 
 class StationServiceTest {
     StationDao stationDao;
+    SectionDao sectionDao;
     StationService stationService;
 
     @BeforeEach
     public void setUp() {
         stationDao = Mockito.mock(StationDao.class);
-        stationService = new StationService(stationDao);
+        sectionDao = Mockito.mock(SectionDao.class);
+        stationService = new StationService(stationDao, sectionDao);
     }
 
     @Test
@@ -71,5 +74,15 @@ class StationServiceTest {
     @DisplayName("지하철 역을 삭제할 수 있다.")
     void delete() {
         assertDoesNotThrow(() -> stationService.delete(1L));
+    }
+
+    @Test
+    @DisplayName("노선에 등록되어있는 역이라면 삭제할 수 없다.")
+    void cantDelete() {
+        given(sectionDao.isStationExist(1L)).willReturn(true);
+
+        assertThatThrownBy(() -> stationService.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("구간에 존재하는 역은 삭제할 수 없습니다.");
     }
 }
