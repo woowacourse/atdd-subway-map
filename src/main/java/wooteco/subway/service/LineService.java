@@ -138,17 +138,24 @@ public class LineService {
     public void delete(Long lineId, Long stationId) {
         Station station = stationDao.findById(stationId).orElseThrow();
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
-        Section upSection = sections.findContainsDownStation(station);
-        Section downSection = sections.findContainsUpStation(station);
+        List<Section> removedSections = sections.deleteStation(station);
+        if (removedSections.size() == 2) {
+            Section upSection = sections.findContainsDownStation(station);
+            Section downSection = sections.findContainsUpStation(station);
+            sectionDao.save(new Section(
+                findLine(lineId),
+                upSection.getUpStation(),
+                downSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance())
+            );
+            sectionDao.deleteById(upSection.getId());
+            sectionDao.deleteById(downSection.getId());
+            return;
+        }
 
-        sectionDao.save(new Section(
-            findLine(lineId),
-            upSection.getUpStation(),
-            downSection.getDownStation(),
-            upSection.getDistance() + downSection.getDistance())
-        );
-        sectionDao.deleteById(upSection.getId());
-        sectionDao.deleteById(downSection.getId());
+        for (Section removedSection : removedSections) {
+            sectionDao.deleteById(removedSection.getId());
+        }
     }
 }
 

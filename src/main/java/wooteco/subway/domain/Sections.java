@@ -53,6 +53,12 @@ public class Sections {
         return values;
     }
 
+    public List<Section> deleteStation(Station station) {
+        return values.stream()
+            .filter(value -> value.getUpStation().equals(station) || value.getDownStation().equals(station))
+            .collect(Collectors.toList());
+    }
+
     private Station findFirstStation(List<Section> sections) {
         List<Station> upStations = createUpStations(sections);
         List<Station> downStations = createDownStations(sections);

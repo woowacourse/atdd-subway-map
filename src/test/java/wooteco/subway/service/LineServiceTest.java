@@ -141,7 +141,25 @@ class LineServiceTest {
 
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(신분당선.getId());
         assertThat(sectionEntities).hasSize(1);
-        assertThat(sectionEntities.get(0).getDistance()).isEqualTo(10);
+        assertThat(sectionEntities.get(0).getDistance()).isEqualTo(6);
+    }
+
+    @Test
+    @DisplayName("하행 종점을 삭제한다. 강남-양재-광교 -> 강남-양재")
+    void deleteDownSection() {
+        Station 강남 = stationDao.save(new Station("강남"));
+        Station 양재 = stationDao.save(new Station("양재"));
+        Station 광교 = stationDao.save(new Station("광교"));
+        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        sectionDao.save(new Section(신분당선, 강남, 광교, 10));
+        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest);
+
+        lineService.delete(신분당선.getId(), 광교.getId());
+
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(신분당선.getId());
+        assertThat(sectionEntities).hasSize(1);
+        assertThat(sectionEntities.get(0).getDistance()).isEqualTo(4);
     }
 
     @Test
