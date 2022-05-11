@@ -5,10 +5,10 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-
 import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
@@ -123,5 +123,17 @@ class LineServiceTest {
                 new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10)))
                 .isInstanceOf(ClientException.class)
                 .hasMessageContaining("등록된 지하철노선으로 변경할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("노선 정보 조회")
+    void find() {
+        Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
+        Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
+
+        LineRequest line = new LineRequest("4호선", "red", firstStation.getId(), secondStation.getId(), 10);
+        LineResponse newLine = lineService.createLine(line);
+
+        assertThat(lineService.findById(newLine.getId()).getName()).isEqualTo(line.getName());
     }
 }

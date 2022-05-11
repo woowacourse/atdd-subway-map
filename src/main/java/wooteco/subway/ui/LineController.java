@@ -38,15 +38,30 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        LineResponse lineResponse = lineService.findById(id);
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Void> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> modifyLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Section> saveSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        LineResponse line = lineService.findById(id);
+        Sections sections = lineService.findSections(id);
+
+        sectionService.saveSection(id, sectionRequest, sections, line);
+        return ResponseEntity.created(URI.create("/lines/" + id + "/sections")).build();
     }
 }

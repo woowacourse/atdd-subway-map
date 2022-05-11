@@ -46,11 +46,33 @@ public class LineService {
     public List<LineResponse> findAll() {
         List<LineResponse> responses = new ArrayList<>();
         for (Line line : lineDao.findAll()) {
-            responses.add(new LineResponse());
+            responses.add(makeLineResponseWithLinkedStations(line, sectionJdbcDao.find(line.getId())));
         }
         return responses;
     }
 
+    public LineResponse findById(Long id) {
+        Line line = lineDao.find(id);
+        Sections sections = sectionJdbcDao.find(line.getId());
+        return makeLineResponseWithLinkedStations(line, sections);
+    }
+
+    private LineResponse makeLineResponseWithLinkedStations(Line line, Sections sections) {
+        Set<Station> stations = new LinkedHashSet<>();
+        if (sections.isExistSection()) {
+            for (Section section : sections.linkSections()) {
+                stations.add(toMapStations().get(section.getUpStationId()));
+                stations.add(toMapStations().get(section.getDownStationId()));
+            }
+            return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+        }
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+    }
+
+    public Sections findSections(Long id) {
+        Sections sections = sectionJdbcDao.find(id);
+        return new Sections(sections.linkSections());
+    }
 
     private Map<Long, Station> toMapStations() {
         return stationDao.findAll()
@@ -70,3 +92,4 @@ public class LineService {
         return lineDao.delete(id);
     }
 }
+
