@@ -13,13 +13,8 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
-import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.repository.dao.LineDao;
-import wooteco.subway.repository.dao.SectionDao;
-import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.entity.LineEntity;
-import wooteco.subway.repository.entity.SectionEntity;
-import wooteco.subway.repository.entity.StationEntity;
 
 @Service
 public class LineService {
@@ -28,7 +23,8 @@ public class LineService {
     private final StationService stationService;
     private final SectionService sectionService;
 
-    public LineService(final LineDao lineDao, final StationService stationService,final SectionService sectionService) {
+    public LineService(final LineDao lineDao, final StationService stationService,
+                       final SectionService sectionService) {
         this.lineDao = lineDao;
         this.stationService = stationService;
         this.sectionService = sectionService;
@@ -45,8 +41,10 @@ public class LineService {
             final LineEntity savedLineEntity = lineDao.save(lineEntity);
             final Station upStation = stationService.searchById(upStationId);
             final Station downStation = stationService.searchById(downStationId);
-            final Sections sections = new Sections(new Section(savedLineEntity.getId(), upStation, downStation, distance));
-            final Line line = new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor(), sections);
+            final Sections sections = new Sections(
+                    new Section(savedLineEntity.getId(), upStation, downStation, distance));
+            final Line line = new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor(),
+                    sections);
             sectionService.resisterFirst(line.getId(), upStationId, downStationId, distance);
             return line;
         } catch (DataIntegrityViolationException e) {

@@ -1,8 +1,6 @@
 package wooteco.subway.repository.entity;
 
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 
 public class SectionEntity {
 

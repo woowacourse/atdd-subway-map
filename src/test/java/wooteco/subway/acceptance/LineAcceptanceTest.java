@@ -2,7 +2,8 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static wooteco.subway.Fixture.*;
+import static wooteco.subway.Fixture.createLineRequest;
+import static wooteco.subway.Fixture.save2StationsRequest;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

@@ -1,7 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.Fixture.*;
+import static wooteco.subway.Fixture.createStationRequest;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

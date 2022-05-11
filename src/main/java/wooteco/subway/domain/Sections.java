@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import wooteco.subway.exception.NotFoundStationException;
 
 public class Sections {
@@ -64,7 +63,8 @@ public class Sections {
         return Collections.unmodifiableList(value);
     }
 
-    public SectionsUpdateResult addSection(final Station newUpStation, final Station newDownStation, final Integer distance) {
+    public SectionsUpdateResult addSection(final Station newUpStation, final Station newDownStation,
+                                           final Integer distance) {
         validateStationRegistration(newUpStation, newDownStation);
 
         if (isResistedStation(newUpStation)) {
@@ -87,20 +87,21 @@ public class Sections {
         return value.stream()
                 .anyMatch(section ->
                         section.getDownStation().equals(station)
-                        || section.getUpStation().equals(station)
+                                || section.getUpStation().equals(station)
                 );
     }
 
     private SectionsUpdateResult addDownDirectionSection(final Station newUpStation,
-                                         final Station newDownStation,
-                                        final Integer distance) {
+                                                         final Station newDownStation,
+                                                         final Integer distance) {
         if (isUpStation(newUpStation)) {
             return splitInsertDownDirection(newUpStation, newDownStation, distance);
         }
         return simpleAddLast(newUpStation, newDownStation, distance);
     }
 
-    private SectionsUpdateResult simpleAddLast(final Station newUpStation, final Station newDownStation, final Integer distance) {
+    private SectionsUpdateResult simpleAddLast(final Station newUpStation, final Station newDownStation,
+                                               final Integer distance) {
         final List<Section> addedSections = new ArrayList<>();
         final Section section = Section.createWithoutId(newUpStation, newDownStation, distance);
         value.addLast(section);
@@ -230,7 +231,8 @@ public class Sections {
         return backSection;
     }
 
-    private List<Section> addNewMergedSection(final int sectionIndex, final Section frontSection, final Section backSection) {
+    private List<Section> addNewMergedSection(final int sectionIndex, final Section frontSection,
+                                              final Section backSection) {
         final List<Section> addedSections = new ArrayList<>();
         final Section newSection = mergeSection(frontSection, backSection);
         value.add(sectionIndex, newSection);

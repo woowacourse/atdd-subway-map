@@ -1,7 +1,8 @@
 package wooteco.subway.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ class SectionServiceTest {
     private final MockLineDao lineDao = new MockLineDao();
     private final MockStationDao stationDao = new MockStationDao();
     private final MockSectionDao sectionDao = new MockSectionDao();
-    private final StationService stationService  = new StationService(stationDao);
+    private final StationService stationService = new StationService(stationDao);
     private final SectionService sectionService = new SectionService(sectionDao, stationService);
     private final LineService lineService = new LineService(lineDao, stationService, sectionService);
 

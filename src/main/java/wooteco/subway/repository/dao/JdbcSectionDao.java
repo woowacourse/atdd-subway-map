@@ -13,9 +13,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.repository.entity.LineEntity;
 import wooteco.subway.repository.entity.SectionEntity;
-import wooteco.subway.repository.entity.StationEntity;
 
 @Repository
 public class JdbcSectionDao implements SectionDao {

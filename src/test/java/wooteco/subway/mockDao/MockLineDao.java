@@ -59,7 +59,8 @@ public class MockLineDao implements LineDao {
         }
         findById(newLineEntity.getId()).ifPresent(oldLineEntity -> {
             store.remove(oldLineEntity.getId());
-            store.put(oldLineEntity.getId(), new LineEntity(oldLineEntity.getId(), newLineEntity.getName(), newLineEntity.getColor()));
+            store.put(oldLineEntity.getId(),
+                    new LineEntity(oldLineEntity.getId(), newLineEntity.getName(), newLineEntity.getColor()));
         });
     }
 

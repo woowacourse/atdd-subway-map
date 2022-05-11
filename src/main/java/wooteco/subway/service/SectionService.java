@@ -22,7 +22,8 @@ public class SectionService {
         this.stationService = stationService;
     }
 
-    public Section resisterFirst(final Long lineId, final Long upStationId, final Long downStationId, final Integer distance) {
+    public Section resisterFirst(final Long lineId, final Long upStationId, final Long downStationId,
+                                 final Integer distance) {
         final Station upStation = stationService.searchById(upStationId);
         final Station downStation = stationService.searchById(downStationId);
 

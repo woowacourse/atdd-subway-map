@@ -1,10 +1,9 @@
 package wooteco.subway.repository.dao;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.repository.entity.LineEntity;
 import wooteco.subway.repository.entity.SectionEntity;
 import wooteco.subway.repository.entity.StationEntity;
-import wooteco.subway.service.LineService;
 
 @JdbcTest
 class JdbcSectionDaoTest {
