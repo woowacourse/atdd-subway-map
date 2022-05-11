@@ -59,6 +59,33 @@ class SectionsTest {
         assertThat(sections.getSortedStations().size()).isEqualTo(2);
     }
 
+    @DisplayName("가장 높은 상행역을 가진 구간 하나를 제거한다.")
+    @Test
+    void deleteSection_top() {
+        final Station firstStation = new Station(1L, "1번역");
+        final Station thirdStation = new Station(3L, "3번역");
+        final Section section = new Section(1L, firstStation, thirdStation, 7);
+
+        sections.addSection(section);
+        sections.deleteSection(firstStation);
+
+        assertThat(sections.getSortedStations().size()).isEqualTo(2);
+    }
+
+    @DisplayName("가장 낮은 하행역을 가진 구간 하나를 제거한다.")
+    @Test
+    void deleteSection_last() {
+        final Station firstStation = new Station(1L, "1번역");
+        final Station secondStation = new Station(2L, "2번역");
+        final Station thirdStation = new Station(3L, "3번역");
+        final Section section = new Section(1L, firstStation, thirdStation, 7);
+
+        sections.addSection(section);
+        sections.deleteSection(secondStation);
+
+        assertThat(sections.getSortedStations().size()).isEqualTo(2);
+    }
+
     @DisplayName("추가할 구간과 연결 가능한 역이 없으면 예외를 발생한다.")
     @Test
     void addSection_not_connect_exception() {
@@ -93,5 +120,17 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.addSection(section))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 구간의 길이가 추가하려는 구간의 길이보다 작거나 같습니다.");
+    }
+
+    @DisplayName("구간이 한개 있을때, 구간을 삭제하려고 하면 예외를 발생한다.")
+    @Test
+    void deleteSection_not_enough_size_exception() {
+        final Station firstStation = new Station(1L, "1번역");
+        final Station thirdStation = new Station(3L, "3번역");
+        final Section section = new Section(1L, firstStation, thirdStation, 10);
+
+        assertThatThrownBy(() -> sections.deleteSection(firstStation))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("현재 구간이 하나 있기때문에, 구간을 제거 할수 없습니다.");
     }
 }

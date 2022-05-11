@@ -141,16 +141,71 @@ public class Sections {
     }
 
     private void updateUpStationOfSectionFrom(final Section otherSection) {
-        final Section section = getLowerSection(otherSection.getUpStation());
+        final Section section = sections.stream()
+                .filter(existingSection -> existingSection.hasSameUpStationWith(otherSection.getUpStation()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
         section.updateUpStationFrom(otherSection);
     }
 
     private void updateDownStationOfSectionFrom(final Section otherSection) {
-        final Section section = getUpperSection(otherSection.getDownStation());
+        final Section section = sections.stream()
+                .filter(existingSection -> existingSection.hasSameDownStationWith(otherSection.getDownStation()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
         section.updateDownStationFrom(otherSection);
     }
 
     public void deleteSection(final Station station) {
+        validateEnoughToDeleteSection();
+        if (isTopStation(station)) {
+            deleteTopSectionBy(station);
+            return;
+        }
+        if (isLastStation(station)) {
+            deleteLastSectionBy(station);
+            return;
+        }
+        deleteMiddleSectionBy(station);
+    }
+
+    private void validateEnoughToDeleteSection() {
+        if (sections.size() == 1) {
+            throw new RuntimeException("현재 구간이 하나 있기때문에, 구간을 제거 할수 없습니다.");
+        }
+    }
+
+    private boolean isTopStation(final Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.hasSameUpStationWith(station))
+                && sections.stream()
+                .noneMatch(section -> section.hasSameDownStationWith(station));
+    }
+
+    private void deleteTopSectionBy(final Station station) {
+        final Section topSection = sections.stream()
+                .filter(existingSection -> existingSection.hasSameUpStationWith(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
+        sections.remove(topSection);
+    }
+
+    private boolean isLastStation(final Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.hasSameUpStationWith(station))
+                && sections.stream()
+                .anyMatch(section -> section.hasSameDownStationWith(station));
+    }
+
+    private void deleteLastSectionBy(final Station station) {
+        final Section lastSection = sections.stream()
+                .filter(existingSection -> existingSection.hasSameDownStationWith(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
+        sections.remove(lastSection);
+    }
+
+    private void deleteMiddleSectionBy(final Station station) {
         final Section upperSection = getUpperSection(station);
         final Section lowerSection = getLowerSection(station);
         upperSection.combineSection(lowerSection);
@@ -161,14 +216,14 @@ public class Sections {
         return sections.stream()
                 .filter(existingSection -> existingSection.hasSameDownStationWith(station))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
     }
 
     private Section getLowerSection(final Station station) {
         return sections.stream()
                 .filter(existingSection -> existingSection.hasSameUpStationWith(station))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
     }
 
     public List<Section> getSections() {
