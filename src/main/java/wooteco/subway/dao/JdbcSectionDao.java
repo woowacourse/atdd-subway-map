@@ -11,15 +11,13 @@ import wooteco.subway.domain.Section;
 @Repository
 public class JdbcSectionDao implements SectionDao {
 
-    private static final String TABLE_NAME = "section";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInserter;
 
     public JdbcSectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleInserter = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TABLE_NAME)
+                .withTableName("section")
                 .usingGeneratedKeyColumns("id");
     }
 

@@ -16,15 +16,13 @@ import wooteco.subway.domain.Line;
 @Repository
 public class JdbcLineDao implements LineDao {
 
-    private static final String TABLE_NAME = "line";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInserter;
 
     public JdbcLineDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleInserter = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TABLE_NAME)
+                .withTableName("line")
                 .usingGeneratedKeyColumns("id");
     }
 

@@ -17,8 +17,6 @@ import wooteco.subway.domain.Station;
 @Repository
 public class JdbcStationDao implements StationDao {
 
-    private static final String TABLE_NAME = "station";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInserter;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -26,7 +24,7 @@ public class JdbcStationDao implements StationDao {
     public JdbcStationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleInserter = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TABLE_NAME)
+                .withTableName("station")
                 .usingGeneratedKeyColumns("id");
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
