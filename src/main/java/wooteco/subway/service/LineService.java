@@ -110,6 +110,19 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException("삭제 요청한 역이 없습니다."));
 
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+
+        if (sections.existUpStation(station) && !sections.existDownStation(station)) {
+            Section deleteSection = sections.findContainsUpStation(station);
+            sectionDao.deleteById(deleteSection.getId());
+            return;
+        }
+
+        if (sections.existDownStation(station) && !sections.existUpStation(station)) {
+            Section deleteSection = sections.findContainsDownStation(station);
+            sectionDao.deleteById(deleteSection.getId());
+            return;
+        }
+
         Section upSection = sections.findContainsDownStation(station);
         Section downSection = sections.findContainsUpStation(station);
 
