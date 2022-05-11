@@ -64,6 +64,15 @@ public class LineService {
         sectionDao.saveAll(sections.getValue());
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        sections.remove(stationId);
+
+        sectionDao.deleteByLineId(lineId);
+        sectionDao.saveAll(sections.getValue());
+    }
+
     public LineResponse findById(Long id) {
         Line line = getLine(id);
 

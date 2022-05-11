@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import java.util.List;
@@ -214,7 +215,6 @@ class LineServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-
     @DisplayName("특정 노선에 존재하지 않는 구간 추가 시 예외가 발생한다.")
     @Test
     void 존재하지_않는_구간_추가_예외발생() {
@@ -231,6 +231,47 @@ class LineServiceTest {
 
         assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest2))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("구간 삭제 기능")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestRemoveSection() {
+        Long stationId1 = generateStation("신도림역").getId();
+        Long stationId2 = generateStation("온수역").getId();
+        Long stationId3 = generateStation("역곡역").getId();
+        Long stationId4 = generateStation("부천역").getId();
+        Long stationId5 = generateStation("중동역").getId();
+
+        LineResponse response = generateLine("1호선", "bg-blue-600", stationId1, stationId2, 10);
+        Long lineId = response.getId();
+
+        lineService.addSection(lineId, new SectionRequest(stationId2, stationId3, 10));
+        lineService.addSection(lineId, new SectionRequest(stationId3, stationId4, 10));
+        lineService.addSection(lineId, new SectionRequest(stationId4, stationId5, 10));
+
+        return Stream.of(
+                dynamicTest("중간에 위치한 역을 삭제한다.", () -> {
+                    assertDoesNotThrow(() -> lineService.deleteSection(lineId, stationId2));
+                }),
+
+                dynamicTest("상행 종점의 구간을 삭제한다.", () -> {
+                    assertDoesNotThrow(() -> lineService.deleteSection(lineId, stationId1));
+                }),
+
+                dynamicTest("존재하지 않는 역을 삭제할 경우 예외를 던진다.", () -> {
+                    assertThatThrownBy(() -> lineService.deleteSection(lineId, stationId1))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("하행 종점의 구간을 삭제한다.", () -> {
+                    assertDoesNotThrow(() -> lineService.deleteSection(lineId, stationId5));
+                }),
+
+                dynamicTest("구간이 한개 뿐인 경우 예외를 던진다.", () -> {
+                    assertThatThrownBy(() -> lineService.deleteSection(lineId, stationId2))
+                            .isInstanceOf(IllegalArgumentException.class);
+                })
+        );
     }
 
     private LineResponse generateLine(String name, String color, Long upStationId, Long downStationId,

@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -126,7 +125,6 @@ class SectionsTest {
 
     @DisplayName("구간 삭제 기능")
     @TestFactory
-    @Disabled
     Stream<DynamicTest> dynamicTestRemoveSection() {
         Long stationId1 = 1L;
         Long stationId2 = 2L;
