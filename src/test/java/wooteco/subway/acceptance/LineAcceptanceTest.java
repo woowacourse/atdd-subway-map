@@ -133,39 +133,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
 
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        long id = Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
+        long lineId = createLineResponse();
 
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + id)
+                .get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
 
         long responseId = getResponse.jsonPath().getLong("id");
-        assertThat(id).isEqualTo(responseId);
+        assertThat(lineId).isEqualTo(responseId);
     }
 
     @DisplayName("노선을 수정하면 200 OK를 반환한다.")
     @Test
     void updateLine() {
 
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        long id = Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
+        long id = createLineResponse();
 
         LineRequest request = new LineRequest("다른분당선", "bg-red-600");
 
@@ -206,6 +190,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         //given
+        long id = createLineResponse();
+
+        SectionRequest sectionRequest = new SectionRequest(thirdStation.getId(), upStation.getId(), 10);
+        ExtractableResponse<Response> response = createSection(sectionRequest, id);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private long createLineResponse() {
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -213,19 +206,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
-        long id = Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
+        return Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
+    }
 
-        SectionRequest sectionRequest = new SectionRequest(thirdStation.getId(), upStation.getId(), 10);
+    private ExtractableResponse<Response> createSection(SectionRequest sectionRequest, long lineId) {
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines/" + id + "/sections")
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    @DisplayName("구간 제거하면 200 ok를 반환한다.")
+    @Test
+    void deleteSection() {
+
+        long lineId = createLineResponse();
+        SectionRequest sectionRequest1 = new SectionRequest(thirdStation.getId(), upStation.getId(), 10);
+        SectionRequest sectionRequest2 = new SectionRequest(upStation.getId(), downStation.getId(), 10);
+        createSection(sectionRequest1, lineId);
+        createSection(sectionRequest2, lineId);
+        
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=2")
                 .then().log().all()
                 .extract();
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

@@ -1,12 +1,10 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.utils.exception.NoTerminalStationException;
+import wooteco.subway.utils.exception.NotDeleteException;
 import wooteco.subway.utils.exception.NotFoundException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -33,7 +31,7 @@ public class Sections {
     private List<Station> getStations(Map<Station, Station> hash, Station upStation) {
         List<Station> stations = new ArrayList<>();
         stations.add(upStation);
-        while (hash.containsKey(upStation)){
+        while (hash.containsKey(upStation)) {
             Station nextStation = hash.get(upStation);
             stations.add(nextStation);
             upStation = nextStation;
@@ -75,4 +73,30 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("[ERROR] 하행 역을 찾을 수 없습니다."));
     }
+
+    public List<Section> delete(Station station) {
+        if (sections.size() == 1){
+            throw new NotDeleteException("[ERROR] 구간이 한개있을때는 삭제할수 없습니다.");
+        }
+        List<Section> bucket = new LinkedList<>();
+        sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .ifPresent(bucket::add);
+        sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .ifPresent(bucket::add);
+
+        validateNoneStation(bucket);
+        return new LinkedList<>(bucket);
+
+    }
+
+    private void validateNoneStation(List<Section> bucket) {
+        if (bucket.isEmpty()) {
+            throw new NotFoundException("[ERROR] 구간들중에 해당 역을 찾을수 없습니다.");
+        }
+    }
+
 }

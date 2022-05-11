@@ -11,10 +11,13 @@ import wooteco.subway.service.dto.SectionRequest;
 import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 
+import java.util.List;
+
 @Transactional
 @Service
 public class SectionService {
     private static final String NOT_FOUND_STATION_MESSAGE = "[ERROR] %d 식별자에 해당하는 역을 찾을수 없습니다.";
+    private static final int DELETE_BETWEEN_STATION_STANDARD = 2;
 
     private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
@@ -80,5 +83,22 @@ public class SectionService {
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getDownStationId())));
         return Section.create(lineId, upStation, downStation, sectionRequest.getDistance());
+    }
+
+    public void delete(Long lineId, Long stationId) {
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, stationId)));
+        Sections sections = new Sections(sectionRepository.findAllByLineId(lineId));
+        
+        List<Section> deleteSections = sections.delete(station);
+        Section leftSection = deleteSections.get(0);
+        sectionRepository.deleteById(leftSection.getId());
+
+        if (deleteSections.size() == DELETE_BETWEEN_STATION_STANDARD) {
+            Section rightSection = deleteSections.get(1);
+            Section section = new Section(lineId, leftSection.getUpStation(), rightSection.getDownStation(), leftSection.getDistance() + rightSection.getDistance());
+            sectionRepository.deleteById(rightSection.getId());
+            sectionRepository.save(section);
+        }
     }
 }

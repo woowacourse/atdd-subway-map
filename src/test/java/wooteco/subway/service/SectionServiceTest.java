@@ -13,6 +13,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.*;
 import wooteco.subway.service.dto.SectionRequest;
 import wooteco.subway.utils.exception.DuplicatedException;
+import wooteco.subway.utils.exception.NotDeleteException;
 import wooteco.subway.utils.exception.NotFoundException;
 
 import javax.sql.DataSource;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class SectionServiceTest {
@@ -106,5 +108,54 @@ class SectionServiceTest {
         assertThatThrownBy(
                 () -> sectionService.add(line.getId(), sectionRequest)
         ).isExactlyInstanceOf(DuplicatedException.class);
+    }
+
+    @DisplayName("중간의 역을 구간에서 제거하면 기존의 구간들이 연결된다. 거리는 기존의 구간들의 합이다.")
+    @Test
+    void delete() {
+        sectionService.delete(LINE_ID, MIDDLE_STATION_ID);
+        List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
+
+        assertAll(
+                () -> assertThat(sections).hasSize(1),
+                () -> assertThat(sections.get(0).getUpStation().getId()).isEqualTo(UP_STATION_ID),
+                () -> assertThat(sections.get(0).getDownStation().getId()).isEqualTo(DOWN_STATION_ID),
+                () ->  assertThat(sections.get(0).getDistance()).isEqualTo(10)
+        );
+    }
+
+    @DisplayName("상행 종점의 역을 구간에서 제거한다.")
+    @Test
+    void deleteWhenTerminalUpStation() {
+        sectionService.delete(LINE_ID, UP_STATION_ID);
+        List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
+
+        assertAll(
+                () -> assertThat(sections).hasSize(1),
+                () -> assertThat(sections.get(0).getUpStation().getId()).isEqualTo(MIDDLE_STATION_ID),
+                () -> assertThat(sections.get(0).getDownStation().getId()).isEqualTo(DOWN_STATION_ID)
+        );
+    }
+
+    @DisplayName("하행 종점의 역을 구간에서 제거한다.")
+    @Test
+    void deleteWhenTerminalDownStation() {
+        sectionService.delete(LINE_ID, DOWN_STATION_ID);
+        List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
+
+        assertAll(
+                () -> assertThat(sections).hasSize(1),
+                () -> assertThat(sections.get(0).getUpStation().getId()).isEqualTo(UP_STATION_ID),
+                () -> assertThat(sections.get(0).getDownStation().getId()).isEqualTo(MIDDLE_STATION_ID)
+        );
+    }
+
+    @DisplayName("구간이 하나일때는 역을 구간에서 제거할수없다.")
+    @Test
+    void deleteFailure() {
+        sectionService.delete(LINE_ID, DOWN_STATION_ID);
+        assertThatThrownBy(
+                () ->  sectionService.delete(LINE_ID, MIDDLE_STATION_ID)
+        ).isExactlyInstanceOf(NotDeleteException.class);
     }
 }

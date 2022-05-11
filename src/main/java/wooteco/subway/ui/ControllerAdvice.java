@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.service.dto.ErrorResponse;
 import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NoTerminalStationException;
+import wooteco.subway.utils.exception.NotDeleteException;
 import wooteco.subway.utils.exception.NotFoundException;
 
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler({DuplicatedException.class, NoTerminalStationException.class, IllegalArgumentException.class})
-    public ResponseEntity<ErrorResponse> nameDuplicatedExceptionHandler(RuntimeException e) {
+    @ExceptionHandler({DuplicatedException.class, NoTerminalStationException.class,
+            IllegalArgumentException.class, NotDeleteException.class})
+    public ResponseEntity<ErrorResponse> badRequestExceptionHandler(RuntimeException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 
