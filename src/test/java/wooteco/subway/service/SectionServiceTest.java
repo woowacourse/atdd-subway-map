@@ -12,6 +12,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.NonexistentSectionStationException;
+import wooteco.subway.exception.section.OnlyOneSectionException;
 import wooteco.subway.exception.section.SectionLengthExcessException;
 
 public class SectionServiceTest {
@@ -210,14 +211,14 @@ public class SectionServiceTest {
     @Test
     void remove_onlySection() {
         assertThatThrownBy(() -> sectionService.remove(1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(OnlyOneSectionException.class);
     }
 
     @DisplayName("입력받은 지하철 역이 노선에 존재하지 않는 경우 예외가 발생한다.")
     @Test
     void remove_notExist() {
         assertThatThrownBy(() -> sectionService.remove(1L, 2L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(OnlyOneSectionException.class);
     }
 
     @DisplayName("상행선부터 하행선으로 정렬된 역 아이디들을 반환한다.")

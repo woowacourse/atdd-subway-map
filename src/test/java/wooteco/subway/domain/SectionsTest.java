@@ -5,11 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.NonexistentSectionStationException;
+import wooteco.subway.exception.section.NonexistentStationSectionException;
+import wooteco.subway.exception.section.OnlyOneSectionException;
 import wooteco.subway.exception.section.SectionLengthExcessException;
 
 class SectionsTest {
@@ -19,6 +22,7 @@ class SectionsTest {
     void create() {
         List<Section> sections = List.of(new Section(1L, 1L, 2L, 10),
                 new Section(1L, 2L, 3L, 5));
+
         assertThatCode(() -> new Sections(sections, 1L))
                 .doesNotThrowAnyException();
     }
@@ -75,7 +79,7 @@ class SectionsTest {
 
         Section newSection = new Section(1L, 2L, 4L, 2);
 
-        assertThat(sections.needToChange(newSection)).isTrue();
+        assertThat(sections.needToChangeExistingSection(newSection)).isTrue();
     }
 
     @DisplayName("입력받은 구간에 대해 같은 하행역이 존재하는 경우 구간 변경이 필요하다.")
@@ -86,7 +90,7 @@ class SectionsTest {
 
         Section newSection = new Section(1L, 5L, 3L, 2);
 
-        assertThat(sections.needToChange(newSection)).isTrue();
+        assertThat(sections.needToChangeExistingSection(newSection)).isTrue();
     }
 
     @DisplayName("입력받은 구간에 대해 같은 상행역과 하행역이 존재하지 않는 경우 구간 변경이 필요없다.")
@@ -97,7 +101,7 @@ class SectionsTest {
 
         Section newSection = new Section(1L, 3L, 4L, 2);
 
-        assertThat(sections.needToChange(newSection)).isFalse();
+        assertThat(sections.needToChangeExistingSection(newSection)).isFalse();
     }
 
     @DisplayName("입력받은 구간에 대해 같은 상행역이 존재하면 기존의 구간들에서 변경될 구간을 반환한다.")
@@ -108,9 +112,9 @@ class SectionsTest {
 
         Section newSection = new Section(1L, 2L, 4L, 2);
 
-        assertThat(sections.findUpdatingSection(newSection).getUpStationId()).isEqualTo(4L);
-        assertThat(sections.findUpdatingSection(newSection).getDownStationId()).isEqualTo(3L);
-        assertThat(sections.findUpdatingSection(newSection).getDistance()).isEqualTo(3);
+        assertThat(sections.findNeedUpdatingSection(newSection).getUpStationId()).isEqualTo(4L);
+        assertThat(sections.findNeedUpdatingSection(newSection).getDownStationId()).isEqualTo(3L);
+        assertThat(sections.findNeedUpdatingSection(newSection).getDistance()).isEqualTo(3);
     }
 
     @DisplayName("입력받은 구간에 대해 같은 하행역이 존재하면 기존의 구간들에서 변경될 구간을 반환한다.")
@@ -121,9 +125,9 @@ class SectionsTest {
 
         Section newSection = new Section(1L, 4L, 3L, 2);
 
-        assertThat(sections.findUpdatingSection(newSection).getUpStationId()).isEqualTo(2L);
-        assertThat(sections.findUpdatingSection(newSection).getDownStationId()).isEqualTo(4L);
-        assertThat(sections.findUpdatingSection(newSection).getDistance()).isEqualTo(3);
+        assertThat(sections.findNeedUpdatingSection(newSection).getUpStationId()).isEqualTo(2L);
+        assertThat(sections.findNeedUpdatingSection(newSection).getDownStationId()).isEqualTo(4L);
+        assertThat(sections.findNeedUpdatingSection(newSection).getDistance()).isEqualTo(3);
     }
 
     @DisplayName("새로운 구간의 길이가 기존 역 사이 길이보다 크거나 같으면 예외가 발생한다.")
@@ -132,7 +136,7 @@ class SectionsTest {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
                 new Section(1L, 2L, 3L, 5))), 1L);
 
-        assertThatThrownBy(() -> sections.findUpdatingSection(new Section(1L, 4L, 3L, 5)))
+        assertThatThrownBy(() -> sections.findNeedUpdatingSection(new Section(1L, 4L, 3L, 5)))
                 .isInstanceOf(SectionLengthExcessException.class);
     }
 
@@ -142,7 +146,7 @@ class SectionsTest {
         Sections sections = new Sections(List.of(new Section(1L, 1L, 2L, 10)), 1L);
 
         assertThatThrownBy(() -> sections.validateRemovable(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(OnlyOneSectionException.class);
     }
 
     @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거하려고 하면 예외가 발생한다.")
@@ -152,7 +156,7 @@ class SectionsTest {
                 new Section(1L, 2L, 3L, 5))), 1L);
 
         assertThatThrownBy(() -> sections.validateRemovable(10L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NonexistentStationSectionException.class);
     }
 
     @DisplayName("입력받은 지하철 역이 상행종착역일 때 참을 반환한다.")
@@ -176,8 +180,8 @@ class SectionsTest {
     @DisplayName("입력받은 지하철 역이 상행종착역일 때 참을 반환한다.")
     @Test
     void isEndStation_false() {
-        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+        Sections sections = new Sections(List.of(new Section(1L, 1L, 2L, 10),
+                new Section(1L, 2L, 3L, 5)), 1L);
 
         assertThat(sections.isEndStation(2L)).isFalse();
     }
@@ -185,8 +189,8 @@ class SectionsTest {
     @DisplayName("입력받은 지하철 역에 대해 제거할 상행 구간 아이디를 반환한다.")
     @Test
     void findEndSectionIdToRemove_upStation() {
-        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 1L, 2L, 10),
-                new Section(2L, 1L, 2L, 3L, 5))), 1L);
+        Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
+                new Section(2L, 1L, 2L, 3L, 5)), 1L);
 
         assertThat(sections.findEndSectionIdToRemove(1L)).isEqualTo(1L);
     }
@@ -194,8 +198,8 @@ class SectionsTest {
     @DisplayName("입력받은 지하철 역에 대해 제거할 하행 구간 아이디를 반환한다.")
     @Test
     void findEndSectionIdToRemove_downStation() {
-        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 1L, 2L, 10),
-                new Section(2L, 1L, 2L, 3L, 5))), 1L);
+        Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
+                new Section(2L, 1L, 2L, 3L, 5)), 1L);
 
         assertThat(sections.findEndSectionIdToRemove(3L)).isEqualTo(2L);
     }
@@ -203,9 +207,9 @@ class SectionsTest {
     @DisplayName("중간역을 제거하려는 경우, 양 쪽의 역으로 새로운 구간을 생성한다. ")
     @Test
     void makeNewSection() {
-        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 1L, 2L, 10),
+        Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
                 new Section(2L, 1L, 2L, 3L, 5),
-                new Section(3L, 1L, 3L, 4L, 7))), 1L);
+                new Section(3L, 1L, 3L, 4L, 7)), 1L);
 
         Section section = sections.makeNewSection(2L);
 
@@ -217,40 +221,42 @@ class SectionsTest {
     @DisplayName("중간역을 제거하려는 경우, 제거할 양쪽 구간의 id를 반환한다.")
     @Test
     void findSectionIdsToRemove() {
-        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 1L, 2L, 10),
+        Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
                 new Section(2L, 1L, 2L, 3L, 5),
-                new Section(3L, 1L, 3L, 4L, 7))), 1L);
+                new Section(3L, 1L, 3L, 4L, 7)), 1L);
 
         List<Long> sectionIdsToRemove = sections.findSectionIdsToRemove(2L);
 
         assertThat(sectionIdsToRemove).containsExactly(1L, 2L);
     }
 
-    @DisplayName("정렬테스트~일반 정렬 ~~~~~")
+    @DisplayName("Line의 종착 상행구간을 입력받으면, 종착 상행역부터 종착 하행역까지를 순서대로 반환한다.")
     @Test
-    void 정렬테스트() {
-        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 1L, 2L, 10),
+    void findArrangedStationIds1() {
+        Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
                 new Section(2L, 1L, 2L, 3L, 5),
-                new Section(3L, 1L, 3L, 4L, 7))), 1L);
+                new Section(3L, 1L, 3L, 4L, 7)), 1L);
 
-        Section endUpSection = sections.findEndSections().get(0);
+        int endUpSectionIndex = 0;
+        Section endUpSection = sections.findEndSections().get(endUpSectionIndex);
+        List<Long> arrangedStationIdsByLineId = sections.findArrangedStationIds(endUpSection);
 
-        List<Long> arrangedStationIdsByLineId = sections.findArrangedStationIdsByLineId(1L, endUpSection);
-
-        System.out.println(arrangedStationIdsByLineId);
         assertThat(arrangedStationIdsByLineId).containsExactly(1L, 2L, 3L, 4L);
     }
 
-    @DisplayName("정렬테스트~~")
+    @DisplayName("Line의 종착 상행구간을 입력받으면, 종착 상행역부터 종착 하행역까지를 순서대로 반환한다. - shuffle된 경우")
     @Test
-    void 정렬테스트2() {
-        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 1L, 10),
+    void findArrangedStationIds2() {
+        List<Section> rawSections = new ArrayList<>(List.of(new Section(1L, 1L, 2L, 1L, 10),
                 new Section(2L, 1L, 3L, 4L, 5),
-                new Section(3L, 1L, 1L, 3L, 7))), 1L);
+                new Section(3L, 1L, 1L, 3L, 7)));
+        Collections.shuffle(rawSections);
 
-        Section endUpSection = sections.findEndSections().get(0);
+        Sections sections = new Sections(rawSections, 1L);
 
-        List<Long> arrangedStationIdsByLineId = sections.findArrangedStationIdsByLineId(1L, endUpSection);
+        int endUpSectionIndex = 0;
+        Section endUpSection = sections.findEndSections().get(endUpSectionIndex);
+        List<Long> arrangedStationIdsByLineId = sections.findArrangedStationIds(endUpSection);
 
         assertThat(arrangedStationIdsByLineId).containsExactly(2L, 1L, 3L, 4L);
     }

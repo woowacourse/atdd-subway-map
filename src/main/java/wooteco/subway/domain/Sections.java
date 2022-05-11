@@ -6,16 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.NonexistentSectionStationException;
+import wooteco.subway.exception.section.NonexistentStationSectionException;
+import wooteco.subway.exception.section.OnlyOneSectionException;
 import wooteco.subway.exception.section.SectionLengthExcessException;
 
 public class Sections {
 
     private static final int NONE = 0;
     private static final int TWO = 2;
+
+    private static final int ONE = 1;
 
     private final List<Section> sections;
     private final Long lineId;
@@ -29,13 +32,15 @@ public class Sections {
         if (sections.size() == NONE) {
             return;
         }
-        checkDuplicateSection(section);
+        checkIsDuplicate(section);
     }
 
-    private void checkDuplicateSection(Section section) {
+    private void checkIsDuplicate(Section section) {
         List<Long> stationIds = findStationIds();
+
         long matchCount = stationIds.stream()
-                .filter(it -> section.isSameUpStationId(it) || section.isSameDownStationId(it))
+                .filter(it -> section.isSameUpStationId(it)
+                        || section.isSameDownStationId(it))
                 .count();
 
         if (matchCount == TWO) {
@@ -47,44 +52,37 @@ public class Sections {
     }
 
     private List<Long> findStationIds() {
-        Set<Long> upStationIds = sections.stream()
-                .map(Section::getUpStationId)
-                .collect(Collectors.toSet());
-
-        Set<Long> downStationIds = sections.stream()
-                .map(Section::getDownStationId)
-                .collect(Collectors.toSet());
-        upStationIds.addAll(downStationIds);
-        return new ArrayList<>(upStationIds);
+        return sections.stream()
+                .flatMap(it -> it.getStationIds().stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    public boolean needToChange(Section section) {
+    public boolean needToChangeExistingSection(Section section) {
         return sections.stream()
                 .anyMatch(it -> section.hasSameUpStation(it)
                         || section.hasSameDownStation(it));
     }
 
-    public Section findUpdatingSection(Section section) {
+    public Section findNeedUpdatingSection(Section section) {
         boolean upStationMatched = sections.stream()
                 .anyMatch(it -> section.hasSameUpStation(it)
                         && !section.hasSameDownStation(it));
 
         if (upStationMatched) {
-            return findNewUpStationSection(section);
+            return makeSectionWithNewUpStation(section);
         }
-        return findNewDownStationSection(section);
+        return makeSectionWithNewDownStation(section);
     }
 
-    private Section findNewUpStationSection(Section section) {
+    private Section makeSectionWithNewUpStation(Section section) {
         Section oldSection = sections.stream()
                 .filter(it -> section.hasSameUpStation(it)
                         && !section.hasSameDownStation(it))
-                .findAny()
+                .findFirst()
                 .orElseThrow(NonexistentSectionStationException::new);
 
-        if (section.isGreaterOrEqualDistanceThan(oldSection)) {
-            throw new SectionLengthExcessException();
-        }
+        checkDistance(section, oldSection);
 
         return new Section(oldSection.getId(),
                 oldSection.getLineId(),
@@ -93,16 +91,20 @@ public class Sections {
                 oldSection.calculateDistanceDifference(section));
     }
 
-    private Section findNewDownStationSection(Section section) {
+    private void checkDistance(Section section, Section oldSection) {
+        if (section.isGreaterOrEqualDistanceThan(oldSection)) {
+            throw new SectionLengthExcessException();
+        }
+    }
+
+    private Section makeSectionWithNewDownStation(Section section) {
         Section oldSection = sections.stream()
                 .filter(it -> !section.hasSameUpStation(it)
                         && section.hasSameDownStation(it))
                 .findAny()
                 .orElseThrow(NonexistentSectionStationException::new);
 
-        if (section.isGreaterOrEqualDistanceThan(oldSection)) {
-            throw new SectionLengthExcessException();
-        }
+        checkDistance(section, oldSection);
 
         return new Section(oldSection.getId(),
                 oldSection.getLineId(),
@@ -112,20 +114,21 @@ public class Sections {
     }
 
     public void validateRemovable(Long stationId) {
-        if (sections.size() <= 1) {
-            throw new IllegalArgumentException();
+        if (sections.size() <= ONE) {
+            throw new OnlyOneSectionException();
         }
         List<Long> stationIds = findStationIds();
         if (!stationIds.contains(stationId)) {
-            throw new IllegalArgumentException();
+            throw new NonexistentStationSectionException();
         }
     }
 
     public boolean isEndStation(Long stationId) {
         long matchedCount = sections.stream()
-                .filter(it -> it.isSameUpStationId(stationId) || it.isSameDownStationId(stationId))
+                .filter(it -> it.isSameUpStationId(stationId)
+                        || it.isSameDownStationId(stationId))
                 .count();
-        return matchedCount == 1;
+        return matchedCount == ONE;
     }
 
     public Long findEndSectionIdToRemove(Long stationId) {
@@ -134,17 +137,19 @@ public class Sections {
                         || it.isSameDownStationId(stationId))
                 .map(Section::getId)
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(IllegalStateException::new);
     }
 
     public Section makeNewSection(Long stationId) {
-        Section newUpStation = sections.stream().filter(it -> it.isSameDownStationId(stationId))
+        Section newUpStation = sections.stream()
+                .filter(it -> it.isSameDownStationId(stationId))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(IllegalStateException::new);
 
-        Section newDownStation = sections.stream().filter(it -> it.isSameUpStationId(stationId))
+        Section newDownStation = sections.stream()
+                .filter(it -> it.isSameUpStationId(stationId))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(IllegalStateException::new);
 
         return new Section(newUpStation.getLineId(),
                 newUpStation.getUpStationId(),
@@ -160,22 +165,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public Long getLineId() {
-        return lineId;
-    }
-
-    @Override
-    public String toString() {
-        return "Sections{" +
-                "sections=" + sections +
-                ", lineId=" + lineId +
-                '}';
-    }
-
     public List<Section> findEndSections() {
         Map<Long, Integer> stationCount = new HashMap<>();
 
@@ -187,31 +176,30 @@ public class Sections {
                     stationCount.getOrDefault(section.getDownStationId(), 0) + 1);
         }
 
-        List<Long> endStationIds = new ArrayList<>();
-        for (Entry<Long, Integer> entrySet : stationCount.entrySet()) {
-            if (entrySet.getValue() == 1) {
-                endStationIds.add(entrySet.getKey());
-            }
-        }
+        List<Long> endStationIds = stationCount.entrySet()
+                .stream()
+                .filter(it -> it.getValue() == ONE)
+                .map(Entry::getKey)
+                .collect(Collectors.toList());
 
-        return new ArrayList<>(List.of(findUpSection(endStationIds), findDownSection(endStationIds)));
+        return List.of(findUpSection(endStationIds), findDownSection(endStationIds));
     }
 
     private Section findUpSection(List<Long> endStationIds) {
         return sections.stream()
                 .filter(it -> endStationIds.contains(it.getUpStationId()))
                 .findFirst()
-                .get();
+                .orElseThrow(IllegalStateException::new);
     }
 
     private Section findDownSection(List<Long> endStationIds) {
         return sections.stream()
                 .filter(it -> endStationIds.contains(it.getDownStationId()))
                 .findFirst()
-                .get();
+                .orElseThrow(IllegalStateException::new);
     }
 
-    public List<Long> findArrangedStationIdsByLineId(Long id, Section endUpSection) {
+    public List<Long> findArrangedStationIds(Section endUpSection) {
         List<Long> stationIds = new ArrayList<>(
                 List.of(endUpSection.getUpStationId(), endUpSection.getDownStationId()));
 
@@ -229,5 +217,9 @@ public class Sections {
         }
 
         return stationIds;
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.List;
+
 public class Section {
 
     private Long id;
@@ -67,14 +69,7 @@ public class Section {
         return distance;
     }
 
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", lineId=" + lineId +
-                ", upStationId=" + upStationId +
-                ", downStationId=" + downStationId +
-                ", distance=" + distance +
-                '}';
+    public List<Long> getStationIds() {
+        return List.of(upStationId, downStationId);
     }
 }

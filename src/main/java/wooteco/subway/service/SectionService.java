@@ -17,11 +17,12 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public Section save(Section section) {
         Sections sections = new Sections(sectionDao.findByLineId(section.getLineId()), section.getLineId());
         sections.validateAddable(section);
-        if (sections.needToChange(section)) {
-            Section newSection = sections.findUpdatingSection(section);
+        if (sections.needToChangeExistingSection(section)) {
+            Section newSection = sections.findNeedUpdatingSection(section);
             sectionDao.update(newSection);
         }
         return sectionDao.save(section);
@@ -31,28 +32,12 @@ public class SectionService {
         return sectionDao.findByLineId(lineId);
     }
 
-//    public List<Long> findStationIdsByLineId(Long id) {
-//        List<Section> sections = sectionDao.findByLineId(id);
-//
-//        Set<Long> collect = sections.stream()
-//                .map(Section::getUpStationId)
-//                .collect(Collectors.toSet());
-//
-//        Set<Long> collect2 = sections.stream()
-//                .map(Section::getDownStationId)
-//                .collect(Collectors.toSet());
-//
-//        collect.addAll(collect2);
-//
-//        return new ArrayList<>(collect);
-//    }
-
     public List<Long> findArrangedStationIdsByLineId(Long id) {
         Sections sections = new Sections(sectionDao.findByLineId(id), id);
         List<Section> endSections = sections.findEndSections();
         Section endUpSection = endSections.get(0);
 
-        return new ArrayList<>(sections.findArrangedStationIdsByLineId(id, endUpSection));
+        return new ArrayList<>(sections.findArrangedStationIds(endUpSection));
     }
 
     @Transactional
