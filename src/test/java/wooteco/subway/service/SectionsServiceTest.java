@@ -21,9 +21,11 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
-class SectionServiceTest extends ServiceTest {
+class SectionsServiceTest extends ServiceTest {
+    private static final Station station = new Station("강남역");
+
     @Autowired
-    private SectionService sectionService;
+    private SectionsService sectionsService;
     @Autowired
     private StationService stationService;
     @Autowired
@@ -37,7 +39,7 @@ class SectionServiceTest extends ServiceTest {
         stationService.save(STATION_2);
         lineService.save(LINE);
 
-        Section resSection = sectionService.save(SECTION);
+        Section resSection = sectionsService.save(SECTION);
         assertThat(resSection)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
@@ -54,11 +56,11 @@ class SectionServiceTest extends ServiceTest {
         lineService.save(LINE);
 
         //when
-        sectionService.save(SECTION_2);
-        sectionService.save(SECTION);
+        sectionsService.save(SECTION_2);
+        sectionsService.save(SECTION);
 
         //then
-        assertThat(sectionService.findStationsOfLine(SECTION.getLineId()))
+        assertThat(sectionsService.findStationsOfLine(SECTION.getLineId()))
                 .containsExactly(saveStation, saveStation2, saveStation3);
     }
 
@@ -70,11 +72,11 @@ class SectionServiceTest extends ServiceTest {
         Station saveStation2 = stationService.save(STATION_2);
         Station saveStation3 = stationService.save(STATION_3);
         Line saveLine = lineService.save(LINE);
-        sectionService.save(SECTION);
-        sectionService.save(SECTION_2);
+        sectionsService.save(SECTION);
+        sectionsService.save(SECTION_2);
 
         //when then
-        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+        assertThat(sectionsService.findStationsOfLine(saveLine.getId()))
                 .containsExactly(saveStation, saveStation2, saveStation3);
     }
 
@@ -87,14 +89,14 @@ class SectionServiceTest extends ServiceTest {
         Station saveStation3 = stationService.save(STATION_3);
         Station saveStation4 = stationService.save(STATION_4);
         Line saveLine = lineService.save(LINE);
-        sectionService.save(SECTION);
-        sectionService.save(SECTION_2);
-        sectionService.save(SECTION_3);
+        sectionsService.save(SECTION);
+        sectionsService.save(SECTION_2);
+        sectionsService.save(SECTION_3);
 
         //when then
-        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+        assertThat(sectionsService.findStationsOfLine(saveLine.getId()))
                 .hasSize(4);
-        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+        assertThat(sectionsService.findStationsOfLine(saveLine.getId()))
                 .usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(List.of(saveStation, saveStation2, saveStation4, saveStation3));
@@ -107,10 +109,10 @@ class SectionServiceTest extends ServiceTest {
         stationService.save(STATION);
         stationService.save(STATION_2);
         lineService.save(LINE);
-        sectionService.save(SECTION);
+        sectionsService.save(SECTION);
 
         //when then
-        assertThatThrownBy(() -> sectionService.save(SECTION))
+        assertThatThrownBy(() -> sectionsService.save(SECTION))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("중복된 구간입니다.");
     }
@@ -122,7 +124,7 @@ class SectionServiceTest extends ServiceTest {
         lineService.save(LINE);
 
         //when then
-        assertThatThrownBy(() -> sectionService.save(SECTION))
+        assertThatThrownBy(() -> sectionsService.save(SECTION))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 아이디의 역을 찾을 수 없습니다.");
     }
@@ -136,10 +138,10 @@ class SectionServiceTest extends ServiceTest {
         stationService.save(STATION_3);
         stationService.save(STATION_4);
         lineService.save(LINE);
-        sectionService.save(SECTION);
+        sectionsService.save(SECTION);
 
         //when then
-        assertThatThrownBy(() -> sectionService.save(SECTION_4))
+        assertThatThrownBy(() -> sectionsService.save(SECTION_4))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 구간은 역과 연결될 수 없습니다.");
     }
@@ -153,12 +155,12 @@ class SectionServiceTest extends ServiceTest {
         stationService.save(STATION_3);
         stationService.save(STATION_4);
         lineService.save(LINE);
-        sectionService.save(SECTION_2);
+        sectionsService.save(SECTION_2);
 
         //when then
-        assertThat(sectionService.save(SECTION))
+        assertThat(sectionsService.save(SECTION))
                 .isNotNull();
-        assertThatThrownBy(() -> sectionService.save(SECTION_5))
+        assertThatThrownBy(() -> sectionsService.save(SECTION_5))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("새 구간의 길이가 기존 역 사이 길이보다 작아야 합니다.");
     }
@@ -172,15 +174,15 @@ class SectionServiceTest extends ServiceTest {
         Station saveStation3 = stationService.save(STATION_3);
         Station saveStation4 = stationService.save(STATION_4);
         Line saveLine = lineService.save(LINE);
-        sectionService.save(SECTION);
-        sectionService.save(SECTION_2);
-        sectionService.save(SECTION_4);
+        sectionsService.save(SECTION);
+        sectionsService.save(SECTION_2);
+        sectionsService.save(SECTION_4);
 
         //when
-        sectionService.delete(saveLine.getId(), saveStation.getId());
+        sectionsService.delete(saveLine.getId(), saveStation.getId());
 
         //then
-        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+        assertThat(sectionsService.findStationsOfLine(saveLine.getId()))
                 .containsExactly(saveStation2, saveStation3, saveStation4);
     }
 
@@ -193,15 +195,15 @@ class SectionServiceTest extends ServiceTest {
         Station saveStation3 = stationService.save(STATION_3);
         Station saveStation4 = stationService.save(STATION_4);
         Line saveLine = lineService.save(LINE);
-        sectionService.save(SECTION);
-        sectionService.save(SECTION_2);
-        sectionService.save(SECTION_4);
+        sectionsService.save(SECTION);
+        sectionsService.save(SECTION_2);
+        sectionsService.save(SECTION_4);
 
         //when
-        sectionService.delete(saveLine.getId(), saveStation4.getId());
+        sectionsService.delete(saveLine.getId(), saveStation4.getId());
 
         //then
-        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+        assertThat(sectionsService.findStationsOfLine(saveLine.getId()))
                 .containsExactly(saveStation, saveStation2, saveStation3);
     }
 
@@ -214,17 +216,17 @@ class SectionServiceTest extends ServiceTest {
         Station saveStation3 = stationService.save(STATION_3);
         Station saveStation4 = stationService.save(STATION_4);
         Line saveLine = lineService.save(LINE);
-        sectionService.save(SECTION);
-        sectionService.save(SECTION_2);
-        sectionService.save(SECTION_4);
+        sectionsService.save(SECTION);
+        sectionsService.save(SECTION_2);
+        sectionsService.save(SECTION_4);
 
         //when
-        sectionService.delete(saveLine.getId(), saveStation2.getId());
+        sectionsService.delete(saveLine.getId(), saveStation2.getId());
 
         //then
-        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+        assertThat(sectionsService.findStationsOfLine(saveLine.getId()))
                 .containsExactly(saveStation, saveStation3, saveStation4);
-        assertThat(sectionService.findById(4L).getDistance())
+        assertThat(sectionsService.findById(4L).getDistance())
                 .isEqualTo(15);
     }
 
@@ -235,11 +237,72 @@ class SectionServiceTest extends ServiceTest {
         Station saveStation = stationService.save(STATION);
         stationService.save(STATION_2);
         Line saveLine = lineService.save(LINE);
-        sectionService.save(SECTION);
+        sectionsService.save(SECTION);
 
         //when then
-        assertThatThrownBy(() -> sectionService.delete(saveLine.getId(), saveStation.getId()))
+        assertThatThrownBy(() -> sectionsService.delete(saveLine.getId(), saveStation.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 지하철 노선은 1개 이하의 구간을 가지고 있어 역을 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("지하철역을 삭제한다.")
+    @Test
+    void delete() {
+        //given
+        Station resStation = stationService.save(station);
+        Long id = resStation.getId();
+
+        //when
+        sectionsService.deleteStationById(id);
+
+        //then
+        assertThat(stationService.findAll())
+                .isNotIn(resStation);
+    }
+
+    @DisplayName("없는 지하철역을 삭제할 수 없다.")
+    @Test
+    void delete_error() {
+        assertThatThrownBy(() -> sectionsService.deleteStationById(100L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 아이디의 역을 찾을 수 없습니다.");
+    }
+
+    @DisplayName("이미 노선에 등록된 지하철 역은 삭제할 수 없다.")
+    @Test
+    void delete_linkedError() {
+        //given
+        Station savedStation = stationService.save(STATION);
+        stationService.save(STATION_2);
+        lineService.save(LINE);
+        sectionsService.save(SECTION);
+
+        //when then
+        assertThatThrownBy(() -> sectionsService.deleteStationById(savedStation.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지하철 노선에 해당 역이 등록되어있어 역을 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        //given
+        Line resLine = lineService.save(LINE);
+        Long id = resLine.getId();
+
+        //when
+        sectionsService.deleteLineById(id);
+
+        //then
+        assertThat(lineService.findAll())
+                .isEmpty();
+    }
+
+    @DisplayName("없는 지하철 노선을 삭제할 수 없다.")
+    @Test
+    void deleteLine_error() {
+        assertThatThrownBy(() -> sectionsService.deleteLineById(100L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 아이디의 노선을 찾을 수 없습니다.");
     }
 }

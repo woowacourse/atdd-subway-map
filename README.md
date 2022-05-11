@@ -98,8 +98,9 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] SectionWithStation을 Section 도메인과 통합
 - [x] optional 추가
 - [x] 새로 만든 도메인 객체들의 테스트코드 추가
+- [ ] equals 대신 isSame... 등의 메소드들 생성해 비교하기
 - [ ] 테스트코드 속도 개선
-    - [ ] Drop table 대신 truncate 어쩌구 사용..
+    - [ ] Drop table 대신 truncate 어쩌구 사용...
 - [ ] Entity는 vo ㄴㄴ
     - [ ] equals 대신 usingRecursiveComparison 사용?
     - [ ] [참고자료](https://prolog.techcourse.co.kr/studylogs/2352)

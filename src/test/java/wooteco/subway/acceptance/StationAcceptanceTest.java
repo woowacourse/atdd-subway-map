@@ -92,6 +92,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString())
-                .isEqualTo("해당 아이디의 역이 없습니다.");
+                .isEqualTo("해당 아이디의 역을 찾을 수 없습니다.");
     }
 }

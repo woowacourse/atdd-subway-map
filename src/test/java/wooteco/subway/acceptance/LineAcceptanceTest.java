@@ -145,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(updateResponse.statusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(updateResponse.body().asString())
-                .isEqualTo("해당 아이디의 노선이 없습니다.");
+                .isEqualTo("해당 아이디의 노선을 찾을 수 없습니다.");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -172,6 +172,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString())
-                .isEqualTo("해당 아이디의 노선이 없습니다.");
+                .isEqualTo("해당 아이디의 노선을 찾을 수 없습니다.");
     }
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import wooteco.subway.domain.Line;
 
 class LineServiceTest extends ServiceTest {
     @Autowired
@@ -66,29 +65,6 @@ class LineServiceTest extends ServiceTest {
     void update_error() {
         assertThatThrownBy(() -> lineService.update(100L, LINE))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 아이디의 노선이 없습니다.");
-    }
-
-    @DisplayName("지하철 노선을 삭제한다.")
-    @Test
-    void delete() {
-        //given
-        Line resLine = lineService.save(LINE);
-        Long id = resLine.getId();
-
-        //when
-        lineService.delete(id);
-
-        //then
-        assertThat(lineService.findAll())
-                .isEmpty();
-    }
-
-    @DisplayName("없는 지하철 노선을 삭제할 수 없다.")
-    @Test
-    void delete_error() {
-        assertThatThrownBy(() -> lineService.delete(100L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 아이디의 노선이 없습니다.");
+                .hasMessage("해당 아이디의 노선을 찾을 수 없습니다.");
     }
 }

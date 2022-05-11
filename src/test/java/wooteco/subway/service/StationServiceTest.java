@@ -2,10 +2,6 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.Fixtures.LINE;
-import static wooteco.subway.Fixtures.SECTION;
-import static wooteco.subway.Fixtures.STATION;
-import static wooteco.subway.Fixtures.STATION_2;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +17,7 @@ class StationServiceTest extends ServiceTest {
     @Autowired
     private LineService lineService;
     @Autowired
-    private SectionService sectionService;
+    private SectionsService sectionsService;
 
 
     @DisplayName("지하철역을 저장한다.")
@@ -52,43 +48,5 @@ class StationServiceTest extends ServiceTest {
         //when then
         assertThat(stationService.findAll())
                 .containsOnly(resStation, resStation2);
-    }
-
-    @DisplayName("지하철역을 삭제한다.")
-    @Test
-    void delete() {
-        //given
-        Station resStation = stationService.save(station);
-        Long id = resStation.getId();
-
-        //when
-        stationService.delete(id);
-
-        //then
-        assertThat(stationService.findAll())
-                .isNotIn(resStation);
-    }
-
-    @DisplayName("없는 지하철역을 삭제할 수 없다.")
-    @Test
-    void delete_error() {
-        assertThatThrownBy(() -> stationService.delete(100L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 아이디의 역이 없습니다.");
-    }
-
-    @DisplayName("이미 노선에 등록된 지하철 역은 삭제할 수 없다.")
-    @Test
-    void delete_linkedError() {
-        //given
-        Station savedStation = stationService.save(STATION);
-        stationService.save(STATION_2);
-        lineService.save(LINE);
-        sectionService.save(SECTION);
-
-        //when then
-        assertThatThrownBy(() -> stationService.delete(savedStation.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지하철 노선에 해당 역이 등록되어있어 역을 삭제할 수 없습니다.");
     }
 }

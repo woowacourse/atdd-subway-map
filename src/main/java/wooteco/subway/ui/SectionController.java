@@ -9,27 +9,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.service.SectionService;
+import wooteco.subway.service.SectionsService;
 
 @RestController
 @RequestMapping("/lines")
 public class SectionController {
-    private final SectionService sectionService;
+    private final SectionsService sectionsService;
 
-    public SectionController(SectionService sectionService) {
-        this.sectionService = sectionService;
+    public SectionController(SectionsService sectionsService) {
+        this.sectionsService = sectionsService;
     }
 
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        sectionService.save(sectionRequest.toEntity(id));
+        sectionsService.save(sectionRequest.toEntity(id));
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-        sectionService.delete(id, stationId);
+        sectionsService.delete(id, stationId);
         return ResponseEntity.ok().build();
     }
 }

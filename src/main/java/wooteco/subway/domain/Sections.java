@@ -16,7 +16,6 @@ public class Sections {
     private static final int COMBINED_UP_STATION_INDEX = 0;
     private static final int COMBINED_DOWN_STATION_INDEX = 2;
 
-
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {

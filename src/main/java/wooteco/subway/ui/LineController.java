@@ -16,32 +16,32 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
-import wooteco.subway.service.SectionService;
+import wooteco.subway.service.SectionsService;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
-    private final SectionService sectionService;
+    private final SectionsService sectionsService;
 
-    public LineController(LineService lineService, SectionService sectionService) {
+    public LineController(LineService lineService, SectionsService sectionsService) {
         this.lineService = lineService;
-        this.sectionService = sectionService;
+        this.sectionsService = sectionsService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line newLine = lineService.save(lineRequest.toLine());
-        sectionService.save(lineRequest.toSection(newLine.getId()));
+        sectionsService.save(lineRequest.toSection(newLine.getId()));
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
-                .body(LineResponse.of(newLine, sectionService.findStationsOfLine(newLine.getId())));
+                .body(LineResponse.of(newLine, sectionsService.findStationsOfLine(newLine.getId())));
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findAll()
                 .stream()
-                .map(line -> LineResponse.of(line, sectionService.findStationsOfLine(line.getId())))
+                .map(line -> LineResponse.of(line, sectionsService.findStationsOfLine(line.getId())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
@@ -50,7 +50,7 @@ public class LineController {
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
         return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-                .body(LineResponse.of(line, sectionService.findStationsOfLine(line.getId())));
+                .body(LineResponse.of(line, sectionsService.findStationsOfLine(line.getId())));
     }
 
     @PutMapping(value = "/{id}")
@@ -61,7 +61,7 @@ public class LineController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineService.delete(id);
+        sectionsService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 }
