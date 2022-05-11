@@ -31,8 +31,7 @@ public class SectionService {
         final Station downStation = stationDao.findById(downStationId);
         savedLine.addSection(new Section(upStation, downStation, distance));
 
-        sectionDao.deleteByLineId(lineId);
-        sectionDao.save(savedLine.getSections(), lineId);
+        updateSection(lineId, savedLine);
     }
 
     public void deleteSection(Long lineId, Long stationId) {
@@ -44,6 +43,10 @@ public class SectionService {
 
         line.deleteSection(station);
 
+        updateSection(lineId, line);
+    }
+
+    private void updateSection(Long lineId, Line line) {
         sectionDao.deleteByLineId(lineId);
         sectionDao.save(line.getSections(), lineId);
     }
