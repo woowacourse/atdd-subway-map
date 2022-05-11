@@ -28,6 +28,7 @@ public class SectionService {
         this.lineDao = lineDao;
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Transactional
     public List<Station> findSectionStationsByLineId(final Long lineId) {
         return sectionDao.findSectionStationsByLineId(lineId)
@@ -44,8 +45,8 @@ public class SectionService {
         final List<Section> sectionsBeforeAddSection = sectionDao.findSectionStationsByLineId(lineId);
         Section newSection = sectionRequest.toEntity(lineId);
         newSection = sectionDao.save(newSection);
-        final List<Section> sectionsAfterAddSection = new Sections(sectionsBeforeAddSection).addSection(newSection);
-        sectionDao.batchUpdate(sectionsAfterAddSection);
+        final List<Section> sectionsAfterAdd = new Sections(sectionsBeforeAddSection).addSection(newSection);
+        sectionDao.batchUpdate(sectionsAfterAdd);
     }
 
     @Transactional
@@ -55,8 +56,9 @@ public class SectionService {
         stationDao.findById(id)
             .orElseThrow(() -> new StationNotFoundException("[ERROR] 해당 이름의 지하철역이 존재하지 않습니다."));
         final Sections sections = new Sections(sectionDao.findSectionStationsByLineId(id));
-
-        sections.deleteSectionByStationId(stationId);
-
+        final Long sectionId = sections.deleteSectionByStationId(stationId);
+        sectionDao.deleteById(sectionId);
+        final List<Section> sectionsAfterDelete = sections.getValue();
+        sectionDao.batchUpdate(sectionsAfterDelete);
     }
 }
