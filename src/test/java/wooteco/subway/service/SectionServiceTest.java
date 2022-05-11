@@ -16,8 +16,8 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.SectionDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.service.dto.section.SectionSaveRequest;
 import wooteco.subway.ui.dto.SectionDeleteRequest;
+import wooteco.subway.ui.dto.SectionRequest;
 
 @JdbcTest
 public class SectionServiceTest {
@@ -46,7 +46,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 4L, 5L, 5));
 
         // when
-        sectionService.save(new SectionSaveRequest(lineId, 1L, 2L, 2));
+        sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
         List<Section> sections = sectionDao.findByLineId(lineId);
 
         // then
@@ -63,7 +63,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 4L, 5L, 5));
 
         // when
-        sectionService.save(new SectionSaveRequest(lineId, 1L, 2L, 2));
+        sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
         List<Section> sections = sectionDao.findByLineId(lineId);
 
         // then
@@ -80,7 +80,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 4L, 5L, 5));
 
         // when
-        sectionService.save(new SectionSaveRequest(lineId, 1L, 2L, 2));
+        sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
         List<Section> sections = sectionDao.findByLineId(lineId);
 
         // then
@@ -97,7 +97,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 4L, 5L, 5));
 
         assertThatThrownBy(() ->
-            sectionService.save((new SectionSaveRequest(lineId, 2L, 1L, 4))))
+            sectionService.save(new SectionRequest(2L, 1L, 4), lineId))
             .hasMessage("등록할 구간의 길이가 기존 역 사이의 길이보다 길거나 같으면 안됩니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }

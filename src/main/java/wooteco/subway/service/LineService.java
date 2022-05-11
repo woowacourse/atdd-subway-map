@@ -12,9 +12,8 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.service.dto.line.LineFindResponse;
-import wooteco.subway.service.dto.line.LineSaveRequest;
-import wooteco.subway.service.dto.line.LineSaveResponse;
+import wooteco.subway.ui.dto.LineRequest;
+import wooteco.subway.ui.dto.LineResponse;
 import wooteco.subway.ui.dto.StationResponse;
 
 @Service
@@ -32,14 +31,14 @@ public class LineService {
     }
 
     @Transactional
-    public LineSaveResponse save(LineSaveRequest lineSaveRequest) {
+    public LineResponse save(LineRequest lineSaveRequest) {
         validateDuplicationName(lineSaveRequest.getName());
         Line line = new Line(lineSaveRequest.getName(), lineSaveRequest.getColor());
         Long savedId = lineDao.save(line);
         sectionDao.save(new Section(savedId, lineSaveRequest.getUpStationId(),
             lineSaveRequest.getDownStationId(), lineSaveRequest.getDistance()));
 
-        return new LineSaveResponse(savedId, line.getName(), line.getColor(), List.of(
+        return new LineResponse(savedId, line.getName(), line.getColor(), List.of(
             findStationByLineId(lineSaveRequest.getUpStationId()),
             findStationByLineId(lineSaveRequest.getDownStationId())
         ));
@@ -51,10 +50,10 @@ public class LineService {
         }
     }
 
-    public List<LineFindResponse> findAll() {
+    public List<LineResponse> findAll() {
         Map<Long, Station> stations = findAllStations();
         return lineDao.findAll().stream()
-            .map(i -> new LineFindResponse(i.getId(), i.getName(), i.getColor(),
+            .map(i -> new LineResponse(i.getId(), i.getName(), i.getColor(),
                 getSortedStationsByLineId(i.getId(), stations)))
             .collect(Collectors.toList());
     }
@@ -69,12 +68,22 @@ public class LineService {
             .collect(Collectors.toMap(Station::getId, i -> new Station(i.getName())));
     }
 
-    private List<Station> getSortedStationsByLineId(Long lineId, Map<Long, Station> stations) {
+    private List<StationResponse> getSortedStationsByLineId(Long lineId, Map<Long, Station> stations) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         List<Long> stationIds = sections.sortedStationId();
 
         return stationIds.stream()
-            .map(stations::get)
+            .map(i -> toStationResponse(stations.get(i)))
+            .collect(Collectors.toList());
+    }
+
+    private StationResponse toStationResponse(Station station) {
+        return new StationResponse(station.getId(), station.getName());
+    }
+
+    private List<StationResponse> toStationResponse(List<Station> stations) {
+        return stations.stream()
+            .map(i -> new StationResponse(i.getId(), i.getName()))
             .collect(Collectors.toList());
     }
 
@@ -86,10 +95,10 @@ public class LineService {
         return lineDao.updateById(id, line);
     }
 
-    public LineFindResponse findById(Long id) {
+    public LineResponse findById(Long id) {
         Line line = lineDao.findById(id).get();
         List<Station> stations = findSortedStationByLineId(line.getId());
-        return new LineFindResponse(line.getId(), line.getName(), line.getColor(), stations);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), toStationResponse(stations));
     }
 
     private List<Station> findSortedStationByLineId(Long lineId) {

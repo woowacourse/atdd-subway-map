@@ -2,7 +2,6 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,9 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.service.StationService;
-import wooteco.subway.service.dto.station.StationFindResponse;
-import wooteco.subway.service.dto.station.StationSaveRequest;
-import wooteco.subway.service.dto.station.StationSaveResponse;
 import wooteco.subway.ui.dto.StationRequest;
 import wooteco.subway.ui.dto.StationResponse;
 
@@ -30,19 +26,14 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@Validated @RequestBody StationRequest stationRequest) {
-        StationSaveResponse stationSaveResponse = stationService.save(
-            new StationSaveRequest(stationRequest.getName()));
-        StationResponse stationResponse = new StationResponse(stationSaveResponse.getId(), stationSaveResponse.getName());
+        StationResponse stationResponse = stationService.save(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationFindResponse> stations = stationService.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
-            .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        List<StationResponse> stations = stationService.findAll();
+        return ResponseEntity.ok().body(stations);
     }
 
     @DeleteMapping("/stations/{id}")

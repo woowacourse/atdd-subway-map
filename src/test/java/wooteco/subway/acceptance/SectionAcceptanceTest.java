@@ -1,5 +1,7 @@
 package wooteco.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -26,7 +28,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(station1, station2, 1);
 
         // when
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(sectionRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -35,12 +37,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .statusCode(HttpStatus.OK.value())
             .extract();
 
-        RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines/" + lineId)
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value());
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
@@ -63,28 +61,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // when
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
             .queryParam("stationId", station2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .delete("/lines/" + lineId + "/sections")
             .then().log().all()
-            .statusCode(HttpStatus.OK.value())
             .extract();
 
-        RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines/" + lineId)
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value());
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     Long saveLine(Long station1, Long station2) {
-        // given
         LineRequest lineRequest = new LineRequest("3호선", "bg-orange-600", station1, station2, 4);
 
-        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -99,7 +90,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     Long createStation(String name) {
-        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
@@ -110,7 +100,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        // when
         String uri = createResponse.header("Location");
         return Long.parseLong(uri.split("/")[2]);
     }

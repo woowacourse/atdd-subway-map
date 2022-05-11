@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class Sections {
+
+    private static final int MINIMUM_SIZE = 1;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -37,14 +40,14 @@ public class Sections {
         return sections.stream()
             .filter(i -> i.getUpStationId().equals(id))
             .findAny()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("구간 중 해당 upStationId이 존재하지 않습니다."));
     }
 
     public Section findSectionByDownStationId(Long id) {
         return sections.stream()
             .filter(i -> i.getDownStationId().equals(id))
             .findAny()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("구간 중 해당 downStationId 존재하지 않습니다."));
     }
 
     private Map<Long, Long> getSectionId() {
@@ -85,6 +88,6 @@ public class Sections {
     }
 
     public boolean isSingleSection() {
-        return sections.size() == 1;
+        return sections.size() == MINIMUM_SIZE;
     }
 }

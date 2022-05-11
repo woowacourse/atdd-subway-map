@@ -13,9 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
-import wooteco.subway.service.dto.station.StationFindResponse;
-import wooteco.subway.service.dto.station.StationSaveRequest;
-import wooteco.subway.service.dto.station.StationSaveResponse;
+import wooteco.subway.ui.dto.StationRequest;
+import wooteco.subway.ui.dto.StationResponse;
 
 @JdbcTest
 class StationServiceTest {
@@ -42,10 +41,10 @@ class StationServiceTest {
     @Test
     void save() {
         // given
-        StationSaveRequest station = new StationSaveRequest("범고래");
+        StationRequest station = new StationRequest("범고래");
 
         // when
-        StationSaveResponse result = stationService.save(station);
+        StationResponse result = stationService.save(station);
 
         // then
         String stationName = station.getName();
@@ -60,11 +59,11 @@ class StationServiceTest {
         Station station2 = new Station("범고래");
 
         // when
-        stationService.save(new StationSaveRequest(station1.getName()));
+        stationService.save(new StationRequest(station1.getName()));
 
         // then
         assertThatThrownBy(
-            () -> stationService.save(new StationSaveRequest(station2.getName())))
+            () -> stationService.save(new StationRequest(station2.getName())))
             .hasMessage("중복된 이름이 존재합니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }
@@ -72,11 +71,11 @@ class StationServiceTest {
     @Test
     void findAll() {
         // given
-        StationSaveResponse station1 = stationService.save(new StationSaveRequest("범고래"));
-        StationSaveResponse station2 = stationService.save(new StationSaveRequest("애쉬"));
+        StationResponse station1 = stationService.save(new StationRequest("범고래"));
+        StationResponse station2 = stationService.save(new StationRequest("애쉬"));
 
         // when
-        List<StationFindResponse> stations = stationService.findAll();
+        List<StationResponse> stations = stationService.findAll();
 
         // then
         assertThat(stations).filteredOn((station) -> station.getName().equals(station1.getName()))
@@ -88,11 +87,11 @@ class StationServiceTest {
     @Test
     void deleteById() {
         // given
-        StationSaveResponse savedStation = stationService.save(new StationSaveRequest("범고래"));
+        StationResponse savedStation = stationService.save(new StationRequest("범고래"));
 
         // when
         stationService.deleteById(savedStation.getId());
-        List<StationFindResponse> stations = stationService.findAll();
+        List<StationResponse> stations = stationService.findAll();
 
         // then
         assertThat(stations).filteredOn(

@@ -18,9 +18,8 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
-import wooteco.subway.service.dto.line.LineFindResponse;
-import wooteco.subway.service.dto.line.LineSaveRequest;
-import wooteco.subway.service.dto.line.LineSaveResponse;
+import wooteco.subway.ui.dto.LineRequest;
+import wooteco.subway.ui.dto.LineResponse;
 
 @JdbcTest
 class LineServiceTest {
@@ -55,11 +54,11 @@ class LineServiceTest {
         // given
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("역삼역"));
-        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600", station1.getId(),
+        LineRequest line = new LineRequest("1호선", "bg-red-600", station1.getId(),
             station2.getId(), 5);
 
         // when
-        LineSaveResponse savedLine = lineService.save(line);
+        LineResponse savedLine = lineService.save(line);
         Line result = lineDao.findById(savedLine.getId()).get();
 
         // then
@@ -71,9 +70,9 @@ class LineServiceTest {
         // given
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("역삼역"));
-        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600", station1.getId(),
+        LineRequest line1 = new LineRequest("1호선", "bg-red-600", station1.getId(),
             station2.getId(), 5);
-        LineSaveRequest line2 = new LineSaveRequest("1호선", "bg-red-600", station1.getId(),
+        LineRequest line2 = new LineRequest("1호선", "bg-red-600", station1.getId(),
             station2.getId(), 5);
 
         // when
@@ -90,9 +89,9 @@ class LineServiceTest {
         // given
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("역삼역"));
-        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600", station1.getId(),
+        LineRequest line1 = new LineRequest("1호선", "bg-red-600", station1.getId(),
             station2.getId(), 5);
-        LineSaveRequest line2 = new LineSaveRequest("2호선", "bg-green-600", station1.getId(),
+        LineRequest line2 = new LineRequest("2호선", "bg-green-600", station1.getId(),
             station2.getId(), 5);
 
         // when
@@ -102,7 +101,7 @@ class LineServiceTest {
         // then
         List<String> names = lineService.findAll()
             .stream()
-            .map(LineFindResponse::getName)
+            .map(LineResponse::getName)
             .collect(Collectors.toList());
 
         assertThat(names)
@@ -115,9 +114,9 @@ class LineServiceTest {
         // given
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("역삼역"));
-        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600", station1.getId(),
+        LineRequest line = new LineRequest("1호선", "bg-red-600", station1.getId(),
             station2.getId(), 5);
-        LineSaveResponse savedLine = lineService.save(line);
+        LineResponse savedLine = lineService.save(line);
 
         // when
         lineService.deleteById(savedLine.getId());
@@ -125,7 +124,7 @@ class LineServiceTest {
         // then
         List<Long> lineIds = lineService.findAll()
             .stream()
-            .map(LineFindResponse::getId)
+            .map(LineResponse::getId)
             .collect(Collectors.toList());
 
         assertThat(lineIds)
@@ -138,9 +137,9 @@ class LineServiceTest {
         // given
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("역삼역"));
-        LineSaveRequest originLine = new LineSaveRequest("1호선", "bg-red-600", station1.getId(),
+        LineRequest originLine = new LineRequest("1호선", "bg-red-600", station1.getId(),
             station2.getId(), 5);
-        LineSaveResponse savedLine = lineService.save(originLine);
+        LineResponse savedLine = lineService.save(originLine);
 
         // when
         Line newLineEntity = new Line("2호선", "bg-green-600");
@@ -156,9 +155,9 @@ class LineServiceTest {
         // given
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("역삼역"));
-        LineSaveRequest originLine = new LineSaveRequest("1호선", "bg-red-600", station1.getId(),
+        LineRequest originLine = new LineRequest("1호선", "bg-red-600", station1.getId(),
             station2.getId(), 5);
-        LineSaveResponse savedLine = lineService.save(originLine);
+        LineResponse savedLine = lineService.save(originLine);
 
         lineService.findById(savedLine.getId());
     }

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.service.SectionService;
-import wooteco.subway.service.dto.section.SectionSaveRequest;
 import wooteco.subway.ui.dto.LineResponse;
 import wooteco.subway.ui.dto.SectionDeleteRequest;
 import wooteco.subway.ui.dto.SectionRequest;
@@ -25,9 +24,7 @@ public class SectionController {
 
     @PostMapping("/lines/{id}/sections")
     public ResponseEntity<LineResponse> createSection(@Validated @RequestBody SectionRequest sectionRequest, @PathVariable Long id) {
-        Long savedId = sectionService.save(new SectionSaveRequest(id, sectionRequest.getUpStationId(),
-            sectionRequest.getDownStationId(),
-            sectionRequest.getDistance()));
+        Long savedId = sectionService.save(sectionRequest, id);
         if (savedId != null) {
             return ResponseEntity.ok().build();
         }
