@@ -35,13 +35,13 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public void updateLineOrder(Long lineId, Long lineOrder) {
+    public void updateLineOrderByInc(long lineId, Long lineOrder) {
         String sql = "UPDATE \"SECTION\" SET line_order = line_order + 1 WHERE line_id = (?) AND line_order >= (?)";
         jdbcTemplate.update(sql, lineId, lineOrder);
     }
 
     @Override
-    public boolean existByLineId(Long lineId) {
+    public boolean existByLineId(long lineId) {
         String sql = "SELECT EXISTS ("
             + "SELECT * FROM \"SECTION\" WHERE line_id = (?)"
             + ")";
@@ -49,7 +49,7 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findAllByLineId(Long lineId) {
+    public List<Section> findAllByLineId(long lineId) {
         String sql = "SELECT * from \"SECTION\" WHERE line_id = (?)";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             return new Section(
@@ -86,7 +86,7 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public void updateLineOrderByDec(long lineId, long lineOrder) {
+    public void updateLineOrderByDec(long lineId, Long lineOrder) {
         String sql = "UPDATE \"SECTION\" SET line_order = line_order - 1 WHERE line_id = (?) AND line_order > (?)";
         jdbcTemplate.update(sql, lineId, lineOrder);
     }

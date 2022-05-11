@@ -91,30 +91,37 @@ public class Sections {
 
     public Section findOverlapSection(long upStationId, long downStationId, int distance) {
         if (existByUpStationId(upStationId)) {
-            Section section = findById(findIdByUpStationId(upStationId));
-            return new Section(section.getId(), section.getLineId(), downStationId, section.getDownStationId(),
-
-                section.getDistance() - distance, section.getLineOrder());
+            return getUpdateSectionUpsideMatchingCase(upStationId, downStationId, distance);
         }
-
         if (existByDownStationId(downStationId)) {
-            Section section = findById(findIdByDownStationId(downStationId));
-            return new Section(
-                section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
-                section.getDistance() - distance, section.getLineOrder());
+            return getUpdateSectionDownsideMatchingCase(upStationId, downStationId, distance);
         }
-
         if (existByUpStationId(downStationId)) {
-            Section section = findById(findIdByUpStationId(downStationId));
-            return new Section(
-                null, section.getLineId(), upStationId, downStationId,
-                distance, section.getLineOrder() + 1);
+            return getSectionWithLineOrder(
+                findById(findIdByUpStationId(downStationId)).getLineOrder() + 1);
         }
+        return getSectionWithLineOrder(
+            findById(findIdByDownStationId(upStationId)).getLineOrder());
+    }
 
-        Section section = findById(findIdByDownStationId(upStationId));
+    private Section getUpdateSectionUpsideMatchingCase(
+        long upStationId, long downStationId, int distance) {
+        Section section = findById(findIdByUpStationId(upStationId));
         return new Section(
-            null, section.getLineId(), upStationId, downStationId,
-            distance, section.getLineOrder());
+            section.getId(), section.getLineId(), downStationId, section.getDownStationId(),
+            section.getDistance() - distance, section.getLineOrder());
+    }
+
+    private Section getUpdateSectionDownsideMatchingCase(
+        long upStationId, long downStationId, int distance) {
+        Section section = findById(findIdByDownStationId(downStationId));
+        return new Section(
+            section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
+            section.getDistance() - distance, section.getLineOrder());
+    }
+
+    private Section getSectionWithLineOrder(long lineOrder) {
+        return new Section(lineOrder);
     }
 
     private Section findById(long sectionId) {

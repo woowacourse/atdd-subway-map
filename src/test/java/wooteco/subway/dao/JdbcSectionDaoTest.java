@@ -43,7 +43,7 @@ class JdbcSectionDaoTest {
         sectionDao.save(GIVEN_SECTION);
 
         // when
-        sectionDao.updateLineOrder(1L, 1L);
+        sectionDao.updateLineOrderByInc(1L, 1L);
 
         // then
         assertThat(sectionDao.findAllByLineId(1L))

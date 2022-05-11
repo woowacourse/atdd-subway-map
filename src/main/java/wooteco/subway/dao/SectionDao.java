@@ -7,15 +7,15 @@ public interface SectionDao {
 
     Long save(Section section);
 
-    void updateLineOrder(Long lineId, Long lineOrder);
+    void updateLineOrderByInc(long lineId, Long lineOrder);
 
-    boolean existByLineId(Long lineId);
+    boolean existByLineId(long lineId);
 
-    List<Section> findAllByLineId(Long lineId);
+    List<Section> findAllByLineId(long lineId);
 
     void deleteById(Long id);
 
     List<Section> findByLineIdAndStationId(long lineId, long stationId);
 
-    void updateLineOrderByDec(long lineId, long lineOrder);
+    void updateLineOrderByDec(long lineId, Long lineOrder);
 }
