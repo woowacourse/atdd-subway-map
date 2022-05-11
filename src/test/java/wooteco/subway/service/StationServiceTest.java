@@ -35,7 +35,7 @@ class StationServiceTest {
     void finish() {
         List<StationResponse> stations = stationService.findAll();
         for (StationResponse station : stations) {
-            stationService.deleteStation(station.getId());
+            stationService.delete(station.getId());
         }
     }
 
@@ -43,7 +43,7 @@ class StationServiceTest {
     @DisplayName("역정보 저장")
     void save() {
         StationRequest station = new StationRequest("역삼역");
-        StationResponse newStation = stationService.createStation(station);
+        StationResponse newStation = stationService.save(station);
 
         assertThat(station.getName()).isEqualTo(newStation.getName());
     }
@@ -53,9 +53,9 @@ class StationServiceTest {
     void duplicateStation() {
         StationRequest station = new StationRequest("역삼역");
         StationRequest duplicateStation = new StationRequest("역삼역");
-        stationService.createStation(station);
+        stationService.save(station);
 
-        assertThatThrownBy(() -> stationService.createStation(duplicateStation))
+        assertThatThrownBy(() -> stationService.save(duplicateStation))
                 .isInstanceOf(ClientException.class)
                 .hasMessageContaining("이미 등록된 지하철역입니다.");
     }
@@ -65,8 +65,8 @@ class StationServiceTest {
     void findAll() {
         StationRequest firstStation = new StationRequest("역삼역");
         StationRequest secondStation = new StationRequest("삼성역");
-        stationService.createStation(firstStation);
-        stationService.createStation(secondStation);
+        stationService.save(firstStation);
+        stationService.save(secondStation);
 
         List<StationResponse> stations = stationService.findAll();
         StationResponse stationResponse = stations.stream()
@@ -81,8 +81,8 @@ class StationServiceTest {
     @DisplayName("역 정보를 삭제")
     void deleteStation() {
         StationRequest station = new StationRequest("역삼역");
-        StationResponse newStation = stationService.createStation(station);
+        StationResponse newStation = stationService.save(station);
 
-        assertThat(stationService.deleteStation(newStation.getId())).isEqualTo(1);
+        assertThat(stationService.delete(newStation.getId())).isEqualTo(1);
     }
 }

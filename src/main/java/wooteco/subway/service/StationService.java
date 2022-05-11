@@ -22,7 +22,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse createStation(StationRequest stationRequest) {
+    public StationResponse save(StationRequest stationRequest) {
         try {
             Station newStation = stationDao.save(stationRequest);
             return new StationResponse(newStation.getId(), newStation.getName());
@@ -38,9 +38,9 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public int deleteStation(long id) {
+    public int delete(long id) {
         try {
-            return stationDao.deleteStation(id);
+            return stationDao.delete(id);
         } catch (TransactionSystemException exception) {
             throw new ClientException("구간에 등록되어 있는 역은 제거할 수 없습니다.");
         }

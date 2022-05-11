@@ -22,7 +22,7 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse stationResponse = stationService.createStation(stationRequest);
+        StationResponse stationResponse = stationService.save(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
@@ -34,7 +34,7 @@ public class StationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        stationService.deleteStation(id);
+        stationService.delete(id);
         return ResponseEntity.ok().build();
     }
 }

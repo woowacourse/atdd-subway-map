@@ -67,7 +67,7 @@ public class LineJdbcDaoTest {
                 1L, 2L, 10);
         Line lineResponse = lineDao.save(line);
 
-        assertThat(lineDao.find(lineResponse.getId()).getName()).isEqualTo("5호선");
+        assertThat(lineDao.findById(lineResponse.getId()).getName()).isEqualTo("5호선");
     }
 
     @DisplayName("노선 정보를 변경한다.")

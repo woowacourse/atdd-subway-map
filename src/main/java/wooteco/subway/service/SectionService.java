@@ -21,7 +21,7 @@ public class SectionService {
         this.sectionJdbcDao = sectionJdbcDao;
     }
 
-    public void saveSection(Long id, SectionRequest sectionRequest, Sections sections, LineResponse line) {
+    public void save(Long id, SectionRequest sectionRequest, Sections sections, LineResponse line) {
         validateSameStation(sectionRequest);
 
         if (sections.isExistSection()) {
@@ -57,8 +57,8 @@ public class SectionService {
     }
 
     public void delete(Long id, Long stationId) {
-        sectionJdbcDao.find(id).validateDeleteCondition();
-        Sections sections = sectionJdbcDao.find(id);
+        sectionJdbcDao.findById(id).validateDeleteCondition();
+        Sections sections = sectionJdbcDao.findById(id);
 
         Optional<Section> downSection = sections.findDownSection(stationId);
         Optional<Section> upSection = sections.findUpSection(stationId);

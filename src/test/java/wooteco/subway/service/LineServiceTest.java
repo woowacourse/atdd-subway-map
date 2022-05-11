@@ -33,7 +33,7 @@ class LineServiceTest {
     void finish() {
         List<LineResponse> lines = lineService.findAll();
         for (LineResponse line : lines) {
-            lineService.deleteLine(line.getId());
+            lineService.delete(line.getId());
         }
     }
 
@@ -44,7 +44,7 @@ class LineServiceTest {
         Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
 
         LineRequest line = new LineRequest("4호선", "green", firstStation.getId(), secondStation.getId(), 10);
-        LineResponse newLine = lineService.createLine(line);
+        LineResponse newLine = lineService.save(line);
 
         assertThat(line.getName()).isEqualTo(newLine.getName());
     }
@@ -57,9 +57,9 @@ class LineServiceTest {
 
         LineRequest line = new LineRequest("3호선", "red", firstStation.getId(), secondStation.getId(), 10);
         LineRequest dupLine = new LineRequest("3호선", "red", firstStation.getId(), secondStation.getId(), 10);
-        lineService.createLine(line);
+        lineService.save(line);
 
-        assertThatThrownBy(() -> lineService.createLine(dupLine))
+        assertThatThrownBy(() -> lineService.save(dupLine))
                 .isInstanceOf(ClientException.class)
                 .hasMessageContaining("이미 등록된 지하철노선입니다.");
     }
@@ -71,8 +71,8 @@ class LineServiceTest {
         Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
         Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
 
-        lineService.createLine(new LineRequest("5호선", "red", firstStation.getId(), secondStation.getId(), 10));
-        lineService.createLine(new LineRequest("7호선", "red", firstStation.getId(), secondStation.getId(), 10));
+        lineService.save(new LineRequest("5호선", "red", firstStation.getId(), secondStation.getId(), 10));
+        lineService.save(new LineRequest("7호선", "red", firstStation.getId(), secondStation.getId(), 10));
 
         List<LineResponse> lines = lineService.findAll();
         lines.stream()
@@ -89,9 +89,9 @@ class LineServiceTest {
 
         LineRequest line = new LineRequest("4호선", "red", firstStation.getId(),
                 secondStation.getId(), 10);
-        LineResponse newLine = lineService.createLine(line);
+        LineResponse newLine = lineService.save(line);
 
-        assertThat(lineService.deleteLine(newLine.getId())).isEqualTo(1);
+        assertThat(lineService.delete(newLine.getId())).isEqualTo(1);
     }
 
     @Test
@@ -101,9 +101,9 @@ class LineServiceTest {
         Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
 
         LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);
-        LineResponse newLine = lineService.createLine(line);
+        LineResponse newLine = lineService.save(line);
 
-        assertThat(lineService.updateLine(newLine.getId(), new LineRequest("7호선", "red", firstStation.getId(),
+        assertThat(lineService.update(newLine.getId(), new LineRequest("7호선", "red", firstStation.getId(),
                 secondStation.getId(), 10))).isEqualTo(1);
     }
 
@@ -114,12 +114,12 @@ class LineServiceTest {
         Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
 
         LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);;
-        lineService.createLine(line);
+        lineService.save(line);
 
         LineRequest secondLine = new LineRequest("8호선", "red", firstStation.getId(), secondStation.getId(), 10);;
-        LineResponse secondNewLine = lineService.createLine(secondLine);
+        LineResponse secondNewLine = lineService.save(secondLine);
 
-        assertThatThrownBy(() -> lineService.updateLine(secondNewLine.getId(),
+        assertThatThrownBy(() -> lineService.update(secondNewLine.getId(),
                 new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10)))
                 .isInstanceOf(ClientException.class)
                 .hasMessageContaining("등록된 지하철노선으로 변경할 수 없습니다.");
@@ -132,7 +132,7 @@ class LineServiceTest {
         Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
 
         LineRequest line = new LineRequest("4호선", "red", firstStation.getId(), secondStation.getId(), 10);
-        LineResponse newLine = lineService.createLine(line);
+        LineResponse newLine = lineService.save(line);
 
         assertThat(lineService.findById(newLine.getId()).getName()).isEqualTo(line.getName());
     }

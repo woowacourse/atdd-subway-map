@@ -37,13 +37,13 @@ public class StationJdbcDao {
                 new Station(rs.getLong("id"), rs.getString("name")));
     }
 
-    public Station findStation(long id) {
+    public Station findById(long id) {
         final String sql = "select * from station where id = (?)";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
                 new Station(rs.getLong("id"), rs.getString("name")), id);
     }
 
-    public int deleteStation(long id) {
+    public int delete(long id) {
         final String sql = "delete from station where id = (?)";
         return jdbcTemplate.update(sql, id);
     }

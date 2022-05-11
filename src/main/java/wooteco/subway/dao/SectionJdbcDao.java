@@ -34,7 +34,7 @@ public class SectionJdbcDao {
                 section.getDownStationId(), section.getDistance());
     }
 
-    public Sections find(Long lineId) {
+    public Sections findById(Long lineId) {
         final String sql = "select * from section where line_id = (?)";
         return new Sections(jdbcTemplate.query(sql, (rs, rowNum) -> new Section(rs.getLong("id"),
                 rs.getLong("line_id"), rs.getLong("up_station_id"),

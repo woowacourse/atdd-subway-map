@@ -30,13 +30,13 @@ public class LineService {
         this.sectionJdbcDao = sectionJdbcDao;
     }
 
-    public LineResponse createLine(LineRequest request) {
+    public LineResponse save(LineRequest request) {
         try {
             Line line = lineDao.save(request);
             sectionJdbcDao.save(line.getId(), new Section(0L, line.getId(), request.getUpStationId(), request.getDownStationId(), request.getDistance()));
 
-            Station upsStation = stationDao.findStation(request.getUpStationId());
-            Station downStation = stationDao.findStation(request.getDownStationId());
+            Station upsStation = stationDao.findById(request.getUpStationId());
+            Station downStation = stationDao.findById(request.getDownStationId());
             return new LineResponse(line.getId(), line.getName(), line.getColor(), Set.of(upsStation, downStation));
         } catch (DataAccessException exception) {
             throw new ClientException("이미 등록된 지하철노선입니다.");
@@ -46,14 +46,14 @@ public class LineService {
     public List<LineResponse> findAll() {
         List<LineResponse> responses = new ArrayList<>();
         for (Line line : lineDao.findAll()) {
-            responses.add(makeLineResponseWithLinkedStations(line, sectionJdbcDao.find(line.getId())));
+            responses.add(makeLineResponseWithLinkedStations(line, sectionJdbcDao.findById(line.getId())));
         }
         return responses;
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineDao.find(id);
-        Sections sections = sectionJdbcDao.find(line.getId());
+        Line line = lineDao.findById(id);
+        Sections sections = sectionJdbcDao.findById(line.getId());
         return makeLineResponseWithLinkedStations(line, sections);
     }
 
@@ -70,7 +70,7 @@ public class LineService {
     }
 
     public Sections findSections(Long id) {
-        Sections sections = sectionJdbcDao.find(id);
+        Sections sections = sectionJdbcDao.findById(id);
         return new Sections(sections.linkSections());
     }
 
@@ -80,7 +80,7 @@ public class LineService {
                 .collect(Collectors.toMap(Station::getId, station -> station));
     }
 
-    public int updateLine(Long id, LineRequest lineRequest) {
+    public int update(Long id, LineRequest lineRequest) {
         try {
             return lineDao.update(id, lineRequest);
         } catch (DataAccessException exception) {
@@ -88,7 +88,7 @@ public class LineService {
         }
     }
 
-    public int deleteLine(Long id) {
+    public int delete(Long id) {
         return lineDao.delete(id);
     }
 }

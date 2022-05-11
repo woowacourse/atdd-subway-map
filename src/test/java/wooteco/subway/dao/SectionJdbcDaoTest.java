@@ -64,7 +64,7 @@ class SectionJdbcDaoTest {
 
         sectionJdbcDao.delete(1L, new Section(1L, 1L, 1L, 2L, 10));
 
-        assertThat(sectionJdbcDao.find(1L).getSections().size()).isOne();
+        assertThat(sectionJdbcDao.findById(1L).getSections().size()).isOne();
         lineJdbcDao.delete(1L);
     }
 }

@@ -24,15 +24,15 @@ class SectionServiceTest {
     @DisplayName("구간 저장")
     @Test
     void save() {
-        StationResponse firstStation = stationService.createStation(new StationRequest("역삼역"));
-        StationResponse secondStation = stationService.createStation(new StationRequest("삼성역"));
-        StationResponse thirdStation = stationService.createStation(new StationRequest("잠실역"));
+        StationResponse firstStation = stationService.save(new StationRequest("역삼역"));
+        StationResponse secondStation = stationService.save(new StationRequest("삼성역"));
+        StationResponse thirdStation = stationService.save(new StationRequest("잠실역"));
 
         LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);;
-        LineResponse saveLine = lineService.createLine(line);
+        LineResponse saveLine = lineService.save(line);
 
         //assert 하기
-        sectionService.saveSection(saveLine.getId(), new SectionRequest(secondStation.getId(), thirdStation.getId(),
+        sectionService.save(saveLine.getId(), new SectionRequest(secondStation.getId(), thirdStation.getId(),
                         10),
                 lineService.findSections(saveLine.getId()), lineService.findById(saveLine.getId()));
     }
@@ -40,14 +40,14 @@ class SectionServiceTest {
     @DisplayName("구간 삭제")
     @Test
     void delete() {
-        StationResponse firstStation = stationService.createStation(new StationRequest("역삼역"));
-        StationResponse secondStation = stationService.createStation(new StationRequest("삼성역"));
-        StationResponse thirdStation = stationService.createStation(new StationRequest("잠실역"));
+        StationResponse firstStation = stationService.save(new StationRequest("역삼역"));
+        StationResponse secondStation = stationService.save(new StationRequest("삼성역"));
+        StationResponse thirdStation = stationService.save(new StationRequest("잠실역"));
 
         LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);
-        LineResponse saveLine = lineService.createLine(line);
+        LineResponse saveLine = lineService.save(line);
 
-        sectionService.saveSection(saveLine.getId(), new SectionRequest(secondStation.getId(), thirdStation.getId(), 10),
+        sectionService.save(saveLine.getId(), new SectionRequest(secondStation.getId(), thirdStation.getId(), 10),
                 lineService.findSections(saveLine.getId()), lineService.findById(saveLine.getId()));
 
 

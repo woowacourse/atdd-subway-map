@@ -58,6 +58,6 @@ class StationJdbcDaoTest {
         StationRequest station = new StationRequest("역삼역");
         Station newStation = stationJdbcDao.save(station);
 
-        assertThat(stationJdbcDao.deleteStation(newStation.getId())).isEqualTo(1);
+        assertThat(stationJdbcDao.delete(newStation.getId())).isEqualTo(1);
     }
 }
