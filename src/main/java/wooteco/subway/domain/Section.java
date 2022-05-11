@@ -5,23 +5,29 @@ import java.util.Objects;
 public class Section {
 
     private Long id;
+    private Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public Section(Long id, Long upStationId, Long downStationId, int distance) {
+    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         this.id = id;
+        this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public Section(Long upStationId, Long downStationId, int distance) {
-        this(null, upStationId, downStationId, distance);
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(null, lineId, upStationId, downStationId, distance);
     }
 
     public Long getId() {
         return id;
+    }
+
+    public Long getLineId() {
+        return lineId;
     }
 
     public Long getUpStationId() {

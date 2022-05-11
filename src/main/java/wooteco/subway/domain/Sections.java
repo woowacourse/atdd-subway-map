@@ -16,35 +16,25 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public void addSection(Section inputSection) {
+    public Section addSection(Section inputSection) {
         validateSameSection(inputSection);
-        if (countSameStation(inputSection) != 2) {
+        if (sections.isEmpty()) {
+            sections.add(inputSection);
+            return null;
+        }
+        if (!isEdgeSection(inputSection)) {
             Section section = findAddPoint(inputSection);
             Direction direction = Direction.findDirection(section, inputSection);
             syncSection(section, inputSection, direction);
             sections.add(inputSection);
-            return;
+            return section;
         }
-        List<Section> sectionOptions = getSections(inputSection);
-        Section section = findSection(sectionOptions, inputSection);
-        syncSection(section, inputSection, Direction.findDirection(section, inputSection));
+        List<Section> sectionOptions = findConnectableSection(inputSection);
+        Section section = findAddPoint(sectionOptions, inputSection);
+        Direction direction = Direction.findDirection(section, inputSection);
+        syncSection(section, inputSection, direction);
         sections.add(inputSection);
-    }
-
-    private void syncSection(Section section, Section inputSection, Direction direction) {
-        validateDistance(section, inputSection);
-        if (direction == Direction.BETWEEN_UP) {
-            Long downStationId = section.getDownStationId();
-            int distance = section.getDistance();
-            section.update(section.getUpStationId(), inputSection.getDownStationId(),
-                    inputSection.getDistance());
-            inputSection.update(inputSection.getDownStationId(), downStationId, distance - inputSection.getDistance());
-        }
-        if (direction == Direction.BETWEEN_DOWN) {
-            section.update(section.getUpStationId(), inputSection.getUpStationId(),
-                    section.getDistance() - inputSection.getDistance());
-            inputSection.update(section.getDownStationId(), inputSection.getDownStationId(), inputSection.getDistance());
-        }
+        return section;
     }
 
     private void validateSameSection(Section inputSection) {
@@ -56,39 +46,54 @@ public class Sections {
         }
     }
 
-    private Section findAddPoint(Section inputSection) {
-        return sections.stream()
-                .filter(section -> section.isExistSameStation(inputSection))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION_IN_LINE));
-    }
-
-    private int countSameStation(Section inputSection) {
-        return (int) sections.stream()
-                .filter(section -> section.isExistSameStation(inputSection))
-                .count();
-    }
-
-    private List<Section> getSections(Section inputSection) {
-        return sections.stream()
-                .filter(section -> section.isExistSameStation(inputSection))
-                .collect(Collectors.toList());
-    }
-
-    private Section findSection(List<Section> sections, Section inputSection) {
-        return sections.stream()
-                .filter(section -> {
-                    Direction direction = Direction.findDirection(section, inputSection);
-                    return direction != Direction.UP || direction != Direction.DOWN;
-                })
-                .findAny()
-                .orElseThrow();
+    private void syncSection(Section section, Section inputSection, Direction direction) {
+        if (direction == Direction.BETWEEN_UP) {
+            validateDistance(section, inputSection);
+            section.update(inputSection.getDownStationId(), section.getDownStationId(),
+                    section.getDistance() - inputSection.getDistance());
+        }
+        if (direction == Direction.BETWEEN_DOWN) {
+            validateDistance(section, inputSection);
+            section.update(section.getUpStationId(), inputSection.getUpStationId(),
+                    section.getDistance() - inputSection.getDistance());
+        }
     }
 
     private void validateDistance(Section section, Section inputSection) {
         if (section.getDistance() <= inputSection.getDistance()) {
             throw new IllegalArgumentException(EXCEED_DISTANCE);
         }
+    }
+
+    private Section findAddPoint(Section inputSection) {
+        return sections.stream()
+                .filter(section -> sections.size() != 0 && section.isExistSameStation(inputSection))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION_IN_LINE));
+    }
+
+    private Section findAddPoint(List<Section> sections, Section inputSection) {
+        return sections.stream()
+                .filter(section -> {
+                    Direction direction = Direction.findDirection(section, inputSection);
+                    return direction == Direction.BETWEEN_UP || direction == Direction.BETWEEN_DOWN;
+                })
+                .findAny()
+                .orElseThrow();
+    }
+
+    private boolean isEdgeSection(Section inputSection) {
+        int countOfCoincidence = (int) sections.stream()
+                .filter(section -> section.isExistSameStation(inputSection))
+                .count();
+
+        return countOfCoincidence == 2;
+    }
+
+    private List<Section> findConnectableSection(Section inputSection) {
+        return sections.stream()
+                .filter(section -> section.isExistSameStation(inputSection))
+                .collect(Collectors.toList());
     }
 
     public List<Section> getSections() {
