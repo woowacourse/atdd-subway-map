@@ -23,8 +23,8 @@ import wooteco.subway.dto.LineResponse;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private JdbcStationDao jdbcStationDao;
-    public String upStationId;
-    public String downStationId;
+    private String upStationId;
+    private String downStationId;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
