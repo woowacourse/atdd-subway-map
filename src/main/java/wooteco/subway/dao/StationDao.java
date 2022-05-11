@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotFoundException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -60,7 +61,11 @@ public class StationDao {
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
+        final int affectedRows = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
+
+        if (affectedRows == 0) {
+            throw new DataNotFoundException("존재하지 않는 노선 id 입니다.");
+        }
     }
 
     public boolean existByName(final String name) {
