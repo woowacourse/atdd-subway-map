@@ -21,7 +21,7 @@ class StationRepositoryTest extends RepositoryTest {
 
         assertAll(
                 () -> assertThat(savedStation.getId()).isNotNull(),
-                () -> assertThat(savedStation.isSameName(station.getName())).isTrue()
+                () -> assertThat(savedStation.getName()).isEqualTo(station.getName())
         );
     }
 

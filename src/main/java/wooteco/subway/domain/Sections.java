@@ -135,10 +135,6 @@ public class Sections {
         }
     }
 
-    public List<Section> getValues() {
-        return List.copyOf(values);
-    }
-
     public Station findFirstStation() {
         List<Station> downStations = getDownStations();
         List<Station> upStations = getUpStations();
@@ -154,7 +150,10 @@ public class Sections {
                 .filter(value -> value.isSameUpStation(station))
                 .map(Section::getDownStation)
                 .findFirst();
+    }
 
+    public List<Section> getValues() {
+        return List.copyOf(values);
     }
 
     @Override

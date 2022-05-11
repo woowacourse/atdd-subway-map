@@ -29,14 +29,6 @@ public class Station {
         return name;
     }
 
-    public boolean isSameName(final String name) {
-        return name.equals(this.name);
-    }
-
-    public boolean isSameStation(final Station station) {
-        return equals(station) && isSameName(name);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
