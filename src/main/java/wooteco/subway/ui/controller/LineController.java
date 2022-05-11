@@ -33,7 +33,6 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.create(lineRequest);
         Long id = lineResponse.getId();
-        sectionService.create(lineRequest, id);
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
     }
 

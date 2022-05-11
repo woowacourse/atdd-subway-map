@@ -10,7 +10,6 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
@@ -30,34 +29,36 @@ public class LineService {
     public LineResponse create(LineRequest lineRequest) {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
-        Line line = new Line(name, color);
-        Line createdLine = lineDao.save(line);
 
         Station upStation = stationDao.findById(lineRequest.getUpStationId());
         Station downStation = stationDao.findById(lineRequest.getDownStationId());
-        return LineResponse.from(createdLine, List.of(upStation, downStation));
+        Section section = new Section(upStation, downStation, lineRequest.getDistance());
+
+        Line line = new Line(name, color, section);
+        Line createdLine = lineDao.save(line);
+        sectionDao.save(section, createdLine.getId());
+
+        return LineResponse.from(createdLine);
     }
 
     public List<LineResponse> findAll() {
         final List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(line -> LineResponse.from(line, findStations(line)))
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         final Line line = lineDao.findById(id);
-        List<Station> stations = findStations(line);
-        return LineResponse.from(line, stations);
-    }
-
-    private List<Station> findStations(Line line) {
-        final List<Section> sections = sectionDao.findByLine(line.getId());
-        return new Sections(line, sections).getStations();
+        return LineResponse.from(line);
     }
 
     public void modify(Long id, LineRequest lineRequest) {
-        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        final Line line = new Line(
+                id,
+                lineRequest.getName(),
+                lineRequest.getColor()
+        );
         lineDao.update(line);
     }
 
