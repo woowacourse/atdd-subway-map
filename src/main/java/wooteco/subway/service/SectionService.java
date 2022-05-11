@@ -36,12 +36,13 @@ public class SectionService {
 
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
+        final List<Section> sectionsBeforeAddSection = sectionDao.findSectionStationsByLineId(lineId);
+
         Section newSection = sectionRequest.toEntity(lineId);
         newSection = sectionDao.save(newSection);
 
-        final Sections sections = new Sections(sectionDao.findSectionStationsByLineId(lineId));
+        final List<Section> sectionsAfterAddSection = new Sections(sectionsBeforeAddSection).addSection(newSection);
 
-        final List<Section> updatedSections = sections.addSection(newSection);
-        sectionDao.batchUpdate(updatedSections);
+        sectionDao.batchUpdate(sectionsAfterAddSection);
     }
 }
