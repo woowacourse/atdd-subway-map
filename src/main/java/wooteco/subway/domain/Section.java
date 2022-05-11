@@ -47,7 +47,7 @@ public class Section {
 
     private void validateShortDistance(int distance) {
         if (this.distance <= distance) {
-            throw new IllegalArgumentException("거리가 큽니다.");
+            throw new IllegalArgumentException("추가하려는 거리가 큽니다.");
         }
     }
 

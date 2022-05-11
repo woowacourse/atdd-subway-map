@@ -108,9 +108,10 @@ public class LineService {
             throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
         }
 
-        if (!((sections.existUpStation(downStation) || sections.existDownStation(upStation))
-            && !sections.existUpStation(upStation) && !sections.existDownStation(downStation))) {
-            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
+        if ((sections.existUpStation(downStation) && !sections.existDownStation(upStation))
+            || (!sections.existUpStation(downStation) && sections.existDownStation(upStation))) {
+            sectionDao.save(new Section(line, upStation, downStation, distance));
+            return;
         }
 
         if (sections.existUpStation(upStation)) {
@@ -129,7 +130,9 @@ public class LineService {
             return;
         }
 
-        sectionDao.save(new Section(line, upStation, downStation, distance));
+        if (!sections.existUpStation(upStation) && !sections.existDownStation(downStation)) {
+            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
+        }
     }
 
     public void delete(Long lineId, Long stationId) {
@@ -138,8 +141,12 @@ public class LineService {
         Section upSection = sections.findContainsDownStation(station);
         Section downSection = sections.findContainsUpStation(station);
 
-        sectionDao.save(new Section(findLine(lineId), upSection.getUpStation(), downSection.getDownStation(),
-            upSection.getDistance() + downSection.getDistance()));
+        sectionDao.save(new Section(
+            findLine(lineId),
+            upSection.getUpStation(),
+            downSection.getDownStation(),
+            upSection.getDistance() + downSection.getDistance())
+        );
         sectionDao.deleteById(upSection.getId());
         sectionDao.deleteById(downSection.getId());
     }
