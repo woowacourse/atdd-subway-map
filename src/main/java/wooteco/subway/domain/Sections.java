@@ -27,9 +27,8 @@ public class Sections implements Iterable<Section> {
     public void checkCanAddAndUpdate(Section section) {
         validateCanConnect(section);
         validateAlreadyConnected(section);
-        validateSectionCanDividedWithSameUpStation(section);
-        validateSectionCanDividedWithSameDownStation(section);
-        sections.add(section);
+        updateIfCanDivideWithSameUpStation(section);
+        updateIfCanDivideWithSameDownStation(section);
     }
 
     private void validateCanConnect(Section section) {
@@ -52,7 +51,7 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    private void validateSectionCanDividedWithSameUpStation(Section section) {
+    private void updateIfCanDivideWithSameUpStation(Section section) {
         Section sectionWithSameUpStation = sections.stream()
             .filter(section1 -> section1.isSameUpStation(section))
             .findFirst()
@@ -69,7 +68,7 @@ public class Sections implements Iterable<Section> {
         sectionWithSameUpStation.changeDownStationAndDistance(section);
     }
 
-    private void validateSectionCanDividedWithSameDownStation(Section section) {
+    private void updateIfCanDivideWithSameDownStation(Section section) {
         Section sectionWithSameDownStation = sections.stream()
             .filter(section1 -> section1.isSameDownStation(section))
             .findFirst()
