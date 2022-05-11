@@ -97,14 +97,13 @@ class LineServiceTest {
 
     @Test
     @DisplayName("구간 사이에 역을 추가한다.")
-    void addSectionInSection() {
+    void addSectionBetweenSection() {
         Station 미르역 = stationDao.save(new Station("미르역"));
         Station 수달역 = stationDao.save(new Station("수달역"));
         Station 호호역 = stationDao.save(new Station("호호역"));
         Line 우테코노선 = new Line("우테코노선", "노랑");
 
         LineRequest request = new LineRequest(우테코노선.getName(), 우테코노선.getColor(), 미르역.getId(), 수달역.getId(), 100);
-
         LineResponse lineResponse = lineService.create(request);
         // when
         lineService.createSection(lineResponse.getId(),
@@ -112,16 +111,73 @@ class LineServiceTest {
 
         // then
         List<SectionEntity> result = sectionDao.findByLineId(lineResponse.getId());
-        assertThat(result.size()).isEqualTo(2);
-        // assertThat(result)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getDistance()).isEqualTo(40);
+        assertThat(result.get(1).getDistance()).isEqualTo(60);
     }
 
 
-    private SectionEntity findSectionEntity(Station startStation, List<SectionEntity> sectionEntities) {
-        return sectionEntities.stream()
-                .filter(entity -> entity.getUpStationId().equals(startStation.getId()))
-                .findFirst()
-                .get();
+    @Test
+    @DisplayName("맨 앞 역을 삭제한다. ")
+    void deleteFrontStation() {
+        Station 미르역 = stationDao.save(new Station("미르역"));
+        Station 수달역 = stationDao.save(new Station("수달역"));
+        Station 호호역 = stationDao.save(new Station("호호역"));
+        Line 우테코노선 = new Line("우테코노선", "노랑");
+        LineResponse lineResponse = createTwoSection(미르역, 수달역, 호호역, 우테코노선);
+
+        // when
+        lineService.delete(lineResponse.getId(), 미르역.getId());
+
+        // then
+        List<SectionEntity> result = sectionDao.findByLineId(lineResponse.getId());
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("맨 뒤 역을 삭제한다. ")
+    void deleteBackStation() {
+        Station 미르역 = stationDao.save(new Station("미르역"));
+        Station 수달역 = stationDao.save(new Station("수달역"));
+        Station 호호역 = stationDao.save(new Station("호호역"));
+        Line 우테코노선 = new Line("우테코노선", "노랑");
+        LineResponse lineResponse = createTwoSection(미르역, 수달역, 호호역, 우테코노선);
+
+        // when
+        lineService.delete(lineResponse.getId(), 호호역.getId());
+
+        // then
+        List<SectionEntity> result = sectionDao.findByLineId(lineResponse.getId());
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUpStationId()).isEqualTo(미르역.getId());
+        assertThat(result.get(0).getDownStationId()).isEqualTo(수달역.getId());
+    }
+
+    @Test
+    @DisplayName("가운데 역을 삭제한다.")
+    void deleteBetweenStation() {
+        Station 미르역 = stationDao.save(new Station("미르역"));
+        Station 수달역 = stationDao.save(new Station("수달역"));
+        Station 호호역 = stationDao.save(new Station("호호역"));
+        Line 우테코노선 = new Line("우테코노선", "노랑");
+        LineResponse lineResponse = createTwoSection(미르역, 수달역, 호호역, 우테코노선);
+
+        // when
+        lineService.delete(lineResponse.getId(), 수달역.getId());
+
+        // then
+        List<SectionEntity> result = sectionDao.findByLineId(lineResponse.getId());
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUpStationId()).isEqualTo(미르역.getId());
+        assertThat(result.get(0).getDownStationId()).isEqualTo(호호역.getId());
+    }
+
+    private LineResponse createTwoSection(Station 미르역, Station 수달역, Station 호호역, Line 우테코노선) {
+        LineRequest request = new LineRequest(우테코노선.getName(), 우테코노선.getColor(), 미르역.getId(), 수달역.getId(), 100);
+        LineResponse lineResponse = lineService.create(request);
+        lineService.createSection(lineResponse.getId(),
+                new SectionRequest(미르역.getId(), 호호역.getId(), 40));
+        return lineResponse;
     }
 
 }
