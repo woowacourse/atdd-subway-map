@@ -5,6 +5,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 public class LineRequest {
 
@@ -14,10 +15,14 @@ public class LineRequest {
     @NotNull(message = "노선 색상은 공백일 수 없습니다.")
     private String color;
 
+    @NotNull(message = "노선 구간의 상행 아이디는 공백일 수 없습니다.")
     private Long upStationId;
 
+    @NotNull(message = "노선 구간의 하행 아이디는 공백일 수 없습니다.")
     private Long downStationId;
 
+    @Positive
+    @NotNull(message = "구간의 거리는 공백이거나 음수일 수 없습니다.")
     private int distance;
 
 

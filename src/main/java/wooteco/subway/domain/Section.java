@@ -82,7 +82,11 @@ public class Section {
         if (this == o) return true;
         if (!(o instanceof Section)) return false;
         final Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(lineId, section.lineId);
+        return distance == section.distance &&
+                Objects.equals(id, section.id) &&
+                Objects.equals(upStation, section.upStation) &&
+                Objects.equals(downStation, section.downStation) &&
+                Objects.equals(lineId, section.lineId);
     }
 
     @Override

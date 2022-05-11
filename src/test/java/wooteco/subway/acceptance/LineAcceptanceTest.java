@@ -84,7 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        final LineRequest lineRequest2 = new LineRequest("분당선", "bg-green-600", upStationId, downStationId, 0);
+        final LineRequest lineRequest2 = new LineRequest("분당선", "bg-green-600", upStationId, downStationId, 2);
 
         final ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(lineRequest2)
@@ -177,7 +177,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         final String name = "다른분당선";
         final String color = "bg-red-600";
-        final LineRequest updateRequest = new LineRequest(name, color, null, null, 0);
+        final LineRequest updateRequest = new LineRequest(name, color, upStationId, downStationId, 5);
 
         RestAssured.given().log().all()
                 .body(updateRequest)
