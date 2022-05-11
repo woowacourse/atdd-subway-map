@@ -34,7 +34,7 @@ public class LineService {
         Long downStationId = lineRequest.getDownStationId();
         int distance = lineRequest.getDistance();
 
-        sectionService.createSection(new SectionRequest(upStationId, downStationId, distance), lineId);
+        sectionService.saveSection(new SectionRequest(upStationId, downStationId, distance), lineId);
         List<StationResponse> stationResponses = sectionService.getStationsByLineId(lineId);
 
         return new LineResponse(lineId, name, color, stationResponses);
