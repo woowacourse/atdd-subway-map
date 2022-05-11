@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class Sections {
     private static final int MERGE_SECTION_SIZE = 2;
     private static final int LAST_STATION_SIZE = 1;
-    public static final int ONE_SECTION = 1;
+    private static final int ONE_SECTION = 1;
 
     private final List<Section> sections;
 

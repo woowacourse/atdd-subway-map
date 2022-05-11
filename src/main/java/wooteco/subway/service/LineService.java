@@ -53,8 +53,9 @@ public class LineService {
         Line line = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
         List<Station> stations = stationService.findAll();
+        List<Long> stationIds = sectionService.getStationIds(id);
 
-        return getLineResponse(line, stations);
+        return LineResponse.of(line, stations, stationIds);
     }
 
     public void update(Long id, Line line) {
@@ -77,13 +78,6 @@ public class LineService {
         sectionService.delete(lineId, stationId);
     }
 
-    private void validateDuplicateName(Line line) {
-        Optional<Line> optionalLine = lineDao.findByName(line.getName());
-        optionalLine.ifPresent(existed -> {
-            throw new DuplicateLineNameException();
-        });
-    }
-
     private LineResponse getLineResponse(Line line, List<Station> allStations) {
         Long lineId = line.getId();
         List<Long> stationIds = sectionService.getStationIds(lineId);
@@ -93,5 +87,12 @@ public class LineService {
                 .collect(Collectors.toList());
 
         return LineResponse.of(line, stations);
+    }
+
+    private void validateDuplicateName(Line line) {
+        Optional<Line> optionalLine = lineDao.findByName(line.getName());
+        optionalLine.ifPresent(existed -> {
+            throw new DuplicateLineNameException();
+        });
     }
 }

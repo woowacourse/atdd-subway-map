@@ -30,6 +30,14 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
+    public static LineResponse of(Line line, List<Station> allStations, List<Long> stationIds) {
+        List<Station> stationsOfLine = allStations.stream()
+                .filter(station -> stationIds.contains(station.getId()))
+                .collect(Collectors.toList());
+
+        return LineResponse.of(line, stationsOfLine);
+    }
+
     public static LineResponse of(Line line, List<Station> stations) {
         return from(line).stations(stations);
     }

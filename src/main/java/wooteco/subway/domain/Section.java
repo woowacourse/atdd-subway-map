@@ -13,10 +13,10 @@ public class Section {
     private static final int LINEARLY_SAME_COUNT = 2;
 
     private Long id;
-    private int distance;
-    private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
+    private final int distance;
+    private final Long lineId;
+    private final Long upStationId;
+    private final Long downStationId;
 
     public Section(int distance, Long lineId, Long upStationId, Long downStationId) {
         this.distance = distance;
@@ -30,10 +30,10 @@ public class Section {
         this.id = id;
     }
 
-    public static Section of(Line savedLine, LineRequest lineRequest) {
+    public static Section of(Line line, LineRequest lineRequest) {
         return new Section(
                 lineRequest.getDistance(),
-                savedLine.getId(),
+                line.getId(),
                 lineRequest.getUpStationId(),
                 lineRequest.getDownStationId()
         );
@@ -60,17 +60,17 @@ public class Section {
     }
 
     public boolean canAddAsLastStation(Sections sections) {
-        List<Long> lastStopIds = sections.getLastStationIds();
+        List<Long> lastStationIds = sections.getLastStationIds();
 
-        return lastStopIds.contains(upStationId) || lastStopIds.contains(downStationId);
+        return lastStationIds.contains(upStationId) || lastStationIds.contains(downStationId);
     }
 
     public SectionResult canAddAsBetweenStation(Sections sections) {
         Optional<Section> upStationSection = sections.getExistedUpStationSection(upStationId);
-
         if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {
             return SectionResult.of(upStationSection.get(), this);
         }
+
         Optional<Section> downStationSection = sections.getExistedDownStationSection(downStationId);
         if (downStationSection.isPresent() && downStationSection.get().getDistance() > distance) {
             return SectionResult.of(downStationSection.get(), this);
