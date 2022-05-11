@@ -36,17 +36,17 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines")).body(lineService.create(lineRequest));
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/{id}")
     public LineResponse showLine(@PathVariable Long id) {
         return lineService.showById(id);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public List<LineResponse> showLines() {
         return lineService.showAll();
     }
 
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping("/{id}")
     public void updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest request) {
         lineService.updateById(id, request);
     }

@@ -19,12 +19,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 등록한다.")
     void save() {
         // given
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", saveStationAndGetId("강남"));
-        params.put("downStationId", saveStationAndGetId("잠실"));
-        params.put("distance", 10);
+        Map<String, Object> params = lineParam("신분당선", "bg-red-600", "잠실", "강남");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -67,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 id로 조회한다.")
     void showLine() {
         // given
-        long id = saveLineAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue", "창동", "도봉");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -101,8 +96,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 목록을 조회한다.")
     void showLines() {
         /// given
-        saveLineAndGetId("1호선", "blue");
-        saveLineAndGetId("2호선", "green");
+        saveLineAndGetId("1호선", "blue", "잠실", "강남");
+        saveLineAndGetId("2호선", "green", "창동", "의정부");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -122,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 id로 수정한다.")
     void modify() {
         // given
-        long id = saveLineAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue", "잠실", "강남");
 
         // when
         Map<String, String> params2 = new HashMap<>();
@@ -144,7 +139,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 수정시 존재하지 않는 id인 경우 400응답을 한다.")
     void modifyNotfoundId() {
         // given
-        long id = saveLineAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue", "잠실", "강남");
 
         // when
         Map<String, String> params2 = new HashMap<>();
@@ -167,7 +162,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 수정시 빈 값일 경우 400응답을 한다.")
     void modifyEmpty() {
         // given
-        long id = saveLineAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue", "잠실", "강남");
 
         // when
         Map<String, String> params2 = new HashMap<>();
@@ -190,8 +185,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("수정시 노선이 중복될 경우 400응답을 한다.")
     void duplicateUpdate() {
         // given
-        saveLineAndGetId("1호선", "blue");
-        long id = saveLineAndGetId("2호선", "green");
+        saveLineAndGetId("1호선", "blue", "창동", "도봉");
+        long id = saveLineAndGetId("2호선", "green", "홍대", "건대");
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
@@ -214,7 +209,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 id로 삭제한다.")
     void deleteById() {
         // given
-        long id = saveLineAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue", "창동", "도봉");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -227,14 +222,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(204);
     }
 
-    private long saveLineAndGetId(String name, String color) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", saveStationAndGetId("강남"));
-        params.put("downStationId", saveStationAndGetId("잠실"));
-        params.put("distance", 10);
-
+    private long saveLineAndGetId(String name, String color, String upStation, String downStation) {
+        Map<String, Object> params = lineParam(name, color, upStation, downStation);
         ExtractableResponse<Response> savedResponse = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -243,6 +232,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         return savedResponse.body().jsonPath().getLong("id");
+    }
+
+    private Map<String, Object> lineParam(String name, String color, String upStation, String downStation) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", saveStationAndGetId(upStation));
+        params.put("downStationId", saveStationAndGetId(downStation));
+        params.put("distance", 10);
+        return params;
     }
 
     private long saveStationAndGetId(String name) {

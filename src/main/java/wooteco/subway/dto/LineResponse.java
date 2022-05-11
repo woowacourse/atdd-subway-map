@@ -19,18 +19,8 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public LineResponse(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
     public static LineResponse of(Line line, List<Station> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), toResponse(stations));
-    }
-
-    public static LineResponse from(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     private static List<StationResponse> toResponse(List<Station> stations) {
