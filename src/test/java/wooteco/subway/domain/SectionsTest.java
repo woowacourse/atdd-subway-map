@@ -46,6 +46,19 @@ class SectionsTest {
         assertThat(sections.getSections().get(0).getDistance()).isEqualTo(3);
     }
 
+    @DisplayName("구간 정보를 합치고 구간 하나를 제거한다.")
+    @Test
+    void deleteSection() {
+        final Station firstStation = new Station(1L, "1번역");
+        final Station thirdStation = new Station(3L, "3번역");
+        final Section section = new Section(1L, firstStation, thirdStation, 7);
+
+        sections.addSection(section);
+        sections.deleteSection(thirdStation);
+
+        assertThat(sections.getSortedStations().size()).isEqualTo(2);
+    }
+
     @DisplayName("추가할 구간과 연결 가능한 역이 없으면 예외를 발생한다.")
     @Test
     void addSection_not_connect_exception() {
@@ -70,7 +83,7 @@ class SectionsTest {
                 .hasMessage("입력한 구간의 상행역과 하행역이 이미 모두 연결되어 있습니다.");
     }
 
-    @DisplayName("입력한 구간의 상행역과 하행역의 길이가 기존 구간의 길이와 같거나 더 크면 예외를 발생한다..")
+    @DisplayName("입력한 구간의 상행역과 하행역의 길이가 기존 구간의 길이와 같거나 더 크면 예외를 발생한다.")
     @Test
     void addSection_longer_than_base_section_exception() {
         final Station firstStation = new Station(1L, "1번역");

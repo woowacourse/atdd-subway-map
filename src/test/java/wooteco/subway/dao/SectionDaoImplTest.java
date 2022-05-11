@@ -57,4 +57,20 @@ public class SectionDaoImplTest extends DaoImplTest {
 
         assertThat(sectionDaoImpl.update(sections)).isEqualTo(1);
     }
+
+    @DisplayName("역 정보를 통해 구간 정보를 삭제 한다.")
+    @Test
+    void deleteByStationId() {
+        Station firstStation = stationDaoImpl.findById(1L);
+        Station secondStation = stationDaoImpl.findById(2L);
+        Station thirdStation = stationDaoImpl.findById(3L);
+
+        Section section = new Section(1L, firstStation, secondStation, 12);
+        Section nextSection = new Section(2L, secondStation, thirdStation, 4);
+
+        sectionDaoImpl.save(section);
+        sectionDaoImpl.save(nextSection);
+
+        assertThat(sectionDaoImpl.deleteByUpStationId(secondStation.getId())).isEqualTo(1);
+    }
 }

@@ -62,12 +62,12 @@ public class Section {
         return this.upStation.equals(station) || this.downStation.equals(station);
     }
 
-    public boolean hasSameUpStationWith(final Section otherSection) {
-        return this.upStation.equals(otherSection.upStation);
+    public boolean hasSameUpStationWith(final Station station) {
+        return this.upStation.equals(station);
     }
 
-    public boolean hasSameDownStationWith(final Section otherSection) {
-        return this.downStation.equals(otherSection.downStation);
+    public boolean hasSameDownStationWith(final Station station) {
+        return this.downStation.equals(station);
     }
 
     public void updateUpStationFrom(final Section otherSection) {
@@ -86,5 +86,10 @@ public class Section {
         if (this.distance <= otherSection.distance) {
             throw new IllegalArgumentException("현재 구간의 길이가 추가하려는 구간의 길이보다 작거나 같습니다.");
         }
+    }
+
+    public void combineSection(final Section otherSection) {
+        this.downStation = otherSection.downStation;
+        this.distance = this.distance + otherSection.distance;
     }
 }

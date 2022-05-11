@@ -75,4 +75,10 @@ public class SectionDaoImpl implements SectionDao {
             }
         }).length;
     }
+
+    @Override
+    public int deleteByUpStationId(final Long stationId) {
+        final String sql = "delete from section where up_station_id = (?)";
+        return jdbcTemplate.update(sql, stationId);
+    }
 }

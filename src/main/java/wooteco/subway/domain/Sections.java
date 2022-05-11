@@ -56,7 +56,7 @@ public class Sections {
         if (isLastSection(section)) {
             return;
         }
-        addStationInSection(stations, nextUnderSection(section));
+        addStationInSection(stations, nextLowerSection(section));
     }
 
     private boolean isLastSection(final Section otherSection) {
@@ -64,7 +64,7 @@ public class Sections {
                 .noneMatch(section -> section.isLowerThan(otherSection));
     }
 
-    private Section nextUnderSection(final Section otherSection) {
+    private Section nextLowerSection(final Section otherSection) {
         return sections.stream()
                 .filter(section -> section.isLowerThan(otherSection))
                 .findAny()
@@ -122,7 +122,7 @@ public class Sections {
         if (isLastSection(section)) {
             return section;
         }
-        return findLastSection(nextUnderSection(section));
+        return findLastSection(nextLowerSection(section));
     }
 
     private void addSectionToMiddle(final Section otherSection) {
@@ -137,23 +137,38 @@ public class Sections {
 
     private boolean hasSameUpStationWith(final Section otherSection) {
         return sections.stream()
-                .anyMatch(section -> section.hasSameUpStationWith(otherSection));
+                .anyMatch(section -> section.hasSameUpStationWith(otherSection.getUpStation()));
     }
 
     private void updateUpStationOfSectionFrom(final Section otherSection) {
-        final Section section = sections.stream()
-                .filter(existingSection -> existingSection.hasSameUpStationWith(otherSection))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+        final Section section = getLowerSection(otherSection.getUpStation());
         section.updateUpStationFrom(otherSection);
     }
 
     private void updateDownStationOfSectionFrom(final Section otherSection) {
-        final Section section = sections.stream()
-                .filter(existingSection -> existingSection.hasSameDownStationWith(otherSection))
+        final Section section = getUpperSection(otherSection.getDownStation());
+        section.updateDownStationFrom(otherSection);
+    }
+
+    public void deleteSection(final Station station) {
+        final Section upperSection = getUpperSection(station);
+        final Section lowerSection = getLowerSection(station);
+        upperSection.combineSection(lowerSection);
+        sections.remove(lowerSection);
+    }
+
+    private Section getUpperSection(final Station station) {
+        return sections.stream()
+                .filter(existingSection -> existingSection.hasSameDownStationWith(station))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
-        section.updateDownStationFrom(otherSection);
+    }
+
+    private Section getLowerSection(final Station station) {
+        return sections.stream()
+                .filter(existingSection -> existingSection.hasSameUpStationWith(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
     }
 
     public List<Section> getSections() {
