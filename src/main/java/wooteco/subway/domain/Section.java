@@ -5,21 +5,15 @@ import java.util.List;
 
 public class Section {
     private final Long id;
-    private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
     private final Distance distance;
 
-    private Section(Long id, Long lineId, Long upStationId, Long downStationId, Distance distance) {
+    public Section(Long id, Long upStationId, Long downStationId, Distance distance) {
         this.id = id;
-        this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public Section(Long lineId, Long upStationId, Long downStationId, Distance distance) {
-        this(null, lineId, upStationId, downStationId, distance);
     }
 
     public Section(Long upStationId, Long downStationId, Distance distance) {
@@ -27,11 +21,7 @@ public class Section {
     }
 
     public Section(Long id, Section section) {
-        this(id, section.getLineId(), section.getUpStationId(), section.getDownStationId(), section.getDistance());
-    }
-
-    public Section(Section section, Distance distance) {
-        this(section.id, section.lineId, section.upStationId, section.getDownStationId(), distance);
+        this(id, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
     public boolean isSameUpStation(Section other) {
@@ -67,10 +57,6 @@ public class Section {
         return id;
     }
 
-    public Long getLineId() {
-        return lineId;
-    }
-
     public Long getUpStationId() {
         return upStationId;
     }
@@ -91,7 +77,6 @@ public class Section {
         Section section = (Section) o;
 
         if (id != null ? !id.equals(section.id) : section.id != null) return false;
-        if (lineId != null ? !lineId.equals(section.lineId) : section.lineId != null) return false;
         if (upStationId != null ? !upStationId.equals(section.upStationId) : section.upStationId != null) return false;
         if (downStationId != null ? !downStationId.equals(section.downStationId) : section.downStationId != null)
             return false;
@@ -101,7 +86,6 @@ public class Section {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (lineId != null ? lineId.hashCode() : 0);
         result = 31 * result + (upStationId != null ? upStationId.hashCode() : 0);
         result = 31 * result + (downStationId != null ? downStationId.hashCode() : 0);
         result = 31 * result + (distance != null ? distance.hashCode() : 0);
@@ -112,7 +96,6 @@ public class Section {
     public String toString() {
         return "Section{" +
                 "id=" + id +
-                ", lineId=" + lineId +
                 ", upStationId=" + upStationId +
                 ", downStationId=" + downStationId +
                 ", distance=" + distance +

@@ -12,9 +12,31 @@ public class Sections {
 
     private final List<Section> value;
 
+
     public Sections(Long upStationId, Long downStationId, Distance distance) {
         Section initialSection = new Section(upStationId, downStationId, distance);
         this.value = new ArrayList<>(List.of(initialSection));
+    }
+
+    public Sections(Section section) {
+        this.value = new ArrayList<>(List.of(section));
+    }
+
+    // TODO: 리팩토링
+    public static Sections from(List<Section> sections) {
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("비어있는 구간 목록은 생성할 수 없습니다.");
+        }
+
+        Section firstSection = sections.get(0);
+        Sections newSections = new Sections(firstSection);
+        sections.remove(0);
+
+        for (Section section : sections) {
+            newSections.addSection(section);
+        }
+
+        return newSections;
     }
 
     // TODO: 구간 삽입 로직 리팩토링
