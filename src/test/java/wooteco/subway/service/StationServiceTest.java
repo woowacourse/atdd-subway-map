@@ -31,6 +31,14 @@ public class StationServiceTest {
 			.hasMessage("해당 이름의 지하철 역이 이미 존재합니다.");
 	}
 
+	@DisplayName("지하철 역 하나를 조회한다.")
+	@Test
+	void findOne() {
+		Station station = stationService.create("강남역");
+		Station findStation = stationService.findOne(station.getId());
+		assertThat(findStation.isSameName("강남역")).isTrue();
+	}
+
 	@DisplayName("지하철 역 목록을 조회한다.")
 	@Test
 	void listStations() {
