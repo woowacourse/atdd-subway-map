@@ -2,9 +2,11 @@ package wooteco.subway.acceptance;
 
 import static io.restassured.RestAssured.get;
 import static org.hamcrest.Matchers.equalTo;
+import static wooteco.subway.acceptance.util.RestAssuredUtils.checkProperErrorMessage;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.checkProperResponseStatus;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.checkSameResponseIds;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.createData;
+import static wooteco.subway.acceptance.util.RestAssuredUtils.deleteData;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.getData;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.getLocationId;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.modifyData;
@@ -102,6 +104,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
+        // given
         ExtractableResponse<Response> createStation1 = createData("/stations", new Station("지하철역"));
         ExtractableResponse<Response> createStation2 = createData("/stations", new Station("새로운지하철역"));
         final LineRequest lineRequest = new LineRequest(lineName, lineColor, getLocationId(createStation1), getLocationId(createStation2), distance);
@@ -121,13 +124,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new Station(getLocationId(createStation2), "새로운지하철역"));
     }
 
-    /*
     @DisplayName("지하철노선을 제거한다.")
     @Test
     void deleteStation() {
         // given
-        final Line line = new Line(lineName, lineColor);
-        ExtractableResponse<Response> createResponse = createData("/lines", line);
+        ExtractableResponse<Response> createStation1 = createData("/stations", new Station("지하철역"));
+        ExtractableResponse<Response> createStation2 = createData("/stations", new Station("새로운지하철역"));
+        final LineRequest lineRequest = new LineRequest(lineName, lineColor, getLocationId(createStation1), getLocationId(createStation2), distance);
+        ExtractableResponse<Response> createResponse = createData("/lines", lineRequest);
 
         // when
         ExtractableResponse<Response> deleteResponse = deleteData(createResponse.header("Location"));
@@ -136,7 +140,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         checkProperResponseStatus(deleteResponse, HttpStatus.NO_CONTENT);
         checkProperErrorMessage("/lines/" + getLocationId(createResponse), "해당하는 노선이 존재하지 않습니다.");
     }
-     */
 
     private void checkProperData(String url, Line line, Station upStation, Station downStation) {
         get(url).then()
