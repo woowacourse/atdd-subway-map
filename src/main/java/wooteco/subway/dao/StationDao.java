@@ -1,12 +1,14 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class StationDao {
@@ -28,6 +30,17 @@ public class StationDao {
 
         final long stationId = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Station(stationId, station.getName());
+    }
+
+    public Optional<Station> findById(final Long id) {
+        final String sql = "SELECT id, name FROM STATION WHERE id=?";
+
+        final List<Station> stations = jdbcTemplate.query(sql, (resultSet, rowNum) -> new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+        ), id);
+
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
     public List<Station> findAll() {

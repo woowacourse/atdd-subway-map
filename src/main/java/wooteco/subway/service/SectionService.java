@@ -3,9 +3,11 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,24 +15,33 @@ import java.util.Optional;
 public class SectionService {
 
     private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public SectionService(final SectionDao sectionDao) {
+    public SectionService(final SectionDao sectionDao, final StationDao stationDao) {
         this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     @Transactional
     public Section addSection(final long lineId, final Section section) {
+        final Station upStation = stationDao.findById(section.getUpStation().getId())
+                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 지하철역 ID입니다."));
+        final Station downStation = stationDao.findById(section.getDownStation().getId())
+                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 지하철역 ID입니다."));
+
+        Section newSection = new Section(upStation, downStation, section.getDistance(), lineId);
+
         final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
         final Sections sections = new Sections(lineSections);
-        sections.add(section);
+        sections.add(newSection);
 
-        lineSections.add(section);
+        lineSections.add(newSection);
         List<Section> sectionsToUpdate = sections.extract(lineSections);
         for (Section sectionToUpdate : sectionsToUpdate) {
             sectionDao.update(sectionToUpdate.getId(), sectionToUpdate);
         }
 
-        return sectionDao.save(section);
+        return sectionDao.save(newSection);
     }
 
     @Transactional

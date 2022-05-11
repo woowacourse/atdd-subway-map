@@ -29,6 +29,7 @@ public class LineResponse {
 
         return new LineResponse(id, name, color, null);
     }
+
     public static LineResponse from(final Line line, final List<Station> stations) {
         final Long id = line.getId();
         final String name = line.getName();
