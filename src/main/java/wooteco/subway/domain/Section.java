@@ -62,6 +62,10 @@ public class Section {
         throw new IllegalMergeSectionException();
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Long getLineId() {
         return lineId;
     }

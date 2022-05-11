@@ -77,11 +77,11 @@ class SectionDaoTest {
     void deleteBySection() {
         Section section1 = new Section(10, 1L, 1L, 3L);
         Section section2 = new Section(10, 1L, 11L, 13L);
-        sectionDao.save(section1);
-        sectionDao.save(section2);
+        Section savedSection1 = sectionDao.save(section1);
+        Section savedSection2 = sectionDao.save(section2);
 
         assertAll(() -> {
-            assertThatCode(() -> sectionDao.delete(section1))
+            assertThatCode(() -> sectionDao.deleteById(savedSection1.getId()))
                     .doesNotThrowAnyException();
 
             assertThat(sectionDao.findAll().size()).isOne();

@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
+import wooteco.subway.exception.section.NoSuchSectionException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,14 +60,15 @@ public class SectionDao {
         return jdbcTemplate.query(sql, new MapSqlParameterSource(params), rowMapper);
     }
 
-    public void delete(Section section) {
-        String sql = "DELETE FROM section " +
-                "WHERE line_id = :lineId and up_station_id = :upStationId and down_station_id = :downStationId and distance = :distance";
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM section WHERE id = :id";
+        Map<String,Object> params = new HashMap<>();
+        params.put("id", id);
 
-        int affected = jdbcTemplate.update(sql, new BeanPropertySqlParameterSource(section));
+        int affected = jdbcTemplate.update(sql, params);
 
         if (affected == 0) {
-            throw new IllegalArgumentException("구간 삭제 시 문제가 발생했습니다.");
+            throw new NoSuchSectionException();
         }
     }
 }

@@ -49,7 +49,7 @@ public class SectionService {
 
         SectionResult result = section.canAddAsBetweenStation(sections);
         if (result.canAddAsBetweenStation()) {
-            sectionDao.delete(result.getExistedSection());
+            sectionDao.deleteById(result.getExistedSection().getId());
             save(result.getInsertedSection());
             save(result.getGeneratedSection());
             return;
@@ -64,7 +64,7 @@ public class SectionService {
         Sections sectionsToDelete = sections.getByStationId(stationId);
 
         for (Section section : sectionsToDelete.getSections()) {
-            sectionDao.delete(section);
+            sectionDao.deleteById(section.getId());
         }
 
         if (sectionsToDelete.isIntermediateStation()) {
