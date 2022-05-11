@@ -4,29 +4,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SectionMap {
+public class SectionStationMap {
 
     private final Map<Long, Long> upToDownStationIdMap;
     private final Map<Long, Long> downToUpStationIdMap;
 
-    private SectionMap(Map<Long, Long> upToDownStationIdMap,
-                       Map<Long, Long> downToUpStationIdMap) {
+    private SectionStationMap(Map<Long, Long> upToDownStationIdMap,
+                              Map<Long, Long> downToUpStationIdMap) {
         this.upToDownStationIdMap = upToDownStationIdMap;
         this.downToUpStationIdMap = downToUpStationIdMap;
     }
 
-    public static SectionMap of(List<Section> sections) {
+    public static SectionStationMap of(List<SectionStationInfo> sectionStationInfos) {
         Map<Long, Long> upToDownStationIdMap = new HashMap<>();
         Map<Long, Long> downToUpStationIdMap = new HashMap<>();
 
-        for (Section section : sections) {
-            Long upStationId = section.getUpStationId();
-            Long downStationId = section.getDownStationId();
+        for (SectionStationInfo sectionStationInfo : sectionStationInfos) {
+            Long upStationId = sectionStationInfo.getUpStationId();
+            Long downStationId = sectionStationInfo.getDownStationId();
 
             upToDownStationIdMap.put(upStationId, downStationId);
             downToUpStationIdMap.put(downStationId, upStationId);
         }
-        return new SectionMap(upToDownStationIdMap, downToUpStationIdMap);
+        return new SectionStationMap(upToDownStationIdMap, downToUpStationIdMap);
     }
 
     public Long findAnyStationId() {

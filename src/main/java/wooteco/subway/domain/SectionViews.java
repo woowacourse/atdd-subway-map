@@ -8,21 +8,21 @@ import wooteco.subway.entity.StationEntity;
 
 public class SectionViews {
 
-    private final SectionMap sectionMap;
+    private final SectionStationMap sectionMap;
     private final StationEntityMap entityMap;
 
-    private SectionViews(SectionMap sectionMap,
+    private SectionViews(SectionStationMap sectionMap,
                          StationEntityMap entityMap) {
         this.sectionMap = sectionMap;
         this.entityMap = entityMap;
     }
 
     public static SectionViews of(List<SectionViewEntity> sectionViewEntities) {
-        List<Section> sections = sectionViewEntities.stream()
-                .map(SectionViewEntity::toSection)
+        List<SectionStationInfo> sectionStationInfos = sectionViewEntities.stream()
+                .map(SectionViewEntity::toSectionStationInfo)
                 .collect(Collectors.toList());
 
-        return new SectionViews(SectionMap.of(sections),
+        return new SectionViews(SectionStationMap.of(sectionStationInfos),
                 StationEntityMap.of(sectionViewEntities));
     }
 

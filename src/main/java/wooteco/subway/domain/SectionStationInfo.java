@@ -1,11 +1,11 @@
 package wooteco.subway.domain;
 
-public class Section {
+public class SectionStationInfo {
 
     private final Long upStationId;
     private final Long downStationId;
 
-    public Section(Long upStationId, Long downStationId) {
+    public SectionStationInfo(Long upStationId, Long downStationId) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
     }
@@ -20,7 +20,7 @@ public class Section {
 
     @Override
     public String toString() {
-        return "Section{" +
+        return "Stations{" +
                 "upStationId=" + upStationId +
                 ", downStationId=" + downStationId +
                 '}';

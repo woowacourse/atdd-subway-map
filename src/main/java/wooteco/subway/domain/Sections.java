@@ -10,21 +10,21 @@ public class Sections {
     private static final String ALL_STATIONS_REGISTERED_EXCEPTION = "이미 노선에 등록된 지하철역들입니다.";
     private static final String NO_STATION_REGISTERED_EXCEPTION = "적어도 하나의 지하철역은 이미 노선에 등록되어 있어야 합니다.";
 
-    private final SectionMap sectionMap;
+    private final SectionStationMap sectionMap;
     private final SectionDistanceMap sectionDistanceMap;
 
-    private Sections(SectionMap sectionMap,
+    private Sections(SectionStationMap sectionMap,
                      SectionDistanceMap sectionDistanceMap) {
         this.sectionMap = sectionMap;
         this.sectionDistanceMap = sectionDistanceMap;
     }
 
     public static Sections of(List<SectionEntity> entities) {
-        List<Section> sections = entities.stream()
-                .map(entity -> new Section(entity.getUpStationId(), entity.getDownStationId()))
+        List<SectionStationInfo> stationPairs = entities.stream()
+                .map(SectionEntity::toSectionStationInfo)
                 .collect(Collectors.toList());
 
-        return new Sections(SectionMap.of(sections), SectionDistanceMap.of(entities));
+        return new Sections(SectionStationMap.of(stationPairs), SectionDistanceMap.of(entities));
     }
 
     public boolean hasSingleSection() {

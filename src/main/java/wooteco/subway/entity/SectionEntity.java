@@ -1,6 +1,7 @@
 package wooteco.subway.entity;
 
 import java.util.Objects;
+import wooteco.subway.domain.SectionStationInfo;
 
 public class SectionEntity {
 
@@ -39,6 +40,10 @@ public class SectionEntity {
         if (distance < MIN_DISTANCE) {
             throw new IllegalArgumentException("구간의 길이는 1이상이어야 합니다.");
         }
+    }
+
+    public SectionStationInfo toSectionStationInfo() {
+        return new SectionStationInfo(upStationId, downStationId);
     }
 
     public Long getLineId() {
