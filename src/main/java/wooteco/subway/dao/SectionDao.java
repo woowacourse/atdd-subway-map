@@ -20,7 +20,7 @@ public class SectionDao {
 
     public void save(List<Section> sections, Long lineId) {
         final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("section").usingGeneratedKeyColumns("id");
+                .withTableName("sections").usingGeneratedKeyColumns("id");
 
         for (Section section : sections) {
             Map<String, Object> parameters = new HashMap<>();
@@ -35,7 +35,7 @@ public class SectionDao {
 
     public List<Section> findByLineId(Long lineId) {
         final String sql = "select s.id sid, s.distance sdistance, us.id usid, us.name usname, ds.id dsid, ds.name dsname " +
-                "from section s " +
+                "from sections s " +
                 "join station us on s.up_station_id = us.id " +
                 "join station ds on s.down_station_id = ds.id " +
                 "where line_id = ?";
@@ -47,7 +47,7 @@ public class SectionDao {
 
 
     public void deleteByLineId(Long lineId) {
-        final String sql = "delete from section where line_id = ?";
+        final String sql = "delete from sections where line_id = ?";
         jdbcTemplate.update(sql, lineId);
     }
 }
