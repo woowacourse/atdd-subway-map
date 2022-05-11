@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionAdvisor {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<String> handleDuplicateKeyException() {
         return ResponseEntity.badRequest().body("이름은 중복될 수 없습니다.");
@@ -16,7 +21,7 @@ public class ExceptionAdvisor {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<String> handleEmptyResultDataAccessException() {
-        return ResponseEntity.badRequest().body("존재하지 않는 결과입니다.");
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler({Exception.class, RuntimeException.class})
