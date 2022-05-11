@@ -15,17 +15,13 @@ class SectionTest {
     @Test
     @DisplayName("상행종점과 하행종점이 동일한 경우")
     void sameUpDown() {
-        assertThatThrownBy(() -> Section.of(1L, new SectionRequest(1L, 1L, 5)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("상행종점과 하행종점은 같은 지하철역일 수 없습니다.");
+        assertThatThrownBy(() -> Section.of(1L, new SectionRequest(1L, 1L, 5))).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("상행종점과 하행종점은 같은 지하철역일 수 없습니다.");
     }
 
     @Test
     @DisplayName("거리가 1미만의 정수인 경우")
     void wrongDistance() {
-        assertThatThrownBy(() -> Section.of(1L, new SectionRequest(1L, 2L, 0)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("거리는 1이상의 정수만 허용됩니다.");
+        assertThatThrownBy(() -> Section.of(1L, new SectionRequest(1L, 2L, 0))).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("거리는 1이상의 정수만 허용됩니다.");
     }
 
     @Test
@@ -96,5 +92,32 @@ class SectionTest {
         Section target = new Section(1L, 1L, 1L, 2L, 5);
 
         assertThat(source.isShorterDistance(target)).isFalse();
+    }
+
+    @Test
+    @DisplayName("분리된 나머지 구간 정보 반환")
+    void makeRest() {
+        Section source = new Section(1L, 1L, 1L, 2L, 10);
+        Section target = new Section(1L, 1L, 1L, 3L, 3);
+
+        Section result = source.makeRest(target);
+
+        assertThat(result.getUpStationId()).isEqualTo(3L);
+        assertThat(result.getDownStationId()).isEqualTo(2L);
+        assertThat(result.getDistance()).isEqualTo(7);
+    }
+
+    @Test
+    @DisplayName("합쳐진 구간 정보 반환")
+    void combine() {
+        Section source = new Section(1L, 1L, 2L, 3L, 10);
+        Section target = new Section(1L, 1L, 1L, 2L, 3);
+
+        Section result = source.combine(target);
+
+        assertThat(result.getUpStationId()).isEqualTo(1L);
+        assertThat(result.getDownStationId()).isEqualTo(3L);
+        assertThat(result.getDistance()).isEqualTo(13);
+
     }
 }
