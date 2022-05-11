@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,30 +38,32 @@ class SubwaySectionDaoTest {
     }
 
     @Test
-    void delete() {
+    void getSections() {
         //given
         Station 잠실역 = stationDao.save(new Station("잠실역"));
         sectionDao.save(new Section(분당선, 강남역, 역삼역, 5));
         sectionDao.save(new Section(분당선, 역삼역, 잠실역, 5));
 
         //when
-        int affectedQueryCount = sectionDao.deleteSection(분당선.getId(), 강남역.getId());
+        List<Section> sections = sectionDao.findByLineId(분당선.getId());
 
         //then
-        assertThat(affectedQueryCount).isEqualTo(1);
+        assertThat(sections.size()).isEqualTo(2);
     }
 
     @Test
-    void delete2() {
+    void findByLineIdAndStationId() {
         //given
         Station 잠실역 = stationDao.save(new Station("잠실역"));
         sectionDao.save(new Section(분당선, 강남역, 역삼역, 5));
         sectionDao.save(new Section(분당선, 역삼역, 잠실역, 5));
 
         //when
-        int affectedQueryCount = sectionDao.deleteSection(분당선.getId(), 역삼역.getId());
+        List<Section> sectionsWithYeoksam = sectionDao.findByLineIdAndStationId(분당선.getId(), 역삼역.getId());
+        List<Section> sectionsWithJamsil = sectionDao.findByLineIdAndStationId(분당선.getId(), 잠실역.getId());
 
         //then
-        assertThat(affectedQueryCount).isEqualTo(2);
+        assertThat(sectionsWithYeoksam.size()).isEqualTo(2);
+        assertThat(sectionsWithJamsil.size()).isEqualTo(1);
     }
 }
