@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.service.dto.section.SectionSaveRequest;
 import wooteco.subway.ui.dto.SectionDeleteRequest;
-import wooteco.subway.ui.dto.SectionRequest;
 
 @Service
 public class SectionService {
@@ -16,13 +16,11 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public Long save(SectionRequest sectionRequest) {
+    public Long save(SectionSaveRequest sectionRequest) {
         Section section = sectionRequest.toSection();
-
         Sections sections = new Sections(sectionDao.findByLineId(sectionRequest.getLineId()));
 
         if (sections.isMiddleSection(section)) {
-            sections.validateForkedLoad(section);
             return updateMiddleSection(section, sections);
         }
 
@@ -30,41 +28,69 @@ public class SectionService {
     }
 
     private Long updateMiddleSection(Section section, Sections sections) {
-        Section upStationSection = sections.findSectionByUpStationId(section.getUpStationId());
+        if (sections.hasStationId(section.getDownStationId())) {
+            return updateUpStationSection(section, sections);
+        }
+        return updateDownStationSection(section, sections);
+    }
 
-        if (upStationSection.getDistance() <= section.getDistance()) {
+    private Long updateUpStationSection(Section section, Sections sections) {
+        Section updateSection = sections.findSectionByDownStationId(section.getDownStationId());
+        if (updateSection.getDistance() <= section.getDistance()) {
             throw new IllegalArgumentException("등록할 구간의 길이가 기존 역 사이의 길이보다 길거나 같으면 안됩니다.");
         }
-
-        sectionDao.update(upStationSection.getId(), section.getDownStationId(),
-            section.getDistance());
+        sectionDao.update(updateSection.getId(), section.getUpStationId(),
+            updateSection.getDistance() - section.getDistance());
 
         return sectionDao.save(
             new Section(section.getLineId(), section.getUpStationId(),
-                section.getDownStationId(),
-                upStationSection.getDistance() - section.getDistance()));
+                updateSection.getDownStationId(), section.getDistance()));
+    }
+
+    private Long updateDownStationSection(Section section, Sections sections) {
+        Section updateSection = sections.findSectionByUpStationId(section.getUpStationId());
+
+        if (updateSection.getDistance() <= section.getDistance()) {
+            throw new IllegalArgumentException("등록할 구간의 길이가 기존 역 사이의 길이보다 길거나 같으면 안됩니다.");
+        }
+
+        sectionDao.update(updateSection.getId(), section.getDownStationId(),
+            section.getDistance());
+
+        return sectionDao.save(new Section(section.getLineId(), section.getDownStationId(),
+                updateSection.getDownStationId(),
+                updateSection.getDistance() - section.getDistance()));
     }
 
     public boolean removeSection(SectionDeleteRequest sectionDeleteRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(sectionDeleteRequest.getLineId()));
 
-        validateRemoveSection(sectionDeleteRequest, sections);
+        validateRemoveSection(sections);
 
-        Section upStationSection = sections.findSectionByDownStationId(sectionDeleteRequest.getStationId());
+        return deleteSection(sectionDeleteRequest, sections);
+    }
 
+    private boolean deleteSection(SectionDeleteRequest sectionDeleteRequest, Sections sections) {
+        if (isEndStationSection(sectionDeleteRequest, sections)) {
+            Section upStationSection = sections.findSectionByUpStationId(sectionDeleteRequest.getStationId());
+            return sectionDao.deleteById(upStationSection.getId());
+        }
+
+        Section downStationSection = sections.findSectionByDownStationId(sectionDeleteRequest.getStationId());
         Section deleteSectionStation = sections.findSectionByUpStationId(sectionDeleteRequest.getStationId());
 
-        int totalDistance = upStationSection.getDistance() + deleteSectionStation.getDistance();
-        sectionDao.update(upStationSection.getId(), deleteSectionStation.getDownStationId(),
-            totalDistance);
+        int totalDistance = downStationSection.getDistance() + deleteSectionStation.getDistance();
+        sectionDao.update(downStationSection.getId(), deleteSectionStation.getDownStationId(), totalDistance);
         return sectionDao.deleteById(deleteSectionStation.getId());
     }
 
-    private void validateRemoveSection(SectionDeleteRequest sectionDeleteRequest,
-        Sections sections) {
-        if (!sections.isMiddleSection(new Section(sectionDeleteRequest.getStationId(),
-            sectionDeleteRequest.getStationId()))) {
-            throw new IllegalArgumentException("종점은 제거할 수 없습니다.");
+    private boolean isEndStationSection(SectionDeleteRequest sectionDeleteRequest, Sections sections) {
+        return !sections.isMiddleSection(new Section(sectionDeleteRequest.getStationId(), sectionDeleteRequest.getStationId()));
+    }
+
+    private void validateRemoveSection(Sections sections) {
+        if (sections.isSingleSection()) {
+            throw new IllegalArgumentException("구간이 하나 밖에 없어서 제거할 수 없습니다.");
         }
     }
 }

@@ -162,5 +162,4 @@ class LineServiceTest {
 
         lineService.findById(savedLine.getId());
     }
-
 }

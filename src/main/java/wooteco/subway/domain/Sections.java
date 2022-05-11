@@ -21,8 +21,16 @@ public class Sections {
     }
 
     private boolean isMiddlePoint(Section section, Long upStationId, Long downStationId) {
-        return !(section.getDownStationId().equals(upStationId) || section.getUpStationId()
-            .equals(downStationId));
+        return !(section.getDownStationId().equals(upStationId) || section.getUpStationId().equals(downStationId));
+    }
+
+    public boolean hasStationId(Long id) {
+        Set<Long> stationIds = new HashSet<>();
+        for (Section section : sections) {
+            stationIds.add(section.getUpStationId());
+            stationIds.add(section.getDownStationId());
+        }
+        return stationIds.contains(id);
     }
 
     public Section findSectionByUpStationId(Long id) {
@@ -34,7 +42,7 @@ public class Sections {
 
     public Section findSectionByDownStationId(Long id) {
         return sections.stream()
-            .filter(i -> i.getUpStationId().equals(id))
+            .filter(i -> i.getDownStationId().equals(id))
             .findAny()
             .orElseThrow(IllegalArgumentException::new);
     }
@@ -45,14 +53,6 @@ public class Sections {
             sectionId.put(sectionOfSections.getUpStationId(), sectionOfSections.getDownStationId());
         }
         return sectionId;
-    }
-
-    public void validateForkedLoad(Section section) {
-        Long upStationId = findUpStationId();
-        Long downStationId = findDownStationId();
-        if (section.getUpStationId().equals(upStationId) || section.getDownStationId().equals(downStationId)) {
-            throw new IllegalArgumentException("갈래길은 생성할 수 없습니다.");
-        }
     }
 
     private Long findDownStationId() {
@@ -72,14 +72,19 @@ public class Sections {
     }
 
     public List<Long> sortedStationId() {
-        Set<Long> stationIds = new HashSet<>();
-        Map<Long, Long> sectionIds = getSectionId();
+        Long upStationId = findUpStationId();
+        List<Long> sectionIds = new ArrayList<>(List.of(upStationId));
+        Map<Long, Long> sectionId = getSectionId();
 
-        for (Long sectionUpStationId : sectionIds.keySet()) {
-            stationIds.add(sectionUpStationId);
-            stationIds.add(sectionIds.get(sectionUpStationId));
+        for (int i = 0; i < sectionId.size(); i++) {
+            upStationId = sectionId.get(upStationId);
+            sectionIds.add(upStationId);
         }
 
-        return new ArrayList<>(stationIds);
+        return sectionIds;
+    }
+
+    public boolean isSingleSection() {
+        return sections.size() == 1;
     }
 }

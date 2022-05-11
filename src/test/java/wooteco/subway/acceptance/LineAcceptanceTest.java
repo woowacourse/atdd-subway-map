@@ -208,7 +208,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 노선을 수정한다. 상태코드는 204이어야 한다.")
+    @DisplayName("노선 Id를 입력 받아 조회한다.")
     void findLineById() {
         // given
         Long lineId = saveLine();
