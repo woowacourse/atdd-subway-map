@@ -46,6 +46,18 @@ public class Section {
         return this.distance >= other.distance;
     }
 
+    private int calculateDistance(final Section section) {
+        return this.distance - section.distance;
+    }
+
+    public Section createSectionByUpStation(final Section section) {
+        return new Section(this.id, this.upStation, section.upStation, calculateDistance(section), this.lineId);
+    }
+
+    public Section createSectionByDownStation(final Section section) {
+        return new Section(this.id, section.downStation, this.downStation, calculateDistance(section), this.lineId);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
