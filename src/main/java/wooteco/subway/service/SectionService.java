@@ -37,15 +37,19 @@ public class SectionService {
         if (getTargetWithNotTerminal(sections, sectionRequest).isPresent()) {
             Section section = getTargetWithNotTerminal(sections, sectionRequest).get();
             validateDistance(sectionRequest, section);
-            if (newSection.getUpStation().equals(section.getUpStation())) {
-                Station newUpStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new NotFoundException("[ERROR]없는 역입니다."));
-                sectionRepository.save(new Section(lineId, newUpStation, section.getDownStation(), section.getDistance() - sectionRequest.getDistance()));
-            }
-            if (newSection.getDownStation().equals(section.getDownStation())) {
-                Station newDownStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new NotFoundException("[ERROR]없는 역입니다."));
-                sectionRepository.save(new Section(lineId, section.getUpStation(), newDownStation, section.getDistance() - sectionRequest.getDistance()));
-            }
+            saveSection(lineId, sectionRequest, newSection, section);
             sectionRepository.deleteById(section.getId());
+        }
+    }
+
+    private void saveSection(Long lineId, SectionRequest sectionRequest, Section newSection, Section section) {
+        if (newSection.getUpStation().equals(section.getUpStation())) {
+            Station newUpStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new NotFoundException("[ERROR]없는 역입니다."));
+            sectionRepository.save(new Section(lineId, newUpStation, section.getDownStation(), section.getDistance() - sectionRequest.getDistance()));
+        }
+        if (newSection.getDownStation().equals(section.getDownStation())) {
+            Station newDownStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new NotFoundException("[ERROR]없는 역입니다."));
+            sectionRepository.save(new Section(lineId, section.getUpStation(), newDownStation, section.getDistance() - sectionRequest.getDistance()));
         }
     }
 
