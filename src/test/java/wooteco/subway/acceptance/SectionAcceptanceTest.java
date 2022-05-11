@@ -6,7 +6,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.sql.Connection;
 import java.util.HashMap;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,17 +20,10 @@ import wooteco.subway.test_utils.HttpUtils;
 @DisplayName("인수테스트 - /lines/{lineId}/sections")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    @BeforeAll
-    void setUpTables() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("setup_test_db.sql"));
-        }
-    }
-
     @BeforeEach
     public void cleanseAndSetUpFixture() throws Exception {
         try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("section_service_test_fixture.sql"));
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("section_test_fixture.sql"));
         }
     }
 

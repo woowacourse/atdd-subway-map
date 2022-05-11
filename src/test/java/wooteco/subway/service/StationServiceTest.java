@@ -3,11 +3,15 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.sql.Connection;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
@@ -21,6 +25,13 @@ class StationServiceTest extends ServiceTest {
 
     @Autowired
     private StationDao stationDao;
+
+    @BeforeEach
+    void cleanseAndSetUp() throws Exception {
+        try (Connection connection = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("service_test_fixture.sql"));
+        }
+    }
 
     @Test
     void findAll_메서드는_모든_데이터를_id_순서대로_조회() {

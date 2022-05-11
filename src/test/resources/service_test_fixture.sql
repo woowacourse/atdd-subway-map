@@ -1,3 +1,11 @@
+TRUNCATE TABLE station;
+TRUNCATE TABLE line;
+TRUNCATE TABLE section;
+
+ALTER TABLE station ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE line ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE section ALTER COLUMN id RESTART WITH 1;
+
 INSERT INTO station(id, name)
 VALUES (1, '이미 존재하는 역 이름'),
        (2, '선릉역'),

@@ -6,15 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.sql.Connection;
 import java.util.List;
-import javax.sql.DataSource;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import wooteco.subway.dao.SectionDao;
@@ -23,9 +19,7 @@ import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.exception.NotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
-@SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SectionServiceTest {
+class SectionServiceTest extends ServiceTest{
 
     @Autowired
     private SectionService service;
@@ -33,20 +27,10 @@ class SectionServiceTest {
     @Autowired
     protected SectionDao dao;
 
-    @Autowired
-    private DataSource dataSource;
-
-    @BeforeAll
-    void setUpTables() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("setup_test_db.sql"));
-        }
-    }
-
     @BeforeEach
     void cleanseAndSetUp() throws Exception {
         try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("section_service_test_fixture.sql"));
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("section_test_fixture.sql"));
         }
     }
 

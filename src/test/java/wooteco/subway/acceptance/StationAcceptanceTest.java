@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,13 +22,6 @@ import wooteco.subway.test_utils.HttpUtils;
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("인수테스트 - /stations")
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    @BeforeAll
-    void setUpTables() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("setup_test_db.sql"));
-        }
-    }
 
     @AfterEach
     public void cleanseDb() throws Exception {
