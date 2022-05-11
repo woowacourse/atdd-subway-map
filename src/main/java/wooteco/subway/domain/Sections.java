@@ -14,7 +14,7 @@ public class Sections {
     }
 
     public void add(final Section section) {
-        validateExist(section);
+        validateCanAdd(section);
         validateSection(section);
 
         final Optional<Section> upSection = findUpSection(section);
@@ -34,6 +34,20 @@ public class Sections {
 
         value.add(section);
 
+    }
+
+    public void delete(final long stationId) {
+        final Optional<Section> downSection = value.stream()
+                .filter(section -> section.getDownStation().getId() == stationId)
+                .findAny();
+
+        final Optional<Section> upSection = value.stream()
+                .filter(section -> section.getUpStation().getId() == stationId)
+                .findAny();
+
+        if (downSection.isEmpty() && upSection.isEmpty()) {
+            throw new IllegalArgumentException("구간에 존재하지 않는 지하철 역입니다.");
+        }
     }
 
     public boolean isBranched(final Section other) {
@@ -77,7 +91,7 @@ public class Sections {
         }
     }
 
-    private void validateExist(final Section other) {
+    private void validateCanAdd(final Section other) {
         final HashSet<Station> stations = new HashSet<>();
         for (Section section : value) {
             stations.add(section.getUpStation());
