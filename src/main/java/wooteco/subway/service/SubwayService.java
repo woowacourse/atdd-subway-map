@@ -55,7 +55,7 @@ public class SubwayService {
         subway.checkAbleToAdd(lineDao.findAll(), line);
         Line newLine = lineDao.save(line);
         saveSection(newLine.getId(), lineRequest);
-        return toLineResponse(newLine);
+        return new LineResponse(newLine, StationResponse.toStationResponses(getStationsInLine(newLine)));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
@@ -67,13 +67,13 @@ public class SubwayService {
     public List<LineResponse> getLines() {
         return lineDao.findAll()
                 .stream()
-                .map(this::toLineResponse)
+                .map(it -> new LineResponse(it, StationResponse.toStationResponses(getStationsInLine(it))))
                 .collect(Collectors.toList());
     }
 
     public LineResponse getLine(Long id) {
         Line line = lineDao.findById(id);
-        return toLineResponse(line);
+        return new LineResponse(line, StationResponse.toStationResponses(getStationsInLine(line)));
     }
 
     public void deleteLine(Long id) {
@@ -101,29 +101,17 @@ public class SubwayService {
     }
 
     private void saveSection(Long lineId, LineRequest lineRequest) {
-        SectionRequest sectionRequest = toSectionRequest(lineRequest);
+        SectionRequest sectionRequest = new SectionRequest(lineRequest);
         SectionEntity sectionEntity = sectionRequest.toEntity(lineId);
         sectionDao.save(sectionEntity);
     }
 
-    private List<StationResponse> makeStationResponses(List<Station> stations) {
-        return stations.stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
-    }
-
-    private LineResponse toLineResponse(Line line) {
+    private List<Station> getStationsInLine(Line line) {
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(line.getId());
-        List<Station> stations = SectionEntity.extractStationIds(sectionEntities)
+        return SectionEntity.extractStationIds(sectionEntities)
                 .stream()
                 .map(stationDao::findById)
                 .collect(Collectors.toList());
-        return new LineResponse(line, makeStationResponses(stations));
-    }
-
-    private SectionRequest toSectionRequest(LineRequest lineRequest) {
-        return new SectionRequest(lineRequest.getUpStationId(), lineRequest.getDownStationId(),
-                lineRequest.getDistance());
     }
 
     private Section toSection(SectionEntity sectionEntity) {
