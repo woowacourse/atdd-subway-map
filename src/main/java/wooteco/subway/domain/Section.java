@@ -3,6 +3,8 @@ package wooteco.subway.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -30,5 +32,27 @@ public class Section {
 
     public boolean isLongerThan(Section section) {
         return distance >= section.getDistance();
+    }
+
+    private boolean isOnSameLine(Section section) {
+        return lineId.equals(section.getLineId());
+    }
+
+    private boolean hasCommonStationWith(Section newSection) {
+        return !Collections.disjoint(List.of(upStationId, downStationId),
+                List.of(newSection.getUpStationId(), newSection.getDownStationId()));
+    }
+
+    public boolean isConnectedTo(Section newSection) {
+        return isOnSameLine(newSection) && hasCommonStationWith(newSection);
+    }
+
+    public boolean isOverLappedWith(Section newSection) {
+        return isOnSameLine(newSection)
+                && (upStationId.equals(newSection.getUpStationId()) || downStationId.equals(newSection.getDownStationId()));
+    }
+
+    public boolean hasStation(Long stationId) {
+        return List.of(upStationId, downStationId).contains(stationId);
     }
 }

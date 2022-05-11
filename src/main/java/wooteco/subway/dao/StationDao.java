@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -28,6 +27,12 @@ public class StationDao {
         return createNewObject(station);
     }
 
+    private Station createNewObject(Station station) {
+        String sql = "select max(id) from STATION";
+        Long id = jdbcTemplate.queryForObject(sql, Long.class);
+        return new Station(id, station.getName());
+    }
+
     public boolean existByName(String name) {
         String sql = "select EXISTS (select id from STATION where name = ?) as success";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
@@ -43,18 +48,6 @@ public class StationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    private static class StationMapper implements RowMapper<Station> {
-        public Station mapRow(ResultSet rs, int rowCnt) throws SQLException {
-            return new Station(rs.getLong("id"), rs.getString("name"));
-        }
-    }
-
-    private Station createNewObject(Station station) {
-        String sql2 = "select max(id) from STATION";
-        Long id = jdbcTemplate.queryForObject(sql2, Long.class);
-        return new Station(id, station.getName());
-    }
-
     public Station findById(Long id) {
         String sql = String.format("select * from STATION where id = %d", id);
         return jdbcTemplate.queryForObject(sql, new StationMapper());
@@ -67,5 +60,11 @@ public class StationDao {
 
         String sql = String.format("select * from STATION where id in (%s)", String.join(", ", stringIds));
         return jdbcTemplate.query(sql, new StationMapper());
+    }
+
+    private static class StationMapper implements RowMapper<Station> {
+        public Station mapRow(ResultSet rs, int rowCnt) throws SQLException {
+            return new Station(rs.getLong("id"), rs.getString("name"));
+        }
     }
 }

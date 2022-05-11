@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -9,7 +8,6 @@ import wooteco.subway.domain.Line;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -27,6 +25,12 @@ public class LineDao {
         return createNewObject(line);
     }
 
+    private Line createNewObject(Line line) {
+        String sql = "select max(id) from LINE";
+        Long id = jdbcTemplate.queryForObject(sql, Long.class);
+        return new Line(id, line.getName(), line.getColor());
+    }
+
     public boolean existByName(String name) {
         String sql = "select EXISTS (select id from LINE where name = ?) as success";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
@@ -42,18 +46,6 @@ public class LineDao {
         jdbcTemplate.update(sql, id);
     }
 
-    private static class LineMapper implements RowMapper<Line> {
-        public Line mapRow(ResultSet rs, int rowCnt) throws SQLException {
-            return new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color"));
-        }
-    }
-
-    private Line createNewObject(Line line) {
-        String sql = "select max(id) from LINE";
-        Long id = jdbcTemplate.queryForObject(sql, Long.class);
-        return new Line(id, line.getName(), line.getColor());
-    }
-
     public Line findById(Long id) {
         String sql = String.format("select * from LINE where id = %d", id);
         return jdbcTemplate.queryForObject(sql, new LineMapper());
@@ -62,5 +54,11 @@ public class LineDao {
     public void edit(Long id, String name, String color) {
         String sql = "update LINE set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, name, color, id);
+    }
+
+    private static class LineMapper implements RowMapper<Line> {
+        public Line mapRow(ResultSet rs, int rowCnt) throws SQLException {
+            return new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color"));
+        }
     }
 }
