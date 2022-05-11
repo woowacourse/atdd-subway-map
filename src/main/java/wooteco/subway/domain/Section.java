@@ -50,23 +50,23 @@ public class Section {
         return this.distance >= other.distance;
     }
 
-    private int calculateDistance(final Section section) {
-        return this.distance - section.distance;
-    }
-
     public Section createSectionByUpStation(final Section section) {
-        return new Section(this.id, this.upStation, section.upStation, calculateDistance(section), this.lineId);
+        return new Section(this.id, this.upStation, section.upStation, subtractDistance(section), this.lineId);
     }
 
     public Section createSectionByDownStation(final Section section) {
-        return new Section(this.id, section.downStation, this.downStation, calculateDistance(section), this.lineId);
+        return new Section(this.id, section.downStation, this.downStation, subtractDistance(section), this.lineId);
+    }
+
+    private int subtractDistance(final Section section) {
+        return this.distance - section.distance;
     }
 
     public Section merge(final Section section) {
-        return new Section(this.upStation, section.downStation, mergeDistance(section), this.lineId);
+        return new Section(this.upStation, section.downStation, sumDistance(section), this.lineId);
     }
 
-    private int mergeDistance(final Section section) {
+    private int sumDistance(final Section section) {
         return this.distance + section.distance;
     }
 
