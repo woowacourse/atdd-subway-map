@@ -3,43 +3,40 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.StationRequest;
 
-import java.util.List;
-
 @DisplayName("지하철역 관련 service 테스트")
-@ExtendWith(MockitoExtension.class)
+@JdbcTest
 class StationServiceTest {
 
     private static final Station STATION = new Station("강남역");
     private static final StationRequest STATION_REQUEST = new StationRequest("강남역");
 
-    @Mock
-    private StationDao stationDao;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    @InjectMocks
     private StationService stationService;
+
+    @BeforeEach
+    void setUp() {
+        StationDao stationDao = new StationDao(jdbcTemplate);
+        stationService = new StationService(stationDao);
+    }
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void save() {
         // when
         stationService.save(STATION_REQUEST);
-
-        // mocking
-        given(stationDao.findAll())
-                .willReturn(List.of(STATION));
 
         // then
         assertThat(stationService.findAll().get(0).getName()).isEqualTo("강남역");
@@ -50,10 +47,6 @@ class StationServiceTest {
     void saveDuplicatedName() {
         // given
         stationService.save(STATION_REQUEST);
-
-        // mocking
-        given(stationDao.existStationByName(any()))
-                .willThrow(new IllegalArgumentException("지하철역 이름이 중복됩니다."));
 
         // when & then
         assertThatThrownBy(() -> stationService.save(STATION_REQUEST))
@@ -67,10 +60,6 @@ class StationServiceTest {
         // given
         stationService.save(STATION_REQUEST);
 
-        // mocking
-        given(stationDao.findAll())
-                .willReturn(List.of(STATION));
-
         // when & then
         assertThat(stationService.findAll()).hasSize(1);
     }
@@ -81,10 +70,6 @@ class StationServiceTest {
         // given
         long stationId = stationService.save(STATION_REQUEST);
 
-        // mocking
-        given(stationDao.existStationById(any()))
-                .willReturn(true);
-
         // when & then
         assertThatCode(() -> stationService.delete(stationId))
                 .doesNotThrowAnyException();
@@ -93,10 +78,6 @@ class StationServiceTest {
     @DisplayName("존재하지 않는 지하철역을 삭제할 경우 예외가 발생한다.")
     @Test
     void deleteNotExistStation() {
-        // mocking
-        given(stationDao.existStationById(any()))
-                .willThrow(new IllegalArgumentException("존재하지 않는 지하철역입니다."));
-
         // when & then
         assertThatThrownBy(() -> stationService.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class)

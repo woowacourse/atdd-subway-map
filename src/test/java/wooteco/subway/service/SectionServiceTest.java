@@ -1,61 +1,42 @@
 package wooteco.subway.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.SectionRequest;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 
 @DisplayName("구간 관련 service 테스트")
-@ExtendWith(MockitoExtension.class)
+@JdbcTest
 class SectionServiceTest {
 
-    @Mock
-    private SectionDao sectionDao;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    @Mock
+    private SectionService sectionService;
+    private SectionDao sectionDao;
     private StationDao stationDao;
 
-    @InjectMocks
-    private SectionService sectionService;
+    @BeforeEach
+    void setUp() {
+        sectionDao = new SectionDao(jdbcTemplate);
+        stationDao = new StationDao(jdbcTemplate);
 
-    @DisplayName("구간을 생성한다.")
-    @Test
-    void save() {
-        // mocking
-        given(stationDao.existStationById(1L))
-                .willReturn(true);
-        given(stationDao.existStationById(2L))
-                .willReturn(true);
-        given(sectionDao.existStation(1L, 1L))
-                .willReturn(true);
-        given(sectionDao.existStation(1L, 2L))
-                .willReturn(false);
-
-        // when & then
-        assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
-        ).doesNotThrowAnyException();
+        sectionService = new SectionService(sectionDao, stationDao);
     }
 
     @DisplayName("구간 생성 시 상행역에 해당하는 지하철역이 존재하지 경우 예외가 발생한다.")
     @Test
     void saveNotExistUpStation() {
-        // mocking
-        given(stationDao.existStationById(1L))
-                .willReturn(false);
-
         // when & then
         assertThatThrownBy(
                 () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
@@ -66,15 +47,12 @@ class SectionServiceTest {
     @DisplayName("구간 생성 시 하행역에 해당하는 지하철역이 존재하지 경우 예외가 발생한다.")
     @Test
     void saveNotExistDownStation() {
-        // mocking
-        given(stationDao.existStationById(1L))
-                .willReturn(true);
-        given(stationDao.existStationById(2L))
-                .willReturn(false);
+        // given
+        long stationId = stationDao.save(new Station(1L, "강남역"));
 
         // when & then
         assertThatThrownBy(
-                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
+                () -> sectionService.save(1L, new SectionRequest(stationId, 2L, 10))
         ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("하행역이 존재하지 않습니다.");
     }
@@ -82,17 +60,15 @@ class SectionServiceTest {
     @DisplayName("구간 생성 시 상행역과 하행역이 이미 지하철 노선에 존재하면 예외가 발생한다.")
     @Test
     void saveAlreadyExistAllSection() {
-        // mocking
-        given(stationDao.existStationById(1L))
-                .willReturn(true);
-        given(stationDao.existStationById(2L))
-                .willReturn(true);
-        given(sectionDao.existStation(eq(1L), any()))
-                .willReturn(true);
+        // given
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+
+        sectionDao.save(1L, new Section(station1Id, station2Id, 10));
 
         // when & then
         assertThatThrownBy(
-                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
+                () -> sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10))
         ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 위치에 구간을 저장할 수 없습니다.");
     }
@@ -100,84 +76,61 @@ class SectionServiceTest {
     @DisplayName("구간 생성 시 상행역 또는 하행역 중 하나만 지하철 노선에 포함되어 있으면 등록 가능하다.")
     @Test
     void saveExistOneStation() {
-        // mocking
-        given(stationDao.existStationById(1L))
-                .willReturn(true);
-        given(stationDao.existStationById(2L))
-                .willReturn(true);
-        given(sectionDao.existStation(1L, 1L))
-                .willReturn(true);
-        given(sectionDao.existStation(1L, 2L))
-                .willReturn(false);
+        // given
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        long station3Id = stationDao.save(new Station(3L, "삼성역"));
+
+        sectionDao.save(1L, new Section(station1Id, station2Id, 10));
 
         // when & then
         assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10)))
+                () -> sectionService.save(1L, new SectionRequest(station1Id, station3Id, 10)))
                 .doesNotThrowAnyException();
     }
 
     @DisplayName("구간 생성 시 상행 종점을 등록한다.")
     @Test
     void saveNewUpStation() {
-        // mocking
-        given(stationDao.existStationById(1L))
-                .willReturn(true);
-        given(stationDao.existStationById(2L))
-                .willReturn(true);
-        given(sectionDao.existStation(1L, 1L))
-                .willReturn(true);
-        given(sectionDao.existStation(1L, 2L))
-                .willReturn(false);
-        lenient().when(sectionDao.existUpStation(1L, 2L))
-                        .thenReturn(true);
-        lenient().when(sectionDao.existDownStation(1L, 1L))
-                        .thenReturn(false);
+        // given
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        long station3Id = stationDao.save(new Station(3L, "삼성역"));
+
+        sectionDao.save(1L, new Section(station2Id, station3Id, 10));
 
         // when & then
         assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
+                () -> sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10))
         ).doesNotThrowAnyException();
     }
 
     @DisplayName("구간 생성 시 하행 종점을 등록한다.")
     @Test
     void saveNewDownStation() {
-        // mocking
-        given(stationDao.existStationById(1L))
-                .willReturn(true);
-        given(stationDao.existStationById(2L))
-                .willReturn(true);
-        given(sectionDao.existStation(1L, 1L))
-                .willReturn(true);
-        given(sectionDao.existStation(1L, 2L))
-                .willReturn(false);
-        given(sectionDao.existUpStation(1L, 2L))
-                .willReturn(false);
-        given(sectionDao.existDownStation(1L, 1L))
-                .willReturn(true);
+        // given
+        stationDao.save(new Station(1L, "강남역"));
+        stationDao.save(new Station(2L, "역삼역"));
+        stationDao.save(new Station(3L, "삼성역"));
+
+        sectionDao.save(1L, new Section(1L, 2L, 10));
 
         // when & then
         assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
+                () -> sectionService.save(1L, new SectionRequest(2L, 3L, 10))
         ).doesNotThrowAnyException();
     }
 
     @DisplayName("구간 생성 시 다른 구간과 연결되어 있지 않으면 예외가 발생한다.")
     @Test
     void saveNotExistAnyStation() {
-        // mocking
-        given(stationDao.existStationById(999L))
-                .willReturn(true);
-        given(stationDao.existStationById(888L))
-                .willReturn(true);
-        given(sectionDao.existStation(1L, 999L))
-                .willReturn(false);
-        given(sectionDao.existStation(1L, 888L))
-                .willReturn(false);
+        // given
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
 
         // when & then
         assertThatThrownBy(
-                () -> sectionService.save(1L, new SectionRequest(999L, 888L, 10))
+                () -> sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10))
         ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 위치에 구간을 저장할 수 없습니다.");
     }
