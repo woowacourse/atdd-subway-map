@@ -40,4 +40,10 @@ public class JdbcSectionDao implements SectionDao {
         ReflectionUtils.setField(field, section, id);
         return section;
     }
+
+    @Override
+    public void deleteByLine(Long lineId) {
+        String sql = "DELETE FROM section WHERE line_id = ?";
+        jdbcTemplate.update(sql, lineId);
+    }
 }

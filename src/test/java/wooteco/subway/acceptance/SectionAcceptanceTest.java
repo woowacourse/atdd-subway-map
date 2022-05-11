@@ -15,14 +15,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간을 생성한다.")
     public void createSection() {
         // given
-        Map<String, String> lineParams =
-                Map.of("name", "신분당선", "color", "bg-red-600");
-        SimpleRestAssured.post("/lines", lineParams);
-
         Map<String, String> stationParams1 = Map.of("name", "강남역");
         Map<String, String> stationParams2 = Map.of("name", "역삼역");
         SimpleRestAssured.post("/stations", stationParams1);
         SimpleRestAssured.post("/stations", stationParams2);
+
+        Map<String, String> lineParams = Map.of(
+                "name", "신분당선",
+                "color", "bg-red-600",
+                "upStationId", "1",
+                "downStationId", "2",
+                "distance", "10"
+        );
+        SimpleRestAssured.post("/lines", lineParams);
 
         Map<String, String> sectionParams =
                 Map.of("upStationId", "1",

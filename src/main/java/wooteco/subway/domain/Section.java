@@ -29,6 +29,14 @@ public class Section {
         return downStation.getId();
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     public int getDistance() {
         return distance;
     }

@@ -2,14 +2,13 @@ package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
@@ -38,7 +37,12 @@ public class JdbcLineDao implements LineDao {
     @Override
     public Line save(Line line) {
         try {
-            final SqlParameterSource param = new BeanPropertySqlParameterSource(line);
+            final Map<String, Object> param = Map.of(
+                    "name", line.getName(),
+                    "color", line.getColor(),
+                    "up_station_id", line.getUpStationId(),
+                    "down_station_id", line.getDownStationId()
+            );
             final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
             return createNewObject(line, id);
         } catch (DuplicateKeyException ignored) {

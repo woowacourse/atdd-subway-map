@@ -5,6 +5,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.request.SectionRequest;
 
 @Service
@@ -27,5 +28,18 @@ public class SectionService {
 
         Section section = new Section(upStation, downStation, distance);
         sectionDao.save(section, lineId);
+    }
+
+    public void create(LineRequest lineRequest, Long lineId) {
+        SectionRequest sectionRequest = new SectionRequest(
+                lineRequest.getUpStationId(),
+                lineRequest.getDownStationId(),
+                lineRequest.getDistance()
+        );
+        create(sectionRequest, lineId);
+    }
+
+    public void deleteByLine(Long id) {
+        sectionDao.deleteByLine(id);
     }
 }
