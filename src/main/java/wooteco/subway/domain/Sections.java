@@ -2,8 +2,10 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -83,6 +85,14 @@ public class Sections {
             removeInMiddle(station, removableSection);
         }
         sections.remove(removableSection.get(0));
+    }
+
+    public List<Section> getDifferentList(Sections otherSections) {
+        Set<String> set = new HashSet<>();
+
+        List<Section> thisSections = new ArrayList<>(this.sections);
+        thisSections.removeAll(otherSections.sections);
+        return thisSections;
     }
 
     private List<Section> findRemovableSections(Station station) {

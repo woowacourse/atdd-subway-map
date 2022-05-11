@@ -85,12 +85,13 @@
      - stations의 요소는 station의 id, name을 각각 가진다.
    - [ ] 노선 조회 시 노선에 해당하는 역 목록도 추가로 조회한다. `GET /lines/{id}`
      - 결과 상태 코드는 `200 OK` 이다.
+     - 역 목록은 상행선부터 하행선으로 정렬된 상태여야한다.
      - `응답` id, name, color, stations(station의 리스트)를 반환한다.
    - [ ] 노선 목록 조회 시 노선에 해당하는 역 목록도 추가로 조회한다. `GET /lines`
      - 결과 상태 코드는 `200 OK` 이다.
      - `응답` id, name, color, stations를 요소로 가지는 리스트를 반환한다.
 3. 구간 관리 API 구현
-    - [ ] 구간 추가 기능 노선에 구간을 추가 (`POST /lines/{line_id}/sections`)
+    - [x] 구간 추가 기능 노선에 구간을 추가 (`POST /lines/{line_id}/sections`)
       - 결과 상태 코드는 `200 OK` 이다.
       - `요청` json으로 upStationId, downStationId, distance를 받는다.
       - `응답` body 내용은 존재하지 않는다.

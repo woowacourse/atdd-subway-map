@@ -29,6 +29,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
 
 @WebMvcTest(LineController.class)
@@ -50,7 +51,7 @@ public class LineControllerTest {
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLineV2() throws Exception {
+    void createLine() throws Exception {
         // given
         LineRequest test = new LineRequest("신림역", "GREEN", 1L, 2L, 5);
         given(lineService.save(any(LineRequest.class)))
@@ -224,6 +225,22 @@ public class LineControllerTest {
         perform.andExpectAll(
                 status().isBadRequest(),
                 jsonPath("message").value("2호선 : 이름이 중복되는 지하철 노선이 존재합니다.")
+        );
+    }
+
+    @DisplayName("노선에 구간을 추가한다.")
+    @Test
+    void addSection() throws Exception {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        // when
+        ResultActions perform = mockMvc.perform(post("/lines/1/sections")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(sectionRequest)));
+        // then
+        assertAll(
+                () -> perform.andExpect(status().isOk()),
+                () -> verify(lineService).addSection(anyLong(), any(SectionRequest.class))
         );
     }
 }

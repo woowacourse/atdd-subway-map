@@ -4,17 +4,23 @@ import java.util.Objects;
 
 public class Section {
 
+    private final Long id;
     private final Station upStation;
     private final Station downStation;
     private final int distance;
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Long id, Station upStation, Station downStation, int distance) {
         Objects.requireNonNull(upStation);
         Objects.requireNonNull(downStation);
         validateDistanceOverZero(distance);
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
     }
 
     public Section slice(Section insertSection) {
@@ -76,6 +82,10 @@ public class Section {
         return distance <= section.distance;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -109,7 +119,8 @@ public class Section {
     @Override
     public String toString() {
         return "Section{" +
-                "upStation=" + upStation +
+                "id=" + id +
+                ", upStation=" + upStation +
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';

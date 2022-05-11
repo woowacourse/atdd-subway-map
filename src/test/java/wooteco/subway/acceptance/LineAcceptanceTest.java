@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -30,6 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void init() {
         createNewStation("신림역");
         createNewStation("봉천역");
+        createNewStation("서울대입구역");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -159,15 +161,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("3호선", "GREEN", 1L, 2L, 5));
         String uri = createdResponse.header("Location");
 
-        Map<String, String> params3 = new HashMap<>();
-        params3.put("name", "2호선");
-        params3.put("color", "ORANGE");
-        // when
         ExtractableResponse<Response> response = putRequest(uri,
-                new HashMap<>(Map.of("name", "2호선", "color", "ORANGE"
-                )));
+                Map.of("name", "2호선", "color", "ORANGE"));
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선에 구간을 추가한다.")
+    @Test
+    void addSection() {
+        // given
+        LineRequest lineRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
+        postRequest(LINES_URI, lineRequest);
+
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
+        // when
+        ExtractableResponse<Response> response = postRequest("/lines/1/sections", sectionRequest);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // TODO 조회기능이 완성되면 조회해서 잘 들어갔는지 확인한다.
     }
 
     private ExtractableResponse<Response> postRequest(String path, Object body) {

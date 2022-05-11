@@ -2,17 +2,17 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.test.TestFixture.낙성대역;
+import static wooteco.subway.test.TestFixture.봉천역;
+import static wooteco.subway.test.TestFixture.사당역;
+import static wooteco.subway.test.TestFixture.신림역;
+import static wooteco.subway.test.TestFixture.서울대입구역;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class SectionsTest {
-
-    private final Station 신림역 = new Station("신림역");
-    private final Station 봉천역 = new Station("봉천역");
-    private final Station 잠실역 = new Station("잠실역");
-    private final Station 낙성대역 = new Station("낙성대역");
 
     @DisplayName("구간은 하나 이상 존재해야 합니다.")
     @Test
@@ -27,7 +27,7 @@ public class SectionsTest {
     void insert_noStationException() {
         Sections sections = new Sections(new Section(신림역, 봉천역, 5));
 
-        assertThatThrownBy(() -> sections.insert(new Section(잠실역, 낙성대역, 5)))
+        assertThatThrownBy(() -> sections.insert(new Section(서울대입구역, 낙성대역, 5)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역 또는 하행역이 노선에 포함되어 있어야합니다.");
     }
@@ -47,7 +47,7 @@ public class SectionsTest {
     void insert_frontOrBack() {
         // given
         Section section = new Section(신림역, 봉천역, 5);
-        Section newSection = new Section(잠실역, 신림역, 5);
+        Section newSection = new Section(서울대입구역, 신림역, 5);
         Sections sections = new Sections(section);
         // when
         sections.insert(newSection);
@@ -63,7 +63,7 @@ public class SectionsTest {
         // given
         Section section = new Section(신림역, 봉천역, 5);
         Section section2 = new Section(봉천역, 낙성대역, 7);
-        Section newSection = new Section(봉천역, 잠실역, 3);
+        Section newSection = new Section(봉천역, 서울대입구역, 3);
 
         Sections sections = new Sections(List.of(section, section2));
         // when
@@ -73,8 +73,8 @@ public class SectionsTest {
         assertThat(results.size()).isEqualTo(3);
         assertThat(results).contains(
                 section,
-                new Section(봉천역, 잠실역, 3),
-                new Section(잠실역, 낙성대역, 4));
+                new Section(봉천역, 서울대입구역, 3),
+                new Section(서울대입구역, 낙성대역, 4));
     }
 
     @DisplayName("새로운 구간이 기존에 존재하는 구간 중간에 삽입하는 경우 - downStation 일치")
@@ -103,14 +103,14 @@ public class SectionsTest {
         Section section2 = new Section(봉천역, 낙성대역, 5);
         Sections sections = new Sections(List.of(section, section2));
         // when
-        Section newSection = new Section(봉천역, 잠실역, 3);
+        Section newSection = new Section(봉천역, 서울대입구역, 3);
         sections.insert(newSection);
         // then
         List<Section> results = sections.getSections();
         assertThat(results).contains(
                 section,
                 newSection,
-                new Section(잠실역, 낙성대역, 2)
+                new Section(서울대입구역, 낙성대역, 2)
         );
     }
 
@@ -119,7 +119,7 @@ public class SectionsTest {
     void insertMiddle_distanceException() {
         // given
         Section section = new Section(봉천역, 낙성대역, 5);
-        Section newSection = new Section(봉천역, 잠실역, 7);
+        Section newSection = new Section(봉천역, 서울대입구역, 7);
         Sections sections = new Sections(section);
         // then
         assertThatThrownBy(() -> sections.insert(newSection))
@@ -136,7 +136,7 @@ public class SectionsTest {
         Sections sections = new Sections(section);
         sections.insert(section2);
         // then
-        assertThatThrownBy(() -> sections.delete(잠실역))
+        assertThatThrownBy(() -> sections.delete(서울대입구역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지우려는 역이 노선에 포함되어 있어야합니다.");
     }
@@ -182,6 +182,32 @@ public class SectionsTest {
         List<Section> results = sections.getSections();
         assertThat(results).contains(
                 new Section(봉천역, 신림역, 10)
+        );
+    }
+
+    @DisplayName("한 섹션에서 다른 섹션과의 차집합을 구한다. (호출객체 - 인자객체)")
+    @Test
+    void getDifferentList() {
+        Sections sections = new Sections(List.of(
+                new Section(봉천역, 낙성대역, 5),
+                new Section(낙성대역, 신림역, 5),
+                new Section(신림역, 서울대입구역, 5)));
+
+        Sections sections2 = new Sections(List.of(
+                new Section(봉천역, 낙성대역, 5),
+                new Section(낙성대역, 사당역, 2),
+                new Section(사당역, 신림역, 3),
+                new Section(신림역, 서울대입구역, 5)
+        ));
+
+        List<Section> differentListA = sections.getDifferentList(sections2);
+        List<Section> differentListB = sections2.getDifferentList(sections);
+        assertThat(differentListA).contains(
+                new Section(낙성대역, 신림역, 5)
+        );
+        assertThat(differentListB).contains(
+                new Section(낙성대역, 사당역, 2),
+                new Section(사당역, 신림역, 3)
         );
     }
 }

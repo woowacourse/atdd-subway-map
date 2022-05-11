@@ -5,8 +5,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static wooteco.subway.test.TestFixture.낙성대역;
+import static wooteco.subway.test.TestFixture.봉천역;
+import static wooteco.subway.test.TestFixture.사당역;
+import static wooteco.subway.test.TestFixture.서울대입구역;
+import static wooteco.subway.test.TestFixture.신림역;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +31,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,9 +59,9 @@ class LineServiceTest {
         when(lineDao.save(any(Line.class)))
                 .thenReturn(new Line(1L, testRequest.getName(), testRequest.getColor()));
         when(stationDao.findById(1L))
-                .thenReturn(Optional.of(new Station(1L, "신림역")));
+                .thenReturn(Optional.of(신림역));
         when(stationDao.findById(2L))
-                .thenReturn(Optional.of(new Station(2L, "봉천역")));
+                .thenReturn(Optional.of(봉천역));
         // when
         LineResponse result = lineService.save(testRequest);
         // then
@@ -199,5 +207,53 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.update(1L, updateRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("2호선 : 이름이 중복되는 지하철 노선이 존재합니다.");
+    }
+
+    @DisplayName("노선 중간에 구간을 추가한다.")
+    @Test
+    void addSection_middle() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(2L, 5L, 3);
+        when(lineDao.findById(1L))
+                .thenReturn(Optional.of(new Line(1L, "2호선", "GREEN")));
+        when(sectionDao.findAllByLineId(1L))
+                .thenReturn(List.of(
+                        new Section(신림역, 봉천역, 5),
+                        new Section(봉천역, 서울대입구역, 5),
+                        new Section(서울대입구역, 낙성대역, 5)
+                ));
+        when(stationDao.findById(2L))
+                .thenReturn(Optional.of(봉천역));
+        when(stationDao.findById(5L))
+                .thenReturn(Optional.of(사당역));
+        // when
+        lineService.addSection(1L, sectionRequest);
+        // then
+        verify(sectionDao, times(1)).remove(any(Section.class));
+        verify(sectionDao, times(2)).save(eq(1L), any(Section.class));
+    }
+
+    @DisplayName("노선 맨 앞 혹은 맨 뒤에 구간을 추가한다.")
+    @Test
+    void addSection_frontOrBack() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(4L, 5L, 3);
+        when(lineDao.findById(1L))
+                .thenReturn(Optional.of(new Line(1L, "2호선", "GREEN")));
+        when(sectionDao.findAllByLineId(1L))
+                .thenReturn(List.of(
+                        new Section(신림역, 봉천역, 5),
+                        new Section(봉천역, 서울대입구역, 5),
+                        new Section(서울대입구역, 낙성대역, 5)
+                ));
+        when(stationDao.findById(4L))
+                .thenReturn(Optional.of(낙성대역));
+        when(stationDao.findById(5L))
+                .thenReturn(Optional.of(사당역));
+        // when
+        lineService.addSection(1L, sectionRequest);
+        // then
+        verify(sectionDao, times(0)).remove(any(Section.class));
+        verify(sectionDao, times(1)).save(eq(1L), any(Section.class));
     }
 }

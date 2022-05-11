@@ -8,9 +8,11 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.StringFormat;
 
@@ -36,8 +38,7 @@ public class LineService {
                     StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
         Line newLine = lineDao.save(lineRequest.toEntity());
-        Station up = stationDao.findById(lineRequest.getUpStationId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+        Station up = findExistStationById(lineRequest.getUpStationId());
         Station down = stationDao.findById(lineRequest.getDownStationId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
 
@@ -68,6 +69,32 @@ public class LineService {
         return null;
     }
 
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findExistLineById(lineId);
+        List<Section> findSections = sectionDao.findAllByLineId(line.getId());
+        Sections origin = new Sections(findSections);
+
+        Station up = findExistStationById(sectionRequest.getUpStationId());
+        Station down = findExistStationById(sectionRequest.getDownStationId());
+        Section newSection = new Section(up, down, sectionRequest.getDistance());
+
+        Sections resultSections = new Sections(findSections);
+        resultSections.insert(newSection);
+        deleteAndSaveSections(lineId, origin, resultSections);
+    }
+
+    private void deleteAndSaveSections(Long line_id, Sections origin, Sections resultSections) {
+        List<Section> createdSections = resultSections.getDifferentList(origin);
+        List<Section> toDeleteSections = origin.getDifferentList(resultSections);
+
+        for (Section deleteTargetSection : toDeleteSections) {
+            sectionDao.remove(deleteTargetSection);
+        }
+        for (Section createdSection : createdSections) {
+            sectionDao.save(line_id, createdSection);
+        }
+    }
+
     public Void delete(Long id) {
         lineDao.delete(findExistLineById(id));
         return null;
@@ -77,6 +104,11 @@ public class LineService {
         return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
                         StringFormat.errorMessage(id, NO_SUCH_LINE_EXCEPTION_MESSAGE)));
+    }
+
+    private Station findExistStationById(Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
     }
 
     private boolean isDuplicateName(String name) {
