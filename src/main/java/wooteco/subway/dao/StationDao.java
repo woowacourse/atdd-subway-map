@@ -1,30 +1,63 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.List;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
+@Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    private final RowMapper<Station> actorRowMapper = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
+
+    public Long save(Station station) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO STATION(name) VALUES(?)";
+        String name = station.getName();
+        jdbcTemplate.update((Connection conn) -> {
+            PreparedStatement pstmt = conn.prepareStatement(sql, new String[]{"id"});
+            pstmt.setString(1, name);
+            return pstmt;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public boolean existByName(String name) {
+        String sql = "SELECT EXISTS(SELECT id FROM STATION WHERE name = ?) AS SUCCESS";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
+    public List<Station> findAll() {
+        String sql = "SELECT id, name FROM STATION";
+        return jdbcTemplate.query(sql, actorRowMapper);
+    }
+
+    public void delete(Long id) {
+        String sql = "DELETE FROM STATION WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public boolean existById(Long id) {
+        String sql = "SELECT EXISTS(SELECT * FROM STATION WHERE id = ?) AS SUCCESS";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    public Station findById(Long id) {
+        String sql = "SELECT id, name FROM STATION WHERE id =?";
+        return jdbcTemplate.queryForObject(sql, actorRowMapper, id);
     }
 }

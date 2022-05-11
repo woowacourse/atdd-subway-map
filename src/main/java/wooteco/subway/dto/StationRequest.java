@@ -1,5 +1,7 @@
 package wooteco.subway.dto;
 
+import wooteco.subway.domain.Station;
+
 public class StationRequest {
     private String name;
 
@@ -12,5 +14,13 @@ public class StationRequest {
 
     public String getName() {
         return name;
+    }
+
+    public Station toStation() {
+        return new Station(name);
+    }
+
+    public Station toStation(final Long id) {
+        return new Station(id, name);
     }
 }
