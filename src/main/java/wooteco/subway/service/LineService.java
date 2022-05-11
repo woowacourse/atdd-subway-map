@@ -109,7 +109,15 @@ public class LineService {
     }
 
     public void deleteSectionByLineIdAndStationId(Long lineId, Long stationId) {
+        validSectionSize(lineId);
         sectionDao.deleteByLineIdAndStationId(lineId, stationId);
 
+    }
+
+    private void validSectionSize(Long lineId) {
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("노선에 구간이 1개 이상은 존재해야합니다.");
+        }
     }
 }
