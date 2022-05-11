@@ -82,6 +82,11 @@ public class Section implements Comparator<Section> {
             unSplitSection.getDistance() - distance);
     }
 
+    public Section createUpToDownSection(final Section middleToDownSection) {
+        return new Section(id, lineId, upStationId, middleToDownSection.getDownStationId(),
+            distance + middleToDownSection.distance);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

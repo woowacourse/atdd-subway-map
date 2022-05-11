@@ -151,7 +151,8 @@ class SectionsTest {
     void deleteSectionByStationId_valid_delete_up_station() {
         final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
 
-        final List<Section> actual = sections.deleteSectionByStationId(1L);
+        sections.deleteSectionByStationId(1L);
+        final List<Section> actual = sections.getValue();
 
         assertAll(
             () -> assertThat(actual.get(0).getUpStationId()).isEqualTo(2L),
@@ -164,10 +165,26 @@ class SectionsTest {
     void deleteSectionByStationId_valid_delete_down_station() {
         final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
 
-        final List<Section> actual = sections.deleteSectionByStationId(3L);
+        sections.deleteSectionByStationId(3L);
+        final List<Section> actual = sections.getValue();
 
         assertAll(
             () -> assertThat(actual.get(actual.size() - 1).getDownStationId()).isEqualTo(2L),
+            () -> assertThat(actual).hasSize(1)
+        );
+    }
+
+    @DisplayName("구간 삭제시 중간역을 제거할 수 있다.")
+    @Test
+    void deleteSectionByStationId_valid_delete_middle_station() {
+        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
+
+        sections.deleteSectionByStationId(2L);
+        final List<Section> actual = sections.getValue();
+
+        assertAll(
+            () -> assertThat(actual.get(0).getUpStationId()).isEqualTo(1L),
+            () -> assertThat(actual.get(actual.size() - 1).getDownStationId()).isEqualTo(3L),
             () -> assertThat(actual).hasSize(1)
         );
     }
