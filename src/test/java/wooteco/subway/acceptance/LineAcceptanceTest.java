@@ -24,6 +24,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.LineCreateRequest;
 import wooteco.subway.ui.dto.LineRequest;
 import wooteco.subway.ui.dto.SectionRequest;
@@ -46,7 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         savedId1 = insertLine("신분당선", "bg-red-600");
         savedId2 = insertLine("분당선", "bg-green-600");
 
-        savedInsertId = insertSection(savedId1, 1L, 2L);
+        savedInsertId = insertSection(savedId1);
     }
 
     private Long insertLine(String name, String color) {
@@ -61,15 +62,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    private Long insertSection(Long lineId, Long upStationId, Long downStationId) {
+    private Long insertSection(Long lineId) {
         String insertSql = "insert into section (line_id, up_station_id, down_station_id, distance) "
                 + "values (:lineId, :upStationId, :downStationId, :distance)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource source = new MapSqlParameterSource();
         source.addValue("lineId", lineId);
-        source.addValue("upStationId", upStationId);
-        source.addValue("downStationId", downStationId);
+        source.addValue("upStationId", 1L);
+        source.addValue("downStationId", 2L);
         source.addValue("distance", 5);
 
         jdbcTemplate.update(insertSql, source, keyHolder);
@@ -214,7 +215,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         expectedIds.remove(Long.parseLong(id));
 
         //when
-        RestAssuredUtil.delete("/lines/" + id, null);
+        RestAssuredUtil.delete("/lines/" + id, new HashMap<>());
 
         //then
         assertThat(expectedIds).isEqualTo(selectLines());
@@ -228,29 +229,44 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 생성")
     @Test
     void createSection() {
-        //given
+        // given
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 5);
         String url = "/lines/" + savedId2 + "/sections";
 
-        //when
-        ExtractableResponse<Response> response = RestAssuredUtil.post(url, sectionRequest);
+        // when
+        RestAssuredUtil.post(url, sectionRequest);
 
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // then
+        List<StationResponse> stations = findStations(savedId2);
+
+        StationResponse expected1 = new StationResponse(1L, "강남역");
+        StationResponse expected2 = new StationResponse(2L, "왕십리역");
+
+        assertThat(stations).contains(expected1, expected2);
     }
 
     @DisplayName("구간 삭제")
     @Test
     void deleteSection() {
-        //given
-        String url = "/lines/" + savedId1 + "/sections";
+        // given
         Map<String, String> source = new HashMap<>();
         source.put("stationId", savedInsertId.toString());
+        String url = "/lines/" + savedId1 + "/sections";
 
-        //when
-        ExtractableResponse<Response> response = RestAssuredUtil.delete(url, source);
+        // when
+        RestAssuredUtil.delete(url, source);
 
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // then
+        List<Long> stationIds = findStations(savedId1)
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(stationIds).doesNotContain(savedInsertId);
+    }
+
+    private List<StationResponse> findStations(Long lineId) {
+        ExtractableResponse<Response> findLine = RestAssuredUtil.get("/lines/" + lineId);
+        return findLine.jsonPath().getList("stations", StationResponse.class);
     }
 }

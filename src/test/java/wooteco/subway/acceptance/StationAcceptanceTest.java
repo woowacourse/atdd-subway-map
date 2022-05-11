@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -83,10 +84,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        List<Long> stationIds = generateStationIds(response);
+
+        assertThat(stationIds).containsAll(List.of(savedId1, savedId2));
+    }
+
+    private List<Long> generateStationIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(List.of(savedId1, savedId2));
     }
 
     @DisplayName("지하철역을 제거한다.")
@@ -98,7 +104,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssuredUtil.delete(uri, null);
+        ExtractableResponse<Response> response = RestAssuredUtil.delete(uri, new HashMap<>());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
