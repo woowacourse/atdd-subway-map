@@ -35,7 +35,7 @@ public class SectionEntity {
     }
 
     public static SectionEntity of(Section section) {
-        return new SectionEntity(null, section.getLineId(), section.getUpStationId(), section.getDownStationId(),
+        return new SectionEntity(section.getId(), section.getLineId(), section.getUpStationId(), section.getDownStationId(),
                 section.getDistance());
     }
 
