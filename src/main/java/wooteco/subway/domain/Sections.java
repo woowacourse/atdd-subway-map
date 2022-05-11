@@ -57,15 +57,6 @@ public class Sections {
         }
     }
 
-    private boolean isInvalid(Section section, List<Section> foundSections) {
-        return hasSameStations(section) ||
-            isContainStationsInMiddle(foundSections) || isSameWithDestinations(foundSections);
-    }
-
-    private boolean hasSameStations(Section newSection) {
-        return values.stream().anyMatch(section -> section.hasSameStations(newSection));
-    }
-
     private List<Section> findSectionsOverlapped(Section newSection) {
         return values.stream()
             .filter(section ->
@@ -73,8 +64,18 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    private boolean isContainStationsInMiddle(List<Section> foundSections) {
-        return foundSections.size() > 2;
+    private boolean isInvalid(Section section, List<Section> foundSections) {
+        return hasSameStations(section) ||
+            isInvalidCountInMiddle(foundSections) || isSameWithDestinations(foundSections);
+    }
+
+    private boolean hasSameStations(Section newSection) {
+        return values.stream().anyMatch(section -> section.hasSameStations(newSection));
+    }
+
+    private boolean isInvalidCountInMiddle(List<Section> foundSections) {
+        int count = foundSections.size();
+        return count < 1 || count > 2;
     }
 
     private boolean isSameWithDestinations(List<Section> foundSections) {

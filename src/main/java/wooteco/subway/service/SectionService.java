@@ -35,10 +35,10 @@ public class SectionService {
         Sections sections = new Sections(convertedSections);
         Section newSection = new Section(getStationById(upDestinationId), getStationById(downDestinationId), distance);
         sections.add(newSection);
-        List<Section> sectionsValues = new ArrayList<>(sections.getValues());
-        sectionsValues.removeAll(convertedSections);
-        sectionsValues.remove(newSection);
-        for (Section section : sectionsValues) {
+        List<Section> sectionValues = new ArrayList<>(sections.getValues());
+        sectionValues.removeAll(convertedSections);
+        sectionValues.remove(newSection);
+        for (Section section : sectionValues) {
             sectionDao.update(new SectionEntity(section.getId(), lineId, section.getUpStation().getId(),
                 section.getDownStation().getId(), section.getDistance()));
         }

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.RestAssured;
@@ -262,9 +263,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> actual = getExtractableGetResponse(defaultUri);
         List<LineResponse> actualLineResponses = actual.jsonPath().getList(".", LineResponse.class);
         List<LineResponse> expectedLineResponses = List.of(
-            new LineResponse(1L, "7호선", "khaki", List.of(new StationResponse(3L, "선릉"),
-                new StationResponse(4L, "삼성"), new StationResponse(1L, "강남"),
-                new StationResponse(2L, "역삼"))));
+            new LineResponse(1L, "7호선", "khaki",
+                List.of(
+                    new StationResponse(3L, "선릉"),
+                    new StationResponse(4L, "삼성"),
+                    new StationResponse(1L, "강남"),
+                    new StationResponse(2L, "역삼")
+                )
+            ));
 
         //then
         assertAll(
@@ -302,9 +308,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> actual = getExtractableGetResponse(defaultUri);
         List<LineResponse> actualLineResponses = actual.jsonPath().getList(".", LineResponse.class);
         List<LineResponse> expectedLineResponses = List.of(
-            new LineResponse(1L, "7호선", "khaki", List.of(new StationResponse(1L, "강남"),
-                new StationResponse(2L, "역삼"), new StationResponse(4L, "삼성"),
-                new StationResponse(3L, "선릉"))));
+            new LineResponse(1L, "7호선", "khaki",
+                List.of(
+                    new StationResponse(1L, "강남"),
+                    new StationResponse(2L, "역삼"),
+                    new StationResponse(4L, "삼성"),
+                    new StationResponse(3L, "선릉")
+                )
+            ));
 
         //then
         assertAll(
@@ -358,6 +369,71 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {5, 6})
+    @DisplayName("역 사이 새로운 역 등록시 기존 역 사이 길이보다 크거나 같으면(>=) 400 응답을 던진다.")
+    void addSectionWithInvalidDistance(int distance) {
+        //given
+        StationRequest stationRequestC = new StationRequest("선릉");
+        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
+        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
+
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 5);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        //when
+        SectionRequest sectionRequest = new SectionRequest(stationIdA, stationIdC, distance);
+        ExtractableResponse<Response> response = getExtractablePostResponse(sectionRequest,
+            defaultUri + "/" + lineId + "/sections");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"1:2", "2:1"}, delimiter = ':')
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 400 응답을 던진다.")
+    void addSectionWithDuplicated(Long idA, Long idB) {
+        //given
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 5);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        //when
+        SectionRequest sectionRequest = new SectionRequest(idA, idB, 4);
+        ExtractableResponse<Response> response = getExtractablePostResponse(sectionRequest,
+            defaultUri + "/" + lineId + "/sections");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역 모두가 포함되어 있지 않으면 400 응답을 던진다.")
+    void addSectionWithDuplicated() {
+        //given
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 5);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        StationRequest stationRequestC = new StationRequest("선릉");
+        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
+        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
+
+        StationRequest stationRequestD = new StationRequest("삼성");
+        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
+        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+
+        //when
+        SectionRequest sectionRequest = new SectionRequest(stationIdC, stationIdD, 4);
+        ExtractableResponse<Response> response = getExtractablePostResponse(sectionRequest,
+            defaultUri + "/" + lineId + "/sections");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @Test
     @DisplayName("맨 앞 구간을 삭제한다.(A -> B -> C -> D) => (B -> C -> D) => (C -> D)")
     void deleteFirstSection() {
@@ -393,11 +469,8 @@ class LineAcceptanceTest extends AcceptanceTest {
                 List.of(
                     new StationResponse(3L, "선릉"),
                     new StationResponse(4L, "삼성")
-                )));
-
-        System.out.println("[lala 힘내]: ");
-        System.out.println(actualLineResponses);
-        System.out.println(expectedLineResponses);
+                )
+            ));
 
         //then
         assertAll(
@@ -442,7 +515,8 @@ class LineAcceptanceTest extends AcceptanceTest {
                 List.of(
                     new StationResponse(1L, "강남"),
                     new StationResponse(2L, "역삼")
-                )));
+                )
+            ));
 
         //then
         assertAll(
@@ -496,4 +570,5 @@ class LineAcceptanceTest extends AcceptanceTest {
             () -> assertThat(actualLineResponses).isEqualTo(expectedLineResponses)
         );
     }
+
 }
