@@ -5,21 +5,13 @@ public class Line {
     private final Long id;
     private final String name;
     private final String color;
-    private final Station upStation;
-    private final Station downStation;
 
-    public Line(Long id, String name, String color, Station upStation, Station downStation) {
+    public Line(Long id, String name, String color) {
         validateNotNull(name, "name");
         validateNotNull(color, "color");
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-    }
-
-    public Line(Long id, String name, String color) {
-        this(id, name, color, null, null);
     }
 
     private void validateNotNull(String input, String param) {
@@ -28,8 +20,8 @@ public class Line {
         }
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
-        this(null, name, color, upStation, downStation);
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
     public boolean hasSameNameWith(Line otherLine) {
@@ -46,21 +38,5 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public Long getUpStationId() {
-        return upStation.getId();
-    }
-
-    public Long getDownStationId() {
-        return downStation.getId();
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
     }
 }

@@ -30,23 +30,17 @@ class LineDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private LineDao dao;
-    private Station upStation;
-    private Station downStation;
 
     @BeforeEach
     void setUp() {
         dao = new JdbcLineDao(dataSource, jdbcTemplate);
-
-        StationDao stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
-        upStation = stationDao.save(new Station("상행역"));
-        downStation = stationDao.save(new Station("하행역"));
     }
 
     @Test
     @DisplayName("노선을 저장한다.")
     public void save() {
         // given
-        Line Line = new Line(LINE_NAME, LINE_COLOR, upStation, downStation);
+        Line Line = new Line(LINE_NAME, LINE_COLOR);
         // when
         final Line saved = dao.save(Line);
         // then
@@ -57,10 +51,10 @@ class LineDaoTest {
     @DisplayName("중복된 이름을 저장하는 경우 예외를 던진다.")
     public void save_throwsExceptionWithDuplicatedName() {
         // given & when
-        dao.save(new Line(LINE_NAME, LINE_COLOR, upStation, downStation));
+        dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
         assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> dao.save(new Line(LINE_NAME, LINE_COLOR, upStation, downStation)));
+                .isThrownBy(() -> dao.save(new Line(LINE_NAME, LINE_COLOR)));
     }
 
     @Test
@@ -76,7 +70,7 @@ class LineDaoTest {
     @DisplayName("노선을 하나 추가한 뒤, 전체 노선을 조회한다")
     public void findAll_afterSaveOneLine() {
         // given
-        dao.save(new Line(LINE_NAME, LINE_COLOR, upStation, downStation));
+        dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         List<Line> lines = dao.findAll();
         // then
@@ -87,7 +81,7 @@ class LineDaoTest {
     @DisplayName("ID 값으로 노선을 조회한다")
     public void findById() {
         // given
-        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR, upStation, downStation));
+        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         final Line found = dao.findById(saved.getId());
         // then
@@ -102,7 +96,7 @@ class LineDaoTest {
     @DisplayName("존재하지 않는 ID 값으로 노선을 조회하면 예외를 던진다")
     public void findById_invalidID() {
         // given & when
-        dao.save(new Line(LINE_NAME, LINE_COLOR, upStation, downStation));
+        dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> dao.findById(2L));
     }
@@ -111,19 +105,19 @@ class LineDaoTest {
     @DisplayName("노선 정보를 수정한다.")
     public void update() {
         // given & when
-        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR, upStation, downStation));
+        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
         assertThatNoException()
-                .isThrownBy(() -> dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR, upStation, downStation)));
+                .isThrownBy(() -> dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR)));
     }
 
     @Test
     @DisplayName("존재하지 않는 ID값을 수정하는 경우 예외를 던진다.")
     public void update_throwsExceptionWithInvalidId() {
         // given
-        dao.save(new Line(LINE_NAME, LINE_COLOR, upStation, downStation));
+        dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
-        Line updateLine = new Line(100L, "사랑이넘치는", "우테코", upStation, downStation);
+        Line updateLine = new Line(100L, "사랑이넘치는", "우테코");
         // then
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(() -> dao.update(updateLine));
@@ -133,7 +127,7 @@ class LineDaoTest {
     @DisplayName("ID값으로 노선을 삭제한다.")
     public void delete() {
         // given & when
-        Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR, upStation, downStation));
+        Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
         assertThatNoException()
                 .isThrownBy(() -> dao.delete(saved.getId()));
@@ -143,7 +137,7 @@ class LineDaoTest {
     @DisplayName("존재하지않는 ID값을 삭제하는 경우 예외를 던진다.")
     public void delete_throwsExceptionWithInvalidId() {
         // given
-        dao.save(new Line(LINE_NAME, LINE_COLOR, upStation, downStation));
+        dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         Long deleteId = 100L;
         // then
@@ -153,9 +147,7 @@ class LineDaoTest {
 
     @AfterEach
     void setDown() {
-        final String lineSql = "DELETE FROM line";
-        jdbcTemplate.update(lineSql);
-        final String stationSql = "DELETE FROM station";
-        jdbcTemplate.update(stationSql);
+        final String sql = "DELETE FROM line";
+        jdbcTemplate.update(sql);
     }
 }
