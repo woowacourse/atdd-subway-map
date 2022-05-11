@@ -109,6 +109,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long resultLineId = response.jsonPath().getLong("id");
 
         //then
-        delete("/lines/" + resultLineId, 200);
+        delete("/lines/" + resultLineId, 204);
     }
 }

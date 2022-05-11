@@ -51,9 +51,9 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> modifyLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/sections")

@@ -77,6 +77,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         String uri = stationResponse.header("Location");
-        delete(uri, 200);
+        delete(uri, 204);
     }
 }
