@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 
 @DisplayName("구간 관련 service 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -115,9 +116,55 @@ class SectionServiceTest {
                 .doesNotThrowAnyException();
     }
 
+    @DisplayName("구간 생성 시 상행 종점을 등록한다.")
+    @Test
+    void saveNewUpStation() {
+        // mocking
+        given(stationDao.existStationById(1L))
+                .willReturn(true);
+        given(stationDao.existStationById(2L))
+                .willReturn(true);
+        given(sectionDao.existStation(1L, 1L))
+                .willReturn(true);
+        given(sectionDao.existStation(1L, 2L))
+                .willReturn(false);
+        lenient().when(sectionDao.existUpStation(1L, 2L))
+                        .thenReturn(true);
+        lenient().when(sectionDao.existDownStation(1L, 1L))
+                        .thenReturn(false);
+
+        // when & then
+        assertThatCode(
+                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
+        ).doesNotThrowAnyException();
+    }
+
+    @DisplayName("구간 생성 시 하행 종점을 등록한다.")
+    @Test
+    void saveNewDownStation() {
+        // mocking
+        given(stationDao.existStationById(1L))
+                .willReturn(true);
+        given(stationDao.existStationById(2L))
+                .willReturn(true);
+        given(sectionDao.existStation(1L, 1L))
+                .willReturn(true);
+        given(sectionDao.existStation(1L, 2L))
+                .willReturn(false);
+        given(sectionDao.existUpStation(1L, 2L))
+                .willReturn(false);
+        given(sectionDao.existDownStation(1L, 1L))
+                .willReturn(true);
+
+        // when & then
+        assertThatCode(
+                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
+        ).doesNotThrowAnyException();
+    }
+
     @DisplayName("구간 생성 시 다른 구간과 연결되어 있지 않으면 예외가 발생한다.")
     @Test
-    void saveNotConnectingStation() {
+    void saveNotExistAnyStation() {
         // mocking
         given(stationDao.existStationById(999L))
                 .willReturn(true);

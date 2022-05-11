@@ -24,6 +24,16 @@ public class SectionDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
     }
 
+    public boolean existUpStation(final Long lineId, final Long stationId) {
+        final String sql = "select exists (select * from SECTION where line_id = ? and up_station_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
+    }
+
+    public boolean existDownStation(final Long lineId, final Long stationId) {
+        final String sql = "select exists (select * from SECTION where line_id = ? and down_station_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
+    }
+
     public void delete(final Long id) {
         final String sql = "delete from SECTION where line_id = ?";
         jdbcTemplate.update(sql, id);

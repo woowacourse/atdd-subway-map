@@ -44,6 +44,26 @@ class SectionDaoTest {
         assertThat(sectionDao.existStation(1L, 1L)).isTrue();
     }
 
+    @DisplayName("특정 지하철 노선에 특정 상행역 아이디가 존재하면 true 를 반환한다.")
+    @Test
+    void existUpStation() {
+        // given
+        sectionDao.save(1L, new Section(1L, 2L, 10));
+
+        // when & then
+        assertThat(sectionDao.existUpStation(1L, 1L)).isTrue();
+    }
+
+    @DisplayName("특정 지하철 노선에 특정 하행역 아이디가 존재하면 true 를 반환한다.")
+    @Test
+    void existDownStation() {
+        // given
+        sectionDao.save(1L, new Section(1L, 2L, 10));
+
+        // when & then
+        assertThat(sectionDao.existDownStation(1L, 2L)).isTrue();
+    }
+
     @DisplayName("특정 지하철 노선에 포함되어 있는 구간을 모두 삭제한다.")
     @Test
     void delete() {

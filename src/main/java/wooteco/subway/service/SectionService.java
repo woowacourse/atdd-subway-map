@@ -19,10 +19,10 @@ public class SectionService {
         validateStation(sectionRequest);
 
         Section section = convertSection(sectionRequest);
-        if (!canSaving(lineId, section)) {
+        if (canNotSaving(lineId, section)) {
             throw new IllegalArgumentException("현재 위치에 구간을 저장할 수 없습니다.");
         }
-        sectionDao.save(lineId, section);
+        insertSection(lineId, section);
     }
 
     private void validateStation(final SectionRequest sectionRequest) {
@@ -38,14 +38,8 @@ public class SectionService {
         return new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
     }
 
-    private boolean canSaving(final Long lineId, final Section section) {
-        if (existAllStation(lineId, section)) {
-            return false;
-        }
-        if (existOneStation(lineId, section)) {
-            return true;
-        }
-        return false;
+    private boolean canNotSaving(final Long lineId, final Section section) {
+        return existAllStation(lineId, section) || notExistAnyStation(lineId, section);
     }
 
     private boolean existAllStation(final Long lineId, final Section section) {
@@ -53,8 +47,19 @@ public class SectionService {
                 && sectionDao.existStation(lineId, section.getDownStationId());
     }
 
-    private boolean existOneStation(final Long lineId, final Section section) {
-        return sectionDao.existStation(lineId, section.getUpStationId())
-                || sectionDao.existStation(lineId, section.getDownStationId());
+    private boolean notExistAnyStation(final Long lineId, final Section section) {
+        return !sectionDao.existStation(lineId, section.getUpStationId())
+                && !sectionDao.existStation(lineId, section.getDownStationId());
+    }
+
+    private void insertSection(final Long lineId, final Section section) {
+        if (isAddingEndSection(lineId, section)) {
+            sectionDao.save(lineId, section);
+        }
+    }
+
+    private boolean isAddingEndSection(final Long lineId, final Section section) {
+        return sectionDao.existUpStation(lineId, section.getDownStationId())
+                || sectionDao.existDownStation(lineId, section.getUpStationId());
     }
 }
