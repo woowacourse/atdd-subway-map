@@ -17,12 +17,20 @@ public class Section {
         this.distance = distance;
     }
 
-    public static Section replace(final Section existSection, final Section section) {
+    public static Section replaced(final Section existSection, final Section section) {
         int newDistance = subtractDistance(existSection, section);
         if (existSection.upStationId.equals(section.upStationId)) {
             return new Section(section.downStationId, existSection.downStationId, newDistance);
         }
         return new Section(existSection.upStationId, section.upStationId, newDistance);
+    }
+
+    public static Section deleted(final Section sectionIncludedDownStation, final Section sectionIncludedUpStation) {
+        return new Section(
+                sectionIncludedDownStation.upStationId,
+                sectionIncludedUpStation.downStationId,
+                sectionIncludedUpStation.distance + sectionIncludedDownStation.distance
+        );
     }
 
     public static int subtractDistance(final Section existSection, final Section section) {
@@ -31,6 +39,12 @@ public class Section {
             throw new IllegalArgumentException("기존 구간의 길이를 벗어납니다.");
         }
         return distance;
+    }
+
+    private void validateDistance(final int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간 거리는 1 이상이어야 합니다.");
+        }
     }
 
     public boolean existStation(final Long stationId) {
@@ -42,10 +56,12 @@ public class Section {
                 || downStationId.equals(section.upStationId);
     }
 
-    private void validateDistance(final int distance) {
-        if (distance <= 0) {
-            throw new IllegalArgumentException("구간 거리는 1 이상이어야 합니다.");
-        }
+    public boolean hasUpStation(final Long sectionId) {
+        return upStationId.equals(sectionId);
+    }
+
+    public boolean hasDownStation(final Long sectionId) {
+        return downStationId.equals(sectionId);
     }
 
     public Long getUpStationId() {

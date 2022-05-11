@@ -32,12 +32,27 @@ public class Sections {
         if (isEndStation(stationId)) {
             Section existSection = getExistSection(stationId);
             sections.remove(existSection);
+            return;
         }
+        deleteStationInSection(stationId);
     }
 
-    private boolean isEndStation(final Long stationId) {
-        return (getUpStationIds().contains(stationId) && !getDownStationIds().contains(stationId))
-                || (!getUpStationIds().contains(stationId) && getDownStationIds().contains(stationId));
+    private void addStationInSection(final Section existSection, final Section section) {
+        Section replacedSection = Section.replaced(existSection, section);
+
+        sections.remove(existSection);
+        sections.add(section);
+        sections.add(replacedSection);
+    }
+
+    private void deleteStationInSection(final Long stationId) {
+        Section sectionIncludedUpStation = getExistUpStation(stationId);
+        Section sectionIncludedDownStation = getExistDownStation(stationId);
+        Section deletedSection = Section.deleted(sectionIncludedDownStation, sectionIncludedUpStation);
+
+        sections.remove(sectionIncludedUpStation);
+        sections.remove(sectionIncludedDownStation);
+        sections.add(deletedSection);
     }
 
     private void validateSection(final Section section) {
@@ -64,12 +79,9 @@ public class Sections {
         return !stationIds.contains(section.getUpStationId()) && !stationIds.contains(section.getDownStationId());
     }
 
-    private void addStationInSection(final Section existSection, final Section section) {
-        Section replacedSection = Section.replace(existSection, section);
-
-        sections.remove(existSection);
-        sections.add(section);
-        sections.add(replacedSection);
+    private boolean isEndStation(final Long stationId) {
+        return (getUpStationIds().contains(stationId) && !getDownStationIds().contains(stationId))
+                || (!getUpStationIds().contains(stationId) && getDownStationIds().contains(stationId));
     }
 
     private List<Long> getStationIdsInSection() {
@@ -107,6 +119,20 @@ public class Sections {
                         || exist.existStation(section.getDownStationId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("구간 정보를 찾을 수 없습니다."));
+    }
+
+    private Section getExistUpStation(final Long sectionId) {
+        return sections.stream()
+                .filter(section -> section.hasUpStation(sectionId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("구간 내 지하철역 정보를 찾을 수 없습니다."));
+    }
+
+    private Section getExistDownStation(final Long sectionId) {
+        return sections.stream()
+                .filter(section -> section.hasDownStation(sectionId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("구간 내 지하철역 정보를 찾을 수 없습니다."));
     }
 
     public List<Section> getSections() {

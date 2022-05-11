@@ -29,13 +29,31 @@ class SectionTest {
         Section newSection = new Section(1L, 2L, 5);
 
         // when
-        Section replacedSection = Section.replace(existSection, newSection);
+        Section replacedSection = Section.replaced(existSection, newSection);
 
         // then
         assertAll(
                 () -> assertThat(replacedSection.getUpStationId()).isEqualTo(2L),
                 () -> assertThat(replacedSection.getDownStationId()).isEqualTo(3L),
                 () -> assertThat(replacedSection.getDistance()).isEqualTo(5)
+        );
+    }
+
+    @DisplayName("기존 구간에 지하철역을 삭제할 경우 구간 거리가 늘어난 새로운 구간을 반환한다.")
+    @Test
+    void deletedStation() {
+        // given
+        Section section1 = new Section(1L, 2L, 5);
+        Section section2 = new Section(2L, 3L, 5);
+
+        // when
+        Section deletedSection = Section.deleted(section1, section2);
+
+        // then
+        assertAll(
+                () -> assertThat(deletedSection.getUpStationId()).isEqualTo(1L),
+                () -> assertThat(deletedSection.getDownStationId()).isEqualTo(3L),
+                () -> assertThat(deletedSection.getDistance()).isEqualTo(10)
         );
     }
 

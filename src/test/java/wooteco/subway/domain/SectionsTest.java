@@ -125,4 +125,14 @@ class SectionsTest {
         // then
         assertThat(sections.getSections()).hasSize(2);
     }
+
+    @DisplayName("중간역을 삭제한다.")
+    @Test
+    void deleteStationInSection() {
+        // when
+        sections.delete(2L);
+
+        // then
+        assertThat(sections.getSections()).contains(new Section(1L, 3L, 20));
+    }
 }
