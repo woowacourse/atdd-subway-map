@@ -28,4 +28,16 @@ public class SectionServiceTest {
 
         assertThat(sectionService.save(lineId, sectionRequest)).isEqualTo(2);
     }
+
+    @DisplayName("Section 정보를 삭제한다.")
+    @Test()
+    void delete() {
+        Long lineId = 1L;
+        Long stationId = 1L;
+        SectionRequest sectionRequest = new SectionRequest(stationId, 3L, 3);
+
+        sectionService.save(lineId, sectionRequest);
+
+        assertThat(sectionService.delete(lineId, stationId)).isEqualTo(1);
+    }
 }

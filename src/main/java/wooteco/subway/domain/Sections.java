@@ -156,17 +156,15 @@ public class Sections {
         section.updateDownStationFrom(otherSection);
     }
 
-    public void deleteSection(final Station station) {
+    public Section deleteSection(final Station station) {
         validateEnoughToDeleteSection();
         if (isTopStation(station)) {
-            deleteTopSectionBy(station);
-            return;
+            return deleteTopSectionBy(station);
         }
         if (isLastStation(station)) {
-            deleteLastSectionBy(station);
-            return;
+            return deleteLastSectionBy(station);
         }
-        deleteMiddleSectionBy(station);
+        return deleteMiddleSectionBy(station);
     }
 
     private void validateEnoughToDeleteSection() {
@@ -182,12 +180,13 @@ public class Sections {
                 .noneMatch(section -> section.hasSameDownStationWith(station));
     }
 
-    private void deleteTopSectionBy(final Station station) {
+    private Section deleteTopSectionBy(final Station station) {
         final Section topSection = sections.stream()
                 .filter(existingSection -> existingSection.hasSameUpStationWith(station))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
         sections.remove(topSection);
+        return topSection;
     }
 
     private boolean isLastStation(final Station station) {
@@ -197,19 +196,21 @@ public class Sections {
                 .anyMatch(section -> section.hasSameDownStationWith(station));
     }
 
-    private void deleteLastSectionBy(final Station station) {
+    private Section deleteLastSectionBy(final Station station) {
         final Section lastSection = sections.stream()
                 .filter(existingSection -> existingSection.hasSameDownStationWith(station))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
         sections.remove(lastSection);
+        return lastSection;
     }
 
-    private void deleteMiddleSectionBy(final Station station) {
+    private Section deleteMiddleSectionBy(final Station station) {
         final Section upperSection = getUpperSection(station);
         final Section lowerSection = getLowerSection(station);
         upperSection.combineSection(lowerSection);
         sections.remove(lowerSection);
+        return lowerSection;
     }
 
     private Section getUpperSection(final Station station) {

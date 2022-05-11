@@ -69,8 +69,8 @@ public class SectionDaoImplTest extends DaoImplTest {
         Section nextSection = new Section(2L, secondStation, thirdStation, 4);
 
         sectionDaoImpl.save(section);
-        sectionDaoImpl.save(nextSection);
+        Section newSection = sectionDaoImpl.save(nextSection);
 
-        assertThat(sectionDaoImpl.deleteByUpStationId(secondStation.getId())).isEqualTo(1);
+        assertThat(sectionDaoImpl.delete(newSection)).isEqualTo(1);
     }
 }

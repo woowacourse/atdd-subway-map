@@ -11,5 +11,5 @@ public interface SectionDao {
 
     int update(List<Section> sections);
 
-    int deleteByUpStationId(Long stationId);
+    int delete(Section section);
 }

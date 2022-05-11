@@ -44,8 +44,11 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
-    public int deleteByUpStationId(Long stationId) {
-        return 0;
+    public int delete(Section otherSection) {
+        sections = sections.stream()
+                .filter(section -> section.getUpStation().getId() != otherSection.getId())
+                .collect(Collectors.toList());
+        return sections.size();
     }
 
     private void updateBy(final Section otherSection) {
