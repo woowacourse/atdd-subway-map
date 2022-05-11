@@ -93,6 +93,7 @@ public class Sections {
     private SectionAddStatus getAddSectionStatus(final Section section) {
         final List<Long> totalStationIds = getTotalStationIds();
         validateSection(totalStationIds, section);
+
         return SectionAddStatus.from(value, section);
     }
 
