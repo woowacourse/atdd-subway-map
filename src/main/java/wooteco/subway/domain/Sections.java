@@ -23,9 +23,11 @@ public class Sections {
         return sortedIds;
     }
 
-    public boolean isTerminus(long upStationId, long downStationId) {
+    public boolean isTerminus(Section section) {
         LinkedList<Long> sortedStations = getSortedStationIds();
-        return ((sortedStations.getFirst() == downStationId) || (sortedStations.getLast() == upStationId));
+        return (section.isSameDownStation(sortedStations.getFirst()) ||
+                section.isSameUpStation(sortedStations.getLast())
+        );
     }
 
     private void addUpStream(LinkedList<Long> result, Long key) {

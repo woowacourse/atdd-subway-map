@@ -40,6 +40,14 @@ public class Section {
         return this.upStationId == section.downStationId;
     }
 
+    public boolean isSameUpStation(Long id) {
+        return upStationId == id;
+    }
+
+    public boolean isSameDownStation(Long id) {
+        return downStationId == id;
+    }
+
     public Long getId() {
         return id;
     }
