@@ -33,4 +33,14 @@ public class FakeSectionDao implements SectionDao {
                 .filter(section -> section.getLineId() == lineId)
                 .collect(Collectors.toUnmodifiableList());
     }
+
+    @Override
+    public List<Section> save(Long lineId, List<Section> sections) {
+        return null;
+    }
+
+    @Override
+    public void deleteByLineId(Long lineId) {
+        return ;
+    }
 }

@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,7 +17,7 @@ public class SectionDaoImpl implements SectionDao {
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Section> rowMapper = (rs, rowNum) ->
             new Section(
-                    rs.getLong("id"),
+                    rs.getLong("line_id"),
                     rs.getLong("up_station_id"),
                     rs.getLong("down_station_id"),
                     rs.getInt("distance")
@@ -49,5 +50,20 @@ public class SectionDaoImpl implements SectionDao {
     public List<Section> findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id = ?";
         return jdbcTemplate.query(sql, rowMapper, lineId);
+    }
+
+    @Override
+    public List<Section> save(Long lineId, List<Section> sections) {
+        List<Section> newSections = new ArrayList<>();
+        for (Section section : sections) {
+            newSections.add(insert(section));
+        }
+        return newSections;
+    }
+
+    @Override
+    public void deleteByLineId(Long lineId) {
+        String sql = "DELETE FROM SECTION WHERE line_id = ?";
+        jdbcTemplate.update(sql, lineId);
     }
 }

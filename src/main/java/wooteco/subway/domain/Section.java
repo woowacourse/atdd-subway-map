@@ -26,6 +26,32 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Long upStationId, Long downStationId, int distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
+    public Boolean isUpTerminal(Section section) {
+        return section.downStationId.equals(this.upStationId);
+    }
+
+    public Boolean isDownTerminal(Section section) {
+        return section.upStationId.equals(this.downStationId);
+    }
+
+    public Boolean isSameUpStation(Section section) {
+        return section.upStationId.equals(this.upStationId);
+    }
+
+    public Boolean isSameDownStation(Section section) {
+        return section.downStationId.equals(this.downStationId);
+    }
+
+    public Boolean isLessThanDistance(Section section) {
+        return section.distance < this.distance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -48,5 +74,16 @@ public class Section {
 
     public Integer getDistance() {
         return distance;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
     }
 }

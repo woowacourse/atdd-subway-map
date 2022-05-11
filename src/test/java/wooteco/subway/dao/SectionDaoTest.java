@@ -39,4 +39,26 @@ public class SectionDaoTest {
 
         assertThat(sections.get(0).getDistance()).isEqualTo(10);
     }
+
+    @Test
+    @DisplayName("지하철 구간들을 저장할 수 있다.")
+    void save() {
+        Section section1 = new Section(1L, 1L, 2L, 10);
+        Section section2 = new Section(1L, 2L, 3L, 10);
+        List<Section> sections = List.of(section1, section2);
+
+        List<Section> result = sectionDao.save(1L, sections);
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("지하철 구간들을 노선 식별자별로 지울 수 있다.")
+    void deleteByLineId() {
+        sectionDao.insert(new Section(1L, 1L, 2L, 10));
+        sectionDao.insert(new Section(1L, 2L, 3L, 10));
+
+        sectionDao.deleteByLineId(1L);
+
+        assertThat(sectionDao.findByLineId(1L)).isEmpty();
+    }
 }
