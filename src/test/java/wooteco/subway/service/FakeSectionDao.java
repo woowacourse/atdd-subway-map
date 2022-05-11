@@ -23,4 +23,15 @@ public class FakeSectionDao implements SectionDao {
             .filter(section -> section.getLineId().equals(lineId))
             .collect(Collectors.toList());
     }
+
+    @Override
+    public void update(SectionEntity sectionEntity) {
+        sections.stream()
+            .filter(it -> it.getId().equals(sectionEntity.getId()))
+            .findFirst()
+            .ifPresent(it -> {
+                sections.remove(it);
+                sections.add(sectionEntity);
+            });
+    }
 }

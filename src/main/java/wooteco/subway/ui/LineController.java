@@ -20,6 +20,7 @@ import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
 import wooteco.subway.service.StationService;
 import wooteco.subway.ui.request.LineRequest;
+import wooteco.subway.ui.request.SectionRequest;
 import wooteco.subway.ui.response.LineResponse;
 
 @RestController
@@ -45,6 +46,13 @@ public class LineController {
             lineRequest.getDownStationId(), lineRequest.getDistance());
         LineResponse lineResponse = new LineResponse(newLine, List.of(upStationEntity, downStationEntity));
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> createSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        sectionService.saveSection(id, sectionRequest.getUpStationId(),
+            sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")

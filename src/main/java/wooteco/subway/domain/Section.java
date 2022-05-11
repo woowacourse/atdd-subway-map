@@ -4,21 +4,31 @@ import java.util.Objects;
 
 public class Section {
 
+    private final Long id;
     private final Station upStation;
     private final Station downStation;
     private final int distance;
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Long id, Station upStation, Station downStation, int distance) {
         validateDistance(distance);
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
     }
 
     private void validateDistance(int distance) {
         if (distance <= 0) {
             throw new IllegalArgumentException("거리는 0보다 작을 수 없습니다.");
         }
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getUpStation() {
@@ -49,19 +59,20 @@ public class Section {
         if (o == null || getClass() != o.getClass())
             return false;
         Section section = (Section)o;
-        return distance == section.distance && Objects.equals(upStation, section.upStation)
-            && Objects.equals(downStation, section.downStation);
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(
+            upStation, section.upStation) && Objects.equals(downStation, section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStation, downStation, distance);
+        return Objects.hash(id, upStation, downStation, distance);
     }
 
     @Override
     public String toString() {
         return "Section{" +
-            "upStation=" + upStation +
+            "id=" + id +
+            ", upStation=" + upStation +
             ", downStation=" + downStation +
             ", distance=" + distance +
             '}';
