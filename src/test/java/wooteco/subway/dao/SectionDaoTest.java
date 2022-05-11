@@ -42,13 +42,13 @@ class SectionDaoTest {
     @DisplayName("특정 노선의 구간을 저장한다.")
     @Test
     void save() {
-        final Section section = new Section(station1.getId(), station2.getId(), 10, line.getId());
+        final Section section = new Section(station1, station2, 10, line.getId());
         final Section savedSection = sectionDao.save(section);
 
         assertAll(
                 () -> assertThat(savedSection.getId()).isNotNull(),
-                () -> assertThat(savedSection.getUpStationId()).isEqualTo(section.getUpStationId()),
-                () -> assertThat(savedSection.getDownStationId()).isEqualTo(section.getDownStationId())
+                () -> assertThat(savedSection.getUpStation()).isEqualTo(section.getUpStation()),
+                () -> assertThat(savedSection.getDownStation()).isEqualTo(section.getDownStation())
         );
     }
 }
