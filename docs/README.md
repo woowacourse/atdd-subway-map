@@ -42,7 +42,7 @@
 - [x] 스프링 빈 활용하기
 
 ### 3단계 요구사항 정리
-- [ ] 지하철 노선 추가 API 수정
+- [x] 지하철 노선 추가 API 수정
   - 노선 속성 추가
     - upStationId : 상행 종점 
     - downStationId : 하행 종점 
@@ -58,12 +58,10 @@
   - [x] 노선 조회 `GET /lines/{id}`
     - 결과 상태 코드는 `200 OK` 이다.
     - `응답` json으로 id, name, color, stations를 반환한다.
-  - [ ] 노선 수정 `PUT /lines/{id}`
-    - `요청` json으로 name, color를 전송한다.
     - 결과 상태 코드는 `200 OK` 이다.
-  - [ ] 노선 삭제 `DELETE /lines/{id}`
+  - [x] 노선 삭제 `DELETE /lines/{id}`
     - 결과 상태 코드는 `204 No Content` 이다. 
-- [ ] 구간 관리 API 구현
+- [x] 구간 관리 API 구현
   - [x] 구간 등록 `POST /lines/{id}/sections`
     - `요청` json으로 upStationId, downStationId, distance를 전송한다.
     - 결과 상태 코드는 `200 OK` 이다.

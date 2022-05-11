@@ -99,6 +99,7 @@ public class LineService {
 
     public void deleteLine(Long id) {
         Line line = findLineById(id);
+        sectionDao.deleteByLineId(id);
         lineDao.delete(line);
     }
 
