@@ -81,16 +81,6 @@ public class LineDaoImpl implements LineDao {
         };
     }
 
-    private RowMapper<Line> joinRowMapperForObject() {
-        return (resultSet, rowNum) -> {
-            final Long lineId = resultSet.getLong("line_id");
-            final String name = resultSet.getString("line_name");
-            final String color = resultSet.getString("line_color");
-            Section section = serializeSection(resultSet);
-            return new Line(lineId, name, color, section);
-        };
-    }
-
     private Section serializeSection(ResultSet resultSet) throws SQLException {
         final Long sectionId = resultSet.getLong("section_id");
         final Long upStationId = resultSet.getLong("up_station_id");
@@ -121,7 +111,17 @@ public class LineDaoImpl implements LineDao {
             + "LEFT JOIN STATION AS ds ON ds.id = s.down_station_id "
             + "WHERE l.id = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, joinRowMapperForObject(), id));
+            List<LineSection> lineSections = jdbcTemplate.query(sql, joinRowMapper(), id);
+            if (lineSections.isEmpty()) {
+                return Optional.empty();
+            }
+            LineSection lineSection = lineSections.get(0);
+            Line findLine = lineSection.getLine();
+            List<Section> sections = lineSections.stream()
+                .map(LineSection::getSection)
+                .collect(Collectors.toList());
+            return Optional.of(
+                new Line(findLine.getId(), findLine.getName(), findLine.getColor(), sections));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }

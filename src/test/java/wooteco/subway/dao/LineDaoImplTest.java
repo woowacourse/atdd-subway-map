@@ -41,7 +41,6 @@ class LineDaoImplTest {
 
         station1 = stationDao.save(new Station("강남역"));
         station2 = stationDao.save(new Station("선릉역"));
-        // sectionDao.save(Section.from(upStation, downStation, lineRequest.getDistance()), savedLineId);
 
         station3 = stationDao.save(new Station("교대역"));
         station4 = stationDao.save(new Station("잠실역"));

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -51,32 +52,37 @@ public class Sections {
             .get();
     }
 
-    public void insert(Section section) {
+    public Optional<Section> insert(Section section) {
         LinkedList<Section> flexibleSections = new LinkedList<>(this.sections);
         for (int i = 0; i < flexibleSections.size(); i++) {
             Section sectionInLine = flexibleSections.get(i);
-            if (insertSection(section, flexibleSections, i, sectionInLine))
-                return;
+            if (insertSection(section, flexibleSections, i, sectionInLine)) {
+                return Optional.of(sectionInLine);
+            }
         }
 
         if (flexibleSections.size() == sections.size()) {
             insertSectionSide(section, flexibleSections);
+            return Optional.empty();
         }
+
+        throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
     }
 
     private boolean insertSection(Section section, LinkedList<Section> flexibleSections, int i, Section sectionInLine) {
-        if (canInsertUpStation(section, sectionInLine)) {
+        if (canInsertUpStation(section, sectionInLine) && !canInsertDownStation(section, sectionInLine)) {
             sectionInLine.updateUpStation(section.getDownStation(), section.getDistance());
             flexibleSections.add(i, section);
             sections = flexibleSections;
             return true;
         }
-        if (canInsertDownStation(section, sectionInLine)) {
+        if (canInsertDownStation(section, sectionInLine) && !canInsertUpStation(section, sectionInLine)) {
             sectionInLine.updateDownStation(section.getUpStation(), section.getDistance());
             flexibleSections.add(i + 1, section);
             sections = flexibleSections;
             return true;
         }
+
         return false;
     }
 
@@ -92,7 +98,10 @@ public class Sections {
         if (firstSection.isUpStation(section.getDownStation())) {
             flexibleSections.addFirst(section);
             sections = flexibleSections;
+            return;
         }
+
+        throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
     }
 
     private boolean canInsertDownStation(Section section, Section sectionInLine) {

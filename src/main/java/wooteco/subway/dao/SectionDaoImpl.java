@@ -33,4 +33,15 @@ public class SectionDaoImpl implements SectionDao{
 
         return keyHolder.getKey().longValue();
     }
+
+    @Override
+    public boolean update(Section section) {
+        final String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
+        int updateSize = jdbcTemplate.update(sql,
+            section.getUpStation().getId(),
+            section.getDownStation().getId(),
+            section.getDistance(),
+            section.getId());
+        return updateSize != 0;
+    }
 }

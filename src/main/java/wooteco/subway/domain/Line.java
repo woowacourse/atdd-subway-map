@@ -1,13 +1,13 @@
 package wooteco.subway.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Line {
     private Long id;
     private String name;
     private String color;
     private Sections sections;
-    // private List<Section> sections;
 
     public Line(String name, String color) {
         this.name = name;
@@ -34,16 +34,12 @@ public class Line {
         this.color = color;
     }
 
+    public Optional<Section> insertSection(Section section) {
+        return sections.insert(section);
+    }
+
     public List<Station> getStations() {
         return sections.getStations();
-        // List<Station> stations = new ArrayList<>();
-        // for (Section section : sections) {
-        //     stations.add(section.getUpStation());
-        //     stations.add(section.getDownStation());
-        // }
-        // return stations.stream()
-        //     .distinct()
-        //     .collect(Collectors.toList());
     }
 
     public Long getId() {

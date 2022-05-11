@@ -23,10 +23,6 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    // public static LineResponse from(Line line) {
-    //     return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
-    // }
-
     public static LineResponse from(Line line) {
         List<Station> stations = line.getStations();
         List<StationResponse> stationResponses = stations.stream()

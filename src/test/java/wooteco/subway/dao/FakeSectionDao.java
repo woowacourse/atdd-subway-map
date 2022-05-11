@@ -16,4 +16,9 @@ public class FakeSectionDao implements SectionDao {
         sections.put(seq, newSection);
         return seq;
     }
+
+    @Override
+    public boolean update(Section section) {
+        return sections.replace(section.getId(), section) != null;
+    }
 }

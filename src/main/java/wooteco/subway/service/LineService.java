@@ -1,6 +1,8 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.EmptyResultException;
 
 @Service
@@ -32,9 +35,9 @@ public class LineService {
         Long savedLineId = lineDao.save(line);
 
         Station upStation = stationDao.findById(lineRequest.getUpStationId())
-            .orElseThrow(() -> new EmptyResultException("해당 역을 찾을 수 없습니다."));
+            .orElseThrow((throwEmptyStationException()));
         Station downStation = stationDao.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new EmptyResultException("해당 역을 찾을 수 없습니다."));
+            .orElseThrow(throwEmptyStationException());
 
         sectionDao.save(Section.from(upStation, downStation, lineRequest.getDistance()), savedLineId);
         return LineResponse.from(savedLineId, line);
@@ -43,7 +46,7 @@ public class LineService {
     public LineResponse findById(Long id) {
         return lineDao.findById(id)
             .map(LineResponse::from)
-            .orElseThrow(() -> new EmptyResultException("해당 노선을 찾을 수 없습니다."));
+            .orElseThrow(throwEmptyLineResultException());
     }
 
     public List<LineResponse> findAll() {
@@ -58,9 +61,31 @@ public class LineService {
 
     public boolean updateById(Long id, LineRequest lineRequest) {
         Line line = lineDao.findById(id)
-            .orElseThrow(() -> new EmptyResultException("해당 노선을 찾을 수 없습니다."));
+            .orElseThrow(throwEmptyLineResultException());
 
         line.update(lineRequest.getName(), lineRequest.getColor());
         return lineDao.updateById(id, line);
+    }
+
+    public void insertSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineDao.findById(id)
+            .orElseThrow(throwEmptyLineResultException());
+        Station upStation = stationDao.findById(sectionRequest.getUpStationId())
+            .orElseThrow(throwEmptyStationException());
+        Station downStation = stationDao.findById(sectionRequest.getDownStationId())
+            .orElseThrow(throwEmptyStationException());
+
+        Section section = Section.from(upStation, downStation, sectionRequest.getDistance());
+        Optional<Section> updatedSection = line.insertSection(section);
+        updatedSection.ifPresent(sectionDao::update);
+        sectionDao.save(section, line.getId());
+    }
+
+    private Supplier<EmptyResultException> throwEmptyStationException() {
+        return () -> new EmptyResultException("해당 역을 찾을 수 없습니다.");
+    }
+
+    private Supplier<EmptyResultException> throwEmptyLineResultException() {
+        return () -> new EmptyResultException("해당 노선을 찾을 수 없습니다.");
     }
 }

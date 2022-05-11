@@ -4,10 +4,15 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class SectionsTest {
     private List<Section> sections = new LinkedList<>();
@@ -18,6 +23,11 @@ class SectionsTest {
         sections.add(Section.from(new Station("2"), new Station("4"), 5));
         sections.add(Section.from(new Station("8"), new Station("10"), 5));
         sections.add(Section.from(new Station("4"), new Station("6"), 5));
+    }
+
+    @AfterEach
+    void setDown() {
+        sections = new LinkedList<>();
     }
 
     @Test
@@ -102,5 +112,23 @@ class SectionsTest {
                 Section.from(new Station("6"), new Station("8"), 5),
                 Section.from(new Station("8"), new Station("10"), 5),
                 Section.from(new Station("10"), new Station("xx"), 100));
+    }
+
+    @ParameterizedTest(name = "{index}: {1}")
+    @MethodSource("invalidParameters")
+    @DisplayName("들어갈 구간이 없으면 예외를 반환해야 한다.")
+    void insertInvalidParameters(Section section, String testName) {
+        Sections sections1 = Sections.of(sections);
+        assertThatThrownBy(
+            () -> sections1.insert(section)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private static Stream<Arguments> invalidParameters() {
+        return Stream.of(
+            Arguments.of(Section.from(new Station("11"), new Station("12"), 100), "아무 역과도 연결되지 않을 때"),
+            Arguments.of(Section.from(new Station("2"), new Station("3"), 100), "역과는 연결되었지만 길이가 길때"),
+            Arguments.of(Section.from(new Station("2"), new Station("4"), 3), "상행선과 하행선이 이미 있는 구간일 때")
+        );
     }
 }

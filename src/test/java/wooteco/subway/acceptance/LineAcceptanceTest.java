@@ -19,6 +19,7 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -38,14 +39,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     private void createStations() {
         StationRequest stationRequest1 = new StationRequest("선릉역");
         ExtractableResponse<Response> response1 = createStation(stationRequest1);
-        stationId1 = getSavedIdByResponse(response1);
+        stationId1 = getSavedStationIdByResponse(response1);
 
         StationRequest stationRequest2 = new StationRequest("강남역");
         ExtractableResponse<Response> response2 = createStation(stationRequest2);
-        stationId2 = getSavedIdByResponse(response2);
+        stationId2 = getSavedStationIdByResponse(response2);
     }
 
-    private long getSavedIdByResponse(ExtractableResponse<Response> response1) {
+    private long getSavedStationIdByResponse(ExtractableResponse<Response> response1) {
         return Long.parseLong(response1.header("Location").split("/")[2]);
     }
 
@@ -138,19 +139,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = getExpectedLineIds(createResponse1, createResponse2);
         List<Long> resultLineIds = getResultLineIds(response);
         assertThat(resultLineIds).containsAll(expectedLineIds);
-    }
-
-    private List<Long> getExpectedLineIds(ExtractableResponse<Response> createResponse1,
-        ExtractableResponse<Response> createResponse2) {
-        return Arrays.asList(createResponse1, createResponse2).stream()
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
-    }
-
-    private List<Long> getResultLineIds(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
     }
 
     @Test
@@ -255,6 +243,67 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", stationId1, stationId2, 0);
         createLineRequest(lineRequest)
             .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("section 삽입이 성공하면 상태코드 200을 반환해야 한다.")
+    void insertSection() {
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", stationId1, stationId2, 5);
+        ExtractableResponse<Response> createResponse = extractCreateLineRequest(lineRequest);
+
+        StationRequest newStationRequest = new StationRequest("교대역");
+        ExtractableResponse<Response> response = createStation(newStationRequest);
+        Long newDownStationId = getSavedStationIdByResponse(response);
+
+        // when
+        SectionRequest sectionRequest = new SectionRequest(stationId1, newDownStationId, 3);
+        String uri = createResponse.header("Location");
+        createSectionRequest(sectionRequest, uri)
+            .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("section 삽입이 실패하면 bad request를 반환해야 한다.")
+    void insertInvalidSection() {
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", stationId1, stationId2, 5);
+        ExtractableResponse<Response> createResponse = extractCreateLineRequest(lineRequest);
+
+        Long newUpStationId = createNewStation("잠실역");
+        Long newDownStationId = createNewStation("교대역");
+
+        // when
+        SectionRequest sectionRequest = new SectionRequest(newUpStationId, newDownStationId, 3);
+        String uri = createResponse.header("Location");
+        createSectionRequest(sectionRequest, uri)
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ValidatableResponse createSectionRequest(SectionRequest sectionRequest, String uri) {
+        return RestAssured.given().log().all()
+            .body(sectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(uri + "/sections")
+            .then().log().all();
+    }
+
+    private Long createNewStation(String stationName) {
+        StationRequest newStationRequest = new StationRequest(stationName);
+        ExtractableResponse<Response> response = createStation(newStationRequest);
+        return getSavedStationIdByResponse(response);
+    }
+
+    private List<Long> getExpectedLineIds(ExtractableResponse<Response> createResponse1,
+        ExtractableResponse<Response> createResponse2) {
+        return Arrays.asList(createResponse1, createResponse2).stream()
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+    }
+
+    private List<Long> getResultLineIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
     }
 
     private ExtractableResponse<Response> extractCreateLineRequest(LineRequest lineRequest) {

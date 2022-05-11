@@ -20,6 +20,8 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.StationResponse;
 
 @SpringBootTest
 @Transactional
@@ -66,8 +68,8 @@ class LineServiceTest {
     @Test
     void validateDuplication() {
         // given
-        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
-        LineRequest lineRequest2 = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
+        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
+        LineRequest lineRequest2 = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
 
         // when
         lineService.save(lineRequest1);
@@ -80,8 +82,8 @@ class LineServiceTest {
     @Test
     void findAll() {
         // given
-        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
-        LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 0);
+        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
+        LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 5);
 
         // when
         lineService.save(lineRequest1);
@@ -101,7 +103,7 @@ class LineServiceTest {
     @Test
     void delete() {
         // given
-        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
         LineResponse lineResponse = lineService.save(lineRequest);
 
         // when
@@ -121,15 +123,59 @@ class LineServiceTest {
     @Test
     void update() {
         // given
-        LineRequest originLine = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
+        LineRequest originLine = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
         LineResponse lineResponse = lineService.save(originLine);
 
         // when
-        LineRequest newLine = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 0);
+        LineRequest newLine = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 5);
         lineService.updateById(lineResponse.getId(), newLine);
         Line line = lineDao.findById(lineResponse.getId()).get();
 
         // then
         assertThat(line.getName()).isEqualTo(newLine.getName());
+    }
+
+    @Test
+    void insertSection() {
+        // given
+        LineRequest originLine = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
+        LineResponse lineResponse = lineService.save(originLine);
+
+
+        // when
+        Long newDownStationId = stationDao.save(new Station("교대역")).getId();
+        SectionRequest sectionRequest = new SectionRequest(upStationId, newDownStationId, 3);
+
+        // then
+        lineService.insertSection(lineResponse.getId(), sectionRequest);
+        LineResponse newLineResponse = lineService.findById(lineResponse.getId());
+        assertAll(
+            () -> assertThat(lineResponse.getId()).isEqualTo(newLineResponse.getId()),
+            () -> assertThat(lineResponse.getName()).isEqualTo(newLineResponse.getName()),
+            () -> assertThat(lineResponse.getColor()).isEqualTo(newLineResponse.getColor()),
+            () -> assertThat(newLineResponse.getStations())
+                .hasSize(3)
+                .contains(StationResponse.from(new Station("강남역")),
+                    StationResponse.from(new Station("교대역")),
+                    StationResponse.from(new Station("선릉역")))
+        );
+    }
+
+    @Test
+    void insertInvalidSection() {
+        // given
+        LineRequest originLine = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
+        LineResponse lineResponse = lineService.save(originLine);
+
+
+        // when
+        Long newUpStationId = stationDao.save(new Station("잠실역")).getId();
+        Long newDownStationId = stationDao.save(new Station("교대역")).getId();
+        SectionRequest sectionRequest = new SectionRequest(newUpStationId, newDownStationId, 3);
+
+        // then
+        assertThatThrownBy(
+            () -> lineService.insertSection(lineResponse.getId(), sectionRequest)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 }
