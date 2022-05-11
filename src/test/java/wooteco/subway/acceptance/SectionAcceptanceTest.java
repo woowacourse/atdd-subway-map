@@ -44,6 +44,60 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(sectionResponse1.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(sectionResponse2.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+    
+    @DisplayName("갈래길을 방지하여 구간을 등록한다.")
+    @Test
+    public void addPreventFork() {
+        // given
+        final Long stationId1 = extractStationIdFromName("교대역");
+        final Long stationId2 = extractStationIdFromName("강남역");
+        final Long stationId3 = extractStationIdFromName("역삼역");
+
+        final LineRequest params = new LineRequest("2호선", "bg-red-600", stationId1, stationId3, 7);
+        ExtractableResponse<Response> response = AcceptanceFixture.post(params, "/lines");
+        Long lineId = extractId(response);
+
+        final SectionRequest sectionRequest = new SectionRequest(stationId1, stationId2, 4);
+
+        // when
+        AcceptanceFixture.post(sectionRequest, "/lines/" + lineId + "/sections");
+
+        // then
+        final ExtractableResponse<Response> result = AcceptanceFixture.get("/lines/" + lineId);
+        assertThat(result.as(LineResponse.class).getName()).isEqualTo("2호선");
+        assertThat(result.as(LineResponse.class).getColor()).isEqualTo("bg-red-600");
+        assertThat(result.as(LineResponse.class).getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly("교대역", "강남역", "역삼역");
+    }
+
+    @DisplayName("구간을 제거할 수 있다.")
+    @Test
+    public void deleteSection() {
+        // given
+        final Long stationId1 = extractStationIdFromName("교대역");
+        final Long stationId2 = extractStationIdFromName("강남역");
+        final Long stationId3 = extractStationIdFromName("역삼역");
+
+        final LineRequest params = new LineRequest("2호선", "bg-red-600", stationId1, stationId3, 7);
+        ExtractableResponse<Response> response = AcceptanceFixture.post(params, "/lines");
+        Long lineId = extractId(response);
+
+        final SectionRequest sectionRequest = new SectionRequest(stationId1, stationId2, 4);
+
+        AcceptanceFixture.post(sectionRequest, "/lines/" + lineId + "/sections");
+
+        // when
+        AcceptanceFixture.delete("/lines/" + lineId + "/sections?stationId=" + stationId2);
+
+        // then
+        final ExtractableResponse<Response> result = AcceptanceFixture.get("/lines/" + lineId);
+        assertThat(result.as(LineResponse.class).getName()).isEqualTo("2호선");
+        assertThat(result.as(LineResponse.class).getColor()).isEqualTo("bg-red-600");
+        assertThat(result.as(LineResponse.class).getStations()).hasSize(2)
+                .extracting("name")
+                .containsExactly("교대역", "역삼역");
+    }
 
     private Long extractId(ExtractableResponse<Response> response) {
         return response.jsonPath()
