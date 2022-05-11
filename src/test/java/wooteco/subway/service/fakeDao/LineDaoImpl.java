@@ -1,6 +1,7 @@
-package wooteco.subway.dao;
+package wooteco.subway.service.fakeDao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 

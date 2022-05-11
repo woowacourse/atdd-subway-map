@@ -3,15 +3,15 @@ package wooteco.subway.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.LineDaoImpl;
-import wooteco.subway.dao.SectionDaoImpl;
-import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.service.fakeDao.LineDaoImpl;
+import wooteco.subway.service.fakeDao.SectionDaoImpl;
+import wooteco.subway.service.fakeDao.StationDaoImpl;
 
 import java.util.List;
 

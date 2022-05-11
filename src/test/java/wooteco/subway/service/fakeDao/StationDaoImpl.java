@@ -1,6 +1,7 @@
-package wooteco.subway.dao;
+package wooteco.subway.service.fakeDao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
 import java.lang.reflect.Field;
@@ -11,9 +12,8 @@ import java.util.Optional;
 
 public class StationDaoImpl implements StationDao {
     private static final StationDaoImpl stationDao = new StationDaoImpl();
-
-    private static Long seq = 0L;
     private static final List<Station> stations = new ArrayList<>();
+    private static Long seq = 0L;
 
     public static StationDaoImpl getInstance() {
         return stationDao;
