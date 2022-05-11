@@ -119,13 +119,23 @@ class LineServiceTest {
         // given
         when(lineDao.findById(1L))
                 .thenReturn(Optional.of(new Line(1L, "test1", "GREEN")));
+        when(sectionDao.findAllByLineId(1L))
+                .thenReturn(List.of(
+                        new Section(봉천역, 서울대입구역, 1),
+                        new Section(서울대입구역, 낙성대역, 2),
+                        new Section(낙성대역, 사당역, 10),
+                        new Section(신림역, 봉천역, 5)));
         // when
         LineResponse result = lineService.findById(1L);
         // then
         assertAll(
                 () -> assertThat(result.getId()).isEqualTo(1L),
                 () -> assertThat(result.getName()).isEqualTo("test1"),
-                () -> assertThat(result.getColor()).isEqualTo("GREEN")
+                () -> assertThat(result.getColor()).isEqualTo("GREEN"),
+                () -> assertThat(result.getStations()).hasSize(5),
+                () -> assertThat(result.getStations()).extracting("name").containsExactly(
+                        신림역.getName(), 봉천역.getName(), 서울대입구역.getName(), 낙성대역.getName(), 사당역.getName()
+                )
         );
     }
 

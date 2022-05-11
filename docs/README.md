@@ -83,7 +83,7 @@
      - `요청` json으로 name, color, upStationId, downStationId, distance를 받는다.
      - `응답` json으로 id, name, color, stations(station 리스트)를 반환한다.
      - stations의 요소는 station의 id, name을 각각 가진다.
-   - [ ] 노선 조회 시 노선에 해당하는 역 목록도 추가로 조회한다. `GET /lines/{id}`
+   - [x] 노선 조회 시 노선에 해당하는 역 목록도 추가로 조회한다. `GET /lines/{id}`
      - 결과 상태 코드는 `200 OK` 이다.
      - 역 목록은 상행선부터 하행선으로 정렬된 상태여야한다.
      - `응답` id, name, color, stations(station의 리스트)를 반환한다.

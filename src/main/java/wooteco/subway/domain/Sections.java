@@ -2,10 +2,8 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -88,8 +86,6 @@ public class Sections {
     }
 
     public List<Section> getDifferentList(Sections otherSections) {
-        Set<String> set = new HashSet<>();
-
         List<Section> thisSections = new ArrayList<>(this.sections);
         thisSections.removeAll(otherSections.sections);
         return thisSections;
@@ -124,5 +120,55 @@ public class Sections {
 
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
+    }
+
+    public List<Station> getSortedStations() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        Station firstStation = findFirstStation(upStations, downStations);
+        Station endStation = findEndStation(upStations, downStations);
+
+        return sortStations(firstStation, endStation);
+    }
+
+    private List<Station> sortStations(Station firstStation, Station endStation) {
+        List<Station> results = new ArrayList<>();
+        results.add(firstStation);
+        Section target = findSectionIncludingUpStation(firstStation);
+        while (!target.isDownStation(endStation)) {
+            Station targetDownStation = target.getDownStation();
+            results.add(targetDownStation);
+            target = findSectionIncludingUpStation(targetDownStation);
+        }
+        results.add(endStation);
+        return results;
+    }
+
+    private Section findSectionIncludingUpStation(Station firstStation) {
+        return sections.stream()
+                .filter(sec -> sec.isUpStation(firstStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("찾으려는 구간이 존재하지 않습니다."));
+    }
+
+    private Station findEndStation(List<Station> upStations, List<Station> downStations) {
+        downStations.removeAll(upStations);
+        return downStations.get(0);
+    }
+
+    private Station findFirstStation(List<Station> upStations, List<Station> downStations) {
+        return upStations.stream()
+                .filter(it -> !downStations.contains(it))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("상행 종점이 존재하지 않습니다."));
+    }
+
+    private List<Station> getDownStations() {
+        return sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+    }
+
+    private List<Station> getUpStations() {
+        return sections.stream().map(Section::getUpStation).collect(Collectors.toList());
     }
 }

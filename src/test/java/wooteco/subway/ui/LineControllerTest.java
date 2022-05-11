@@ -13,6 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static wooteco.subway.test.TestFixture.봉천역;
+import static wooteco.subway.test.TestFixture.서울대입구역;
+import static wooteco.subway.test.TestFixture.신림역;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -121,7 +124,8 @@ public class LineControllerTest {
     void getLine() throws Exception {
         // given
         given(lineService.findById(1L))
-                .willReturn(LineResponse.of(new Line(1L, "test1", "GREEN")));
+                .willReturn(LineResponse.of(new Line(1L, "test1", "GREEN"),
+                        List.of(신림역, 봉천역, 서울대입구역)));
         // when
         ResultActions perform = mockMvc.perform(get("/lines/1"));
         // then
@@ -130,7 +134,10 @@ public class LineControllerTest {
                 content().contentType(MediaType.APPLICATION_JSON),
                 jsonPath("id").value(1),
                 jsonPath("name").value("test1"),
-                jsonPath("color").value("GREEN")
+                jsonPath("color").value("GREEN"),
+                jsonPath("stations[0].name").value("신림역"),
+                jsonPath("stations[1].name").value("봉천역"),
+                jsonPath("stations[2].name").value("서울대입구역")
         );
     }
 

@@ -98,11 +98,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String uri = createdResponse.header("Location");
         // when
         ExtractableResponse<Response> response = getRequest(uri);
+        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
         // then
         assertAll(
                 () -> assertThat(response.jsonPath().getString("name")).isEqualTo("6호선"),
                 () -> assertThat(response.jsonPath().getString("color")).isEqualTo("SKYBLUE"),
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(stations.get(0).getName()).isEqualTo("신림역"),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(2L),
+                () -> assertThat(stations.get(1).getName()).isEqualTo("봉천역")
         );
     }
 
@@ -110,7 +115,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-
         ExtractableResponse<Response> createResponse = postRequest(LINES_URI,
                 new LineRequest("2호선", "GREEN", 1L, 2L, 5));
         // when

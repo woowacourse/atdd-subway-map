@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.test.TestFixture.낙성대역;
 import static wooteco.subway.test.TestFixture.봉천역;
 import static wooteco.subway.test.TestFixture.사당역;
-import static wooteco.subway.test.TestFixture.신림역;
 import static wooteco.subway.test.TestFixture.서울대입구역;
+import static wooteco.subway.test.TestFixture.신림역;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -209,5 +209,21 @@ public class SectionsTest {
                 new Section(낙성대역, 사당역, 2),
                 new Section(사당역, 신림역, 3)
         );
+    }
+
+    @DisplayName("상행 -> 하행 순으로 Sections를 정렬한다.")
+    @Test
+    void getSortedStations() {
+        // given
+        Section 신림_봉천 = new Section(신림역, 봉천역, 5);
+        Section 봉천_설입 = new Section(봉천역, 서울대입구역, 10);
+        Section 설입_낙성대 = new Section(서울대입구역, 낙성대역, 8);
+        Section 낙성대_사당 = new Section(낙성대역, 사당역, 20);
+        Sections sections = new Sections(List.of(봉천_설입, 설입_낙성대, 신림_봉천, 낙성대_사당));
+        // when
+        sections.getSortedStations();
+        List<Station> results = sections.getSortedStations();
+        // then
+        assertThat(results).containsExactly(신림역, 봉천역, 서울대입구역, 낙성대역, 사당역);
     }
 }

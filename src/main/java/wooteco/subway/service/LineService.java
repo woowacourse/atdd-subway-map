@@ -56,7 +56,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return LineResponse.of(findExistLineById(id));
+        Line findLine = findExistLineById(id);
+        List<Section> findSections = sectionDao.findAllByLineId(findLine.getId());
+        Sections sections = new Sections(findSections);
+
+        List<Station> sortedStations = sections.getSortedStations();
+        return LineResponse.of(findLine, sortedStations);
     }
 
     public Void update(Long id, LineRequest lineRequest) {
