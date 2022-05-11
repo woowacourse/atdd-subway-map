@@ -3,14 +3,12 @@ package wooteco.subway.service;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import wooteco.subway.dao.StationJdbcDao;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ClientException;
@@ -18,26 +16,13 @@ import wooteco.subway.exception.ClientException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@JdbcTest
+
+@SpringBootTest
+@Sql(scripts = {"classpath:schema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class StationServiceTest {
 
-    private StationService stationService;
-
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        stationService = new StationService(new StationJdbcDao(jdbcTemplate));
-    }
-
-    @AfterEach
-    void finish() {
-        List<StationResponse> stations = stationService.findAll();
-        for (StationResponse station : stations) {
-            stationService.delete(station.getId());
-        }
-    }
+    private StationService stationService;
 
     @Test
     @DisplayName("역정보 저장")

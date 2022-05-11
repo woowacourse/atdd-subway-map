@@ -29,14 +29,6 @@ class LineServiceTest {
     @Autowired
     private StationJdbcDao stationJdbcDao;
 
-    @AfterEach
-    void finish() {
-        List<LineResponse> lines = lineService.findAll();
-        for (LineResponse line : lines) {
-            lineService.delete(line.getId());
-        }
-    }
-
     @DisplayName("노선 저장")
     @Test
     void save() {
