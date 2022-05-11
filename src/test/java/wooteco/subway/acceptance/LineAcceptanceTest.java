@@ -83,10 +83,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        List<Long> resultLineIds = lineResponses.stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(lineResponses.get(0).getStations()).extracting("name").containsExactly("신림역", "봉천역");
+        assertThat(lineResponses.get(1).getStations()).extracting("name").containsExactly("신림역", "봉천역");
     }
 
     @DisplayName("id를 통해 지하철 노선을 조회한다.")

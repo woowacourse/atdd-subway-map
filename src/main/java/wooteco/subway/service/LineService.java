@@ -1,7 +1,7 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
@@ -49,10 +49,14 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
+        List<LineResponse> lineResponses = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
-        return lines.stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+        for (Line line : lines) {
+            List<Section> findSections = sectionDao.findAllByLineId(line.getId());
+            Sections sections = new Sections(findSections);
+            lineResponses.add(LineResponse.of(line, sections.getSortedStations()));
+        }
+        return lineResponses;
     }
 
     public LineResponse findById(Long id) {

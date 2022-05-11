@@ -99,6 +99,15 @@ class LineServiceTest {
                 .thenReturn(List.of(
                         new Line(1L, "test1", "GREEN"),
                         new Line(2L, "test2", "YELLOW")));
+        when(sectionDao.findAllByLineId(1L))
+                .thenReturn(List.of(
+                        new Section(신림역, 봉천역, 5),
+                        new Section(봉천역, 서울대입구역, 5)));
+        when(sectionDao.findAllByLineId(2L))
+                .thenReturn(List.of(
+                        new Section(봉천역, 사당역, 5),
+                        new Section(신림역, 봉천역, 3),
+                        new Section(사당역, 서울대입구역, 8)));
         // when
         List<LineResponse> result = lineService.findAll();
         // then
@@ -107,9 +116,13 @@ class LineServiceTest {
                 () -> assertThat(result.get(0).getId()).isEqualTo(1),
                 () -> assertThat(result.get(0).getName()).isEqualTo("test1"),
                 () -> assertThat(result.get(0).getColor()).isEqualTo("GREEN"),
+                () -> assertThat(result.get(0).getStations()).extracting("name")
+                        .containsExactly("신림역", "봉천역", "서울대입구역"),
                 () -> assertThat(result.get(1).getId()).isEqualTo(2),
                 () -> assertThat(result.get(1).getName()).isEqualTo("test2"),
-                () -> assertThat(result.get(1).getColor()).isEqualTo("YELLOW")
+                () -> assertThat(result.get(1).getColor()).isEqualTo("YELLOW"),
+                () -> assertThat(result.get(1).getStations()).extracting("name")
+                        .containsExactly("신림역", "봉천역", "사당역", "서울대입구역")
         );
     }
 

@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static wooteco.subway.test.TestFixture.봉천역;
+import static wooteco.subway.test.TestFixture.사당역;
 import static wooteco.subway.test.TestFixture.서울대입구역;
 import static wooteco.subway.test.TestFixture.신림역;
 
@@ -101,8 +102,8 @@ public class LineControllerTest {
         // given
         given(lineService.findAll())
                 .willReturn(List.of(
-                        LineResponse.of(new Line(1L, "test1", "GREEN")),
-                        LineResponse.of(new Line(2L, "test2", "YELLOW"))));
+                        LineResponse.of(new Line(1L, "test1", "GREEN"), List.of(신림역, 봉천역, 서울대입구역)),
+                        LineResponse.of(new Line(2L, "test2", "YELLOW"), List.of(사당역, 신림역))));
         // when
         ResultActions perform = mockMvc.perform(get("/lines"));
         // then
@@ -113,9 +114,14 @@ public class LineControllerTest {
                 jsonPath("$[0].id").value(1),
                 jsonPath("$[0].name").value("test1"),
                 jsonPath("$[0].color").value("GREEN"),
+                jsonPath("$[0].stations[0].name").value("신림역"),
+                jsonPath("$[0].stations[1].name").value("봉천역"),
+                jsonPath("$[0].stations[2].name").value("서울대입구역"),
                 jsonPath("$[1].id").value(2),
                 jsonPath("$[1].name").value("test2"),
-                jsonPath("$[1].color").value("YELLOW")
+                jsonPath("$[1].color").value("YELLOW"),
+                jsonPath("$[1].stations[0].name").value("사당역"),
+                jsonPath("$[1].stations[1].name").value("신림역")
         );
     }
 
