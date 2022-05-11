@@ -10,7 +10,7 @@ public class Sections {
         this.sections = sections;
     }
 
-    public List<Long> getSortedStationIds() {
+    public LinkedList<Long> getSortedStationIds() {
         LinkedList<Long> sortedIds = new LinkedList<>();
 
         Section target = sections.get(0);
@@ -23,11 +23,16 @@ public class Sections {
         return sortedIds;
     }
 
+    public boolean isTerminus(long upStationId, long downStationId) {
+        LinkedList<Long> sortedStations = getSortedStationIds();
+        return ((sortedStations.getFirst() == downStationId) || (sortedStations.getLast() == upStationId));
+    }
+
     private void addUpStream(LinkedList<Long> result, Long key) {
         Map<Long, Long> ids = sections.stream()
                 .collect(Collectors.toMap(
-                        i1 -> i1.getDownStationId(),
-                        i2 -> i2.getUpStationId()
+                        Section::getDownStationId,
+                        Section::getUpStationId
                 ));
 
         while (ids.containsKey(key)) {
@@ -39,8 +44,8 @@ public class Sections {
     private void addDownStream(LinkedList<Long> result, Long key) {
         Map<Long, Long> ids = sections.stream()
                 .collect(Collectors.toMap(
-                        i1 -> i1.getUpStationId(),
-                        i2 -> i2.getDownStationId()
+                        Section::getUpStationId,
+                        Section::getDownStationId
                 ));
 
         while (ids.containsKey(key)) {
@@ -48,5 +53,6 @@ public class Sections {
             result.addLast(key);
         }
     }
+
 
 }

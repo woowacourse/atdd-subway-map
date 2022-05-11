@@ -53,4 +53,18 @@ class SectionServiceTest {
         assertThat(stations.get(1).getId()).isEqualTo(2L);
         assertThat(stations.get(2).getId()).isEqualTo(1L);
     }
+
+    @Test
+    @DisplayName("상행종점이라면 맨 앞에 추가")
+    void addUpTerminus() {
+        given(sectionDao.findAllByLineId(1L)).willReturn(List.of(
+                new Section(1L, 1L, 3L, 4L, 5),
+                new Section(2L, 1L, 2L, 3L, 5)
+        ));
+
+        assertDoesNotThrow(() ->
+                sectionService.add(1L, new SectionRequest(1L, 2L, 5))
+        );
+    }
+
 }
