@@ -53,6 +53,24 @@ public class Sections {
         sections.remove(findDownSection.get());
     }
 
+    public List<Section> getSections() {
+        return List.copyOf(sections);
+    }
+
+    public boolean hasSection(Section section) {
+        return sections.stream()
+            .anyMatch(it -> it.equals(section));
+    }
+
+    public List<Long> getStationIds() {
+        Set<Long> distinctStationIds = new HashSet<>();
+        for (Section section : sections) {
+            distinctStationIds.add(section.getUpStationId());
+            distinctStationIds.add(section.getDownStationId());
+        }
+        return new ArrayList<>(distinctStationIds);
+    }
+
     private void validateAddSectionCondition(boolean existUpStation, boolean existDownStation) {
         if (existUpStation && existDownStation) {
             throw new IllegalArgumentException(DUPLICATE_BOTH_STATION_EXCEPTION);
@@ -121,23 +139,5 @@ public class Sections {
         if (findSectionByUpStationId.isEmpty() && findSectionByDownStationId.isEmpty()) {
             throw new IllegalArgumentException(NOT_FOUND_STATION_ID_EXCEPTION);
         }
-    }
-
-    public List<Section> getSections() {
-        return List.copyOf(sections);
-    }
-
-    public boolean hasSection(Section section) {
-        return sections.stream()
-            .anyMatch(it -> it.equals(section));
-    }
-
-    public List<Long> getStationIds() {
-        Set<Long> distinctStationIds = new HashSet<>();
-        for (Section section : sections) {
-            distinctStationIds.add(section.getUpStationId());
-            distinctStationIds.add(section.getDownStationId());
-        }
-        return new ArrayList<>(distinctStationIds);
     }
 }

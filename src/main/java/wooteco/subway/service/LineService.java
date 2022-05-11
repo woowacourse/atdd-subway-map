@@ -48,16 +48,6 @@ public class LineService {
         return new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(), stationResponses);
     }
 
-    private List<StationResponse> generateStationResponsesByLineRequest(LineRequest lineRequest) {
-        Optional<Station> upStation = stationDao.findById(lineRequest.getUpStationId());
-        Optional<Station> downStation = stationDao.findById(lineRequest.getDownStationId());
-        if (upStation.isEmpty() || downStation.isEmpty()) {
-            throw new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE);
-        }
-        return List.of(new StationResponse(upStation.get().getId(), upStation.get().getName()),
-            new StationResponse(downStation.get().getId(), downStation.get().getName()));
-    }
-
     public List<LineResponse> showLines() {
         List<Line> lines = lineDao.findAll();
         List<Station> stations = stationDao.findAll();
@@ -71,20 +61,6 @@ public class LineService {
         List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = generateStationResponses(line, stations);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
-    }
-
-    private List<StationResponse> generateStationResponses(Line line, List<Station> stations) {
-        Sections sections = sectionDao.findByLineId(line.getId());
-        List<Long> stationsIds = sections.getStationIds();
-        return stations.stream()
-            .filter(station -> stationsIds.contains(station.getId()))
-            .map(station -> new StationResponse(station.getId(), station.getName()))
-            .collect(Collectors.toList());
-    }
-
-    private Line findLineById(Long id) {
-        return lineDao.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION_MESSAGE));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
@@ -112,6 +88,30 @@ public class LineService {
         Sections updateSections = new Sections(originSectionList);
         updateSections.remove(stationId);
         compareWithDao(originSectionList, updateSections.getSections());
+    }
+
+    private List<StationResponse> generateStationResponsesByLineRequest(LineRequest lineRequest) {
+        Optional<Station> upStation = stationDao.findById(lineRequest.getUpStationId());
+        Optional<Station> downStation = stationDao.findById(lineRequest.getDownStationId());
+        if (upStation.isEmpty() || downStation.isEmpty()) {
+            throw new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE);
+        }
+        return List.of(new StationResponse(upStation.get().getId(), upStation.get().getName()),
+            new StationResponse(downStation.get().getId(), downStation.get().getName()));
+    }
+
+    private List<StationResponse> generateStationResponses(Line line, List<Station> stations) {
+        Sections sections = sectionDao.findByLineId(line.getId());
+        List<Long> stationsIds = sections.getStationIds();
+        return stations.stream()
+            .filter(station -> stationsIds.contains(station.getId()))
+            .map(station -> new StationResponse(station.getId(), station.getName()))
+            .collect(Collectors.toList());
+    }
+
+    private Line findLineById(Long id) {
+        return lineDao.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION_MESSAGE));
     }
 
     private void validateUpdateDuplicateLine(Line originLine, LineRequest lineRequest) {
