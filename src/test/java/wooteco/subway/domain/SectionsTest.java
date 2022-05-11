@@ -8,6 +8,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.AddSectionException;
+import wooteco.subway.exception.DeleteSectionException;
 
 class SectionsTest {
 
@@ -94,7 +96,7 @@ class SectionsTest {
         final Section section = new Section(1L, firstStation, secondStation, 10);
 
         assertThatThrownBy(() -> sections.addSection(section))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(AddSectionException.class)
                 .hasMessage("연결 할 수 있는 상행역 또는 하행역이 없습니다.");
     }
 
@@ -106,7 +108,7 @@ class SectionsTest {
         final Section section = new Section(1L, firstStation, secondStation, 10);
 
         assertThatThrownBy(() -> sections.addSection(section))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(AddSectionException.class)
                 .hasMessage("입력한 구간의 상행역과 하행역이 이미 모두 연결되어 있습니다.");
     }
 
@@ -118,7 +120,7 @@ class SectionsTest {
         final Section section = new Section(1L, firstStation, thirdStation, 10);
 
         assertThatThrownBy(() -> sections.addSection(section))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(AddSectionException.class)
                 .hasMessage("현재 구간의 길이가 추가하려는 구간의 길이보다 작거나 같습니다.");
     }
 
@@ -130,7 +132,7 @@ class SectionsTest {
         final Section section = new Section(1L, firstStation, thirdStation, 10);
 
         assertThatThrownBy(() -> sections.deleteSection(firstStation))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(DeleteSectionException.class)
                 .hasMessage("현재 구간이 하나 있기때문에, 구간을 제거 할수 없습니다.");
     }
 }

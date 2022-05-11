@@ -3,6 +3,8 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.AddSectionException;
+import wooteco.subway.exception.DeleteSectionException;
 
 public class Sections {
 
@@ -20,7 +22,7 @@ public class Sections {
     private Section findAnySection() {
         return sections.stream()
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하는 구간 데이터가 없습니다."));
+                .orElseThrow(() -> new AddSectionException("존재하는 구간 데이터가 없습니다."));
     }
 
     private Section findTopSection(final Section section) {
@@ -39,7 +41,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isUpperThan(otherSection))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("존재하는 구간 데이터가 없습니다."));
+                .orElseThrow(() -> new AddSectionException("존재하는 구간 데이터가 없습니다."));
     }
 
     private List<Station> createSortedStations(final Section section) {
@@ -68,7 +70,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isLowerThan(otherSection))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("더이상 하행구간이 없습니다."));
+                .orElseThrow(() -> new AddSectionException("더이상 하행구간이 없습니다."));
     }
 
     public void addSection(final Section section) {
@@ -82,10 +84,10 @@ public class Sections {
 
     private void validateAddableSection(final Section section) {
         if (hasNoConnectableSection(section)) {
-            throw new IllegalArgumentException("연결 할 수 있는 상행역 또는 하행역이 없습니다.");
+            throw new AddSectionException("연결 할 수 있는 상행역 또는 하행역이 없습니다.");
         }
         if (isAlreadyConnectedSection(section)) {
-            throw new IllegalArgumentException("입력한 구간의 상행역과 하행역이 이미 모두 연결되어 있습니다.");
+            throw new AddSectionException("입력한 구간의 상행역과 하행역이 이미 모두 연결되어 있습니다.");
         }
     }
 
@@ -144,7 +146,7 @@ public class Sections {
         final Section section = sections.stream()
                 .filter(existingSection -> existingSection.hasSameUpStationWith(otherSection.getUpStation()))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
+                .orElseThrow(() -> new AddSectionException("입력한 역정보를 가지는 구간이 없습니다."));
         section.updateUpStationFrom(otherSection);
     }
 
@@ -152,7 +154,7 @@ public class Sections {
         final Section section = sections.stream()
                 .filter(existingSection -> existingSection.hasSameDownStationWith(otherSection.getDownStation()))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
+                .orElseThrow(() -> new AddSectionException("입력한 역정보를 가지는 구간이 없습니다."));
         section.updateDownStationFrom(otherSection);
     }
 
@@ -169,7 +171,7 @@ public class Sections {
 
     private void validateEnoughToDeleteSection() {
         if (sections.size() == 1) {
-            throw new RuntimeException("현재 구간이 하나 있기때문에, 구간을 제거 할수 없습니다.");
+            throw new DeleteSectionException("현재 구간이 하나 있기때문에, 구간을 제거 할수 없습니다.");
         }
     }
 
@@ -184,7 +186,7 @@ public class Sections {
         final Section topSection = sections.stream()
                 .filter(existingSection -> existingSection.hasSameUpStationWith(station))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
+                .orElseThrow(() -> new DeleteSectionException("입력한 역정보를 가지는 구간이 없습니다."));
         sections.remove(topSection);
         return topSection;
     }
@@ -200,7 +202,7 @@ public class Sections {
         final Section lastSection = sections.stream()
                 .filter(existingSection -> existingSection.hasSameDownStationWith(station))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
+                .orElseThrow(() -> new DeleteSectionException("입력한 역정보를 가지는 구간이 없습니다."));
         sections.remove(lastSection);
         return lastSection;
     }
@@ -217,14 +219,14 @@ public class Sections {
         return sections.stream()
                 .filter(existingSection -> existingSection.hasSameDownStationWith(station))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
+                .orElseThrow(() -> new DeleteSectionException("입력한 역정보를 가지는 구간이 없습니다."));
     }
 
     private Section getLowerSection(final Station station) {
         return sections.stream()
                 .filter(existingSection -> existingSection.hasSameUpStationWith(station))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("입력한 역정보를 가지는 구간이 없습니다."));
+                .orElseThrow(() -> new DeleteSectionException("입력한 역정보를 가지는 구간이 없습니다."));
     }
 
     public List<Section> getSections() {

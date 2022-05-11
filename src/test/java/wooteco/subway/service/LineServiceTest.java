@@ -12,8 +12,9 @@ import wooteco.subway.dao.FakeSectionDao;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.datanotfound.LineNotFoundException;
+import wooteco.subway.exception.datanotfound.StationNotFoundException;
+import wooteco.subway.exception.duplicatename.LineDuplicateException;
 
 class LineServiceTest {
 
@@ -46,7 +47,7 @@ class LineServiceTest {
         LineRequest line = new LineRequest("4호선", "green", 1L, 7L, 10);
 
         assertThatThrownBy(() -> lineService.save(line))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(StationNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 역입니다.");
     }
 
@@ -58,7 +59,7 @@ class LineServiceTest {
         lineService.save(line);
 
         assertThatThrownBy(() -> lineService.save(duplicateLine))
-                .isInstanceOf(DuplicateNameException.class)
+                .isInstanceOf(LineDuplicateException.class)
                 .hasMessageContaining("이미 등록된 지하철 노선이름 입니다.");
     }
 
@@ -89,7 +90,7 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 노선정보 조회시 예외를 발생한다.")
     void findNotExistLine() {
         assertThatThrownBy(() -> lineService.findLine(12L))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(LineNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
@@ -106,7 +107,7 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 노선정보 삭제시 예외를 발생한다.")
     void deleteNotExistLine() {
         assertThatThrownBy(() -> lineService.deleteLine(12L))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(LineNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
@@ -128,7 +129,7 @@ class LineServiceTest {
         LineResponse newLine = lineService.save(line);
 
         assertThatThrownBy(() -> lineService.updateLine(newLine.getId(), line))
-                .isInstanceOf(DuplicateNameException.class)
+                .isInstanceOf(LineDuplicateException.class)
                 .hasMessageContaining("이미 등록된 지하철 노선이름 입니다.");
     }
 
@@ -141,7 +142,7 @@ class LineServiceTest {
         LineResponse newLine = lineService.save(line);
 
         assertThatThrownBy(() -> lineService.updateLine(12L, lineForUpdate))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(LineNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 }

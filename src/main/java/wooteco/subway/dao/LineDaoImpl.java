@@ -11,7 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.datanotfound.DataNotFoundException;
+import wooteco.subway.exception.datanotfound.LineNotFoundException;
 
 @Repository
 public class LineDaoImpl implements LineDao {
@@ -53,7 +54,7 @@ public class LineDaoImpl implements LineDao {
             final String sql = "select * from line where id = (?)";
             return jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("존재하지 않는 노선입니다.");
+            throw new LineNotFoundException("존재하지 않는 노선입니다.");
         }
     }
 

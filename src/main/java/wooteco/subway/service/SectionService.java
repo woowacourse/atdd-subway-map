@@ -8,6 +8,8 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.exception.AddSectionException;
+import wooteco.subway.exception.DeleteSectionException;
 
 @Service
 public class SectionService {
@@ -25,7 +27,7 @@ public class SectionService {
         final Section section = createSection(lineId, sectionRequest);
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
         final Section newSection = sectionDao.save(section);
-        sections.addSection(newSection);
+        addSection(sections, newSection);
         return sectionDao.update(sections.getSections());
     }
 
@@ -35,12 +37,28 @@ public class SectionService {
         return new Section(lineId, upStation, downStation, sectionRequest.getDistance());
     }
 
+    private void addSection(final Sections sections, final Section newSection) {
+        try {
+            sections.addSection(newSection);
+        } catch (AddSectionException e) {
+            throw new AddSectionException(e.getMessage());
+        }
+    }
+
     @Transactional
     public int delete(final Long lineId, final Long stationId) {
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
         final Station station = stationDao.findById(stationId);
-        final Section section = sections.deleteSection(station);
-        sectionDao.delete(section);
+        deleteSection(sections, station);
         return sectionDao.update(sections.getSections());
+    }
+
+    private void deleteSection(final Sections sections, final Station station) {
+        try {
+            final Section section = sections.deleteSection(station);
+            sectionDao.delete(section);
+        } catch (DeleteSectionException e) {
+            throw new DeleteSectionException(e.getMessage());
+        }
     }
 }

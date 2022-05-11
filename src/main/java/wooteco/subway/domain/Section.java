@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.AddSectionException;
+
 public class Section {
     private Long id;
     private Long lineId;
@@ -84,7 +86,7 @@ public class Section {
 
     private void validateLongerThan(final Section otherSection) {
         if (this.distance <= otherSection.distance) {
-            throw new IllegalArgumentException("현재 구간의 길이가 추가하려는 구간의 길이보다 작거나 같습니다.");
+            throw new AddSectionException("현재 구간의 길이가 추가하려는 구간의 길이보다 작거나 같습니다.");
         }
     }
 

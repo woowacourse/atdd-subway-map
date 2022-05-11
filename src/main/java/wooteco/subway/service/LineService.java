@@ -14,8 +14,8 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.datanotfound.LineNotFoundException;
+import wooteco.subway.exception.duplicatename.LineDuplicateException;
 
 @Service
 public class LineService {
@@ -40,7 +40,7 @@ public class LineService {
 
     private void validateDuplicate(final LineRequest lineRequest) {
         if (hasDuplicateLine(lineRequest)) {
-            throw new DuplicateNameException("이미 등록된 지하철 노선이름 입니다.");
+            throw new LineDuplicateException("이미 등록된 지하철 노선이름 입니다.");
         }
     }
 
@@ -86,7 +86,7 @@ public class LineService {
             Line line = lineDao.findById(id);
             return LineResponse.of(line, stationsOnLine(line.getId()));
         } catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("존재하지 않는 노선입니다.");
+            throw new LineNotFoundException("존재하지 않는 노선입니다.");
         }
     }
 
@@ -99,7 +99,7 @@ public class LineService {
         try {
             lineDao.findById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("존재하지 않는 노선입니다.");
+            throw new LineNotFoundException("존재하지 않는 노선입니다.");
         }
     }
 }

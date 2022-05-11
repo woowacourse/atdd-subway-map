@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.datanotfound.DataNotFoundException;
+import wooteco.subway.exception.datanotfound.LineNotFoundException;
 
 public class FakeLineDao implements LineDao {
 
@@ -43,7 +44,7 @@ public class FakeLineDao implements LineDao {
         return lines.stream()
                 .filter(line -> line.getId() == id)
                 .findAny()
-                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 노선입니다."));
+                .orElseThrow(() -> new LineNotFoundException("존재하지 않는 노선입니다."));
     }
 
     @Override
@@ -51,7 +52,7 @@ public class FakeLineDao implements LineDao {
         int targetIndex = IntStream.range(0, lines.size())
                 .filter(index -> lines.get(index).getId() == id)
                 .findAny()
-                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 노선입니다."));
+                .orElseThrow(() -> new LineNotFoundException("존재하지 않는 노선입니다."));
         lines.set(targetIndex, line);
 
         if (lines.get(targetIndex).getName().equals(line.getName())) {

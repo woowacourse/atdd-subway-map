@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.datanotfound.DataNotFoundException;
 
 public class FakeSectionDao implements SectionDao {
 

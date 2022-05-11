@@ -2,7 +2,6 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -12,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.datanotfound.StationNotFoundException;
+import wooteco.subway.exception.duplicatename.StationDuplicateException;
 
 class StationServiceTest {
 
@@ -50,7 +49,7 @@ class StationServiceTest {
         stationService.createStation(station);
 
         assertThatThrownBy(() -> stationService.createStation(duplicateStation))
-                .isInstanceOf(DuplicateNameException.class)
+                .isInstanceOf(StationDuplicateException.class)
                 .hasMessageContaining("이미 등록된 지하철역 이름입니다.");
     }
 
@@ -84,7 +83,7 @@ class StationServiceTest {
     @DisplayName("존재하지 않는 역 정보 삭제시 예외를 발생한다.")
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.deleteStation(12))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(StationNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 역입니다.");
     }
 }

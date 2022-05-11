@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.datanotfound.StationNotFoundException;
 
 @Repository
 public class StationDaoImpl implements StationDao {
@@ -49,7 +49,7 @@ public class StationDaoImpl implements StationDao {
             final String sql = "select * from station where id = (?)";
             return jdbcTemplate.queryForObject(sql, stationRowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("존재하지 않는 역입니다.");
+            throw new StationNotFoundException("존재하지 않는 역입니다.");
         }
     }
 
