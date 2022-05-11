@@ -39,7 +39,7 @@ public class StationControllerTest extends AcceptanceTest {
         StationRequest request = new StationRequest("강남역");
 
         ExtractableResponse<Response> response =
-                RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -51,7 +51,7 @@ public class StationControllerTest extends AcceptanceTest {
         StationRequest request = new StationRequest("");
 
         ExtractableResponse<Response> response =
-                RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -62,7 +62,7 @@ public class StationControllerTest extends AcceptanceTest {
         StationRequest request = new StationRequest("선릉역");
 
         ExtractableResponse<Response> response =
-                RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -70,7 +70,7 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        ExtractableResponse<Response> response = RestAssureConvenienceMethod.getRequest(basicPath);
+        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.getRequest(basicPath);
 
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
@@ -82,7 +82,7 @@ public class StationControllerTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         ExtractableResponse<Response> response =
-                RestAssureConvenienceMethod.deleteRequest("/stations/" + savedStation1.getId());
+                RestAssuredConvenienceMethod.deleteRequest("/stations/" + savedStation1.getId());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
@@ -91,7 +91,7 @@ public class StationControllerTest extends AcceptanceTest {
     @Test
     void deleteStationWithNotExistData() {
         ExtractableResponse<Response> response =
-                RestAssureConvenienceMethod.deleteRequest("/stations/" + 100L);
+                RestAssuredConvenienceMethod.deleteRequest("/stations/" + 100L);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
