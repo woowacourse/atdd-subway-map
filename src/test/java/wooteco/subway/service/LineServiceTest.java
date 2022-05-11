@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.Fixtures.LINE;
 import static wooteco.subway.Fixtures.LINE_2;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,14 @@ class LineServiceTest extends ServiceTest {
     @Test
     void findAll() {
         //given
-        Line resLine = lineService.save(LINE);
-        Line resLine2 = lineService.save(LINE_2);
+        lineService.save(LINE);
+        lineService.save(LINE_2);
 
         //when then
         assertThat(lineService.findAll())
-                .containsOnly(resLine, resLine2);
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(List.of(LINE, LINE_2));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -49,11 +52,13 @@ class LineServiceTest extends ServiceTest {
         Long id = lineService.save(LINE).getId();
 
         //when
-        Line updateLine = lineService.update(id, LINE_2);
+        lineService.update(id, LINE_2);
 
         //then
         assertThat(lineService.findAll())
-                .containsOnly(updateLine);
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(List.of(LINE_2));
     }
 
     @DisplayName("없는 지하철 노선을 수정할 수 없다.")
@@ -76,7 +81,7 @@ class LineServiceTest extends ServiceTest {
 
         //then
         assertThat(lineService.findAll())
-                .isNotIn(resLine);
+                .isEmpty();
     }
 
     @DisplayName("없는 지하철 노선을 삭제할 수 없다.")

@@ -117,8 +117,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] sectionDao에서 바로 station이 포함된 Section을 반환하도록 변경
 - [x] checkStationExist 코드에서 hasStation 쿼리 한번으로 바뀌도록 새 StationDao 메소드 생성
 - [x] 존재하지 않는 id로 검색시 어떻게 될까요? -> 들어오는 서비스의 모든 파라미터 검증
+  - [x] update시 line만 넘겨주면 다시 조회를 하지 않아도 될거같은데 어떻게 생각하시나요? -> update 실행 시 리턴값 void로 변경
 - [ ] 메서드 라인수가 긴거같아요. 검증과 생성을 명시적으로 더 나눠보면 어떨까요?
-- [ ] update시 line만 넘겨주면 다시 조회를 하지 않아도 될거같은데 어떻게 생각하시나요?
 - [ ] MockMVC와 기존 RestAssured 비교해 공부, 더 좋은 방식으로 결정
 - [ ] 어떤 부분은 검증을 먼저 해주고있는데요, 하나로 통일하면 어떨까요?
 - [ ] executeMiddleSection의 기능을 save, execute로 분리
