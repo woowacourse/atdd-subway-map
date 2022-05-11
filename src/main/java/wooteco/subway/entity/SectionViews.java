@@ -1,78 +1,70 @@
 package wooteco.subway.entity;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionMap;
+import wooteco.subway.domain.StationEntityMap;
 
 public class SectionViews {
 
-    private final Map<Long, StationEntity> fromUpStationIdMap;
-    private final Map<Long, StationEntity> fromDownStationIdMap;
+    private final SectionMap sectionMap;
+    private final StationEntityMap entityMap;
 
-    private SectionViews(Map<Long, StationEntity> fromUpStationIdMap,
-                         Map<Long, StationEntity> fromDownStationIdMap) {
-        this.fromUpStationIdMap = fromUpStationIdMap;
-        this.fromDownStationIdMap = fromDownStationIdMap;
+    private SectionViews(SectionMap sectionMap,
+                         StationEntityMap entityMap) {
+        this.sectionMap = sectionMap;
+        this.entityMap = entityMap;
     }
 
     public static SectionViews of(List<SectionViewEntity> sectionViewEntities) {
-        Map<Long, StationEntity> fromUpStationIdMap = new HashMap<>();
-        Map<Long, StationEntity> fromDownStationIdMap = new HashMap<>();
+        return new SectionViews(
+                SectionMap.of(toSections(sectionViewEntities)),
+                StationEntityMap.of(sectionViewEntities));
+    }
 
-        for (SectionViewEntity sectionView : sectionViewEntities) {
-            Long upStationId = sectionView.getUpStationId();
-            Long downStationId = sectionView.getDownStationId();
-
-            fromUpStationIdMap.put(upStationId, sectionView.getDownStation());
-            fromDownStationIdMap.put(downStationId, sectionView.getUpStation());
-        }
-
-        return new SectionViews(fromUpStationIdMap, fromDownStationIdMap);
+    private static List<Section> toSections(List<SectionViewEntity> sectionViewEntities) {
+        return sectionViewEntities.stream()
+                .map(SectionViewEntity::toSection)
+                .collect(Collectors.toList());
     }
 
     public List<StationEntity> getSortedStationsList() {
-        StationEntity initialStation = getInitialStation();
-        boolean shouldAppendRight = true;
-        int stationEntityCount = fromUpStationIdMap.values().size() + 1;
+        Long initialStationId = sectionMap.findAnyStationId();
+        boolean isDownDirection = true;
+        int stationEntityCount = entityMap.getSize();
 
-        return toSortedStationList(initialStation, shouldAppendRight, stationEntityCount);
+        return toSortedStationList(initialStationId, isDownDirection, stationEntityCount);
     }
 
-    private List<StationEntity> toSortedStationList(StationEntity initialStation,
-                                                    boolean shouldAppendRight,
+    private List<StationEntity> toSortedStationList(Long initialStationId,
+                                                    boolean isDownDirection,
                                                     int capacity) {
-        LinkedList<StationEntity> list = new LinkedList<>(List.of(initialStation));
-        Long key = initialStation.getId();
+        LinkedList<StationEntity> list = new LinkedList<>();
+        list.add(entityMap.findEntityOfId(initialStationId));
+        Long currentStationId = initialStationId;
+
         while (list.size() < capacity) {
-            if (shouldAppendRight && fromUpStationIdMap.containsKey(key)) {
-                key = appendRightAndGetNextKey(list, key);
+            if (isDownDirection && sectionMap.hasDownStation(currentStationId)) {
+                currentStationId = addDownStationIdAndGetNextKey(list, currentStationId);
                 continue;
             }
-            shouldAppendRight = false;
-            key = appendLeftAndGetNextKey(list, key);
+            isDownDirection = false;
+            currentStationId = addUpStationIdAndGetNextKey(list, currentStationId);
         }
         return list;
     }
 
-    private StationEntity getInitialStation() {
-        Long initialKey = (Long) fromUpStationIdMap.keySet().toArray()[0];
-        return fromDownStationIdMap.values()
-                .stream()
-                .filter(station -> station.hasIdOf(initialKey))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("해당 로직이 잘못 구현되었습니다."));
+    private Long addDownStationIdAndGetNextKey(List<StationEntity> list, Long upStationId) {
+        Long downStationId = sectionMap.getDownStationIdOf(upStationId);
+        list.add(entityMap.findEntityOfId(downStationId));
+        return downStationId;
     }
 
-    private Long appendRightAndGetNextKey(List<StationEntity> list, Long key) {
-        StationEntity value = fromUpStationIdMap.get(key);
-        list.add(value);
-        return value.getId();
-    }
-
-    private Long appendLeftAndGetNextKey(List<StationEntity> list, Long key) {
-        StationEntity value = fromDownStationIdMap.get(key);
-        list.add(0, value);
-        return value.getId();
+    private Long addUpStationIdAndGetNextKey(List<StationEntity> list, Long downStationId) {
+        Long upStationId = sectionMap.getUpStationIdOf(downStationId);
+        list.add(0, entityMap.findEntityOfId(upStationId));
+        return upStationId;
     }
 }

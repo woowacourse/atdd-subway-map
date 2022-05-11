@@ -1,6 +1,7 @@
 package wooteco.subway.entity;
 
 import java.util.Objects;
+import wooteco.subway.domain.Section;
 
 public class SectionViewEntity {
 
@@ -21,12 +22,8 @@ public class SectionViewEntity {
         return downStation;
     }
 
-    public Long getUpStationId() {
-        return upStation.getId();
-    }
-
-    public Long getDownStationId() {
-        return downStation.getId();
+    public Section toSection() {
+        return new Section(upStation.getId(), downStation.getId());
     }
 
     @Override
