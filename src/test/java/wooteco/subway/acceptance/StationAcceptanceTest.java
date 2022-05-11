@@ -22,22 +22,22 @@ import static wooteco.subway.acceptance.AcceptanceFixture.*;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철역을 생성한다.")
+    @DisplayName("지하철역 생성")
     @Test
     void createStation() {
         // given
-        ExtractableResponse<Response> response = insert(new StationRequest("강남역"), "/stations");
+        ExtractableResponse<Response> response = insert(new StationRequest("강남역"), "/stations", 201);
 
         // then
         assertThat(response.jsonPath().getString("name")).isEqualTo("강남역");
         assertThat(response.header("Location")).isEqualTo("/stations/1");
     }
 
-    @DisplayName("중복된 지하철역을 생성")
+    @DisplayName("중복된 지하철역 생성")
     @Test
     void createStationWithDuplicateName() {
         // given
-        insert(new StationRequest("강남역"), "/stations");
+        insert(new StationRequest("강남역"), "/stations", 201);
 
         // then
         RestAssured.given().log().all()
@@ -49,12 +49,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역 조회")
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations");
-        ExtractableResponse<Response> newStationResponse = insert(new StationRequest("역삼역"), "/stations");
+        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations", 201);
+        ExtractableResponse<Response> newStationResponse = insert(new StationRequest("역삼역"), "/stations", 201);
 
         ExtractableResponse<Response> response = select("/stations");
 
@@ -69,14 +69,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("지하철역 제거")
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations");
+        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations", 201);
 
         // then
         String uri = stationResponse.header("Location");
-        delete(uri);
+        delete(uri, 200);
     }
 }

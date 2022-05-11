@@ -12,14 +12,14 @@ public class AcceptanceFixture {
     private AcceptanceFixture() {
     }
 
-    public static <T> ExtractableResponse<Response> insert(T request, String path) {
+    public static <T> ExtractableResponse<Response> insert(T request, String path, int statusCode) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(path)
                 .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
+                .statusCode(statusCode)
                 .extract();
     }
 
@@ -32,13 +32,13 @@ public class AcceptanceFixture {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> delete(String path) {
+    public static ExtractableResponse<Response> delete(String path, int statusCode) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .delete(path)
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(statusCode)
                 .extract();
     }
 }

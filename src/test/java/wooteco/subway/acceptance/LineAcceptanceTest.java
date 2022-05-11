@@ -8,6 +8,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -22,14 +23,21 @@ import static wooteco.subway.acceptance.AcceptanceFixture.*;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @BeforeEach()
+    void setStation() {
+        // 지하철 등록
+        insert(new StationRequest("강남역"), "/stations", 201);
+        insert(new StationRequest("역삼역"), "/stations", 201);
+        insert(new StationRequest("선릉역"), "/stations", 201);
+        insert(new StationRequest("잠실역"), "/stations", 201);
+    }
+
+    @DisplayName("지하철 노선 생성")
     @Test
     void createLines() {
         // given
-        insert(new StationRequest("강남역"), "/stations");
-        insert(new StationRequest("역삼역"), "/stations");
         ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines");
+                1L, 2L, 10), "/lines", 201);
 
         // then
         assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
@@ -41,13 +49,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        insert(new StationRequest("강남역"), "/stations");
-        insert(new StationRequest("역삼역"), "/stations");
-
         ExtractableResponse<Response> createResponse = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines");
+                1L, 2L, 10), "/lines", 201);
         ExtractableResponse<Response> newCreateResponse = insert(new LineRequest("분당선", "bg-green-600",
-                1L, 2L, 10), "/lines");
+                1L, 2L, 10), "/lines", 201);
 
         ExtractableResponse<Response> response = select("/lines");
 
@@ -66,11 +71,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        insert(new StationRequest("강남역"), "/stations");
-        insert(new StationRequest("역삼역"), "/stations");
-
         ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines");
+                1L, 2L, 10), "/lines", 201);
         long resultLineId = response.jsonPath().getLong("id");
 
         // then
@@ -82,11 +84,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifyLine() {
         // given
-        insert(new StationRequest("강남역"), "/stations");
-        insert(new StationRequest("역삼역"), "/stations");
-
         ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines");
+                1L, 2L, 10), "/lines", 201);
         long resultLineId = response.jsonPath().getLong("id");
 
         //then
@@ -105,13 +104,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        insert(new StationRequest("강남역"), "/stations");
-        insert(new StationRequest("역삼역"), "/stations");
         ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines");
+                1L, 2L, 10), "/lines", 201);
         long resultLineId = response.jsonPath().getLong("id");
 
         //then
-        delete("/lines/" + resultLineId);
+        delete("/lines/" + resultLineId, 200);
     }
 }
