@@ -98,10 +98,10 @@ public class Sections {
         }
         if (existByUpStationId(downStationId)) {
             return getSectionWithLineOrder(
-                findById(findIdByUpStationId(downStationId)).getLineOrder() + 1);
+                findById(findIdByUpStationId(downStationId)).getLineOrder());
         }
         return getSectionWithLineOrder(
-            findById(findIdByDownStationId(upStationId)).getLineOrder());
+            findById(findIdByDownStationId(upStationId)).getLineOrder() + 1);
     }
 
     private Section getUpdateSectionUpsideMatchingCase(
@@ -117,7 +117,7 @@ public class Sections {
         Section section = findById(findIdByDownStationId(downStationId));
         return new Section(
             section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
-            section.getDistance() - distance, section.getLineOrder());
+            section.getDistance() - distance, section.getLineOrder() + 1);
     }
 
     private Section getSectionWithLineOrder(long lineOrder) {

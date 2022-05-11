@@ -40,18 +40,28 @@ public class SectionService {
         sections.validateSection(upStationId, downStationId, distance);
 
         Section section = sections.findOverlapSection(upStationId, downStationId, distance);
-        updateSections(lineId, section);
+        updateSectionsAndGetLineOrder(lineId, section, upStationId);
 
         sectionDao.save(
             createSection(lineId, upStationId, downStationId, distance, section.getLineOrder()));
     }
 
-    private void updateSections(Long lineId, Section section) {
+    private void updateSectionsAndGetLineOrder(Long lineId, Section section, long upStationId) {
+        if (section.getDownStationId() == upStationId) {
+            handleExistDownNewDownMatchingCase(lineId, section);
+            return;
+        }
         if (section.getId() != null) {
             sectionDao.deleteById(section.getId());
             sectionDao.save(section);
         }
         sectionDao.updateLineOrderByInc(lineId, section.getLineOrder());
+    }
+
+    private void handleExistDownNewDownMatchingCase(Long lineId, Section section) {
+        sectionDao.updateLineOrderByInc(lineId, section.getLineOrder());
+        sectionDao.deleteById(section.getId());
+        sectionDao.save(section);
     }
 
     public List<Long> findAllStationByLineId(long lineId) {
