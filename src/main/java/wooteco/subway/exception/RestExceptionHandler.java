@@ -8,7 +8,7 @@ import wooteco.subway.dto.ErrorDto;
 @RestControllerAdvice
 public class RestExceptionHandler {
 
-    @ExceptionHandler({IllegalArgumentException.class})
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<ErrorDto> handle(RuntimeException exception) {
         return ResponseEntity.badRequest()
                 .body(new ErrorDto(exception.getMessage()));

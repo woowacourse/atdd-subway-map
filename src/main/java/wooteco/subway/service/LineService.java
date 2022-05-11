@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -13,10 +14,10 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.StringFormat;
 
 @Service
+@Transactional
 public class LineService {
 
     private static final String LINE_DUPLICATION_EXCEPTION_MESSAGE = "이름이 중복되는 지하철 노선이 존재합니다.";
@@ -39,15 +40,12 @@ public class LineService {
         }
         Line newLine = lineDao.save(lineRequest.toEntity());
         Station up = findExistStationById(lineRequest.getUpStationId());
-        Station down = stationDao.findById(lineRequest.getDownStationId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
-
+        Station down = findExistStationById(lineRequest.getDownStationId());
         sectionDao.save(newLine.getId(), new Section(up, down, lineRequest.getDistance()));
-
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(),
-                List.of(new StationResponse(up), new StationResponse(down)));
+        return LineResponse.of(newLine, List.of(up, down));
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<LineResponse> lineResponses = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
@@ -59,6 +57,7 @@ public class LineService {
         return lineResponses;
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line findLine = findExistLineById(id);
         List<Section> findSections = sectionDao.findAllByLineId(findLine.getId());
@@ -83,16 +82,19 @@ public class LineService {
         List<Section> findSections = sectionDao.findAllByLineId(line.getId());
         Sections origin = new Sections(findSections);
 
-        Station up = findExistStationById(sectionRequest.getUpStationId());
-        Station down = findExistStationById(sectionRequest.getDownStationId());
-        Section newSection = new Section(up, down, sectionRequest.getDistance());
-
+        Section newSection = getSectionByRequest(sectionRequest);
         Sections resultSections = new Sections(findSections);
         resultSections.insert(newSection);
         deleteAndSaveSections(lineId, origin, resultSections);
     }
 
-    private void deleteAndSaveSections(Long line_id, Sections origin, Sections resultSections) {
+    private Section getSectionByRequest(SectionRequest sectionRequest) {
+        Station up = findExistStationById(sectionRequest.getUpStationId());
+        Station down = findExistStationById(sectionRequest.getDownStationId());
+        return new Section(up, down, sectionRequest.getDistance());
+    }
+
+    private void deleteAndSaveSections(Long lineId, Sections origin, Sections resultSections) {
         List<Section> createdSections = resultSections.getDifferentList(origin);
         List<Section> toDeleteSections = origin.getDifferentList(resultSections);
 
@@ -100,7 +102,7 @@ public class LineService {
             sectionDao.remove(deleteTargetSection);
         }
         for (Section createdSection : createdSections) {
-            sectionDao.save(line_id, createdSection);
+            sectionDao.save(lineId, createdSection);
         }
     }
 
@@ -129,7 +131,8 @@ public class LineService {
 
     private Station findExistStationById(Long id) {
         return stationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        StringFormat.errorMessage(id, "해당 ID의 지하철역이 존재하지 않습니다.")));
     }
 
     private boolean isDuplicateName(String name) {
