@@ -8,8 +8,8 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,17 +34,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final List<StationResponse> STATION_RESPONSE_3_1 = List.of(STATION_3, STATION_1);
 
     @BeforeAll
-    void setup() throws Exception {
+    void setUpTables() throws Exception {
         try (Connection connection = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(connection, new ClassPathResource("setup_test_db.sql"));
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("lines_assurance_test_fixture.sql"));
         }
     }
 
-    @AfterEach
-    public void cleanseAndSetup() throws Exception {
+    @BeforeEach
+    public void cleanseAndSetUpFixture() throws Exception {
         try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("lines_assurance_test_fixture.sql"));
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("assurance_test_fixture.sql"));
         }
     }
 

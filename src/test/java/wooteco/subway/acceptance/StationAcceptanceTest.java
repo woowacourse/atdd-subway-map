@@ -25,14 +25,14 @@ import wooteco.subway.test_utils.HttpUtils;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @BeforeAll
-    void beforeAll() throws Exception {
+    void setUpTables() throws Exception {
         try (Connection connection = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(connection, new ClassPathResource("setup_test_db.sql"));
         }
     }
 
     @AfterEach
-    public void cleanse() throws Exception {
+    public void cleanseDb() throws Exception {
         try (Connection connection = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(connection, new ClassPathResource("cleanse_test_db.sql"));
         }
