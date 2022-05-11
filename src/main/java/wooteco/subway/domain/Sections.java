@@ -108,6 +108,36 @@ public class Sections implements Iterable<Section> {
         return new ArrayList<>(stations);
     }
 
+    public Section deleteAndUpdate(Station station) {
+        long count = sections.stream()
+            .filter(section -> section.isSameDownStation(station) || section.isSameUpStation(station))
+            .count();
+
+        if (count == 0) {
+            throw new IllegalArgumentException("해당 역을 지나지 않습니다.");
+        }
+
+        if (count == 1) {
+            Section deletedSection = sections.stream()
+                .filter(section -> section.isSameDownStation(station) || section.isSameUpStation(station))
+                .findFirst().orElseThrow();
+            sections.remove(deletedSection);
+            return deletedSection;
+        }
+
+        Section sectionWithSameUpStation = sections.stream()
+            .filter(section -> section.isSameUpStation(station))
+            .findFirst().orElseThrow();
+
+        Section sectionWithSameDownStation = sections.stream()
+            .filter(section -> section.isSameDownStation(station))
+            .findFirst().orElseThrow();
+
+        sectionWithSameDownStation.connect(sectionWithSameUpStation);
+        sections.remove(sectionWithSameUpStation);
+        return sectionWithSameUpStation;
+    }
+
     private class SectionIterator implements Iterator<Section> {
 
         private int current = 0;

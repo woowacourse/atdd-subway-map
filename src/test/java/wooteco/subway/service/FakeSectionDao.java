@@ -52,7 +52,7 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
-    public void delete(Long lineId) {
+    public void deleteAll(Long lineId) {
         List<Section> sectionInDeleteLine = sections.entrySet().stream()
             .filter(section2 -> section2.getValue().equals(lineId))
             .map(section2 -> section2.getKey())
@@ -61,5 +61,10 @@ public class FakeSectionDao implements SectionDao {
         for (Section section : sectionInDeleteLine) {
             sections.remove(section);
         }
+    }
+
+    @Override
+    public void delete(Long lineId, Section section) {
+        sections.remove(section);
     }
 }

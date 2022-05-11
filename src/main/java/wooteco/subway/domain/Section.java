@@ -48,8 +48,16 @@ public class Section {
         return section.upStation.equals(this.upStation);
     }
 
+    public boolean isSameUpStation(Station station) {
+        return station.equals(this.upStation);
+    }
+
     public boolean isSameDownStation(Section section) {
         return section.downStation.equals(this.downStation);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return station.equals(this.downStation);
     }
 
     public boolean canInsert(Section section) {
@@ -64,6 +72,11 @@ public class Section {
     public void changeDownStationAndDistance(Section section) {
         this.downStation = section.upStation;
         this.distance -= section.distance;
+    }
+
+    public void connect(Section sectionWithSameUpStation) {
+        this.downStation = sectionWithSameUpStation.downStation;
+        this.distance += sectionWithSameUpStation.distance;
     }
 
     public boolean isSameId(Long id) {

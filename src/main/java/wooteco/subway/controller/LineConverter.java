@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import wooteco.subway.dto.info.LineInfoToUpdate;
+import wooteco.subway.dto.info.RequestCreateSectionInfo;
+import wooteco.subway.dto.info.RequestDeleteSectionInfo;
 import wooteco.subway.dto.info.RequestLineInfo;
-import wooteco.subway.dto.info.RequestSectionInfo;
 import wooteco.subway.dto.info.ResponseLineInfo;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.request.SectionRequest;
@@ -30,8 +31,12 @@ public class LineConverter {
             stationResponses);
     }
 
-    static RequestSectionInfo toInfo(Long lineId, SectionRequest sectionRequest) {
-        return new RequestSectionInfo(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+    static RequestCreateSectionInfo toInfo(Long lineId, SectionRequest sectionRequest) {
+        return new RequestCreateSectionInfo(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
             sectionRequest.getDistance());
+    }
+
+    static RequestDeleteSectionInfo toInfo(Long lineId, Long stationId) {
+        return new RequestDeleteSectionInfo(lineId, stationId);
     }
 }

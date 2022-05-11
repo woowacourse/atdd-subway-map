@@ -12,5 +12,7 @@ public interface SectionDao {
 
     void update(Long lineId, Section section);
 
-    void delete(Long lineId);
+    void deleteAll(Long lineId);
+
+    void delete(Long lineId, Section section);
 }

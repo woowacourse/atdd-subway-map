@@ -515,4 +515,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
+        createStationForTest("잠실역");
+
+        ExtractableResponse<Response> createLineResponse = createLineForTest("2호선", "green", "1", "2", "10");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "2");
+        params.put("downStationId", "3");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> createdResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + createLineResponse.jsonPath().getLong("id") + "/sections")
+            .then().log().all()
+            .extract();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/" + createLineResponse.jsonPath().getLong("id") + "/sections?stationId=2")
+            .then().log().all()
+            .extract();
+        
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

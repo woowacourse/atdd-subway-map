@@ -53,6 +53,14 @@ public class Line {
         sections.checkCanAddAndUpdate(section);
     }
 
+    public Section delete(Station station) {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("구간이 1개 밖에 없으므로 삭제할 수 없습니다.");
+        }
+
+        return sections.deleteAndUpdate(station);
+    }
+
     public Long getId() {
         return id;
     }

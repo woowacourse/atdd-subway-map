@@ -17,8 +17,9 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineEntity;
 import wooteco.subway.dto.SectionEntity;
 import wooteco.subway.dto.info.LineInfoToUpdate;
+import wooteco.subway.dto.info.RequestCreateSectionInfo;
+import wooteco.subway.dto.info.RequestDeleteSectionInfo;
 import wooteco.subway.dto.info.RequestLineInfo;
-import wooteco.subway.dto.info.RequestSectionInfo;
 import wooteco.subway.dto.info.ResponseLineInfo;
 import wooteco.subway.dto.info.StationInfo;
 
@@ -134,7 +135,7 @@ public class LineService {
 
     public void delete(Long id) {
         validateNotExists(id);
-        sectionDao.delete(id);
+        sectionDao.deleteAll(id);
         lineDao.delete(id);
     }
 
@@ -144,11 +145,11 @@ public class LineService {
         }
     }
 
-    public void saveSection(RequestSectionInfo requestSectionInfo) {
-        Long lineId = requestSectionInfo.getLineId();
-        Long upStationId = requestSectionInfo.getUpStationId();
-        Long downStationId = requestSectionInfo.getDownStationId();
-        Integer distance = requestSectionInfo.getDistance();
+    public void saveSection(RequestCreateSectionInfo requestCreateSectionInfo) {
+        Long lineId = requestCreateSectionInfo.getLineId();
+        Long upStationId = requestCreateSectionInfo.getUpStationId();
+        Long downStationId = requestCreateSectionInfo.getDownStationId();
+        Integer distance = requestCreateSectionInfo.getDistance();
 
         validateNotExists(lineId);
         validateNotExistStation(upStationId);
@@ -164,5 +165,26 @@ public class LineService {
         Sections sections = line.getSections();
         sectionDao.save(line.getId(), section);
         sections.forEach(section1 -> sectionDao.update(line.getId(), section1));
+    }
+
+    public void deleteSection(RequestDeleteSectionInfo requestDeleteSectionInfo) {
+        Long lineId = requestDeleteSectionInfo.getLineId();
+        Long stationId = requestDeleteSectionInfo.getStationId();
+
+        validateNotExists(lineId);
+        validateNotExistStation(stationId);
+
+        Line line = createLine(lineId);
+        Station station = stationDao.getStation(stationId);
+        Section deletedSection = line.delete(station);
+
+        sectionDao.delete(lineId, deletedSection);
+        line.getSections().forEach(section -> sectionDao.update(lineId, section));
+    }
+
+    private Line createLine(Long lineId) {
+        LineEntity lineEntity = lineDao.find(lineId);
+        return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(),
+            new Sections(findSections(lineEntity.getId())));
     }
 }
