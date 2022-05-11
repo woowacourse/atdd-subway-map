@@ -30,7 +30,7 @@ public class Sections {
         value.add(section);
     }
 
-    public List<Section> getDeletedSections(final List<Section> sections) {
+    public List<Section> deleteAll(final List<Section> sections) {
         List<Section> origin = new ArrayList<>(value);
         origin.removeAll(sections);
         return origin;
@@ -58,6 +58,12 @@ public class Sections {
         return Optional.empty();
     }
 
+    public List<Station> extractStations() {
+        return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
     private Optional<Section> mergeSection(final List<Section> sections) {
         final Section section1 = sections.get(0);
         final Section section2 = sections.get(1);
@@ -69,12 +75,6 @@ public class Sections {
             return findSection(section2.merge(section1));
         }
         throw new IllegalStateException("서버에 오류가 발생했습니다.");
-    }
-
-    public List<Station> extractStations() {
-        return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation))
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     private void update(final Section source, final Section target) {

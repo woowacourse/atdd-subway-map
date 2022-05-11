@@ -23,7 +23,13 @@ public class LineService {
     public Line createLine(final Line line, final Section section) {
         validateDuplicateName(line);
         final Line savedLine = lineDao.save(line);
-        sectionDao.save(new Section(section.getUpStation(), section.getDownStation(), section.getDistance(), savedLine.getId()));
+        final Section sectionToSave = new Section(
+                section.getUpStation(),
+                section.getDownStation(),
+                section.getDistance(),
+                savedLine.getId()
+        );
+        sectionDao.save(sectionToSave);
         return savedLine;
     }
 

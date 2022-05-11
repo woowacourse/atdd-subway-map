@@ -29,19 +29,19 @@ public class SectionService {
         final Station downStation = stationDao.findById(section.getDownStation().getId())
                 .orElseThrow(() -> new DataNotFoundException("존재하지 않는 지하철역 ID입니다."));
 
-        Section newSection = new Section(upStation, downStation, section.getDistance(), lineId);
+        Section sectionToSave = new Section(upStation, downStation, section.getDistance(), lineId);
 
         final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
         final Sections sections = new Sections(lineSections);
-        sections.add(newSection);
+        sections.add(sectionToSave);
 
-        lineSections.add(newSection);
-        List<Section> sectionsToUpdate = sections.getDeletedSections(lineSections);
+        lineSections.add(sectionToSave);
+        List<Section> sectionsToUpdate = sections.deleteAll(lineSections);
         for (Section sectionToUpdate : sectionsToUpdate) {
             sectionDao.update(sectionToUpdate.getId(), sectionToUpdate);
         }
 
-        return sectionDao.save(newSection);
+        return sectionDao.save(sectionToSave);
     }
 
     @Transactional
