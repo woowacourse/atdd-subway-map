@@ -41,4 +41,50 @@ class SectionsTest {
         assertThatThrownBy(() -> Sections.forSave(List.of(SECTION), SECTION_4)).isInstanceOf(
                 IllegalArgumentException.class).hasMessage("해당 구간은 역과 연결될 수 없습니다.");
     }
+
+    @DisplayName("해당 중간 역 양옆 역들을 이은 새로운 구간을 계산한다.")
+    @Test
+    void calculateCombinedSection() {
+        Section section = new Section(1L, 1L, STATION, STATION_2, 5);
+        Section section2 = new Section(3L, 1L, STATION_2, STATION_3, 10);
+        Section section3 = new Section(2L, 1L, STATION_3, STATION_4, 6);
+        Sections sections = new Sections(List.of(section2, section, section3));
+        assertThat(sections.calculateCombinedSection(STATION_2))
+                .isEqualTo(new Section(1L, STATION, STATION_3, 15));
+    }
+
+    @DisplayName("노선에서 해당 역을 포함한 모든 구간들을 찾는다.")
+    @Test
+    void findLinks() {
+        Section section = new Section(1L, 1L, STATION, STATION_2, 5);
+        Section section2 = new Section(2L, 1L, STATION_2, STATION_3, 10);
+        Section section3 = new Section(3L, 1L, STATION_3, STATION_4, 6);
+        Sections sections = new Sections(List.of(section2, section, section3));
+        assertThat(sections.findLinks(STATION_2))
+                .containsOnly(section, section2);
+    }
+
+    @DisplayName("노선에서 해당 역이 맨 끝일 경우 종점 구간을 찾는다.")
+    @Test
+    void findSide() {
+        Section section = new Section(1L, 1L, STATION, STATION_2, 5);
+        Section section2 = new Section(2L, 1L, STATION_2, STATION_3, 10);
+        Section section3 = new Section(3L, 1L, STATION_3, STATION_4, 6);
+        Sections sections = new Sections(List.of(section2, section, section3));
+        assertThat(sections.findSide(STATION).orElseThrow())
+                .isEqualTo(section);
+        assertThat(sections.findSide(STATION_2))
+                .isEmpty();
+    }
+
+    @DisplayName("노선에서 해당 구간을 추가할 때 삽입될 기반 구간을 찾는다.")
+    @Test
+    void findMiddleBase() {
+        Section section = new Section(1L, STATION, STATION_2, 5);
+        Section section2 = new Section(1L, STATION_2, STATION_3, 10);
+        Section section3 = new Section(1L, STATION_2, STATION_4, 6);
+        Sections sections = new Sections(List.of(section, section2));
+        assertThat(sections.findMiddleBase(section3).orElseThrow())
+                .isEqualTo(section2);
+    }
 }

@@ -18,19 +18,4 @@ public class Fixtures {
     public static final Section SECTION_3 = new Section(1L, STATION_2, STATION_4, 3);
     public static final Section SECTION_4 = new Section(1L, STATION_3, STATION_4, 3);
     public static final Section SECTION_5 = new Section(1L, STATION_2, STATION_4, 10);
-
-    public static Station getStation(Long id, Station station) {
-        return new Station(id, station.getName());
-    }
-
-    public static Line getLine(Long id, Line line) {
-        return new Line(id, line.getName(), line.getColor());
-    }
-
-    public static Section getSection(Long id, Section section) {
-        return new Section(id, section.getLineId(),
-                section.getUpStation(),
-                section.getDownStation(),
-                section.getDistance());
-    }
 }

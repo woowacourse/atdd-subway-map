@@ -66,12 +66,12 @@ public class Sections {
         return sections.stream().filter(section -> section.contains(station)).collect(Collectors.toList());
     }
 
-    public Optional<Section> findSide(Station includedStation) {
-        if (isFirst(includedStation)) {
-            return Optional.of(findByUpStation(includedStation));
+    public Optional<Section> findSide(Station station) {
+        if (isFirst(station)) {
+            return Optional.of(findByUpStation(station));
         }
-        if (isLast(includedStation)) {
-            return Optional.of(findByDownStation(includedStation));
+        if (isLast(station)) {
+            return Optional.of(findByDownStation(station));
         }
         return Optional.empty();
     }

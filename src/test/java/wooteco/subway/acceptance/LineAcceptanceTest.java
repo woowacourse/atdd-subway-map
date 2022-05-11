@@ -1,7 +1,6 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.Fixtures.getStation;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -33,7 +32,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         setRequest().body(station).post("/stations");
         setRequest().body(station2).post("/stations");
         LineResponse lineResponse = new LineResponse(1L, "신분당선", "red",
-                List.of(getStation(1L, station.toEntity()), getStation(2L, station2.toEntity())));
+                List.of(station.toEntity(), station2.toEntity()));
 
         //when
         ExtractableResponse<Response> response = getResponse(setRequest().body(line).post("/lines"));
@@ -44,6 +43,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location"))
                 .isNotBlank();
         assertThat(response.body().as(LineResponse.class))
+                .usingRecursiveComparison()
+                .ignoringFields("stations.id", "stations.id")
                 .isEqualTo(lineResponse);
     }
 
@@ -103,7 +104,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         LineResponse createLine = getResponse(setRequest().body(line).post("/lines")).body().as(LineResponse.class);
         LineResponse lineResponse = new LineResponse(1L, "신분당선", "red",
-                List.of(getStation(1L, station.toEntity()), getStation(2L, station2.toEntity())));
+                List.of(station.toEntity(), station2.toEntity()));
 
         // when
         ExtractableResponse<Response> response = getResponse(setRequest().get("/lines"));
@@ -112,10 +113,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.OK.value());
         assertThat(createLine)
+                .usingRecursiveComparison()
+                .ignoringFields("stations.id")
                 .isEqualTo(lineResponse);
-        assertThat(response.body().asString())
-                .contains(
-                        "{\"id\":1,\"name\":\"신분당선\",\"color\":\"red\",\"stations\":[{\"id\":1,\"name\":\"강남역\"},{\"id\":2,\"name\":\"선릉역\"}]}");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -126,6 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> updateResponse = getResponse(setRequest().body(line2).put("/lines/1"));
+
         // then
         assertThat(updateResponse.statusCode())
                 .isEqualTo(HttpStatus.OK.value());
@@ -139,6 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> updateResponse = getResponse(setRequest().body(line2).put("/lines/2"));
+
         // then
         assertThat(updateResponse.statusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());

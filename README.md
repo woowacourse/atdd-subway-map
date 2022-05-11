@@ -97,7 +97,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] Sections에 서비스 로직 이동 및 테스트코드 이동
 - [x] SectionWithStation을 Section 도메인과 통합
 - [x] optional 추가
-- [ ] 새로 만든 도메인 객체들의 테스트코드 수정
+- [x] 새로 만든 도메인 객체들의 테스트코드 추가
 - [ ] 테스트코드 속도 개선
     - [ ] Drop table 대신 truncate 어쩌구 사용..
 - [ ] 테스트코드 가독성 개선
@@ -122,8 +122,10 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 메서드 라인수가 긴거같아요. 검증과 생성을 명시적으로 더 나눠보면 어떨까요?
 - [x] stream 문 개선
 - [x] executeMiddleSection의 기능을 save, execute로 분리
-- [ ] MockMVC와 기존 RestAssured 비교해 공부, 더 좋은 방식으로 결정
-- [ ] 어떤 부분은 검증을 먼저 해주고있는데요, 하나로 통일하면 어떨까요?
+- [x] 어떤 부분은 검증을 먼저 해주고있는데요, 하나로 통일하면 어떨까요?
+    - [x] 검증을 나눈 이유는 dao를 통한 검증 방식과 domain 내 검증 방식으로 나뉘기 때문.
+    - [x] 검증코드 대다수를 도메인 내부로 이동함.
+- [x] MockMVC와 기존 RestAssured 비교해 공부, 더 좋은 방식으로 결정 -> RestAssured 현행 유지
 
 ### 1/2단계 피드백
 

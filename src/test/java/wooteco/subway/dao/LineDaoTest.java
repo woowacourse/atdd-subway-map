@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.Fixtures.LINE;
 import static wooteco.subway.Fixtures.LINE_2;
-import static wooteco.subway.Fixtures.getLine;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +33,9 @@ class LineDaoTest {
 
         //when then
         assertThat(lineDao.findById(id))
-                .isEqualTo(getLine(id, LINE));
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(LINE);
     }
 
     @DisplayName("해당 이름의 지하철 노선이 있는지 여부를 확인한다.")
@@ -69,7 +70,9 @@ class LineDaoTest {
 
         //then
         assertThat(lines)
-                .containsOnly(getLine(id1, LINE), getLine(id2, LINE_2));
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(List.of(LINE, LINE_2));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
