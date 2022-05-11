@@ -38,7 +38,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         final List<Line> lines = lineService.getAllLines();
         final List<LineResponse> lineResponses = lines.stream()
@@ -48,7 +48,7 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         final Line line = lineService.getLineById(id);
         final LineResponse lineResponse = LineResponse.from(line, getStationsByLine(line));
@@ -56,7 +56,7 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable final Long id,
                                            @RequestBody @Valid final LineRequest lineRequest) {
         final Line line = lineRequest.toEntity();
