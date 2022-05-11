@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,11 +30,30 @@ class SectionDaoTest {
     @DisplayName("구간을 생성한다.")
     @Test
     void save() {
+        // when
         sectionDao.save(1L, new Section(1L, 2L, 10));
 
+        // then
         Integer count = jdbcTemplate.queryForObject("select count(*) from SECTION", Integer.class);
-
         assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("구간들을 생성한다.")
+    @Test
+    void saveAll() {
+        // given
+        Sections sections = new Sections(List.of(
+                new Section(1L, 2L, 10),
+                new Section(2L, 3L, 10),
+                new Section(3L, 4L, 10)
+        ));
+
+        // when
+        sectionDao.saveAll(1L, sections);
+
+        // then
+        Integer count = jdbcTemplate.queryForObject("select count(*) from SECTION", Integer.class);
+        assertThat(count).isEqualTo(3);
     }
 
     @DisplayName("특정 지하철 노선에 특정 지하철역이 존재하면 true 를 반환한다.")

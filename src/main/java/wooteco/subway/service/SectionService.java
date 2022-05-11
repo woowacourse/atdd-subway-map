@@ -25,7 +25,8 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findAllById(lineId));
         sections.add(newSection);
 
-//        sectionDao.replace(sections);
+        sectionDao.delete(lineId);
+        sectionDao.saveAll(lineId, sections);
     }
 
     private void validateStationInSection(final SectionRequest sectionRequest) {
