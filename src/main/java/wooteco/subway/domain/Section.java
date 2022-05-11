@@ -10,16 +10,20 @@ public class Section {
     private final int distance;
     private final Long lineId;
 
+    public Section(final Station upStation, final Station downStation, final int distance) {
+        this(null, upStation, downStation, distance, null);
+    }
+
+    public Section(final Station upStation, final Station downStation, final int distance, final Long lineId) {
+        this(null, upStation, downStation, distance, lineId);
+    }
+
     public Section(final Long id, final Station upStation, final Station downStation, final int distance, final Long lineId) {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
         this.lineId = lineId;
-    }
-
-    public Section(final Station upStation, final Station downStation, final int distance, final Long lineId) {
-        this(null, upStation, downStation, distance, lineId);
     }
 
     public Long getId() {

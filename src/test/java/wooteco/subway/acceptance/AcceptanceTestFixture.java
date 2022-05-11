@@ -19,6 +19,16 @@ public class AcceptanceTestFixture {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> post(String uri, Object param) {
+        return RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(uri)
+                .then().log().all()
+                .extract();
+    }
+
     static ExtractableResponse<Response> get(String uri) {
         return RestAssured.given().log().all()
                 .when()

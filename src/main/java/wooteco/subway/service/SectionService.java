@@ -20,13 +20,16 @@ public class SectionService {
 
     @Transactional
     public Section addSection(final long lineId, final Section section) {
-        final Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
+        final Sections sections = new Sections(lineSections);
         sections.add(section);
 
-        final Section updatedSection = sections.findLastInsert();
-        if (!updatedSection.equals(section)) {
-            sectionDao.update(updatedSection.getId(), updatedSection);
+        lineSections.add(section);
+        List<Section> sectionsToUpdate = sections.extract(lineSections);
+        for (Section sectionToUpdate : sectionsToUpdate) {
+            sectionDao.update(sectionToUpdate.getId(), sectionToUpdate);
         }
+
         return sectionDao.save(section);
     }
 

@@ -8,7 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +30,9 @@ class LineServiceTest {
     @MockBean
     private LineDao lineDao;
 
+    @MockBean
+    private SectionDao sectionDao;
+
     private final LineService lineService;
 
     @Autowired
@@ -38,9 +44,13 @@ class LineServiceTest {
     @Test
     void lineCreateTest() {
         Line line = new Line("2호선", "bg-green-600");
-        given(lineDao.save(line)).willReturn(new Line(1L, "2호선", "bg-green-600"));
+        final Section section = new Section(new Station(1L, null), new Station(2L, null), 3, 1L);
 
-        final Line savedLine = lineService.create(line);
+        given(lineDao.save(line)).willReturn(new Line(1L, "2호선", "bg-green-600"));
+        given(sectionDao.save(section)).willReturn(section);
+
+        final Line savedLine = lineService.create(line, section);
+
         assertAll(
                 () -> assertThat(savedLine.getId()).isEqualTo(1L),
                 () -> assertThat(savedLine.getName()).isEqualTo("2호선"),

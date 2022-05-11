@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 import java.util.HashMap;
@@ -26,42 +27,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "상일동역");
+        StationRequest stationRequest = new StationRequest("아차산역");
 
         // when
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", params);
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", stationRequest);
 
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank()
-        );
-    }
-
-    @DisplayName("지하철역을 생성할 때 입력값이 잘못되면 예외를 발생한다.")
-    @ParameterizedTest
-    @MethodSource("badStationRequest")
-    void createStationWithBadInput(String name, String errorMessage) {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        // when
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", params);
-
-        // then
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isEqualTo(errorMessage)
-        );
-    }
-
-    private static Stream<Arguments> badStationRequest() {
-        return Stream.of(
-                Arguments.of(new String(new char[256]), "역이름은 255자를 초과할 수 없습니다."),
-                Arguments.of("", "역이름은 비어있을 수 없습니다."),
-                Arguments.of(null, "역이름은 비어있을 수 없습니다.")
         );
     }
 

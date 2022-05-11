@@ -7,6 +7,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,9 +22,9 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line savedLine = lineService.create(line);
+        Line savedLine = lineService.create(line, lineRequest.toSectionEntity());
         return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(LineResponse.of(savedLine));
     }
 
@@ -41,7 +42,7 @@ public class LineController {
     }
 
     @PutMapping("/lines/{lineId}")
-    public void updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
+    public void updateLine(@PathVariable Long lineId, @RequestBody @Valid LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
         lineService.modify(lineId, newLine);
     }

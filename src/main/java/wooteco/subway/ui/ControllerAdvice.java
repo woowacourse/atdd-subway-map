@@ -9,7 +9,7 @@ import wooteco.subway.dto.ErrorMessageResponse;
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<ErrorMessageResponse> illegalArgumentExceptionHandler(RuntimeException e) {
         ErrorMessageResponse errorMessageResponse = new ErrorMessageResponse(e.getMessage());
         return ResponseEntity.badRequest().body(errorMessageResponse);

@@ -2,7 +2,9 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,15 +14,20 @@ public class LineService {
 
     private final LineDao lineDao;
 
-    public LineService(LineDao lineDao) {
+    private final SectionDao sectionDao;
+
+    public LineService(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
-    public Line create(Line line) {
+    public Line create(Line line, Section section) {
         if (checkExistByName(line.getName())) {
             throw new IllegalArgumentException("이미 같은 이름의 노선이 존재합니다.");
         }
-        return lineDao.save(line);
+        final Line savedLine = lineDao.save(line);
+        sectionDao.save(new Section(section.getUpStation(), section.getDownStation(), section.getDistance(), savedLine.getId()));
+        return savedLine;
     }
 
     public List<Line> queryAll() {
