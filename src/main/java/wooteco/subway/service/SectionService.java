@@ -19,7 +19,7 @@ public class SectionService {
 
     @Transactional
     public Section save(Section section) {
-        Sections sections = new Sections(sectionDao.findByLineId(section.getLineId()), section.getLineId());
+        Sections sections = sectionDao.findByLineId(section.getLineId());
         sections.validateAddable(section);
         if (sections.needToChangeExistingSection(section)) {
             Section newSection = sections.findNeedUpdatingSection(section);
@@ -28,12 +28,12 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
-    public List<Section> findByLineId(long lineId) {
+    public Sections findByLineId(long lineId) {
         return sectionDao.findByLineId(lineId);
     }
 
     public List<Long> findArrangedStationIdsByLineId(Long id) {
-        Sections sections = new Sections(sectionDao.findByLineId(id), id);
+        Sections sections = sectionDao.findByLineId(id);
         List<Section> endSections = sections.findEndSections();
         Section endUpSection = endSections.get(0);
 
@@ -42,7 +42,7 @@ public class SectionService {
 
     @Transactional
     public void remove(Long lineId, Long stationId) {
-        Sections sections = new Sections(sectionDao.findByLineId(lineId), lineId);
+        Sections sections = sectionDao.findByLineId(lineId);
         sections.validateRemovable(stationId);
         if (sections.isEndStation(stationId)) {
             Long sectionId = sections.findEndSectionIdToRemove(stationId);

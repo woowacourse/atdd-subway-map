@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
@@ -59,9 +60,9 @@ public class SectionDaoImplTest {
     void update() {
         sectionDao.update(new Section(section.getId(), line.getId(), 3L, 2L, 5));
 
-        List<Section> sections = sectionDao.findByLineId(1L);
+        Sections sections = sectionDao.findByLineId(1L);
 
-        Section newSection = sections.get(0);
+        Section newSection = sections.getSections().get(0);
 
         assertThat(newSection.getUpStationId()).isEqualTo(3L);
         assertThat(newSection.getDownStationId()).isEqualTo(2L);
@@ -71,9 +72,9 @@ public class SectionDaoImplTest {
     @Test
     void findByLineId() {
         section = sectionDao.save(new Section(1L, 2L, 3L, 5));
-        List<Section> sections = sectionDao.findByLineId(1L);
+        Sections sections = sectionDao.findByLineId(1L);
 
-        assertThat(sections).hasSize(2);
+        assertThat(sections.getSections()).hasSize(2);
     }
 
     @DisplayName("section에 해당하는 구간을 삭제한다.")
@@ -82,9 +83,9 @@ public class SectionDaoImplTest {
         section = sectionDao.save(new Section(1L, 2L, 3L, 5));
 
         sectionDao.delete(section.getId());
-        List<Section> sections = sectionDao.findByLineId(1L);
+        Sections sections = sectionDao.findByLineId(1L);
 
-        assertThat(sections).hasSize(1);
+        assertThat(sections.getSections()).hasSize(1);
     }
 
     @DisplayName("ids에 해당하는 모든 구간을 삭제한다.")
@@ -95,7 +96,7 @@ public class SectionDaoImplTest {
 
         sectionDao.deleteByIds(ids);
 
-        List<Section> sections = sectionDao.findByLineId(1L);
-        assertThat(sections).hasSize(0);
+        Sections sections = sectionDao.findByLineId(1L);
+        assertThat(sections.getSections()).hasSize(0);
     }
 }

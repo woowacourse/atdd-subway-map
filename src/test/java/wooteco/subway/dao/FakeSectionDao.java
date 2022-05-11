@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 public class FakeSectionDao implements SectionDao {
 
@@ -23,11 +24,11 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findByLineId(Long lineId) {
-        return sections.values()
+    public Sections findByLineId(Long lineId) {
+        return new Sections(sections.values()
                 .stream()
                 .filter(section -> section.getLineId().equals(lineId))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()), lineId);
     }
 
     @Override
@@ -41,7 +42,6 @@ public class FakeSectionDao implements SectionDao {
 
     @Override
     public int deleteByIds(List<Long> ids) {
-        System.out.println(ids);
         for (Long id : ids) {
             sections.remove(id);
         }

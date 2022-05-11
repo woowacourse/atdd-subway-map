@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 @Repository
 public class SectionDaoImpl implements SectionDao {
@@ -52,10 +53,10 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public List<Section> findByLineId(Long lineId) {
+    public Sections findByLineId(Long lineId) {
         String sql = "select * from section where line_id = :lineId";
         SqlParameterSource namedParameter = new MapSqlParameterSource("lineId", lineId);
-        return namedParameterJdbcTemplate.query(sql, namedParameter, ACTOR_ROW_MAPPER);
+        return new Sections(namedParameterJdbcTemplate.query(sql, namedParameter, ACTOR_ROW_MAPPER), lineId);
     }
 
     @Override

@@ -56,9 +56,10 @@ public class SectionServiceTest {
 
         sectionService.save(newSection);
 
-        List<Section> sections = sectionService.findByLineId(1L);
+        Sections sections = sectionService.findByLineId(1L);
 
-        Section targetSection = sections.stream()
+        Section targetSection = sections.getSections()
+                .stream()
                 .filter(it -> it.getId().equals(1L))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
@@ -73,9 +74,10 @@ public class SectionServiceTest {
 
         sectionService.save(newSection);
 
-        List<Section> sections = sectionService.findByLineId(1L);
+        Sections sections = sectionService.findByLineId(1L);
 
-        Section targetSection = sections.stream()
+        Section targetSection = sections.getSections()
+                .stream()
                 .filter(section -> section.getId().equals(1L))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
@@ -135,7 +137,7 @@ public class SectionServiceTest {
         Section newSection = new Section(1L, 2L, 3L, 5);
         sectionService.save(newSection);
 
-        Sections sections = new Sections(sectionService.findByLineId(1L), 1L);
+        Sections sections = sectionService.findByLineId(1L);
 
         assertThat(sections.getSections()).hasSize(2);
     }
@@ -146,7 +148,7 @@ public class SectionServiceTest {
         Section newSection = new Section(1L, 2L, 3L, 5);
         sectionService.save(newSection);
 
-        Sections sections = new Sections(sectionService.findByLineId(1L), 1L);
+        Sections sections = sectionService.findByLineId(1L);
 
         assertThat(sections.getSections()).hasSize(2);
     }
@@ -198,6 +200,7 @@ public class SectionServiceTest {
 
         List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(1L);
         Section newSection = sectionService.findByLineId(1L)
+                .getSections()
                 .stream()
                 .filter(it -> it.isSameUpStationId(1L))
                 .findFirst()
