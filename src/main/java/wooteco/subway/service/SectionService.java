@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
@@ -36,5 +37,11 @@ public class SectionService {
             .forEach(sectionDao::save);
     }
 
+    public void deleteSection(final Long lineId, final Long stationId) {
+        final Sections previousSections = new Sections(sectionDao.findByLineId(lineId));
+        List<Section> updatedSections = previousSections.remove(lineId, stationId);
+        updatedSections.forEach(section -> sectionDao.deleteById(section.getId()));
 
+        sectionDao.save(previousSections.mergeSection(lineId, stationId));
+    }
 }

@@ -56,4 +56,9 @@ public class SectionDao {
             rs.getInt("distance")
         ));
     }
+
+    public void deleteById(final Long id) {
+        final String sql = "delete from SECTION where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }

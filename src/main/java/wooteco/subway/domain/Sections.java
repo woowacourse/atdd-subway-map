@@ -163,4 +163,35 @@ public class Sections {
                 s.getDistance() == section.getDistance() &&
                 Objects.equals(s.getLineId(), section.getLineId()));
     }
+
+    public List<Section> remove(final Long lineId, final Long stationId) {
+        validateMinimumSectionSize();
+        List<Section> removeSections = this.sections.stream()
+            .filter(s -> s.getUpStation().getId().equals(stationId) ||
+                s.getDownStation().getId().equals(stationId))
+            .collect(Collectors.toList());
+
+        removeSections.forEach(sections::remove);
+        return removeSections;
+    }
+
+    private void validateMinimumSectionSize() {
+        if (sections.size() == 1) {
+            throw new IllegalStateException("구간은 2개 이상이어야 합니다.");
+        }
+    }
+
+    public Section mergeSection(final Long lineId, final Long stationId) {
+        Section upSection = sections.stream()
+            .filter(s -> s.getDownStation().getId().equals(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("구간을 찾을 수 없습니다."));
+        Section downSection = sections.stream()
+            .filter(s -> s.getUpStation().getId().equals(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("구간을 찾을 수 없습니다."));
+        int newDistance = upSection.getDistance() + downSection.getDistance();
+
+        return new Section(lineId, upSection.getUpStation(), downSection.getDownStation(), newDistance);
+    }
 }
