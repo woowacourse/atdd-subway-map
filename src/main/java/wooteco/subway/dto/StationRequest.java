@@ -10,6 +10,10 @@ public class StationRequest {
     private StationRequest() {
     }
 
+    public StationRequest(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
