@@ -1,6 +1,9 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.Fixtures.STATION;
+import static wooteco.subway.Fixtures.STATION_2;
+import static wooteco.subway.Fixtures.STATION_4;
 import static wooteco.subway.Fixtures.getStation;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
@@ -50,6 +54,18 @@ class StationDaoTest {
         assertThat(stationDao.hasStation(id))
                 .isTrue();
         assertThat(stationDao.hasStation(100L))
+                .isFalse();
+    }
+
+    @DisplayName("해당 구간 속 지하철역이 있는지 확인한다.")
+    @Test
+    void hasValidStations() {
+        Station upStation = stationDao.findById(stationDao.save(STATION));
+        Station downStation = stationDao.findById(stationDao.save(STATION_2));
+
+        assertThat(stationDao.hasValidStations(new Section(1L, upStation, downStation, 10)))
+                .isTrue();
+        assertThat(stationDao.hasValidStations(new Section(1L, STATION_4, downStation, 10)))
                 .isFalse();
     }
 

@@ -108,4 +108,20 @@ class SectionDaoTest {
         assertThat(sectionDao.findAllByLineId(lineId))
                 .hasSize(0);
     }
+
+    @DisplayName("해당 아이디의 구간이 있는지 확인한다.")
+    @Test
+    void hasSection() {
+        Station station = stationDao.findById(stationDao.save(STATION));
+        Station station2 = stationDao.findById(stationDao.save(STATION_2));
+        Long lineId = lineDao.save(LINE);
+        Section section = new Section(lineId, station, station2, 10);
+        Long id = sectionDao.save(section);
+
+        //when then
+        assertThat(sectionDao.hasSection(id))
+                .isTrue();
+        assertThat(sectionDao.hasSection(100L))
+                .isFalse();
+    }
 }

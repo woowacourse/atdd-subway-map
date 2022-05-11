@@ -75,4 +75,9 @@ public class SectionDao {
         jdbcTemplate.batchUpdate(sql, sections, sections.size(),
                 (statement, section) -> statement.setLong(1, section.getId()));
     }
+
+    public boolean hasSection(Long id) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM section WHERE id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
 }

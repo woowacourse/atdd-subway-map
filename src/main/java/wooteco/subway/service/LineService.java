@@ -30,6 +30,7 @@ public class LineService {
     }
 
     public Line findById(Long id) {
+        validateID(id);
         return lineDao.findById(id);
     }
 
