@@ -71,7 +71,7 @@
 - [x]  특정 노선을 삭제한다. `DELETE /lines/{id} -> 204(No content)`
 
 ### 구간(Section)
-- [ ] 구간을 등록한다. `POST /lines/{line_id}/sections -> 200(OK)`
+- [x] 구간을 등록한다. `POST /lines/{line_id}/sections -> 200(OK)`
   - [ ] 기존 노선의 종점이 두 역중 하나와 다른 방향 종점 -> 노선을 연장
   - [ ] 기존 노선의 구간이 같은 방향 종점 -> 새로 추가되는 역을 기준으로 기존 구간 분리
     - [ ] [예외] 새로 추가하는 구간의 distance가 기존 구간 distance 이상 -> 추가 X

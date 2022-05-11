@@ -55,6 +55,15 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
+    public Station findById(Long id) {
+        final String sql = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+        ), id);
+    }
+
+    @Override
     public void deleteById(Long id) {
         final String sql = "DELETE FROM station WHERE id = ?";
         final int deletedCount = jdbcTemplate.update(sql, id);
