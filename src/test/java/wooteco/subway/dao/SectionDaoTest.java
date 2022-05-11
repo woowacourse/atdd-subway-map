@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Section;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
@@ -38,5 +40,25 @@ class SectionDaoTest {
         final int actual = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM Section", Integer.class);
 
         assertThat(actual).isEqualTo(1);
+    }
+
+    @DisplayName("노선에 해당하는 Section 객체들을 가져오는 것을 확인한다.")
+    @Test
+    void find_sections_by_line_id() {
+        final Section section = new Section(1L, 2L, 10);
+        sectionDao.save(1L, section);
+        final List<Section> sections = sectionDao.findSectionsByLineId(1L);
+        final int actual = sections.size();
+
+        assertThat(actual).isEqualTo(1);
+    }
+
+    @DisplayName("노선에 해당하는 Section 객체들이 없을 때 빈 리스트를 가져오는 것을 확인한다.")
+    @Test
+    void find_sections_by_line_id_when_empty() {
+        final List<Section> sections = sectionDao.findSectionsByLineId(1L);
+        final int actual = sections.size();
+
+        assertThat(actual).isEqualTo(0);
     }
 }

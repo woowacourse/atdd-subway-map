@@ -11,6 +11,26 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section divideRight(final Section section) {
+        return new Section(section.downStationId, downStationId, distance - section.distance);
+    }
+
+    public Section divideLeft(final Section section) {
+        return new Section(upStationId, section.upStationId, distance - section.distance);
+    }
+
+    public boolean isConnected(final Section section) {
+        return downStationId.equals(section.upStationId);
+    }
+
+    public boolean equalsUpStation(final Section section) {
+        return upStationId.equals(section.upStationId);
+    }
+
+    public boolean equalsDownStation(final Section section) {
+        return downStationId.equals(section.downStationId);
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }

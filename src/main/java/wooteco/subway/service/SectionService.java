@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 import java.util.HashSet;
@@ -20,13 +21,30 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public void create(final Long id, final Long upStationId, final Long downStationId, final int distance) {
-        final Section section = new Section(upStationId, downStationId, distance);
+    public void createFirstInLine(final Long id, final Section section) {
+        sectionDao.deleteAllByLine(id);
         sectionDao.save(id, section);
     }
 
-    public void deleteSectionByStationIdInLineId(final Long lineId, final Long stationId) {
-        sectionDao.delete(lineId, stationId);
+    public void create(final Long id, final Long upStationId, final Long downStationId, final int distance) {
+        final Sections sections = new Sections(sectionDao.findSectionsByLineId(id));
+        final Section section = new Section(upStationId, downStationId, distance);
+        if (sections.isLastStation(section)) {
+            sectionDao.save(id, section);
+        }
+        if (sections.matchUpStationId(section)) {
+            final Section targetSection = sectionDao.findSectionByUpStationId(id, section);
+            insertSectionInTargetSection(id, section, targetSection.divideRight(section));
+        }
+        if (sections.matchDownStationId(section)) {
+            final Section targetSection = sectionDao.findSectionByDownStationId(id, section);
+            insertSectionInTargetSection(id, targetSection.divideLeft(section), section);
+        }
+    }
+
+    private void insertSectionInTargetSection(final Long id, final Section leftSection, final Section rightSection) {
+        sectionDao.editByUpStationId(id, leftSection);
+        sectionDao.save(id, rightSection);
     }
 
     public List<Station> findStationsByLineId(final Long lineId) {
@@ -40,5 +58,8 @@ public class SectionService {
             stationIds.add(section.getDownStationId());
         }
         return stationIds;
+    }
+
+    public void deleteSectionByStationId(Long lineId, Long stationId) {
     }
 }

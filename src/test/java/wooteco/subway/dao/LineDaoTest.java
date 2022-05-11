@@ -62,7 +62,7 @@ public class LineDaoTest {
 
     @DisplayName("모든 Line을 가져오는 것을 확인한다.")
     @Test
-    void findAll() {
+    void find_all() {
         jdbcTemplate.update("insert into Line (name, color) values (?, ?)", "1호선", "#0052A4");
         jdbcTemplate.update("insert into Line (name, color) values (?, ?)", "2호선", "##009D3E");
         jdbcTemplate.update("insert into Line (name, color) values (?, ?)", "3호선", "#EF7C1C");
@@ -74,7 +74,7 @@ public class LineDaoTest {
 
     @DisplayName("인자로 전달된 id를 가지는 Line을 가져오는 것을 확인한다.")
     @Test
-    void findById() {
+    void find_by_id() {
         jdbcTemplate.update("insert into Line (name, color) values (?, ?)", "1호선", "#0052A4");
         final Line line = lineDao.findById(1L);
         final String actual = line.getName();
@@ -94,7 +94,7 @@ public class LineDaoTest {
 
     @DisplayName("인자로 전달된 id를 가지는 레코드가 삭제되는 것을 확인한다.")
     @Test
-    void deleteById() {
+    void delete_by_id() {
         jdbcTemplate.update("insert into Line (name, color) values (?, ?)", "1호선", "#0052A4");
         lineDao.deleteById(1L);
         final int actual = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM Line WHERE name = '1호선'", Integer.class);

@@ -22,14 +22,29 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
-    public void delete(final Long lineId, final Long stationId) {
-        final String sql = "delete from Section where line_id = ? and (up_station_id = ? OR down_station_id = ?)";
-        jdbcTemplate.update(sql, lineId, stationId, stationId);
-    }
-
     public List<Section> findSectionsByLineId(final Long lineId) {
         final String sql = String.format("select * from Section where line_id = %d", lineId);
         return jdbcTemplate.query(sql, new SectionMapper());
+    }
+
+    public void deleteAllByLine(final Long id) {
+        final String sql = "delete from Section where line_id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public void editByUpStationId(final Long lineId, final Section section) {
+        final String sql = "update Section set down_station_id = ?, distance = ? where line_id = ? and up_station_id = ?";
+        jdbcTemplate.update(sql, section.getDownStationId(), section.getDistance(), lineId, section.getUpStationId());
+    }
+
+    public Section findSectionByUpStationId(final Long lineId, final Section section) {
+        final String sql = String.format("select * from Section where line_id = %d and up_station_id = %d", lineId, section.getUpStationId());
+        return jdbcTemplate.queryForObject(sql, new SectionMapper());
+    }
+
+    public Section findSectionByDownStationId(final Long lineId, final Section section) {
+        final String sql = String.format("select * from Section where line_id = %d and down_station_id = %d", lineId, section.getDownStationId());
+        return jdbcTemplate.queryForObject(sql, new SectionMapper());
     }
 
     private static final class SectionMapper implements RowMapper<Section> {

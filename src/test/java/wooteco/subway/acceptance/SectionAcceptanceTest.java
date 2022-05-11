@@ -20,9 +20,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         // given
+        Map<String, Object> params1 = new HashMap<>();
+        params1.put("name", "1호선");
+        params1.put("color", "red");
+        params1.put("upStationId", 1L);
+        params1.put("downStationId", 2L);
+        params1.put("distance", 10);
+
+        RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", 1L);
-        params.put("downStationId", 2L);
+        params.put("upStationId", 2L);
+        params.put("downStationId", 3L);
         params.put("distance", 10);
 
         // when

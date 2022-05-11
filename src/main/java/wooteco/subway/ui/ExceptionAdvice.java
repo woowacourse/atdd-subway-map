@@ -4,6 +4,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import wooteco.subway.exception.IllegalSectionCreatedException;
 import wooteco.subway.exception.NameDuplicationException;
 
 @ControllerAdvice
@@ -22,4 +23,9 @@ public class ExceptionAdvice {
 //    public ResponseEntity<Void> exceptions() {
 //        return ResponseEntity.badRequest().build();
 //    }
+
+    @ExceptionHandler(IllegalSectionCreatedException.class)
+    public ResponseEntity<Void> illegalSectionCreated() {
+        return ResponseEntity.badRequest().build();
+    }
 }
