@@ -3,20 +3,20 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.anyLong;
+import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.JdbcSectionDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionDeleteRequest;
 import wooteco.subway.dto.SectionSaveRequest;
 
@@ -25,7 +25,7 @@ import wooteco.subway.dto.SectionSaveRequest;
 class SectionServiceTest {
 
     @Mock
-    private JdbcSectionDao sectionDao;
+    private SectionDao sectionDao;
 
     @InjectMocks
     private SectionService sectionService;

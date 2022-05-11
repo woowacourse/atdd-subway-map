@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -20,10 +20,10 @@ import wooteco.subway.exception.NotFoundException;
 public class LineService {
 
     private final LineDao lineDao;
-    private final JdbcSectionDao sectionDao;
+    private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public LineService(LineDao lineDao, JdbcSectionDao sectionDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
@@ -45,7 +45,8 @@ public class LineService {
     }
 
     private void saveSection(Long lineId, LineRequest request) {
-        Section section = new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance());
+        Section section = new Section(lineId, request.getUpStationId(), request.getDownStationId(),
+                request.getDistance());
         sectionDao.save(section);
     }
 

@@ -1,7 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.JdbcSectionDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.DeletableSections;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -11,9 +11,9 @@ import wooteco.subway.dto.SectionSaveRequest;
 @Service
 public class SectionService {
 
-    private final JdbcSectionDao sectionDao;
+    private final SectionDao sectionDao;
 
-    public SectionService(JdbcSectionDao sectionDao) {
+    public SectionService(SectionDao sectionDao) {
         this.sectionDao = sectionDao;
     }
 

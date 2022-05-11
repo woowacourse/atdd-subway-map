@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 
 @Repository
-public class JdbcSectionDao {
+public class JdbcSectionDao implements SectionDao {
 
     private static final String TABLE_NAME = "section";
 
@@ -23,6 +23,7 @@ public class JdbcSectionDao {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Section save(Section section) {
         Map<String, ?> params = Map.of(
                 "line_id", section.getLine_id(),
@@ -49,16 +50,19 @@ public class JdbcSectionDao {
         };
     }
 
+    @Override
     public List<Section> findByLineId(Long lineId) {
         final String sql = "SELECT * FROM section WHERE line_id = ?";
         return jdbcTemplate.query(sql, getRowMapper(), lineId);
     }
 
+    @Override
     public int deleteById(Long id) {
         final String sql = "DELETE FROM section WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public int update(Section sections) {
         final String sql = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
         return jdbcTemplate.update(sql, sections.getUpStationId(), sections.getDownStationId(),
