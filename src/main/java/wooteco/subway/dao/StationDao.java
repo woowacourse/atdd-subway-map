@@ -27,12 +27,10 @@ public class StationDao {
         return createNewObject(station);
     }
 
-    public void checkDuplication(Station station) {
-        String sql = String.format("select count(*) from STATION where name = '%s'", station.getName());
-
-        if (jdbcTemplate.queryForObject(sql, Integer.class) > 0) {
-            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
-        }
+    private Station createNewObject(Station station) {
+        String sql = "select max(id) from STATION";
+        Long id = jdbcTemplate.queryForObject(sql, Long.class);
+        return new Station(id, station.getName());
     }
 
     public List<Station> findAll() {
@@ -40,21 +38,9 @@ public class StationDao {
         return jdbcTemplate.query(sql, new StationMapper());
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = "delete from STATION where id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    private static class StationMapper implements RowMapper<Station> {
-        public Station mapRow(ResultSet rs, int rowCnt) throws SQLException {
-            return new Station(rs.getLong("id"), rs.getString("name"));
-        }
-    }
-
-    private Station createNewObject(Station station) {
-        String sql2 = "select max(id) from STATION";
-        Long id = jdbcTemplate.queryForObject(sql2, Long.class);
-        return new Station(id, station.getName());
     }
 
     public Station findById(Long id) {
@@ -62,8 +48,18 @@ public class StationDao {
         return jdbcTemplate.queryForObject(sql, new StationMapper());
     }
 
-    public List<Station> findByIdIn(List<String> stringIds) {
+    public List<Station> findByIdIn(Set<Long> ids) {
+        List<String> stringIds = ids.stream()
+                .map(id -> Long.toString(id))
+                .collect(Collectors.toList());
+
         String sql = String.format("select * from STATION where id in (%s)", String.join(", ", stringIds));
         return jdbcTemplate.query(sql, new StationMapper());
+    }
+
+    private static class StationMapper implements RowMapper<Station> {
+        public Station mapRow(ResultSet rs, int rowCnt) throws SQLException {
+            return new Station(rs.getLong("id"), rs.getString("name"));
+        }
     }
 }
