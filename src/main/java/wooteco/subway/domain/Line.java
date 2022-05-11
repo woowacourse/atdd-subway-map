@@ -1,55 +1,49 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 public class Line {
 
+    private final Long id;
     private final String name;
     private final String color;
-    private final List<Section> sections;
 
-    public Line(String name, String color, List<Section> sections) {
+    public Line(Long id, String name, String color) {
+        this.id = id;
         this.name = name;
         this.color = color;
-        this.sections = sections;
     }
 
-    public List<Station> getTrainsFromUpLine() {
-        List<Station> stations = new ArrayList<>();
-
-        List<Station> upStations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        List<Station> downStations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        Station endOftheUpLine = endOftheUpLine(upStations, downStations);
-        stations.add(endOftheUpLine);
-        addStation(stations, endOftheUpLine);
-        return stations;
+    public Line(String name, String color) {
+        this(0L, name, color);
     }
 
-    private void addStation(List<Station> stations, Station upStation) {
-        Optional<Section> section = sections.stream()
-                .filter(s -> s.isUpStation(upStation))
-                .findAny();
+    public Long getId() {
+        return id;
+    }
 
-        if (!section.isPresent()) {
-            return;
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-
-        Station downStation = section.get().getDownStation();
-        stations.add(downStation);
-        addStation(stations, downStation);
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
     }
 
-    private Station endOftheUpLine(List<Station> upStations, List<Station> downStations) {
-        return upStations.stream()
-                .filter(station -> !downStations.contains(station))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 노선입니다."));
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, color);
     }
 }

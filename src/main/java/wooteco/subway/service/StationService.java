@@ -3,7 +3,7 @@ package wooteco.subway.service;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.dao.entity.StationEntity;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class StationService {
 
     public StationResponse create(String name) {
         try {
-            StationEntity newStation = stationDao.save(new StationEntity(name));
+            Station newStation = stationDao.save(new Station(name));
             return new StationResponse(newStation.getId(), newStation.getName());
         } catch (DuplicateKeyException e) {
             throw new DuplicateKeyException("이미 존재하는 역 이름이 있습니다.");
@@ -28,7 +28,7 @@ public class StationService {
     }
 
     public List<StationResponse> findAll() {
-        List<StationEntity> stations = stationDao.findAll();
+        List<Station> stations = stationDao.findAll();
         return stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());

@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.dao.entity.StationEntity;
+import wooteco.subway.domain.Station;
 
 import wooteco.subway.dto.StationResponse;
 
@@ -50,7 +50,7 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성할 때 400을 반환한다.")
     @Test
     void createStationWithDuplicateName() {
-        stationDao.save(new StationEntity("강남역"));
+        stationDao.save(new Station("강남역"));
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
 
@@ -69,8 +69,8 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        StationEntity station1 = stationDao.save(new StationEntity("강남역"));
-        StationEntity station2 = stationDao.save(new StationEntity("역삼역"));
+        Station station1 = stationDao.save(new Station("강남역"));
+        Station station2 = stationDao.save(new Station("역삼역"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -89,7 +89,7 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        StationEntity station = stationDao.save(new StationEntity("강남역"));
+        Station station = stationDao.save(new Station("강남역"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()

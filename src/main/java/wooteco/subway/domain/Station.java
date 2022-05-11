@@ -4,29 +4,35 @@ import java.util.Objects;
 
 public class Station {
 
-    private final String name;
+    private Long id;
+    private String name;
+
+    public Station() {
+    }
+
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Station(String name) {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "Station{" +
-                "name='" + name + '\'' +
-                '}';
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Station station = (Station) o;
-        return Objects.equals(name, station.name);
+        return name.equals(station.name);
     }
 
     @Override
@@ -34,3 +40,4 @@ public class Station {
         return Objects.hash(name);
     }
 }
+

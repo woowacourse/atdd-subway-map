@@ -1,7 +1,6 @@
 package wooteco.subway.dto;
 
 import java.util.List;
-import wooteco.subway.dao.entity.LineEntity;
 
 public class LineResponse {
 
@@ -13,10 +12,10 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(LineEntity lineEntity, List<StationResponse> stations) {
-        this.id = lineEntity.getId();
-        this.name = lineEntity.getName();
-        this.color = lineEntity.getColor();
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
         this.stations = stations;
     }
 

@@ -1,6 +1,6 @@
 package wooteco.subway.dto;
 
-import wooteco.subway.dao.entity.StationEntity;
+import wooteco.subway.domain.Station;
 
 public class StationResponse {
 
@@ -15,10 +15,11 @@ public class StationResponse {
         this.name = name;
     }
 
-    public StationResponse(StationEntity station) {
+    public StationResponse(Station station) {
         this.id = station.getId();
         this.name = station.getName();
     }
+
     public Long getId() {
         return id;
     }

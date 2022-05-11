@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import wooteco.subway.controller.AcceptanceTest;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.dao.entity.StationEntity;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -29,8 +30,8 @@ public class LineServiceTest extends AcceptanceTest {
     @DisplayName("노선을 등록하고 LineResponse를 반환한다.")
     @Test
     void save() {
-        StationEntity upStation = stationDao.save(new StationEntity("동천역"));
-        StationEntity downStation = stationDao.save(new StationEntity("판교역"));
+        Station upStation = stationDao.save(new Station("동천역"));
+        Station downStation = stationDao.save(new Station("판교역"));
 
         LineResponse lineResponse = lineService.save(
                 new LineRequest("신분당선", "red", upStation.getId(), downStation.getId(), 10));
@@ -68,5 +69,21 @@ public class LineServiceTest extends AcceptanceTest {
         assertThatThrownBy(() -> lineService.save(
                 new LineRequest("신분당선", "red", 1L, 1L, 0)))
                 .isInstanceOf(BadRequestLineException.class);
+    }
+
+    @DisplayName("모든 노선을 조회한다.")
+    @Test
+    void findAll() {
+        Station 강남 = stationDao.save(new Station("강남"));
+        Station 양재 = stationDao.save(new Station("양재"));
+        lineService.save(new LineRequest("신분당선", "red", 강남.getId(), 양재.getId(), 3));
+        List<LineResponse> lineResponses = lineService.findAll();
+        for (LineResponse lineResponse : lineResponses) {
+            assertAll(
+                    () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                    () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
+                    () -> assertThat(lineResponse.getStations()).hasSize(2)
+            );
+        }
     }
 }
