@@ -17,7 +17,7 @@ public class SectionRequest {
     @NotNull(message = "구간의 거리는 공백이거나 음수일 수 없습니다.")
     private int distance;
 
-    public SectionRequest() {
+    private SectionRequest() {
     }
 
     public SectionRequest(final Long upStationId, final Long downStationId, final int distance) {

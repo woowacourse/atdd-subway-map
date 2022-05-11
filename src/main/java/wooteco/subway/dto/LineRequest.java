@@ -26,7 +26,7 @@ public class LineRequest {
     private int distance;
 
 
-    public LineRequest() {
+    private LineRequest() {
     }
 
     public LineRequest(final String name,

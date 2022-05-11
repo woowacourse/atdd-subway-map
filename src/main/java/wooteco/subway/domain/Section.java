@@ -26,26 +26,6 @@ public class Section {
         this(null, upStation, downStation, distance, null);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Long getLineId() {
-        return lineId;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
     public boolean isGreaterOrEqualTo(final Section other) {
         return this.distance >= other.distance;
     }
@@ -75,6 +55,26 @@ public class Section {
 
     private int mergeDistance(final Section section) {
         return this.distance + section.distance;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Long getLineId() {
+        return lineId;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override
