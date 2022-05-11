@@ -64,13 +64,14 @@ public class Section {
         return section.distance < this.distance;
     }
 
-    public void changeUpStationAndDistance(Section section) {
-        this.downStation = section.upStation;
-        this.distance -= section.distance;
-    }
+    public void changeStationAndDistance(Section section) {
+        if (this.upStation.equals(section.upStation)) {
+            this.upStation = section.downStation;
+            this.distance -= section.distance;
+            return;
+        }
 
-    public void changeDownStationAndDistance(Section section) {
-        this.upStation = section.downStation;
+        this.downStation = section.upStation;
         this.distance -= section.distance;
     }
 

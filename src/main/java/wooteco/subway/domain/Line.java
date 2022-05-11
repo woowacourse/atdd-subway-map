@@ -58,7 +58,7 @@ public class Line {
             throw new IllegalArgumentException("구간이 1개 밖에 없으므로 삭제할 수 없습니다.");
         }
 
-        return sections.deleteAndUpdate(station);
+        return sections.removeAndUpdate(station);
     }
 
     public Long getId() {

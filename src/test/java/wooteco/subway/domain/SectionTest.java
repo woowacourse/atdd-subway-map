@@ -12,7 +12,7 @@ public class SectionTest {
         Section section1 = new Section(new Station(1L, "강남역"), new Station(2L, "선릉역"), 10);
         Section section2 = new Section(new Station(1L, "강남역"), new Station(3L, "잠실역"), 7);
 
-        section1.changeDownStationAndDistance(section2);
+        section1.changeStationAndDistance(section2);
         assertThat(section1.getUpStation()).isEqualTo(section2.getDownStation());
         assertThat(section1.getDistance()).isEqualTo(3);
     }
@@ -23,7 +23,7 @@ public class SectionTest {
         Section section1 = new Section(new Station(1L, "강남역"), new Station(2L, "선릉역"), 10);
         Section section2 = new Section(new Station(3L, "잠실역"), new Station(2L, "선릉역"), 7);
 
-        section1.changeUpStationAndDistance(section2);
+        section1.changeStationAndDistance(section2);
         assertThat(section1.getDownStation()).isEqualTo(section2.getUpStation());
         assertThat(section1.getDistance()).isEqualTo(3);
     }

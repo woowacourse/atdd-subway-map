@@ -27,8 +27,7 @@ public class Sections implements Iterable<Section> {
     public void checkCanAddAndUpdate(Section section) {
         validateCanConnect(section);
         validateAlreadyConnected(section);
-        updateIfCanDivideWithSameUpStation(section);
-        updateIfCanDivideWithSameDownStation(section);
+        updateIfCanDivide(section);
     }
 
     private void validateCanConnect(Section section) {
@@ -51,38 +50,24 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    private void updateIfCanDivideWithSameUpStation(Section section) {
-        Section sectionWithSameUpStation = sections.stream()
-            .filter(section1 -> section1.isSameUpStation(section))
+    private void updateIfCanDivide(Section section) {
+        Section sectionHavingSameStation = sections.stream()
+            .filter(section1 -> section1.isSameUpStation(section) || section1.isSameDownStation(section))
             .findFirst()
             .orElse(null);
 
-        if (sectionWithSameUpStation == null) {
+        if (sectionHavingSameStation == null) {
             return;
         }
 
-        if (!sectionWithSameUpStation.canInsert(section)) {
-            throw new IllegalArgumentException("해당 구간은 추가될 수 없습니다.");
-        }
-
-        sectionWithSameUpStation.changeDownStationAndDistance(section);
+        checkCanInsert(sectionHavingSameStation, section);
+        sectionHavingSameStation.changeStationAndDistance(section);
     }
 
-    private void updateIfCanDivideWithSameDownStation(Section section) {
-        Section sectionWithSameDownStation = sections.stream()
-            .filter(section1 -> section1.isSameDownStation(section))
-            .findFirst()
-            .orElse(null);
-
-        if (sectionWithSameDownStation == null) {
-            return;
-        }
-
-        if (!sectionWithSameDownStation.canInsert(section)) {
+    private void checkCanInsert(Section sectionHavingSameStation, Section section) {
+        if (!sectionHavingSameStation.canInsert(section)) {
             throw new IllegalArgumentException("해당 구간은 추가될 수 없습니다.");
         }
-
-        sectionWithSameDownStation.changeUpStationAndDistance(section);
     }
 
     public int size() {
@@ -107,7 +92,7 @@ public class Sections implements Iterable<Section> {
         return new ArrayList<>(stations);
     }
 
-    public Section deleteAndUpdate(Station station) {
+    public Section removeAndUpdate(Station station) {
         long count = sections.stream()
             .filter(section -> section.isSameDownStation(station) || section.isSameUpStation(station))
             .count();
@@ -117,13 +102,21 @@ public class Sections implements Iterable<Section> {
         }
 
         if (count == 1) {
-            Section deletedSection = sections.stream()
-                .filter(section -> section.isSameDownStation(station) || section.isSameUpStation(station))
-                .findFirst().orElseThrow();
-            sections.remove(deletedSection);
-            return deletedSection;
+            return removeSectionWhenIsTerminal(station);
         }
 
+        return removeSectionNotTerminal(station);
+    }
+
+    private Section removeSectionWhenIsTerminal(Station station) {
+        Section deletedSection = sections.stream()
+            .filter(section -> section.isSameDownStation(station) || section.isSameUpStation(station))
+            .findFirst().orElseThrow();
+        sections.remove(deletedSection);
+        return deletedSection;
+    }
+
+    private Section removeSectionNotTerminal(Station station) {
         Section sectionWithSameUpStation = sections.stream()
             .filter(section -> section.isSameUpStation(station))
             .findFirst().orElseThrow();
