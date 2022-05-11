@@ -27,6 +27,8 @@ class LineTest {
     Section section5;
     Sections sections;
 
+    Line line;
+
     @BeforeEach
     public void setUp() {
         station1 = new Station(1L, "testStation1");
@@ -49,12 +51,13 @@ class LineTest {
             }
         };
         sections = new Sections(initialSections);
+
+        line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
     }
 
     @DisplayName("새로운 상행 종점 추가")
     @Test
     void add_upEndStation() {
-        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
         Section newUpSection = new Section(1L, station5, station1, 20L);
 
         line.addSection(newUpSection);
@@ -66,7 +69,6 @@ class LineTest {
     @DisplayName("새로운 하행 종점 추가")
     @Test
     void add_downEndStation() {
-        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
         Section newDownSection = new Section(1L, station4, station5, 20L);
 
         line.addSection(newDownSection);
@@ -78,7 +80,6 @@ class LineTest {
     @DisplayName("기존에 있던 역을 새로운 구간 상행역과 겹치게 추가")
     @Test
     public void add_betweenUpperStation() {
-        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
         Section newSection = new Section(1L, station2, station5, 2L);
 
         line.addSection(newSection);
@@ -89,7 +90,6 @@ class LineTest {
     @DisplayName("기존에 있던 역을 새로운 구간 하행역과 겹치게 추가")
     @Test
     public void add_betweenLowerStation() {
-        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
         Section newSection = new Section(1L, station5, station2, 2L);
 
         line.addSection(newSection);
@@ -100,7 +100,6 @@ class LineTest {
     @DisplayName("추가하려는 구간의 길이가 기존 존재하는 구간의 길이보다 같거나 길면 예외 반환")
     @Test
     public void add_longerSection() {
-        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
         Section newSection = new Section(1L, station5, station2, 11L);
 
         assertThatThrownBy(() -> line.addSection(newSection))
@@ -110,8 +109,6 @@ class LineTest {
     @DisplayName("상행역을 제거")
     @Test
     public void remove_upEndStation() {
-        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
-
         line.removeStation(station1);
 
         assertThat(line.contains(station1)).isFalse();
@@ -120,8 +117,6 @@ class LineTest {
     @DisplayName("하행역을 제거")
     @Test
     public void remove_downEndStation() {
-        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
-
         line.removeStation(station4);
 
         assertThat(line.contains(station4)).isFalse();
@@ -130,10 +125,15 @@ class LineTest {
     @DisplayName("가운데 위치한 역을 제거")
     @Test
     public void remove_betweenStation() {
-        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
-
         line.removeStation(station3);
 
         assertThat(line.contains(station3)).isFalse();
+    }
+
+    @DisplayName("존재하지 않는 역을 제거하려할 때 예외 발생")
+    @Test
+    public void remove_notExistStation() {
+        assertThatThrownBy(() -> line.removeStation(station5))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

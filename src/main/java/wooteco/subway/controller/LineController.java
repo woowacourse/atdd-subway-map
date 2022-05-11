@@ -3,8 +3,6 @@ package wooteco.subway.controller;
 import java.net.URI;
 import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +18,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
 import wooteco.subway.utils.exceptions.LineNotFoundException;
+import wooteco.subway.utils.exceptions.StationNotFoundException;
 
 
 @RestController
@@ -64,12 +63,14 @@ public class LineController {
     }
 
     @ExceptionHandler({IllegalArgumentException.class, DuplicateKeyException.class})
-    public ResponseEntity<StationResponse> handleBadRequest() {
+    public ResponseEntity<StationResponse> handleBadRequest(Exception e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler({LineNotFoundException.class})
-    public ResponseEntity<StationResponse> handleNoContent() {
+    @ExceptionHandler({LineNotFoundException.class, StationNotFoundException.class})
+    public ResponseEntity<StationResponse> handleNoContent(Exception e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 }

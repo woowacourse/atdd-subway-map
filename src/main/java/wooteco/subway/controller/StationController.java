@@ -48,12 +48,14 @@ public class StationController {
     }
 
     @ExceptionHandler({IllegalArgumentException.class, DuplicateKeyException.class})
-    public ResponseEntity<StationResponse> handleBadRequest() {
+    public ResponseEntity<StationResponse> handleBadRequest(Exception e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler({StationNotFoundException.class})
-    public ResponseEntity<StationResponse> handleNoContent() {
+    public ResponseEntity<StationResponse> handleNoContent(Exception e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 }
