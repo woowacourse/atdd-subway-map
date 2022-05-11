@@ -41,18 +41,17 @@ public class SectionDao {
         return jdbcTemplate.query(sql, new SectionMapper());
     }
 
-    public Optional<Section> getSectionsHaving(Long lineId, Long stationId) {
-        String sql = String.format("select * from SECTION where line_id = %d and (up_station_id = %d or down_station_id = %d)",
-                lineId, stationId, stationId);
+    public boolean existByLineAndStation(Long lineId, Long stationId){
+        String sql = "select EXISTS (select id from SECTION where line_id = ? and (up_station_id = ? or down_station_id = ?))";
 
-        return createOptionalSectionBy(sql);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId));
     }
 
-    public Optional<Section> getSectionsConnectedTo(Section section) {
-        String sql = String.format("select * from SECTION where line_id = %d and (up_station_id = %d or down_station_id = %d or up_station_id = %d or down_station_id = %d)",
-                section.getLineId(), section.getUpStationId(), section.getDownStationId(), section.getDownStationId(), section.getUpStationId());
+    public boolean existConnectedTo(Section section){
+        String sql = "select EXISTS (select id from SECTION where line_id = ? and (up_station_id = ? or down_station_id = ? or up_station_id = ? or down_station_id = ?))";
 
-        return createOptionalSectionBy(sql);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class,
+                section.getLineId(), section.getUpStationId(), section.getDownStationId(), section.getDownStationId(), section.getUpStationId()));
     }
 
     public Optional<Section> getSectionsOverLappedBy(Section section) {
@@ -61,10 +60,10 @@ public class SectionDao {
         return createOptionalSectionBy(sql);
     }
 
-    public List<Section> getSectionsIn(Long lineId) {
-        String sql = String.format("select * from SECTION where line_id = %d", lineId);
+    public Integer countSectionsIn(Long lineId) {
+        String sql = "select count(id) from SECTION where line_id = ?";
 
-        return jdbcTemplate.query(sql, new SectionMapper());
+        return jdbcTemplate.queryForObject(sql, Integer.class, lineId);
     }
 
     public Optional<Section> findSectionHavingDownStationOf(Long lineId, Long stationId) {

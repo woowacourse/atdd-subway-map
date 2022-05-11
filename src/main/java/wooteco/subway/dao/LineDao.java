@@ -27,14 +27,9 @@ public class LineDao {
         return createNewObject(line);
     }
 
-    public Optional<Line> getLinesHavingName(String name) {
-        String sql = String.format("select * from LINE where name = '%s'", name);
-
-        try{
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new LineMapper()));
-        }catch(EmptyResultDataAccessException e){
-            return Optional.empty();
-        }
+    public boolean existByName(String name) {
+        String sql = "select EXISTS (select id from LINE where name = ?) as success";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
     }
 
     public List<Line> findAll() {

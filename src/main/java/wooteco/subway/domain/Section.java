@@ -27,4 +27,8 @@ public class Section {
 
         return new Section(id, lineId, upStationId, addedSection.getUpStationId(), revisedDistance);
     }
+
+    public boolean isLongerThan(Section section) {
+        return distance >= section.getDistance();
+    }
 }

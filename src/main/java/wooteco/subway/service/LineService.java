@@ -2,7 +2,6 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -35,7 +34,7 @@ public class LineService {
         Station downStation = stationDao.findById(lineRequest.getDownStationId());
         Station upStation = stationDao.findById(lineRequest.getUpStationId());
 
-        Line line = validateAndSave(lineRequest.toLine());
+        Line line = saveLine(lineRequest.toLine());
 
         Section section = new Section(line.getId(), upStation.getId(), downStation.getId(), lineRequest.getDistance());
         sectionDao.save(section);
@@ -43,15 +42,11 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), createStationResponseOf(line));
     }
 
-    private Line validateAndSave(Line line) {
-        checkDuplication(line);
-        return lineDao.save(line);
-    }
-
-    private void checkDuplication(Line line) {
-        if (lineDao.getLinesHavingName(line.getName()).isPresent()) {
+    private Line saveLine(Line line) {
+        if(lineDao.existByName(line.getName())){
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
         }
+        return lineDao.save(line);
     }
 
     public List<LineResponse> findAll() {
@@ -67,15 +62,16 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponseOf(Line line) {
-        List<Section> sections = sectionDao.findSectionsIn(line);
-        List<Station> stations = findStationsIn(sections);
+        List<Station> stations = findStationsIn(line);
 
         return stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
     }
 
-    private List<Station> findStationsIn(List<Section> sections) {
+    private List<Station> findStationsIn(Line line) {
+        List<Section> sections = sectionDao.findSectionsIn(line);
+
         Set<Long> stationIds = new HashSet<>();
         for (Section section : sections) {
             stationIds.add(section.getUpStationId());

@@ -9,7 +9,6 @@ import wooteco.subway.domain.Station;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,14 +28,9 @@ public class StationDao {
         return createNewObject(station);
     }
 
-    public Optional<Station> getStationsHavingName(String name) {
-        String sql = String.format("select * from Station where name = '%s'", name);
-
-        try{
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new StationMapper()));
-        }catch(EmptyResultDataAccessException e){
-            return Optional.empty();
-        }
+    public boolean existByName(String name) {
+        String sql = "select EXISTS (select id from STATION where name = ?) as success";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
     }
 
     public List<Station> findAll() {

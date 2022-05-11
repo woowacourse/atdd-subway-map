@@ -18,17 +18,14 @@ public class StationService {
     }
 
     public StationResponse save(StationRequest stationRequest) {
-        Station station = validateAndSave(stationRequest.toStation());
+        Station station = stationRequest.toStation();
+        checkDuplication(station);
+        stationDao.save(station);
         return new StationResponse(station.getId(), station.getName());
     }
 
-    private Station validateAndSave(Station station) {
-        checkDuplication(station);
-        return stationDao.save(station);
-    }
-
     private void checkDuplication(Station station) {
-        if (stationDao.getStationsHavingName(station.getName()).isPresent()) {
+        if(stationDao.existByName(station.getName())){
             throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
         }
     }

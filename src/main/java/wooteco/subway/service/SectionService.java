@@ -20,11 +20,11 @@ public class SectionService {
     public void save(Long lineId, SectionRequest sectionRequest) {
         Section section = sectionRequest.toSection(lineId);
         checkSavable(section);
-        checkAndFixOverLappingBy(section);
+        fixOverLappingBy(section);
         sectionDao.save(section);
     }
 
-    private void checkAndFixOverLappingBy(Section section) {
+    private void fixOverLappingBy(Section section) {
         sectionDao.getSectionsOverLappedBy(section)
                 .ifPresent(value -> sectionDao.update(value.revisedBy(section)));
     }
@@ -43,15 +43,13 @@ public class SectionService {
 
     private boolean isLineAlreadyHasBothStationsOf(Section section) {
         Long lineId = section.getLineId();
-        Long upStationId = section.getUpStationId();
-        Long downStationId = section.getDownStationId();
 
-        return sectionDao.getSectionsHaving(lineId, upStationId).isPresent()
-                && sectionDao.getSectionsHaving(lineId, downStationId).isPresent();
+        return sectionDao.existByLineAndStation(lineId, section.getUpStationId())
+                && sectionDao.existByLineAndStation(lineId, section.getDownStationId());
     }
 
     private void checkConnected(Section section) {
-        if (sectionDao.getSectionsConnectedTo(section).isEmpty()) {
+        if (!sectionDao.existConnectedTo(section)) {
             throw new IllegalArgumentException("기존 노선과 연결된 구간이 아닙니다.");
         }
     }
@@ -59,28 +57,24 @@ public class SectionService {
     private void checkDistance(Section section) {
         Optional<Section> overLappedSection = sectionDao.getSectionsOverLappedBy(section);
 
-        if (overLappedSection.isPresent() && isInvalidDistance(section, overLappedSection.get())) {
+        if (overLappedSection.isPresent() && section.isLongerThan(overLappedSection.get())) {
             throw new IllegalArgumentException("적절한 거리가 아닙니다.");
         }
     }
 
-    private boolean isInvalidDistance(Section newSection, Section oldSection) {
-        return newSection.getDistance() >= oldSection.getDistance();
-    }
-
-    public void checkAndDelete(Long lineId, Long stationId) {
+    public void delete(Long lineId, Long stationId) {
         checkDeletable(lineId);
-        checkAndFixDisconnectionByDeleting(lineId, stationId);
+        fixDisconnectionByDeleting(lineId, stationId);
         sectionDao.delete(lineId, stationId);
     }
 
     private void checkDeletable(Long lineId) {
-        if (sectionDao.getSectionsIn(lineId).size() == 1) {
+        if (sectionDao.countSectionsIn(lineId) == 1) {
             throw new IllegalArgumentException("노선의 유일한 구간은 삭제할 수 없습니다.");
         }
     }
 
-    private void checkAndFixDisconnectionByDeleting(Long lineId, Long stationId) {
+    private void fixDisconnectionByDeleting(Long lineId, Long stationId) {
         Optional<Section> upSection = sectionDao.findSectionHavingDownStationOf(lineId, stationId);
         Optional<Section> downSection = sectionDao.findSectionHavingUpStationOf(lineId, stationId);
 
