@@ -30,6 +30,7 @@ public class LineService {
         }
 
         Line savedLine = lineDao.save(lineRequest.toLine());
+        
         sectionService.save(savedLine.getId(),
                 new SectionRequest(lineRequest.getUpStationId(), lineRequest.getDownStationId(),
                         lineRequest.getDistance()));

@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -22,6 +23,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -38,6 +42,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getLong("id")).isEqualTo(1L);
         assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
         assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600");
+        assertThat(response.jsonPath().getList("stations"))
+                .extracting("id", "name")
+                .containsExactly(tuple(1, "신도림역"), tuple(2, "왕십리역"));
     }
 
     @Test

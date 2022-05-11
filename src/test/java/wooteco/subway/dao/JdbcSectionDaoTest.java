@@ -19,7 +19,7 @@ import wooteco.subway.domain.Section;
 class JdbcSectionDaoTest {
 
     public static final Section GIVEN_SECTION = new Section(
-            1L,
+            null,
             1L, 1L, 2L,
             6, 1L);
 
@@ -199,8 +199,7 @@ class JdbcSectionDaoTest {
         // given
         sectionDao.save(GIVEN_SECTION);
         sectionDao.save(new Section(
-                1L, 2L, 3L,
-                6, 2));
+                null, 1L, 2L, 3L, 2, 2L));
 
         // when
         List<Section> sections = sectionDao.findAllByLineId(1L);
@@ -208,6 +207,6 @@ class JdbcSectionDaoTest {
         // then
         assertThat(sections).hasSize(2)
                 .extracting("lineId", "upStationId", "downStationId", "distance", "lineOrder")
-                .containsExactly(tuple(1L, 1L, 2L, 6, 1L), tuple(1L, 2L, 3L, 6, 2L));
+                .containsExactly(tuple(1L, 1L, 2L, 6, 1L), tuple(1L, 2L, 3L, 2, 2L));
     }
 }
