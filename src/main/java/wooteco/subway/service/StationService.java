@@ -31,7 +31,7 @@ public class StationService {
 		}
 	}
 
-	public List<Station> listStations() {
+	public List<Station> findAllStations() {
 		return stationDao.findAll();
 	}
 

@@ -45,7 +45,7 @@ public class StationServiceTest {
 		List<String> names = List.of("강남역", "역삼역", "선릉역");
 		names.forEach(stationService::create);
 
-		List<Station> stations = stationService.listStations();
+		List<Station> stations = stationService.findAllStations();
 		assertThat(stations).hasSize(3);
 	}
 
@@ -55,6 +55,6 @@ public class StationServiceTest {
 		Station station = stationService.create("강남역");
 		stationService.remove(station.getId());
 
-		assertThat(stationService.listStations()).isEmpty();
+		assertThat(stationService.findAllStations()).isEmpty();
 	}
 }
