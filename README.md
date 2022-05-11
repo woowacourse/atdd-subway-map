@@ -57,9 +57,7 @@
 
 ### 구간을 삭제한다.
 - 성공 : Http status(200)
-- 실패(존재하지 않는 역) : Http status(400) 
-
-
+- 실패(노선에 구간이 하나인 경우) : Http status(400)
 
 <p align="center">
     <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
