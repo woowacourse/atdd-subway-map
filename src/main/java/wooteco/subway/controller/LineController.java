@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequestDto;
@@ -31,7 +32,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponseDto> createLine(@RequestBody final LineRequestDto lineRequestDto) {
         final Line line = lineService.registerLine(lineRequestDto);
-        final LineResponseDto lineResponseDto = LineResponseDto.of(line);
+        final LineResponseDto lineResponseDto = new LineResponseDto(line);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponseDto);
     }
 
@@ -39,28 +40,28 @@ public class LineController {
     public ResponseEntity<List<LineResponseDto>> showLines() {
         final List<Line> lines = lineService.searchAllLines();
         final List<LineResponseDto> lineResponseDtos = lines.stream()
-                .map(line -> LineResponseDto.of(line))
+                .map(line -> new LineResponseDto(line))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponseDtos);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LineResponseDto> showLine(@PathVariable final Long id) {
-        final Line line = lineService.searchLineById(id);
-        final LineResponseDto lineResponseDto = LineResponseDto.of(line);
+    @GetMapping("/{lineId}")
+    public ResponseEntity<LineResponseDto> showLine(@PathVariable final Long lineId) {
+        final Line line = lineService.searchLineById(lineId);
+        final LineResponseDto lineResponseDto = new LineResponseDto(line);
         return ResponseEntity.ok().body(lineResponseDto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> modifyLine(@PathVariable final Long id,
+    @PutMapping("/{lineId}")
+    public ResponseEntity<Void> modifyLine(@PathVariable final Long lineId,
                                            @RequestBody final LineRequestDto lineRequestDto) {
-        lineService.modifyLine(id, lineRequestDto);
+        lineService.modifyLine(lineId, lineRequestDto);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeLine(@PathVariable final Long id) {
-        lineService.removeLine(id);
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity<Void> removeLine(@PathVariable final Long lineId) {
+        lineService.removeLine(lineId);
         return ResponseEntity.noContent().build();
     }
 
@@ -68,6 +69,12 @@ public class LineController {
     public ResponseEntity<Void> createSection(@PathVariable final Long lineId,
                                               @RequestBody final SectionRequestDto sectionRequestDto) {
         lineService.registerSection(lineId, sectionRequestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<Void> removeSection(@PathVariable final Long lineId, @RequestParam Long stationId) {
+        lineService.removeSection(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 }

@@ -9,36 +9,52 @@ import wooteco.subway.exception.IllegalSectionException;
 
 public class Sections {
 
+    public static final int SINGLE_COUNT = 1;
+
     private final List<Section> sections;
 
     public Sections(final List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
     }
 
-    public boolean isAddableOnLine(final Section section) {
+    public boolean isAddableOnTheLine(final Section section) {
         validateSectionForAdd(section);
-        if ((sections.stream().anyMatch(it -> it.isUpStationMatch(section.getUpStation()))) ||
-                (sections.stream().anyMatch(it -> it.isDownStationMatch(section.getDownStation())))) {
-            return true;
-        }
-        return false;
+        return doMatchedUpStationExist(section) || doMatchedDownStationExist(section);
+    }
+
+    private boolean doMatchedUpStationExist(final Section sectionToAdd) {
+        return sections.stream().anyMatch(section -> section.isUpStation(sectionToAdd.getUpStation()));
+    }
+
+    private boolean doMatchedDownStationExist(final Section sectionToAdd) {
+        return sections.stream().anyMatch(section -> section.isDownStation(sectionToAdd.getDownStation()));
     }
 
     private void validateSectionForAdd(final Section section) {
-        final List<Station> stations = orderStations();
+        final List<Station> stations = lineUpStations();
         final Station upStation = section.getUpStation();
         final Station downStation = section.getDownStation();
-        if ((!stations.contains(upStation) && !stations.contains(downStation)) ||
-                (stations.contains(upStation) && stations.contains(downStation))) {
+        if (doNotAllStationExist(stations, upStation, downStation) || doAllStationExist(stations, upStation,
+                downStation)) {
             throw new IllegalSectionException();
         }
+    }
+
+    private boolean doNotAllStationExist(final List<Station> stations, final Station upStation,
+                                         final Station downStation) {
+        return !stations.contains(upStation) && !stations.contains(downStation);
+    }
+
+    private boolean doAllStationExist(final List<Station> stations, final Station upStation,
+                                      final Station downStation) {
+        return stations.contains(upStation) && stations.contains(downStation);
     }
 
     public Section findOverlapSection(final Section section) {
         final Station upStation = section.getUpStation();
         final Station downStation = section.getDownStation();
         final Section overlapSection = sections.stream()
-                .filter(it -> it.isUpStationMatch(upStation) || it.isDownStationMatch(downStation))
+                .filter(it -> it.isUpStation(upStation) || it.isDownStation(downStation))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 겹치는 구간을 찾을 수 없습니다."));
         validateDistance(section, overlapSection);
@@ -51,7 +67,7 @@ public class Sections {
         }
     }
 
-    public List<Station> orderStations() {
+    public List<Station> lineUpStations() {
         final List<Station> stations = new ArrayList<>();
         final Station upTerminus = findUpTerminus();
         final Map<Station, Station> map = sections.stream()
@@ -79,9 +95,41 @@ public class Sections {
                 .findFirst().orElseThrow(() -> new NoSuchElementException("[ERROR] 상행 종점을 찾을 수 없습니다."));
     }
 
-    private boolean isUpTerminus(final Station upStation) {
+    private boolean isUpTerminus(final Station station) {
         return sections.stream()
-                .filter(section -> section.getDownStation().equals(upStation))
+                .filter(section -> section.getDownStation().equals(station))
                 .count() == 0;
+    }
+
+    private boolean isDownTerminus(final Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .count() == 0;
+    }
+
+    public boolean isTerminus(final Station station) {
+        return isUpTerminus(station) || isDownTerminus(station);
+    }
+
+    public boolean contains(final Station station) {
+        return lineUpStations().contains(station);
+    }
+
+    public Section findByDownStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 하행역이 일치하는 역을 찾을 수 없습니다."));
+    }
+
+    public Section findByUpStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 상행역이 일치하는 역을 찾을 수 없습니다."));
+    }
+
+    public boolean hasSingleSection() {
+        return sections.size() == SINGLE_COUNT;
     }
 }

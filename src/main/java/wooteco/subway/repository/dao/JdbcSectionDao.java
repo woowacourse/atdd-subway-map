@@ -60,4 +60,15 @@ public class JdbcSectionDao {
         final SqlParameterSource source = new BeanPropertySqlParameterSource(sectionEntity);
         jdbcTemplate.update(sql, source);
     }
+
+    public void deleteByLineIdAndStationId(final Long lineId, final Long stationId) {
+        final String sql = "delete from SECTION"
+                + " where line_id = :lineId"
+                + " and (up_station_id = :stationId or down_station_id = :stationId)";
+        final Map<String, Long> params = new HashMap<>();
+        params.put("lineId", lineId);
+        params.put("stationId", stationId);
+        final SqlParameterSource source = new MapSqlParameterSource(params);
+        jdbcTemplate.update(sql, source);
+    }
 }

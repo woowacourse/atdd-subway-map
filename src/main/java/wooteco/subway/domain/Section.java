@@ -32,12 +32,16 @@ public class Section {
         this(null, upStation, downStation, distance);
     }
 
-    public boolean isUpStationMatch(final Station station) {
+    public boolean isUpStation(final Station station) {
         return upStation.equals(station);
     }
 
-    public boolean isDownStationMatch(final Station station) {
+    public boolean isDownStation(final Station station) {
         return downStation.equals(station);
+    }
+
+    public boolean contains(final Station station) {
+        return isUpStation(station) || isDownStation(station);
     }
 
     public Long getId() {

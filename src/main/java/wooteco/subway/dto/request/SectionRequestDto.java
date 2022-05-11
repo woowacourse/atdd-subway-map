@@ -15,10 +15,6 @@ public class SectionRequestDto {
         this.distance = distance;
     }
 
-    public SectionRequestDto(final LineRequestDto lineRequestDto) {
-        this(lineRequestDto.getUpStationId(), lineRequestDto.getDownStationId(), lineRequestDto.getDistance());
-    }
-
     public Long getUpStationId() {
         return upStationId;
     }

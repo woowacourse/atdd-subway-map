@@ -13,16 +13,19 @@ public class ExceptionAdvice {
 
     @ExceptionHandler
     public ResponseEntity<String> illegalInputError(final IllegalInputException e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler
     public ResponseEntity<String> duplicateNameError(final ElementAlreadyExistException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> noSuchElementError() {
+    @ExceptionHandler
+    public ResponseEntity<String> noSuchElementError(final NoSuchElementException e) {
+        e.printStackTrace();
         return ResponseEntity.notFound().build();
     }
 }
