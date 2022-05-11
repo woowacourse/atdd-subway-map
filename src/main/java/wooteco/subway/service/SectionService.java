@@ -39,13 +39,13 @@ public class SectionService {
     }
 
     private void createMiddleSection(Long lineId, SectionRequest request, Sections sections) {
-        Section existSection = sections.findExistSection(request.getUpStationId(), request.getDownStationId());
-        if (request.getDistance() >= existSection.getDistance()) {
+        Section existNearSection = sections.findNearSection(request.getUpStationId(), request.getDownStationId());
+        if (request.getDistance() >= existNearSection.getDistance()) {
             throw new IllegalArgumentException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
         }
         sectionDao.insert(new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
-        Section updateExistSection = new Section(existSection.getId(), existSection.getLineId(), request.getUpStationId(),
-                existSection.getDownStationId(), existSection.getDistance() - request.getDistance());
+        Section updateExistSection = new Section(existNearSection.getId(), existNearSection.getLineId(), request.getUpStationId(),
+                existNearSection.getDownStationId(), existNearSection.getDistance() - request.getDistance());
         sectionDao.update(updateExistSection);
     }
 

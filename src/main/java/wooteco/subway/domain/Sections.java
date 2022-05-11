@@ -36,7 +36,7 @@ public class Sections {
                 .noneMatch(s -> s.getUpStationId().equals(stationId));
     }
 
-    public Section findExistSection(Long newUpStationId, Long newDownStationId) {
+    public Section findNearSection(Long newUpStationId, Long newDownStationId) {
         return values.stream()
                 .filter(s -> s.getUpStationId().equals(newUpStationId) || s.getDownStationId().equals(newDownStationId))
                 .findFirst()
@@ -69,12 +69,14 @@ public class Sections {
     public Section extractUpSideStation(Long stationId) {
         return values.stream()
                 .filter(s -> s.getDownStationId().equals(stationId))
-                .findFirst().orElseThrow(NoSuchElementException::new);
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public Section extractDownSideStation(Long stationId) {
         return values.stream()
                 .filter(s -> s.getUpStationId().equals(stationId))
-                .findFirst().orElseThrow(NoSuchElementException::new);
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
     }
 }

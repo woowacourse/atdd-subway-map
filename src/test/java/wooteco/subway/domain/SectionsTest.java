@@ -39,7 +39,7 @@ class SectionsTest {
     @DisplayName("새로 생성하려는 구간에 붙어있는 기존 구간을 구한다.")
     @Test
     void findExistSection() {
-        Section existSection = sections.findExistSection(lastUpStationId, newStationId);
+        Section existSection = sections.findNearSection(lastUpStationId, newStationId);
 
         assertThat(existSection).isEqualTo(section1);
     }
