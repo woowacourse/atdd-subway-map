@@ -27,11 +27,14 @@ public class SectionService {
 
     public List<StationResponse> create(long lineId, SectionRequest sectionRequest) {
         validateDistance(lineId, sectionRequest);
-        validateStations(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+        if (getSectionsByLineId(lineId).findAny().isPresent()) {
+            validateStations(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+        }
 
         updateSection(lineId, sectionRequest);
 
-        SectionDto sectionDto = sectionDao.save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+        SectionDto sectionDto = sectionDao.save(lineId, sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
         Station upStation = getUpStation(sectionDto);
         Station downStation = getDownStation(sectionDto);
@@ -41,14 +44,16 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
-    private void validateDistance(long lineId, SectionRequest sectionRequest) {
-        int distance = sectionDao.findDistanceByUpStationAndDownStation(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId())
-                .orElse(0);
-        checkDistance(sectionRequest, distance);
+    private Stream<SectionDto> getSectionsByLineId(long lineId) {
+        return sectionDao.findAll().stream()
+                .filter(sectionDto -> sectionDto.getLineId() == lineId);
     }
 
-    private void checkDistance(SectionRequest sectionRequest, int distance) {
-        if (distance != 0 && distance <= sectionRequest.getDistance()) {
+    private void validateDistance(long lineId, SectionRequest sectionRequest) {
+        int totalDistance = getSectionsByLineId(lineId)
+                .mapToInt(SectionDto::getDistance)
+                .sum();
+        if (totalDistance != 0 && totalDistance <= sectionRequest.getDistance()) {
             throw new IllegalArgumentException("기존 구간의 거리보다 크거나 같은 구간은 추가할 수 없습니다.");
         }
     }
@@ -59,14 +64,25 @@ public class SectionService {
     }
 
     private void checkBothExist(long lineId, long upStationId, long downStationId) {
-        if (sectionDao.findByUpStationAndDownStation(lineId, upStationId, downStationId).isPresent()) {
+        int count = (int)getSectionsByLineId(lineId)
+                .filter(sectionDto -> sectionDto.getUpStationId() == upStationId)
+                .filter(sectionDto -> sectionDto.getDownStationId() == downStationId)
+                .count();
+        if (count == 1) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }
 
     private void checkBothDoNotExist(long lineId, long upStationId, long downStationId) {
-        if (sectionDao.findByUpStation(lineId, upStationId).isEmpty()
-                && sectionDao.findByDownStation(lineId, downStationId).isEmpty()) {
+        int upStationCount = (int)getSectionsByLineId(lineId)
+                .filter(sectionDto -> sectionDto.getUpStationId() == upStationId)
+                .count();
+
+        int downStationCount = (int)getSectionsByLineId(lineId)
+                .filter(sectionDto -> sectionDto.getDownStationId() == downStationId)
+                .count();
+
+        if (upStationCount == 0 && downStationCount == 0) {
             throw new IllegalArgumentException("상행역과 하행역 모두 존재하지 않습니다.");
         }
     }
@@ -77,21 +93,27 @@ public class SectionService {
     }
 
     private void updateIfUpStation(long lineId, SectionRequest sectionRequest) {
-        Optional<Long> sectionId = sectionDao.findByUpStation(lineId, sectionRequest.getUpStationId());
-        sectionId.ifPresent(id -> {
-            sectionDao.updateUpStation(id, sectionRequest.getDownStationId());
-            int distance = sectionDao.findDistanceById(id).orElse(0) - sectionRequest.getDistance();
-            sectionDao.updateDistance(id, distance);
-        });
+        getSectionsByLineId(lineId)
+                .filter(sectionDto -> sectionDto.getUpStationId() == sectionRequest.getUpStationId())
+                .findFirst()
+                .ifPresent(sectionDto -> {
+                    long id = sectionDto.getId();
+                    sectionDao.updateUpStation(id, sectionRequest.getDownStationId());
+                    int distance = sectionDao.findDistanceById(id).orElse(0) - sectionRequest.getDistance();
+                    sectionDao.updateDistance(id, distance);
+                });
     }
 
     private void updateIfDownStation(long lineId, SectionRequest sectionRequest) {
-        Optional<Long> sectionId = sectionDao.findByDownStation(lineId, sectionRequest.getDownStationId());
-        sectionId.ifPresent(id -> {
-            sectionDao.updateDownStation(id, sectionRequest.getUpStationId());
-            int distance = sectionDao.findDistanceById(id).orElse(0);
-            sectionDao.updateDistance(id, distance - sectionRequest.getDistance());
-        });
+        getSectionsByLineId(lineId)
+                .filter(sectionDto -> sectionDto.getDownStationId() == sectionRequest.getDownStationId())
+                .findFirst()
+                .ifPresent(sectionDto -> {
+                    long id = sectionDto.getId();
+                    sectionDao.updateDownStation(id, sectionRequest.getUpStationId());
+                    int distance = sectionDao.findDistanceById(id).orElse(0) - sectionRequest.getDistance();
+                    sectionDao.updateDistance(id, distance);
+                });
     }
 
     private Station getUpStation(SectionDto sectionDto) {

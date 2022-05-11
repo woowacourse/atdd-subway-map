@@ -29,7 +29,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         StationAcceptanceTest.postStations(downStationRequest);
     }
 
-    private ExtractableResponse<Response> postLines(LineAndStationRequest request) {
+    public static ExtractableResponse<Response> postLines(LineAndStationRequest request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

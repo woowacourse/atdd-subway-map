@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import wooteco.subway.dto.LineAndStationRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 
@@ -22,6 +23,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         StationAcceptanceTest.postStations(upStationRequest);
         StationRequest downStationRequest = new StationRequest("선릉역");
         StationAcceptanceTest.postStations(downStationRequest);
+        LineAndStationRequest lineRequest = new LineAndStationRequest("2호선", "green", 1L, 2L, 5);
+        LineAcceptanceTest.postLines(lineRequest);
     }
 
     private ExtractableResponse<Response> postSections(SectionRequest request) {
@@ -35,31 +38,17 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("노선을 생성한다.")
-    void createLine() {
+    @DisplayName("구간을 추가한다.")
+    void create_section() {
         // given
-        SectionRequest request = new SectionRequest(1L, 2L, 5);
+        StationRequest downStationRequest = new StationRequest("잠실역");
+        StationAcceptanceTest.postStations(downStationRequest);
+        SectionRequest request = new SectionRequest(1L, 3L, 3);
 
         // when
         ExtractableResponse<Response> response = postSections(request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
-    @DisplayName("등록시 기존 역 사이 길이와 같으면 예외를 반환한다")
-    void createLine_sameDistance() {
-        // given
-        SectionRequest request1 = new SectionRequest(1L, 2L, 5);
-        postSections(request1);
-
-        SectionRequest request2 = new SectionRequest(1L, 3L, 3);
-
-        // when
-        ExtractableResponse<Response> response = postSections(request2);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

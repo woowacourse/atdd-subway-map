@@ -41,75 +41,22 @@ public class SectionDao {
         return new SectionDto(id, lineId, upStationId, downStationId, distance);
     }
 
+    public List<SectionDto> findById(long id) {
+        String sql = "SELECT * FROM section WHERE id = :id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.query(sql, parameterSource, sectionRowMapper);
+    }
+
+    public List<SectionDto> findAll() {
+        String sql = "SELECT * FROM section";
+        return namedParameterJdbcTemplate.query(sql, sectionRowMapper);
+    }
+
     public Optional<Integer> findDistanceById(long id) {
         String sql = "SELECT distance FROM section WHERE id = :id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Integer.class));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<Integer> findDistanceByUpStationAndDownStation(long lineId, long upStationId, long downStationId) {
-        Optional<Integer> distance = findDistanceByUpStationId(lineId, upStationId);
-        if (distance.isPresent()) {
-            return distance;
-        }
-        return findDistanceByDownStationId(lineId, downStationId);
-    }
-
-    private Optional<Integer> findDistanceByUpStationId(long lineId, long upStationId) {
-        String sql = "SELECT distance FROM section WHERE line_id = :lineId AND up_station_id = :upStationId";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
-                .addValue("lineId", lineId);
-        return getDistance(sql, parameterSource);
-    }
-
-    private Optional<Integer> findDistanceByDownStationId(long lineId, long downStationId) {
-        String sql = "SELECT distance FROM section WHERE line_id = :lineId AND down_station_id = :downStationId";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("downStationId", downStationId)
-                .addValue("lineId", lineId);
-        return getDistance(sql, parameterSource);
-    }
-
-    private Optional<Integer> getDistance(String sql, SqlParameterSource parameterSource) {
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Integer.class));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<Long> findByUpStationAndDownStation(long lineId, long upStationId, long downStationId) {
-        String sql = "SELECT id FROM section WHERE line_id = :lineId AND up_station_id = :upStationId AND down_station_id = :downStationId";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
-                .addValue("downStationId", downStationId)
-                .addValue("lineId", lineId);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Long.class));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<Long> findByUpStation(long lineId, long upStationId) {
-        String sql = "SELECT id FROM section WHERE line_id = :lineId AND up_station_id = :upStationId";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
-                .addValue("lineId", lineId);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Long.class));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<Long> findByDownStation(long lineId, long downStationId) {
-        String sql = "SELECT id FROM section WHERE line_id = :lineId AND down_station_id = :downStationId";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("downStationId", downStationId)
-                .addValue("lineId", lineId);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Long.class));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -141,11 +88,5 @@ public class SectionDao {
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
         String resetIdSql = "ALTER TABLE section ALTER COLUMN id RESTART WITH 1";
         namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
-    }
-
-    public List<SectionDto> findById(long id) {
-        String sql = "SELECT * FROM section WHERE id = :id";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.query(sql, parameterSource, sectionRowMapper);
     }
 }

@@ -45,69 +45,13 @@ public class SectionDaoTest {
     }
 
     @Test
-    @DisplayName("거리를 검색한다.")
-    void findDistance() {
-        int expectedDistance = 5;
-        sectionDao.save(1L, 1L, 2L, expectedDistance);
-
-        int actualDistance = sectionDao.findDistanceByUpStationAndDownStation(1L, 1L, 2L).orElse(0);
-
-        assertThat(actualDistance).isEqualTo(actualDistance);
-    }
-
-    @Test
-    @DisplayName("상행역과 하행역이 일치하는 역을 검색한다.")
-    void findByUpStationAndDownStation() {
-        SectionDto sectionDto = sectionDao.save(1L, 2L, 3L, 5);
-
-        long actualId = sectionDao.findByUpStationAndDownStation(
-                sectionDto.getLineId(),
-                sectionDto.getUpStationId(),
-                sectionDto.getDownStationId()).orElse(0L);
-
-        assertThat(actualId).isEqualTo(1L);
-    }
-
-    @Test
-    @DisplayName("상행역이 일치하는 역을 검색한다.")
-    void findByUpStation() {
-        SectionDto sectionDto = sectionDao.save(1L, 2L, 3L, 5);
-
-        long actualId = sectionDao.findByUpStation(sectionDto.getLineId(), sectionDto.getUpStationId())
-                .orElse(0L);
-
-        assertThat(actualId).isEqualTo(1L);
-    }
-
-    @Test
-    @DisplayName("하행역이 일치하는 역을 검색한다.")
-    void findByDownStation() {
-        SectionDto sectionDto = sectionDao.save(1L, 2L, 3L, 5);
-
-        long actualId = sectionDao.findByDownStation(sectionDto.getLineId(), sectionDto.getDownStationId())
-                .orElse(0L);
-
-        assertThat(actualId).isEqualTo(1L);
-    }
-
-    @Test
-    @DisplayName("상행역을 수정한다.")
-    void update_upStation() {
-        SectionDto sectionDto = sectionDao.save(1L, 2L, 3L, 5);
-
-        sectionDao.updateUpStation(sectionDto.getId(), 5L);
-
-        assertThat(sectionDao.findByUpStationAndDownStation(1L, 5L, 3L).orElse(0L)).isEqualTo(1L);
-    }
-
-    @Test
     @DisplayName("하행역을 수정한다.")
     void update_downStation() {
         SectionDto sectionDto = sectionDao.save(1L, 2L, 3L, 5);
 
         sectionDao.updateDownStation(sectionDto.getId(), 5L);
 
-        assertThat(sectionDao.findByUpStationAndDownStation(1L, 2L, 5L).orElse(0L)).isEqualTo(1L);
+        assertThat(sectionDao.findById(1L).get(0).getDownStationId()).isEqualTo(5L);
     }
 
     @Test
@@ -118,7 +62,7 @@ public class SectionDaoTest {
         int expectedDistance = 8;
         sectionDao.updateDistance(sectionDto.getId(), expectedDistance);
 
-        int actualDistance = sectionDao.findDistanceByUpStationAndDownStation(1L, 2L, 3L).orElse(0);
+        int actualDistance = sectionDao.findDistanceById(1L).orElse(0);
         assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 }
