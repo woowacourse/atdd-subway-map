@@ -67,4 +67,18 @@ public class SectionDaoTest {
         // then
         assertThat(deletedSections).isOne();
     }
+
+    @Test
+    @DisplayName("구간 정보를 수정하기")
+    void update() {
+        // given
+        Section section = sectionDao.save(new Section(null, 1L, 1L, 2L, 1));
+        Section sectionForUpdate = new Section(section.getId(), 1L, 1L, 3L, 3);
+
+        // when
+        int updated = sectionDao.update(sectionForUpdate);
+
+        // then
+        assertThat(updated).isOne();
+    }
 }

@@ -58,4 +58,10 @@ public class JdbcSectionDao {
         final String sql = "DELETE FROM section WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
+
+    public int update(Section sections) {
+        final String sql = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, sections.getUpStationId(), sections.getDownStationId(),
+                sections.getDistance(), sections.getId());
+    }
 }
