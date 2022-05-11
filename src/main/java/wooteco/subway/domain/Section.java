@@ -40,6 +40,14 @@ public class Section {
         return List.of(start, end);
     }
 
+    public boolean hasSameUpStation(Station other) {
+        return upStation.equals(other);
+    }
+
+    public boolean hasSameDownStation(Station other) {
+        return downStation.equals(other);
+    }
+
     private void validate(int distance) {
         if (distance < MIN_DISTANCE) {
             throw new IllegalArgumentException("거리는 1이상이어야 합니다.");

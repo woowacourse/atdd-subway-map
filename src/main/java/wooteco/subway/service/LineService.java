@@ -86,15 +86,6 @@ public class LineService {
         updateSection(wait, result);
     }
 
-    private void updateSection(Section wait, List<Section> result) {
-        if (!result.contains(wait)) {
-            sectionDao.update(result.get(BEFORE_SECTION));
-            sectionDao.save(result.get(AFTER_SECTION));
-            return;
-        }
-        sectionDao.save(wait);
-    }
-
     public void delete(Long lineId, Long stationId) {
         Station station = findStation(stationId, "삭제 요청한 역이 없습니다.");
 
@@ -102,6 +93,15 @@ public class LineService {
         List<Section> result = sections.margeSection(station, findLine(lineId));
 
         mergeAndDelete(result);
+    }
+
+    private void updateSection(Section wait, List<Section> result) {
+        if (!result.contains(wait)) {
+            sectionDao.update(result.get(BEFORE_SECTION));
+            sectionDao.save(result.get(AFTER_SECTION));
+            return;
+        }
+        sectionDao.save(wait);
     }
 
     private void mergeAndDelete(List<Section> result) {

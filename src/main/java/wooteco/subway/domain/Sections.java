@@ -16,56 +16,36 @@ public class Sections {
 
     public boolean existUpStation(Station station) {
         return values.stream()
-                .anyMatch(value -> value.getUpStation().equals(station));
+                .anyMatch(value -> value.hasSameUpStation(station));
     }
 
     public boolean existDownStation(Station station) {
         return values.stream()
-                .anyMatch(value -> value.getDownStation().equals(station));
+                .anyMatch(value -> value.hasSameDownStation(station));
     }
 
     public Section findContainsUpStation(Station station) {
         return values.stream()
-                .filter(value -> value.getUpStation().equals(station))
+                .filter(value -> value.hasSameUpStation(station))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("구간에 등록된 출발역이 없습니다."));
     }
 
     public Section findContainsDownStation(Station station) {
         return values.stream()
-                .filter(value -> value.getDownStation().equals(station))
+                .filter(value -> value.hasSameDownStation(station))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("구간에 등록된 도착역이 없습니다."));
     }
 
-    private List<Section> sort(List<Section> sections) {
-        List<Section> values = new ArrayList<>();
-        Station next = findFirstStation(sections);
-        while (values.size() != sections.size()) {
-            next = findNext(sections, values, next);
-        }
-        return values;
-    }
-
     private Station findNext(List<Section> sections, List<Section> values, Station next) {
         for (Section section : sections) {
-            if (section.getUpStation().equals(next)) {
+            if (section.hasSameUpStation(next)) {
                 values.add(section);
                 return section.getDownStation();
             }
         }
         throw new IllegalArgumentException("다음 역을 찾을 수 없습니다.");
-    }
-
-
-    private Station findFirstStation(List<Section> sections) {
-        List<Station> upStations = createUpStations(sections);
-        List<Station> downStations = createDownStations(sections);
-
-        return upStations.stream()
-                .filter(upStation -> !downStations.contains(upStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("시작 구간을 찾을 수 없습니다."));
     }
 
     public List<Section> splitSection(Station upStation, Station downStation, Section target) {
@@ -90,26 +70,6 @@ public class Sections {
         }
 
         return marge(target, line);
-    }
-
-    private List<Section> marge(Station target, Line line) {
-        Section upSection = findContainsDownStation(target);
-        Section downSection = findContainsUpStation(target);
-        Section resultSection = new Section(line, upSection.getUpStation(), downSection.getDownStation(),
-                upSection.getDistance() + downSection.getDistance());
-        return List.of(resultSection, upSection, downSection);
-    }
-
-    private List<Station> createDownStations(List<Section> sections) {
-        return sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-    }
-
-    private List<Station> createUpStations(List<Section> sections) {
-        return sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
     }
 
     public void validateHasSameSection(Station upStation, Station downStation) {
@@ -140,5 +100,44 @@ public class Sections {
 
     public boolean hasStationFrontOrBack(Station upStation, Station downStation) {
         return existUpStation(downStation) || existDownStation(upStation);
+    }
+
+    private List<Section> sort(List<Section> sections) {
+        List<Section> values = new ArrayList<>();
+        Station next = findFirstStation(sections);
+        while (values.size() != sections.size()) {
+            next = findNext(sections, values, next);
+        }
+        return values;
+    }
+
+    private Station findFirstStation(List<Section> sections) {
+        List<Station> upStations = createUpStations(sections);
+        List<Station> downStations = createDownStations(sections);
+
+        return upStations.stream()
+                .filter(upStation -> !downStations.contains(upStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("시작 구간을 찾을 수 없습니다."));
+    }
+
+    private List<Section> marge(Station target, Line line) {
+        Section upSection = findContainsDownStation(target);
+        Section downSection = findContainsUpStation(target);
+        Section resultSection = new Section(line, upSection.getUpStation(), downSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance());
+        return List.of(resultSection, upSection, downSection);
+    }
+
+    private List<Station> createUpStations(List<Section> sections) {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> createDownStations(List<Section> sections) {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
     }
 }
