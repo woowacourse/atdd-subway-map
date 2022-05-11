@@ -126,14 +126,14 @@ public class SubwayService {
                 lineRequest.getDistance());
     }
 
-    public Section toSection(SectionEntity sectionEntity) {
+    private Section toSection(SectionEntity sectionEntity) {
         Line line = lineDao.findById(sectionEntity.getLineId());
         Station upStation = stationDao.findById(sectionEntity.getUpStationId());
         Station downStation = stationDao.findById(sectionEntity.getDownStationId());
         return new Section(sectionEntity.getId(), line, upStation, downStation, sectionEntity.getDistance());
     }
 
-    public List<Section> toSections(List<SectionEntity> sectionEntities) {
+    private List<Section> toSections(List<SectionEntity> sectionEntities) {
         return sectionEntities.stream()
                 .map(this::toSection)
                 .collect(Collectors.toList());
