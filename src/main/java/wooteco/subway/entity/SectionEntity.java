@@ -80,7 +80,7 @@ public class SectionEntity {
     @Override
     public String toString() {
         return "SectionEntity{" +
-                ", lineId=" + lineId +
+                "lineId=" + lineId +
                 ", upStationId=" + upStationId +
                 ", downStationId=" + downStationId +
                 ", distance=" + distance +

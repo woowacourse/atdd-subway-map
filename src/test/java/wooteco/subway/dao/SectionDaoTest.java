@@ -53,6 +53,27 @@ class SectionDaoTest extends DaoTest {
         }
     }
 
+
+    @Test
+    void updateUpStationIdAndDistance_메서드는_노선과_하행역에_부합하는_데이터를_수정한다() {
+        dao.updateUpStationIdAndDistance(new SectionEntity(2L, 2L, 3L, 5));
+
+        boolean exists = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM section "
+                + "WHERE line_id = 2 AND up_station_id = 2 AND distance = 5", Integer.class) > 0;
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    void updateDownStationIdAndDistance_메서드는_노선과_상행역에_부합하는_데이터를_수정한다() {
+        dao.updateDownStationIdAndDistance(new SectionEntity(2L, 1L, 2L, 5));
+
+        boolean exists = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM section "
+                + "WHERE line_id = 2 AND down_station_id = 2 AND distance = 5", Integer.class) > 0;
+
+        assertThat(exists).isTrue();
+    }
+
     @Test
     void deleteAllByLineId_메서드는_노선에_해당되는_모든_구간_데이터를_삭제() {
         dao.deleteAllByLineId(1L);

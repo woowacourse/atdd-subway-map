@@ -42,6 +42,22 @@ public class SectionDao {
         jdbcTemplate.update(sql, paramSource);
     }
 
+    public void updateUpStationIdAndDistance(SectionEntity sectionEntity) {
+        final String sql = "UPDATE section SET up_station_id = :upStationId, distance = :distance "
+                + "WHERE line_id = :lineId AND down_station_id = :downStationId";
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(sectionEntity);
+
+        jdbcTemplate.update(sql, paramSource);
+    }
+
+    public void updateDownStationIdAndDistance(SectionEntity sectionEntity) {
+        final String sql = "UPDATE section SET down_station_id = :downStationId, distance = :distance "
+                + "WHERE line_id = :lineId AND up_station_id = :upStationId";
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(sectionEntity);
+
+        jdbcTemplate.update(sql, paramSource);
+    }
+
     public void deleteAllByLineId(Long lineId) {
         final String sql = "DELETE FROM section WHERE line_id = :lineId ";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
