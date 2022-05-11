@@ -43,4 +43,13 @@ public class SectionService {
 
         return stations;
     }
+
+    public void add(long lineId, SectionRequest sectionRequest) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+
+        if (sections.isTerminus(sectionRequest.getUpStationId(), sectionRequest.getDownStationId())) {
+            save(lineId, sectionRequest);
+            return;
+        }
+    }
 }

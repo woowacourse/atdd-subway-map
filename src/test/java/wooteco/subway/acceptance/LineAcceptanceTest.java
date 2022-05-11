@@ -266,23 +266,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private Long postStationAndGetId(String name) {
-        return post("/stations", Map.of("name", name))
-                .jsonPath()
-                .getLong("id");
-    }
-
-    private Long postLineAndGetId(String name, String color, Long upStationId, Long downStationId, int distance) {
-        Map<String, String> param = Map.of(
-                "name", name,
-                "color", color,
-                "upStationId", String.valueOf(upStationId),
-                "downStationId", String.valueOf(downStationId),
-                "distance", String.valueOf(distance)
-        );
-
-        return post("/lines", param)
-                .jsonPath()
-                .getLong("id");
-    }
 }

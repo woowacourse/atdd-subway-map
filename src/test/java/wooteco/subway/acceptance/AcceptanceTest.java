@@ -57,4 +57,24 @@ public class AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+    public Long postStationAndGetId(String name) {
+        return post("/stations", Map.of("name", name))
+                .jsonPath()
+                .getLong("id");
+    }
+
+    public Long postLineAndGetId(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> param = Map.of(
+                "name", name,
+                "color", color,
+                "upStationId", String.valueOf(upStationId),
+                "downStationId", String.valueOf(downStationId),
+                "distance", String.valueOf(distance)
+        );
+
+        return post("/lines", param)
+                .jsonPath()
+                .getLong("id");
+    }
 }
