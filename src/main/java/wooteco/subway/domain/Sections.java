@@ -47,10 +47,6 @@ public class Sections {
                 .findFirst();
     }
 
-    private boolean isEqualDownStationId(Long downStationId, Section section) {
-        return section.getDownStationId().equals(downStationId);
-    }
-
     public boolean isLastStation(Long stationId) {
         return getLastStationIds().contains(stationId);
     }
@@ -76,10 +72,14 @@ public class Sections {
             throw new IllegalMergeSectionException();
         }
 
-        int distance = calculateDistance();
+        int distance = calculateMergedDistance();
         List<Long> mergedIds = getMergedStationIds();
 
         return new Section(distance, sections.get(0).getLineId(), mergedIds.get(0), mergedIds.get(1));
+    }
+
+    private boolean isEqualDownStationId(Long downStationId, Section section) {
+        return section.getDownStationId().equals(downStationId);
     }
 
     private List<Long> getMergedStationIds() {
@@ -95,7 +95,7 @@ public class Sections {
         throw new IllegalMergeSectionException();
     }
 
-    private int calculateDistance() {
+    private int calculateMergedDistance() {
         return sections.stream()
                 .mapToInt(Section::getDistance)
                 .sum();

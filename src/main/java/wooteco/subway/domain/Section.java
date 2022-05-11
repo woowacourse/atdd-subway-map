@@ -26,11 +26,8 @@ public class Section {
     }
 
     public Section(Long id, int distance, Long lineId, Long upStationId, Long downStationId) {
+        this(distance, lineId, upStationId, downStationId);
         this.id = id;
-        this.distance = distance;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
     }
 
     public static Section of(Line savedLine, LineRequest lineRequest) {
@@ -62,24 +59,31 @@ public class Section {
         throw new IllegalMergeSectionException();
     }
 
-    public Long getId() {
-        return id;
+    public boolean canAddAsLastStation(Sections sections) {
+        List<Long> lastStopIds = sections.getLastStationIds();
+
+        return lastStopIds.contains(upStationId) || lastStopIds.contains(downStationId);
     }
 
-    public Long getLineId() {
-        return lineId;
+    public SectionResult canAddAsBetweenStation(Sections sections) {
+        Optional<Section> upStationSection = sections.getExistedUpStationSection(upStationId);
+
+        if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {
+            return SectionResult.of(upStationSection.get(), this);
+        }
+        Optional<Section> downStationSection = sections.getExistedDownStationSection(downStationId);
+        if (downStationSection.isPresent() && downStationSection.get().getDistance() > distance) {
+            return SectionResult.of(downStationSection.get(), this);
+        }
+        return new SectionResult(false);
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public boolean isEqualDownStationId(Long stationId) {
+        return downStationId.equals(stationId);
     }
 
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
+    public boolean isEqualUpStationId(Long stationId) {
+        return upStationId.equals(stationId);
     }
 
     public boolean isExistedIn(List<Section> sections) {
@@ -110,30 +114,23 @@ public class Section {
         return section.downStationId.equals(this.downStationId);
     }
 
-    public boolean canAddAsLastStation(Sections sections) {
-        List<Long> lastStopIds = sections.getLastStationIds();
-
-        return lastStopIds.contains(upStationId) || lastStopIds.contains(downStationId);
+    public Long getId() {
+        return id;
     }
 
-    public SectionResult canAddAsBetweenStation(Sections sections) {
-        Optional<Section> upStationSection = sections.getExistedUpStationSection(upStationId);
-
-        if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {
-            return SectionResult.of(upStationSection.get(), this);
-        }
-        Optional<Section> downStationSection = sections.getExistedDownStationSection(downStationId);
-        if (downStationSection.isPresent() && downStationSection.get().getDistance() > distance) {
-            return SectionResult.of(downStationSection.get(), this);
-        }
-        return new SectionResult(false);
+    public Long getLineId() {
+        return lineId;
     }
 
-    public boolean isEqualDownStationId(Long stationId) {
-        return downStationId.equals(stationId);
+    public Long getUpStationId() {
+        return upStationId;
     }
 
-    public boolean isEqualUpStationId(Long stationId) {
-        return upStationId.equals(stationId);
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

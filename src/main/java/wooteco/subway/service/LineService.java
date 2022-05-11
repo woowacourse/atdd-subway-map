@@ -40,13 +40,6 @@ public class LineService {
         return LineResponse.of(savedLine, List.of(upStation, downStation));
     }
 
-    private void validateDuplicateName(Line line) {
-        Optional<Line> optionalLine = lineDao.findByName(line.getName());
-        optionalLine.ifPresent(existed -> {
-            throw new DuplicateLineNameException();
-        });
-    }
-
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         List<Station> stations = stationService.findAll();
@@ -54,17 +47,6 @@ public class LineService {
         return lines.stream()
                 .map(line -> getLineResponse(line, stations))
                 .collect(Collectors.toList());
-    }
-
-    private LineResponse getLineResponse(Line line, List<Station> allStations) {
-        Long lineId = line.getId();
-        List<Long> stationIds = sectionService.getStationIds(lineId);
-
-        List<Station> stations = allStations.stream()
-                .filter(station -> stationIds.contains(station.getId()))
-                .collect(Collectors.toList());
-
-        return LineResponse.of(line, stations);
     }
 
     public LineResponse findById(Long id) {
@@ -93,5 +75,23 @@ public class LineService {
 
     public void deleteSection(Long lineId, Long stationId) {
         sectionService.delete(lineId, stationId);
+    }
+
+    private void validateDuplicateName(Line line) {
+        Optional<Line> optionalLine = lineDao.findByName(line.getName());
+        optionalLine.ifPresent(existed -> {
+            throw new DuplicateLineNameException();
+        });
+    }
+
+    private LineResponse getLineResponse(Line line, List<Station> allStations) {
+        Long lineId = line.getId();
+        List<Long> stationIds = sectionService.getStationIds(lineId);
+
+        List<Station> stations = allStations.stream()
+                .filter(station -> stationIds.contains(station.getId()))
+                .collect(Collectors.toList());
+
+        return LineResponse.of(line, stations);
     }
 }
