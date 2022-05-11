@@ -1,5 +1,9 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.IllegalDeleteException;
+import wooteco.subway.exception.IllegalSectionInsertException;
+import wooteco.subway.exception.InvalidDistanceException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -87,13 +91,13 @@ public class Sections {
 
     private void validateSectionNotFound(final List<Section> sections) {
         if (sections.size() == 0) {
-            throw new IllegalArgumentException("구간에 존재하지 않는 지하철 역입니다.");
+            throw new DataNotFoundException("구간에 존재하지 않는 지하철 역입니다.");
         }
     }
 
     private void validateMinimumSize() {
         if (value.size() <= MINIMUM_SIZE) {
-            throw new IllegalArgumentException("구간이 " + value.size() + "개 이므로 삭제할 수 없습니다.");
+            throw new IllegalDeleteException("구간이 " + value.size() + "개 이므로 삭제할 수 없습니다.");
         }
     }
 
@@ -146,7 +150,7 @@ public class Sections {
 
     private void validateDistance(final Section section, final Section other) {
         if (other.isGreaterOrEqualTo(section)) {
-            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
+            throw new InvalidDistanceException("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
         }
     }
 
@@ -165,10 +169,10 @@ public class Sections {
         final boolean hasDownStation = stations.contains(other.getDownStation());
 
         if (hasUpStation && hasDownStation) {
-            throw new IllegalStateException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+            throw new IllegalSectionInsertException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
         }
         if (!hasUpStation && !hasDownStation) {
-            throw new IllegalStateException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
+            throw new IllegalSectionInsertException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
         }
     }
 

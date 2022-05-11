@@ -10,6 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.IllegalDeleteException;
+import wooteco.subway.exception.IllegalSectionInsertException;
+import wooteco.subway.exception.InvalidDistanceException;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +38,7 @@ class SectionsTest {
         final Section newSection = new Section(newStation1, newStation2, 5, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalSectionInsertException.class)
                 .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
     }
 
@@ -44,7 +48,7 @@ class SectionsTest {
         final Section newSection = new Section(upStation, downStation, 5, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalSectionInsertException.class)
                 .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
     }
 
@@ -57,7 +61,7 @@ class SectionsTest {
         final Section newSection = new Section(newStation1, newStation2, distance, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidDistanceException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
     }
 
@@ -70,7 +74,7 @@ class SectionsTest {
         final Section newSection = new Section(newStation1, newStation2, distance, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidDistanceException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
     }
 
@@ -190,7 +194,7 @@ class SectionsTest {
         final long stationId = 4L;
 
         assertThatThrownBy(() -> newSections.pop(stationId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("구간에 존재하지 않는 지하철 역입니다.");
     }
 
@@ -198,7 +202,7 @@ class SectionsTest {
     @Test
     void delete_throwsSectionsSizeException() {
         assertThatThrownBy(() -> sections.pop(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalDeleteException.class)
                 .hasMessage("구간이 1개 이므로 삭제할 수 없습니다.");
     }
 
