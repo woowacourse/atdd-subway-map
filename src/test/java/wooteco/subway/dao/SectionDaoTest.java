@@ -11,6 +11,8 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -76,5 +78,27 @@ class SectionDaoTest {
         sectionDao.save(section2);
 
         assertThat(sectionDao.findAllByLineId(line.getId()).size()).isEqualTo(2);
+    }
+
+    @DisplayName("특정 구간을 수정한다.")
+    @Test
+    void update() {
+        final Section section1 = new Section(station1, station2, 10, line.getId());
+        final Station station3 = stationDao.save(new Station("광나루역"));
+
+        final Section savedSection = sectionDao.save(section1);
+
+        final Section newSection = new Section(station1, station3, 5, line.getId());
+        sectionDao.update(savedSection.getId(), newSection);
+
+        final Optional<Section> updatedSection = sectionDao.findAllByLineId(line.getId())
+                .stream()
+                .findFirst();
+
+        assert (updatedSection.isPresent());
+
+        assertThat(updatedSection.get()).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(newSection);
     }
 }

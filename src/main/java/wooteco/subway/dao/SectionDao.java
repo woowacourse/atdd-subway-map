@@ -70,4 +70,16 @@ public class SectionDao {
 
         return namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), rowMapper);
     }
+
+    public void update(final Long id, final Section newSection) {
+        final String sql = "UPDATE SECTION SET up_station_id=:upStationId, down_station_id=:downStationId, distance=:distance WHERE id=:id";
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        params.put("upStationId", newSection.getUpStation().getId());
+        params.put("downStationId", newSection.getDownStation().getId());
+        params.put("distance", newSection.getDistance());
+
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
+    }
 }
