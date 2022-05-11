@@ -10,17 +10,17 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.repository.dao.entity.StationEntity;
 
-@Repository
+@Component
 public class JdbcStationDao implements StationDao {
 
-    private static final RowMapper<Station> stationRowMapper =
-            (resultSet, rowNum) -> new Station(
+    private static final RowMapper<StationEntity> ROW_MAPPER =
+            (resultSet, rowNum) -> new StationEntity(
                     resultSet.getLong("id"),
                     resultSet.getString("name")
             );
@@ -36,24 +36,24 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Long save(Station station) {
-        SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
+    public Long save(StationEntity stationEntity) {
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(stationEntity);
         return jdbcInsert.executeAndReturnKey(parameters)
                 .longValue();
     }
 
     @Override
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         String query = "SELECT id, name from Station";
-        return jdbcTemplate.query(query, stationRowMapper);
+        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
     @Override
-    public Optional<Station> findById(Long id) {
+    public Optional<StationEntity> findById(Long id) {
         String query = "SELECT id, name from Station WHERE id=(:id)";
         try {
             SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-            return Optional.ofNullable(jdbcTemplate.queryForObject(query, parameters, stationRowMapper));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, parameters, ROW_MAPPER));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

@@ -11,6 +11,7 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.StationRepository;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.repository.dao.entity.EntityAssembler;
 import wooteco.subway.repository.exception.DuplicateLineColorException;
 import wooteco.subway.repository.exception.DuplicateLineNameException;
 import wooteco.subway.repository.exception.DuplicateStationNameException;
@@ -29,7 +30,7 @@ public class SubwayRepository implements LineRepository, StationRepository {
     @Override
     public Long saveLine(Line line) {
         validateLineNotDuplicated(line);
-        return lineDao.save(line);
+        return lineDao.save(EntityAssembler.lineEntity(line));
     }
 
     private void validateLineNotDuplicated(Line line) {
@@ -52,7 +53,7 @@ public class SubwayRepository implements LineRepository, StationRepository {
     @Override
     public Long saveStation(Station station) {
         validateStationNotDuplicated(station);
-        return stationDao.save(station);
+        return stationDao.save(EntityAssembler.stationEntity(station));
     }
 
     private void validateStationNotDuplicated(Station station) {
@@ -67,23 +68,25 @@ public class SubwayRepository implements LineRepository, StationRepository {
 
     @Override
     public List<Line> findLines() {
-        return lineDao.findAll();
+        return EntityAssembler.lines(lineDao.findAll());
     }
 
     @Override
     public Line findLineById(Long lineId) {
         return lineDao.findById(lineId)
+                .map(EntityAssembler::line)
                 .orElseThrow(() -> new NoSuchElementException("조회하고자 하는 지하철노선이 존재하지 않습니다."));
     }
 
     @Override
     public List<Station> findStations() {
-        return stationDao.findAll();
+        return EntityAssembler.stations(stationDao.findAll());
     }
 
     @Override
     public Station findStationById(Long stationId) {
         return stationDao.findById(stationId)
+                .map(EntityAssembler::station)
                 .orElseThrow(() -> new NoSuchElementException("조회하고자 하는 지하철역이 존재하지 않습니다."));
     }
 
@@ -93,7 +96,7 @@ public class SubwayRepository implements LineRepository, StationRepository {
             throw new NoSuchElementException("수정하고자 하는 지하철노선이 존재하지 않습니다.");
         }
         validateLineNotDuplicated(line);
-        lineDao.update(line.getId(), line.getName(), line.getColor());
+        lineDao.update(EntityAssembler.lineEntity(line));
     }
 
     @Override

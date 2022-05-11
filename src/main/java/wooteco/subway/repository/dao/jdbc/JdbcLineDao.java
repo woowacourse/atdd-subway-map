@@ -10,17 +10,17 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import wooteco.subway.domain.line.Line;
 import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.repository.dao.entity.LineEntity;
 
-@Repository
+@Component
 public class JdbcLineDao implements LineDao {
 
-    private static final RowMapper<Line> lineRowMapper =
-            (resultSet, rowNum) -> new Line(
+    private static final RowMapper<LineEntity> ROW_MAPPER =
+            (resultSet, rowNum) -> new LineEntity(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("color")
@@ -37,24 +37,24 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Long save(Line line) {
-        SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+    public Long save(LineEntity lineEntity) {
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(lineEntity);
         return jdbcInsert.executeAndReturnKey(parameters)
                 .longValue();
     }
 
     @Override
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         String query = "SELECT id, name, color from Line";
-        return jdbcTemplate.query(query, lineRowMapper);
+        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Optional<LineEntity> findById(Long id) {
         String query = "SELECT id, name, color from Line WHERE id=(:id)";
         try {
             SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-            return Optional.ofNullable(jdbcTemplate.queryForObject(query, parameters, lineRowMapper));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, parameters, ROW_MAPPER));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -77,11 +77,11 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public void update(Long id, String name, String color) {
+    public void update(LineEntity lineEntity) {
         String query = "UPDATE Line SET name=(:name), color=(:color) WHERE id=(:id)";
-        SqlParameterSource parameters = new MapSqlParameterSource("id", id)
-                .addValue("name", name)
-                .addValue("color", color);
+        SqlParameterSource parameters = new MapSqlParameterSource("id", lineEntity.getId())
+                .addValue("name", lineEntity.getName())
+                .addValue("color", lineEntity.getColor());
         jdbcTemplate.update(query, parameters);
     }
 

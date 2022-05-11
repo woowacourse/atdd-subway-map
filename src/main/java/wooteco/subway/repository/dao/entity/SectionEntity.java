@@ -1,14 +1,14 @@
-package wooteco.subway.repository.dao.dto;
+package wooteco.subway.repository.dao.entity;
 
-public class SectionDto {
+public class SectionEntity {
 
     private final Long id;
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
-    private final Long distance;
+    private final Integer distance;
 
-    public SectionDto(Long id, Long lineId, Long upStationId, Long downStationId, Long distance) {
+    public SectionEntity(Long id, Long lineId, Long upStationId, Long downStationId, Integer distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -32,7 +32,7 @@ public class SectionDto {
         return downStationId;
     }
 
-    public Long getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 }

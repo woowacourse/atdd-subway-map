@@ -3,21 +3,21 @@ package wooteco.subway.repository.dao;
 import java.util.List;
 import java.util.Optional;
 
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.repository.dao.entity.LineEntity;
 
 public interface LineDao {
 
-    Long save(Line line);
+    Long save(LineEntity lineEntity);
 
-    List<Line> findAll();
+    List<LineEntity> findAll();
 
-    Optional<Line> findById(Long id);
+    Optional<LineEntity> findById(Long id);
 
     Boolean existsByName(String name);
 
     Boolean existsByColor(String color);
 
-    void update(Long id, String name, String color);
+    void update(LineEntity lineEntity);
 
     void remove(Long id);
 }

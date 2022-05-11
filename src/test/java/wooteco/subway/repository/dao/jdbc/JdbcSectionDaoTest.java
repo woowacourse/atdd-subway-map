@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
 import javax.sql.DataSource;
 import wooteco.subway.repository.dao.SectionDao;
-import wooteco.subway.repository.dao.dto.SectionDto;
+import wooteco.subway.repository.dao.entity.SectionEntity;
 
 @JdbcTest
 class JdbcSectionDaoTest {
@@ -27,8 +27,8 @@ class JdbcSectionDaoTest {
     @DisplayName("지하철구간을 저장한다.")
     @Test
     void save() {
-        SectionDto sectionDto = new SectionDto(0L, 1L, 1L, 2L, 1L);
-        Long sectionId = sectionDao.save(sectionDto);
+        SectionEntity sectionEntity = new SectionEntity(0L, 1L, 1L, 2L, 10);
+        Long sectionId = sectionDao.save(sectionEntity);
         assertThat(sectionId).isGreaterThan(0L);
     }
 
@@ -36,11 +36,11 @@ class JdbcSectionDaoTest {
     @Test
     void findAllByLineId() {
         Long anotherLineId = 2L;
-        sectionDao.save(new SectionDto(0L, anotherLineId, 2L, 3L, 1L));
+        sectionDao.save(new SectionEntity(0L, anotherLineId, 2L, 3L, 10));
 
         Long expectedLineId = 1L;
-        sectionDao.save(new SectionDto(0L, expectedLineId, 1L, 2L, 1L));
-        sectionDao.save(new SectionDto(0L, expectedLineId, 2L, 3L, 1L));
+        sectionDao.save(new SectionEntity(0L, expectedLineId, 1L, 2L, 10));
+        sectionDao.save(new SectionEntity(0L, expectedLineId, 2L, 3L, 10));
         assertThat(sectionDao.findAllByLineId(expectedLineId)).hasSize(2);
     }
 
@@ -48,7 +48,7 @@ class JdbcSectionDaoTest {
     @Test
     void remove() {
         Long lineId = 1L;
-        Long sectionId = sectionDao.save(new SectionDto(0L, lineId, 1L, 2L, 1L));
+        Long sectionId = sectionDao.save(new SectionEntity(0L, lineId, 1L, 2L, 10));
         sectionDao.remove(sectionId);
         assertThat(sectionDao.findAllByLineId(lineId)).isEmpty();
     }

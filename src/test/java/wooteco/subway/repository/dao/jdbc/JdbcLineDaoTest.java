@@ -15,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import javax.sql.DataSource;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.repository.dao.entity.EntityAssembler;
+import wooteco.subway.repository.dao.entity.LineEntity;
 
 @JdbcTest
 class JdbcLineDaoTest {
@@ -31,75 +33,78 @@ class JdbcLineDaoTest {
     @DisplayName("지하철노선을 저장한다.")
     @Test
     void save() {
-        Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
-        assertThat(lineId).isGreaterThan(0);
+        LineEntity lineEntity = EntityAssembler.lineEntity(new Line("신분당선", "bg-red-600"));
+        assertThat(lineDao.save(lineEntity)).isGreaterThan(0);
     }
 
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void findAll() {
-        List<Line> lines = List.of(
-                new Line("신분당선", "bg-red-600"),
-                new Line("1호선", "bg-red-601"),
-                new Line("2호선", "bg-red-602")
+        List<LineEntity> lines = List.of(
+                EntityAssembler.lineEntity(new Line("신분당선", "bg-red-600")),
+                EntityAssembler.lineEntity(new Line("1호선", "bg-red-601")),
+                EntityAssembler.lineEntity(new Line("2호선", "bg-red-602"))
         );
         lines.forEach(lineDao::save);
-        List<Line> foundLines = lineDao.findAll();
-        assertThat(foundLines).hasSize(3);
+        assertThat(lineDao.findAll()).hasSize(3);
     }
 
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void findById() {
-        Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
-        Optional<Line> line = lineDao.findById(lineId);
-        assertThat(line.isPresent()).isTrue();
+        LineEntity expected = EntityAssembler.lineEntity(new Line("신분당선", "bg-red-600"));
+        Long lineId = lineDao.save(expected);
+        Optional<LineEntity> lineEntity = lineDao.findById(lineId);
+        assertAll(
+                () -> assertThat(lineEntity.isPresent()).isTrue(),
+                () -> assertThat(lineEntity.get()).usingRecursiveComparison()
+                        .ignoringFields("id")
+                        .isEqualTo(expected)
+        );
     }
 
     @DisplayName("존재하지 않는 지하철노선을 조회한다.")
     @Test
     void findWithNonexistentId() {
-        Optional<Line> line = lineDao.findById(1L);
-        assertThat(line.isEmpty()).isTrue();
+        Optional<LineEntity> lineEntity = lineDao.findById(1L);
+        assertThat(lineEntity.isEmpty()).isTrue();
     }
 
     @DisplayName("지하철 노선 정보를 수정한다.")
     @Test
     void update() {
-        Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
-        lineDao.update(lineId, "분당선", "bg-blue-600");
-        Optional<Line> updatedLine = lineDao.findById(lineId);
-
-        assertAll(() -> {
-            assertThat(updatedLine.isPresent()).isTrue();
-
-            Line line = updatedLine.get();
-            assertThat(line.getId()).isEqualTo(lineId);
-            assertThat(line.getName()).isEqualTo("분당선");
-            assertThat(line.getColor()).isEqualTo("bg-blue-600");
-        });
+        Long lineId = lineDao.save(EntityAssembler.lineEntity(new Line("신분당선", "bg-red-600")));
+        LineEntity expected = EntityAssembler.lineEntity(new Line(lineId, "분당선", "bg-blue-600"));
+        lineDao.update(expected);
+        Optional<LineEntity> actual = lineDao.findById(lineId);
+        assertAll(
+                () -> assertThat(actual.isPresent()).isTrue(),
+                () -> assertThat(actual.get()).usingRecursiveComparison()
+                        .isEqualTo(expected)
+        );
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void remove() {
-        Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+        Long lineId = lineDao.save(EntityAssembler.lineEntity(new Line("신분당선", "bg-red-600")));
         lineDao.remove(lineId);
-
         assertThat(lineDao.findAll()).isEmpty();
     }
 
     @DisplayName("해당 이름의 노선이 존재하는지 확인한다.")
     @Test
     void existsByName() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
-        assertThat(lineDao.existsByName("신분당선")).isTrue();
+        LineEntity lineEntity = EntityAssembler.lineEntity(new Line("신분당선", "bg-red-600"));
+        lineDao.save(lineEntity);
+        assertThat(lineDao.existsByName(lineEntity.getName())).isTrue();
     }
 
     @DisplayName("해당 색상의 노선이 존재하는지 확인한다.")
     @Test
     void existsByColor() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
-        assertThat(lineDao.existsByColor("bg-red-600")).isTrue();
+        LineEntity lineEntity = EntityAssembler.lineEntity(new Line("신분당선", "bg-red-600"));
+        lineDao.save(lineEntity);
+        assertThat(lineDao.existsByColor(lineEntity.getColor())).isTrue();
     }
 }
