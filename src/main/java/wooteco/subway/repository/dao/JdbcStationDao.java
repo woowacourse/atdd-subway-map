@@ -55,7 +55,7 @@ public class JdbcStationDao implements StationDao {
         final SqlParameterSource source = new MapSqlParameterSource(params);
         try {
             final StationEntity stationEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
-            return Optional.of(stationEntity);
+            return Optional.ofNullable(stationEntity);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
@@ -69,7 +69,7 @@ public class JdbcStationDao implements StationDao {
         final SqlParameterSource source = new MapSqlParameterSource(params);
         try {
             final StationEntity stationEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
-            return Optional.of(stationEntity);
+            return Optional.ofNullable(stationEntity);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }

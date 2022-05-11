@@ -59,7 +59,7 @@ public class JdbcSectionDao implements SectionDao {
         final SqlParameterSource source = new MapSqlParameterSource(params);
         try {
             final SectionEntity sectionEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
-            return Optional.of(sectionEntity);
+            return Optional.ofNullable(sectionEntity);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }

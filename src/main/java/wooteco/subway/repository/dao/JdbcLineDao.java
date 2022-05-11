@@ -56,7 +56,7 @@ public class JdbcLineDao implements LineDao {
         final SqlParameterSource source = new MapSqlParameterSource(params);
         try {
             final LineEntity lineEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
-            return Optional.of(lineEntity);
+            return Optional.ofNullable(lineEntity);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
@@ -70,7 +70,7 @@ public class JdbcLineDao implements LineDao {
         final SqlParameterSource source = new MapSqlParameterSource(params);
         try {
             final LineEntity lineEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
-            return Optional.of(lineEntity);
+            return Optional.ofNullable(lineEntity);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
