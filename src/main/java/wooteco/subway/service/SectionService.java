@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
@@ -24,5 +25,23 @@ public class SectionService {
         Sections newSections = sections.add(section);
         sectionDao.deleteByLineId(lineId);
         sectionDao.save(lineId, newSections.getValue());
+    }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        Set<Long> stationIds = sections.getStationIds();
+        validateExistStation(stationId, stationIds);
+        Sections newSections = sections.delete(lineId, stationId);
+        sectionDao.deleteByLineId(lineId);
+        sectionDao.save(lineId, newSections.getValue());
+    }
+
+    private void validateExistStation(Long stationId, Set<Long> stationIds) {
+        if (!stationIds.contains(stationId)) {
+            throw new IllegalArgumentException("삭제할 구간이 존재하지 않습니다.");
+        }
+        if (stationIds.size() == 2) {
+            throw new IllegalArgumentException("삭제할 수 없습니다.");
+        }
     }
 }

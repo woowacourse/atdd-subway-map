@@ -66,6 +66,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
     @Test
     @DisplayName("지하철 구간을 생성한다.")
     void createSection() throws JsonProcessingException {
@@ -81,6 +82,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("지하철 구간에서 역을 삭제한다.")
+    void deleteSection() throws JsonProcessingException {
+        createStation1();
+        createLine();
+
+        // given
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
+        String params = om.writeValueAsString(sectionRequest);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections?stationId=2")
                 .then().log().all()
                 .extract();
 

@@ -52,6 +52,18 @@ public class Section {
         return section.distance < this.distance;
     }
 
+    public Boolean hasStation(Long stationId) {
+        return upStationId == stationId || downStationId == stationId;
+    }
+
+    public Boolean hasUpStation(Long stationId) {
+        return upStationId == stationId;
+    }
+
+    public Boolean hasDownStation(Long stationId) {
+        return downStationId == stationId;
+    }
+
     public Long getId() {
         return id;
     }

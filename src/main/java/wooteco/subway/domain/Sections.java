@@ -11,6 +11,7 @@ public class Sections {
 
     static final String DUPLICATE_STATION_ERROR_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.";
     static final String NONE_DUPLICATE_STATION_ERROR_MESSAGE = "상행역과 하행역 둘 중 하나는 포함되어 있어야 합니다.";
+    static final String IMPOSSIBLE_DELETE_EXCEPTION_MESSAGE = "삭제할 구간이 존재하지 않습니다.";
 
     private final List<Section> value;
 
@@ -19,16 +20,12 @@ public class Sections {
     }
 
     public Sections add(Section section) {
-        List<Section> sections = new ArrayList<>(value);
         validateExistStations(section);
+        List<Section> sections = new ArrayList<>(value);
         for (Section originSection : sections) {
-            // 상행종점
-            if (originSection.isUpTerminal(section) && !getDownStationIds().contains(section.getDownStationId())) {
-                sections.add(section);
-                return new Sections(sections);
-            }
-            // 하행종점
-            if (originSection.isDownTerminal(section) && !getUpStationIds().contains(section.getUpStationId())) {
+            // 상행종점, 하행종점
+            if (originSection.isUpTerminal(section) && !getDownStationIds().contains(section.getDownStationId())
+                    || originSection.isDownTerminal(section) && !getUpStationIds().contains(section.getUpStationId())) {
                 sections.add(section);
                 return new Sections(sections);
             }
@@ -68,6 +65,48 @@ public class Sections {
         }
     }
 
+    public Sections delete(Long lineId, Long stationId) {
+        validatePossibleToDelete(stationId);
+        long size = getStationIdsToList().stream()
+                .filter(it -> it == stationId)
+                .count();
+        if (size == 1) {
+            value.removeIf(section -> section.hasStation(stationId));
+            return new Sections(value);
+        }
+        if (size == 2) {
+            Section newSection = makeNewSection(lineId, stationId);
+            value.removeIf(section -> section.hasStation(stationId));
+            value.add(newSection);
+            return new Sections(value);
+        }
+        throw new IllegalStateException("에러");
+    }
+
+    private Section makeNewSection(Long lineId, Long stationId) {
+        Long newDownStationId = 0L;
+        Long newUpStationId = 0L;
+        Integer newDistance = 0;
+        for (Section section : value) {
+            if (section.hasUpStation(stationId)) {
+                newDownStationId = section.getDownStationId();
+                newDistance += section.getDistance();
+            }
+            if (section.hasDownStation(stationId)) {
+                newUpStationId = section.getUpStationId();
+                newDistance += section.getDistance();
+            }
+        }
+        return new Section(lineId, newUpStationId, newDownStationId, newDistance);
+    }
+
+    private void validatePossibleToDelete(Long stationId) {
+        Set<Long> stationIds = getStationIds();
+        if (!stationIds.contains(stationId) || stationIds.size() == 2) {
+            throw new IllegalArgumentException(IMPOSSIBLE_DELETE_EXCEPTION_MESSAGE);
+        }
+    }
+
     private Set<Long> getUpStationIds() {
         return value.stream()
                 .map(Section::getUpStationId)
@@ -80,11 +119,18 @@ public class Sections {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    private Set<Long> getStationIds() {
+    public Set<Long> getStationIds() {
         return value.stream()
                 .map(Section::getStationId)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public List<Long> getStationIdsToList() {
+        return value.stream()
+                .map(Section::getStationId)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<Section> getValue() {
