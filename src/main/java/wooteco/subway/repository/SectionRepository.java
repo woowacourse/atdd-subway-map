@@ -17,7 +17,7 @@ public class SectionRepository {
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public SectionRepository(JdbcTemplate jdbcTemplate, StationDao stationDao) {
+    public SectionRepository(JdbcTemplate jdbcTemplate) {
         this.sectionDao = new JdbcSectionDao(jdbcTemplate);
         this.stationDao = new JdbcStationDao(jdbcTemplate);
     }
