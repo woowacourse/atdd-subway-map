@@ -70,7 +70,7 @@ public class SubwayServiceTest {
         addStation("강남역");
         addStation("잠실역");
 
-        LineRequest lineRequest = LineRequest.of("2호선", "초록색", 1L, 2L, 3);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 3);
         LineResponse response = subwayService.addLine(lineRequest);
 
         assertThat(response.getId()).isEqualTo(1L);
@@ -84,7 +84,7 @@ public class SubwayServiceTest {
     void updateLine() {
         addLine("2호선", "초록색");
 
-        LineRequest lineRequest = LineRequest.of("3호선", "빨간색");
+        LineRequest lineRequest = new LineRequest("3호선", "빨간색", null, null, 0);
         subwayService.updateLine(1L, lineRequest);
 
         LineResponse response = subwayService.getLine(1L);
@@ -155,7 +155,7 @@ public class SubwayServiceTest {
     private void addLine(String name, String color) {
         addStation("강남역");
         addStation("잠실역");
-        LineRequest lineRequest = LineRequest.of(name, color, 1L, 2L, 3);
+        LineRequest lineRequest = new LineRequest(name, color, 1L, 2L, 3);
         subwayService.addLine(lineRequest);
     }
 

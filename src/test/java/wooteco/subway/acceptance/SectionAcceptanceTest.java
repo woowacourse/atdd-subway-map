@@ -36,7 +36,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         stationDao.save(station1);
         stationDao.save(station2);
 
-        LineRequest lineRequest = LineRequest.of("2호선", "초록색", 1L, 2L, 10);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
         subwayService.addLine(lineRequest);
     }
 

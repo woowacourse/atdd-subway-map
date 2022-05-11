@@ -39,7 +39,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        LineRequest lineRequest = LineRequest.of("2호선", "초록색", 1L, 2L, 3);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 3);
 
         ExtractableResponse<Response> response = requestPost(lineRequest);
 
@@ -50,11 +50,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
-        LineRequest lineRequest = LineRequest.of("2호선", "초록색", 1L, 2L, 3);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 3);
 
         requestPost(lineRequest);
 
-        lineRequest = LineRequest.of("2호선", "분홍색", 1L, 2L, 3);
+        lineRequest = new LineRequest("2호선", "분홍색", 1L, 2L, 3);
 
         ExtractableResponse<Response> response = requestPost(lineRequest);
 
@@ -64,11 +64,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 색상으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateColor() {
-        LineRequest lineRequest = LineRequest.of("2호선", "초록색", 1L, 2L, 3);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 3);
 
         requestPost(lineRequest);
 
-        lineRequest = LineRequest.of("3호선", "초록색", 1L, 2L, 3);
+        lineRequest = new LineRequest("3호선", "초록색", 1L, 2L, 3);
 
         ExtractableResponse<Response> response = requestPost(lineRequest);
 
@@ -78,10 +78,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 지하철 노선을 조회한다.")
     @Test
     void getLines() {
-        LineRequest lineRequest1 = LineRequest.of("1호선", "군청색", 1L, 2L, 3);
+        LineRequest lineRequest1 = new LineRequest("1호선", "군청색", 1L, 2L, 3);
         requestPost(lineRequest1);
 
-        LineRequest lineRequest2 = LineRequest.of("2호선", "초록색", 1L, 2L, 3);
+        LineRequest lineRequest2 = new LineRequest("2호선", "초록색", 1L, 2L, 3);
         requestPost(lineRequest2);
 
         ExtractableResponse<Response> response = requestGet();
@@ -93,7 +93,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 id로 조회한다.")
     @Test
     void getLine() {
-        LineRequest lineRequest = LineRequest.of("2호선", "초록색", 1L, 2L, 3);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 3);
         ExtractableResponse<Response> createResponse = requestPost(lineRequest);
 
         Long id = getId(createResponse);
@@ -107,12 +107,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 id를 가지는 노선을 수정한다.")
     @Test
     void updateLine() {
-        LineRequest lineRequest = LineRequest.of("2호선", "초록색", 1L, 2L, 3);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 3);
         ExtractableResponse<Response> createResponse = requestPost(lineRequest);
 
         Long id = getId(createResponse);
 
-        LineRequest lineRequest2 = LineRequest.of("1호선", "군청색");
+        LineRequest lineRequest2 = new LineRequest("1호선", "군청색", null, null, 0);
         RestAssured.given().log().all()
                 .body(lineRequest2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -132,7 +132,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 id의 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        LineRequest lineRequest = LineRequest.of("2호선", "초록색", 1L, 2L, 3);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 3);
         ExtractableResponse<Response> createResponse = requestPost(lineRequest);
 
         long id = getId(createResponse);
@@ -153,7 +153,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @CsvSource(value = {",", "'',''", "' ',' '"})
     void notAllowNullOrBlankNameAndColor(String name, String color) {
-        LineRequest lineRequest = LineRequest.of(name, color, 1L, 2L, 3);
+        LineRequest lineRequest = new LineRequest(name, color, 1L, 2L, 3);
 
         ExtractableResponse<Response> response = requestPost(lineRequest);
 
