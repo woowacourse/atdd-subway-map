@@ -81,6 +81,14 @@ public class Section {
         throw new IllegalArgumentException(ExceptionMessage.NOT_CONNECTED_SECTIONS.getContent());
     }
 
+    public boolean isUpperThan(Section other) {
+        return downStationId.equals(other.upStationId);
+    }
+
+    public boolean isDownerThan(Section other) {
+        return upStationId.equals(other.downStationId);
+    }
+
     public Long getId() {
         return id;
     }

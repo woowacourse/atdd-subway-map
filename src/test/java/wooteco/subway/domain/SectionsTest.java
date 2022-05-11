@@ -17,14 +17,14 @@ public class SectionsTest {
     void setUp() {
         Section section1 = new Section(1L, 1L, 2L, 10);
         Section section2 = new Section(1L, 2L, 3L, 10);
-        sections = Sections.of(section1, section2);
+        sections = Sections.of(section2, section1);
     }
 
     @Test
     @DisplayName("섹션들에서 역 id 찾기")
     void findStationIds() {
         // when
-        List<Long> ids = sections.findStationIds();
+        List<Long> ids = sections.getSortedStationId();
 
         // then
         assertThat(ids).containsOnly(1L, 2L, 3L);
