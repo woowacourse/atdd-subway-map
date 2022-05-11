@@ -40,8 +40,9 @@ public class LineController {
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.showAll();
+
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), it.getStations()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lineResponses);
     }
@@ -49,7 +50,7 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.show(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations());
         return ResponseEntity.ok(lineResponse);
     }
 

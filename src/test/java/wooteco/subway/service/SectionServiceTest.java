@@ -17,15 +17,19 @@ public class SectionServiceTest {
 
     private final SectionService sectionService = new SectionService(sectionDao);
 
-    private final Station first = stationDao.save(new Station("강남역"));
-    private final Station second = stationDao.save(new Station("역삼역"));
-    private final Station third = stationDao.save(new Station("선릉역"));
+    private Station first;
+    private Station second;
+    private Station third;
 
     @BeforeEach
     void before() {
         sectionDao.clear();
         stationDao.clear();
+        first = stationDao.save(new Station("강남역"));
+        second = stationDao.save(new Station("역삼역"));
+        third = stationDao.save(new Station("선릉역"));
         sectionDao.save(new Section(LINE_ID, first.getId(), third.getId(), 10));
+
     }
 
     @Test

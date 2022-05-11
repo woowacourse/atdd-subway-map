@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -11,6 +10,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 @Service
@@ -46,11 +46,22 @@ public class LineService {
     }
 
     public List<Line> showAll() {
-        return lineDao.findAll();
+        List<Line> lines = lineDao.findAll();
+        for (Line line : lines) {
+            setStations(line);
+        }
+        return lines;
     }
 
     public Line show(Long id) {
-        return lineDao.findById(id);
+        Line line = lineDao.findById(id);
+        setStations(line);
+        return line;
+    }
+
+    private void setStations(Line line) {
+        Sections sections = sectionDao.findByLineId(line.getId());
+        line.setStations(stationDao.findByIds(sections.getAllIds()));
     }
 
     @Transactional

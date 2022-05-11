@@ -13,10 +13,10 @@ import wooteco.subway.mock.MemorySectionDao;
 import wooteco.subway.mock.MemoryStationDao;
 
 class LineServiceTest {
-    private MemoryLineDao lineDao = new MemoryLineDao();
-    private MemoryStationDao stationDao = new MemoryStationDao();
-    private MemorySectionDao sectionDao = new MemorySectionDao();
-    private LineService lineService = new LineService(lineDao, stationDao, sectionDao);
+    private final MemoryLineDao lineDao = new MemoryLineDao();
+    private final MemoryStationDao stationDao = new MemoryStationDao();
+    private final MemorySectionDao sectionDao = new MemorySectionDao();
+    private final LineService lineService = new LineService(lineDao, stationDao, sectionDao);
 
     @BeforeEach
     void beforeEach() {

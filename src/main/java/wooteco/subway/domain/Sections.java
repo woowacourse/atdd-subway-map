@@ -13,6 +13,10 @@ public class Sections {
         this.sections = sections;
     }
 
+    public List<Long> getAllIds() {
+        return allStationIds();
+    }
+
     public void validateAddable(Section section) {
         checkNoStations(section);
         checkExist(section);
