@@ -63,18 +63,24 @@ public class SectionDaoImpl implements SectionDao {
     @Override
     public Optional<Section> findByDownStationId(Long lineId, Long downStationId) {
         return findByLineId(lineId).stream()
-                .filter(it -> Objects.equals(it.getUpStationId(), downStationId))
+                .filter(it -> Objects.equals(it.getDownStationId(), downStationId))
                 .findFirst();
     }
 
     @Override
     public void updateDownStation(Long id, Long downStationId, int newDistance) {
-        // Need Setter method
+        Section section = findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(id + "번에 해당하는 구간이 존재하지 않습니다."));
+        section.setDownStationId(downStationId);
+        section.setDistance(newDistance);
     }
 
     @Override
     public void updateUpStation(Long id, Long upStationId, int newDistance) {
-        // Need Setter method
+        Section section = findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(id + "번에 해당하는 구간이 존재하지 않습니다."));
+        section.setUpStationId(upStationId);
+        section.setDistance(newDistance);
     }
 
     @Override
@@ -85,7 +91,7 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     private void deleteById(Long deleteSectionId) {
-        boolean result = sections.removeIf(section -> section.getId() == deleteSectionId);
+        boolean result = sections.removeIf(section -> Objects.equals(section.getId(), deleteSectionId));
         if (!result) {
             throw new IllegalArgumentException(deleteSectionId + "번에 해당하는 노선이 존재하지 않습니다.");
         }

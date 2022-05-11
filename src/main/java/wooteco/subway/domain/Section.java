@@ -108,6 +108,18 @@ public class Section {
         return distance;
     }
 
+    public void setUpStationId(Long upStationId) {
+        this.upStationId = upStationId;
+    }
+
+    public void setDownStationId(Long downStationId) {
+        this.downStationId = downStationId;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
