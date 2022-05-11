@@ -53,6 +53,12 @@ public class RestUtil {
 			.collect(Collectors.toList());
 	}
 
+	public static List<Long> getIdsFromLine(ExtractableResponse<Response> response) {
+		return response.jsonPath().getList(".", LineResponse.class).stream()
+			.map(LineResponse::getId)
+			.collect(Collectors.toList());
+	}
+
 	public static <T> T toResponseDto(ExtractableResponse<Response> response, Class<T> responseClass) {
 		return response.body()
 			.jsonPath()

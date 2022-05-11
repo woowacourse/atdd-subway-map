@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Map;
@@ -51,10 +52,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		LineResponse lineResponse = RestUtil.toResponseDto(response, LineResponse.class);
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(response.header("Location")).isNotBlank();
-		assertThat(lineResponse.getName()).isEqualTo("신분당선");
-		assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+			() -> assertThat(response.header("Location")).isNotBlank(),
+			() -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+			() -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600")
+		);
 	}
 
 	@DisplayName("지하철 노선을 생성하면 역들을 응답으로 받는다.")
@@ -72,9 +75,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		LineResponse lineResponse = RestUtil.toResponseDto(response, LineResponse.class);
 		List<StationResponse> stations = lineResponse.getStations();
+
 		assertThat(stations)
 			.map(StationResponse::getName)
-			.containsAll(List.of("강남역", "역삼역"));
+			.containsExactly("강남역", "역삼역");
+	}
+
+	@DisplayName("없는 역으로 노선을 생성하면 404 응답을 받는다.")
+	@Test
+	void createLineNoFoundStation() {
+		// when
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.body(new LineRequest("2호선", "red", 1L, 2L, 10))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines")
+			.then().log().all()
+			.extract();
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
@@ -98,7 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("지하철 노선 목록을 조회한다.")
 	@Test
-	void getLines() {
+	void findAllLines() {
 		// given
 		ExtractableResponse<Response> createResponse1 = RestUtil.post(lineRequest);
 		ExtractableResponse<Response> createResponse2 = RestUtil.post(
@@ -116,19 +136,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		List<Long> expectedLIneIds = Stream.of(createResponse1, createResponse2)
-			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+		List<Long> expectedLIneIds = Stream.of(
+				RestUtil.getIdFromLine(createResponse1),
+				RestUtil.getIdFromLine(createResponse2))
 			.collect(Collectors.toList());
-		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-			.map(LineResponse::getId)
-			.collect(Collectors.toList());
-		assertThat(resultLineIds).containsAll(expectedLIneIds);
+		List<Long> resultLineIds = RestUtil.getIdsFromLine(response);
+
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(resultLineIds).containsAll(expectedLIneIds)
+		);
 	}
 
-	@DisplayName("지하철 노선을 조회한다.")
+	@DisplayName("지하철 노선 하나를 조회한다.")
 	@Test
-	void findLine() {
+	void findOneLine() {
 		// given
 		ExtractableResponse<Response> createResponse = RestUtil.post(lineRequest);
 
@@ -137,14 +159,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.accept(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.get("/lines/" + RestUtil.getIdFromLine(createResponse))
+			.get("/lines/" + createdId)
 			.then().log().all()
 			.extract();
 
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		Long expectedId = RestUtil.getIdFromLine(response);
-		assertThat(expectedId).isEqualTo(createdId);
+		LineResponse lineResponse = RestUtil.toResponseDto(response, LineResponse.class);
+
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(lineResponse.getId()).isEqualTo(createdId),
+			() -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+			() -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600")
+		);
+	}
+
+	@DisplayName("없는 노선 조회 시 404 응답을 받는다.")
+	@Test
+	void findOneLineNotFound() {
+		// when
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.get("/lines/" + 1)
+			.then().log().all()
+			.extract();
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
@@ -183,5 +225,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	@DisplayName("없는 노선을 삭제하면 404 응답을 받는다.")
+	@Test
+	void removeLineNotFound() {
+		// when
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.delete("/lines/" + 1)
+			.then().log().all()
+			.extract();
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 }
