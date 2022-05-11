@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.InvalidSectionCreateRequestException;
+
 public class Section {
 
     private final Long id;
@@ -12,10 +14,17 @@ public class Section {
     }
 
     public Section(Long id, Station upStation, Station downStation, int distance) {
+        validateEndpoints(upStation, downStation);
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateEndpoints(Station upStation, Station downStation) {
+        if (upStation.hasSameName(downStation)) {
+            throw new InvalidSectionCreateRequestException("구간의 시작과 끝은 같은 역일 수 없습니다.");
+        }
     }
 
     public boolean hasSameStations(Section section) {
