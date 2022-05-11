@@ -98,7 +98,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssuredUtil.delete(uri);
+        ExtractableResponse<Response> response = RestAssuredUtil.delete(uri, null);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

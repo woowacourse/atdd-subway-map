@@ -3,6 +3,7 @@ package wooteco.subway.utils;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Map;
 import org.springframework.http.MediaType;
 
 public class RestAssuredUtil {
@@ -28,8 +29,9 @@ public class RestAssuredUtil {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> delete(String url) {
+    public static ExtractableResponse<Response> delete(String url, Map<String, String> map) {
         return RestAssured.given().log().all()
+                .queryParams(map)
                 .when()
                 .delete(url)
                 .then().log().all()

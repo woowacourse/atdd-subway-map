@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,6 +34,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private Long savedId1;
     private Long savedId2;
+    private Long savedInsertId;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -43,7 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         savedId1 = insertLine("신분당선", "bg-red-600");
         savedId2 = insertLine("분당선", "bg-green-600");
 
-        insertSection(savedId1, 1L, 2L);
+        savedInsertId = insertSection(savedId1, 1L, 2L);
     }
 
     private Long insertLine(String name, String color) {
@@ -58,17 +61,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    private void insertSection(Long lineId, Long upStationId, Long downStationId) {
+    private Long insertSection(Long lineId, Long upStationId, Long downStationId) {
         String insertSql = "insert into section (line_id, up_station_id, down_station_id, distance) "
                 + "values (:lineId, :upStationId, :downStationId, :distance)";
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource source = new MapSqlParameterSource();
         source.addValue("lineId", lineId);
         source.addValue("upStationId", upStationId);
         source.addValue("downStationId", downStationId);
         source.addValue("distance", 5);
 
-        jdbcTemplate.update(insertSql, source);
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+
     }
 
     @DisplayName("지하철 노선 생성")
@@ -208,7 +214,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         expectedIds.remove(Long.parseLong(id));
 
         //when
-        RestAssuredUtil.delete("/lines/" + id);
+        RestAssuredUtil.delete("/lines/" + id, null);
 
         //then
         assertThat(expectedIds).isEqualTo(selectLines());
@@ -228,6 +234,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //when
         ExtractableResponse<Response> response = RestAssuredUtil.post(url, sectionRequest);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간 삭제")
+    @Test
+    void deleteSection() {
+        //given
+        String url = "/lines/" + savedId1 + "/sections";
+        Map<String, String> source = new HashMap<>();
+        source.put("stationId", savedInsertId.toString());
+
+        //when
+        ExtractableResponse<Response> response = RestAssuredUtil.delete(url, source);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

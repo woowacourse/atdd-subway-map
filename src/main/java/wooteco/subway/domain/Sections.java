@@ -111,31 +111,6 @@ public class Sections {
                 .findFirst();
     }
 
-    /**
-     * 기존 구간을 삭제하는 메서드
-     *
-     * @param sectionId 삭제하고자 하는 구간의 id
-     * @return 데이터가 변경된 id
-     */
-    public Optional<Section> delete(Long sectionId) {
-        Section section = findBySectionId(sectionId);
-        value.remove(section);
-
-        Optional<Section> updatedSection = findByUpStationId(section.getDownStationId());
-        if (updatedSection.isPresent()) {
-            updatedSection.get().updateUpStationId(section.getUpStationId());
-            updatedSection.get().addDistance(section.getDistance());
-        }
-        return updatedSection;
-    }
-
-    private Section findBySectionId(Long id) {
-        return value.stream()
-                .filter(section -> section.isSameId(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 id인 구역을 찾을 수 없습니다."));
-    }
-
     public List<Section> getValue() {
         return value;
     }

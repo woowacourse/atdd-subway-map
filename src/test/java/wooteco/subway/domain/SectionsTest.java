@@ -52,20 +52,6 @@ class SectionsTest {
         );
     }
 
-    @DisplayName("Section 삭제")
-    @Test
-    void delete() {
-        // given
-        Section expected = new Section(section2.getId(), section2.getLineId(), section3.getUpStationId(),
-                section2.getDownStationId(), section2.getDistance() + section3.getDistance());
-
-        // when
-        Optional<Section> deletedSection = sections.delete(section3.getId());
-
-        // then
-        assertThat(deletedSection.get()).isEqualTo(expected);
-    }
-
     @DisplayName("station id 목록")
     @Test
     void select_sorted_ids() {

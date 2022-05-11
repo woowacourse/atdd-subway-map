@@ -67,7 +67,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}/sections")
-    public void deleteSectionById(@PathVariable(name = "id") Long lineId, @RequestParam Long sectionId) {
-        sectionService.deleteById(lineId, sectionId);
+    public void deleteSectionById(@PathVariable(name = "id") Long lineId, @RequestParam Long stationId) {
+        sectionService.deleteById(lineId, stationId);
     }
 }

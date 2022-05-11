@@ -35,6 +35,14 @@ public class SectionDao {
         return jdbcTemplate.query(sql, source, eventRowMapper);
     }
 
+    public List<Section> findByStationId(Long lineId, Long stationId) {
+        String sql = "select * from SECTION where line_id = :lineId and (up_station_id = :stationId or down_station_id = :stationId)";
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("lineId", lineId);
+        source.addValue("stationId", stationId);
+        return jdbcTemplate.query(sql, source, eventRowMapper);
+    }
+
     public Long save(Section section) {
         String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) "
                 + "values (:lineId, :upStationId, :downStationId, :distance)";
