@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.station.NoSuchStationException;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +35,7 @@ public class StationService {
 
     public Station findById(Long id) {
         Optional<Station> station = stationDao.findById(id);
-        return station.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+        return station.orElseThrow(NoSuchStationException::new);
     }
 
     public void deleteById(Long id) {

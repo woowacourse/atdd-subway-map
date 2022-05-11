@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import wooteco.subway.exception.station.NoSuchStationException;
 
 import java.util.Optional;
 
@@ -23,7 +24,6 @@ public class StationServiceTest extends ServiceTest {
         //when & then
         assertThatThrownBy(() -> {
             stationService.findById(1L);
-        }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("존재하지 않는 역입니다.");
+        }).isInstanceOf(NoSuchStationException.class);
     }
 }

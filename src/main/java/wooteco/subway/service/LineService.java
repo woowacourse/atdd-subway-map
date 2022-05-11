@@ -9,6 +9,8 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.exception.line.DuplicateLineNameException;
+import wooteco.subway.exception.line.NoSuchLineException;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,9 +42,9 @@ public class LineService {
 
     private void validateDuplicateName(Line line) {
         Optional<Line> optionalLine = lineDao.findByName(line.getName());
-        if (optionalLine.isPresent()) {
-            throw new IllegalArgumentException("같은 이름의 노선은 등록할 수 없습니다.");
-        }
+        optionalLine.ifPresent(existed -> {
+            throw new DuplicateLineNameException();
+        });
     }
 
     public List<LineResponse> findAll() {
@@ -67,7 +69,7 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+                .orElseThrow(NoSuchLineException::new);
         List<Station> stations = stationService.findAll();
 
         return getLineResponse(line, stations);
@@ -84,7 +86,7 @@ public class LineService {
 
     public void addSection(Long id, SectionRequest sectionRequest) {
         Line line = lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+                .orElseThrow(NoSuchLineException::new);
 
         sectionService.add(line, sectionRequest);
     }

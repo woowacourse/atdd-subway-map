@@ -9,6 +9,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.line.NoSuchLineException;
 
 import java.util.List;
 import java.util.Optional;
@@ -111,7 +112,6 @@ public class LineServiceTest extends ServiceTest {
         //when & then
         assertThatThrownBy(() -> {
             lineService.findById(1L);
-        }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("존재하지 않는 노선입니다.");
+        }).isInstanceOf(NoSuchLineException.class);
     }
 }

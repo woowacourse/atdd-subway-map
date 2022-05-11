@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import wooteco.subway.exception.section.IllegalMergeSectionException;
 
 import java.util.List;
 import java.util.Optional;
@@ -126,8 +127,7 @@ class SectionsTest {
         Sections sections = new Sections(List.of(section1, section2, section3));
 
         assertThatThrownBy(sections::mergeSections)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("두 구간만 합칠 수 있습니다.");
+                .isInstanceOf(IllegalMergeSectionException.class);
     }
 
     @DisplayName("두 개의 구간을 합친다.")

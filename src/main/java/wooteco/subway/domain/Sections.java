@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.section.IllegalMergeSectionException;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,17 +61,19 @@ public class Sections {
                 .collect(Collectors.toList()));
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public boolean isIntermediateStation() {
         return sections.size() == MERGE_SECTION_SIZE;
     }
 
+    public void validateSize() {
+        if (sections.size() == ONE_SECTION) {
+            throw new IllegalArgumentException("구간이 하나인 경우에는 삭제할 수 없습니다.");
+        }
+    }
+
     public Section mergeSections() {
         if (sections.size() != MERGE_SECTION_SIZE) {
-            throw new IllegalArgumentException("두 구간만 합칠 수 있습니다.");
+            throw new IllegalMergeSectionException();
         }
 
         int distance = calculateDistance();
@@ -88,7 +92,7 @@ public class Sections {
         if (section2.isEqualUpStationId(section1.getDownStationId())) {
             return List.of(section1.getUpStationId(), section2.getDownStationId());
         }
-        throw new IllegalArgumentException("합칠 수 없는 구간입니다.");
+        throw new IllegalMergeSectionException();
     }
 
     private int calculateDistance() {
@@ -97,9 +101,7 @@ public class Sections {
                 .sum();
     }
 
-    public void validateSize() {
-        if (sections.size() == ONE_SECTION) {
-            throw new IllegalArgumentException("구간이 하나인 경우에는 삭제할 수 없습니다.");
-        }
+    public List<Section> getSections() {
+        return sections;
     }
 }

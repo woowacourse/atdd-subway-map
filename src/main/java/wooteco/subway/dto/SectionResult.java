@@ -12,7 +12,7 @@ public class SectionResult {
         this.canAddAsBetweenStation = canAddAsBetweenStation;
     }
 
-    public SectionResult(boolean canAddAsBetweenStation, Section existedSection, Section insertedSection, Section generatedSection) {
+    private SectionResult(boolean canAddAsBetweenStation, Section existedSection, Section insertedSection, Section generatedSection) {
         this.canAddAsBetweenStation = canAddAsBetweenStation;
         this.existedSection = existedSection;
         this.insertedSection = insertedSection;

@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.station.NoSuchStationException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +73,7 @@ public class StationDao {
         int affected = jdbcTemplate.update(sql, params);
 
         if (affected == 0) {
-            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+            throw new NoSuchStationException();
         }
     }
 }

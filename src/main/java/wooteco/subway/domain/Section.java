@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResult;
+import wooteco.subway.exception.section.IllegalMergeSectionException;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +59,7 @@ public class Section {
         if (existedSection.downStationId.equals(insertedSection.downStationId)) {
             return new Section(generatedDistance, existedSection.getLineId(), existedSection.upStationId, insertedSection.upStationId);
         }
-        throw new IllegalArgumentException("만들 수 없는 구간입니다.");
+        throw new IllegalMergeSectionException();
     }
 
     public Long getLineId() {

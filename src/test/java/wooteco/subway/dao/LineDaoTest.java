@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.line.NoSuchLineException;
 
 import java.util.Optional;
 
@@ -34,18 +35,6 @@ public class LineDaoTest {
 
         assertThat(line.getName()).isEqualTo(savedLine.getName());
     }
-
-//    @DisplayName("같은 이름의 노선을 저장하는 경우 예외가 발생한다.")
-//    @Test
-//    void saveExistingName() {
-//        Line line = new Line("2호선", "green");
-//        lineDao.save(line);
-//
-//        assertThatThrownBy(() -> {
-//            lineDao.save(line);
-//        }).isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("같은 이름의 노선은 등록할 수 없습니다.");
-//    }
 
     @DisplayName("모든 지하철 노선을 조회한다.")
     @Test
@@ -116,7 +105,6 @@ public class LineDaoTest {
     @Test
     void deleteNotExistingLine() {
         assertThatThrownBy(() -> lineDao.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 노선입니다.");
+                .isInstanceOf(NoSuchLineException.class);
     }
 }
