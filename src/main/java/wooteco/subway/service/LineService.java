@@ -43,42 +43,44 @@ public class LineService {
             throw new IllegalArgumentException(LINE_DUPLICATION_COLOR_EXCEPTION_MESSAGE);
         }
         Line createdLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        Section createdSection = sectionDao.save(new Section(createdLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
+        sectionDao.save(new Section(createdLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
+        List<StationResponse> stationResponses = generateStationResponsesByLineRequest(lineRequest);
+        return new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(), stationResponses);
+    }
+
+    private List<StationResponse> generateStationResponsesByLineRequest(LineRequest lineRequest) {
         Optional<Station> upStation = stationDao.findById(lineRequest.getUpStationId());
         Optional<Station> downStation = stationDao.findById(lineRequest.getDownStationId());
         if (upStation.isEmpty() || downStation.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 지하철역입니다.");
         }
-        List<StationResponse> stationResponses = List.of(new StationResponse(upStation.get().getId(), upStation.get().getName()),
+        return List.of(new StationResponse(upStation.get().getId(), upStation.get().getName()),
             new StationResponse(downStation.get().getId(), downStation.get().getName()));
-        return new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(), stationResponses);
     }
 
     public List<LineResponse> showLines() {
         List<LineResponse> responses = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
         List<Station> stations = stationDao.findAll();
-
-        for (Line line : lines) {
-            Sections sections = sectionDao.findByLineId(line.getId());
-            List<Long> stationsIds = sections.getStationIds();
-            List<StationResponse> stationResponses = stations.stream().filter(station -> stationsIds.contains(station.getId()))
-                .map(station -> new StationResponse(station.getId(), station.getName()))
-                .collect(Collectors.toList());
-            responses.add(new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses));
-        }
-        return responses;
+        return lines.stream()
+            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), generateStationResponses(line, stations)))
+            .collect(Collectors.toList());
     }
 
     public LineResponse showLine(Long id) {
         Line line = findLineById(id);
         List<Station> stations = stationDao.findAll();
+        List<StationResponse> stationResponses = generateStationResponses(line, stations);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
+    }
+
+    private List<StationResponse> generateStationResponses(Line line, List<Station> stations) {
         Sections sections = sectionDao.findByLineId(line.getId());
         List<Long> stationsIds = sections.getStationIds();
-        List<StationResponse> stationResponses = stations.stream().filter(station -> stationsIds.contains(station.getId()))
+        return stations.stream()
+            .filter(station -> stationsIds.contains(station.getId()))
             .map(station -> new StationResponse(station.getId(), station.getName()))
             .collect(Collectors.toList());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
     private Line findLineById(Long id) {
@@ -88,12 +90,7 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         Line originLine = findLineById(id);
-        if (isDuplicateName(lineRequest.getName()) && isNotSameName(originLine.getName(), lineRequest.getName())) {
-            throw new IllegalArgumentException(LINE_DUPLICATION_NAME_EXCEPTION_MESSAGE);
-        }
-        if (isDuplicateColor(lineRequest.getColor()) && isNotSameColor(originLine.getColor(), lineRequest.getColor())) {
-            throw new IllegalArgumentException(LINE_DUPLICATION_COLOR_EXCEPTION_MESSAGE);
-        }
+        validateUpdateDuplicateLine(originLine, lineRequest);
         lineDao.update(originLine, new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
@@ -101,6 +98,30 @@ public class LineService {
         Line line = findLineById(id);
         sectionDao.deleteByLineId(id);
         lineDao.delete(line);
+    }
+
+    public void addSection(long id, SectionRequest sectionRequest) {
+        List<Section> originSectionList = sectionDao.findByLineId(id).getSections();
+        Sections updateSections = new Sections(originSectionList);
+        Section addSection = new Section(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        updateSections.add(addSection);
+        compareWithDao(originSectionList, updateSections.getSections());
+    }
+
+    public void deleteSection(long id, Long stationId) {
+        List<Section> originSectionList = sectionDao.findByLineId(id).getSections();
+        Sections updateSections = new Sections(originSectionList);
+        updateSections.remove(stationId);
+        compareWithDao(originSectionList, updateSections.getSections());
+    }
+
+    private void validateUpdateDuplicateLine(Line originLine, LineRequest lineRequest) {
+        if (isDuplicateName(lineRequest.getName()) && isNotSameName(originLine.getName(), lineRequest.getName())) {
+            throw new IllegalArgumentException(LINE_DUPLICATION_NAME_EXCEPTION_MESSAGE);
+        }
+        if (isDuplicateColor(lineRequest.getColor()) && isNotSameColor(originLine.getColor(), lineRequest.getColor())) {
+            throw new IllegalArgumentException(LINE_DUPLICATION_COLOR_EXCEPTION_MESSAGE);
+        }
     }
 
     private boolean isDuplicateName(String name) {
@@ -119,54 +140,20 @@ public class LineService {
         return !originColor.equals(updateColor);
     }
 
-    public void addSection(long id, SectionRequest sectionRequest) {
-        List<Section> originSections = sectionDao.findByLineId(id).getSections();
-        Sections addedSections = new Sections(originSections);
-        Section addSection = new Section(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        addedSections.add(addSection);
-        List<Section> fullSection = new ArrayList<>((addedSections.getSections()));
-        List<Section> deleteSection = new ArrayList<>();
-        for (Section section : originSections) {
-            if (fullSection.contains(section)) {
-                fullSection.remove(section);
-                continue;
-            }
-            deleteSection.add(section);
-            fullSection.remove(section);
+    private void compareWithDao(List<Section> originSectionList, List<Section> updateSections) {
+        List<Section> addSectionList = generateNonMatchList(updateSections, originSectionList);
+        List<Section> deleteSectionList = generateNonMatchList(originSectionList, updateSections);
+        if (!deleteSectionList.isEmpty()) {
+            deleteSectionList.forEach(section -> sectionDao.delete(section.getId()));
         }
-        List<Section> newSection = fullSection.stream()
-            .map(section -> new Section(id, section.getUpStationId(), section.getDownStationId(), section.getDistance())
-            ).collect(Collectors.toList());
-        if (!deleteSection.isEmpty()) {
-            deleteSection.forEach(section -> sectionDao.delete(section.getId()));
-        }
-        if (!newSection.isEmpty()) {
-            newSection.forEach(sectionDao::save);
+        if (!addSectionList.isEmpty()) {
+            addSectionList.forEach(sectionDao::save);
         }
     }
 
-    public void deleteSection(long id, Long stationId) {
-        List<Section> originSections = sectionDao.findByLineId(id).getSections();
-        Sections removedSection = new Sections(originSections);
-        removedSection.remove(stationId);
-        List<Section> fullSection = new ArrayList<>((removedSection.getSections()));
-        List<Section> deleteSection = new ArrayList<>();
-        for (Section section : originSections) {
-            if (fullSection.contains(section)) {
-                fullSection.remove(section);
-                continue;
-            }
-            deleteSection.add(section);
-            fullSection.remove(section);
-        }
-        List<Section> newSection = fullSection.stream()
-            .map(section -> new Section(id, section.getUpStationId(), section.getDownStationId(), section.getDistance())
-            ).collect(Collectors.toList());
-        if (!deleteSection.isEmpty()) {
-            deleteSection.forEach(section -> sectionDao.delete(section.getId()));
-        }
-        if (!newSection.isEmpty()) {
-            newSection.forEach(sectionDao::save);
-        }
+    private List<Section> generateNonMatchList(List<Section> baseSectionList, List<Section> findSectionList) {
+        return baseSectionList.stream()
+            .filter(section -> !findSectionList.contains(section))
+            .collect(Collectors.toList());
     }
 }

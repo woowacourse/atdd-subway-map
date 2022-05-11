@@ -21,8 +21,8 @@ public class Sections {
     }
 
     public void add(Section section) {
-        boolean existUpStation = hasSameUpStation(section) || hasSameDownByUp(section);
-        boolean existDownStation = hasSameDownStation(section) || hasSameUpByDown(section);
+        boolean existUpStation = hasSameUpByUp(section) || hasSameDownByUp(section);
+        boolean existDownStation = hasSameDownByDown(section) || hasSameUpByDown(section);
         validateAddSectionCondition(existUpStation, existDownStation);
         if (existUpStation) {
             addSplitByUpStation(section);
@@ -32,26 +32,19 @@ public class Sections {
     }
 
     public void remove(long stationId) {
-        Optional<Section> findSectionByUpStationId = sections.stream().filter(it -> it.findByUpStationId(stationId)).findFirst();
-        Optional<Section> findSectionByDownStationId = sections.stream().filter(it -> it.findByDownStationId(stationId)).findFirst();
-        validateExistStationId(findSectionByUpStationId, findSectionByDownStationId);
+        Optional<Section> findUpSection = sections.stream().filter(it -> it.findByUpStationId(stationId)).findFirst();
+        Optional<Section> findDownSection = sections.stream().filter(it -> it.findByDownStationId(stationId)).findFirst();
+        validateExistStationId(findUpSection, findDownSection);
         validateMinimumListSize();
-        if (findSectionByUpStationId.isPresent() && findSectionByDownStationId.isPresent()) {
-            removeWayPointSection(findSectionByUpStationId.get(), findSectionByDownStationId.get());
+        if (findUpSection.isPresent() && findDownSection.isPresent()) {
+            removeWayPointSection(findUpSection.get(), findDownSection.get());
             return;
         }
-        if (findSectionByUpStationId.isPresent()) {
-            sections.remove(findSectionByUpStationId.get());
+        if (findUpSection.isPresent()) {
+            sections.remove(findUpSection.get());
             return;
         }
-        sections.remove(findSectionByDownStationId.get());
-    }
-
-    private void removeWayPointSection(Section firstSection, Section secondSection) {
-        Section newSection = new Section(secondSection.getUpStationId(), firstSection.getDownStationId(), firstSection.getDistance() + secondSection.getDistance());
-        sections.remove(firstSection);
-        sections.remove(secondSection);
-        sections.add(newSection);
+        sections.remove(findDownSection.get());
     }
 
     private void validateAddSectionCondition(boolean existUpStation, boolean existDownStation) {
@@ -67,7 +60,7 @@ public class Sections {
         return sections.stream().anyMatch(it -> it.isSameUpByDown(section));
     }
 
-    private boolean hasSameDownStation(Section section) {
+    private boolean hasSameDownByDown(Section section) {
         return sections.stream().anyMatch(it -> it.isSameDownStation(section));
     }
 
@@ -75,12 +68,12 @@ public class Sections {
         return sections.stream().anyMatch(it -> it.isSameDownByUp(section));
     }
 
-    private boolean hasSameUpStation(Section section) {
+    private boolean hasSameUpByUp(Section section) {
         return sections.stream().anyMatch(it -> it.isSameUpStation(section));
     }
 
     private void addSplitByUpStation(Section section) {
-        if (hasSameUpStation(section)) {
+        if (hasSameUpByUp(section)) {
             Section findSection = sections.stream().filter(it -> it.isSameUpStation(section)).findAny().get();
             validateDistance(section, findSection);
             int distance = findSection.getDistance() - section.getDistance();
@@ -90,13 +83,20 @@ public class Sections {
     }
 
     private void addSplitByDownStation(Section section) {
-        if (hasSameDownStation(section)) {
+        if (hasSameDownByDown(section)) {
             Section findSection = sections.stream().filter(it -> it.isSameDownStation(section)).findAny().get();
             validateDistance(section, findSection);
             int distance = findSection.getDistance() - section.getDistance();
             sections.add(new Section(findSection.getUpStationId(), section.getUpStationId(), distance));
             sections.remove(findSection);
         }
+    }
+
+    private void removeWayPointSection(Section upSection, Section downSection) {
+        Section newSection = new Section(downSection.getUpStationId(), upSection.getDownStationId(), upSection.getDistance() + downSection.getDistance());
+        sections.remove(upSection);
+        sections.remove(downSection);
+        sections.add(newSection);
     }
 
     private void validateDistance(Section section, Section findSection) {
@@ -127,11 +127,11 @@ public class Sections {
     }
 
     public List<Long> getStationIds() {
-        Set<Long> ids = new HashSet<>();
+        Set<Long> distinctStationIds = new HashSet<>();
         for (Section section : sections) {
-            ids.add(section.getUpStationId());
-            ids.add(section.getDownStationId());
+            distinctStationIds.add(section.getUpStationId());
+            distinctStationIds.add(section.getDownStationId());
         }
-        return new ArrayList<>(ids);
+        return new ArrayList<>(distinctStationIds);
     }
 }

@@ -40,6 +40,16 @@ public class SectionDao {
         return new Sections(jdbcTemplate.query(sql, rowMapper(), lineId));
     }
 
+    public void delete(Long id) {
+        String sql = "delete from section where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public void deleteByLineId(Long lineId) {
+        String sql = "delete from section where line_id = ?";
+        jdbcTemplate.update(sql, lineId);
+    }
+
     private RowMapper<Section> rowMapper() {
         return (rs, rowNum) ->
             new Section(
@@ -49,15 +59,5 @@ public class SectionDao {
                 rs.getLong("down_station_id"),
                 rs.getInt("distance")
             );
-    }
-
-    public void delete(Long id) {
-        String sql = "delete from section where id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    public void deleteByLineId(Long lineId) {
-        String sql = "delete from section where line_id = ?";
-        jdbcTemplate.update(sql, lineId);
     }
 }
