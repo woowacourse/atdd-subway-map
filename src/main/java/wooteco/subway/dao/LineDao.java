@@ -42,6 +42,14 @@ public class LineDao {
         return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
     }
 
+    public boolean existsByNameExceptWithId(String name, Long id) {
+        String sql = "select exists (select 1 from LINE where id != :id and name = :name)";
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("id", id);
+        source.addValue("name", name);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
+    }
+
     public boolean existsById(Long id) {
         String sql = "select exists (select 1 from LINE where id = :id)";
         SqlParameterSource source = new MapSqlParameterSource("id", id);

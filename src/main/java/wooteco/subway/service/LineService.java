@@ -51,6 +51,12 @@ public class LineService {
         return new LineResponse(lineId, line.getName(), line.getColor(), stations);
     }
 
+    private void validDuplicatedName(String name) {
+        if (lineDao.existsByName(name)) {
+            throw new IllegalArgumentException(DUPLICATED_NAME_ERROR_MESSAGE);
+        }
+    }
+
     private void validStations(Long... ids) {
         for (Long id : ids) {
             validStation(id);
@@ -70,12 +76,12 @@ public class LineService {
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        validDuplicatedName(lineRequest.getName());
+        validDuplicatedNameExceptMySelf(lineRequest.getName(), id);
         lineDao.update(id, lineRequest);
     }
 
-    private void validDuplicatedName(String name) {
-        if (lineDao.existsByName(name)) {
+    private void validDuplicatedNameExceptMySelf(String name, Long id) {
+        if (lineDao.existsByNameExceptWithId(name, id)) {
             throw new IllegalArgumentException(DUPLICATED_NAME_ERROR_MESSAGE);
         }
     }
