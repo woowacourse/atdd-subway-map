@@ -15,60 +15,61 @@ import org.springframework.http.MediaType;
 
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private <T> ExtractableResponse<Response> insert(T request, String path) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(path)
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+    }
+
+    private <T> ExtractableResponse<Response> select(T request, String path) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(path)
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLines() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        insert(new StationRequest("강남역"), "/stations");
+        insert(new StationRequest("역삼역"), "/stations");
+        ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines");
 
         // then
-        RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("신분당선"))
-                .body("color", is("bg-red-600"))
-                .header("Location", "/lines/1");
+        assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
+        assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600");
+        assertThat(response.header("Location")).isEqualTo("/lines/1");
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 노선 목록 조회")
     @Test
     void getLines() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
-        LineRequest newLineRequest = new LineRequest("분당선", "bg-green-600");
+        insert(new StationRequest("강남역"), "/stations");
+        insert(new StationRequest("역삼역"), "/stations");
 
-        // when
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("신분당선"))
-                .body("color", is("bg-red-600"))
-                .extract();
-
-        ExtractableResponse<Response> newCreateResponse = RestAssured.given().log().all()
-                .body(newLineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("분당선"))
-                .body("color", is("bg-green-600"))
-                .extract();
+        ExtractableResponse<Response> createResponse = insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines");
+        ExtractableResponse<Response> newCreateResponse = insert(new LineRequest("분당선", "bg-green-600",
+                1L, 2L, 10), "/lines");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -91,20 +92,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        insert(new StationRequest("강남역"), "/stations");
+        insert(new StationRequest("역삼역"), "/stations");
 
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log()
-                .all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("신분당선"))
-                .body("color", is("bg-red-600"))
-                .extract();
+        ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines");
 
         long resultLineId = response.jsonPath().getLong("id");
 
@@ -123,26 +115,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifyLine() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        insert(new StationRequest("강남역"), "/stations");
+        insert(new StationRequest("역삼역"), "/stations");
 
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log()
-                .all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("신분당선"))
-                .body("color", is("bg-red-600"))
-                .extract();
+        ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines");
 
         long resultLineId = response.jsonPath().getLong("id");
 
         RestAssured.given().log()
                 .all()
-                .body(lineRequest)
+                .body(new LineRequest("분당선", "bg-red-600", 1L, 2L, 10))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + resultLineId)
@@ -155,20 +138,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        insert(new StationRequest("강남역"), "/stations");
+        insert(new StationRequest("역삼역"), "/stations");
 
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log()
-                .all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("신분당선"))
-                .body("color", is("bg-red-600"))
-                .extract();
+        ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines");
 
         long resultLineId = response.jsonPath().getLong("id");
 

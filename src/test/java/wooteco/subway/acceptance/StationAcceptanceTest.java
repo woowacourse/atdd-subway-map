@@ -22,43 +22,37 @@ import static org.hamcrest.core.Is.is;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
+    private <T> ExtractableResponse<Response> insert(T request, String path) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(path)
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
+    }
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
+        ExtractableResponse<Response> response = insert(new StationRequest("강남역"), "/stations");
 
         // then
-        RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("강남역"))
-                .header("Location", "/stations/1");
+        assertThat(response.jsonPath().getString("name")).isEqualTo("강남역");
+        assertThat(response.header("Location")).isEqualTo("/stations/1");
     }
 
     @DisplayName("중복된 지하철역을 생성")
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
-
-        // when
-        RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("강남역"));
+        insert(new StationRequest("강남역"), "/stations");
 
         // then
         RestAssured.given().log().all()
-                .body(stationRequest)
+                .body(new StationRequest("강남역"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
@@ -70,29 +64,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        StationRequest stationRequest = new StationRequest("강남역");
-        StationRequest newStationRequest = new StationRequest("역삼역");
-
-        // when
-        ExtractableResponse<Response> stationResponse = RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("강남역"))
-                .extract();
-
-        ExtractableResponse<Response> newStationResponse = RestAssured.given().log().all()
-                .body(newStationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("역삼역"))
-                .extract();
+        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations");
+        ExtractableResponse<Response> newStationResponse = insert(new StationRequest("역삼역"), "/stations");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -108,6 +81,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
+
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -115,18 +89,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
-
-        // when
-        ExtractableResponse<Response> stationResponse = RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("강남역"))
-                .extract();
+        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations");
 
         // then
         String uri = stationResponse.header("Location");

@@ -12,7 +12,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 
 @Repository
-public class StationJdbcDao implements StationDao {
+public class StationJdbcDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -20,7 +20,6 @@ public class StationJdbcDao implements StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
     public Station save(StationRequest stationRequest) {
         final String sql = "insert into station (name) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -32,15 +31,18 @@ public class StationJdbcDao implements StationDao {
         return new Station(keyHolder.getKey().longValue(), stationRequest.getName());
     }
 
-    @Override
     public List<Station> findAll() {
         final String sql = "select * from station";
-
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new Station(rs.getLong("id"), rs.getString("name")));
     }
 
-    @Override
+    public Station findStation(long id) {
+        final String sql = "select * from station where id = (?)";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
+                new Station(rs.getLong("id"), rs.getString("name")), id);
+    }
+
     public int deleteStation(long id) {
         final String sql = "delete from station where id = (?)";
         return jdbcTemplate.update(sql, id);

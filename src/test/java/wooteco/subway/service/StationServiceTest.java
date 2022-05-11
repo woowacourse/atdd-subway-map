@@ -6,8 +6,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-import wooteco.subway.dao.FakeStationDao;
+import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ClientException;
@@ -15,13 +18,17 @@ import wooteco.subway.exception.ClientException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@JdbcTest
 class StationServiceTest {
 
     private StationService stationService;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void setUp() {
-        stationService = new StationService(new FakeStationDao());
+        stationService = new StationService(new StationJdbcDao(jdbcTemplate));
     }
 
     @AfterEach

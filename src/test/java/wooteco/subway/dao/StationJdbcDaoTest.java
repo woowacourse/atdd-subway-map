@@ -28,12 +28,6 @@ class StationJdbcDaoTest {
     void setUp() {
         stationJdbcDao = new StationJdbcDao(jdbcTemplate);
 
-        jdbcTemplate.execute("DROP TABLE station IF EXISTS");
-        jdbcTemplate.execute("CREATE TABLE station(" +
-                "id bigint auto_increment not null,\n" +
-                "name varchar(255) not null unique,\n" +
-                "primary key(id));");
-
         List<Object[]> splitStation = Arrays.asList("선릉역", "잠실역", "강남역").stream()
                 .map(name -> name.split(" "))
                 .collect(Collectors.toList());

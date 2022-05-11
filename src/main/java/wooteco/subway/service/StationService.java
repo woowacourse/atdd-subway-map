@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.dao.StationDao;
+import org.springframework.transaction.TransactionSystemException;
+import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -15,9 +16,9 @@ import wooteco.subway.exception.ClientException;
 @Service
 public class StationService {
 
-    private final StationDao stationDao;
+    private final StationJdbcDao stationDao;
 
-    public StationService(final StationDao stationDao) {
+    public StationService(final StationJdbcDao stationDao) {
         this.stationDao = stationDao;
     }
 
@@ -38,6 +39,10 @@ public class StationService {
     }
 
     public int deleteStation(long id) {
-        return stationDao.deleteStation(id);
+        try {
+            return stationDao.deleteStation(id);
+        } catch (TransactionSystemException exception) {
+            throw new ClientException("구간에 등록되어 있는 역은 제거할 수 없습니다.");
+        }
     }
 }
