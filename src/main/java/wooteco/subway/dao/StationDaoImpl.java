@@ -58,4 +58,10 @@ public class StationDaoImpl implements StationDao{
         final String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
+
+    @Override
+    public StationEntity findById(Long id) {
+        final String sql = "SELECT * FROM station where id = ?";
+        return jdbcTemplate.queryForObject(sql, stationMapper(), id);
+    }
 }

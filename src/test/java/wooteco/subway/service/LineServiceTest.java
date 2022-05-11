@@ -14,6 +14,8 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.SectionDaoImpl;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.line.LineFindResponse;
@@ -28,13 +30,15 @@ class LineServiceTest {
 
     private LineDao lineDao;
     private SectionDao sectionDao;
+    private StationDao stationDao;
     private LineService lineService;
 
     @BeforeEach
     void setUp() {
         lineDao = new LineDaoImpl(jdbcTemplate);
         sectionDao = new SectionDaoImpl(jdbcTemplate);
-        lineService = new LineService(lineDao, sectionDao);
+        stationDao = new StationDaoImpl(jdbcTemplate);
+        lineService = new LineService(lineDao, sectionDao, stationDao);
 
         List<LineEntity> lineEntities = lineDao.findAll();
         List<Long> stationIds = lineEntities.stream()

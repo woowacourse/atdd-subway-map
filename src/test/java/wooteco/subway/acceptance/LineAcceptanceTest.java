@@ -14,7 +14,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.ui.dto.LineRequest;
 import wooteco.subway.ui.dto.LineResponse;
+import wooteco.subway.ui.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -23,21 +25,25 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 노선을 생성한다.")
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "3호선");
-        params.put("color", "bg-orange-600");
+        List<StationResponse> stationResponses = List.of(new StationResponse(1L, "강남역"),
+            new StationResponse(1L, "역삼역"));
+        LineRequest lineRequest = new LineRequest("3호선", "bg-orange-600", 1L, 2L, 4);
+        LineResponse lineResponse = new LineResponse(1L, "3호선", "bg-orange-600", stationResponses);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
             .then().log().all()
+            .statusCode(HttpStatus.CREATED.value())
             .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse result = response.jsonPath().getObject("", LineResponse.class);
+        assertThat(result).extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor, i -> i.getStations().size())
+                .containsExactly(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor(), lineResponse.getStations().size());
         assertThat(response.header("Location")).isNotBlank();
     }
 
@@ -74,22 +80,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선들을 조회한다.")
     void getLines() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "1호선");
-        params1.put("color", "bg-blue-600");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(params1)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        List<StationResponse> stationResponses = List.of(new StationResponse(1L, "강남역"),
+            new StationResponse(1L, "역삼역"));
+        LineRequest lineRequest = new LineRequest("3호선", "bg-orange-600", 1L, 2L, 4);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "2호선");
-        params2.put("color", "bg-green-600");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(params2)
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -105,7 +101,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Arrays.asList(createResponse1).stream()
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()

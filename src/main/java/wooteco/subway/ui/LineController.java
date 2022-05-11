@@ -38,7 +38,7 @@ public class LineController {
                 lineRequest.getDistance()));
         LineResponse lineResponse = new LineResponse(lineSaveResponse.getId(),
             lineSaveResponse.getName(), lineSaveResponse.getColor(),
-            new ArrayList<>());
+            lineSaveResponse.getStations());
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
             .body(lineResponse);
     }

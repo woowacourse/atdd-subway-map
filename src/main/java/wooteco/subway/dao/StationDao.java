@@ -13,4 +13,6 @@ public interface StationDao {
     boolean deleteById(Long id);
 
     boolean existsByName(String name);
+
+    StationEntity findById(Long id);
 }

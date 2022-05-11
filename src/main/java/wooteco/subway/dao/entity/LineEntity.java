@@ -10,12 +10,6 @@ public class LineEntity {
     private final String color;
     private final ArrayList<StationEntity> stationEntities;
 
-    public LineEntity(String name, String color) {
-        this.name = name;
-        this.color = color;
-        this.stationEntities = null;
-    }
-
     public LineEntity(Long id, String name, String color) {
         this.id = id;
         this.name = name;

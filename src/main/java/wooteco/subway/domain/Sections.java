@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,5 +53,18 @@ public class Sections {
             .filter(i -> !(sectionId.containsValue(i)))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("상행점을 찾을 수 없습니다."));
+    }
+
+    public List<Long> sortedStationId() {
+        List<Long> stationIds = new ArrayList<>();
+        Map<Long, Long> sectionIds = getSectionId();
+        Long upStationId = findUpStationId();
+
+        for (int i = 0; i < sectionIds.size(); i++) {
+            stationIds.add(upStationId);
+            upStationId = sectionIds.get(upStationId);
+        }
+
+        return stationIds;
     }
 }

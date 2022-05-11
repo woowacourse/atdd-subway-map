@@ -12,6 +12,7 @@ import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.dao.entity.StationEntity;
+import wooteco.subway.domain.Station;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,6 +33,8 @@ public class AcceptanceTest {
 
         clearAllStations();
         clearAllLines();
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("역삼역"));
     }
 
     private void clearAllStations() {
