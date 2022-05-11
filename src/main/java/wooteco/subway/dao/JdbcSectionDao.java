@@ -31,7 +31,7 @@ public class JdbcSectionDao implements SectionDao {
             .addValue("line_id", section.getLineId())
             .addValue("up_station_id", section.getUpStationId())
             .addValue("down_station_id", section.getDownStationId())
-            .addValue("distance", section.getLineId());
+            .addValue("distance", section.getDistance());
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Section(id, section.getLineId(), section.getUpStationId(), section.getDownStationId(),
             section.getDistance());
