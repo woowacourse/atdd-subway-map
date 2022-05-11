@@ -35,7 +35,7 @@ public class SectionService {
         Sections sections = getAllSections(lineId);
         sections.delete(stationId);
 
-//        update(lineId, sections);
+        update(lineId, sections);
     }
 
     private void validateStationInSection(final SectionRequest sectionRequest) {

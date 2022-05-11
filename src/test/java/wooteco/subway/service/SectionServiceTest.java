@@ -3,6 +3,8 @@ package wooteco.subway.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +14,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.SectionRequest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -165,5 +168,59 @@ class SectionServiceTest {
                 () -> sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10))
         ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("추가하려는 구간이 노선에 포함되어 있지 않습니다.");
+    }
+
+    @DisplayName("구간 삭제 시 상행 종점을 삭제한다.")
+    @Test
+    void deleteEndUpStation() {
+        // given
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        long station3Id = stationDao.save(new Station(3L, "삼성역"));
+
+        sectionDao.save(1L, new Section(station1Id, station2Id, 10));
+        sectionDao.save(1L, new Section(station2Id, station3Id, 10));
+
+        // when
+        sectionService.delete(1L, station1Id);
+
+        // then
+        assertThat(sectionDao.findAllById(1L)).hasSize(1);
+    }
+
+    @DisplayName("구간 삭제 시 하행 종점을 삭제한다.")
+    @Test
+    void deleteEndDownStation() {
+        // given
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        long station3Id = stationDao.save(new Station(3L, "삼성역"));
+
+        sectionDao.save(1L, new Section(station1Id, station2Id, 10));
+        sectionDao.save(1L, new Section(station2Id, station3Id, 10));
+
+        // when
+        sectionService.delete(1L, station3Id);
+
+        // then
+        assertThat(sectionDao.findAllById(1L)).hasSize(1);
+    }
+
+    @DisplayName("구간 삭제 시 중간역을 삭제한다.")
+    @Test
+    void deleteStationInSection() {
+        // given
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        long station3Id = stationDao.save(new Station(3L, "삼성역"));
+
+        sectionDao.save(1L, new Section(station1Id, station2Id, 10));
+        sectionDao.save(1L, new Section(station2Id, station3Id, 10));
+
+        // when
+        sectionService.delete(1L, station2Id);
+
+        // then
+        assertThat(sectionDao.findAllById(1L)).hasSize(1);
     }
 }
