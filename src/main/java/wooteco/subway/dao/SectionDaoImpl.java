@@ -36,4 +36,11 @@ public class SectionDaoImpl implements SectionDao {
         String sql = "select * from section where lineId = ?";
         return jdbcTemplate.query(sql, actorRowMapper, lindId);
     }
+
+    @Override
+    public void update(final Section section) {
+        String sql = "update section set (upStationId, downStationId, distance) = (?, ?, ?) where id = ?";
+        jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(),
+                section.getDistance(), section.getId());
+    }
 }

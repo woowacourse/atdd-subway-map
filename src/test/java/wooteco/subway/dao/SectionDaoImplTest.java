@@ -26,8 +26,8 @@ class SectionDaoImplTest {
         sectionDao = new SectionDaoImpl(jdbcTemplate);
     }
 
+    @DisplayName("노선에 해당하는 구간들을 반환한다.")
     @Test
-    @DisplayName("노선에 해당하는 Section들을 반환한다.")
     void findByLineId() {
         Long lineId = 1L;
         Section firstSection = new Section(lineId, 1L, 2L, 10);
@@ -38,5 +38,16 @@ class SectionDaoImplTest {
         final List<Section> sections = sectionDao.findByLineId(lineId);
 
         assertThat(sections).contains(firstSection, secondSection);
+    }
+
+    @DisplayName("id에 해당하는 구간의 상행선, 하행선, 거리를 수정한다.")
+    @Test
+    void update() {
+        Section firstSection = new Section(1L, 1L, 2L, 10);
+        sectionDao.save(firstSection);
+        final Section updatingSection = new Section(1L, 1L, 4L, 5L, 8);
+        sectionDao.update(updatingSection);
+
+        assertThat(sectionDao.findByLineId(1L)).contains(updatingSection);
     }
 }
