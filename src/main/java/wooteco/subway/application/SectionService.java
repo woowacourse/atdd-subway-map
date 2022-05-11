@@ -22,6 +22,13 @@ public class SectionService {
         Section sectionWithSameUpStation = getSectionWithSameUpStation(sections, upStationId);
         Section sectionWithSameDownStation = getSectionWithSameDownStation(sections, downStationId);
 
+        Map<TerminalStation, Long> terminalStations = findTerminalStations(lineId);
+
+        if (terminalStations.get(TerminalStation.UP).equals(downStationId)
+                || terminalStations.get(TerminalStation.DOWN).equals(upStationId)) {
+            return saveSection(lineId, upStationId, downStationId, distance);
+        }
+
         if (conditionForInsertStationInMiddle(distance, sectionWithSameUpStation)) {
             return insertDownStationInMiddle(lineId, upStationId, downStationId, distance, sectionWithSameUpStation);
         }
@@ -116,10 +123,7 @@ public class SectionService {
 
     public Map<TerminalStation, Long> findTerminalStations(long lineId) {
         LinkedList<Long> sortedStations = findSortedStations(lineId);
-        Map<TerminalStation, Long> terminalStationMap = new HashMap<>();
-        terminalStationMap.put(TerminalStation.UP, sortedStations.getFirst());
-        terminalStationMap.put(TerminalStation.DOWN, sortedStations.getLast());
-        return Collections.unmodifiableMap(terminalStationMap);
+        return Map.of(TerminalStation.UP, sortedStations.getFirst(), TerminalStation.DOWN, sortedStations.getLast());
     }
 
     private Long getAnyPivot(List<Section> foundSections) {

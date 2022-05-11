@@ -121,7 +121,7 @@ class SectionServiceTest {
             @Test
             void prevent_forked_road_same_down_station() {
                 // given
-                long oldSectionId = sectionService.createSection(1L, 1L, 2L, 7);
+                long oldSectionId = firstCreateSection(1L, 1L, 2L, 7);
                 long newSectionId = sectionService.createSection(1L, 3L, 2L, 4);
 
                 Section oldSection = sectionDao.findById(oldSectionId).get();
@@ -142,7 +142,7 @@ class SectionServiceTest {
             @ParameterizedTest
             @CsvSource(value = {"1 - 3", "3 - 2"}, delimiterString = " - ")
             void can_not_register_if_new_distance_is_longer(long upStationId, long downStationId) {
-                sectionService.createSection(1L, 1L, 2L, 7);
+                firstCreateSection(1L, 1L, 2L, 7);
                 assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
                         .isInstanceOf(SectionNotRegisterException.class);
             }
@@ -152,7 +152,7 @@ class SectionServiceTest {
             void can_not_register_if_all_same_up_and_down_station_when_1_section() {
                 long upStationId = 1L;
                 long downStationId = 2L;
-                sectionService.createSection(1L, upStationId, downStationId, 7);
+                firstCreateSection(1L, upStationId, downStationId, 7);
                 assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
                         .isInstanceOf(SectionNotRegisterException.class);
             }
@@ -162,7 +162,7 @@ class SectionServiceTest {
             void can_not_register_if_all_same_up_and_down_station_when_2_section() {
                 long upStationId = 1L;
                 long downStationId = 3L;
-                sectionService.createSection(1L, upStationId, 2L, 7);
+                firstCreateSection(1L, upStationId, 2L, 7);
                 sectionService.createSection(1L, 2L, downStationId, 7);
                 assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
                         .isInstanceOf(SectionNotRegisterException.class);
@@ -171,7 +171,7 @@ class SectionServiceTest {
             @DisplayName("[예외] 상행역과 하행역 모두 존재하지 않는다면 구간을 추가할 수 없다")
             @Test
             void can_not_register_if_up_and_down_all_exist() {
-                sectionService.createSection(1L, 1L, 2L, 7);
+                firstCreateSection(1L, 1L, 2L, 7);
                 assertThatThrownBy(() -> sectionService.createSection(1L, 5L, 6L, 11))
                         .isInstanceOf(SectionNotRegisterException.class);
             }
