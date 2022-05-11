@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 
 import wooteco.subway.acceptance.fixture.SimpleResponse;
 import wooteco.subway.acceptance.fixture.SimpleRestAssured;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.response.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 

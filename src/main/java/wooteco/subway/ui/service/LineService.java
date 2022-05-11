@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.ui.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.response.LineResponse;
 
 @Service
 public class LineService {

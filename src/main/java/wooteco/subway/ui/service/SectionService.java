@@ -1,11 +1,11 @@
-package wooteco.subway.ui;
+package wooteco.subway.ui.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.request.SectionRequest;
 
 @Service
 public class SectionService {

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
-import wooteco.subway.dto.ExceptionResponse;
+import wooteco.subway.dto.response.ExceptionResponse;
 
 public class SimpleResponse {
     private final Response response;
