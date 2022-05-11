@@ -95,8 +95,9 @@ class LineControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
+    @ParameterizedTest
+    @CsvSource({"1,200", "2,404"})
+    void getLine(Long pathParameter, int httpStatusCode) {
         Station upStation = stationDao.save(new Station("동천역"));
         Station downStation = stationDao.save(new Station("판교역"));
         Line line = lineDao.save(new Line("신분당선", "red"));
@@ -104,12 +105,12 @@ class LineControllerTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + line.getId())
+                .get("/lines/" + pathParameter)
                 .then().log().all()
                 .extract();
 
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
+                () -> assertThat(response.statusCode()).isEqualTo(httpStatusCode)
         );
     }
 

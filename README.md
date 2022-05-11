@@ -57,9 +57,9 @@
 > 목록 - GET /lines
 
 > 조회 - GET /lines/{id}
-  - [ ]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
+  - [x]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
 > 수정 - PUT /lines/{id}
-  - [ ]  [예외] 이미 있는 이름, 색깔이면 안된다. (Bad Request 400)
+  - [x]  [예외] 이미 있는 이름, 색깔이면 안된다. (Bad Request 400)
   - [x]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
 > 삭제 - DELETE /lines/{id}
   - 해당 id 값을 가지는 line을 삭제하고 노선에 있는 모든 구간들을 삭제한다.
