@@ -8,12 +8,12 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
-public class Stations {
+public class MetroManager {
     private static final Long NO_EXIST = -1L;
 
     private final Map<Long, Adjacency> adjacencies;
 
-    public Stations(List<Section> sections) {
+    public MetroManager(List<Section> sections) {
         this.adjacencies = new HashMap<>();
         Set<Long> totalId = new HashSet<>();
         Map<Long, StationInfo> leftInfos = new HashMap<>();

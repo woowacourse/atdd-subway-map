@@ -12,8 +12,6 @@ import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -63,5 +61,25 @@ public class LineDao {
     public boolean isValidId(Long id) {
         String sql = "select count(*) from line where id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
+    }
+
+    public Long findUpStationId(Long id) {
+        String sql = "select up_station_id from line where id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, id);
+    }
+
+    public Long findDownStationId(Long id) {
+        String sql = "select down_station_id from line where id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, id);
+    }
+
+    public void changeUpStation(Long id, Long newUpStationId) {
+        String sql = "update line set up_station_id = (?) where id = (?)";
+        jdbcTemplate.update(sql, newUpStationId, id);
+    }
+
+    public void changeDownStation(Long id, Long newDownStationId) {
+        String sql = "update line set down_station_id = (?) where id = (?)";
+        jdbcTemplate.update(sql, newDownStationId, id);
     }
 }
