@@ -14,11 +14,6 @@ public class Sections {
     }
 
     public List<Section> add(Section section) {
-        if (sections.size() == 0) {
-            sections.add(section);
-            return sections;
-        }
-
         checkContainsSameSection(section);
         preventFork(section);
         isPossibleRegistration(section);
