@@ -35,7 +35,7 @@ class SectionsTest {
         final Section newSection = new Section(newStation1, newStation2, 5, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
     }
 
@@ -45,7 +45,7 @@ class SectionsTest {
         final Section newSection = new Section(upStation, downStation, 5, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
     }
 
