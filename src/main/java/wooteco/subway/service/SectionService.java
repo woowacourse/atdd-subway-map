@@ -25,6 +25,7 @@ public class SectionService {
     }
 
     public List<StationResponse> create(long id, SectionRequest sectionRequest) {
+        validateDistance(id, sectionRequest);
         SectionDto sectionDto = sectionDao.save(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
         Station upStation = getStation(sectionDto);
@@ -35,9 +36,20 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
+    private void validateDistance(long id, SectionRequest sectionRequest) {
+        int distance = sectionDao.findDistance(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId())
+                .orElse(0);
+        checkDistance(sectionRequest, distance);
+    }
+
+    private void checkDistance(SectionRequest sectionRequest, int distance) {
+        if (distance != 0 && distance <= sectionRequest.getDistance()) {
+            throw new IllegalArgumentException("기존 구간의 거리보다 크거나 같은 구간은 추가할 수 없습니다.");
+        }
+    }
+
     private Station getStation(SectionDto sectionDto) {
         return stationDao.findById(sectionDto.getUpStationId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
     }
-
 }

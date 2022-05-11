@@ -34,16 +34,17 @@ public class StationDao {
     }
 
     public Station save(String name) {
-        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        SqlParameterSource parameterSource = new MapSqlParameterSource("name", name);
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return new Station(id, name);
     }
 
-    public Optional<Station> findById(Long id) {
+    public Optional<Station> findById(long id) {
         String sql = "SELECT * FROM station WHERE id = :id";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, stationRowMapper));
+            return Optional.ofNullable(
+                    namedParameterJdbcTemplate.queryForObject(sql, parameterSource, stationRowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -63,7 +64,7 @@ public class StationDao {
 
     public void deleteById(Long id) {
         String sql = "DELETE FROM station WHERE id = :id";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        namedParameterJdbcTemplate.update(sql, parameters);
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
+        namedParameterJdbcTemplate.update(sql, parameterSource);
     }
 }

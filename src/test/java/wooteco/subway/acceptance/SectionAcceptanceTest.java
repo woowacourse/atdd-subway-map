@@ -46,4 +46,20 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @Test
+    @DisplayName("등록시 기존 역 사이 길이와 같으면 예외를 반환한다")
+    void createLine_sameDistance() {
+        // given
+        SectionRequest request1 = new SectionRequest(1L, 2L, 5);
+        postSections(request1);
+
+        SectionRequest request2 = new SectionRequest(1L, 3L, 3);
+
+        // when
+        ExtractableResponse<Response> response = postSections(request2);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

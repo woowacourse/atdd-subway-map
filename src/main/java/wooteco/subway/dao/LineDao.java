@@ -36,17 +36,17 @@ public class LineDao {
     }
 
     public Line save(String name, String color) {
-        SqlParameterSource parameters = new MapSqlParameterSource("name", name)
+        SqlParameterSource parameterSource = new MapSqlParameterSource("name", name)
                 .addValue("color", color);
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return new Line(id, name, color);
     }
 
     public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM line WHERE id = :id";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, lineRowMapper));
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, lineRowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -66,13 +66,13 @@ public class LineDao {
 
     public void deleteById(Long id) {
         String sql = "DELETE FROM line WHERE id = :id";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        namedParameterJdbcTemplate.update(sql, parameters);
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
+        namedParameterJdbcTemplate.update(sql, parameterSource);
     }
 
     public void update(Line line) {
         String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
-        BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
-        namedParameterJdbcTemplate.update(sql, parameters);
+        BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(line);
+        namedParameterJdbcTemplate.update(sql, parameterSource);
     }
 }
