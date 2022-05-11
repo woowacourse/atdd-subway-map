@@ -1,32 +1,27 @@
 package wooteco.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.StationResponse;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // given
-        Map<String, String> params = createParam("강남역");
-
         // when
-        ExtractableResponse<Response> response = createStation(params);
+        ExtractableResponse<Response> response = requestCreateStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -37,14 +32,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        Map<String, String> params1 = createParam("강남역");
-        ExtractableResponse<Response> createResponse1 = createStation(params1);
-
-        Map<String, String> params2 = createParam("역삼역");
-        ExtractableResponse<Response> createResponse2 = createStation(params2);
+        ExtractableResponse<Response> createResponse1 = requestCreateStation("강남역");
+        ExtractableResponse<Response> createResponse2 = requestCreateStation("역삼역");
 
         // when
-        ExtractableResponse<Response> response = getAllStations();
+        ExtractableResponse<Response> response = requestGetAllStations();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -61,12 +53,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = createParam("강남역");
-        ExtractableResponse<Response> createResponse = createStation(params);
+        ExtractableResponse<Response> createResponse = requestCreateStation("강남역");
 
         // when
         Long createdId = getIdFromResponse(createResponse);
-        ExtractableResponse<Response> response = deleteStation(createdId);
+        ExtractableResponse<Response> response = requestDeleteStation(createdId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -76,11 +67,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = createParam("강남역");
-        createStation(params);
+        requestCreateStation("강남역");
 
         // when
-        ExtractableResponse<Response> response = createStation(params);
+        ExtractableResponse<Response> response = requestCreateStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -90,13 +80,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine_returnsBadRequestWithNotExistingId() {
         // given & when
-        ExtractableResponse<Response> response = deleteStation(3L);
+        ExtractableResponse<Response> response = requestDeleteStation(3L);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private ExtractableResponse<Response> createStation(Map<String, String> params) {
+    private ExtractableResponse<Response> requestCreateStation(String name) {
+        Map<String, String> params = Map.of("name", name);
+
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -107,7 +99,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> getAllStations() {
+    private ExtractableResponse<Response> requestGetAllStations() {
         return RestAssured.given().log().all()
                 .when()
                 .get("/stations")
@@ -115,18 +107,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> deleteStation(Long createdId) {
+    private ExtractableResponse<Response> requestDeleteStation(Long createdId) {
         return RestAssured.given().log().all()
                 .when()
                 .delete("/stations/" + createdId)
                 .then().log().all()
                 .extract();
-    }
-
-    private Map<String, String> createParam(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        return params;
     }
 
     private Long getIdFromResponse(ExtractableResponse<Response> response) {

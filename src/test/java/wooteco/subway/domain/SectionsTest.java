@@ -1,17 +1,18 @@
 package wooteco.subway.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.exception.BothUpAndDownStationAlreadyExistsException;
 import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
 import wooteco.subway.exception.CanNotInsertSectionException;
 import wooteco.subway.exception.OnlyOneSectionException;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
 
@@ -21,7 +22,8 @@ class SectionsTest {
     @BeforeEach
     void setUp() {
         initialSection = new Section(1L, 2L, new Distance(10));
-        sections = new Sections(initialSection.getUpStationId(), initialSection.getDownStationId(), initialSection.getDistance());
+        sections = new Sections(initialSection.getUpStationId(), initialSection.getDownStationId(),
+                initialSection.getDistance());
     }
 
     @DisplayName("상행 종점, 하행 종점, 거리를 전달받아 구간 목록 생성")
@@ -95,11 +97,12 @@ class SectionsTest {
         assertThat(actual).containsAll(expected);
     }
 
-    @DisplayName("구간 삽입시 기존 구간의 길이보다 더 긴 길이의 구간을 삽입할 시 예외가 발생한다.")
-    @Test
-    void addSection_throwsExceptionOnTryingToInsertLongerSection() {
+    @DisplayName("구간 삽입시 기존 구간의 길이보다 더 길거나 같은 길이의 구간을 삽입할 시 예외가 발생한다.")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 15, 100})
+    void addSection_throwsExceptionOnTryingToInsertLongerSection(int distance) {
         // given
-        Section newSection = new Section(3L, 2L, new Distance(15));
+        Section newSection = new Section(3L, 2L, new Distance(distance));
 
         // when & then
         assertThatThrownBy(() -> sections.addSection(newSection))

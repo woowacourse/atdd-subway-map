@@ -1,15 +1,14 @@
 package wooteco.subway.dao;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
 
 @Repository
 public class SectionDao {
@@ -41,7 +40,7 @@ public class SectionDao {
         }
     }
 
-    private Section save(Long lineId, Section section) {
+    public Section save(Long lineId, Section section) {
         String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();

@@ -1,5 +1,7 @@
 package wooteco.subway.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
@@ -7,10 +9,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DuplicateNameException;
-import wooteco.subway.exception.NotFoundIdException;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import wooteco.subway.exception.NotFoundStationException;
 
 @Service
 @Transactional
@@ -51,7 +50,7 @@ public class StationService {
         boolean isExisting = stationDao.findById(id).isPresent();
 
         if (!isExisting) {
-            throw new NotFoundIdException();
+            throw new NotFoundStationException();
         }
     }
 }

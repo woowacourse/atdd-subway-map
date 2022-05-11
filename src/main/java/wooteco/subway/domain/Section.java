@@ -36,12 +36,13 @@ public class Section {
         return isSameUpStation(other) || isSameDownStation(other);
     }
 
-    public boolean isDistanceLessThan(Section other) {
-        return distance.isLessThan(other.distance);
+    public boolean isDistanceLessThanOrEqualTo(Section other) {
+        return distance.isLessThanOrEqualTo(other.distance);
     }
 
     public boolean hasSameStation(Section other) {
-        HashSet<Long> stationIds = new HashSet<>(List.of(upStationId, downStationId, other.upStationId, other.downStationId));
+        HashSet<Long> stationIds = new HashSet<>(
+                List.of(upStationId, downStationId, other.upStationId, other.downStationId));
         return stationIds.size() < 4;
     }
 
@@ -71,15 +72,24 @@ public class Section {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Section section = (Section) o;
 
-        if (id != null ? !id.equals(section.id) : section.id != null) return false;
-        if (upStationId != null ? !upStationId.equals(section.upStationId) : section.upStationId != null) return false;
-        if (downStationId != null ? !downStationId.equals(section.downStationId) : section.downStationId != null)
+        if (id != null ? !id.equals(section.id) : section.id != null) {
             return false;
+        }
+        if (upStationId != null ? !upStationId.equals(section.upStationId) : section.upStationId != null) {
+            return false;
+        }
+        if (downStationId != null ? !downStationId.equals(section.downStationId) : section.downStationId != null) {
+            return false;
+        }
         return distance != null ? distance.equals(section.distance) : section.distance == null;
     }
 
