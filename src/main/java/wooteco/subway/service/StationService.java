@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.station.DuplicateStationNameException;
 import wooteco.subway.exception.station.NoSuchStationException;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public class StationService {
 
     private void validateDuplicateName(Station station) {
         Optional<Station> optionalStation = stationDao.findByName(station.getName());
-        if (optionalStation.isPresent()) {
-            throw new IllegalArgumentException("같은 이름의 역은 등록할 수 없습니다.");
-        }
+        optionalStation.ifPresent(existed -> {
+            throw new DuplicateStationNameException();
+        });
     }
 
     public List<Station> findAll() {
