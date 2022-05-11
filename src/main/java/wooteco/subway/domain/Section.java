@@ -20,10 +20,6 @@ public class Section {
         return upStation.equals(this.upStation) && downStation.equals(this.downStation);
     }
 
-    public boolean matchUpStation(Station station) {
-        return station.equals(this.upStation);
-    }
-
     public boolean hasStation(Station station) {
         return station.equals(this.upStation) || station.equals(this.downStation);
     }

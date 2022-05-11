@@ -2,6 +2,7 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static wooteco.subway.fixture.LineFixture.createLineResponse;
 import static wooteco.subway.fixture.StationFixture.getSavedStationId;
 
 import io.restassured.RestAssured;
@@ -31,14 +32,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = getSavedStationId("상일동역");
         Long downStationId = getSavedStationId("아차산역");
         LineRequest lineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId, 10);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = createLineResponse(lineRequest);
 
         // then
         List<Long> resultStationIds = response.jsonPath().getList("stations", StationResponse.class).stream()
@@ -62,14 +56,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = getSavedStationId("상일동역");
         Long downStationId = getSavedStationId("아차산역");
         LineRequest wrongLineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId + 1, 10);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(wrongLineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = createLineResponse(wrongLineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -82,24 +69,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = getSavedStationId("상일동역");
         Long downStationId = getSavedStationId("아차산역");
         LineRequest lineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId, 10);
-
-        RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        createLineResponse(lineRequest);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = createLineResponse(lineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -112,26 +85,12 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId1 = getSavedStationId("상일동역");
         Long downStationId1 = getSavedStationId("아차산역");
         LineRequest lineRequest1 = new LineRequest("5호선", "rgb-purple-600", upStationId1, downStationId1, 10);
-
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(lineRequest1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = createLineResponse(lineRequest1);
 
         Long upStationId2 = getSavedStationId("선릉역");
         Long downStationId2 = getSavedStationId("강남역");
         LineRequest lineRequest2 = new LineRequest("2호선", "rgb-green-600", upStationId2, downStationId2, 10);
-
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(lineRequest2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = createLineResponse(lineRequest2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -172,14 +131,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = getSavedStationId("상일동역");
         Long downStationId = getSavedStationId("아차산역");
         LineRequest lineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId, 10);
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = createLineResponse(lineRequest);
         long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
@@ -210,14 +162,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = getSavedStationId("상일동역");
         Long downStationId = getSavedStationId("아차산역");
         LineRequest lineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId, 10);
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = createLineResponse(lineRequest);
         long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
@@ -254,14 +199,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = getSavedStationId("상일동역");
         Long downStationId = getSavedStationId("아차산역");
         LineRequest lineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId, 10);
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = createLineResponse(lineRequest);
 
         // when
         String uri = createResponse.header("Location");
@@ -291,16 +229,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = getSavedStationId("상일동역");
         Long downStationId = getSavedStationId("아차산역");
         LineRequest lineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId, 10);
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> createResponse = createLineResponse(lineRequest);
         long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
         Long addStationId = getSavedStationId("군자역");
 
         // when
@@ -340,15 +271,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = getSavedStationId("상일동역");
         Long downStationId = getSavedStationId("아차산역");
         LineRequest lineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId, 10);
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> createResponse = createLineResponse(lineRequest);
         long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         Long addStationId = getSavedStationId("군자역");

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.MediaType;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.request.StationRequest;
 
 public class StationFixture {
 
@@ -30,5 +31,15 @@ public class StationFixture {
                 .then().log().all()
                 .extract();
         return Long.parseLong(response.header("Location").split("/")[2]);
+    }
+
+    public static ExtractableResponse<Response> createStationResponse(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
     }
 }
