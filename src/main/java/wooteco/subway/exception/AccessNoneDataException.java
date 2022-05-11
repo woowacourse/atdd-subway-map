@@ -1,7 +1,8 @@
 package wooteco.subway.exception;
 
-public class AccessNoneDataException extends RuntimeException {
+public class AccessNoneDataException extends IllegalArgumentException {
 
-    public AccessNoneDataException() {
+    public AccessNoneDataException(String message) {
+        super(message);
     }
 }

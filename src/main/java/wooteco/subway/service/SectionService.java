@@ -8,6 +8,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.exception.AccessNoneDataException;
 
 import java.util.Optional;
 
@@ -50,13 +51,13 @@ public class SectionService {
 
     private void validateExistLine(Long id) {
         if (!lineDao.existLineById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
+            throw new AccessNoneDataException("존재하지 않는 노선입니다.");
         }
     }
 
     private void validateExistStationInLine(Sections sections, Long upStationId, Long downStationId) {
         if (!stationDao.existStationById(upStationId) || !stationDao.existStationById(downStationId)) {
-            throw new IllegalArgumentException("등록되지 않은 역으로는 구간을 만들 수 없습니다.");
+            throw new AccessNoneDataException("등록되지 않은 역으로는 구간을 만들 수 없습니다.");
         }
         boolean isExistUpStation = sections.hasStation(upStationId);
         boolean isExistDownStation = sections.hasStation(downStationId);

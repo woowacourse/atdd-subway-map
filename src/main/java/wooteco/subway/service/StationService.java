@@ -40,7 +40,7 @@ public class StationService {
     private void validateExistData(Long lineId) {
         boolean isExist = stationDao.existStationById(lineId);
         if (!isExist) {
-            throw new AccessNoneDataException();
+            throw new AccessNoneDataException("접근하려는 역이 존재하지 않습니다.");
         }
     }
 }

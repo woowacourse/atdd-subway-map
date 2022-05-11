@@ -20,6 +20,12 @@ public class ExceptionHandlerController {
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(AccessNoneDataException.class)
+    public ResponseEntity<ErrorMessageResponse> handleAccessNoneDataException(AccessNoneDataException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessageResponse(e.getMessage()));
+    }
+
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ErrorMessageResponse> handleEmptyResultDataAccessException() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -35,12 +41,6 @@ public class ExceptionHandlerController {
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorMessageResponse> handleDataAccessException() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorMessageResponse("DB관련 작업에서 오류가 발생했습니다."));
-    }
-
-    @ExceptionHandler(AccessNoneDataException.class)
-    public ResponseEntity<ErrorMessageResponse> handleAccessNoneDataException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorMessageResponse("접근하려는 데이터가 존재하지 않습니다."));
+                .body(new ErrorMessageResponse("DB관련 작업에서 데이터 관련 작업중 오류가 발생했습니다."));
     }
 }
