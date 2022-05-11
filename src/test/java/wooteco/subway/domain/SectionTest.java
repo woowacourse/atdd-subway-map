@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Section 도메인 객체 테스트")
 class SectionTest {
@@ -18,6 +19,51 @@ class SectionTest {
         assertThatThrownBy(() -> new Section(1L, 2L, -1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간 거리는 1 이상이어야 합니다.");
+    }
+
+    @DisplayName("기존 구간에 새로운 구간이 추가될 경우 구간 거리가 줄어든 새로운 구간을 반환한다.")
+    @Test
+    void replaceSection() {
+        // given
+        Section existSection = new Section(1L, 3L, 10);
+        Section newSection = new Section(1L, 2L, 5);
+
+        // when
+        Section replacedSection = Section.replace(existSection, newSection);
+
+        // then
+        assertAll(
+                () -> assertThat(replacedSection.getUpStationId()).isEqualTo(2L),
+                () -> assertThat(replacedSection.getDownStationId()).isEqualTo(3L),
+                () -> assertThat(replacedSection.getDistance()).isEqualTo(5)
+        );
+    }
+
+    @DisplayName("구간 거리의 차를 구한다.")
+    @Test
+    void subtractDistance() {
+        // given
+        Section existSection = new Section(1L, 3L, 10);
+        Section newSection = new Section(1L, 2L, 5);
+
+        // when & then
+        assertThat(Section.subtractDistance(existSection, newSection))
+                .isEqualTo(5);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {10, 15})
+    @DisplayName("새로 추가하려는 구간이 기존 구간의 거리보다 크거나 같을 경우 예외가 발생한다.")
+    void subtractDistanceOverExist(int distance) {
+        // given
+        Section existSection = new Section(1L, 3L, 10);
+        Section newSection = new Section(1L, 2L, distance);
+
+        // when & then
+        assertThatThrownBy(
+                () -> Section.subtractDistance(existSection, newSection)
+        ).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("기존 구간의 길이를 벗어납니다.");
     }
 
     @ParameterizedTest

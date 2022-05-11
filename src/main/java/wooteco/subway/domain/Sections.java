@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -18,28 +19,57 @@ public class Sections {
         Section existSection = getExistSection(section);
         if (existSection.isAddingEndSection(section)) {
             sections.add(section);
+            return;
         }
+        addStationInSection(existSection, section);
     }
 
     private void validateSection(final Section section) {
-        if (hasUpStation(section) && hasDownStation(section)) {
+        List<Long> stationIds = getStationIdsInSection();
+        if (hasAllStation(section, stationIds)) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 지하철 노선에 존재합니다.");
         }
-        if (!hasUpStation(section) && !hasDownStation(section)) {
+        if (hasNotAnyStation(section, stationIds)) {
             throw new IllegalArgumentException("추가하려는 구간이 노선에 포함되어 있지 않습니다.");
         }
     }
 
-    private boolean hasUpStation(final Section section) {
-        return sections.stream()
-                .map(Section::getUpStationId)
-                .anyMatch(section::existStation);
+    private List<Long> getStationIdsInSection() {
+        List<Long> allStationIds = new ArrayList<>();
+        allStationIds.addAll(getUpStationIds());
+        allStationIds.addAll(getDownStationIds());
+
+        return allStationIds.stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    private boolean hasDownStation(final Section section) {
+    private List<Long> getUpStationIds() {
+        return sections.stream()
+                    .map(Section::getUpStationId)
+                    .collect(Collectors.toList());
+    }
+
+    private List<Long> getDownStationIds() {
         return sections.stream()
                 .map(Section::getDownStationId)
-                .anyMatch(section::existStation);
+                .collect(Collectors.toList());
+    }
+
+    private boolean hasAllStation(final Section section, final List<Long> stationIds) {
+        return stationIds.contains(section.getUpStationId()) && stationIds.contains(section.getDownStationId());
+    }
+
+    private boolean hasNotAnyStation(final Section section, final List<Long> stationIds) {
+        return !stationIds.contains(section.getUpStationId()) && !stationIds.contains(section.getDownStationId());
+    }
+
+    private void addStationInSection(final Section existSection, final Section section) {
+        Section replacedSection = Section.replace(existSection, section);
+
+        sections.remove(existSection);
+        sections.add(section);
+        sections.add(replacedSection);
     }
 
     private Section getExistSection(Section section) {

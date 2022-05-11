@@ -9,6 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Sections 도메인 객체 테스트")
 class SectionsTest {
@@ -68,5 +69,37 @@ class SectionsTest {
 
         // then
         assertThat(sections.getSections()).contains(newSection);
+    }
+
+    @DisplayName("상행역을 추가한다.")
+    @Test
+    void addUpStation() {
+        // given
+        Section newSection = new Section(9L, 2L, 5);
+
+        // when
+        sections.add(newSection);
+
+        // then
+        assertAll(
+                () -> assertThat(sections.getSections()).contains(new Section(1L, 9L, 5)),
+                () -> assertThat(sections.getSections()).contains(new Section(9L, 2L, 5))
+        );
+    }
+
+    @DisplayName("하행역을 추가한다.")
+    @Test
+    void addDownStation() {
+        // given
+        Section newSection = new Section(1L, 9L, 5);
+
+        // when
+        sections.add(newSection);
+
+        // then
+        assertAll(
+                () -> assertThat(sections.getSections()).contains(new Section(1L, 9L, 5)),
+                () -> assertThat(sections.getSections()).contains(new Section(9L, 2L, 5))
+        );
     }
 }
