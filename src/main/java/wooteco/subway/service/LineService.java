@@ -78,11 +78,6 @@ public class LineService {
         return new LineResponse(line, stations);
     }
 
-    private Station getStation(Long id) {
-        return stationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(id + "의 지하철역은 존재하지 않습니다."));
-    }
-
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
@@ -98,6 +93,11 @@ public class LineService {
                 .map(StationResponse::new)
                 .collect(toList());
         return new LineResponse(line, stationResponses);
+    }
+
+    private Station getStation(Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(id + "의 지하철역은 존재하지 않습니다."));
     }
 
     @Transactional
