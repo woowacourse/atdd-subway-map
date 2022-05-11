@@ -114,4 +114,15 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("노선에 구간이 하나만 존재하기 때문에 삭제할 수 없습니다.");
     }
+
+    @ParameterizedTest
+    @ValueSource(longs = {1L, 4L})
+    @DisplayName("종점을 삭제한다.")
+    void deleteLastUpStation(long stationId) {
+        // when
+        sections.delete(stationId);
+
+        // then
+        assertThat(sections.getSections()).hasSize(2);
+    }
 }

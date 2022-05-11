@@ -28,6 +28,16 @@ public class Sections {
 
     public void delete(final Long stationId) {
         validateStationCount();
+
+        if (isEndStation(stationId)) {
+            Section existSection = getExistSection(stationId);
+            sections.remove(existSection);
+        }
+    }
+
+    private boolean isEndStation(final Long stationId) {
+        return (getUpStationIds().contains(stationId) && !getDownStationIds().contains(stationId))
+                || (!getUpStationIds().contains(stationId) && getDownStationIds().contains(stationId));
     }
 
     private void validateSection(final Section section) {
@@ -84,7 +94,14 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private Section getExistSection(Section section) {
+    private Section getExistSection(final Long sectionId) {
+        return sections.stream()
+                .filter(exist -> exist.existStation(sectionId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("구간 정보를 찾을 수 없습니다."));
+    }
+
+    private Section getExistSection(final Section section) {
         return sections.stream()
                 .filter(exist -> exist.existStation(section.getUpStationId())
                         || exist.existStation(section.getDownStationId()))
