@@ -12,8 +12,8 @@ import wooteco.subway.dto.request.LineRequestDto;
 import wooteco.subway.dto.request.SectionRequestDto;
 import wooteco.subway.exception.CanNotDeleteException;
 import wooteco.subway.exception.DuplicateLineNameException;
-import wooteco.subway.repository.dao.JdbcSectionDao;
 import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.entity.LineEntity;
 import wooteco.subway.repository.entity.SectionEntity;
 
@@ -21,12 +21,10 @@ import wooteco.subway.repository.entity.SectionEntity;
 public class LineService {
 
     private final LineDao lineDao;
-    // 인터페이스 SectionDao 로 바꿔야 함
-    private final JdbcSectionDao sectionDao;
-
+    private final SectionDao sectionDao;
     private final StationService stationService;
 
-    public LineService(final LineDao lineDao, final JdbcSectionDao sectionDao, final StationService stationService) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationService stationService) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationService = stationService;
