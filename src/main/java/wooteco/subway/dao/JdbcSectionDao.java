@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
@@ -63,13 +64,6 @@ public class JdbcSectionDao implements SectionDao {
         return namedParameterJdbcTemplate.query(sql, parameters, getSectionRowMapper());
     }
 
-    @Override
-    public void deleteAllByLineId(final Long lineId) {
-        final String sql = "DELETE FROM section WHERE line_id = :lineId";
-        final MapSqlParameterSource parameters = new MapSqlParameterSource("lineId", lineId);
-        namedParameterJdbcTemplate.update(sql, parameters);
-    }
-
     private RowMapper<Section> getSectionRowMapper() {
         return (resultSet, rowNum) -> (
             new Section(
@@ -80,5 +74,18 @@ public class JdbcSectionDao implements SectionDao {
                 resultSet.getInt("distance")
             )
         );
+    }
+
+    @Override
+    public void deleteAllByLineId(final Long lineId) {
+        final String sql = "DELETE FROM section WHERE line_id = :lineId";
+        final MapSqlParameterSource parameters = new MapSqlParameterSource("lineId", lineId);
+        namedParameterJdbcTemplate.update(sql, parameters);
+    }
+
+    @Override
+    public void batchUpdate(final List<Section> sections) {
+        final String sql = "UPDATE section SET up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance WHERE id = :id";
+        namedParameterJdbcTemplate.batchUpdate(sql, SqlParameterSourceUtils.createBatch(sections));
     }
 }

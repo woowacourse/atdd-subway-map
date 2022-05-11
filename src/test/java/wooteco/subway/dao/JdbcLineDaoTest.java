@@ -17,7 +17,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequest;
 
 @JdbcTest
-public class LineDaoTest {
+public class JdbcLineDaoTest {
 
     @Autowired
     private DataSource dataSource;

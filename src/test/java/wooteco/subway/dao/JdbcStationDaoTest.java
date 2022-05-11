@@ -14,7 +14,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.testutils.Fixture;
 
 @JdbcTest
-public class StationDaoTest {
+public class JdbcStationDaoTest {
 
     @Autowired
     private DataSource dataSource;

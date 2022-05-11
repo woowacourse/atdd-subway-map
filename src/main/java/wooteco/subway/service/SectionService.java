@@ -44,7 +44,8 @@ public class SectionService {
         targetSection = sectionDao.save(targetSection);
         final Sections sections = new Sections(sectionDao.findSectionStationsByLineId(lineId));
 
-        //1) sections - station id별로 정렬해서 나열한다
         final List<Section> updatedSections = sections.addSection(targetSection);
+
+        sectionDao.batchUpdate(updatedSections);
     }
 }
