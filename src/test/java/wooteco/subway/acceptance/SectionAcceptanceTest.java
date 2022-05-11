@@ -155,7 +155,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value())
         );
     }
 
@@ -173,7 +173,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value())
         );
     }
 
@@ -191,7 +191,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value())
         );
     }
 
