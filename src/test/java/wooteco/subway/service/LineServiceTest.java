@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -9,7 +10,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import wooteco.subway.controller.AcceptanceTest;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -19,6 +24,10 @@ public class LineServiceTest extends AcceptanceTest {
 
     @Autowired
     private StationDao stationDao;
+    @Autowired
+    private LineDao lineDao;
+    @Autowired
+    private SectionDao sectionDao;
     @Autowired
     private LineService lineService;
 
@@ -55,5 +64,21 @@ public class LineServiceTest extends AcceptanceTest {
                     () -> assertThat(lineResponse.getStations()).hasSize(2)
             );
         }
+    }
+
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    void delete() {
+        Station 강남 = stationDao.save(new Station("강남"));
+        Station 양재 = stationDao.save(new Station("양재"));
+        Line line = lineDao.save(new Line("신분당선", "red"));
+        sectionDao.save(new Section(강남.getId(), 양재.getId(), line.getId(), 3));
+
+        lineService.delete(line.getId());
+
+        assertAll(
+                () -> assertThat(lineDao.findById(line.getId()).isEmpty()).isTrue(),
+                () -> assertThat(sectionDao.findAllByLineId(line.getId())).hasSize(0)
+        );
     }
 }

@@ -86,6 +86,7 @@ public class LineService {
     public void delete(Long lineId) {
         getLineOrThrowException(lineId);
         lineDao.delete(lineId);
+        sectionDao.deleteByLineId(lineId);
     }
 
     private Line getLineOrThrowException(Long lineId) {

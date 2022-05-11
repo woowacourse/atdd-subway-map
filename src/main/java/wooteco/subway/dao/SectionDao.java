@@ -40,4 +40,9 @@ public class SectionDao {
                         rs.getInt("distance")
                 ), lineId);
     }
+
+    public void deleteByLineId(Long lineId) {
+        final String SQL = "delete from section where lineId = ?";
+        jdbcTemplate.update(SQL, lineId);
+    }
 }
