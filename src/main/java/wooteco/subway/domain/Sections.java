@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -109,15 +110,21 @@ public class Sections {
     }
 
     private boolean isInsertTop(Section newSection) {
-        Long upStationId = newSection.getUpStationId();
-        Long bottomStationId = sections.get(sections.size() - 1).getDownStationId();
-        return upStationId.equals(bottomStationId);
+        Long downStationId = newSection.getDownStationId();
+        return downStationId.equals(getTopStationId());
     }
 
     private boolean isInsertBottom(Section newSection) {
-        Long downStationId = newSection.getDownStationId();
-        Long topStationId = sections.get(0).getUpStationId();
-        return downStationId.equals(topStationId);
+        Long upStationId = newSection.getUpStationId();
+        return upStationId.equals(getBottomStationId());
+    }
+
+    private Long getTopStationId() {
+        return sections.get(0).getUpStationId();
+    }
+
+    private Long getBottomStationId() {
+        return sections.get(sections.size() - 1).getDownStationId();
     }
 
     public void validateDelete(Long stationId) {
@@ -135,6 +142,34 @@ public class Sections {
         if (sections.size() == 1) {
             throw new IllegalArgumentException("구간이 하나인 노선에서 마지막 구간을 삭제할 수 없습니다.");
         }
+    }
+
+    public boolean isRequireUpdateForDelete(Long stationId) {
+        return !(stationId.equals(getTopStationId()) || stationId.equals(getBottomStationId()));
+    }
+
+    public Section getUpdatedSectionForDelete(Long stationId) {
+        Section upSection = getSectionByFilter(section -> section.getDownStationId().equals(stationId));
+        Section downSection = getSectionByFilter(section -> section.getUpStationId().equals(stationId));
+
+        int newDistance = upSection.getDistance() + downSection.getDistance();
+
+        return new Section(upSection.getId(), upSection.getLineId(),
+                upSection.getUpStationId(), downSection.getDownStationId(), newDistance);
+    }
+
+    public Long deletedSectionId(Long stationId) {
+        if (stationId.equals(getBottomStationId())) {
+            return getSectionByFilter(section -> section.getDownStationId().equals(stationId)).getId();
+        }
+        return getSectionByFilter(section -> section.getUpStationId().equals(stationId)).getId();
+    }
+
+    private Section getSectionByFilter(Predicate<Section> sectionPredicate) {
+        return sections.stream()
+                .filter(sectionPredicate)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("역이 포함된 구간을 찾을 수 없습니다."));
     }
 
     public List<Long> findStationIds() {
