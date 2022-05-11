@@ -61,4 +61,28 @@ public class SectionService {
             }
         }
     }
+
+    public void delete(Long id, Long stationId) {
+        sectionJdbcDao.find(id).validateDeleteCondition();
+
+        Sections sections = sectionJdbcDao.find(id);
+        Optional<Section> downSection = sections.findDownSection(stationId);
+        Optional<Section> upSection = sections.findUpSection(stationId);
+        if (upSection.isPresent() && downSection.isPresent()) {
+            sectionJdbcDao.save(id, new Section(0L, id, upSection.get().getUpStationId(), downSection.get().getDownStationId(), upSection.get().getDistance() + downSection.get().getDistance()));
+            deleteSection(id, downSection.get());
+            deleteSection(id, upSection.get());
+            return;
+        }
+        if (upSection.isEmpty()) {
+            deleteSection(id, downSection.get());
+        }
+        if (downSection.isEmpty()) {
+            deleteSection(id, upSection.get());
+        }
+    }
+
+    private void deleteSection(Long id, Section section) {
+        sectionJdbcDao.delete(id, section);
+    }
 }
