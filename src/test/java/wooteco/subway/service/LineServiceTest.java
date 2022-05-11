@@ -2,13 +2,13 @@ package wooteco.subway.service;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+
 import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
@@ -100,7 +100,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선 정보 업데이트 - 이미 존재하는 노선으로 업데이트")
+    @DisplayName("노선 정보 업데이트 예외 - 이미 존재하는 노선으로 업데이트")
     void updateDuplicateLine() {
         Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
         Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));

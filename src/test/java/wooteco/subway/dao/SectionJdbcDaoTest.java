@@ -35,17 +35,15 @@ class SectionJdbcDaoTest {
     @DisplayName("구간 정보 저장")
     @Test
     void save() {
-        Station 강남역 = stationJdbcDao.save(new StationRequest("강남역"));
-        Station 서초역 = stationJdbcDao.save(new StationRequest("서초역"));
+        Station station = stationJdbcDao.save(new StationRequest("강남역"));
+        Station secondStation = stationJdbcDao.save(new StationRequest("서초역"));
 
-        LineRequest line = new LineRequest("분당선", "bg-red-600",
-                강남역.getId(), 서초역.getId(), 10);
+        LineRequest line = new LineRequest("분당선", "bg-red-600", station.getId(), secondStation.getId(), 10);
         Line lineResponse = lineJdbcDao.save(line);
+        Section section = sectionJdbcDao.save(lineResponse.getId(), new Section(0L, 1L, station.getId(), secondStation.getId(), 10));
 
-        Section section = sectionJdbcDao.save(lineResponse.getId(), new Section(0L, 1L, 강남역.getId(), 서초역.getId(), 10));
-
-        assertThat(section.getUpStationId()).isEqualTo(강남역.getId());
-        assertThat(section.getDownStationId()).isEqualTo(서초역.getId());
+        assertThat(section.getUpStationId()).isEqualTo(station.getId());
+        assertThat(section.getDownStationId()).isEqualTo(secondStation.getId());
     }
 
     @DisplayName("구간 정보 삭제")
@@ -58,13 +56,11 @@ class SectionJdbcDaoTest {
         LineRequest line = new LineRequest("분당선", "bg-red-600",
                 1L, 2L, 10);
         lineJdbcDao.save(line);
-
         sectionJdbcDao.save(1L, new Section(0L, 1L, 1L, 2L, 10));
         sectionJdbcDao.save(1L, new Section(0L, 1L, 2L, 3L, 10));
 
         sectionJdbcDao.delete(1L, new Section(1L, 1L, 1L, 2L, 10));
 
         assertThat(sectionJdbcDao.findById(1L).getSections().size()).isOne();
-        lineJdbcDao.delete(1L);
     }
 }

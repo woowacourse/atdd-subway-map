@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+
 import wooteco.subway.dto.*;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 @SpringBootTest
 @Sql(scripts = {"classpath:schema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -21,7 +23,7 @@ class SectionServiceTest {
     @Autowired
     private LineService lineService;
 
-    @DisplayName("구간 저장")
+    @DisplayName("지하철 구간 저장")
     @Test
     void save() {
         StationResponse firstStation = stationService.save(new StationRequest("역삼역"));
@@ -31,13 +33,11 @@ class SectionServiceTest {
         LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);;
         LineResponse saveLine = lineService.save(line);
 
-        //assert 하기
-        sectionService.save(saveLine.getId(), new SectionRequest(secondStation.getId(), thirdStation.getId(),
-                        10),
-                lineService.findSections(saveLine.getId()), lineService.findById(saveLine.getId()));
+        assertThatNoException().isThrownBy(() -> sectionService.save(saveLine.getId(), new SectionRequest(secondStation.getId(),
+                thirdStation.getId(), 10), lineService.findSections(saveLine.getId()), lineService.findById(saveLine.getId())));
     }
 
-    @DisplayName("구간 삭제")
+    @DisplayName("지하철 구간 삭제")
     @Test
     void delete() {
         StationResponse firstStation = stationService.save(new StationRequest("역삼역"));
@@ -50,7 +50,6 @@ class SectionServiceTest {
         sectionService.save(saveLine.getId(), new SectionRequest(secondStation.getId(), thirdStation.getId(), 10),
                 lineService.findSections(saveLine.getId()), lineService.findById(saveLine.getId()));
 
-
-        sectionService.delete(saveLine.getId(), firstStation.getId());
+        assertThatNoException().isThrownBy(() -> sectionService.delete(saveLine.getId(), firstStation.getId()));
     }
 }
