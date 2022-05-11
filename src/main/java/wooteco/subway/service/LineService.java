@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +23,7 @@ public class LineService {
     private static final String LINE_DUPLICATION_NAME_EXCEPTION_MESSAGE = "[ERROR] 중복되는 이름의 지하철 노선이 존재합니다.";
     private static final String LINE_DUPLICATION_COLOR_EXCEPTION_MESSAGE = "[ERROR] 중복되는 색깔의 지하철 노선이 존재합니다.";
     private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "[ERROR] 해당하는 ID의 지하철 노선이 존재하지 않습니다.";
+    private static final String NO_SUCH_STATION_EXCEPTION_MESSAGE = "[ERROR] 존재하지 않는 지하철역입니다.";
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -52,7 +52,7 @@ public class LineService {
         Optional<Station> upStation = stationDao.findById(lineRequest.getUpStationId());
         Optional<Station> downStation = stationDao.findById(lineRequest.getDownStationId());
         if (upStation.isEmpty() || downStation.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 지하철역입니다.");
+            throw new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE);
         }
         return List.of(new StationResponse(upStation.get().getId(), upStation.get().getName()),
             new StationResponse(downStation.get().getId(), downStation.get().getName()));

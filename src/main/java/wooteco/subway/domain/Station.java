@@ -14,7 +14,7 @@ public class Station {
     }
 
     public Station(String name) {
-        this.name = name;
+        this(null, name);
     }
 
     public Long getId() {

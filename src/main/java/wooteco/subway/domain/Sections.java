@@ -10,6 +10,12 @@ public class Sections {
 
     private static final int SECTIONS_MINIMUM_SIZE = 1;
 
+    private static final String DUPLICATE_BOTH_STATION_EXCEPTION = "[ERROR] 상,하행 Station이 구간에 모두 포함된 경우 추가할 수 없습니다.";
+    private static final String NO_EXIST_BOTH_STATION_EXCEPTION = "[ERROR] 상,하행 Station 모두 구간에 존재하지 않는다면 추가할 수 없습니다.";
+    private static final String WAY_POINT_STATION_DISTANCE_EXCEPTION = "[ERROR] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.";
+    private static final String MINIMUM_STATIONS_SIZE_EXCEPTION = "[ERROR] 최소 하나 이상의 구간이 존재하여야합니다.";
+    private static final String NOT_FOUND_STATION_ID_EXCEPTION = "[ERROR] 구간으로 등록되지 않은 지하철역 정보입니다.";
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -49,10 +55,10 @@ public class Sections {
 
     private void validateAddSectionCondition(boolean existUpStation, boolean existDownStation) {
         if (existUpStation && existDownStation) {
-            throw new IllegalArgumentException("[ERROR] 상,하행 Station이 구간에 모두 포함된 경우 추가할 수 없습니다.");
+            throw new IllegalArgumentException(DUPLICATE_BOTH_STATION_EXCEPTION);
         }
         if (!existUpStation && !existDownStation) {
-            throw new IllegalArgumentException("[ERROR] 상,하행 Station 모두 구간에 존재하지 않는다면 추가할 수 없습니다.");
+            throw new IllegalArgumentException(NO_EXIST_BOTH_STATION_EXCEPTION);
         }
     }
 
@@ -101,19 +107,19 @@ public class Sections {
 
     private void validateDistance(Section section, Section findSection) {
         if (!findSection.isLongDistance(section)) {
-            throw new IllegalArgumentException("[ERROR] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
+            throw new IllegalArgumentException(WAY_POINT_STATION_DISTANCE_EXCEPTION);
         }
     }
 
     private void validateMinimumListSize() {
         if (sections.size() <= SECTIONS_MINIMUM_SIZE) {
-            throw new IllegalArgumentException("[ERROR] 최소 하나 이상의 구간이 존재하여야합니다.");
+            throw new IllegalArgumentException(MINIMUM_STATIONS_SIZE_EXCEPTION);
         }
     }
 
     private void validateExistStationId(Optional<Section> findSectionByUpStationId, Optional<Section> findSectionByDownStationId) {
         if (findSectionByUpStationId.isEmpty() && findSectionByDownStationId.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 구간으로 등록되지 않은 지하철역 정보입니다.");
+            throw new IllegalArgumentException(NOT_FOUND_STATION_ID_EXCEPTION);
         }
     }
 
