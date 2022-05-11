@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 public class Sections {
     private static final int MINIMUM_SIZE = 1;
-
     private static final int NEEDS_MERGE_SIZE = 2;
 
     private final List<Section> value;
@@ -43,20 +42,23 @@ public class Sections {
         if (sections.size() != NEEDS_MERGE_SIZE) {
             return sections;
         }
-
-        mergeSections(sections);
+        mergeSection(sections.get(0), sections.get(1)).ifPresent(value::add);
         return sections;
     }
 
     public Optional<Section> findMergedSection(final List<Section> sections) {
-        final Section section1 = sections.get(0);
-        final Section section2 = sections.get(1);
-
-        if (section1.getDownStation().equals(section2.getUpStation())) {
-            return findSection(section1.merge(section2));
+        if (sections.size() != NEEDS_MERGE_SIZE) {
+            return Optional.empty();
         }
-        if (section1.getUpStation().equals(section2.getDownStation())) {
-            return findSection(section2.merge(section1));
+        return mergeSection(sections.get(0), sections.get(1));
+    }
+
+    private Optional<Section> mergeSection(Section source, Section target) {
+        if (source.getDownStation().equals(target.getUpStation())) {
+            return Optional.of(source.merge(target));
+        }
+        if (source.getUpStation().equals(target.getDownStation())) {
+            return Optional.of(target.merge(source));
         }
         return Optional.empty();
     }
@@ -95,24 +97,6 @@ public class Sections {
         if (value.size() <= MINIMUM_SIZE) {
             throw new IllegalArgumentException("구간이 " + value.size() + "개 이므로 삭제할 수 없습니다.");
         }
-    }
-
-    private void mergeSections(final List<Section> sections) {
-        final Section section1 = sections.get(0);
-        final Section section2 = sections.get(1);
-
-        if (section1.getDownStation().equals(section2.getUpStation())) {
-            value.add(section1.merge(section2));
-        }
-        if (section1.getUpStation().equals(section2.getDownStation())) {
-            value.add(section2.merge(section1));
-        }
-    }
-
-    private Optional<Section> findSection(final Section section) {
-        return value.stream()
-                .filter(it -> it.equals(section))
-                .findAny();
     }
 
     private void validateSection(final Section other) {

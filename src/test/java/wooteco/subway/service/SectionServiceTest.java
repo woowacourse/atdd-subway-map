@@ -85,7 +85,7 @@ class SectionServiceTest {
         );
     }
 
-    @DisplayName("특정 노선에 구간을 삭제한다.")
+    @DisplayName("특정 노선의 중간 구간을 삭제한다.")
     @Test
     void delete() {
         final Station newStation = stationDao.save(new Station("마장역"));
@@ -104,5 +104,26 @@ class SectionServiceTest {
         assertThat(foundSection.get()).usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(new Section(upStation, newStation, 20, savedLine.getId()));
+    }
+
+    @DisplayName("특정 노선의 종점 구간을 삭제한다.")
+    @Test
+    void deleteLast() {
+        final Station newStation = stationDao.save(new Station("마장역"));
+        sectionDao.save(new Section(downStation, newStation, 10, savedLine.getId()));
+
+        sectionService.delete(savedLine.getId(), newStation.getId());
+
+        final List<Section> list = sectionService.getSectionsByLine(savedLine.getId());
+
+        Optional<Section> foundSection = list.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findAny();
+
+        assert (foundSection.isPresent());
+
+        assertThat(foundSection.get()).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(new Section(upStation, downStation, 10, savedLine.getId()));
     }
 }
