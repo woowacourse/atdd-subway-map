@@ -22,7 +22,10 @@ public class SectionService {
     }
 
     public Section addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
+        checkExistsLineId(lineId);
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        checkExistsStationId(upStationId);
+        checkExistsStationId(downStationId);
         Station upStation = stationDao.findById(upStationId);
         Station downStation = stationDao.findById(downStationId);
         if (sections.checkSameStations(upStation, downStation)) {
@@ -33,6 +36,12 @@ public class SectionService {
             return sectionDao.save(new Section(lineDao.findById(lineId), upStation, downStation, distance));
         }
         return addEndOfTheLine(lineId, distance, sections, upStation, downStation);
+    }
+
+    private void checkExistsLineId(Long lineId) {
+        if (lineDao.notExistsById(lineId)) {
+            throw new IllegalArgumentException("존재하지 않는 id입니다.");
+        }
     }
 
     private boolean addBranchSection(Long lineId, Long upStationId, Long downStationId, int distance,
@@ -60,6 +69,7 @@ public class SectionService {
 
     public int deleteSection(Long lineId, Long stationId) {
         checkMinSectionCount(lineId);
+        checkExistsLineId(lineId);
         Sections sections = new Sections(sectionDao.findByLineIdAndStationId(lineId, stationId));
         if (sections.isZeroSize()) {
             throw new IllegalArgumentException("일치하는 구간이 없습니다.");
@@ -76,6 +86,12 @@ public class SectionService {
     private void checkMinSectionCount(Long lineId) {
         if (sectionDao.countByLineId(lineId) == 1) {
             throw new IllegalArgumentException("최소한 한 개의 구간은 있어야 합니다.");
+        }
+    }
+
+    private void checkExistsStationId(Long stationId) {
+        if (stationDao.nonExistsById(stationId)) {
+            throw new IllegalArgumentException("존재하지 않는 id입니다.");
         }
     }
 }

@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -42,7 +43,7 @@ public class StationDao {
     public boolean existsByName(String name) {
         final String sql = "select count(*) from station where name = ?";
         final Integer numOfStation = jdbcTemplate.queryForObject(sql, Integer.class, name);
-        return !numOfStation.equals(0);
+        return !Objects.equals(numOfStation, 0);
     }
 
     public int deleteById(Long id) {
@@ -61,5 +62,11 @@ public class StationDao {
                 + "WHERE (sec.up_station_id=s.id or sec.down_station_id=s.id) and sec.line_id=? ";
         List<Station> query = jdbcTemplate.query(sql, stationRowMapper, lineId);
         return query;
+    }
+
+    public boolean nonExistsById(Long stationId) {
+        final String sql = "select count(*) from station where id = ?";
+        final Integer numOfStation = jdbcTemplate.queryForObject(sql, Integer.class, stationId);
+        return Objects.equals(numOfStation, 0);
     }
 }

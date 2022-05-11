@@ -29,9 +29,13 @@ public class LineService {
     public LineResponse save(String name, String color, Long upStationId, Long downStationId, int distance) {
         checkExistsName(name);
         Line savedLine = lineDao.save(new Line(name, color));
+
+        checkExistsStationId(upStationId);
+        checkExistsStationId(downStationId);
         Station upStation = stationDao.findById(upStationId);
         Station downStation = stationDao.findById(downStationId);
         sectionDao.save(new Section(savedLine, upStation, downStation, distance));
+
         return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(),
                 List.of(upStation, downStation));
     }
@@ -76,6 +80,12 @@ public class LineService {
 
     private void checkExistsId(Long id) {
         if (lineDao.notExistsById(id)) {
+            throw new IllegalArgumentException("존재하지 않는 id입니다.");
+        }
+    }
+
+    private void checkExistsStationId(Long stationId) {
+        if (stationDao.nonExistsById(stationId)) {
             throw new IllegalArgumentException("존재하지 않는 id입니다.");
         }
     }
