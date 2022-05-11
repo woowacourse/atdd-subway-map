@@ -107,5 +107,6 @@ public class LineService {
         if (isDeleted == DELETE_FAIL) {
             throw new NotExistException("존재하지 않는 노선입니다.");
         }
+        sectionDao.deleteByLineId(id);
     }
 }
