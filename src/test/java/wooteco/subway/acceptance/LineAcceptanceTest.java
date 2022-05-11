@@ -5,32 +5,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private LineRequest createLineRequest(String name, String red) {
+        return new LineRequest(name, red, null, null, 0);
+    }
+
+    private RequestSpecification createBody(LineRequest lineRequest) {
+        return RestAssured.given().log().all().body(lineRequest);
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLineTest() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "red", null, null, 0);
+        LineRequest lineRequest = createLineRequest("신분당선", "red");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestHttpPost(createBody(lineRequest), "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -41,25 +43,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateInfoTest() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "red", null, null, 0);
-
-        RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        LineRequest lineRequest = createLineRequest("신분당선", "red");
+        requestHttpPost(createBody(lineRequest), "/lines");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestHttpPost(createBody(lineRequest), "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -69,65 +57,46 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        LineRequest lineRequest1 = new LineRequest("신분당선", "red", null, null, 0);
+        LineRequest lineRequest1 = createLineRequest("신분당선", "red");
+        ExtractableResponse<Response> createResponse1 = requestHttpPost(createBody(lineRequest1), "/lines");
 
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(lineRequest1)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
-
-        LineRequest lineRequest2 = new LineRequest("분당선", "green", null, null, 0);
-
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(lineRequest2)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        LineRequest lineRequest2 = createLineRequest("분당선", "green");
+        ExtractableResponse<Response> createResponse2 = requestHttpPost(createBody(lineRequest2), "/lines");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestHttpGet("/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+
+        List<Long> expectedLineIds = extractLineIdsWithUri(createResponse1, createResponse2);
+        List<Long> resultLineIds = extractLineIdsWithJson(response);
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private List<Long> extractLineIdsWithUri(ExtractableResponse<Response> createResponse1,
+                                   ExtractableResponse<Response> createResponse2) {
+        return Stream.of(createResponse1, createResponse2)
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+    }
+
+    private List<Long> extractLineIdsWithJson(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
             .map(LineResponse::getId)
             .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteStation() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "red", null, null, 0);
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        LineRequest lineRequest = createLineRequest("신분당선", "red");
+        ExtractableResponse<Response> createResponse = requestHttpPost(createBody(lineRequest), "/lines");
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestHttpDelete(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -137,29 +106,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getStationByIdTest() {
         /// given
-        LineRequest lineRequest = new LineRequest("분당선", "red", null, null, 0);
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        LineRequest lineRequest = createLineRequest("분당선", "red");
+        ExtractableResponse<Response> createResponse = requestHttpPost(createBody(lineRequest), "/lines");
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get(uri)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestHttpGet(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
         Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
         Long resultLineId = response.jsonPath().getObject(".", LineResponse.class).getId();
-
         assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 
@@ -167,28 +125,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        LineRequest lineRequest = new LineRequest("신분당선", "red", null, null, 0);
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        LineRequest lineRequest = createLineRequest("신분당선", "red");
+        ExtractableResponse<Response> createResponse = requestHttpPost(createBody(lineRequest), "/lines");
 
         // when, then
-        LineRequest newLineRequest = new LineRequest("분당선", "green", null, null, 0);
+        LineRequest newLineRequest = createLineRequest("분당선", "green");
 
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(newLineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put(uri)
-            .then().log().all()
-            .extract();
-
+        ExtractableResponse<Response> response =
+            requestHttpPut(createBody(newLineRequest), uri);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
