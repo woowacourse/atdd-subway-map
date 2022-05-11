@@ -40,7 +40,7 @@ public class SectionServiceTest {
         sectionService.save(1L, new SectionRequest(2L, 4L, 7));
 
         List<Section> sections = sectionService.getSectionsByLineId(1L);
-        assertThat(sections).containsExactly(new Section(1L, 2L, 3), new Section(3L, 1L, 5), new Section(2L, 4L, 7));
+        assertThat(sections).containsExactly(new Section(1L, 1L, 2L, 3), new Section(1L, 3L, 1L, 5), new Section(1L, 2L, 4L, 7));
     }
 }
 

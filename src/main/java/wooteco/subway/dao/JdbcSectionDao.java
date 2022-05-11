@@ -17,6 +17,7 @@ public class JdbcSectionDao {
     private RowMapper<Section> rowMapper = (rs, rowNum) ->
             new Section(
                     rs.getLong("id"),
+                    rs.getLong("line_id"),
                     rs.getLong("up_station_id"),
                     rs.getLong("down_station_id"),
                     rs.getInt("distance")
@@ -27,14 +28,14 @@ public class JdbcSectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(Long lineId, Section section) {
+    public Long save(Section section) {
         String sql = "insert into section (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection
                     .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setLong(1, lineId);
+            statement.setLong(1, section.getLineId());
             statement.setLong(2, section.getUpStationId());
             statement.setLong(3, section.getDownStationId());
             statement.setInt(4, section.getDistance());
@@ -47,5 +48,11 @@ public class JdbcSectionDao {
     public List<Section> findSectionsByLineId(long lineId) {
         String sql = "select * from section where line_id = ? ";
         return jdbcTemplate.query(sql, rowMapper, lineId);
+    }
+
+    public boolean update(Long lineId, Section section) {
+        String sql = "update section set up_station_id = ?, down_station_id = ? , distance = ? where line_id = ? and id = ? ";
+        return jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(),
+                lineId, section.getId()) == 1;
     }
 }

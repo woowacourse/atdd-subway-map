@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
 
 @Service
@@ -19,12 +20,24 @@ public class SectionService {
         Long upStationId = sectionRequest.getUpStationId();
         Long downStationId = sectionRequest.getDownStationId();
         int distance = sectionRequest.getDistance();
-        Long id = jdbcSectionDao.save(lineId, new Section(upStationId, downStationId, distance));
+        Section inputSection = new Section(lineId, upStationId, downStationId, distance);
 
-        return new Section(id, upStationId, downStationId, distance);
+        Sections sections = new Sections(getSectionsByLineId(lineId));
+        Section connectedPoint = sections.addSection(inputSection);
+
+        Long id = jdbcSectionDao.save(inputSection);
+
+        if (connectedPoint != null) {
+            update(lineId, connectedPoint);
+        }
+        return new Section(id, lineId, upStationId, downStationId, distance);
     }
 
     public List<Section> getSectionsByLineId(long lineId) {
         return jdbcSectionDao.findSectionsByLineId(lineId);
+    }
+
+    private void update(Long lineId, Section section) {
+        jdbcSectionDao.update(lineId, section);
     }
 }

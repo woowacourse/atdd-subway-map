@@ -15,7 +15,6 @@ import wooteco.subway.domain.Section;
 public class JdbcSectionDaoTest {
 
     private JdbcSectionDao jdbcSectionDao;
-    private JdbcStationDao jdbcStationDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -23,27 +22,26 @@ public class JdbcSectionDaoTest {
     @BeforeEach
     void setUp() {
         jdbcSectionDao = new JdbcSectionDao(jdbcTemplate);
-        jdbcStationDao = new JdbcStationDao(jdbcTemplate);
     }
 
     @DisplayName("구간 정보를 등록한다.")
     @Test
     void save() {
-        Section section = new Section(1L, 2L, 5);
-        assertThat(jdbcSectionDao.save(1L, section)).isNotNull();
+        Section section = new Section(1L, 1L, 2L, 5);
+        assertThat(jdbcSectionDao.save(section)).isNotNull();
     }
 
     @DisplayName("노선에 포함되는 지하철역들을 조회한다.")
     @Test
     void findStationsByLineId() {
-        Section section1 = new Section(1L, 2L, 7);
-        Section section2 = new Section(1L, 3L, 3);
-        Section section3 = new Section(2L, 3L, 2);
-        Section section4 = new Section(3L, 4L, 4);
-        jdbcSectionDao.save(1L, section1);
-        jdbcSectionDao.save(1L, section2);
-        jdbcSectionDao.save(1L, section3);
-        jdbcSectionDao.save(1L, section4);
+        Section section1 = new Section(1L, 1L, 2L, 7);
+        Section section2 = new Section(1L, 1L, 3L, 3);
+        Section section3 = new Section(1L, 2L, 5L, 2);
+        Section section4 = new Section(1L, 5L, 4L, 4);
+        jdbcSectionDao.save(section1);
+        jdbcSectionDao.save(section2);
+        jdbcSectionDao.save(section3);
+        jdbcSectionDao.save(section4);
         List<Section> sections = jdbcSectionDao.findSectionsByLineId(1L);
 
         assertThat(sections).containsExactly(section1, section2, section3, section4);
