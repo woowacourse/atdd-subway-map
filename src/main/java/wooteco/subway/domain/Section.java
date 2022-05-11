@@ -23,6 +23,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean isLong(Section section) {
+        return this.distance > section.distance;
+    }
+
     public Long getId() {
         return id;
     }
