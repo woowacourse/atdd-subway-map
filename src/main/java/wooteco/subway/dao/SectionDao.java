@@ -62,10 +62,11 @@ public class SectionDao {
         }
     }
 
-    public Optional<Long> findByUpStationAndDownStation(long upStationId, long downStationId) {
-        String sql = "SELECT id FROM section WHERE up_station_id = :upStationId AND down_station_id = :downStationId";
+    public Optional<Long> findByUpStationAndDownStation(long lineId, long upStationId, long downStationId) {
+        String sql = "SELECT id FROM section WHERE line_id = :lineId AND up_station_id = :upStationId AND down_station_id = :downStationId";
         SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
-                .addValue("downStationId", downStationId);
+                .addValue("downStationId", downStationId)
+                .addValue("lineId", lineId);
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Long.class));
         } catch (EmptyResultDataAccessException e) {

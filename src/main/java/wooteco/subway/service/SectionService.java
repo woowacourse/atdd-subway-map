@@ -26,6 +26,7 @@ public class SectionService {
 
     public List<StationResponse> create(long id, SectionRequest sectionRequest) {
         validateDistance(id, sectionRequest);
+        validateStations(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
         SectionDto sectionDto = sectionDao.save(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
         Station upStation = getStation(sectionDto);
@@ -45,6 +46,12 @@ public class SectionService {
     private void checkDistance(SectionRequest sectionRequest, int distance) {
         if (distance != 0 && distance <= sectionRequest.getDistance()) {
             throw new IllegalArgumentException("기존 구간의 거리보다 크거나 같은 구간은 추가할 수 없습니다.");
+        }
+    }
+
+    private void validateStations(long id, long upStationId, long downStationId) {
+        if (sectionDao.findByUpStationAndDownStation(id, upStationId, downStationId).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }
 
