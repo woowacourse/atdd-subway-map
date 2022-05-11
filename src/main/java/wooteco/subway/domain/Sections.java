@@ -26,18 +26,6 @@ public class Sections {
         return sectionResult;
     }
 
-    private Section findJoinPoint(Section input) {
-        final List<Section> joinPoints = sections.stream()
-                .filter(section -> section.isJoinable(input))
-                .collect(Collectors.toList());
-
-        if (joinPoints.size() != 1) {
-            throw new SubwayUnknownException("구간 추가 시도 중 예외가 발생했습니다");
-        }
-
-        return joinPoints.get(0);
-    }
-
     private void validateJoinPoints(Section input) {
         Set<Station> stations = new HashSet<>();
         for (Section section : sections) {
@@ -56,14 +44,20 @@ public class Sections {
         }
     }
 
-    private boolean doesNotContainAny(Set<Station> stations, Station upStation, Station downStation) {
-        return !stations.contains(upStation) && !stations.contains(downStation);
+    private Section findJoinPoint(Section input) {
+        final List<Section> joinPoints = sections.stream()
+                .filter(section -> section.isAddable(input))
+                .collect(Collectors.toList());
+
+        if (joinPoints.size() != 1) {
+            throw new SubwayUnknownException("구간 추가 시도 중 예외가 발생했습니다");
+        }
+
+        return joinPoints.get(0);
     }
 
-    private void validateNotSuitable(Section input, int matchedStations) {
-        if (matchedStations == 0) {
-            throw new SectionNotSuitableException(input.getUpStation().getName(), input.getUpStation().getName());
-        }
+    private boolean doesNotContainAny(Set<Station> stations, Station upStation, Station downStation) {
+        return !stations.contains(upStation) && !stations.contains(downStation);
     }
 
     public SectionResult remove(Section other) {

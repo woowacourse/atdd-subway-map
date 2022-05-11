@@ -24,40 +24,56 @@ public class Section {
         return Objects.equals(this.lineId, lineId);
     }
 
-    public boolean isSameDownStation(Section other) {
+    public boolean hasSameDownStation(Section other) {
         return Objects.equals(this.downStation, other.downStation);
     }
 
-    public boolean isSameUpStation(Section other) {
+    public boolean hasSameUpStation(Section other) {
         return Objects.equals(this.upStation, other.upStation);
     }
 
-    public int countMatchedStations(Section other) {
-        int count = 0;
-
-        if (hasSingleJoinPoint(other)) {
-            return 1;
-        }
-        if (isSameUpStation(other)) {
-            count++;
-        }
-        if (isSameDownStation(other)) {
-            count++;
-        }
-
-        return count;
+    public boolean isAddable(Section other) {
+        return hasSameUpStation(other)
+                || hasSameDownStation(other)
+                || Objects.equals(upStation, other.downStation)
+                || Objects.equals(downStation, other.upStation);
     }
 
-    private boolean hasSingleJoinPoint(Section other) {
-        return (this.isSameUpStation(other) && !this.isSameDownStation(other))
-                || (!this.isSameUpStation(other) && this.isSameDownStation(other))
-                || Objects.equals(this.upStation, other.downStation)
-                || Objects.equals(this.downStation, other.upStation);
+    public SectionResult sync(Section input) {
+        // 상행 확장
+        if (this.upStation == input.downStation) {
+            return SectionResult.UP_EXTENDED;
+        }
 
+        // 하행 확장
+        if (this.downStation == input.upStation) {
+            return SectionResult.DOWN_EXTENDED;
+        }
+
+        // 거리 초과 검증
+        if (!isWider(input)) {
+            throw new SectionDistanceExceedException(input.getDistance());
+        }
+
+        // 상행역 기준으로 가운데 역 추가
+        if (this.hasSameUpStation(input)) {
+            this.upStation = input.downStation;
+            this.distance = this.distance - input.distance;
+            return SectionResult.MIDDLE_ADDED;
+        }
+
+        // 하행역 기준 가운데 역 추가
+        if (this.hasSameDownStation(input)) {
+            this.downStation = input.upStation;
+            this.distance = this.distance - input.distance;
+            return SectionResult.MIDDLE_ADDED;
+        }
+
+        throw new SubwayUnknownException("구간 확장 처리 중 예외가 발생했습니다");
     }
 
-    public boolean isJoinable(Section other) {
-        return this.distance > other.distance;
+    public boolean isWider(Section input) {
+        return this.distance > input.distance;
     }
 
     public Long getId() {
@@ -96,42 +112,5 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(lineId, upStation, downStation);
-    }
-
-    public SectionResult sync(Section input) {
-        // 상행 확장
-        if (this.upStation == input.downStation) {
-            return SectionResult.UP_EXTENDED;
-        }
-
-        // 하행 확장
-        if (this.downStation == input.upStation) {
-            return SectionResult.DOWN_EXTENDED;
-        }
-
-        // 거리 초과 검증
-        if (!isWider(input)) {
-            throw new SectionDistanceExceedException(input.getDistance());
-        }
-
-        // 상행역 기준으로 가운데 역 추가
-        if (this.isSameUpStation(input)) {
-            this.upStation = input.downStation;
-            this.distance = this.distance - input.distance;
-            return SectionResult.MIDDLE_ADDED;
-        }
-
-        // 하행역 기준 가운데 역 추가
-        if (this.isSameDownStation(input)) {
-            this.downStation = input.upStation;
-            this.distance = this.distance - input.distance;
-            return SectionResult.MIDDLE_ADDED;
-        }
-
-        throw new SubwayUnknownException("구간 확장 처리 중 예외가 발생했습니다");
-    }
-
-    public boolean isWider(Section input) {
-        return this.distance > input.distance;
     }
 }
