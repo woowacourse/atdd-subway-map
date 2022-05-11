@@ -15,4 +15,6 @@ public interface SectionDao {
     void deleteAll(Long lineId);
 
     void delete(Long lineId, Section section);
+
+    boolean isUsingStation(Long stationId);
 }

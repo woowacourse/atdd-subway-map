@@ -67,4 +67,10 @@ public class FakeSectionDao implements SectionDao {
     public void delete(Long lineId, Section section) {
         sections.remove(section);
     }
+
+    @Override
+    public boolean isUsingStation(Long stationId) {
+        return sections.keySet().stream()
+            .anyMatch(section -> section.getUpStationId() == stationId || section.getDownStationId() == stationId);
+    }
 }
