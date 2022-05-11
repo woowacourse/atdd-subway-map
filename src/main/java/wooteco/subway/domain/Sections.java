@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sections {
-
     private static final int MINIMUM_SIZE = 1;
+
     private static final int NEEDS_MERGE_SIZE = 2;
 
     private final List<Section> value;
@@ -27,16 +27,14 @@ public class Sections {
         value.add(section);
     }
 
-    private void update(final Section source, final Section target) {
-        value.remove(target);
-        value.add(target.createSectionInBetween(source));
+    public List<Section> extract(final List<Section> sections) {
+        List<Section> origin = new ArrayList<>(value);
+        origin.removeAll(sections);
+        return origin;
     }
 
     public List<Section> pop(final long stationId) {
-        final List<Section> sections = value.stream()
-                .filter(section -> section.getUpStation().getId() == stationId ||
-                        section.getDownStation().getId() == stationId)
-                .collect(Collectors.toList());
+        final List<Section> sections = findSectionByStationId(stationId);
         validateMinimumSize();
         validateSectionNotFound(sections);
 
@@ -48,6 +46,37 @@ public class Sections {
 
         mergeSections(sections);
         return sections;
+    }
+
+    public Optional<Section> findMergedSection(final List<Section> sections) {
+        final Section section1 = sections.get(0);
+        final Section section2 = sections.get(1);
+
+        if (section1.getDownStation().equals(section2.getUpStation())) {
+            return findSection(section1.merge(section2));
+        }
+        if (section1.getUpStation().equals(section2.getDownStation())) {
+            return findSection(section2.merge(section1));
+        }
+        return Optional.empty();
+    }
+
+    public boolean isBranched(final Section other) {
+        final Optional<Section> upSection = findUpSection(other);
+        final Optional<Section> downSection = findDownSection(other);
+        return upSection.isPresent() || downSection.isPresent();
+    }
+
+    private void update(final Section source, final Section target) {
+        value.remove(target);
+        value.add(target.createSectionInBetween(source));
+    }
+
+    private List<Section> findSectionByStationId(final long stationId) {
+        return value.stream()
+                .filter(section -> section.getUpStation().getId() == stationId ||
+                        section.getDownStation().getId() == stationId)
+                .collect(Collectors.toList());
     }
 
     private void validateSectionNotFound(final List<Section> sections) {
@@ -74,33 +103,10 @@ public class Sections {
         }
     }
 
-    public Optional<Section> findMergedSection(final List<Section> sections) {
-        final Section section1 = sections.get(0);
-        final Section section2 = sections.get(1);
-
-        if (section1.getDownStation().equals(section2.getUpStation())) {
-            return findSection(section1.merge(section2));
-        }
-        if (section1.getUpStation().equals(section2.getDownStation())) {
-            return findSection(section2.merge(section1));
-        }
-        return Optional.empty();
-    }
-
     private Optional<Section> findSection(final Section section) {
         return value.stream()
                 .filter(it -> it.equals(section))
                 .findAny();
-    }
-
-    public boolean isBranched(final Section other) {
-        final Optional<Section> upSection = findUpSection(other);
-        final Optional<Section> downSection = findDownSection(other);
-        return upSection.isPresent() || downSection.isPresent();
-    }
-
-    public Section findLastInsert() {
-        return value.get(value.size() - 2);
     }
 
     private void validateSection(final Section other) {
@@ -120,21 +126,9 @@ public class Sections {
                 .findAny();
     }
 
-    private Optional<Section> findDownSection(final long stationId) {
-        return value.stream()
-                .filter(section -> section.getDownStation().getId() == stationId)
-                .findAny();
-    }
-
     private Optional<Section> findUpSection(final Section other) {
         return value.stream()
                 .filter(it -> it.getUpStation().equals(other.getUpStation()))
-                .findAny();
-    }
-
-    private Optional<Section> findUpSection(final long stationId) {
-        return value.stream()
-                .filter(section -> section.getUpStation().getId() == stationId)
                 .findAny();
     }
 
@@ -156,14 +150,14 @@ public class Sections {
     }
 
     private List<Station> collectExistingStations() {
-        return Stream.concat(getStation(Section::getUpStation), getStation(Section::getDownStation))
+        return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation))
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    private Stream<Station> getStation(Function<Section, Station> getSectionStationFunction) {
+    private Stream<Station> getStations(Function<Section, Station> function) {
         return value.stream()
-                .map(getSectionStationFunction);
+                .map(function);
     }
 
     private void validateSectionInsertion(final Section other, final List<Station> stations) {
