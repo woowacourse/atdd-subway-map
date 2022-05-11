@@ -66,9 +66,7 @@ class SectionDaoTest {
         Section savedSection1 = new Section(savedStationId1, savedStationId2, new Distance(10));
         Section savedSection2 = new Section(savedStationId2, savedStationId3, new Distance(10));
 
-        Sections sections = new Sections(savedSection1);
-        sections.addSection(savedSection2);
-
+        Sections sections = new Sections(List.of(savedSection1, savedSection2));
         sectionDao.saveSections(lineId, sections);
 
         // when
@@ -97,10 +95,11 @@ class SectionDaoTest {
     void saveSections() {
         // given
         Long lineId = savedLineId;
-        Sections sections = new Sections(savedStationId1, savedStationId2, new Distance(10));
-        sections.addSection(new Section(savedStationId2, savedStationId3, new Distance(10)));
-        sections.addSection(new Section(savedStationId3, savedStationId4, new Distance(10)));
-        sections.addSection(new Section(savedStationId4, savedStationId5, new Distance(10)));
+        Section section1 = new Section(savedStationId1, savedStationId2, new Distance(10));
+        Section section2 = new Section(savedStationId2, savedStationId3, new Distance(10));
+        Section section3 = new Section(savedStationId3, savedStationId4, new Distance(10));
+        Section section4 = new Section(savedStationId4, savedStationId5, new Distance(10));
+        Sections sections = new Sections(List.of(section1, section2, section3, section4));
 
         // when
         sectionDao.saveSections(lineId, sections);

@@ -12,30 +12,15 @@ public class Sections {
 
     private final List<Section> sections;
 
-    public Sections(Long upStationId, Long downStationId, Distance distance) {
-        Section initialSection = new Section(upStationId, downStationId, distance);
-        this.sections = new ArrayList<>(List.of(initialSection));
+    public Sections(List<Section> sections) {
+        validateEmptySections(sections);
+        this.sections = new ArrayList<>(sections);
     }
 
-    public Sections(Section section) {
-        this.sections = new ArrayList<>(List.of(section));
-    }
-
-    // TODO: 리팩토링
-    public static Sections from(List<Section> sections) {
+    private void validateEmptySections(List<Section> sections) {
         if (sections.isEmpty()) {
             throw new IllegalArgumentException("비어있는 구간 목록은 생성할 수 없습니다.");
         }
-
-        Section firstSection = sections.get(0);
-        Sections newSections = new Sections(firstSection);
-        sections.remove(0);
-
-        for (Section section : sections) {
-            newSections.addSection(section);
-        }
-
-        return newSections;
     }
 
     public void addSection(Section newSection) {

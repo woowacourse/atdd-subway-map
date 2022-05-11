@@ -29,7 +29,7 @@ public class SectionDao {
                 new Distance(rs.getInt("distance"))
         ), lineId);
 
-        return Sections.from(sections);
+        return new Sections(sections);
     }
 
     public void saveSections(Long lineId, Sections sections) {

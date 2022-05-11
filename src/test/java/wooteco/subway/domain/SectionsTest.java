@@ -22,8 +22,7 @@ class SectionsTest {
     @BeforeEach
     void setUp() {
         initialSection = new Section(1L, 2L, new Distance(10));
-        sections = new Sections(initialSection.getUpStationId(), initialSection.getDownStationId(),
-                initialSection.getDistance());
+        sections = new Sections(List.of(initialSection));
     }
 
     @DisplayName("상행 종점, 하행 종점, 거리를 전달받아 구간 목록 생성")
@@ -33,9 +32,10 @@ class SectionsTest {
         Long upStationId = 1L;
         Long downStationId = 2L;
         Distance distance = new Distance(10);
+        Section section = new Section(upStationId, downStationId, distance);
 
         // when
-        Sections sections = new Sections(upStationId, downStationId, distance);
+        Sections sections = new Sections(List.of(section));
 
         // then
         assertThat(sections).isNotNull();
