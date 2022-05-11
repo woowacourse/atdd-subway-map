@@ -85,7 +85,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLineResponseById(Long id) {
+    public LineResponse findLineById(Long id) {
         Line line = lineDao.findById(id);
         return findLineResponseByLine(line);
     }
@@ -106,5 +106,10 @@ public class LineService {
 
     public void deleteById(Long id) {
         lineDao.deleteById(id);
+    }
+
+    public void deleteSectionByLineIdAndStationId(Long lineId, Long stationId) {
+        sectionDao.deleteByLineIdAndStationId(lineId, stationId);
+
     }
 }

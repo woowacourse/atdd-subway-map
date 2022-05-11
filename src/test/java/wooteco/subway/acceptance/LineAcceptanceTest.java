@@ -6,11 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Long stationId1;
     private Long stationId2;
     private Long stationId3;
+    private Long stationId4;
+    private Long sectionId1;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -51,10 +54,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         stationId1 = insertStationData("강남역");
         stationId2 = insertStationData("선릉역");
         stationId3 = insertStationData("잠실역");
+        stationId4 = insertStationData("교대역");
         lineId1 = insertLineData("신분당선", "red");
         lineId2 = insertLineData("분당선", "yellow");
-        insertSectionData(lineId1, stationId1, stationId2, 10);
-        insertSectionData(lineId2, stationId1, stationId3, 10);
+        sectionId1 = insertSectionData(lineId1, stationId1, stationId2);
+        insertSectionData(lineId1, stationId2, stationId3);
+        insertSectionData(lineId2, stationId1, stationId3);
     }
 
     @DisplayName("line 을 저장한다.")
@@ -95,19 +100,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = executeGetApi(path);
 
-        List<Long> expectedLineIds = List.of(lineId1, lineId2);
+        System.out.println(response.body());
+        List<Long> expectedLineIds = List.of(lineId1);
         List<Long> actualLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId).collect(Collectors.toList());
-        // then
+
         List<List<Station>> linesStations = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(its -> its.getStations().stream()
                         .map(it -> new Station(it.getId(), it.getName())).collect(Collectors.toList()))
                 .collect(Collectors.toList());
+        // then
 
         assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(actualLineIds).containsAll(expectedLineIds),
                 () -> assertThat(linesStations).isEqualTo(
-                        List.of(List.of(new Station(stationId1, "강남역"), new Station(stationId2, "선릉역")),
+                        List.of(List.of(new Station(stationId1, "강남역"), new Station(stationId2, "선릉역"),
+                                        new Station(stationId3, "잠실역")),
                                 List.of(new Station(stationId1, "강남역"), new Station(stationId3, "잠실역")))));
     }
 
@@ -126,7 +134,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertAll(() -> assertThat(findId).isEqualTo(lineId1.intValue()),
                 () -> assertThat(expectStations).isEqualTo(
-                        List.of(new Station(stationId1, "강남역"), new Station(stationId2, "선릉역"))));
+                        List.of(new Station(stationId1, "강남역"), new Station(stationId2, "선릉역"),
+                                new Station(stationId3, "잠실역"))));
     }
 
     @DisplayName("존재하지 않는 id 를 이용하여 line 을 조회한다.")
@@ -192,10 +201,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void saveSection() {
         //given
-        SectionRequest sectionRequest = new SectionRequest(stationId2, stationId3, 10);
-        String path = "lines/" + lineId1 + "/sections";
+        SectionRequest sectionRequest = new SectionRequest(stationId3, stationId4, 10);
+        String path = "/lines/" + lineId1 + "/sections";
         //when
         ExtractableResponse<Response> response = executePostSectionApi(sectionRequest, path);
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("line id와 section id를 이용하여 section을 삭제한다.")
+    @Test
+    void deleteSection() {
+        //given
+        String path = "/lines/" + lineId1 + "/stations";
+        Map<String, Object> param = new HashMap<>();
+        param.put("stationId", stationId2);
+        //when
+        ExtractableResponse<Response> response = executeDeleteApiWithParam(path, param);
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -218,13 +240,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    private void insertSectionData(Long lineId, Long upStationId, Long downStationId, int distance) {
+    private Long insertSectionData(Long lineId, Long upStationId, Long downStationId) {
         String insertSql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) values (:lineId, :upStationId, :downStationId, :distance)";
         SqlParameterSource source = new BeanPropertySqlParameterSource(
-                new Section(lineId, upStationId, downStationId, distance));
+                new Section(lineId, upStationId, downStationId, 10));
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(insertSql, source, keyHolder);
-        Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     private ExtractableResponse<Response> executeGetApi(String path) {
@@ -254,6 +276,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> executeDeleteApi(String path) {
         return RestAssured.given().log().all()
+                .when().delete(path)
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> executeDeleteApiWithParam(String path, Map<String, Object> param) {
+        return RestAssured.given().log().all()
+                .params(param)
                 .when().delete(path)
                 .then().log().all().extract();
     }

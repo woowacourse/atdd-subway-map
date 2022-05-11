@@ -31,6 +31,7 @@ class SectionDaoTest {
         lineId = lineDao.save(new Line("2호선", "green"));
         savedId1 = sectionDao.save(new Section(lineId, 1L, 2L, 10));
         sectionDao.save(new Section(lineId, 2L, 3L, 5));
+        sectionDao.save(new Section(lineId, 3L, 4L, 8));
     }
 
     @DisplayName("section 을 저장한다.")
@@ -56,8 +57,8 @@ class SectionDaoTest {
                 .filter(section -> section.getLineId().equals(lineId))
                 .count();
         assertAll(
-                () -> assertThat(sections.size()).isEqualTo(2),
-                () -> assertThat(expectedIdCount).isEqualTo(2)
+                () -> assertThat(sections.size()).isEqualTo(3),
+                () -> assertThat(expectedIdCount).isEqualTo(3)
         );
     }
 
@@ -86,6 +87,21 @@ class SectionDaoTest {
         sectionDao.deleteById(savedId1);
         //then
         List<Section> sections = sectionDao.findByLineId(lineId);
+        assertThat(sections.size()).isEqualTo(2);
+    }
+
+    @DisplayName("line id와 station id를 이용하여 section 을 삭제한다.")
+    @Test
+    void deleteByLineIdAndStationId() {
+        //given
+
+        //when
+        sectionDao.deleteByLineIdAndStationId(lineId, 3L);
+        //then
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        for (Section section : sections) {
+            System.out.println(section.toString());
+        }
         assertThat(sections.size()).isEqualTo(1);
     }
 
