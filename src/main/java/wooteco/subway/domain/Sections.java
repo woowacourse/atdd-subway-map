@@ -24,14 +24,18 @@ public class Sections {
         Map<Station, Station> goesUpStations = new HashMap<>();
         fillStations(goesDownStations, goesUpStations);
 
+        return Collections.unmodifiableList(sortStations(goesDownStations, goesUpStations));
+    }
+
+    private LinkedList<Station> sortStations(Map<Station, Station> goesDownStations,
+                                             Map<Station, Station> goesUpStations) {
         LinkedList<Station> stations = new LinkedList<>();
         Station station = sections.get(0).getUpStation();
         stations.add(station);
 
         addGoesDownStations(goesDownStations, stations, station);
         addGoesUpStations(goesUpStations, stations, station);
-
-        return Collections.unmodifiableList(stations);
+        return stations;
     }
 
     private void addGoesDownStations(Map<Station, Station> goesDownStations, LinkedList<Station> stations,
