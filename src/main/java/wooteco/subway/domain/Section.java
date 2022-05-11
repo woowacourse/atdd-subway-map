@@ -102,4 +102,24 @@ public class Section {
     public Line getLine() {
         return line;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void setDistance(Integer distance) {
+        this.distance = distance;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
 }

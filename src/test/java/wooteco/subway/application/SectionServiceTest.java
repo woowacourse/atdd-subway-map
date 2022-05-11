@@ -36,15 +36,33 @@ class SectionServiceTest {
         assertThat(foundSection.getDistance()).isEqualTo(3);
     }
 
-/*
-    @DisplayName("구간을 등록할 수 상행 종점 등록")
+    @DisplayName("상행 종점 등록을 한다")
     @Test
-    void test_create_section() {
-        long lineId = 1L;
-        long upStationId = 1L;
-        long downStationId = 2L;
-        int distance = 3;
-        long savedSectionId = sectionService.createSection(lineId, upStationId, downStationId, distance);
+    void create_first_terminal_station() {
+        long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
+        long savedSectionId2 = sectionService.createSection(1L, 3L, 1L, 4);
+
+        Section foundSection = sectionDao.findById(savedSectionId).get();
+        Section foundSection2 = sectionDao.findById(savedSectionId2).get();
+
+        assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
+        assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
+        assertThat(foundSection2.getUpStation().getId()).isEqualTo(3L);
+        assertThat(foundSection2.getDownStation().getId()).isEqualTo(1L);
     }
-*/
+
+    @DisplayName("하행 종점 등록을 한다")
+    @Test
+    void create_last_terminal_station() {
+        long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
+        long savedSectionId2 = sectionService.createSection(1L, 2L, 3L, 4);
+
+        Section foundSection = sectionDao.findById(savedSectionId).get();
+        Section foundSection2 = sectionDao.findById(savedSectionId2).get();
+
+        assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
+        assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
+        assertThat(foundSection2.getUpStation().getId()).isEqualTo(2L);
+        assertThat(foundSection2.getDownStation().getId()).isEqualTo(3L);
+    }
 }

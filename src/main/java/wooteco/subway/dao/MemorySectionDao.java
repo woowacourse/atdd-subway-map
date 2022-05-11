@@ -14,15 +14,8 @@ public class MemorySectionDao implements SectionDao {
 
     @Override
     public long save(Section section) {
-        sections.add(
-                Section.builder()
-                        .id(sequence.incrementAndGet())
-                        .upStation(section.getUpStation())
-                        .downStation(section.getDownStation())
-                        .distance(section.getDistance())
-                        .line(section.getLine())
-                        .build()
-        );
+        section.setId(sequence.incrementAndGet());
+        sections.add(section);
         return sequence.get();
     }
 
