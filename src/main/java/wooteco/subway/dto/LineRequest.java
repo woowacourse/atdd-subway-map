@@ -1,6 +1,7 @@
 package wooteco.subway.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class LineRequest {
 
@@ -8,11 +9,11 @@ public class LineRequest {
     private String name;
     @NotBlank
     private String color;
-    @NotBlank
+    @NotNull
     private Long upStationId;
-    @NotBlank
+    @NotNull
     private Long downStationId;
-    @NotBlank
+    @NotNull
     private int distance;
 
     public LineRequest() {
