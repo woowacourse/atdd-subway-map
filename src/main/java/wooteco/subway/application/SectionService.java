@@ -34,4 +34,17 @@ public class SectionService {
         sectionDao.deleteByLineId(lineId);
         sectionDao.save(savedLine.getSections(), lineId);
     }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        final List<Section> sections = sectionDao.findByLineId2(lineId);
+        final Line savedLine = lineDao.findById(lineId);
+
+        final Line line = new Line(savedLine.getName(), savedLine.getColor(), sections);
+        final Station station = stationDao.findById(stationId);
+
+        line.deleteSection(station);
+
+        sectionDao.deleteByLineId(lineId);
+        sectionDao.save(line.getSections(), lineId);
+    }
 }

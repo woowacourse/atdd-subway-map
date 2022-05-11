@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.application.LineService;
 import wooteco.subway.application.SectionService;
@@ -55,14 +56,6 @@ public class LineController {
         return ResponseEntity.ok(lineResponse);
     }
 
-    @PostMapping("/{id}/sections")
-    public ResponseEntity<Void> registerSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        sectionService.addSection(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
-                sectionRequest.getDistance());
-
-        return ResponseEntity.ok().build();
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest.getName(), lineRequest.getColor());
@@ -73,5 +66,20 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> registerSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        sectionService.addSection(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam("stationId") Long stationId) {
+        System.out.println(id + " ddd "  + stationId);
+        sectionService.deleteSection(id, stationId);
+        return ResponseEntity.ok().build();
     }
 }
