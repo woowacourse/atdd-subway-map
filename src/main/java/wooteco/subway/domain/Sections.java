@@ -58,6 +58,10 @@ public class Sections {
         return sections.get(0);
     }
 
+    public boolean isBlack() {
+        return sections.size() == 0;
+    }
+
     public List<Section> getSections() {
         return sections;
     }

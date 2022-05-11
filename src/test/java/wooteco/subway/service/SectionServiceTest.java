@@ -42,10 +42,6 @@ class SectionServiceTest {
                 .when(jdbcSectionDao)
                 .isExistByUpStationIdAndDownStationId(upStationId, downStationId);
 
-        doReturn(true)
-                .when(jdbcSectionDao)
-                .isExistByLineIdAndUpStationId(LINE_ID, upStationId);
-
         doReturn(new Sections(List.of(
                 new Section(LINE_ID, 1L, 2L,5),
                 new Section(LINE_ID, 2L,5L,5)
@@ -71,17 +67,16 @@ class SectionServiceTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void createSection_상행역과_하행역_둘_중_하나도_포함되어있지_않는_경우() {
-        doReturn(false)
-                .when(jdbcSectionDao)
-                .isExistByUpStationIdAndDownStationId(2L,3L);
 
+        long upStationId = 2L;
+        long downStationId = 3L;
         doReturn(false)
                 .when(jdbcSectionDao)
-                .isExistByLineIdAndUpStationId(LINE_ID,2L);
+                .isExistByUpStationIdAndDownStationId(upStationId,downStationId);
 
-        doReturn(false)
+        doReturn(new Sections(List.of()))
                 .when(jdbcSectionDao)
-                .isExistByLineIdAndDownStationId(LINE_ID,3L);
+                .findByLineIdAndStationIds(LINE_ID, upStationId, downStationId);
 
         assertThatThrownBy(() -> sectionService.createSection(new SectionRequest(2L, 3L, 5), LINE_ID))
                 .isInstanceOf(IllegalArgumentException.class);
