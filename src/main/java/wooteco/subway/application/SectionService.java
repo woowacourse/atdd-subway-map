@@ -28,7 +28,15 @@ public class SectionService {
             return insertUpStationInMiddle(lineId, upStationId, downStationId, distance, sectionWithSameDownStation);
         }
 
+        validateUpAndDownStationAlreadyExist(sectionWithSameUpStation, sectionWithSameDownStation);
+
         return saveSection(lineId, upStationId, downStationId, distance);
+    }
+
+    private void validateUpAndDownStationAlreadyExist(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
+        if (sectionWithSameUpStation != null && sectionWithSameDownStation != null) {
+            throw new SectionNotRegisterException();
+        }
     }
 
     private boolean conditionForInsertStationInMiddle(Integer distance, Section section) {

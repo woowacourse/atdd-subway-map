@@ -2,6 +2,7 @@ package wooteco.subway.application;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -25,104 +26,122 @@ class SectionServiceTest {
         sectionService = new SectionService(sectionDao);
     }
 
-    @DisplayName("Section 을 등록할 수 있다")
-    @Test
-    void create_section() {
-        // given
-        long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
+    @DisplayName("[구간 등록]")
+    @Nested
+    class register {
+        @DisplayName("Section 을 등록할 수 있다")
+        @Test
+        void create_section() {
+            // given
+            long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
 
-        // when
-        Section foundSection = sectionDao.findById(savedSectionId).get();
+            // when
+            Section foundSection = sectionDao.findById(savedSectionId).get();
 
-        // then
-        assertThat(foundSection.getLine().getId()).isEqualTo(1L);
-        assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
-        assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
-        assertThat(foundSection.getDistance()).isEqualTo(3);
-    }
+            // then
+            assertThat(foundSection.getLine().getId()).isEqualTo(1L);
+            assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
+            assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
+            assertThat(foundSection.getDistance()).isEqualTo(3);
+        }
 
-    @DisplayName("상행 종점 등록을 한다")
-    @Test
-    void create_first_terminal_station() {
-        // given
-        long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
-        long savedSectionId2 = sectionService.createSection(1L, 3L, 1L, 4);
+        @DisplayName("상행 종점 등록을 한다")
+        @Test
+        void create_first_terminal_station() {
+            // given
+            long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
+            long savedSectionId2 = sectionService.createSection(1L, 3L, 1L, 4);
 
-        // when
-        Section foundSection = sectionDao.findById(savedSectionId).get();
-        Section foundSection2 = sectionDao.findById(savedSectionId2).get();
+            // when
+            Section foundSection = sectionDao.findById(savedSectionId).get();
+            Section foundSection2 = sectionDao.findById(savedSectionId2).get();
 
-        // then
-        assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
-        assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
-        assertThat(foundSection2.getUpStation().getId()).isEqualTo(3L);
-        assertThat(foundSection2.getDownStation().getId()).isEqualTo(1L);
-    }
+            // then
+            assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
+            assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
+            assertThat(foundSection2.getUpStation().getId()).isEqualTo(3L);
+            assertThat(foundSection2.getDownStation().getId()).isEqualTo(1L);
+        }
 
-    @DisplayName("하행 종점 등록을 한다")
-    @Test
-    void create_last_terminal_station() {
-        // given
-        long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
-        long savedSectionId2 = sectionService.createSection(1L, 2L, 3L, 4);
+        @DisplayName("하행 종점 등록을 한다")
+        @Test
+        void create_last_terminal_station() {
+            // given
+            long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
+            long savedSectionId2 = sectionService.createSection(1L, 2L, 3L, 4);
 
-        // when
-        Section foundSection = sectionDao.findById(savedSectionId).get();
-        Section foundSection2 = sectionDao.findById(savedSectionId2).get();
+            // when
+            Section foundSection = sectionDao.findById(savedSectionId).get();
+            Section foundSection2 = sectionDao.findById(savedSectionId2).get();
 
-        // then
-        assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
-        assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
-        assertThat(foundSection2.getUpStation().getId()).isEqualTo(2L);
-        assertThat(foundSection2.getDownStation().getId()).isEqualTo(3L);
-    }
-    
-    @DisplayName("[갈래길 방지] 상행역이 같을때 변경된 구간을 검증한다")
-    @Test
-    void prevent_forked_road_same_up_station() {
-        // given
-        long oldSectionId = sectionService.createSection(1L, 1L, 2L, 7);
-        long newSectionId = sectionService.createSection(1L, 1L, 3L, 4);
+            // then
+            assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
+            assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
+            assertThat(foundSection2.getUpStation().getId()).isEqualTo(2L);
+            assertThat(foundSection2.getDownStation().getId()).isEqualTo(3L);
+        }
 
-        Section oldSection = sectionDao.findById(oldSectionId).get();
-        Section newSection = sectionDao.findById(newSectionId).get();
+        @DisplayName("[갈림길 방지]")
+        @Nested
+        class preventForkJoin {
+            @DisplayName("상행역이 같을때 변경된 구간을 검증한다")
+            @Test
+            void prevent_forked_road_same_up_station() {
+                // given
+                long oldSectionId = sectionService.createSection(1L, 1L, 2L, 7);
+                long newSectionId = sectionService.createSection(1L, 1L, 3L, 4);
 
-        assertThat(oldSection.getUpStation().getId()).isEqualTo(3L);
-        assertThat(oldSection.getDownStation().getId()).isEqualTo(2L);
-        assertThat(oldSection.getDistance()).isEqualTo(3);
+                Section oldSection = sectionDao.findById(oldSectionId).get();
+                Section newSection = sectionDao.findById(newSectionId).get();
 
-        assertThat(newSection.getUpStation().getId()).isEqualTo(1L);
-        assertThat(newSection.getDownStation().getId()).isEqualTo(3L);
-        assertThat(newSection.getDistance()).isEqualTo(4);
-    }
+                assertThat(oldSection.getUpStation().getId()).isEqualTo(3L);
+                assertThat(oldSection.getDownStation().getId()).isEqualTo(2L);
+                assertThat(oldSection.getDistance()).isEqualTo(3);
 
-    @DisplayName("[갈래길 방지] 하행역이 같을때 변경된 구간을 검증한다")
-    @Test
-    void prevent_forked_road_same_down_station() {
-        // given
-        long oldSectionId = sectionService.createSection(1L, 1L, 2L, 7);
-        long newSectionId = sectionService.createSection(1L, 3L, 2L, 4);
+                assertThat(newSection.getUpStation().getId()).isEqualTo(1L);
+                assertThat(newSection.getDownStation().getId()).isEqualTo(3L);
+                assertThat(newSection.getDistance()).isEqualTo(4);
+            }
 
-        Section oldSection = sectionDao.findById(oldSectionId).get();
-        Section newSection = sectionDao.findById(newSectionId).get();
+            @DisplayName("하행역이 같을때 변경된 구간을 검증한다")
+            @Test
+            void prevent_forked_road_same_down_station() {
+                // given
+                long oldSectionId = sectionService.createSection(1L, 1L, 2L, 7);
+                long newSectionId = sectionService.createSection(1L, 3L, 2L, 4);
 
-        assertAll(
-                () -> assertThat(oldSection.getUpStation().getId()).isEqualTo(1L),
-                () -> assertThat(oldSection.getDownStation().getId()).isEqualTo(3L),
-                () -> assertThat(oldSection.getDistance()).isEqualTo(3),
+                Section oldSection = sectionDao.findById(oldSectionId).get();
+                Section newSection = sectionDao.findById(newSectionId).get();
 
-                () -> assertThat(newSection.getUpStation().getId()).isEqualTo(3L),
-                () -> assertThat(newSection.getDownStation().getId()).isEqualTo(2L),
-                () -> assertThat(newSection.getDistance()).isEqualTo(4)
-        );
-    }
+                assertAll(
+                        () -> assertThat(oldSection.getUpStation().getId()).isEqualTo(1L),
+                        () -> assertThat(oldSection.getDownStation().getId()).isEqualTo(3L),
+                        () -> assertThat(oldSection.getDistance()).isEqualTo(3),
 
-    @DisplayName("[갈림길 방지] 역과 역사이의 길이가 기존보다 길다면 구간을 추가할 수 없다")
-    @ParameterizedTest
-    @CsvSource(value = {"1 - 3", "3 - 2"}, delimiterString = " - ")
-    void can_not_register_if_new_distance_is_longer(long upStationId, long downStationId) {
-        sectionService.createSection(1L, 1L, 2L, 7);
-        assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
-                .isInstanceOf(SectionNotRegisterException.class);
+                        () -> assertThat(newSection.getUpStation().getId()).isEqualTo(3L),
+                        () -> assertThat(newSection.getDownStation().getId()).isEqualTo(2L),
+                        () -> assertThat(newSection.getDistance()).isEqualTo(4)
+                );
+            }
+
+            @DisplayName("[예외] 역과 역사이의 길이가 기존보다 길다면 구간을 추가할 수 없다")
+            @ParameterizedTest
+            @CsvSource(value = {"1 - 3", "3 - 2"}, delimiterString = " - ")
+            void can_not_register_if_new_distance_is_longer(long upStationId, long downStationId) {
+                sectionService.createSection(1L, 1L, 2L, 7);
+                assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
+                        .isInstanceOf(SectionNotRegisterException.class);
+            }
+
+            @DisplayName("[예외] 상행역과 하행역 모두 존재하는 것을 등록하려 한다면 구간을 추가할 수 없다")
+            @Test
+            void can_not_register_if_all_same_up_and_down_station() {
+                long upStationId = 1L;
+                long downStationId = 2L;
+                sectionService.createSection(1L, upStationId, downStationId, 7);
+                assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
+                        .isInstanceOf(SectionNotRegisterException.class);
+            }
+        }
     }
 }
