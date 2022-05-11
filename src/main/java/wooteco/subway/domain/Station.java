@@ -4,17 +4,23 @@ import wooteco.subway.exception.constant.BlankArgumentException;
 
 import java.util.Objects;
 
+import static wooteco.subway.util.StringUtils.isBlank;
+
 public class Station {
 
     private final Long id;
     private final String name;
+
+    public Station(Long id) {
+        this(id, null);
+    }
 
     public Station(String name) {
         this(null, name);
     }
 
     public Station(Long id, String name) {
-        if (name.isBlank()) {
+        if (isBlank(name)) {
             throw new BlankArgumentException();
         }
         this.id = id;
