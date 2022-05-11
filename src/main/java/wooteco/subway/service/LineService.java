@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -16,6 +17,7 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @Service
+@Transactional
 public class LineService {
 
     private static final int midPointCount = 2;
@@ -82,12 +84,14 @@ public class LineService {
         sections.validExistingSectionDistance(sectionRequest);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findLineAll() {
         return lineDao.findAll().stream()
                 .map(this::findLineResponseByLine)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Line line = lineDao.findById(id);
         return findLineResponseByLine(line);
