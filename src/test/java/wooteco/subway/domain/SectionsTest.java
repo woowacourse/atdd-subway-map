@@ -16,6 +16,18 @@ public class SectionsTest {
     private static final Section NEW_SECTION =
             new Section(1L, 1L, 3L, 4);
 
+    @DisplayName("Stations 생성시 정렬되어 저장된다.")
+    @Test
+    void createSortedSections() {
+        Sections sections = new Sections(List.of(
+                new Section(1L, 1L, 1L, 3L, 10),
+                new Section(2L, 1L, 4L, 1L, 4),
+                new Section(3L, 1L, 3L, 2L, 6)
+        ));
+
+        assertThat(sections.findStationIds()).containsExactly(4L, 1L, 3L, 2L);
+    }
+
     @DisplayName("구간이 비어있는 경우 Sections 생성 시 예외가 발생한다.")
     @Test
     void createEmptySections() {
@@ -71,7 +83,7 @@ public class SectionsTest {
     @DisplayName("수정할 구간을 가져온다.")
     @Test
     void getUpdatedSection() {
-        Section updatedSection = SECTIONS.getUpdatedSection(NEW_SECTION);
+        Section updatedSection = SECTIONS.getUpdatedSectionForSave(NEW_SECTION);
 
         assertThat(updatedSection)
                 .usingRecursiveComparison()
@@ -81,7 +93,7 @@ public class SectionsTest {
     @DisplayName("구간 생성시 구간 수정이 필요한 경우 true를 반환한다.")
     @Test
     void isRequireUpdateTrue() {
-        assertThat(SECTIONS.isRequireUpdate(NEW_SECTION)).isTrue();
+        assertThat(SECTIONS.isRequireUpdateForSave(NEW_SECTION)).isTrue();
     }
 
     @DisplayName("구간 생성시 구간 수정이 불필요한 경우 false를 반환한다.")
@@ -89,6 +101,22 @@ public class SectionsTest {
     void isRequireUpdateFalse() {
         Section newSection = new Section(1L, 2L, 3L, 4);
 
-        assertThat(SECTIONS.isRequireUpdate(newSection)).isFalse();
+        assertThat(SECTIONS.isRequireUpdateForSave(newSection)).isFalse();
+    }
+
+    @DisplayName("노선에 등록되지 않은 역을 삭제하는 경우 예외가 발생한다.")
+    @Test
+    void validateDeleteForNotExistStation() {
+        assertThatThrownBy(() -> SECTIONS.validateDelete(3L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 노선에 등록되지 않은 역입니다.");
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 삭제하는 경우 예외가 발생한다.")
+    @Test
+    void validateDeleteForLastSection() {
+        assertThatThrownBy(() -> SECTIONS.validateDelete(2L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간이 하나인 노선에서 마지막 구간을 삭제할 수 없습니다.");
     }
 }

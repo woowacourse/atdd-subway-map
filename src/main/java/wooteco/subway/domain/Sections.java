@@ -90,7 +90,7 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구간입니다."));
     }
 
-    public Section getUpdatedSection(Section newSection) {
+    public Section getUpdatedSectionForSave(Section newSection) {
         List<Long> stationIds = findStationIds();
         Section existSection = getExistSection(newSection);
         int newDistance = existSection.getDistance() - newSection.getDistance();
@@ -104,7 +104,7 @@ public class Sections {
                 existSection.getDownStationId(), newDistance);
     }
 
-    public boolean isRequireUpdate(Section newSection) {
+    public boolean isRequireUpdateForSave(Section newSection) {
         return !(isInsertTop(newSection) || isInsertBottom(newSection));
     }
 
@@ -118,6 +118,23 @@ public class Sections {
         Long downStationId = newSection.getDownStationId();
         Long topStationId = sections.get(0).getUpStationId();
         return downStationId.equals(topStationId);
+    }
+
+    public void validateDelete(Long stationId) {
+        validateNotExistStation(stationId);
+        validateLastSection();
+    }
+
+    private void validateNotExistStation(Long stationId) {
+        if (!findStationIds().contains(stationId)) {
+            throw new IllegalArgumentException("해당 노선에 등록되지 않은 역입니다.");
+        }
+    }
+
+    private void validateLastSection() {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서 마지막 구간을 삭제할 수 없습니다.");
+        }
     }
 
     public List<Long> findStationIds() {

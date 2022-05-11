@@ -24,11 +24,16 @@ public class SectionService {
     public Long save(Section section) {
         Sections sections = new Sections(findAllByLineId(section.getLineId()));
         sections.validateSectionInLine(section);
-        if (sections.isRequireUpdate(section)) {
+        if (sections.isRequireUpdateForSave(section)) {
             sections.validateSectionDistance(section);
-            sectionDao.update(sections.getUpdatedSection(section));
+            sectionDao.update(sections.getUpdatedSectionForSave(section));
         }
         return sectionDao.save(section);
+    }
+
+    public void delete(Long lineId, Long stationId) {
+        Sections sections = new Sections(findAllByLineId(lineId));
+        sections.validateDelete(stationId);
     }
 
     public List<Station> findStationsByLineId(Long lineId) {
