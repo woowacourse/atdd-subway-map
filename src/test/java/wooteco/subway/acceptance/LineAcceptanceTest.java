@@ -7,7 +7,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -544,6 +546,37 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간을 제거한다.")
+    @Test
+    void removeSection() {
+        // given
+        long id1 = registerStationAndReturnId("station1");
+        long id2 = registerStationAndReturnId("station2");
+        String createdLinePath = registerLineAndReturnResponse("line", "color", id1, id2, 10).header("Location");
+
+        long id3 = registerStationAndReturnId("station3");
+        SectionRequest sectionRequest = new SectionRequest(id2, id3, 5);
+
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(sectionRequest)
+                .when()
+                .post(createdLinePath + "/sections")
+                .then()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().log().all().queryParam("stationId", id2)
+                .delete(createdLinePath + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
     }
 
     private long registerStationAndReturnId(final String name) {
