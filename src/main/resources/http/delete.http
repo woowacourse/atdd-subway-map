@@ -1,2 +1,2 @@
 ###
-DELETE http://localhost:8080/lines/{{line2Id}}/sections?stationId={{stationId1}}
+DELETE http://localhost:8080/lines/{{bundangId}}/sections?stationId={{stationId4}}

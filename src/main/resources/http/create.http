@@ -29,12 +29,64 @@ Content-Type: application/json
 <> 2022-05-10T134717.201.json
 
 ###
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": "에덴역"
+}
+
+> {%
+ client.global.set("stationId3", response.body.id);
+ client.log("쿠키: "+client.global.get("stationId3"));
+ %}
+
+###
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": "아자르역"
+}
+
+> {%
+ client.global.set("stationId4", response.body.id);
+ client.log("쿠키: "+client.global.get("stationId4"));
+ %}
+
+###
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": "왕십리역"
+}
+
+> {%
+ client.global.set("stationId5", response.body.id);
+ client.log("쿠키: "+client.global.get("stationId5"));
+ %}
+
+###
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": "서울숲역"
+}
+
+> {%
+ client.global.set("stationId6", response.body.id);
+ client.log("쿠키: "+client.global.get("stationId6"));
+ %}
+
+###
 POST http://localhost:8080/lines
 Content-Type: application/json
 
 {
-  "name": "분당선",
-  "color": "노랑이",
+  "name": "2호선",
+  "color": "초록이",
   "upStationId": {{stationId1}},
   "downStationId": {{stationId2}},
   "distance": 5
@@ -43,6 +95,23 @@ Content-Type: application/json
 > {%
  client.global.set("line2Id", response.body.id);
  client.log("쿠키: "+client.global.get("line2Id"));
+ %}
+
+###
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "분당선",
+  "color": "노랑이",
+  "upStationId": {{stationId5}},
+  "downStationId": {{stationId6}},
+  "distance": 5
+}
+
+> {%
+ client.global.set("bundangId", response.body.id);
+ client.log("쿠키: "+client.global.get("bundangId"));
  %}
 
 <> 2022-05-10T143858.201.json

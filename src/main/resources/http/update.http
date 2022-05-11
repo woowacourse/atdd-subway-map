@@ -1,0 +1,9 @@
+###
+POST http://localhost:8080/lines/1/sections
+Content-Type: application/json
+
+{
+  "upStationId": {{stationId1}},
+  "downStationId": {{stationId3}},
+  "distance": 6;
+}
