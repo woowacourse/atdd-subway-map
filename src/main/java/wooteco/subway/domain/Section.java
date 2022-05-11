@@ -23,7 +23,7 @@ public class Section {
     }
 
     public void reduceDistance(Section other) {
-        if (distance >= other.distance) {
+        if (other.distance >= distance) {
             throw new IllegalArgumentException("distance 는 0 이하가 될 수 없습니다.");
         }
         reduceDistance(other.distance);
@@ -33,7 +33,11 @@ public class Section {
         this.distance -= distance;
     }
 
-    public void addDistance(int distance) {
+    public void addDistance(Section other) {
+        addDistance(other.distance);
+    }
+
+    private void addDistance(int distance) {
         this.distance += distance;
     }
 
