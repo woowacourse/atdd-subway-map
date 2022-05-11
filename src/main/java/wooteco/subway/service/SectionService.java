@@ -2,7 +2,9 @@ package wooteco.subway.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -11,6 +13,7 @@ import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.entity.SectionEntity;
 
 @Service
+@Transactional
 public class SectionService {
 
     private final StationService stationService;
@@ -26,12 +29,56 @@ public class SectionService {
         Station downStation = getStation(sectionRequest.getDownStationId());
 
         Sections sections = getSectionsByLineId(lineId);
-        sections.checkAddSection(upStation, downStation, sectionRequest.getDistance());
+        Station newStation = sections.findNewStation(upStation, downStation);
+        Optional<Section> wrappedSection = sections.findSectionByAddingSection(upStation, downStation,
+                sectionRequest.getDistance());
 
-        SectionEntity sectionEntity = new SectionEntity.Builder(lineId, sectionRequest.getUpStationId(),
+        saveSection(lineId, sectionRequest, newStation, wrappedSection);
+    }
+
+    private void saveSection(Long lineId, SectionRequest sectionRequest, Station newStation,
+                             Optional<Section> wrappedSection) {
+        if (wrappedSection.isPresent()) {
+            Section section = wrappedSection.get();
+
+            saveSplitSection(lineId, sectionRequest, newStation, section);
+            sectionDao.deleteById(section.getId());
+        }
+
+        saveNewSection(lineId, sectionRequest);
+    }
+
+    private void saveSplitSection(Long lineId, SectionRequest sectionRequest, Station newStation, Section section) {
+        if (newStation.isSameId(sectionRequest.getDownStationId())) {
+            saveLeftSection(lineId, sectionRequest.getDistance(), section, newStation);
+            saveRightSection(lineId, section.subtractDistance(sectionRequest.getDistance()), section, newStation);
+            return;
+        }
+        saveLeftSection(lineId, section.subtractDistance(sectionRequest.getDistance()), section, newStation);
+        saveRightSection(lineId, sectionRequest.getDistance(), section, newStation);
+    }
+
+    private void saveLeftSection(Long lineId, int distance, Section section,
+                                 Station newStation) {
+        SectionEntity saveLeftSectionEntity = new SectionEntity.Builder(lineId, section.getUpStation().getId(),
+                newStation.getId(), distance)
+                .build();
+        sectionDao.save(saveLeftSectionEntity);
+    }
+
+    private void saveRightSection(Long lineId, int distance, Section section,
+                                  Station newStation) {
+        SectionEntity saveRightSectionEntity = new SectionEntity.Builder(lineId, newStation.getId(),
+                section.getDownStation().getId(), distance)
+                .build();
+        sectionDao.save(saveRightSectionEntity);
+    }
+
+    private void saveNewSection(Long lineId, SectionRequest sectionRequest) {
+        SectionEntity newSectionEntity = new SectionEntity.Builder(lineId, sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(), sectionRequest.getDistance())
                 .build();
-        sectionDao.save(sectionEntity);
+        sectionDao.save(newSectionEntity);
     }
 
     public List<Station> getOrderedStations(Long lineId) {

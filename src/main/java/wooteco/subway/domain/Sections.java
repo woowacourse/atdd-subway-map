@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -53,14 +54,16 @@ public class Sections {
         return orderedStations;
     }
 
-    public void checkAddSection(Station upStation, Station downStation, int distance) {
+    public Optional<Section> findSectionByAddingSection(Station upStation, Station downStation, int distance) {
         if (this.sections.size() == 0) {
-            return;
+            return Optional.empty();
         }
         List<Station> orderedStations = getOrderedStations();
         checkStationExist(upStation, downStation, orderedStations);
         checkSectionAlreadyExist(upStation, downStation, orderedStations);
-        checkAlreadyExistSectionDistance(upStation, downStation, orderedStations, distance);
+        Optional<Section> wrappedSection = findNeedToUpdateSection(upStation, downStation, orderedStations);
+        wrappedSection.ifPresent(section -> checkAlreadyExistSectionDistance(section, distance));
+        return wrappedSection;
     }
 
     private void checkStationExist(Station upStation, Station downStation, List<Station> orderedStations) {
@@ -75,28 +78,41 @@ public class Sections {
         }
     }
 
-    private void checkAlreadyExistSectionDistance(Station upStation, Station downStation, List<Station> orderedStations,
-                                                  int distance) {
+    private Optional<Section> findNeedToUpdateSection(Station upStation, Station downStation,
+                                                      List<Station> orderedStations) {
         if (orderedStations.contains(upStation)) {
             int nextIndex = orderedStations.indexOf(upStation) + 1;
             if (nextIndex >= orderedStations.size()) {
-                return;
+                return Optional.empty();
             }
-            checkDistance(upStation, orderedStations.get(nextIndex), distance);
+            return Optional.of(getNeedToUpdateSection(upStation, orderedStations.get(nextIndex)));
         }
         int beforeIndex = orderedStations.indexOf(downStation) - 1;
         if (beforeIndex < 0) {
-            return;
+            return Optional.empty();
         }
-        checkDistance(orderedStations.get(beforeIndex), downStation, distance);
+        return Optional.of(getNeedToUpdateSection(orderedStations.get(beforeIndex), downStation));
     }
 
-    private void checkDistance(Station upStation, Station downStation, int distance) {
-        Section needToUpdateSection = sections.stream()
+    private Section getNeedToUpdateSection(Station upStation, Station downStation) {
+        return sections.stream()
                 .filter(section -> section.matchUpStationAndDownStation(upStation, downStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 상행 지하철역이 없습니다."));
+    }
 
-        needToUpdateSection.checkDistance(distance);
+    private void checkAlreadyExistSectionDistance(Section section, int distance) {
+        section.checkDistance(distance);
+    }
+
+    public Station findNewStation(Station upStation, Station downStation) {
+        long upStationMatchCount = this.sections.stream()
+                .filter(section -> section.hasStation(upStation))
+                .count();
+
+        if (upStationMatchCount >= 1) {
+            return downStation;
+        }
+        return upStation;
     }
 }

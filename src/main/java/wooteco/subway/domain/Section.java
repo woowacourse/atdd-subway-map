@@ -20,10 +20,22 @@ public class Section {
         return upStation.equals(this.upStation) && downStation.equals(this.downStation);
     }
 
+    public boolean hasStation(Station station) {
+        return station.equals(this.upStation) || station.equals(this.downStation);
+    }
+
     public void checkDistance(int distance) {
         if (this.distance <= distance) {
             throw new IllegalArgumentException("구간 사이의 거리가 너무 멉니다.");
         }
+    }
+
+    public int subtractDistance(int distance) {
+        return this.distance - distance;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getUpStation() {

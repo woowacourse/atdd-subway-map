@@ -10,14 +10,14 @@ import wooteco.subway.domain.Station;
 
 public class StationFixture {
 
-    public static Station AStation = new Station(1L, "A");
-    public static Station BStation = new Station(2L, "B");
-    public static Station CStation = new Station(3L, "C");
-    public static Station DStation = new Station(4L, "D");
-    public static Station EStation = new Station(5L, "E");
+    public static Station stationA = new Station(1L, "A");
+    public static Station stationB = new Station(2L, "B");
+    public static Station stationC = new Station(3L, "C");
+    public static Station stationD = new Station(4L, "D");
+    public static Station stationE = new Station(5L, "E");
 
-    public static Station YStation = new Station(6L, "Y");
-    public static Station ZStation = new Station(7L, "Z");
+    public static Station stationY = new Station(6L, "Y");
+    public static Station stationZ = new Station(7L, "Z");
 
     public static Long getSavedStationId(String name) {
         Map<String, String> params = new HashMap<>();

@@ -51,4 +51,16 @@ class SectionDaoTest {
 
         assertThat(sectionEntities).hasSize(2);
     }
+
+    @DisplayName("특정 구간을 삭제한다.")
+    @Test
+    void deleteById() {
+        SectionEntity sectionEntity = new SectionEntity.Builder(1L, 1L, 2L, 10)
+                .build();
+        SectionEntity savedSectionEntity = sectionDao.save(sectionEntity);
+        sectionDao.deleteById(savedSectionEntity.getId());
+
+        List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(1L);
+        assertThat(sectionEntities).isEmpty();
+    }
 }

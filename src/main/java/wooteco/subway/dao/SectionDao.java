@@ -53,4 +53,13 @@ public class SectionDao {
                         .id(rs.getLong("id"))
                         .build());
     }
+
+    public int deleteById(Long id) {
+        String sql = "delete from SECTION where id = :id";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
+    }
 }
