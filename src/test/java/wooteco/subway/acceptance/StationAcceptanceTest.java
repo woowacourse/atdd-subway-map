@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dto.station.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
@@ -30,20 +29,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> insertStation(String name) {
-        return requestCreateStation(name);
-    }
-
-    private ExtractableResponse<Response> requestCreateStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        return requestCreate("/stations", params);
     }
 
     @DisplayName("새로운 지하철역을 생성한다.")
@@ -58,9 +46,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철역 이름으로 생성시 400에러 발생.")
     @Test
     void createStationWithDuplicateName() {
-        // when
         var response = insertStation("테스트역");
-        // then
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -71,11 +58,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         var responseCreateStation2 = insertStation("테스트2역");
 
         // when
-        var response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        var response = requestGet("/stations");
 
         // then
         var ids = getIds(response);
@@ -84,10 +67,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(ids).contains(getId(responseCreateStation)),
                 () -> assertThat(ids).contains(getId(responseCreateStation2))
         );
-    }
-
-    private String getId(ExtractableResponse<Response> response) {
-        return response.header("Location").split("/")[2];
     }
 
     private List<String> getIds(ExtractableResponse<Response> response) {
@@ -100,15 +79,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        // when
-        var uri = responseCreateStation.header("Location");
-        var response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        var response = requestDelete("/stations/" + getId(responseCreateStation));
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
