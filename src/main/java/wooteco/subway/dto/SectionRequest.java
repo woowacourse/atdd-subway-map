@@ -1,9 +1,12 @@
 package wooteco.subway.dto;
 
+import javax.validation.constraints.Positive;
+
 public class SectionRequest {
 
     private Long upStationId;
     private Long downStationId;
+    @Positive(message = "구간의 길이는 양수여야 합니다.")
     private int distance;
 
     public SectionRequest() {
