@@ -39,12 +39,12 @@ public class SectionService {
 
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
-        Section targetSection = sectionRequest.toEntity(lineId);
-        //트랜잭셔널을 달았으므로, 일단 section Id부여를 위해 (Id 부여되있어야 일괄 업데이트 됨)
-        targetSection = sectionDao.save(targetSection);
+        Section newSection = sectionRequest.toEntity(lineId);
+        newSection = sectionDao.save(newSection);
+
         final Sections sections = new Sections(sectionDao.findSectionStationsByLineId(lineId));
 
-        final List<Section> updatedSections = sections.addSection(targetSection);
+        final List<Section> updatedSections = sections.addSection(newSection);
 
         sectionDao.batchUpdate(updatedSections);
     }

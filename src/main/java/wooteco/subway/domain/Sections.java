@@ -2,9 +2,9 @@ package wooteco.subway.domain;
 
 import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_DOWN_STATION;
 import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_UP_STATION;
-import static wooteco.subway.domain.SectionAddStatus.from;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,28 +34,36 @@ public class Sections {
         final SectionAddStatus sectionAddStatus = getAddSectionStatus(section);
 
         if (hasMiddleSection(sectionAddStatus)) {
-            return addMiddleSection(section, sectionAddStatus);
+            addMiddleSection(section, sectionAddStatus);
+            return getSortedByUpStationIdSections();
         }
+
         value.add(section);
-        return value;
+        return getSortedByUpStationIdSections();
     }
 
-    private List<Section> addMiddleSection(final Section section, final SectionAddStatus sectionAddStatus) {
+    private void addMiddleSection(final Section section, final SectionAddStatus sectionAddStatus) {
         if (sectionAddStatus == ADD_MIDDLE_FROM_UP_STATION) {
             final Section sameUpStationSection = getSameUpStationSection(section);
             checkDistance(section, sameUpStationSection);
             value.removeIf(it -> Objects.equals(it.getId(), sameUpStationSection.getId()));
             value.add(section);
             value.add(section.createMiddleToDownSection(sameUpStationSection));
+            return;
         }
-        if (sectionAddStatus == ADD_MIDDLE_FROM_DOWN_STATION) {
-            final Section sameDownStationSection = getSameDownStationSection(section);
-            checkDistance(section, sameDownStationSection);
-            value.removeIf(it -> Objects.equals(it.getId(), sameDownStationSection.getId()));
-            value.add(section);
-            value.add(section.createUpToMiddleSection(sameDownStationSection));
-        }
-        return value;
+
+        final Section sameDownStationSection = getSameDownStationSection(section);
+        checkDistance(section, sameDownStationSection);
+        value.removeIf(it -> Objects.equals(it.getId(), sameDownStationSection.getId()));
+        value.add(section);
+        value.add(section.createUpToMiddleSection(sameDownStationSection));
+    }
+
+    private List<Section> getSortedByUpStationIdSections() {
+        final List<Section> sections = value.stream()
+            .sorted(Comparator.comparing(Section::getUpStationId))
+            .collect(Collectors.toList());
+        return List.copyOf(sections);
     }
 
     private void checkDistance(final Section section, final Section sameStandardStationSection) {
@@ -83,12 +91,14 @@ public class Sections {
     }
 
     private SectionAddStatus getAddSectionStatus(final Section section) {
-        final List<Long> uniqueAndSortedStationIds = getUniqueAndSortedStationIds();
-        validateSection(uniqueAndSortedStationIds, section);
-        //TODO 지금 구간을 1개로 잡았는데, 차후 모든 구간을 대상으로잡아야한다.
-        final Long upStationId = uniqueAndSortedStationIds.get(0);
-        final Long downStationId = uniqueAndSortedStationIds.get(uniqueAndSortedStationIds.size() - 1);
-        return from(section, upStationId, downStationId);
+        final List<Long> totalStationIds = getTotalStationIds();
+        validateSection(totalStationIds, section);
+
+//        final Long upStationId = totalStationIds.get(0);
+//        final Long downStationId = totalStationIds.get(totalStationIds.size() - 1);
+
+//        return from(section, upStationId, downStationId);
+        return SectionAddStatus.from(value, section);
     }
 
     private void validateSection(final List<Long> stationIds, final Section section) {
@@ -97,7 +107,7 @@ public class Sections {
         }
     }
 
-    private List<Long> getUniqueAndSortedStationIds() {
+    private List<Long> getTotalStationIds() {
         return this.value.stream()
             .flatMap(it -> Stream.of(it.getUpStationId(), it.getDownStationId()))
             .distinct()

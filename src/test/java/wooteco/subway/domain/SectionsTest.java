@@ -58,11 +58,11 @@ class SectionsTest {
     @Test
     void addSection_invalid_all_not_same_up_and_down_station() {
         final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
-        final Section targetSection = new Section(1L, 2L, 4L, 12);
+        final Section targetSection = new Section(1L, 2L, 4L, 13);
 
         assertThatThrownBy(() -> sections.addSection(targetSection))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessage("[ERROR] 구간을 추가하기 위해선 상행 혹은 하행 종점 둘 중 하나만 포함해야 합니다.");
+            .hasMessage("[ERROR] 기존 구간보다 긴 구간을 추가할 순 없습니다.");
     }
 
     @DisplayName("상행 종점이 같은 구간을 추가할 때, 거리가 더 클 경우 예외가 발생한다.")
@@ -116,8 +116,6 @@ class SectionsTest {
             .stream()
             .sorted(Comparator.comparing(Section::getUpStationId))
             .collect(Collectors.toList());
-
-        System.out.println("actual = " + actual);
 
         assertAll(
             () -> assertThat(actual).hasSize(2),
