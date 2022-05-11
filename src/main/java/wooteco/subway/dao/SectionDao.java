@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -89,5 +90,10 @@ public class SectionDao {
         params.put("id", id);
 
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
+    }
+
+    public void deleteAll(final List<Section> sections) {
+        final String sql = "DELETE FROM SECTION WHERE id = :id";
+        namedParameterJdbcTemplate.batchUpdate(sql, SqlParameterSourceUtils.createBatch(sections));
     }
 }

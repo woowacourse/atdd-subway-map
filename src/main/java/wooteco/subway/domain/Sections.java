@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 public class Sections {
 
     private static final int MINIMUM_SIZE = 1;
+    private static final int NEEDS_MERGE_SIZE = 2;
 
     private final List<Section> value;
 
@@ -31,25 +32,65 @@ public class Sections {
         value.add(target.createSectionInBetween(source));
     }
 
-    public void delete(final long stationId) {
-        validateSize();
-        final Optional<Section> targetOnDownSection = findDownSection(stationId);
-        final Optional<Section> targetOnUpSection = findUpSection(stationId);
+    public List<Section> pop(final long stationId) {
+        final List<Section> sections = value.stream()
+                .filter(section -> section.getUpStation().getId() == stationId ||
+                        section.getDownStation().getId() == stationId)
+                .collect(Collectors.toList());
+        validateMinimumSize();
+        validateSectionNotFound(sections);
 
-        if (targetOnDownSection.isEmpty() && targetOnUpSection.isEmpty()) {
-            throw new IllegalArgumentException("구간에 존재하지 않는 지하철 역입니다.");
+        value.removeAll(sections);
+
+        if (sections.size() != NEEDS_MERGE_SIZE) {
+            return sections;
         }
-        if (targetOnDownSection.isPresent() && targetOnUpSection.isPresent()) {
-            value.add(targetOnDownSection.get().mergeSection(targetOnUpSection.get()));
-        }
-        targetOnDownSection.ifPresent(value::remove);
-        targetOnUpSection.ifPresent(value::remove);
+
+        mergeSections(sections);
+        return sections;
     }
 
-    private void validateSize() {
+    private void validateSectionNotFound(final List<Section> sections) {
+        if (sections.size() == 0) {
+            throw new IllegalArgumentException("구간에 존재하지 않는 지하철 역입니다.");
+        }
+    }
+
+    private void validateMinimumSize() {
         if (value.size() <= MINIMUM_SIZE) {
             throw new IllegalArgumentException("구간이 " + value.size() + "개 이므로 삭제할 수 없습니다.");
         }
+    }
+
+    private void mergeSections(final List<Section> sections) {
+        final Section section1 = sections.get(0);
+        final Section section2 = sections.get(1);
+
+        if (section1.getDownStation().equals(section2.getUpStation())) {
+            value.add(section1.merge(section2));
+        }
+        if (section1.getUpStation().equals(section2.getDownStation())) {
+            value.add(section2.merge(section1));
+        }
+    }
+
+    public Optional<Section> findMergedSection(final List<Section> sections) {
+        final Section section1 = sections.get(0);
+        final Section section2 = sections.get(1);
+
+        if (section1.getDownStation().equals(section2.getUpStation())) {
+            return findSection(section1.merge(section2));
+        }
+        if (section1.getUpStation().equals(section2.getDownStation())) {
+            return findSection(section2.merge(section1));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Section> findSection(final Section section) {
+        return value.stream()
+                .filter(it -> it.equals(section))
+                .findAny();
     }
 
     public boolean isBranched(final Section other) {
