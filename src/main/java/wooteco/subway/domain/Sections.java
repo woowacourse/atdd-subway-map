@@ -65,11 +65,11 @@ public class Sections {
         validateMinSize();
         List<Section> bucket = new LinkedList<>();
         sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
+                .filter(section -> section.isSameDownStation(station))
                 .findFirst()
                 .ifPresent(bucket::add);
         sections.stream()
-                .filter(section -> section.getUpStation().equals(station))
+                .filter(section -> section.isSameUpStation(station))
                 .findFirst()
                 .ifPresent(bucket::add);
 
@@ -90,10 +90,9 @@ public class Sections {
         }
     }
 
-    public Optional<Section> findTargetWithNotTerminal(Long upStationId, Long downStationId) {
+    public Optional<Section> findTargetWithNotTerminal(Station upStation, Station downStation) {
         return sections.stream()
-                .filter(section -> section.getUpStation().getId().equals(upStationId) ||
-                        section.getDownStation().getId().equals(downStationId))
+                .filter(section -> section.isSameUpStation(upStation) || section.isSameDownStation(downStation))
                 .findFirst();
     }
 }

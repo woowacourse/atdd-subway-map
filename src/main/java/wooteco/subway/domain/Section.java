@@ -19,10 +19,6 @@ public class Section {
         this.distance = distance;
     }
 
-    public static Section create(Long lineId, Station upStation, Station downStation, int distance) {
-        return new Section(lineId, upStation, downStation, distance);
-    }
-
     public boolean isEqualsAndSmallerThan(int distance) {
         return this.distance <= distance;
     }
@@ -35,6 +31,22 @@ public class Section {
     public boolean haveStationId(Long upStationId, Long downStationId) {
         return this.upStation.getId().equals(downStationId) || this.downStation.getId().equals(upStationId) ||
                 this.upStation.getId().equals(upStationId) || this.downStation.getId().equals(downStationId);
+    }
+
+    public int minusDistance(int value) {
+        return this.distance - value;
+    }
+
+    public int plusDistance(int value) {
+        return this.distance + value;
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return upStation.equals(station);
     }
 
     public Long getId() {

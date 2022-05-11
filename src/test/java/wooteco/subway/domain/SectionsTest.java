@@ -75,7 +75,7 @@ class SectionsTest {
     @DisplayName("종점이 아닌 구간 중 해당하는 구간을 찾는다.")
     @Test
     void findTargetWithNotTerminal(){
-        Section section = sections.findTargetWithNotTerminal(upStation.getId(), middleStation.getId()).get();
+        Section section = sections.findTargetWithNotTerminal(upStation, middleStation).get();
         assertAll(
                 () -> assertThat(section.getUpStation()).isEqualTo(upStation),
                 () -> assertThat(section.getDownStation()).isEqualTo(middleStation)

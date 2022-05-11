@@ -34,27 +34,35 @@ public class SectionService {
         validateNonMatchStations(sectionRequest, sections);
         Section newSection = sectionRepository.save(createMemorySection(sectionRequest, lineId));
 
-        if (getTargetWithNotTerminal(sections, sectionRequest).isPresent()) {
-            Section section = getTargetWithNotTerminal(sections, sectionRequest).get();
-            validateDistance(sectionRequest, section);
-            saveSection(lineId, sectionRequest, newSection, section);
-            sectionRepository.deleteById(section.getId());
+        if (getTargetWithNotTerminal(sections, newSection).isPresent()) {
+            Section originSection = getTargetWithNotTerminal(sections, newSection).get();
+            validateDistance(sectionRequest, originSection);
+            saveSection(lineId, newSection, originSection);
+            sectionRepository.deleteById(originSection.getId());
         }
     }
 
-    private void saveSection(Long lineId, SectionRequest sectionRequest, Section newSection, Section section) {
+    private void saveSection(Long lineId, Section newSection, Section section) {
         if (newSection.getUpStation().equals(section.getUpStation())) {
-            Station newUpStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new NotFoundException("[ERROR]없는 역입니다."));
-            sectionRepository.save(new Section(lineId, newUpStation, section.getDownStation(), section.getDistance() - sectionRequest.getDistance()));
+            sectionRepository.save(
+                    new Section(lineId,
+                            newSection.getDownStation(),
+                            section.getDownStation(),
+                            section.minusDistance(newSection.getDistance())
+                    ));
         }
         if (newSection.getDownStation().equals(section.getDownStation())) {
-            Station newDownStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new NotFoundException("[ERROR]없는 역입니다."));
-            sectionRepository.save(new Section(lineId, section.getUpStation(), newDownStation, section.getDistance() - sectionRequest.getDistance()));
+            sectionRepository.save(
+                    new Section(
+                            lineId,
+                            section.getUpStation(),
+                            newSection.getUpStation(), section.minusDistance(newSection.getDistance())
+                    ));
         }
     }
 
-    private Optional<Section> getTargetWithNotTerminal(Sections sections, SectionRequest sectionRequest) {
-        return sections.findTargetWithNotTerminal(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+    private Optional<Section> getTargetWithNotTerminal(Sections sections, Section section) {
+        return sections.findTargetWithNotTerminal(section.getUpStation(), section.getDownStation());
     }
 
     private void validateNonMatchStations(SectionRequest sectionRequest, Sections sections) {
@@ -85,7 +93,7 @@ public class SectionService {
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getUpStationId())));
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getDownStationId())));
-        return Section.create(lineId, upStation, downStation, sectionRequest.getDistance());
+        return new Section(lineId, upStation, downStation, sectionRequest.getDistance());
     }
 
     public void delete(Long lineId, Long stationId) {
@@ -103,7 +111,7 @@ public class SectionService {
                     lineId,
                     leftSection.getUpStation(),
                     rightSection.getDownStation(),
-                    leftSection.getDistance() + rightSection.getDistance()
+                    leftSection.plusDistance(rightSection.getDistance())
             );
             sectionRepository.deleteById(rightSection.getId());
             sectionRepository.save(section);

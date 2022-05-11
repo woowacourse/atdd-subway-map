@@ -44,7 +44,7 @@ class SectionRepositoryTest {
         Line line = lineRepository.findById(LINE_ID).get();
         Station upStation = stationRepository.save(new Station("상행역"));
         Station downStation = stationRepository.save(new Station("하행역"));
-        Section section = Section.create(line.getId(), upStation, downStation, 10);
+        Section section = new Section(line.getId(), upStation, downStation, 10);
         //when
         Section savedSection = sectionRepository.save(section);
         //then
