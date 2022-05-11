@@ -1,8 +1,10 @@
 package wooteco.subway.controller;
 
 import java.net.URI;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,22 +30,18 @@ public class LineController {
         LineResponse response = lineService.save(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
-//
-//    @GetMapping
-//    public ResponseEntity<List<LineResponse>> showLines() {
-//        List<LineResponse> lineResponse = lineService.findAll()
-//                .stream()
-//                .map(LineResponse::from)
-//                .collect(Collectors.toList());
-//
-//        return ResponseEntity.ok().body(lineResponse);
-//    }
 
-//    @GetMapping("/{lineId}")
-//    public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
-//        Line line = lineService.findById(lineId);
-//        return ResponseEntity.ok().body(LineResponse.from(line));
-//    }
+    @GetMapping
+    public ResponseEntity<List<LineResponse>> showLines() {
+        List<LineResponse> lineResponse = lineService.findAll();
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @GetMapping("/{lineId}")
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
+        LineResponse response = lineService.findById(lineId);
+        return ResponseEntity.ok().body(response);
+    }
 
     @PutMapping("/{lineId}")
     public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {

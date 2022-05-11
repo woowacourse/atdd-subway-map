@@ -54,12 +54,16 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then().log().all();
+                .then().log().all()
+                .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -78,19 +82,26 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 노선 목록을 조회한다.")
     void findAllLines() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "bg-red-600");
+        params1.put("upStationId", "1");
+        params1.put("downStationId", "2");
+        params1.put("distance", "10");
         RestAssured.given().log().all()
-                .body(params)
+                .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then().log().all();
+                .then().log().all()
+                .extract();
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "분당선");
-        params2.put("color", "bg-green-600");
+        params2.put("color", "yellow");
+        params2.put("upStationId", "3");
+        params2.put("downStationId", "4");
+        params2.put("distance", "10");
         RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -117,6 +128,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         String location = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -146,6 +160,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         String location = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -159,6 +176,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "분당선");
         params2.put("color", "bg-green-600");
+        params2.put("upStationId", "1");
+        params2.put("downStationId", "2");
+        params2.put("distance", "10");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -178,6 +198,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         String location = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
