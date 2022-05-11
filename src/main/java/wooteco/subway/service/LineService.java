@@ -10,6 +10,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DuplicateLineException;
 
 @Service
@@ -32,12 +33,10 @@ public class LineService {
         validateCreateRequest(newLine);
 
         Long lineId = lineDao.save(newLine);
-
-        Line savedLine = lineDao.findById(lineId);
         sectionService.firstSave(lineId, new SectionRequest(
             lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
 
-        return new LineResponse(lineId, savedLine.getName(), savedLine.getColor(),
+        return createLineResponse(lineDao.findById(lineId),
             stationService.findByStationsId(sectionService.findAllStationByLineId(lineId)));
     }
 
@@ -57,9 +56,12 @@ public class LineService {
             throw new DuplicateLineException("이미 존재하는 노선 색깔입니다.");
         }
     }
-
     private LineResponse createLineResponse(Line newLine) {
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+    }
+
+    private LineResponse createLineResponse(Line newLine, List<StationResponse> stations) {
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
     }
 
     @Transactional(readOnly = true)
@@ -72,7 +74,8 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findById(Long lineId) {
         Line line = lineDao.findById(lineId);
-        return createLineResponse(line);
+        return createLineResponse(line,
+            stationService.findByStationsId(sectionService.findAllStationByLineId(line.getId())));
     }
 
     public void update(Long lineId, LineRequest lineRequest) {
