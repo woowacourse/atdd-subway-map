@@ -102,6 +102,7 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void resisterSection(final Long lineId,
                                 final Long upStationId,
                                 final Long downStationId,
@@ -109,6 +110,7 @@ public class LineService {
         sectionService.resister(lineId, upStationId, downStationId, distance);
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void removeStation(final Long lineId, final Long stationId) {
         sectionService.removeStation(lineId, stationId);
     }

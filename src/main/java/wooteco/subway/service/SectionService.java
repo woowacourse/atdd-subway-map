@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.SectionsUpdateResult;
@@ -22,6 +24,7 @@ public class SectionService {
         this.stationService = stationService;
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Section resisterFirst(final Long lineId, final Long upStationId, final Long downStationId,
                                  final Integer distance) {
         final Station upStation = stationService.searchById(upStationId);
@@ -39,6 +42,7 @@ public class SectionService {
         );
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void resister(final Long lineId, final Long upStationId, final Long downStationId, final Integer distance) {
         final Station upStation = stationService.searchById(upStationId);
         final Station downStation = stationService.searchById(downStationId);
@@ -48,6 +52,7 @@ public class SectionService {
         updateSections(sectionsUpdateResult, lineId);
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void removeStation(final Long lineId, final Long stationId) {
         final Station station = stationService.searchById(stationId);
         final Sections sections = searchSectionsByLineId(lineId);
@@ -56,6 +61,7 @@ public class SectionService {
         updateSections(sectionsUpdateResult, lineId);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     public Sections searchSectionsByLineId(final Long lineId) {
         final List<SectionEntity> sectionEntities = sectionDao.findByLineId(lineId);
         final List<Section> sections = sectionEntities.stream()
