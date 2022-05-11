@@ -18,6 +18,7 @@ import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.exception.NoSuchStationException;
 
 @Service
+@Transactional
 public class LineService {
 
     private final StationDao stationDao;
@@ -31,26 +32,27 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    @Transactional
     public LineResponse createLine(final LineRequest request) {
+        Line createdLine = lineDao.save(new Line(request.getName(), request.getColor()));
+
         Station upStation = stationDao.findById(request.getUpStationId())
                 .orElseThrow(NoSuchStationException::new);
-
         Station downStation = stationDao.findById(request.getDownStationId())
                 .orElseThrow(NoSuchStationException::new);
 
-        Line createdLine = lineDao.save(new Line(request.getName(), request.getColor()));
-
         Section createdSection = sectionDao.save(createdLine.getId(),
                 new Section(upStation, downStation, request.getDistance()));
-        return LineResponse.of(createdLine, createdSection);
+
+        createdLine.addSection(createdSection);
+        return LineResponse.from(createdLine);
     }
 
     public LineResponse findLine(final long id) {
         Line findLine = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
         List<Section> sections = sectionDao.findByLineId(findLine.getId());
-        return LineResponse.of(findLine, sections);
+        findLine.addAllSections(sections);
+        return LineResponse.from(findLine);
     }
 
     public List<LineResponse> findLines() {
@@ -58,7 +60,8 @@ public class LineService {
         List<Line> lines = lineDao.findAll();
         for (Line line : lines) {
             List<Section> sectionsByLine = sectionDao.findByLineId(line.getId());
-            result.add(LineResponse.of(line, sectionsByLine));
+            line.addAllSections(sectionsByLine);
+            result.add(LineResponse.from(line));
         }
         return result;
     }
@@ -89,6 +92,24 @@ public class LineService {
 
         // section 추가
         line.addSection(section);
+
+        // section 정보 업데이트
+        sectionDao.batchUpdate(line.getSections());
+    }
+
+    public void deleteSection(final Long lineId, final Long stationId) {
+        // line 초기화
+        Line line = lineDao.findById(lineId)
+                .orElseThrow(NoSuchLineException::new);
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        for (Section each : sections) {
+            line.addSection(each);
+        }
+
+        // section 제거
+        Station station = stationDao.findById(stationId)
+                .orElseThrow(NoSuchStationException::new);
+        line.removeStation(station);
 
         // section 정보 업데이트
         sectionDao.batchUpdate(line.getSections());

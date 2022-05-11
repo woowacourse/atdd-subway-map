@@ -31,7 +31,7 @@ public class Sections {
         if (values.size() == 1) {
             throw new IllegalArgumentException("구간이 하나인 경우 역을 제거할 수 없습니다.");
         }
-        if (!allStations().contains(station)) {
+        if (!stations().contains(station)) {
             throw new IllegalArgumentException("해당 역이 존재하지 않습니다.");
         }
         if (isLastStation(station)) {
@@ -129,7 +129,7 @@ public class Sections {
     }
 
     private boolean isNotAddable(Section section) {
-        return allStations().contains(section.getUpStation()) == allStations().contains(section.getDownStation());
+        return stations().contains(section.getUpStation()) == stations().contains(section.getDownStation());
     }
 
     private boolean containsSameSection(final Section section) {
@@ -141,7 +141,7 @@ public class Sections {
         return false;
     }
 
-    private Set<Station> allStations() {
+    public Set<Station> stations() {
         Set<Station> upStations = upStations();
         Set<Station> downStations = downStations();
         upStations.addAll(downStations);
@@ -158,7 +158,7 @@ public class Sections {
 
     private Set<Station> lastStations() {
         // upStation과 downStation의 교집합을 전체 역에서 차집합한다.
-        Set<Station> stations = allStations();
+        Set<Station> stations = stations();
         Set<Station> upStations = upStations();
         Set<Station> downStations = downStations();
         upStations.retainAll(downStations);

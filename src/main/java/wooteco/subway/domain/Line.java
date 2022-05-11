@@ -25,12 +25,25 @@ public class Line {
         this.color = color;
     }
 
+    public void addAllSections(final List<Section> sections) {
+        for (Section section : sections) {
+            this.sections.add(section);
+        }
+    }
     public void addSection(final Section section) {
         sections.add(section);
     }
 
     public void removeStation(final Station station) {
         sections.removeStation(station);
+    }
+
+    public List<Section> getSections() {
+        return List.copyOf(sections.values());
+    }
+
+    public List<Station> getStations() {
+        return List.copyOf(sections.stations());
     }
 
     public Long getId() {
@@ -43,10 +56,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Section> getSections() {
-        return List.copyOf(sections.values());
     }
 
     @Override

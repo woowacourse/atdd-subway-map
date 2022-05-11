@@ -3,6 +3,7 @@ package wooteco.subway.dto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
@@ -23,6 +24,13 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
                 List.of(StationResponse.from(section.getUpStation()),
                         StationResponse.from(section.getDownStation())));
+    }
+
+    public static LineResponse from(final Line line) {
+        List<StationResponse> stationResponses = line.getStations().stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
     public static LineResponse of(final Line line, final List<Section> sections) {

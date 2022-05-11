@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.LineDao;
@@ -19,6 +20,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 class LineServiceTest {
@@ -27,24 +29,41 @@ class LineServiceTest {
     private final LineDao lineDao = mock(LineDao.class);
     private final SectionJdbcDao sectionDao = mock(SectionJdbcDao.class);
 
+    private Station station1;
+    private Station station2;
+    private Station station3;
+    private Station station4;
+    private Line line1;
+    private Line line2;
+    private Section section1To2;
+    private Section section2To3;
+
+    @BeforeEach
+    void setUp() {
+        station1 = new Station(1L, "station1");
+        station2 = new Station(2L, "station2");
+        station3 = new Station(3L, "station3");
+        station4 = new Station(4L, "station4");
+        line1 = new Line(1L, "line1", "color1");
+        line2 = new Line(2L, "line2", "color2");
+        section1To2 = new Section(1L, station1, station2, 10);
+        section2To3 = new Section(2L, station2, station3, 10);
+    }
+
     @DisplayName("노선을 성공적으로 등록한다.")
     @Test
     void registerLine() {
         //given
-        Station station1 = new Station(1L, "서울역");
-        Station station2 = new Station(2L, "성수");
-        when(stationDao.findById(anyLong())).thenReturn(Optional.of(station1));
-        when(stationDao.findById(anyLong())).thenReturn(Optional.of(station2));
-
-        Line line = new Line(1L, "1호선", "파란색");
-        when(lineDao.save(any(Line.class))).thenReturn(line);
-
-        Section section = new Section(1L, station1, station2, 10);
-        when(sectionDao.save(anyLong(), any(Section.class))).thenReturn(section);
-
         LineService sut = new LineService(stationDao, lineDao, sectionDao);
-        LineRequest request = new LineRequest("1호선", "파란색", 1L, 2L, 10);
-        LineResponse expect = new LineResponse(1L, "1호선", "파란색",
+
+        when(stationDao.findById(station1.getId())).thenReturn(Optional.of(station1));
+        when(stationDao.findById(station2.getId())).thenReturn(Optional.of(station2));
+        when(lineDao.save(any(Line.class))).thenReturn(line1);
+        when(sectionDao.save(anyLong(), any(Section.class))).thenReturn(section1To2);
+
+        LineRequest request = new LineRequest(line1.getName(), line1.getColor(), station1.getId(), station2.getId(),
+                10);
+        LineResponse expect = new LineResponse(line1.getId(), line1.getName(), line1.getColor(),
                 List.of(StationResponse.from(station1), StationResponse.from(station2)));
         // when
         LineResponse actual = sut.createLine(request);
@@ -58,20 +77,15 @@ class LineServiceTest {
     void findLine() {
         // given
         LineService sut = new LineService(stationDao, lineDao, sectionDao);
-        Station station1 = new Station(1L, "서울역");
-        Station station2 = new Station(2L, "성수");
-        Line line = new Line(1L, "1호선", "파란색");
-        Section section = new Section(1L, station1, station2, 10);
 
-        when(lineDao.findById(line.getId())).thenReturn(Optional.of(line));
-        when(sectionDao.findByLineId(line.getId())).thenReturn(List.of(section));
-
-        LineResponse expected = LineResponse.of(line, section);
+        when(lineDao.findById(line1.getId())).thenReturn(Optional.of(line1));
+        when(sectionDao.findByLineId(line1.getId())).thenReturn(List.of(section1To2));
 
         // when
-        LineResponse actual = sut.findLine(line.getId());
+        LineResponse actual = sut.findLine(line1.getId());
 
         // then
+        LineResponse expected = LineResponse.from(line1);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -79,23 +93,36 @@ class LineServiceTest {
     @Test
     void findLines() {
         LineService sut = new LineService(stationDao, lineDao, sectionDao);
-        Station station1 = new Station(1L, "서울역");
-        Station station2 = new Station(2L, "성수");
-        Line line1 = new Line(1L, "1호선", "파란색");
-        Section section1 = new Section(1L, station1, station2, 10);
-
-        Station station3 = new Station(3L, "홍대입구");
-        Line line2 = new Line(2L, "2호선", "초록색");
-        Section section2 = new Section(2L, station2, station3, 10);
 
         when(lineDao.findAll()).thenReturn(List.of(line1, line2));
-        when(sectionDao.findByLineId(1L)).thenReturn(List.of(section1));
-        when(sectionDao.findByLineId(2L)).thenReturn(List.of(section2));
+        when(sectionDao.findByLineId(line1.getId())).thenReturn(List.of(section1To2));
+        when(sectionDao.findByLineId(line2.getId())).thenReturn(List.of(section2To3));
 
         // when
         List<LineResponse> lines = sut.findLines();
 
         // then
-        assertThat(lines).containsExactly(LineResponse.of(line1, section1), LineResponse.of(line2, section2));
+        assertThat(lines).containsOnly(LineResponse.from(line1), LineResponse.from(line2));
+    }
+
+    @DisplayName("구간을 추가한다.")
+    @Test
+    void addSection() {
+        LineService sut = new LineService(stationDao, lineDao, sectionDao);
+
+        when(lineDao.findById(line1.getId())).thenReturn(Optional.of(line1));
+        when(sectionDao.findByLineId(line1.getId())).thenReturn(List.of(section1To2));
+
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(),
+                section2To3.getDistance());
+        when(stationDao.findById(sectionRequest.getUpStationId())).thenReturn(Optional.of(station2));
+        when(stationDao.findById(sectionRequest.getDownStationId())).thenReturn(Optional.of(station2));
+        when(sectionDao.save(anyLong(), any(Section.class))).thenReturn(section2To3);
+
+        // when
+        sut.addSection(line1.getId(), sectionRequest);
+
+        // then
+        assertThat(line1.getSections().size()).isEqualTo(2);
     }
 }
