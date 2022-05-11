@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.matchers.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.domain.Line;
@@ -42,11 +43,9 @@ public class LineServiceTest {
         LineRequest lineRequest = new LineRequest("분당선", "bg-red-600");
         Line line = lineService.create(lineRequest);
 
-        assertAll(
-                () -> assertThat(line.getId()).isNotNull(),
-                () -> assertThat(line.getName()).isEqualTo(lineRequest.getName()),
-                () -> assertThat(line.getColor()).isEqualTo(lineRequest.getColor())
-        );
+        assertThat(line.getId()).isNotNull();
+        assertThat(line).extracting(Line::getName, Line::getColor)
+                .containsExactly(lineRequest.getName(), lineRequest.getColor());
     }
 
     @DisplayName("노선 생성시 이름이 존재할 경우 예외 발생")

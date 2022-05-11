@@ -33,12 +33,10 @@ class SectionsTest {
     @Test
     void getStations() {
         List<Station> stations = sections.getStations();
-        assertAll(
-                () -> assertThat(stations).hasSize(3),
-                () -> assertThat(stations.get(0)).isEqualTo(upStation),
-                () -> assertThat(stations.get(1)).isEqualTo(middleStation),
-                () -> assertThat(stations.get(2)).isEqualTo(downStation)
-        );
+        assertThat(stations).hasSize(3)
+                .containsExactly(
+                        upStation, middleStation, downStation
+                );
     }
 
     @DisplayName("구간에 있는 모든 역들을 상행에서 하행순서대로 조회한다.")
@@ -51,13 +49,14 @@ class SectionsTest {
                 new Section(1L, middleStation, downStation, 5)
         ));
         List<Station> stations = sections.getStations();
-        assertAll(
-                () -> assertThat(stations).hasSize(4),
-                () -> assertThat(stations.get(0)).isEqualTo(upStation),
-                () -> assertThat(stations.get(1)).isEqualTo(middleStation),
-                () -> assertThat(stations.get(2)).isEqualTo(downStation),
-                () -> assertThat(stations.get(3)).isEqualTo(newStation)
-        );
+
+        assertThat(stations).hasSize(4)
+                .containsExactly(
+                        upStation,
+                        middleStation,
+                        downStation,
+                        newStation
+                );
     }
 
     @DisplayName("상행, 하행 id와 중복되는 구간이 존재하면 true를 반환한다.")
