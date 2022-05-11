@@ -63,5 +63,25 @@ public class SectionsTest {
                 () -> sections.add(new Section(0, 1L, 2L, 1L, 10))
         ).isInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    @DisplayName("section이 1개만 있는 경우 삭제할 수 없다.")
+    void removeTest() {
+        assertThatThrownBy(
+                () -> sections.remove(1L)
+        ).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @DisplayName("역을 삭제하는 경우, 상행과 하행에 모두 걸려 있다면 합쳐준다.")
+    void removeUpAndDownSection() {
+        sections.add(new Section(0, 1L, 2L, 3L, 5));
+        sections.remove(2L);
+        assertThat(
+                sections.getSectionContainsStation(1L)
+                        .get(0)
+                        .getDownStationId()
+        ).isEqualTo(3);
+    }
 }
 

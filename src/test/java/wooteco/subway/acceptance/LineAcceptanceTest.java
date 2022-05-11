@@ -105,7 +105,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value())
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
         );
     }
 
@@ -147,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선을 삭제한다.")
@@ -187,7 +187,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createLine(final String name, final String color, final Long upStationId,

@@ -39,4 +39,9 @@ public class SectionDao {
         final String sql = "select id, line_id, up_station_id, down_station_id, distance from section where line_id=?";
         return jdbcTemplate.query(sql, rowMapper, lineId);
     }
+
+    public void deleteByLineId(Long lineId) {
+        final String sql = "delete from section where line_id=?";
+        jdbcTemplate.update(sql, lineId);
+    }
 }

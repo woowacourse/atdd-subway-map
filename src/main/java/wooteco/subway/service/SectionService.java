@@ -29,35 +29,21 @@ public class SectionService {
                 sectionRequest.getDistance())
         );
 
-        sectionDao.save(
-                lineId,
-                sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(),
-                sectionRequest.getDistance()
-        );
+        updateSection(lineId, sections);
     }
 
     @Transactional
     public void deleteById(final Long lineId, final Long stationId) {
         Sections sections = new Sections(sectionDao.getSectionByLineId(lineId));
-
-        List<Section> stationIds = sections.getSectionContainsStation(stationId);
-        if (stationIds.size() == 1) {
-            sectionDao.deleteById(lineId, stationId);
-            return;
-        }
-
-        Section upSection = sections.getUpSection(stationId, stationIds);
-        Section downSection = sections.getDownSection(stationId, stationIds);
-        sectionDao.deleteById(lineId, stationId);
-        sectionDao.save(
-                lineId,
-                downSection.getUpStationId(),
-                upSection.getDownStationId(),
-                downSection.getDistance() + upSection.getDistance()
-        );
-
         sections.remove(stationId);
+        updateSection(lineId, sections);
+    }
+
+    private void updateSection(Long lineId, Sections sections) {
+        sectionDao.deleteByLineId(lineId);
+        for (Section section : sections.getSections()) {
+            sectionDao.save(lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
+        }
     }
 
     public Sections getSections(final Long lineId) {

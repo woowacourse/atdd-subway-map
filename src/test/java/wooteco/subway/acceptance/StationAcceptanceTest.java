@@ -105,7 +105,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createStation(final String name) {
