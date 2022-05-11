@@ -96,6 +96,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] section 외래키로 잇기, 연결된 section 먼저 삭제
 - [x] Sections에 서비스 로직 이동 및 테스트코드 이동
 - [x] SectionWithStation을 Section 도메인과 통합
+- [x] optional 추가
 - [ ] 새로 만든 도메인 객체들의 테스트코드 수정
 - [ ] 테스트코드 속도 개선
     - [ ] MockMVC 사용해 컨트롤러/서비스단 수정? -> 나중에

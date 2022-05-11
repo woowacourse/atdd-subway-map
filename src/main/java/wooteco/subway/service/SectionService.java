@@ -28,13 +28,11 @@ public class SectionService {
     public Section save(Section section) {
         checkLineExist(section.getLineId());
         checkStationsExist(section);
-        Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
-        sections.validateSave(section);
-        if (sections.isMiddle(section)) {
-            Section base = sections.findMiddleBase(section);
+        Sections sections = Sections.forSave(sectionDao.findAllByLineId(section.getLineId()), section);
+        sections.findMiddleBase(section).ifPresent(base -> {
             sectionDao.save(base.calculateRemainSection(section));
             sectionDao.delete(base.getId());
-        }
+        });
         return sectionDao.findById(sectionDao.save(section));
     }
 
@@ -51,16 +49,15 @@ public class SectionService {
     public void delete(Long lineId, Long stationId) {
         checkLineExist(lineId);
         checkStationExist(stationId);
-        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        sections.validateDelete();
+        Sections sections = Sections.forDelete(sectionDao.findAllByLineId(lineId));
         Station station = stationDao.findById(stationId);
-        if (sections.isSide(station)) {
-            sectionDao.delete(sections.findSide(station).getId());
-            return;
-        }
-        List<Section> linkedSections = sections.findByStation(station);
-        sectionDao.save(new Sections(linkedSections).calculateCombinedSection(station));
-        sectionDao.deleteAllBySections(linkedSections);
+        sections.findSide(station).ifPresentOrElse(section -> sectionDao.delete(section.getId()),
+                () -> deleteMiddleStation(sections, station));
+    }
+
+    private void deleteMiddleStation(Sections sections, Station station) {
+        sectionDao.deleteAllBySections(sections.findLinks(station));
+        sectionDao.save(sections.calculateCombinedSection(station));
     }
 
     private void checkSectionExist(Long id) {

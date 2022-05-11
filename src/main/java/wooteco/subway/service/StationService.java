@@ -55,7 +55,7 @@ public class StationService {
     private void validateStationNotLinked(Long stationId) {
         lineDao.findAll().stream()
                 .map(this::getSections)
-                .filter(sections -> !sections.findByStation(stationDao.findById(stationId)).isEmpty())
+                .filter(sections -> !sections.findLinks(stationDao.findById(stationId)).isEmpty())
                 .findAny()
                 .ifPresent(section -> {throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);});
     }

@@ -124,7 +124,7 @@ class SectionServiceTest extends ServiceTest {
         //when then
         assertThatThrownBy(() -> sectionService.save(SECTION))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("구간 안에 존재하지 않는 아이디의 역이 있습니다.");
+                .hasMessage("해당 아이디의 역을 찾을 수 없습니다.");
     }
 
     @DisplayName("기존 역과 연결될 수 없는 구간을 등록할 수 없다.")

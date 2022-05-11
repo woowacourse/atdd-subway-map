@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -20,6 +21,26 @@ public class Sections {
         this.sections = sections;
     }
 
+    public static Sections forSave(List<Section> sections, Section inSection) {
+        Sections result = new Sections(sections);
+        if (result.hasUpStation(inSection) && result.hasDownStation(inSection)) {
+            throw new IllegalArgumentException(DUPLICATED_SECTION_ERROR_MESSAGE);
+        }
+        if (!result.sections.isEmpty() && result.hasNoStation(inSection) && result.hasNoStation(inSection.toReverse())) {
+            throw new IllegalArgumentException(LINK_FAILURE_ERROR_MESSAGE);
+        }
+        return result;
+    }
+
+    public static Sections forDelete(List<Section> sections) {
+        Sections result = new Sections(sections);
+        if (result.sections.size() <= 1) {
+            throw new IllegalArgumentException(ONE_LESS_SECTION_ERROR_MESSAGE);
+        }
+        return result;
+
+    }
+
     public List<Station> calculateStations() {
         final List<Station> stations = new ArrayList<>();
         Station nowStation = getFirst().getUpStation();
@@ -31,53 +52,39 @@ public class Sections {
         return stations;
     }
 
-    public void validateSave(Section section) {
-        checkUnique(section);
-        checkIsLinked(section);
-    }
-
-    public void validateDelete() {
-        if (sections.size() <= 1) {
-            throw new IllegalArgumentException(ONE_LESS_SECTION_ERROR_MESSAGE);
-        }
-    }
-
     public Section calculateCombinedSection(Station middleStation) {
-        List<Station> calculateStations = calculateStations();
-        return new Section(sections.get(0).getLineId(), calculateStations.get(0), calculateStations.get(2),
-                getCombinedDistance(middleStation));
+        List<Section> combinedSections = findLinks(middleStation);
+        List<Station> combined = new Sections(combinedSections).calculateStations();
+        int distance = combinedSections.stream().map(Section::getDistance).reduce(Integer::sum).orElseThrow();
+        return new Section(sections.get(0).getLineId(), combined.get(0), combined.get(2), distance);
     }
 
-    public List<Section> findByStation(Station station) {
-        return sections.stream()
-                .filter(section -> section.contains(station))
-                .collect(Collectors.toList());
+    public List<Section> findLinks(Station station) {
+        return sections.stream().filter(section -> section.contains(station)).collect(Collectors.toList());
     }
 
-    public boolean isSide(Station station) {
-        return isFirst(station) || isLast(station);
-    }
-
-    public Section findSide(Station includedStation) {
+    public Optional<Section> findSide(Station includedStation) {
         if (isFirst(includedStation)) {
-            return findByUpStation(includedStation);
+            return Optional.of(findByUpStation(includedStation));
         }
-        return findByDownStation(includedStation);
+        if (isLast(includedStation)) {
+            return Optional.of(findByDownStation(includedStation));
+        }
+        return Optional.empty();
     }
 
-    public Section findMiddleBase(Section section) {
+    public Optional<Section> findMiddleBase(Section section) {
         if (isMiddleUpAttach(section)) {
             Section upBase = findByUpStation(section.getUpStation());
-            validateDistance(upBase,section);
-            return upBase;
+            validateDistance(upBase, section);
+            return Optional.of(upBase);
         }
-        Section downBase = findByDownStation(section.getDownStation());
-        validateDistance(downBase,section);
-        return downBase;
-    }
-
-    public boolean isMiddle(Section section) {
-        return isMiddleUpAttach(section) || isMiddleDownAttach(section);
+        if (isMiddleDownAttach(section)) {
+            Section downBase = findByDownStation(section.getDownStation());
+            validateDistance(downBase, section);
+            return Optional.of(downBase);
+        }
+        return Optional.empty();
     }
 
     private void validateDistance(Section base, Section inSection) {
@@ -86,27 +93,12 @@ public class Sections {
         }
     }
 
-    private void checkUnique(Section section) {
-        if (hasUpStation(section) && hasDownStation(section)) {
-            throw new IllegalArgumentException(DUPLICATED_SECTION_ERROR_MESSAGE);
-        }
-    }
-
-    private void checkIsLinked(Section section) {
-        if (!sections.isEmpty() && hasNoStation(section) && hasNoStation(section.toReverse())) {
-            throw new IllegalArgumentException(LINK_FAILURE_ERROR_MESSAGE);
-        }
-    }
-
     private boolean isAnyLink(Station downStation) {
-        return sections.stream()
-                .anyMatch(section -> section.getUpStation().equals(downStation));
+        return sections.stream().anyMatch(section -> section.getUpStation().equals(downStation));
     }
 
     private Section getFirst() {
-        return sections.stream()
-                .filter(section -> isFirst(section.getUpStation()))
-                .findFirst().orElse(sections.get(0));
+        return sections.stream().filter(section -> isFirst(section.getUpStation())).findFirst().orElse(sections.get(0));
     }
 
     private boolean hasNoStation(Section section) {
@@ -114,58 +106,41 @@ public class Sections {
     }
 
     private boolean hasUpStation(Section inSection) {
-        return sections.stream()
-                .anyMatch(section -> section.getUpStationId().equals(inSection.getUpStationId()));
+        return sections.stream().anyMatch(section -> section.getUpStationId().equals(inSection.getUpStationId()));
     }
 
     private boolean hasDownStation(Section inSection) {
-        return sections.stream()
-                .anyMatch(section -> section.getDownStationId().equals(inSection.getDownStationId()));
+        return sections.stream().anyMatch(section -> section.getDownStationId().equals(inSection.getDownStationId()));
     }
 
     private Section findByUpStation(Station station) {
-        return sections.stream()
-                .filter(section -> section.getUpStation().equals(station))
-                .findFirst().orElseThrow(() -> new IllegalStateException(NO_UP_STATION_ERROR_MESSAGE));
+        return sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst()
+                .orElseThrow(() -> new IllegalStateException(NO_UP_STATION_ERROR_MESSAGE));
     }
 
     private Section findByDownStation(Station station) {
-        return sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
-                .findFirst().orElseThrow(() -> new IllegalStateException(NO_DOWN_STATION_ERROR_MESSAGE));
-    }
-
-    private int getCombinedDistance(Station middleStation) {
-        List<Section> linkSections = findByStation(middleStation);
-        return linkSections.stream().map(Section::getDistance)
-                .reduce(Integer::sum).orElse(0);
+        return sections.stream().filter(section -> section.getDownStation().equals(station)).findFirst()
+                .orElseThrow(() -> new IllegalStateException(NO_DOWN_STATION_ERROR_MESSAGE));
     }
 
     private boolean isMiddleUpAttach(Section inSection) {
-        return sections.stream()
-                .anyMatch(section -> section.getUpStation().equals(inSection.getUpStation()));
+        return sections.stream().anyMatch(section -> section.getUpStation().equals(inSection.getUpStation()));
     }
 
     private boolean isMiddleDownAttach(Section inSection) {
-        return sections.stream()
-                .anyMatch(section -> section.getDownStation().getId().equals(inSection.getDownStationId()));
+        return sections.stream().anyMatch(section -> section.getDownStation().equals(inSection.getDownStation()));
     }
 
     private boolean isFirst(Station station) {
-        return sections.stream()
-                .noneMatch(section -> section.getDownStation().equals(station));
+        return sections.stream().noneMatch(section -> section.getDownStation().equals(station));
     }
 
     private boolean isLast(Station station) {
-        return sections.stream()
-                .noneMatch(section -> section.getUpStation().equals(station));
+        return sections.stream().noneMatch(section -> section.getUpStation().equals(station));
     }
 
     private Station getNext(Station now) {
-        return sections.stream()
-                .filter(section -> now.equals(section.getUpStation()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(NO_NEXT_SECTION_ERROR_MESSAGE))
-                .getDownStation();
+        return sections.stream().filter(section -> now.equals(section.getUpStation())).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(NO_NEXT_SECTION_ERROR_MESSAGE)).getDownStation();
     }
 }

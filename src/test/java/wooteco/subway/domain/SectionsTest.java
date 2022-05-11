@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static wooteco.subway.Fixtures.SECTION;
-import static wooteco.subway.Fixtures.SECTION_3;
 import static wooteco.subway.Fixtures.SECTION_4;
 import static wooteco.subway.Fixtures.STATION;
 import static wooteco.subway.Fixtures.STATION_2;
@@ -31,19 +30,15 @@ class SectionsTest {
     @DisplayName("해당 구간이 노선에 있는지 검증한다.")
     @Test
     void checkUniqueSection() {
-        Sections sections = new Sections(List.of(SECTION));
-        assertThatThrownBy(() -> sections.validateSave(SECTION))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("중복된 구간입니다.");
+        assertThatThrownBy(() -> Sections.forSave(List.of(SECTION), SECTION)).isInstanceOf(
+                IllegalArgumentException.class).hasMessage("중복된 구간입니다.");
     }
 
     @DisplayName("해당 구간이 노선과 연결 가능한지 검증한다.")
     @Test
     void checkIsLinked() {
-        assertDoesNotThrow(() -> new Sections(List.of()).validateSave(SECTION));
-        Sections sections = new Sections(List.of(SECTION));
-        assertThatThrownBy(() -> sections.validateSave(SECTION_4))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 구간은 역과 연결될 수 없습니다.");
+        assertDoesNotThrow(() -> Sections.forSave(List.of(), SECTION));
+        assertThatThrownBy(() -> Sections.forSave(List.of(SECTION), SECTION_4)).isInstanceOf(
+                IllegalArgumentException.class).hasMessage("해당 구간은 역과 연결될 수 없습니다.");
     }
 }
