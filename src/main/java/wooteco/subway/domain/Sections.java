@@ -48,11 +48,29 @@ public class Sections {
 
     private void processFork(Section existingSection, Section newSection) {
         checkDistance(existingSection, newSection);
-        final Section section = new Section(existingSection.getId(), existingSection.getLineId(), newSection.getDownStationId(),
-                existingSection.getDownStationId(), existingSection.getDistance() - newSection.getDistance());
 
-        sections.add(section);
+        sameUpstationInFork(existingSection, newSection);
+        sameDownStationInFork(existingSection, newSection);
+
         sections.remove(existingSection);
+    }
+
+    private void sameUpstationInFork(Section existingSection, Section newSection) {
+        if (existingSection.getUpStationId().equals(newSection.getUpStationId())) {
+            final Section section = new Section(existingSection.getId(), existingSection.getLineId(), newSection.getDownStationId(),
+                    existingSection.getDownStationId(), existingSection.getDistance() - newSection.getDistance());
+
+            sections.add(section);
+        }
+    }
+
+    private void sameDownStationInFork(Section existingSection, Section newSection) {
+        if (existingSection.getDownStationId().equals(newSection.getDownStationId())) {
+            final Section section = new Section(existingSection.getId(), existingSection.getLineId(), existingSection.getUpStationId(),
+                    newSection.getUpStationId(), existingSection.getDistance() - newSection.getDistance());
+
+            sections.add(section);
+        }
     }
 
     private void checkDistance(Section existingSection, Section newSection) {
