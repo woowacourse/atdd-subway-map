@@ -100,22 +100,10 @@ public class Line {
     }
 
     private void changeEndStations() {
-        if (sections.size() >= 2) {
+        if (sections.size() >= 1) {
             this.upStation = sections.calculateUpStation();
             this.downStation = sections.calculateDownStation();
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Line line = (Line) o;
-        return Objects.equals(getId(), line.getId());
     }
 
     public List<Section> removeStation(Station station) {
@@ -158,6 +146,18 @@ public class Line {
 
     public boolean contains(Station station) {
         return sections.containsStation(station);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(getId(), line.getId());
     }
 
     @Override

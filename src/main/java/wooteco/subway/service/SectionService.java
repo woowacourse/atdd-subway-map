@@ -12,6 +12,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.entity.LineEntity;
 import wooteco.subway.domain.entity.SectionEntity;
+import wooteco.subway.dto.SectionInsertResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResponse;
 import wooteco.subway.utils.exceptions.LineNotFoundException;
@@ -30,32 +31,34 @@ public class SectionService {
         this.lineDao = lineDao;
     }
 
-    public SectionResponse insertSection(Long lineId, SectionRequest sectionRequest) {
+    public SectionInsertResponse insertSection(Long lineId, SectionRequest sectionRequest) {
         LineEntity lineEntity = lineDao.findById(lineId).orElseThrow(() -> new LineNotFoundException(
                 lineId));
-        List<SectionEntity> allSectionByLineId = sectionDao.findAllByLineId(lineId);
         Line line = convertLineEntityToLine(lineEntity);
+        List<SectionEntity> allSectionByLineId = sectionDao.findAllByLineId(lineId);
         Section section = convertSectionRequestToSection(lineId, sectionRequest);
 
         if (allSectionByLineId.isEmpty()) {
             SectionEntity saveEntity = sectionDao.save(section);
-            return new SectionResponse(saveEntity.getLineId(), saveEntity.getUpStationId(), saveEntity.getDownStationId(),
-                    saveEntity.getDistance());
+            return new SectionInsertResponse(new SectionResponse(saveEntity.getLineId(), saveEntity.getUpStationId(),
+                    saveEntity.getDownStationId(),
+                    saveEntity.getDistance()));
         }
 
         List<Section> sections = line.addSection(section);
-        updateAfterInsert(sections);
+        SectionInsertResponse sectionInsertResponse = updateAfterInsert(sections);
 
-        SectionEntity saveEntity = sectionDao.save(section);
-        return new SectionResponse(saveEntity.getLineId(), saveEntity.getUpStationId(), saveEntity.getDownStationId(),
-                saveEntity.getDistance());
+        //SectionEntity saveEntity = sectionDao.save(section);
+        return sectionInsertResponse;
     }
 
-    private void updateAfterInsert(List<Section> changedSections) {
+    private SectionInsertResponse updateAfterInsert(List<Section> changedSections) {
         if (changedSections.size() == 1) {
             Section section = changedSections.get(0);
-            sectionDao.save(section);
-            return;
+            SectionEntity saveEntity = sectionDao.save(section);
+            return new SectionInsertResponse(new SectionResponse(saveEntity.getLineId(), saveEntity.getUpStationId(),
+                    saveEntity.getDownStationId(),
+                    saveEntity.getDistance()));
         }
         Section newFirstSection = changedSections.get(0);
         Section newSecondSection = changedSections.get(1);
@@ -63,9 +66,21 @@ public class SectionService {
         sectionDao.save(newFirstSection);
         sectionDao.save(newSecondSection);
         sectionDao.deleteById(removedSection.getId());
+        return new SectionInsertResponse(
+                List.of(new SectionResponse(
+                                newFirstSection.getId(), newFirstSection.getUpStation().getId(),
+                                newFirstSection.getDownStation().getId(),
+                                newFirstSection.getDistance()),
+                        new SectionResponse(
+                                newSecondSection.getId(), newSecondSection.getUpStation().getId(),
+                                newSecondSection.getDownStation().getId(),
+                                newSecondSection.getDistance())
+                ), new SectionResponse(
+                        removedSection.getId(), removedSection.getUpStation().getId(),
+                        removedSection.getDownStation().getId(),
+                        removedSection.getDistance()));
     }
 
-    // TODO:
     public Station deleteSection(Long lineId, Long stationId) {
         LineEntity lineEntity = lineDao.findById(lineId).orElseThrow(() -> new LineNotFoundException(
                 lineId));
