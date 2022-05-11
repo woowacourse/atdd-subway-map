@@ -99,23 +99,32 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] optional 추가
 - [x] 새로 만든 도메인 객체들의 테스트코드 추가
 - [ ] equals 대신 isSame... 등의 메소드들 생성해 비교하기
-- [ ] 테스트코드 속도 개선
+[//]: # (- [ ] 테스트코드 속도 개선)
 
-    - [ ] Drop table 대신 truncate 어쩌구 사용...
-- [x] domain 는 vo ㄴㄴ
+[//]: # ()
+[//]: # (    - [ ] Drop table 대신 truncate 어쩌구 사용...)
 
-    - [x] equals 대신 usingRecursiveComparison 사용?
+[//]: # (- [x] domain 는 vo ㄴㄴ)
 
-    - [x] [참고자료](https://prolog.techcourse.co.kr/studylogs/2352)
-- [ ] 예외처리 꼼꼼하게~ 수정^^ CustomException 써보거나 기존 쓸만한 Exception 적용
+[//]: # ()
+[//]: # (    - [x] equals 대신 usingRecursiveComparison 사용?)
 
-    - [ ] IllegalStateException, NoSuchElementException 등
+[//]: # ()
+[//]: # (    - [x] [참고자료]&#40;https://prolog.techcourse.co.kr/studylogs/2352&#41;)
 
-    - [ ] sql 관련 Exception 검색 후 적용
+[//]: # (- [ ] 예외처리 꼼꼼하게~ 수정^^ CustomException 써보거나 기존 쓸만한 Exception 적용)
 
-    - [ ] 예외메세지에 해당 역/노선 등 정보 제공
+[//]: # ()
+[//]: # (    - [ ] IllegalStateException, NoSuchElementException 등)
 
-    - [ ] 예외 클래스 만들어 예외메세지 템플릿으로 메세지 변경
+[//]: # ()
+[//]: # (    - [ ] sql 관련 Exception 검색 후 적용)
+
+[//]: # ()
+[//]: # (    - [ ] 예외메세지에 해당 역/노선 등 정보 제공)
+
+[//]: # ()
+[//]: # (    - [ ] 예외 클래스 만들어 예외메세지 템플릿으로 메세지 변경)
 
 ### 3단계 피드백
 
