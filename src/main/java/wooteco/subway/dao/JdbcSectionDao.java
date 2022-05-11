@@ -52,8 +52,12 @@ public class JdbcSectionDao implements SectionDao {
             save(section, lineId, index);
             return;
         }
-        String sql = "UPDATE section SET index_num = ? WHERE id = ?";
-        jdbcTemplate.update(sql, index, section.getId());
+        String sql = "UPDATE section "
+                + "SET up_station_id = ?, down_station_id = ?, distance = ?, index_num = ? "
+                + "WHERE id = ?";
+        jdbcTemplate.update(sql,
+                section.getUpStationId(), section.getDownStationId(), section.getDistance(), index,
+                section.getId());
     }
 
     @Override

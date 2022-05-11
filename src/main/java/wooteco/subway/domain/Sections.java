@@ -2,7 +2,6 @@ package wooteco.subway.domain;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -34,20 +33,21 @@ public class Sections {
     }
 
     private void splitAndAdd(Section newSection) {
-        Section originalSection = findOriginalSection(newSection);
-        if (Objects.isNull(originalSection)) {
-            throw new IllegalArgumentException("노선에 상행 종점과 하행 종점이 모두 존재하지 않아 구간을 추가할 수 없습니다.");
-        }
-    }
-
-    private Section findOriginalSection(Section newSection) {
         Predicate<Section> hasSameUpStation = (section) -> section.hasSameUpStationWith(newSection);
         Section originalSection = findSection(hasSameUpStation);
         if (originalSection != null) {
-            return originalSection;
+            originalSection.splitRightBy(newSection);
+            sections.add(sections.indexOf(originalSection), newSection);
+            return;
         }
         Predicate<Section> hasSameDownStation = (section) -> section.hasSameDownStationWith(newSection);
-        return findSection(hasSameDownStation);
+        originalSection = findSection(hasSameDownStation);
+        if (originalSection != null) {
+            originalSection.splitLeftBy(newSection);
+            sections.add(sections.indexOf(originalSection) + 1, newSection);
+            return;
+        }
+        throw new IllegalArgumentException("노선에 상행 종점과 하행 종점이 모두 존재하지 않아 구간을 추가할 수 없습니다.");
     }
 
     public List<Station> getAllStations() {
@@ -66,11 +66,6 @@ public class Sections {
     private Station getDownTermination() {
         Section lastSection = sections.get(sections.size() - 1);
         return lastSection.getDownStation();
-    }
-
-    private boolean containsUpStationOf(Section newSection) {
-        return sections.stream()
-                .anyMatch(newSection::hasSameUpStationWith);
     }
 
     private Section findSection(Predicate<Section> sectionPredicate) {

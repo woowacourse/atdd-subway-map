@@ -2,7 +2,9 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.LinkedList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,5 +52,33 @@ public class SectionsTest {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> sections.add(section))
                 .withMessageContaining("존재하지 않아");
+    }
+
+    @DisplayName("기존 구간과 하행 종점이 같은 구간이 추가될 경우 기존 구간이 분리되고 그 뒤에 새 구간이 추가된다.")
+    @Test
+    void add_split_left() {
+        Station station = new Station(3L, "새로운역");
+        Section section = new Section(station, downTermination, 3);
+        sections.add(section);
+        LinkedList<Section> sectionValues = this.sections.getSections();
+
+        assertAll(
+                () -> assertThat(sectionValues.get(0).getDistance()).isEqualTo(7),
+                () -> assertThat(sectionValues.get(1)).isEqualTo(section)
+        );
+    }
+
+    @DisplayName("기존 구간과 상행 종점이 같은 구간이 추가될 경우 기존 구간이 분리되고 그 앞에 새 구간이 추가된다.")
+    @Test
+    void add_split_right() {
+        Station station = new Station(3L, "새로운역");
+        Section section = new Section(upTermination, station, 3);
+        sections.add(section);
+        LinkedList<Section> sectionValues = this.sections.getSections();
+
+        assertAll(
+                () -> assertThat(sectionValues.get(1).getDistance()).isEqualTo(7),
+                () -> assertThat(sectionValues.get(0)).isEqualTo(section)
+        );
     }
 }

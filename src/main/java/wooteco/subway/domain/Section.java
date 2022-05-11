@@ -1,12 +1,10 @@
 package wooteco.subway.domain;
 
-import java.util.List;
-
 public class Section {
     private final Long id;
-    private final Station upStation;
-    private final Station downStation;
-    private final int distance;
+    private Station upStation;
+    private Station downStation;
+    private int distance;
 
     public Section(Long id, Station upStation, Station downStation, int distance) {
         this.id = id;
@@ -17,6 +15,38 @@ public class Section {
 
     public Section(Station upStation, Station downStation, int distance) {
         this(null, upStation, downStation, distance);
+    }
+
+    public void splitRightBy(Section section) {
+        splitBy(section, true);
+    }
+
+    public void splitLeftBy(Section section) {
+        splitBy(section, false);
+    }
+
+    public void splitBy(Section section, boolean direction) {
+        checkStations(section);
+        checkDistance(section);
+        if (direction) {
+            upStation = section.downStation;
+        }
+        if (!direction) {
+            downStation = section.upStation;
+        }
+        distance = distance - section.distance;
+    }
+
+    private void checkStations(Section section) {
+        if (hasSameUpStationWith(section) && hasSameDownStationWith(section)) {
+            throw new IllegalArgumentException("기존 구간과 양 방향 종점이 같아 추가할 수 없습니다.");
+        }
+    }
+
+    private void checkDistance(Section section) {
+        if (section.distance >= distance) {
+            throw new IllegalArgumentException("기존 구간보다 거리가 길어 추가할 수 없습니다.");
+        }
     }
 
     public boolean hasSameUpStationWith(Section section) {
