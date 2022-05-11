@@ -1,6 +1,7 @@
 package wooteco.subway.ui.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,12 @@ public class SectionController {
     @PostMapping("/lines/{lineId}/sections")
     public ResponseEntity<Void> createSection(@RequestBody SectionRequest sectionRequest, @PathVariable Long lineId) {
         sectionService.add(sectionRequest, lineId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{lineId}/sections?stationId={stationId}")
+    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @PathVariable Long stationId) {
+        sectionService.delete(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 }

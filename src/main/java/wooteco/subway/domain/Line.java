@@ -37,6 +37,10 @@ public class Line {
         sections.add(section);
     }
 
+    public Section delete(Station station) {
+        return sections.delete(station);
+    }
+
     public boolean hasSameNameWith(Line otherLine) {
         return this.name.equals(otherLine.name);
     }

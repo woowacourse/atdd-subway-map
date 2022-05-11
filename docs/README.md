@@ -79,7 +79,7 @@
     - [x] [예외] 새로 추가하는 구간의 distance가 기존 구간 distance 이상 -> 추가 X
   - [x] [예외] 노선에 이미 양 방향 종점이 같은 구간 존재 -> 추가 X
   - [x] [예외] 노선에 양 방향 종점 둘다 존재하지 X -> 추가 X
-- [ ] 구간을 삭제한다. `DELETE /lines/{line_id}/sections?stationId={station_id} -> 200(OK)`
+- [x] 구간을 삭제한다. `DELETE /lines/{line_id}/sections?stationId={station_id} -> 200(OK)`
   - [x] 노선의 종점을 제거 -> 다음 순서의 역이 종점
   - [ ] 중간역 제거 -> 기존의 두 구간 병합
   - [ ] [예외] 노선에 구간 하나만 존재 -> 제거 X

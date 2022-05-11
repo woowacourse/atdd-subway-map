@@ -61,6 +61,12 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
+    public void delete(Section section) {
+        String sql = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(sql, section.getId());
+    }
+
+    @Override
     public void deleteByLine(Long lineId) {
         String sql = "DELETE FROM section WHERE line_id = ?";
         jdbcTemplate.update(sql, lineId);
