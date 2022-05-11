@@ -70,7 +70,7 @@ public class Sections {
             .filter(section -> section.getUpStationId() == stationId)
             .map(Section::getId)
             .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("ㅋㅋ"));
+            .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다."));
     }
 
     private long findIdByDownStationId(long stationId) {
@@ -78,7 +78,7 @@ public class Sections {
             .filter(section -> section.getDownStationId() == stationId)
             .map(Section::getId)
             .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("ㅋㅋ"));
+            .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다."));
     }
 
     private int findDistanceById(Long id) {
@@ -86,7 +86,7 @@ public class Sections {
             .filter(section -> section.getId().equals(id))
             .findAny()
             .map(Section::getDistance)
-            .orElseThrow(() -> new IllegalArgumentException("없음"));
+            .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다."));
     }
 
     public Section findOverlapSection(long upStationId, long downStationId, int distance) {
@@ -121,7 +121,7 @@ public class Sections {
         return sections.stream()
             .filter(section -> section.getId() == sectionId)
             .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다.똑바로 해라"));
+            .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다."));
     }
 
     public List<Long> getStationsId() {
@@ -138,5 +138,22 @@ public class Sections {
         return sections.stream()
             .sorted(Comparator.comparingLong(Section::getLineOrder))
             .collect(Collectors.toList());
+    }
+
+    public boolean hasTwoSection() {
+        return sections.size() == 2;
+    }
+
+    public Section getSingleDeleteSection() {
+        return sections.get(0);
+    }
+
+    public Section getUpsideEndSection() {
+        return createSortedSection().get(0);
+    }
+
+    public Section getDownsideEndSection() {
+        List<Section> sortedSection = createSortedSection();
+        return sortedSection.get(sortedSection.size() - 1);
     }
 }

@@ -108,4 +108,49 @@ class SectionServiceTest {
         assertThat(sectionService.findAllStationByLineId(1L))
             .containsExactly(1L, 2L, 3L);
     }
+
+    @Test
+    @DisplayName("상행종점을 삭제한다.")
+    void deleteUpEndStation() {
+        // given
+        sectionService.firstSave(1L, new SectionRequest(1L, 3L, 6));
+        sectionService.save(1L, new SectionRequest(1L, 2L, 3));
+
+        // when
+        sectionService.deleteByLineIdAndStationId(1L, 1L);
+
+        // then
+        assertThat(sectionService.findAllStationByLineId(1L))
+            .containsExactly(2L, 3L);
+    }
+
+    @Test
+    @DisplayName("하행종점을 삭제한다.")
+    void deleteDownEndStation() {
+        // given
+        sectionService.firstSave(1L, new SectionRequest(1L, 3L, 6));
+        sectionService.save(1L, new SectionRequest(1L, 2L, 3));
+
+        // when
+        sectionService.deleteByLineIdAndStationId(1L, 3L);
+
+        // then
+        assertThat(sectionService.findAllStationByLineId(1L))
+            .containsExactly(1L, 2L);
+    }
+
+    @Test
+    @DisplayName("양방향 구간이 모두 존재하는 지하철 역을 삭제한다.")
+    void deleteStation() {
+        // given
+        sectionService.firstSave(1L, new SectionRequest(1L, 3L, 6));
+        sectionService.save(1L, new SectionRequest(1L, 2L, 3));
+
+        // when
+        sectionService.deleteByLineIdAndStationId(1L, 2L);
+
+        // then
+        assertThat(sectionService.findAllStationByLineId(1L))
+            .containsExactly(1L, 3L);
+    }
 }

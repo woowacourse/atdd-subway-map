@@ -56,4 +56,34 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         return sections.getStationsId();
     }
+
+    public void deleteByLineIdAndStationId(long lineId, long stationId) {
+        Sections sections = new Sections(sectionDao.findByLineIdAndStationId(lineId, stationId));
+        if (sections.hasTwoSection()) {
+            Section upsideSection = sections.getUpsideEndSection();
+            Section downsideSection = sections.getDownsideEndSection();
+
+            deleteAndUnionTwoSection(lineId, upsideSection, downsideSection);
+            return;
+        }
+        deleteSingleSection(lineId, sections);
+    }
+
+    private void deleteAndUnionTwoSection(long lineId, Section upsideSection, Section downsideSection) {
+        sectionDao.deleteById(upsideSection.getId());
+        sectionDao.deleteById(downsideSection.getId());
+        sectionDao.save(new Section(null, lineId,
+            upsideSection.getUpStationId(), downsideSection.getDownStationId(),
+            upsideSection.getDistance() + downsideSection.getDistance(),
+            upsideSection.getLineOrder()));
+
+        sectionDao.updateLineOrderByDec(lineId, downsideSection.getLineOrder());
+    }
+
+    private void deleteSingleSection(long lineId, Sections sections) {
+        Section section = sections.getSingleDeleteSection();
+        sectionDao.deleteById(section.getId());
+
+        sectionDao.updateLineOrderByDec(lineId, section.getLineOrder());
+    }
 }
