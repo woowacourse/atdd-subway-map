@@ -31,7 +31,7 @@ import wooteco.subway.service.LineService;
 import wooteco.subway.ui.LineController;
 
 @WebMvcTest(LineController.class)
-class LineControllerTest {
+class LineControllerUnitTest {
 
     @Autowired
     private MockMvc mockMvc;

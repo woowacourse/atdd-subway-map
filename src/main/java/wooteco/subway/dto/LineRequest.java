@@ -1,19 +1,24 @@
 package wooteco.subway.dto;
 
-import wooteco.subway.util.NullChecker;
+import javax.validation.constraints.NotBlank;
 
 public class LineRequest {
+
+    @NotBlank
     private String name;
+    @NotBlank
     private String color;
+    @NotBlank
     private Long upStationId;
+    @NotBlank
     private Long downStationId;
+    @NotBlank
     private int distance;
 
     public LineRequest() {
     }
 
     public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
-        NullChecker.validateInputsNotNull(name, color, upStationId, downStationId, distance);
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;

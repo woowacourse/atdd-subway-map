@@ -1,15 +1,16 @@
 package wooteco.subway.dto;
 
-import wooteco.subway.util.NullChecker;
+import javax.validation.constraints.NotBlank;
 
 public class StationRequest {
+
+    @NotBlank
     private String name;
 
     public StationRequest() {
     }
 
     public StationRequest(String name) {
-        NullChecker.validateInputsNotNull(name);
         this.name = name;
     }
 

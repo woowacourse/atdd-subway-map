@@ -1,16 +1,18 @@
 package wooteco.subway.dto;
 
-import wooteco.subway.util.NullChecker;
+import javax.validation.constraints.NotBlank;
 
 public class LineEditRequest {
+
+    @NotBlank
     private String name;
+    @NotBlank
     private String color;
 
     public LineEditRequest() {
     }
 
     public LineEditRequest(String name, String color) {
-        NullChecker.validateInputsNotNull(name, color);
         this.name = name;
         this.color = color;
     }
