@@ -101,4 +101,15 @@ class SectionDaoTest {
                 .ignoringFields("id")
                 .isEqualTo(newSection);
     }
+
+    @DisplayName("특정 구간을 삭제한다.")
+    @Test
+    void delete() {
+        final Section section1 = new Section(station1, station2, 10, line.getId());
+        final Section savedSection = sectionDao.save(section1);
+
+        sectionDao.deleteById(savedSection.getId());
+
+        assertThat(sectionDao.findAllByLineId(savedSection.getLineId()).size()).isZero();
+    }
 }
