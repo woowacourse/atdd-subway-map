@@ -102,7 +102,7 @@ public class LineService {
         sectionService.createSection(lineId, sectionRequest);
     }
 
-    public void deleteStationInSection(Long lineId, Long stationId) {
+    public void deleteSection(Long lineId, Long stationId) {
         checkLineExist(lineDao.findById(lineId));
         sectionService.deleteSection(lineId, stationId);
     }
