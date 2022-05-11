@@ -21,9 +21,9 @@ public class AcceptanceTest {
         RestAssured.port = port;
     }
 
-    protected ExtractableResponse<Response> post(String url, Map<String, Object> params) {
+    protected ExtractableResponse<Response> post(String url, Object value) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(value)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(url)
@@ -39,9 +39,9 @@ public class AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> put(String url, Map<String, Object> newParams) {
+    protected ExtractableResponse<Response> put(String url, Object value) {
         return RestAssured.given().log().all()
-                .body(newParams)
+                .body(value)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(url)
@@ -55,5 +55,11 @@ public class AcceptanceTest {
                 .delete(url)
                 .then().log().all()
                 .extract();
+    }
+
+    protected Long getId(ExtractableResponse<Response> response) {
+        String location = response.header("Location");
+        String value = location.split("/")[2];
+        return Long.parseLong(value);
     }
 }

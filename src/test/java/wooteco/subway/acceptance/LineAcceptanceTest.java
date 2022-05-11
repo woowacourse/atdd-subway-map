@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
@@ -20,17 +22,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        ExtractableResponse<Response> stationResponse1 = post("/stations", Map.of("name", "강남역"));
-        ExtractableResponse<Response> stationResponse2 = post("/stations", Map.of("name", "잠실역"));
+        ExtractableResponse<Response> stationResponse1 = post("/stations", new StationRequest("강남역"));
+        ExtractableResponse<Response> stationResponse2 = post("/stations", new StationRequest("잠실역"));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", getId(stationResponse1));
-        params.put("downStationId", getId(stationResponse2));
-        params.put("distance", 10);
-
-        ExtractableResponse<Response> response = post("/lines", params);
+        ExtractableResponse<Response> response = post("/lines",
+                new LineRequest("신분당선", "bg-red-600", getId(stationResponse1), getId(stationResponse2), 10));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -39,9 +35,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
-        ExtractableResponse<Response> stationResponse1 = post("/stations", Map.of("name", "강남역"));
-        ExtractableResponse<Response> stationResponse2 = post("/stations", Map.of("name", "잠실역"));
-        // given
+        ExtractableResponse<Response> stationResponse1 = post("/stations", new StationRequest("강남역"));
+        ExtractableResponse<Response> stationResponse2 = post("/stations", new StationRequest("잠실역"));
+
         Map<String, Object> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
@@ -49,8 +45,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", getId(stationResponse2));
         params.put("distance", 10);
 
-        post("/lines", params);
-        ExtractableResponse<Response> response = post("/lines", params);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", getId(stationResponse1),
+                getId(stationResponse2), 10);
+        post("/lines", lineRequest);
+        ExtractableResponse<Response> response = post("/lines", lineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -59,27 +57,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 지하철 노선을 조회한다.")
     @Test
     void getLines() {
-        ExtractableResponse<Response> stationResponse1 = post("/stations", Map.of("name", "강남역"));
-        ExtractableResponse<Response> stationResponse2 = post("/stations", Map.of("name", "잠실역"));
-        ExtractableResponse<Response> stationResponse3 = post("/stations", Map.of("names", "선릉역"));
+        ExtractableResponse<Response> stationResponse1 = post("/stations", new StationRequest("강남역"));
+        ExtractableResponse<Response> stationResponse2 = post("/stations", new StationRequest("잠실역"));
+        ExtractableResponse<Response> stationResponse3 = post("/stations", new StationRequest("선릉역"));
 
-        Map<String, Object> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
-        params1.put("upStationId", getId(stationResponse1));
-        params1.put("downStationId", getId(stationResponse2));
-        params1.put("distance", 10);
-
-        ExtractableResponse<Response> createdResponse1 = post("/lines", params1);
-
-        Map<String, Object> params2 = new HashMap<>();
-        params2.put("name", "분당선");
-        params2.put("color", "bg-green-600");
-        params2.put("upStationId", getId(stationResponse1));
-        params2.put("downStationId", getId(stationResponse2));
-        params2.put("distance", 3);
-
-        ExtractableResponse<Response> createdResponse2 = post("/lines", params2);
+        ExtractableResponse<Response> createdResponse1 = post("/lines",
+                new LineRequest("신분당선", "bg-red-600", getId(stationResponse1), getId(stationResponse2), 10));
+        ExtractableResponse<Response> createdResponse2 = post("/lines",
+                new LineRequest("분당선", "bg-green-600", getId(stationResponse1), getId(stationResponse2), 3));
 
         ExtractableResponse<Response> response = get("/lines");
 
@@ -98,16 +83,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 단일 조회한다.")
     @Test
     void getLine() {
-        ExtractableResponse<Response> stationResponse1 = post("/stations", Map.of("name", "강남역"));
-        ExtractableResponse<Response> stationResponse2 = post("/stations", Map.of("name", "잠실역"));
+        ExtractableResponse<Response> stationResponse1 = post("/stations", new StationRequest("강남역"));
+        ExtractableResponse<Response> stationResponse2 = post("/stations", new StationRequest("잠실역"));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", getId(stationResponse1));
-        params.put("downStationId", getId(stationResponse2));
-        params.put("distance", 10);
-        ExtractableResponse<Response> createResponse1 = post("/lines", params);
+        ExtractableResponse<Response> createResponse1 = post("/lines",
+                new LineRequest("신분당선", "bg-red-600", getId(stationResponse1), getId(stationResponse2), 10));
 
         String value = createResponse1.header("Location").split("/")[2];
         int id = Integer.parseInt(value);
@@ -122,28 +102,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        ExtractableResponse<Response> stationResponse1 = post("/stations", Map.of("name", "강남역"));
-        ExtractableResponse<Response> stationResponse2 = post("/stations", Map.of("name", "잠실역"));
+        ExtractableResponse<Response> stationResponse1 = post("/stations", new StationRequest("강남역"));
+        ExtractableResponse<Response> stationResponse2 = post("/stations", new StationRequest("잠실역"));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", getId(stationResponse1));
-        params.put("downStationId", getId(stationResponse2));
-        params.put("distance", 10);
-        ExtractableResponse<Response> createResponse = post("/lines", params);
+        ExtractableResponse<Response> createResponse = post("/lines",
+                new LineRequest("신분당선", "bg-red-600", getId(stationResponse1), getId(stationResponse2), 10));
 
         String value = createResponse.header("Location").split("/")[2];
         int expected = Integer.parseInt(value);
 
-        Map<String, Object> newParams = new HashMap<>();
-        newParams.put("name", "분당선");
-        newParams.put("color", "bg-green-600");
-        newParams.put("upStationId", getId(stationResponse1));
-        newParams.put("downStationId", getId(stationResponse2));
-        newParams.put("distance", 3);
-
-        ExtractableResponse<Response> response = put("/lines/" + expected, newParams);
+        ExtractableResponse<Response> response = put("/lines/" + expected,
+                new LineRequest("분당선", "bg-green-600", getId(stationResponse1), getId(stationResponse2), 3));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -151,39 +120,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선으로 수정할 시 상태 코드 400을 반환한다.")
     @Test
     void updateLineWithDuplicateName() {
-        ExtractableResponse<Response> stationResponse1 = post("/stations", Map.of("name", "강남역"));
-        ExtractableResponse<Response> stationResponse2 = post("/stations", Map.of("name", "잠실역"));
-        ExtractableResponse<Response> stationResponse3 = post("/stations", Map.of("names", "선릉역"));
+        ExtractableResponse<Response> stationResponse1 = post("/stations", new StationRequest("강남역"));
+        ExtractableResponse<Response> stationResponse2 = post("/stations", new StationRequest("잠실역"));
+        ExtractableResponse<Response> stationResponse3 = post("/stations", new StationRequest("선릉역"));
 
-        // given
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", getId(stationResponse1));
-        params.put("downStationId", getId(stationResponse2));
-        params.put("distance", 3);
+        post("/lines", new LineRequest("신분당선", "bg-red-600", getId(stationResponse1), getId(stationResponse2), 3));
 
-        post("/lines", params);
-
-        Map<String, Object> params2 = new HashMap<>();
-        params2.put("name", "분당선");
-        params2.put("color", "bg-green-600");
-        params2.put("upStationId", getId(stationResponse1));
-        params2.put("downStationId", getId(stationResponse2));
-
-        ExtractableResponse<Response> createdResponse = post("/lines", params2);
+        ExtractableResponse<Response> createdResponse = post("/lines",
+                new LineRequest("분당선", "bg-green-600", getId(stationResponse1), getId(stationResponse2), 2));
         String value = createdResponse.header("Location").split("/")[2];
         int id = Integer.parseInt(value);
 
-        // when
-        Map<String, Object> newParams = new HashMap<>();
-        newParams.put("name", "신분당선");
-        newParams.put("color", "bg-red-600");
-        newParams.put("upStationId", getId(stationResponse1));
-        newParams.put("downStationId", getId(stationResponse2));
-        newParams.put("distance", 3);
-
-        ExtractableResponse<Response> response = put("/lines/" + id, newParams);
+        ExtractableResponse<Response> response = put("/lines/" + id,
+                new LineRequest("신분당선", "bg-red-600", getId(stationResponse1), getId(stationResponse2), 3));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -192,17 +141,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        ExtractableResponse<Response> stationResponse1 = post("/stations", Map.of("name", "강남역"));
-        ExtractableResponse<Response> stationResponse2 = post("/stations", Map.of("name", "잠실역"));
+        ExtractableResponse<Response> stationResponse1 = post("/stations", new StationRequest("강남역"));
+        ExtractableResponse<Response> stationResponse2 = post("/stations", new StationRequest("잠실역"));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", getId(stationResponse1));
-        params.put("downStationId", getId(stationResponse2));
-        params.put("distance", 10);
-
-        ExtractableResponse<Response> createResponse = post("/lines", params);
+        ExtractableResponse<Response> createResponse = post("/lines",
+                new LineRequest("신분당선", "bg-red-600", getId(stationResponse1), getId(stationResponse2), 10));
         String uri = createResponse.header("Location");
 
         ExtractableResponse<Response> response = delete(uri);
@@ -216,11 +159,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = delete("/lines/1");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private Long getId(ExtractableResponse<Response> response) {
-        String location = response.header("Location");
-        String value = location.split("/")[2];
-        return Long.parseLong(value);
     }
 }
