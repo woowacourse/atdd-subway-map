@@ -69,7 +69,7 @@ public class Section implements Comparator<Section> {
 
     @Override
     public int compare(final Section section1, final Section section2) {
-        return Long.compare(section1.getId(), section2.getId());
+        return Long.compare(section1.getUpStationId(), section2.getUpStationId());
     }
 
     public Section createMiddleToDownSection(final Section unSplitSection) {
