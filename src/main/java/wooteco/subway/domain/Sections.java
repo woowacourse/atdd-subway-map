@@ -109,6 +109,18 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("일치하는 구간이 존재하지 않습니다."));
     }
 
+    public List<Long> getStationIds() {
+        List<Section> value = getValue();
+        List<Long> stationIds = value.stream()
+                .map(Section::getUpStationId)
+                .collect(toList());
+
+        Section lastSection = value.get(value.size() - 1);
+        stationIds.add(lastSection.getDownStationId());
+
+        return stationIds;
+    }
+
     public List<Section> getValue() {
         List<Section> sections = new ArrayList<>();
         Section firstSection = findByUpStationId(getUpStationId());

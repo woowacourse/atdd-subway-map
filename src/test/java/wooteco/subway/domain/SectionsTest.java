@@ -132,4 +132,25 @@ class SectionsTest {
                 () -> assertThat(value.get(2).getUpStationId()).isEqualTo(1)
         );
     }
+
+    @DisplayName("상행역 부터 하행역까지 정렬된 지하철역을 조회한다.")
+    @Test
+    void 지하철역_조회() {
+        Section basedSection1 = new Section(1L, 2L, 1L, 4);
+        Section basedSection2 = new Section(1L, 1L, 3L, 7);
+        Section basedSection3 = new Section(1L, 4L, 2L, 7);
+        Sections sections = new Sections(List.of(basedSection1, basedSection2, basedSection3));
+
+        List<Long> stationIds = sections.getStationIds();
+
+        System.out.println(stationIds);
+
+        assertAll(
+                () -> assertThat(stationIds.size()).isEqualTo(4),
+                () -> assertThat(stationIds.get(0)).isEqualTo(4),
+                () -> assertThat(stationIds.get(1)).isEqualTo(2),
+                () -> assertThat(stationIds.get(2)).isEqualTo(1),
+                () -> assertThat(stationIds.get(3)).isEqualTo(3)
+        );
+    }
 }
