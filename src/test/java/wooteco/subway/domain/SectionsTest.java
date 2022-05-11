@@ -25,10 +25,10 @@ class SectionsTest {
 
     private static Stream<Arguments> provideAddSectionSource() {
         return Stream.of(
-                Arguments.of(SectionFactory.from("ac3"), List.of(SectionFactory.from("ac3"),
-                        SectionFactory.from("cb3"))),
-                Arguments.of(SectionFactory.from ("cb3"), List.of(
-                        SectionFactory.from("ac3"),SectionFactory.from("cb3"))),
+                Arguments.of(SectionFactory.from("ac2"), List.of(SectionFactory.from("ac2"),
+                        SectionFactory.from("cb1"))),
+                Arguments.of(SectionFactory.from ("cb2"), List.of(
+                        SectionFactory.from("ac1"),SectionFactory.from("cb2"))),
                 Arguments.of(SectionFactory.from("bc3"), List.of(
                         SectionFactory.from("ab3"), SectionFactory.from("bc3"))),
                 Arguments.of(SectionFactory.from("ca3"), List.of(

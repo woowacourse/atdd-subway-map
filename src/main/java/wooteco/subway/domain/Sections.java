@@ -23,7 +23,7 @@ public class Sections {
         final List<Section> existedStations = new ArrayList<>(value);
         for (Section section : existedStations) {
             final MatchingResult result = section.match(newSection);
-            if (canAddStation(result)) {
+            if (canAddStation(result, section, newSection)) {
                 add(section, newSection, result);
                 return;
             }
@@ -44,9 +44,10 @@ public class Sections {
         return newSections;
     }
 
-    private boolean canAddStation(final MatchingResult result) {
-        return result == MatchingResult.ADD_TO_LEFT
-                || result == MatchingResult.ADD_TO_RIGHT;
+    private boolean canAddStation(final MatchingResult result, final Section section, final Section newSection) {
+        return (result == MatchingResult.ADD_TO_LEFT
+                || result == MatchingResult.ADD_TO_RIGHT)
+                && section.isDistanceLongerThan(newSection);
     }
 
     private void add(final Section section, final Section newSection, final MatchingResult result) {
