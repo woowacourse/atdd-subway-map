@@ -576,7 +576,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
     }
 
     private long registerStationAndReturnId(final String name) {

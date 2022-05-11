@@ -62,6 +62,12 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
+    public void deleteSectionsByLineId(final Long id) {
+        final String sql = "DELETE FROM SECTION WHERE line_id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public void batchUpdate(final List<Section> sections) {
         final String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ? WHERE id = ?";
         jdbcTemplate.batchUpdate(sql,

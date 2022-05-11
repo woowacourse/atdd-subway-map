@@ -71,6 +71,7 @@ public class LineService {
     }
 
     public void deleteLineById(final Long id) {
+        sectionDao.deleteSectionsByLineId(id);
         lineDao.deleteById(id);
     }
 
