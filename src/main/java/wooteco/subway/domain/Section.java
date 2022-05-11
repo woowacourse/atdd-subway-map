@@ -19,6 +19,11 @@ public class Section {
         return upStationId.equals(stationId) || downStationId.equals(stationId);
     }
 
+    public boolean isAddingEndSection(final Section section) {
+        return upStationId.equals(section.downStationId)
+                || downStationId.equals(section.upStationId);
+    }
+
     private void validateDistance(final int distance) {
         if (distance <= 0) {
             throw new IllegalArgumentException("구간 거리는 1 이상이어야 합니다.");
