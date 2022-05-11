@@ -98,8 +98,8 @@ public class LineDaoTest {
     @Test
     void existLineById() {
         Line savedLine = lineDao.insert(line);
-        boolean isExist = lineDao.existLineById(savedLine.getId());
+        boolean isExisted = lineDao.existLineById(savedLine.getId());
 
-        assertThat(isExist).isTrue();
+        assertThat(isExisted).isTrue();
     }
 }

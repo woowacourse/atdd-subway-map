@@ -89,8 +89,8 @@ public class LineService {
     }
 
     private void validateExistData(Long lineId) {
-        boolean isExist = lineDao.existLineById(lineId);
-        if (!isExist) {
+        boolean isExisted = lineDao.existLineById(lineId);
+        if (!isExisted) {
             throw new AccessNoneDataException("접근하려는 노선이 존재하지 않습니다.");
         }
     }

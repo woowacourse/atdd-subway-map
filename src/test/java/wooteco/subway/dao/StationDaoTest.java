@@ -64,8 +64,8 @@ class StationDaoTest {
     @Test
     void existStationById() {
         Station savedStation = stationDao.insert(new Station("강남역"));
-        boolean isExist = stationDao.existStationById(savedStation.getId());
+        boolean isExisted = stationDao.existStationById(savedStation.getId());
 
-        assertThat(isExist).isTrue();
+        assertThat(isExisted).isTrue();
     }
 }
