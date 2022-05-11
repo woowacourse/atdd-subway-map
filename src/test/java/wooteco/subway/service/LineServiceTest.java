@@ -47,10 +47,10 @@ class LineServiceTest {
     @DisplayName("모든 노선을 조회한다.")
     void showLines() {
         // given
-        stationDao.save(new Station("강남역"));
-        stationDao.save(new Station("노원역"));
-        lineService.save(new LineRequest("1호선", "bg-red-600", 1L, 2L, 10));
-        lineService.save(new LineRequest("2호선", "bg-blue-600", 2L, 1L, 10));
+        Station 강남역 = stationDao.save(new Station("강남역"));
+        Station 노원역 = stationDao.save(new Station("노원역"));
+        lineService.save(new LineRequest("1호선", "bg-red-600", 강남역.getId(), 노원역.getId(), 10));
+        lineService.save(new LineRequest("2호선", "bg-blue-600", 노원역.getId(), 강남역.getId(), 10));
 
         // when
         List<LineResponse> responses = lineService.findAll();

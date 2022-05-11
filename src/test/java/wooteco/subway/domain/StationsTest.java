@@ -15,16 +15,16 @@ class StationsTest {
         // given
         Stations stations = new Stations(
                 List.of(
-                        new Station(3L, "강남역"), new Station(1L, "노원역"), new Station(2L, "선릉역")
+                        new Station(1L, "강남역"), new Station(2L, "노원역"), new Station(3L, "선릉역")
                 )
         );
 
         // when
-        List<Station> sorted = stations.sortBy(List.of(1L, 2L, 3L));
+        List<Station> sorted = stations.sortBy(List.of(3L, 1L, 2L));
         List<Long> sortedIds = sorted.stream()
                 .map(Station::getId)
                 .collect(Collectors.toList());
         // then
-        assertThat(sortedIds).containsExactly(1L, 2L, 3L);
+        assertThat(sortedIds).containsExactly(3L, 1L, 2L);
     }
 }

@@ -12,6 +12,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.ExceptionMessage;
@@ -55,7 +56,12 @@ public class LineService {
     private List<Station> getStationsByLine(Line line) {
         List<Section> sectionsPerLine = sectionDao.findByLineId(line.getId());
         List<Long> stationIds = new Sections(sectionsPerLine).getSortedStationId();
-        return stationDao.findByIds(stationIds);
+        return getSortedStationsBy(stationIds);
+    }
+
+    private List<Station> getSortedStationsBy(List<Long> ids) {
+        Stations stations = new Stations(stationDao.findByIds(ids));
+        return stations.sortBy(ids);
     }
 
     public List<LineResponse> findAll() {

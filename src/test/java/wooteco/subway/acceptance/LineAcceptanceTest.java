@@ -18,6 +18,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ExceptionMessage;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -39,7 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Station 노원역 = stationDao.save(new Station("노원역"));
 
         // when
-        LineRequest requestBody = new LineRequest(lineName, lineColor, 강남역.getId(), 노원역.getId(), 10);
+        LineRequest requestBody = new LineRequest(lineName, lineColor, 노원역.getId(), 강남역.getId(), 10);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(requestBody)
@@ -54,11 +55,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header(LOCATION)).isNotBlank();
 
         LineResponse lineResponse = response.body().as(LineResponse.class);
+        List<Long> stationIds = lineResponse.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
         assertAll(() -> {
             assertThat(lineResponse.getId()).isNotNull();
             assertThat(lineResponse.getName()).isEqualTo(lineName);
             assertThat(lineResponse.getColor()).isEqualTo(lineColor);
-            assertThat(lineResponse.getStations()).hasSize(2);
+            assertThat(stationIds).containsExactly(노원역.getId(), 강남역.getId());
         });
     }
 
