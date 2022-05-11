@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,18 +34,8 @@ public class SectionDaoTest {
 
     @Test
     void create() {
-        //when
-        RowMapper<Section> rowMapper = (rs, rowNum) -> {
-            var upStationId = rs.getLong("up_station_id");
-            var downStationId = rs.getLong("down_station_id");
-            var distance = rs.getInt("distance");
-            return new Section(upStationId, downStationId, distance);
-        };
+        var section = findSection(LINE_ID);
 
-        var sql = "SELECT * FROM section WHERE line_id = ?";
-        var section = jdbcTemplate.queryForObject(sql, rowMapper, LINE_ID);
-
-        //then
         assertAll(
                 () -> assertThat(section.getUpStationId()).isEqualTo(SECTION_REQUEST.getUpStationId()),
                 () -> assertThat(section.getDownStationId()).isEqualTo(SECTION_REQUEST.getDownStationId()),
@@ -52,7 +43,23 @@ public class SectionDaoTest {
         );
     }
 
+    private Section findSection(Long lineId) {
+        var sql = "SELECT * FROM section WHERE line_id = ?";
+
+        RowMapper<Section> rowMapper = (rs, rowNum) -> {
+            var id = rs.getLong("id");
+            var upStationId = rs.getLong("up_station_id");
+            var downStationId = rs.getLong("down_station_id");
+            var distance = rs.getInt("distance");
+            return new Section(id, upStationId, downStationId, distance);
+        };
+
+        return jdbcTemplate.queryForObject(sql, rowMapper, lineId);
+    }
+
     @Test
     void delete() {
+        var section = findSection(LINE_ID);
+        assertDoesNotThrow(() -> sectionDao.delete(LINE_ID, section.getId()));
     }
 }

@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import wooteco.subway.dto.section.SectionRequest;
@@ -21,5 +22,14 @@ public class SectionDao {
                 sectionRequest.getDistance(),
                 lineId
         );
+    }
+
+    public void delete(Long lineId, Long sectionId) {
+        var sql = "DELETE FROM section WHERE line_id = ? AND id = ?";
+        var removedRowCount = jdbcTemplate.update(sql, lineId, sectionId);
+
+        if (removedRowCount == 0) {
+            throw new NoSuchElementException("[ERROR] 정보와 일치하는 구간이 없습니다.");
+        }
     }
 }
