@@ -19,7 +19,6 @@ public class SectionsOnTheLine {
 
     public boolean isAddableOnTheLine(final Section section) {
         validateSectionForAdd(section);
-        validateSectionDistance(section, findOverlapSection(section));
         return doMatchedUpStationExist(section) || doMatchedDownStationExist(section);
     }
 
@@ -29,12 +28,6 @@ public class SectionsOnTheLine {
         final Station downStation = section.getDownStation();
         if (doNotAllStationExist(stations, upStation, downStation) ||
                 doAllStationExist(stations, upStation, downStation)) {
-            throw new IllegalSectionException();
-        }
-    }
-
-    private void validateSectionDistance(final Section section, final Section overlapSection) {
-        if (overlapSection.getDistance() <= section.getDistance()) {
             throw new IllegalSectionException();
         }
     }
@@ -64,7 +57,14 @@ public class SectionsOnTheLine {
                 .filter(it -> it.isUpStationMatch(upStation) || it.isDownStationMatch(downStation))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 겹치는 구간을 찾을 수 없습니다."));
+        validateSectionDistance(section, overlapSection);
         return overlapSection;
+    }
+
+    private void validateSectionDistance(final Section section, final Section overlapSection) {
+        if (overlapSection.getDistance() <= section.getDistance()) {
+            throw new IllegalSectionException();
+        }
     }
 
     public List<Station> lineUpStations() {

@@ -47,16 +47,6 @@ class SectionsOnTheLineTest {
                 .hasMessage("[ERROR] 부적절한 구간입니다.");
     }
 
-    @DisplayName("추가하고자 하는 구간이 길이가 겹쳐지는 구간길이보다 크거나 같으면 예외를 발생시킨다.")
-    @Test
-    void isAddableOnTheLine_validateSectionDistance() {
-        Section section = new Section(3L, station_GN, station_SS, 11);
-
-        assertThatThrownBy(() -> sectionsOnTheLine.isAddableOnTheLine(section))
-                .isInstanceOf(IllegalSectionException.class)
-                .hasMessage("[ERROR] 부적절한 구간입니다.");
-    }
-
     @DisplayName("추가하고자 하는 구간이 노선 중간에 추가 가능한지 판별한다.")
     @Test
     void isAddableOnTheLine() {
@@ -76,6 +66,16 @@ class SectionsOnTheLineTest {
                 () -> assertThat(overlapSection.getUpStation().getName()).isEqualTo("강남역"),
                 () -> assertThat(overlapSection.getDownStation().getName()).isEqualTo("역삼역")
         );
+    }
+
+    @DisplayName("추가하고자 하는 구간의 길이가 노선위의 겹쳐지는 구간의 길이보다 크거나 같으면 예외를 발생시킨다.")
+    @Test
+    void isAddableOnTheLine_validateSectionDistance() {
+        Section section = new Section(3L, station_GN, station_SS, 11);
+
+        assertThatThrownBy(() -> sectionsOnTheLine.findOverlapSection(section))
+                .isInstanceOf(IllegalSectionException.class)
+                .hasMessage("[ERROR] 부적절한 구간입니다.");
     }
 
     @DisplayName("구간들을 상행종점부터 하행 종점까지 정렬한다.")
