@@ -68,7 +68,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         /// given
         ExtractableResponse<Response> createResponse1 = postMethodRequest(LINE_2_인자, LINE_URL);
-//        ExtractableResponse<Response> createResponse2 = postMethodRequest(경의중앙선_인자, LINE_URL);
 
         // when
         ExtractableResponse<Response> response = getMethodRequest(LINE_URL);
@@ -107,7 +106,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-//                () -> assertThat(response.body().jsonPath().getList()getString("name")).isEqualTo("분당선"),
                 () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("2호선"),
                 () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("초록이")
         );
