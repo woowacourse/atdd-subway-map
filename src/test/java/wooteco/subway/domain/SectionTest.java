@@ -50,7 +50,7 @@ class SectionTest {
         // when
         assertThatThrownBy(() -> section.divideFrom(sectionForAdd))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("섹션을 나누지 못했습니다.");
+                .hasMessage(ExceptionMessage.INVALID_DIVIDE_SECTION.getContent());
     }
 
     @Test
