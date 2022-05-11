@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
@@ -68,5 +69,48 @@ class SectionServiceTest {
         List<StationResponse> stationResponses = sectionService.getStationsByLineId(1L);
 
         assertThat(stationResponses.size()).isEqualTo(3);
+    }
+
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+        Long lineId = 1L;
+        Long stationId = 2L;
+
+        doReturn(new Sections(List.of(
+                new Section(lineId, 1L,stationId,5),
+                new Section(lineId, stationId, 5L, 5)
+
+        )))
+                .when(jdbcSectionDao)
+                .findByLineIdAndStationId(lineId, stationId);
+
+        doReturn(true)
+                .when(jdbcSectionDao)
+                .deleteByLineIdAndUpStationId(lineId,stationId);
+
+        doReturn(true)
+                .when(jdbcSectionDao)
+                .updateDownStationIdByLineIdAndUpStationId(lineId, 1L, 5L);
+
+        boolean isDeleted = sectionService.deleteSection(lineId, stationId);
+        assertThat(isDeleted).isTrue();
+    }
+
+    @DisplayName("구간을 삭제할 때 db에 구간 정보가 한 개이면 에러가 발생한다.")
+    @Test
+    void deleteInCaseOfException() {
+        Long lineId = 1L;
+        Long stationId = 2L;
+
+        doReturn(new Sections(List.of(
+                new Section(lineId, 1L,stationId,5)
+
+        )))
+                .when(jdbcSectionDao)
+                .findByLineIdAndStationId(lineId, stationId);
+
+        assertThatThrownBy(() -> sectionService.deleteSection(lineId, stationId))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
