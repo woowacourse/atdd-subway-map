@@ -6,11 +6,11 @@ public class Section {
 
     private static final int MIN_DISTANCE = 1;
 
-    private final Long id;
-    private final long lineId;
-    private final Station upStation;
-    private final Station downStation;
-    private final int distance;
+    private Long id;
+    private long lineId;
+    private Station upStation;
+    private Station downStation;
+    private int distance;
 
     public Section(final long lineId, final Station upStation, final Station downStation, final int distance) {
         this(null, lineId, upStation, downStation, distance);
@@ -37,6 +37,16 @@ public class Section {
         if (upStation.isSameStation(downStation)) {
             throw new StationDuplicateException();
         }
+    }
+
+    public void updateSection(final Station upStation, final Station downStation, final int overlappingDistance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = decreaseDistance(overlappingDistance);
+    }
+
+    private int decreaseDistance(final int overlappingDistance) {
+        return this.distance -= overlappingDistance;
     }
 
     public boolean isDuplicateSection(final Section section) {

@@ -1,7 +1,9 @@
 package wooteco.subway.domain;
 
+import java.util.Collections;
 import java.util.List;
-import wooteco.subway.exception.CannotConnectSection;
+import java.util.Optional;
+import wooteco.subway.exception.CannotConnectSectionException;
 import wooteco.subway.exception.SectionDuplicateException;
 
 public class Sections {
@@ -15,6 +17,10 @@ public class Sections {
     public void add(final Section section) {
         validateDuplicateSection(section);
         validateConnectSection(section);
+        if (findNearbySection(section).isPresent()) {
+            updateSection(findNearbySection(section).get(), section);
+        }
+        sections.add(section);
     }
 
     private void validateDuplicateSection(final Section checkSection) {
@@ -29,6 +35,29 @@ public class Sections {
         sections.stream()
                 .filter(section -> section.hasSectionToConnect(checkSection))
                 .findFirst()
-                .orElseThrow(CannotConnectSection::new);
+                .orElseThrow(CannotConnectSectionException::new);
+    }
+
+    private Optional<Section> findNearbySection(final Section newSection) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().isSameStation(newSection.getUpStation())
+                        || section.getDownStation().isSameStation(newSection.getDownStation()))
+                .findFirst();
+    }
+
+    private void updateSection(final Section foundSection, final Section newSection) {
+        final Station upStation = foundSection.getUpStation();
+        final Station downStation = foundSection.getDownStation();
+
+        if (upStation.isSameStation(newSection.getUpStation())) {
+            foundSection.updateSection(newSection.getDownStation(), downStation, newSection.getDistance());
+        }
+        if (downStation.isSameStation(newSection.getDownStation())) {
+            foundSection.updateSection(newSection.getUpStation(), downStation, newSection.getDistance());
+        }
+    }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
     }
 }
