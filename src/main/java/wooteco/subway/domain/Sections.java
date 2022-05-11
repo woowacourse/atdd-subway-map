@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.LongerSectionDistanceException;
 import wooteco.subway.exception.section.NonExistenceStationsSectionException;
+import wooteco.subway.exception.section.OnlySectionDeletionException;
 
 public class Sections {
 
@@ -88,6 +90,46 @@ public class Sections {
         }
     }
 
+    public Sections delete(Long stationId) {
+        validateOneSection();
+        if (isBackOrForthDeletion(stationId)) {
+            return deleteBackOrForth(stationId);
+        }
+        return deleteBetween(stationId);
+    }
+
+    private void validateOneSection() {
+        if (values.size() == 1) {
+            throw OnlySectionDeletionException.getInstance();
+        }
+    }
+
+    private Sections deleteBetween(Long stationId) {
+        List<Section> deletedSections = values.stream()
+                .filter(section -> section.hasStationId(stationId))
+                .collect(Collectors.toUnmodifiableList());
+        List<Section> deleted = new ArrayList<>(values);
+        Section combinedSection = deleted.get(0).combine(deleted.get(1));
+        deleted.removeAll(deletedSections);
+        deleted.add(combinedSection);
+        return new Sections(deleted);
+    }
+
+    private Sections deleteBackOrForth(Long stationId) {
+        List<Section> deleted = new ArrayList<>(values);
+        Optional<Section> deletedSection = values.stream()
+                .filter(section -> section.hasStationId(stationId))
+                .findAny();
+        deletedSection.ifPresent(deleted::remove);
+        return new Sections(deleted);
+    }
+
+    private boolean isBackOrForthDeletion(Long stationId) {
+        return values.stream()
+                .filter(section -> section.hasStationId(stationId))
+                .count() == 1;
+    }
+
     public List<Section> findDifferentSections(Sections another) {
         List<Section> sections = new ArrayList<>(values);
         sections.removeAll(another.values);
@@ -118,5 +160,12 @@ public class Sections {
     @Override
     public int hashCode() {
         return Objects.hash(values);
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "values=" + values +
+                '}';
     }
 }

@@ -87,6 +87,17 @@ public class Section {
                 .orElseThrow(IllegalStateException::new);
     }
 
+    public boolean hasStationId(Long stationId) {
+        return upStationId.equals(stationId) || downStationId.equals(stationId);
+    }
+
+    public Section combine(Section another) {
+        if (downStationId.equals(another.upStationId)) {
+            return new Section(id, lindId, upStationId, another.downStationId, distance + another.distance);
+        }
+        return new Section(id, lindId, another.upStationId, downStationId, distance + another.distance);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.LongerSectionDistanceException;
 import wooteco.subway.exception.section.NonExistenceStationsSectionException;
+import wooteco.subway.exception.section.OnlySectionDeletionException;
 
 class SectionsTest {
 
@@ -128,5 +129,38 @@ class SectionsTest {
         Long upStationId = sections.findDownStationId();
 
         assertThat(upStationId).isEqualTo(4L);
+    }
+
+    @DisplayName("구간이 하나뿐인데 구간을 삭제하려고 하면 예외를 발생시킨다.")
+    @Test
+    void delete_exceptionByOnlySection() {
+        Sections sections = new Sections(Collections.singletonList(first));
+        assertThatThrownBy(() -> sections.delete(2L))
+                .isInstanceOf(OnlySectionDeletionException.class);
+    }
+
+    @DisplayName("하행역 혹은 상행역을 삭제할 수 있다.")
+    @Test
+    void deleteForth() {
+        Sections deleted = sections.delete(2L);
+
+        assertThat(deleted).isEqualTo(new Sections(Collections.singletonList(second)));
+    }
+
+    @DisplayName("상행역을 삭제할 수 있다.")
+    @Test
+    void deleteBack() {
+        Sections deleted = sections.delete(4L);
+
+        assertThat(deleted).isEqualTo(new Sections(Collections.singletonList(first)));
+    }
+
+    @DisplayName("구간들 사이에 있는 역을 삭제할 수 있다.")
+    @Test
+    void deleteBetween() {
+        Sections deleted = sections.delete(3L);
+        Section combinedSection = new Section(1L, 2L, 4L, 16);
+
+        assertThat(deleted).isEqualTo(new Sections(Collections.singletonList(combinedSection)));
     }
 }

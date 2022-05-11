@@ -120,4 +120,23 @@ class SectionTest {
                         .isInstanceOf(IllegalStateException.class)
         );
     }
+
+    @DisplayName("지하철 역 id를 받아 해당 id를 가지고 있는지 반환한다.")
+    @ParameterizedTest
+    @CsvSource({"1, false", "2, true", "3, true"})
+    void hasStationId(Long stationId, boolean expected) {
+        boolean actual = section.hasStationId(stationId);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @DisplayName("다른 구간을 받아 자신과 같은 역을 기준으로 결합한 구간을 반환한다.")
+    @Test
+    void combine() {
+        Section another = new Section(1L, 1L, 3L, 4L, 5);
+
+        Section combined = section.combine(another);
+
+        assertThat(combined).isEqualTo(new Section(1L, 1L, 2L, 4L, 10));
+    }
 }
