@@ -3,7 +3,9 @@ package wooteco.subway.application;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.exception.constant.DuplicateException;
 import wooteco.subway.exception.constant.NotExistException;
 
@@ -14,17 +16,30 @@ import java.util.List;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
-    public Line saveAndGet(String name, String color) {
+    public Line saveAndGet(String name, String color, Long upStationId, Long downStationId, Integer distance) {
         if (lineDao.existByName(name) || lineDao.existByColor(name)) {
             throw new DuplicateException();
         }
         long savedLineId = lineDao.save(new Line(name, color));
+        sectionDao.save(new Section(upStationId, downStationId, distance, savedLineId));
         return new Line(savedLineId, name, color);
+    }
+
+    public Line saveAndGet(Line line, Section section) {
+        if (lineDao.existByName(line.getName()) || lineDao.existByColor(line.getColor())) {
+            throw new DuplicateException();
+        }
+        long savedLineId = lineDao.save(line);
+        section.setLineId(savedLineId);
+        sectionDao.save(section);
+        return new Line(savedLineId, line.getName(), line.getName());
     }
 
     public List<Line> findAll() {

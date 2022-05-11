@@ -1,11 +1,15 @@
 package wooteco.subway.domain;
 
+import lombok.Getter;
+import lombok.Setter;
 import wooteco.subway.exception.constant.BlankArgumentException;
 
 import java.util.Objects;
 
 import static wooteco.subway.util.StringUtils.isBlank;
 
+@Getter
+@Setter
 public class Station {
 
     private final Long id;
@@ -25,18 +29,6 @@ public class Station {
         }
         this.id = id;
         this.name = name;
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id == id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

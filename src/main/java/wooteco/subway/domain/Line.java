@@ -1,11 +1,13 @@
 package wooteco.subway.domain;
 
+import lombok.Getter;
 import wooteco.subway.exception.constant.BlankArgumentException;
 
 import java.util.Objects;
 
 import static wooteco.subway.util.StringUtils.isBlank;
 
+@Getter
 public class Line {
 
     private final Long id;
@@ -33,18 +35,6 @@ public class Line {
         return this.name.equals(name);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,9 +55,5 @@ public class Line {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 '}';
-    }
-
-    public boolean isSameLineId(Long lineId) {
-        return this.id.equals(lineId);
     }
 }

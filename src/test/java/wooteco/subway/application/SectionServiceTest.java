@@ -9,7 +9,11 @@ import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.dao.MemorySectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.constant.TerminalStation;
 import wooteco.subway.exception.constant.SectionNotRegisterException;
+
+import java.util.LinkedList;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,30 +30,40 @@ class SectionServiceTest {
         sectionService = new SectionService(sectionDao);
     }
 
+    @DisplayName("정렬을 할 수 있다")
+    @Test
+    void can_sort_stations() {
+        // 3 -> 2 -> 5 -> 7
+        sectionDao.save(new Section(2L, 5L, 40, 10L));
+        sectionDao.save(new Section(3L, 2L, 30, 10L));
+        sectionDao.save(new Section(5L, 7L, 50, 10L));
+
+        LinkedList<Long> sortedStations = sectionService.findSortedStations(10L);
+        assertThat(sortedStations).containsExactly(3L, 2L, 5L, 7L);
+    }
+
+    @DisplayName("상행 종점역과 하행종점역을 찾을 수 있다")
+    @Test
+    void can_find_up_and_down_terminal_station() {
+        // 3 -> 2 -> 5 -> 7
+        sectionDao.save(new Section(2L, 5L, 40, 10L));
+        sectionDao.save(new Section(3L, 2L, 30, 10L));
+        sectionDao.save(new Section(5L, 7L, 50, 10L));
+
+        Map<TerminalStation, Long> terminalStationMap = sectionService.findTerminalStations(10L);
+        assertThat(terminalStationMap.get(TerminalStation.UP)).isEqualTo(3L);
+        assertThat(terminalStationMap.get(TerminalStation.DOWN)).isEqualTo(7L);
+    }
+
     @DisplayName("[구간 등록]")
     @Nested
     class register {
-        @DisplayName("Section 을 등록할 수 있다")
-        @Test
-        void create_section() {
-            // given
-            long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
-
-            // when
-            Section foundSection = sectionDao.findById(savedSectionId).get();
-
-            // then
-            assertThat(foundSection.getLine().getId()).isEqualTo(1L);
-            assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
-            assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
-            assertThat(foundSection.getDistance()).isEqualTo(3);
-        }
 
         @DisplayName("상행 종점 등록을 한다")
         @Test
         void create_first_terminal_station() {
             // given
-            long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
+            long savedSectionId = firstCreateSection(1L, 1L, 2L, 3);
             long savedSectionId2 = sectionService.createSection(1L, 3L, 1L, 4);
 
             // when
@@ -57,17 +71,17 @@ class SectionServiceTest {
             Section foundSection2 = sectionDao.findById(savedSectionId2).get();
 
             // then
-            assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
-            assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
-            assertThat(foundSection2.getUpStation().getId()).isEqualTo(3L);
-            assertThat(foundSection2.getDownStation().getId()).isEqualTo(1L);
+            assertThat(foundSection.getUpStationId()).isEqualTo(1L);
+            assertThat(foundSection.getDownStationId()).isEqualTo(2L);
+            assertThat(foundSection2.getUpStationId()).isEqualTo(3L);
+            assertThat(foundSection2.getDownStationId()).isEqualTo(1L);
         }
 
         @DisplayName("하행 종점 등록을 한다")
         @Test
         void create_last_terminal_station() {
             // given
-            long savedSectionId = sectionService.createSection(1L, 1L, 2L, 3);
+            long savedSectionId = firstCreateSection(1L, 1L, 2L, 3);
             long savedSectionId2 = sectionService.createSection(1L, 2L, 3L, 4);
 
             // when
@@ -75,10 +89,10 @@ class SectionServiceTest {
             Section foundSection2 = sectionDao.findById(savedSectionId2).get();
 
             // then
-            assertThat(foundSection.getUpStation().getId()).isEqualTo(1L);
-            assertThat(foundSection.getDownStation().getId()).isEqualTo(2L);
-            assertThat(foundSection2.getUpStation().getId()).isEqualTo(2L);
-            assertThat(foundSection2.getDownStation().getId()).isEqualTo(3L);
+            assertThat(foundSection.getUpStationId()).isEqualTo(1L);
+            assertThat(foundSection.getDownStationId()).isEqualTo(2L);
+            assertThat(foundSection2.getUpStationId()).isEqualTo(2L);
+            assertThat(foundSection2.getDownStationId()).isEqualTo(3L);
         }
 
         @DisplayName("[갈림길 방지]")
@@ -88,18 +102,18 @@ class SectionServiceTest {
             @Test
             void prevent_forked_road_same_up_station() {
                 // given
-                long oldSectionId = sectionService.createSection(1L, 1L, 2L, 7);
+                long oldSectionId = firstCreateSection(1L, 1L, 2L, 7);
                 long newSectionId = sectionService.createSection(1L, 1L, 3L, 4);
 
                 Section oldSection = sectionDao.findById(oldSectionId).get();
                 Section newSection = sectionDao.findById(newSectionId).get();
 
-                assertThat(oldSection.getUpStation().getId()).isEqualTo(3L);
-                assertThat(oldSection.getDownStation().getId()).isEqualTo(2L);
+                assertThat(oldSection.getUpStationId()).isEqualTo(3L);
+                assertThat(oldSection.getDownStationId()).isEqualTo(2L);
                 assertThat(oldSection.getDistance()).isEqualTo(3);
 
-                assertThat(newSection.getUpStation().getId()).isEqualTo(1L);
-                assertThat(newSection.getDownStation().getId()).isEqualTo(3L);
+                assertThat(newSection.getUpStationId()).isEqualTo(1L);
+                assertThat(newSection.getDownStationId()).isEqualTo(3L);
                 assertThat(newSection.getDistance()).isEqualTo(4);
             }
 
@@ -114,12 +128,12 @@ class SectionServiceTest {
                 Section newSection = sectionDao.findById(newSectionId).get();
 
                 assertAll(
-                        () -> assertThat(oldSection.getUpStation().getId()).isEqualTo(1L),
-                        () -> assertThat(oldSection.getDownStation().getId()).isEqualTo(3L),
+                        () -> assertThat(oldSection.getUpStationId()).isEqualTo(1L),
+                        () -> assertThat(oldSection.getDownStationId()).isEqualTo(3L),
                         () -> assertThat(oldSection.getDistance()).isEqualTo(3),
 
-                        () -> assertThat(newSection.getUpStation().getId()).isEqualTo(3L),
-                        () -> assertThat(newSection.getDownStation().getId()).isEqualTo(2L),
+                        () -> assertThat(newSection.getUpStationId()).isEqualTo(3L),
+                        () -> assertThat(newSection.getDownStationId()).isEqualTo(2L),
                         () -> assertThat(newSection.getDistance()).isEqualTo(4)
                 );
             }
@@ -133,15 +147,38 @@ class SectionServiceTest {
                         .isInstanceOf(SectionNotRegisterException.class);
             }
 
-            @DisplayName("[예외] 상행역과 하행역 모두 존재하는 것을 등록하려 한다면 구간을 추가할 수 없다")
+            @DisplayName("[예외] 상행역과 하행역 모두 존재하는 것을 등록하려 한다면 구간을 추가할 수 없다 (구간 1개인 경우)")
             @Test
-            void can_not_register_if_all_same_up_and_down_station() {
+            void can_not_register_if_all_same_up_and_down_station_when_1_section() {
                 long upStationId = 1L;
                 long downStationId = 2L;
                 sectionService.createSection(1L, upStationId, downStationId, 7);
                 assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
                         .isInstanceOf(SectionNotRegisterException.class);
             }
+
+            @DisplayName("[예외] 상행역과 하행역 모두 존재하는 것을 등록하려 한다면 구간을 추가할 수 없다 (구간 2개인 경우)")
+            @Test
+            void can_not_register_if_all_same_up_and_down_station_when_2_section() {
+                long upStationId = 1L;
+                long downStationId = 3L;
+                sectionService.createSection(1L, upStationId, 2L, 7);
+                sectionService.createSection(1L, 2L, downStationId, 7);
+                assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
+                        .isInstanceOf(SectionNotRegisterException.class);
+            }
+
+            @DisplayName("[예외] 상행역과 하행역 모두 존재하지 않는다면 구간을 추가할 수 없다")
+            @Test
+            void can_not_register_if_up_and_down_all_exist() {
+                sectionService.createSection(1L, 1L, 2L, 7);
+                assertThatThrownBy(() -> sectionService.createSection(1L, 5L, 6L, 11))
+                        .isInstanceOf(SectionNotRegisterException.class);
+            }
         }
+    }
+
+    private long firstCreateSection(Long lineId, long upStationId, long downStationId, Integer distance) {
+        return sectionDao.save(new Section(upStationId, downStationId, distance, lineId));
     }
 }

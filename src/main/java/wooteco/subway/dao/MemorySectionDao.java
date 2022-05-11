@@ -30,7 +30,7 @@ public class MemorySectionDao implements SectionDao {
     @Override
     public List<Section> findByLineId(Long lineId) {
         return sections.stream()
-                .filter(section -> section.getLine().isSameLineId(lineId))
+                .filter(section -> section.getLineId().equals(lineId))
                 .collect(Collectors.toList());
     }
 
