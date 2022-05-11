@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
@@ -26,9 +25,9 @@ class LineDaoImplTest {
     void setUp() {
         lineDaoImpl = new LineDaoImpl(jdbcTemplate);
 
-        List<LineEntity> lineEntities = lineDaoImpl.findAll();
+        List<Line> lineEntities = lineDaoImpl.findAll();
         List<Long> lineIds = lineEntities.stream()
-            .map(LineEntity::getId)
+            .map(Line::getId)
             .collect(Collectors.toList());
 
         for (Long lineId : lineIds) {
@@ -43,7 +42,7 @@ class LineDaoImplTest {
 
         // when
         Long savedId = lineDaoImpl.save(line);
-        LineEntity line1 = lineDaoImpl.findById(savedId).get();
+        Line line1 = lineDaoImpl.findById(savedId).get();
 
         // then
         assertThat(line.getName()).isEqualTo(line1.getName());
@@ -76,7 +75,7 @@ class LineDaoImplTest {
         // then
         List<String> names = lineDaoImpl.findAll()
             .stream()
-            .map(LineEntity::getName)
+            .map(Line::getName)
             .collect(Collectors.toList());
 
         assertThat(names)
@@ -96,7 +95,7 @@ class LineDaoImplTest {
         // then
         List<Long> lineIds = lineDaoImpl.findAll()
             .stream()
-            .map(LineEntity::getId)
+            .map(Line::getId)
             .collect(Collectors.toList());
 
         assertThat(lineIds)
@@ -113,7 +112,7 @@ class LineDaoImplTest {
         // when
         Line newline = new Line("2호선", "bg-green-600");
         lineDaoImpl.updateById(savedId, newline);
-        LineEntity line = lineDaoImpl.findById(savedId).get();
+        Line line = lineDaoImpl.findById(savedId).get();
 
         // then
         assertThat(line.getName()).isEqualTo(newline.getName());

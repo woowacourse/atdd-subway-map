@@ -10,8 +10,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.dao.entity.LineEntity;
-import wooteco.subway.dao.entity.StationEntity;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -33,14 +32,12 @@ public class AcceptanceTest {
 
         clearAllStations();
         clearAllLines();
-        stationDao.save(new Station("강남역"));
-        stationDao.save(new Station("역삼역"));
     }
 
     private void clearAllStations() {
-        List<StationEntity> stationEntities = stationDao.findAll();
+        List<Station> stationEntities = stationDao.findAll();
         List<Long> stationIds = stationEntities.stream()
-            .map(StationEntity::getId)
+            .map(Station::getId)
             .collect(Collectors.toList());
 
         for (Long stationId : stationIds) {
@@ -49,9 +46,9 @@ public class AcceptanceTest {
     }
 
     private void clearAllLines() {
-        List<LineEntity> lineEntities = lineDaoImpl.findAll();
+        List<Line> lineEntities = lineDaoImpl.findAll();
         List<Long> lineIds = lineEntities.stream()
-            .map(LineEntity::getId)
+            .map(Line::getId)
             .collect(Collectors.toList());
 
         for (Long lineId : lineIds) {

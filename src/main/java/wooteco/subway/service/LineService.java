@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.dao.entity.SectionEntity;
-import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -59,29 +57,22 @@ public class LineService {
     }
 
     private StationResponse findStationByLineId(Long lineId) {
-        StationEntity station = stationDao.findById(lineId);
+        Station station = stationDao.findById(lineId);
         return new StationResponse(station.getId(), station.getName());
     }
 
     private Map<Long, Station> findStation() {
         return stationDao.findAll().stream()
-            .collect(Collectors.toMap(StationEntity::getId, i -> new Station(i.getName())));
+            .collect(Collectors.toMap(Station::getId, i -> new Station(i.getName())));
     }
 
     private List<Station> findStation(Long lineId, Map<Long, Station> stations) {
-        Sections sections = toSections(sectionDao.findByLineId(lineId));
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
         List<Long> stationIds = sections.sortedStationId();
 
         return stationIds.stream()
             .map(stations::get)
             .collect(Collectors.toList());
-    }
-
-    private Sections toSections(List<SectionEntity> sectionEntities) {
-        return new Sections(sectionEntities.stream()
-            .map(i -> new Section(i.getLine_id(), i.getUpStationId(), i.getDownStationId(),
-                i.getDistance()))
-            .collect(Collectors.toList()));
     }
 
     public boolean deleteById(Long id) {

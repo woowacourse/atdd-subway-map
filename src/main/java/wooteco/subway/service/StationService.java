@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.station.StationFindResponse;
 import wooteco.subway.service.dto.station.StationSaveRequest;
@@ -21,8 +20,8 @@ public class StationService {
 
     public StationSaveResponse save(StationSaveRequest stationSaveRequest) {
         validateDuplicationName(stationSaveRequest.getName());
-        StationEntity savedStationEntity = stationDao.save(new Station(stationSaveRequest.getName()));
-        return new StationSaveResponse(savedStationEntity.getId(), savedStationEntity.getName());
+        Station savedStation = stationDao.save(new Station(stationSaveRequest.getName()));
+        return new StationSaveResponse(savedStation.getId(), savedStation.getName());
     }
 
     private void validateDuplicationName(String name) {
@@ -32,7 +31,7 @@ public class StationService {
     }
 
     public List<StationFindResponse> findAll() {
-        List<StationEntity> stationEntities = stationDao.findAll();
+        List<Station> stationEntities = stationDao.findAll();
         return stationEntities.stream()
             .map(i -> new StationFindResponse(i.getId(), i.getName()))
             .collect(Collectors.toList());

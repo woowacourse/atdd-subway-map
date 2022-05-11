@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Section;
 
 @Repository
@@ -37,13 +36,13 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public List<SectionEntity> findByLineId(Long lineId) {
+    public List<Section> findByLineId(Long lineId) {
         final String sql = "SELECT * FROM section WHERE line_id = ?";
         return jdbcTemplate.query(sql, sectionMapper(), lineId);
     }
 
-    private RowMapper<SectionEntity> sectionMapper() {
-        return (resultSet, rowNum) -> new SectionEntity(
+    private RowMapper<Section> sectionMapper() {
+        return (resultSet, rowNum) -> new Section(
             resultSet.getLong("id"),
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),

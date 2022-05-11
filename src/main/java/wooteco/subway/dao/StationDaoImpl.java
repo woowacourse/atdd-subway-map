@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
 
 @Repository
@@ -20,7 +19,7 @@ public class StationDaoImpl implements StationDao{
     }
 
     @Override
-    public StationEntity save(Station Station) {
+    public Station save(Station Station) {
         final String sql = "INSERT INTO station (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -30,17 +29,17 @@ public class StationDaoImpl implements StationDao{
         }, keyHolder);
         long id = keyHolder.getKey().longValue();
 
-        return new StationEntity(id, Station.getName());
+        return new Station(id, Station.getName());
     }
 
     @Override
-    public List<StationEntity> findAll() {
+    public List<Station> findAll() {
         final String sql = "SELECT id, name FROM station";
         return jdbcTemplate.query(sql, stationMapper());
     }
 
-    private RowMapper<StationEntity> stationMapper() {
-        return (resultSet, rowNum) -> new StationEntity(
+    private RowMapper<Station> stationMapper() {
+        return (resultSet, rowNum) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
         );
@@ -60,7 +59,7 @@ public class StationDaoImpl implements StationDao{
     }
 
     @Override
-    public StationEntity findById(Long id) {
+    public Station findById(Long id) {
         final String sql = "SELECT * FROM station where id = ?";
         return jdbcTemplate.queryForObject(sql, stationMapper(), id);
     }

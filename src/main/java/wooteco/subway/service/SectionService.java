@@ -1,10 +1,7 @@
 package wooteco.subway.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.ui.dto.SectionDeleteRequest;
@@ -22,60 +19,40 @@ public class SectionService {
     public Long save(SectionRequest sectionRequest) {
         Section section = sectionRequest.toSection();
 
-        List<SectionEntity> sectionEntities = sectionDao.findByLineId(sectionRequest.getLineId());
-        Sections sections = getSections(sectionEntities);
+        Sections sections = new Sections(sectionDao.findByLineId(sectionRequest.getLineId()));
 
         if (sections.isMiddleSection(section)) {
             sections.validateForkedLoad(section);
-            return updateMiddleSection(section, sectionEntities);
+            return updateMiddleSection(section, sections);
         }
 
         return sectionDao.save(section);
     }
 
-    private Sections getSections(List<SectionEntity> sectionEntities) {
-        List<Section> sections = sectionEntities.stream()
-            .map(i -> new Section(i.getLine_id(), i.getUpStationId()
-                    , i.getDownStationId(), i.getDistance()))
-            .collect(Collectors.toList());
-        return new Sections(sections);
-    }
+    private Long updateMiddleSection(Section section, Sections sections) {
+        Section upStationSection = sections.findSectionByUpStationId(section.getUpStationId());
 
-    private Long updateMiddleSection(Section section, List<SectionEntity> sectionEntities) {
-        SectionEntity upStationSectionEntity = sectionEntities.stream()
-            .filter(i -> i.getUpStationId().equals(section.getUpStationId()))
-            .findAny()
-            .orElseThrow(IllegalArgumentException::new);
-
-        if (upStationSectionEntity.getDistance() <= section.getDistance()) {
+        if (upStationSection.getDistance() <= section.getDistance()) {
             throw new IllegalArgumentException("등록할 구간의 길이가 기존 역 사이의 길이보다 길거나 같으면 안됩니다.");
         }
 
-        sectionDao.update(upStationSectionEntity.getId(), section.getDownStationId(),
+        sectionDao.update(upStationSection.getId(), section.getDownStationId(),
             section.getDistance());
 
         return sectionDao.save(
             new Section(section.getLineId(), section.getUpStationId(),
                 section.getDownStationId(),
-                upStationSectionEntity.getDistance() - section.getDistance()));
+                upStationSection.getDistance() - section.getDistance()));
     }
 
     public boolean removeSection(SectionDeleteRequest sectionDeleteRequest) {
-        List<SectionEntity> sectionEntities = sectionDao.findByLineId(
-            sectionDeleteRequest.getLineId());
-        Sections sections = getSections(sectionEntities);
+        Sections sections = new Sections(sectionDao.findByLineId(sectionDeleteRequest.getLineId()));
 
         validateRemoveSection(sectionDeleteRequest, sections);
 
-        SectionEntity upStationSection = sectionEntities.stream()
-            .filter(i -> i.getDownStationId().equals(sectionDeleteRequest.getStationId()))
-            .findAny()
-            .orElseThrow(IllegalArgumentException::new);
+        Section upStationSection = sections.findSectionByDownStationId(sectionDeleteRequest.getStationId());
 
-        SectionEntity deleteSectionStation = sectionEntities.stream()
-            .filter(i -> i.getUpStationId().equals(sectionDeleteRequest.getStationId()))
-            .findAny()
-            .orElseThrow(IllegalArgumentException::new);
+        Section deleteSectionStation = sections.findSectionByUpStationId(sectionDeleteRequest.getStationId());
 
         int totalDistance = upStationSection.getDistance() + deleteSectionStation.getDistance();
         sectionDao.update(upStationSection.getId(), deleteSectionStation.getDownStationId(),

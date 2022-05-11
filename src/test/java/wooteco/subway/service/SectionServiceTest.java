@@ -14,7 +14,6 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.SectionDaoImpl;
-import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.ui.dto.SectionDeleteRequest;
@@ -48,7 +47,7 @@ public class SectionServiceTest {
 
         // when
         sectionService.save(new SectionRequest(lineId, 1L, 2L, 2));
-        List<SectionEntity> sections = sectionDao.findByLineId(lineId);
+        List<Section> sections = sectionDao.findByLineId(lineId);
 
         // then
         assertThat(sections).hasSize(4);
@@ -65,7 +64,7 @@ public class SectionServiceTest {
 
         // when
         sectionService.save(new SectionRequest(lineId, 5L, 6L, 3));
-        List<SectionEntity> sections = sectionDao.findByLineId(lineId);
+        List<Section> sections = sectionDao.findByLineId(lineId);
 
         // then
         assertThat(sections).hasSize(4);
@@ -82,7 +81,7 @@ public class SectionServiceTest {
 
         // when
         sectionService.save(new SectionRequest(lineId, 3L, 6L, 2));
-        List<SectionEntity> sections = sectionDao.findByLineId(lineId);
+        List<Section> sections = sectionDao.findByLineId(lineId);
 
         // then
         assertThat(sections).hasSize(4);

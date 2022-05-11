@@ -1,22 +1,30 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
-import wooteco.subway.dao.entity.StationEntity;
 
 public class Line {
-
+    private final Long id;
     private final String name;
     private final String color;
-    private final ArrayList<StationEntity> stations;
+    private final ArrayList<Station> stations;
 
-    public Line(String name, String color, ArrayList<StationEntity> stations) {
+    public Line(Long id, String name, String color, ArrayList<Station> stations) {
+        this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
     }
 
+    public Line(Long id, String name, String color) {
+        this(id, name, color, null);
+    }
+
     public Line(String name, String color) {
-        this(name, color, null);
+        this(null, name, color, null);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -27,7 +35,7 @@ public class Line {
         return color;
     }
 
-    public ArrayList<StationEntity> getStations() {
+    public ArrayList<Station> getStations() {
         return stations;
     }
 }

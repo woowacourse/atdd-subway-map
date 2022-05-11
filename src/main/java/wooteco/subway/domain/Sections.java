@@ -23,6 +23,20 @@ public class Sections {
             .equals(downStationId));
     }
 
+    public Section findSectionByUpStationId(Long id) {
+        return sections.stream()
+            .filter(i -> i.getUpStationId().equals(id))
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public Section findSectionByDownStationId(Long id) {
+        return sections.stream()
+            .filter(i -> i.getUpStationId().equals(id))
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
+    }
+
     private Map<Long, Long> getSectionId() {
         Map<Long, Long> sectionId = new HashMap<>();
         for (Section sectionOfSections : sections) {

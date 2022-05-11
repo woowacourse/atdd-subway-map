@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
@@ -26,9 +25,9 @@ class StationDaoImplTest {
     void setUp() {
         stationDao = new StationDaoImpl(jdbcTemplate);
 
-        List<StationEntity> stationEntities = stationDao.findAll();
+        List<Station> stationEntities = stationDao.findAll();
         List<Long> stationIds = stationEntities.stream()
-            .map(StationEntity::getId)
+            .map(Station::getId)
             .collect(Collectors.toList());
 
         for (Long stationId : stationIds) {
@@ -42,7 +41,7 @@ class StationDaoImplTest {
         Station Station = new Station("범고래");
 
         // when
-        StationEntity result = stationDao.save(Station);
+        Station result = stationDao.save(Station);
 
         // then
         assertThat(Station.getName()).isEqualTo(result.getName());
@@ -51,16 +50,14 @@ class StationDaoImplTest {
     @Test
     void findAll() {
         // given
-        StationEntity Station1 = stationDao.save(new Station("범고래"));
-        StationEntity Station2 = stationDao.save(new Station("애쉬"));
+        stationDao.save(new Station("범고래"));
+        stationDao.save(new Station("애쉬"));
 
         // when
-        List<StationEntity> stationEntities = stationDao.findAll();
+        List<Station> stations = stationDao.findAll();
 
         // then
-        assertThat(stationEntities)
-            .hasSize(2)
-            .contains(Station1, Station2);
+        assertThat(stations).hasSize(2);
     }
 
     @Test
@@ -80,11 +77,11 @@ class StationDaoImplTest {
     @Test
     void delete() {
         // given
-        StationEntity Station = stationDao.save(new Station("범고래"));
+        Station Station = stationDao.save(new Station("범고래"));
 
         // when
         stationDao.deleteById(Station.getId());
-        List<StationEntity> stationEntities = stationDao.findAll();
+        List<Station> stationEntities = stationDao.findAll();
 
         // then
         assertThat(stationEntities)

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Section;
 
 @JdbcTest
@@ -39,7 +38,7 @@ public class SectionDaoImplTest {
         sectionDao.deleteById(savedId);
 
         // then
-        List<SectionEntity> sections = sectionDao.findByLineId(1L);
+        List<Section> sections = sectionDao.findByLineId(1L);
         assertThat(sections).hasSize(0);
     }
 }
