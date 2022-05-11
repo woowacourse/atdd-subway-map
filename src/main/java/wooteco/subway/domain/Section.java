@@ -3,7 +3,6 @@ package wooteco.subway.domain;
 public class Section {
 
     private Long id;
-//    private Long lineId;
     private final Station upStation;
     private final Station downStation;
     private final int distance;
@@ -19,6 +18,14 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean isEqualToUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isEqualToDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public Station getUpStation() {
