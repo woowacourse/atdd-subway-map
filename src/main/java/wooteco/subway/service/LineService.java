@@ -39,9 +39,9 @@ public class LineService {
         Line savedLine = lineDao.save(line);
 
         Station upStation = stationDao.findById(lineRequest.getUpStationId())
-            .orElseThrow(() -> new NotFoundException("조회하려는 상행역이 없습니다."));
+                .orElseThrow(() -> new NotFoundException("조회하려는 상행역이 없습니다."));
         Station downStation = stationDao.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new NotFoundException("조회하려는 하행역이 없습니다."));
+                .orElseThrow(() -> new NotFoundException("조회하려는 하행역이 없습니다."));
 
         sectionDao.save(new Section(savedLine, upStation, downStation, lineRequest.getDistance()));
 
@@ -54,8 +54,8 @@ public class LineService {
 
     public List<LineResponse> showAll() {
         return lineDao.findAll().stream()
-            .map(line -> LineResponse.of(line, getStations(line.getId())))
-            .collect(Collectors.toList());
+                .map(line -> LineResponse.of(line, getStations(line.getId())))
+                .collect(Collectors.toList());
     }
 
     public void updateById(Long id, LineUpdateRequest request) {
@@ -69,49 +69,22 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    private Line findLine(Long id) {
-        return lineDao.findById(id)
-            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
-    }
-
-    private List<Station> getStations(Long lineId) {
-        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
-        return sections.getStations();
-    }
-
-    private void validateDuplicateNameAndColor(String name, String color) {
-        if (lineDao.existByNameAndColor(name, color)) {
-            throw new BadRequestException("노선이 이름과 색상은 중복될 수 없습니다.");
-        }
-    }
-
-    private List<Section> toSections(List<SectionEntity> entities) {
-        return entities.stream()
-            .map(entity -> new Section(
-                entity.getId(),
-                findLine(entity.getLineId()),
-                stationDao.findById(entity.getUpStationId()).orElseThrow(),
-                stationDao.findById(entity.getDownStationId()).orElseThrow(),
-                entity.getDistance()))
-            .collect(Collectors.toList());
-    }
-
     public void createSection(Long lineId, SectionRequest request) {
         Line line = findLine(lineId);
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
-        Station upStation = stationDao.findById(request.getUpStationId()).orElseThrow();
-        Station downStation = stationDao.findById(request.getDownStationId()).orElseThrow();
+        Station upStation = stationDao.findById(request.getUpStationId())
+                .orElseThrow(() -> new IllegalArgumentException("출발지로 요청한 역이 없습니다."));
+        Station downStation = stationDao.findById(request.getDownStationId())
+                .orElseThrow(() -> new IllegalArgumentException("도착지로 요청한 역이 없습니다."));
         int distance = request.getDistance();
         Section wait = new Section(line, upStation, downStation, distance);
 
         if (sections.existUpStation(upStation) && sections.existDownStation(downStation)) {
             throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
         }
+        hasStationFrontOrBack(sections, upStation, downStation);
 
-        if (!((sections.existUpStation(downStation) || sections.existDownStation(upStation))
-            && !sections.existUpStation(upStation) && !sections.existDownStation(downStation))) {
-            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
-        }
+        validateContainsStation(sections, upStation, downStation);
 
         if (sections.existUpStation(upStation)) {
             Section section = sections.findContainsUpStation(upStation);
@@ -133,15 +106,57 @@ public class LineService {
     }
 
     public void delete(Long lineId, Long stationId) {
-        Station station = stationDao.findById(stationId).orElseThrow();
+        Station station = stationDao.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException("삭제 요청한 역이 없습니다."));
+
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
         Section upSection = sections.findContainsDownStation(station);
         Section downSection = sections.findContainsUpStation(station);
 
         sectionDao.save(new Section(findLine(lineId), upSection.getUpStation(), downSection.getDownStation(),
-            upSection.getDistance() + downSection.getDistance()));
+                upSection.getDistance() + downSection.getDistance()));
         sectionDao.deleteById(upSection.getId());
         sectionDao.deleteById(downSection.getId());
+    }
+
+    private Line findLine(Long id) {
+        return lineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
+    }
+
+    private List<Station> getStations(Long lineId) {
+        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        return sections.getStations();
+    }
+
+    private void validateDuplicateNameAndColor(String name, String color) {
+        if (lineDao.existByNameAndColor(name, color)) {
+            throw new BadRequestException("노선의 이름과 색상은 중복될 수 없습니다.");
+        }
+    }
+
+    private List<Section> toSections(List<SectionEntity> entities) {
+        return entities.stream()
+                .map(entity -> new Section(
+                        entity.getId(),
+                        findLine(entity.getLineId()),
+                        stationDao.findById(entity.getUpStationId())
+                                .orElseThrow(() -> new IllegalArgumentException("출발지로 요청한 역이 없습니다.")),
+                        stationDao.findById(entity.getDownStationId())
+                                .orElseThrow(() -> new IllegalArgumentException("도착지로 요청한 역이 없습니다.")),
+                        entity.getDistance()))
+                .collect(Collectors.toList());
+    }
+
+    private void validateContainsStation(Sections sections, Station upStation, Station downStation) {
+        if (!hasStationFrontOrBack(sections, upStation, downStation)
+                && !sections.existUpStation(upStation) && !sections.existDownStation(downStation)) {
+            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
+        }
+    }
+
+    private boolean hasStationFrontOrBack(Sections sections, Station upStation, Station downStation) {
+        return sections.existUpStation(downStation) || sections.existDownStation(upStation);
     }
 }
 
