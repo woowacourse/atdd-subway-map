@@ -563,4 +563,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("노선이 지나지 않는 역을 포함한 구간 삭제 요청한다.(400에러)")
+    @Test
+    void deleteSection_notExistStationInLine() {
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
+
+        ExtractableResponse<Response> createLineResponse = createLineForTest("2호선", "green", "1", "2", "10");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/" + createLineResponse.jsonPath().getLong("id") + "/sections?stationId=3")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
