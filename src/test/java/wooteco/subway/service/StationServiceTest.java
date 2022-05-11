@@ -23,9 +23,9 @@ class StationServiceTest {
 
     private final StationService stationService = new StationService(mockStationDao, mockSectionDao);
 
-    StationRequestDto stationRequestDto_SL = new StationRequestDto("선릉역");
-    StationRequestDto stationRequestDto_GN = new StationRequestDto("강남역");
-    StationRequestDto stationRequestDto_JS = new StationRequestDto("잠실역");
+    private StationRequestDto stationRequestDto_SL = new StationRequestDto("선릉역");
+    private StationRequestDto stationRequestDto_GN = new StationRequestDto("강남역");
+    private StationRequestDto stationRequestDto_JS = new StationRequestDto("잠실역");
 
     @BeforeEach
     void setUp() {

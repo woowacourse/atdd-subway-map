@@ -30,17 +30,17 @@ class LineServiceTest {
 
     private final LineService lineService = new LineService(mockLineDao, mockSectionDao, stationService);
 
-    Station station_SDB;
-    Station station_GN;
-    Station station_YS;
-    Station station_SL;
-    Station station_JS;
-    LineRequestDto lineRequestDto_2H;
-    LineRequestDto lineRequestDto_SBD;
-    LineRequestDto lineRequestDto_BD;
-    SectionRequestDto sectionRequestDto_SDB_GN;
-    SectionRequestDto sectionRequestDto_GN_YS;
-    SectionRequestDto sectionRequestDto_SL_JS;
+    private Station station_SDB;
+    private Station station_GN;
+    private Station station_YS;
+    private Station station_SL;
+    private Station station_JS;
+    private LineRequestDto lineRequestDto_2H;
+    private LineRequestDto lineRequestDto_SBD;
+    private LineRequestDto lineRequestDto_BD;
+    private SectionRequestDto sectionRequestDto_SDB_GN;
+    private SectionRequestDto sectionRequestDto_GN_YS;
+    private SectionRequestDto sectionRequestDto_SL_JS;
 
     @BeforeEach
     void setUp() {

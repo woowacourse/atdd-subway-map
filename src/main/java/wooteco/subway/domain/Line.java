@@ -21,13 +21,13 @@ public class Line {
     }
 
     private void validateName(final String name) {
-        if (name.isBlank()) {
+        if (name.equals(null) || name.isBlank()) {
             throw new IllegalLineNameException();
         }
     }
 
     private void validateColor(final String color) {
-        if (color.isBlank()) {
+        if (color.equals(null) || color.isBlank()) {
             throw new IllegalLineColorException();
         }
     }

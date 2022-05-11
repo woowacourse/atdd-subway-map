@@ -19,25 +19,32 @@ public class SectionsOnTheLine {
 
     public boolean isAddableOnTheLine(final Section section) {
         validateSectionForAdd(section);
+        validateSectionDistance(section, findOverlapSection(section));
         return doMatchedUpStationExist(section) || doMatchedDownStationExist(section);
-    }
-
-    private boolean doMatchedUpStationExist(final Section sectionToAdd) {
-        return sections.stream().anyMatch(section -> section.isUpStation(sectionToAdd.getUpStation()));
-    }
-
-    private boolean doMatchedDownStationExist(final Section sectionToAdd) {
-        return sections.stream().anyMatch(section -> section.isDownStation(sectionToAdd.getDownStation()));
     }
 
     private void validateSectionForAdd(final Section section) {
         final List<Station> stations = lineUpStations();
         final Station upStation = section.getUpStation();
         final Station downStation = section.getDownStation();
-        if (doNotAllStationExist(stations, upStation, downStation) || doAllStationExist(stations, upStation,
-                downStation)) {
+        if (doNotAllStationExist(stations, upStation, downStation) ||
+                doAllStationExist(stations, upStation, downStation)) {
             throw new IllegalSectionException();
         }
+    }
+
+    private void validateSectionDistance(final Section section, final Section overlapSection) {
+        if (overlapSection.getDistance() <= section.getDistance()) {
+            throw new IllegalSectionException();
+        }
+    }
+
+    private boolean doMatchedUpStationExist(final Section sectionToAdd) {
+        return sections.stream().anyMatch(section -> section.isUpStationMatch(sectionToAdd.getUpStation()));
+    }
+
+    private boolean doMatchedDownStationExist(final Section sectionToAdd) {
+        return sections.stream().anyMatch(section -> section.isDownStationMatch(sectionToAdd.getDownStation()));
     }
 
     private boolean doNotAllStationExist(final List<Station> stations, final Station upStation,
@@ -54,17 +61,10 @@ public class SectionsOnTheLine {
         final Station upStation = section.getUpStation();
         final Station downStation = section.getDownStation();
         final Section overlapSection = sections.stream()
-                .filter(it -> it.isUpStation(upStation) || it.isDownStation(downStation))
+                .filter(it -> it.isUpStationMatch(upStation) || it.isDownStationMatch(downStation))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 겹치는 구간을 찾을 수 없습니다."));
-        validateDistance(section, overlapSection);
         return overlapSection;
-    }
-
-    private void validateDistance(final Section section, final Section overlapSection) {
-        if (overlapSection.getDistance() <= section.getDistance()) {
-            throw new IllegalSectionException();
-        }
     }
 
     public List<Station> lineUpStations() {
@@ -115,18 +115,18 @@ public class SectionsOnTheLine {
         return lineUpStations().contains(station);
     }
 
-    public Section findByDownStation(final Station station) {
-        return sections.stream()
-                .filter(section -> section.isDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 하행역이 일치하는 역을 찾을 수 없습니다."));
-    }
-
     public Section findByUpStation(final Station station) {
         return sections.stream()
-                .filter(section -> section.isUpStation(station))
+                .filter(section -> section.isUpStationMatch(station))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 상행역이 일치하는 역을 찾을 수 없습니다."));
+    }
+
+    public Section findByDownStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStationMatch(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 하행역이 일치하는 역을 찾을 수 없습니다."));
     }
 
     public boolean hasSingleSection() {

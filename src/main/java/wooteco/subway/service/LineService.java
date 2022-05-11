@@ -84,7 +84,7 @@ public class LineService {
     }
 
     private void registerSectionWhenOnTheLine(final Long lineId, final Section section, final Section overlapSection) {
-        if (overlapSection.isUpStation(section.getUpStation())) {
+        if (overlapSection.isUpStationMatch(section.getUpStation())) {
             final SectionEntity sectionEntity = new SectionEntity(
                     overlapSection.getId(),
                     lineId,
