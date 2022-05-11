@@ -2,9 +2,9 @@ package wooteco.subway.domain;
 
 public class Section {
     private Long id;
-    private final Station upStation;
-    private final Station downStation;
-    private final int distance;
+    private Station upStation;
+    private Station downStation;
+    private int distance;
 
     private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
@@ -27,6 +27,28 @@ public class Section {
 
     public static Section from(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
+    }
+
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isLongerThan(int distance) {
+        return this.distance > distance;
+    }
+
+    public void updateUpStation(Station station, int distance) {
+        this.upStation = station;
+        this.distance = this.distance - distance;
+    }
+
+    public void updateDownStation(Station station, int distance) {
+        this.downStation = station;
+        this.distance = this.distance - distance;
     }
 
     public Long getId() {

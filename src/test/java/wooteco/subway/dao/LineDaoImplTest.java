@@ -30,6 +30,8 @@ class LineDaoImplTest {
 
     private Station station1;
     private Station station2;
+    private Station station3;
+    private Station station4;
 
     @BeforeEach
     void setUp() {
@@ -39,6 +41,10 @@ class LineDaoImplTest {
 
         station1 = stationDao.save(new Station("강남역"));
         station2 = stationDao.save(new Station("선릉역"));
+        // sectionDao.save(Section.from(upStation, downStation, lineRequest.getDistance()), savedLineId);
+
+        station3 = stationDao.save(new Station("교대역"));
+        station4 = stationDao.save(new Station("잠실역"));
 
         List<Line> lines = lineDao.findAll();
         List<Long> lineIds = lines.stream()
@@ -105,8 +111,10 @@ class LineDaoImplTest {
         Line line2 = new Line("2호선", "bg-green-600");
 
         // when
-        lineDao.save(line1);
-        lineDao.save(line2);
+        Long savedId1 = lineDao.save(line1);
+        sectionDao.save(Section.from(station1, station2, 10), savedId1);
+        Long savedId2 = lineDao.save(line2);
+        sectionDao.save(Section.from(station3, station4, 10), savedId2);
 
         // then
         List<String> names = lineDao.findAll()
