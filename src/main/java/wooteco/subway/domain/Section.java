@@ -40,8 +40,19 @@ public class Section {
     }
 
     public boolean isDuplicateSection(final Section section) {
-        return (isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation())) || (
-                isSameUpStation(section.getDownStation()) && isSameDownStation(section.getUpStation()));
+        return (isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation())) ||
+                (isSameUpStation(section.getDownStation()) && isSameDownStation(section.getUpStation()));
+    }
+
+    public boolean hasSectionToConnect(final Section section) {
+        if (isSameUpStation(section.getUpStation()) || isSameDownStation(section.getDownStation())) {
+            return isLongerThan(section.getDistance());
+        }
+        return isSameUpStation(section.getDownStation()) || isSameDownStation(section.getUpStation());
+    }
+
+    private boolean isLongerThan(final int distance) {
+        return this.distance > distance;
     }
 
     private boolean isSameUpStation(final Station station) {
@@ -71,4 +82,6 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+
 }

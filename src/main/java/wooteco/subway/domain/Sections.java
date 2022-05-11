@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.List;
+import wooteco.subway.exception.CannotConnectSection;
 import wooteco.subway.exception.SectionDuplicateException;
 
 public class Sections {
@@ -13,6 +14,7 @@ public class Sections {
 
     public void add(final Section section) {
         validateDuplicateSection(section);
+        validateConnectSection(section);
     }
 
     private void validateDuplicateSection(final Section checkSection) {
@@ -21,5 +23,12 @@ public class Sections {
         if (isDuplicate) {
             throw new SectionDuplicateException();
         }
+    }
+
+    private void validateConnectSection(final Section checkSection) {
+        sections.stream()
+                .filter(section -> section.hasSectionToConnect(checkSection))
+                .findFirst()
+                .orElseThrow(CannotConnectSection::new);
     }
 }
