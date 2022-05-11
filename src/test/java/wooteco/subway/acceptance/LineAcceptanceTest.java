@@ -2,7 +2,6 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -218,42 +216,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = delete("/lines/1");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> post(String url, Map<String, Object> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(url)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> get(String url) {
-        return RestAssured.given().log().all()
-                .when()
-                .get(url)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> put(String url, Map<String, Object> newParams) {
-        return RestAssured.given().log().all()
-                .body(newParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(url)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> delete(String url) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(url)
-                .then().log().all()
-                .extract();
     }
 
     private Long getId(ExtractableResponse<Response> response) {
