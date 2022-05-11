@@ -189,7 +189,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        // TODO 조회기능이 완성되면 조회해서 잘 들어갔는지 확인한다.
+        ExtractableResponse<Response> getResponse = getRequest("/lines/1");
+        List<StationResponse> stations = getResponse.jsonPath().getList("stations", StationResponse.class);
+        assertThat(stations).extracting("name").containsExactly("신림역", "봉천역", "서울대입구역");
     }
 
     @DisplayName("노선에서 구간을 제거한다.")
@@ -209,7 +211,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        //TODO 조회기능이 완성되면 조회해서 잘 들어갔는지 확인한다.
+        ExtractableResponse<Response> getResponse = getRequest("/lines/1");
+        List<StationResponse> stations = getResponse.jsonPath().getList("stations", StationResponse.class);
+        assertThat(stations).extracting("name").containsExactly("신림역", "봉천역", "낙성대역");
     }
 
     private ExtractableResponse<Response> postRequest(String path, Object body) {
