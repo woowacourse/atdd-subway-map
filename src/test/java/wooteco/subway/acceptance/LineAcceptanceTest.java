@@ -18,31 +18,9 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.Is.is;
+import static wooteco.subway.acceptance.AcceptanceFixture.*;
 
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    private <T> ExtractableResponse<Response> insert(T request, String path) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract();
-    }
-
-    private <T> ExtractableResponse<Response> select(T request, String path) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract();
-    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -71,12 +49,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> newCreateResponse = insert(new LineRequest("분당선", "bg-green-600",
                 1L, 2L, 10), "/lines");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        ExtractableResponse<Response> response = select("/lines");
 
         // then
         List<Long> expectedLineIds = Stream.of(createResponse, newCreateResponse)
@@ -85,6 +58,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
+
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -97,17 +71,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
                 1L, 2L, 10), "/lines");
-
         long resultLineId = response.jsonPath().getLong("id");
 
-        ExtractableResponse<Response> newResponse = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + resultLineId)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-
         // then
+        ExtractableResponse<Response> newResponse = select("/lines/" + resultLineId);
         assertThat(resultLineId).isEqualTo(newResponse.jsonPath().getLong("id"));
     }
 
@@ -120,9 +87,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
                 1L, 2L, 10), "/lines");
-
         long resultLineId = response.jsonPath().getLong("id");
 
+        //then
         RestAssured.given().log()
                 .all()
                 .body(new LineRequest("분당선", "bg-red-600", 1L, 2L, 10))
@@ -140,19 +107,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         insert(new StationRequest("강남역"), "/stations");
         insert(new StationRequest("역삼역"), "/stations");
-
         ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
                 1L, 2L, 10), "/lines");
-
         long resultLineId = response.jsonPath().getLong("id");
 
         //then
-        RestAssured.given().log()
-                .all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/" + resultLineId)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value());
+        delete("/lines/" + resultLineId);
     }
 }
