@@ -18,6 +18,10 @@ public class Station {
         this(0L, name);
     }
 
+    public Station(Long id) {
+        this(id, null);
+    }
+
     public Long getId() {
         return id;
     }

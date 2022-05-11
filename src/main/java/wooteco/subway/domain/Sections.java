@@ -96,15 +96,18 @@ public class Sections {
     }
 
     private boolean isAnyLink(Station downStation) {
-        return sections.stream().anyMatch(section -> section.getUpStation().equals(downStation));
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().equals(downStation));
     }
 
     private Section getFirst() {
-        return sections.stream().filter(section -> isFirst(section.getUpStation())).findFirst().orElse(sections.get(0));
+        return sections.stream()
+                .filter(section -> isFirst(section.getUpStation())).findFirst().orElse(sections.get(0));
     }
 
     private Station getNext(Station now) {
-        return sections.stream().filter(section -> now.equals(section.getUpStation())).findFirst()
+        return sections.stream()
+                .filter(section -> now.equals(section.getUpStation())).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NO_NEXT_SECTION_ERROR_MESSAGE)).getDownStation();
     }
 
@@ -113,7 +116,8 @@ public class Sections {
     }
 
     private boolean hasUpStation(Section inSection) {
-        return sections.stream().anyMatch(section -> section.getUpStationId().equals(inSection.getUpStationId()));
+        return sections.stream()
+                .anyMatch(section -> section.getUpStationId().equals(inSection.getUpStationId()));
     }
 
     private boolean hasDownStation(Section inSection) {
@@ -122,12 +126,14 @@ public class Sections {
     }
 
     private Section findByUpStation(Station station) {
-        return sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst()
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station)).findFirst()
                 .orElseThrow(() -> new IllegalStateException(NO_UP_STATION_ERROR_MESSAGE));
     }
 
     private Section findByDownStation(Station station) {
-        return sections.stream().filter(section -> section.getDownStation().equals(station)).findFirst()
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station)).findFirst()
                 .orElseThrow(() -> new IllegalStateException(NO_DOWN_STATION_ERROR_MESSAGE));
     }
 

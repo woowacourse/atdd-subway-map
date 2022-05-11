@@ -10,7 +10,6 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.repository.CheckRepository;
 
 @Service
 public class SectionsService {
@@ -19,20 +18,20 @@ public class SectionsService {
     private final SectionDao sectionDao;
     private final StationDao stationDao;
     private final LineDao lineDao;
-    private final CheckRepository checkRepository;
+    private final CheckService checkService;
 
     public SectionsService(SectionDao sectionDao, StationDao stationDao, LineDao lineDao,
-                           CheckRepository checkRepository) {
+                           CheckService checkService) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
         this.lineDao = lineDao;
-        this.checkRepository = checkRepository;
+        this.checkService = checkService;
     }
 
     @Transactional
     public Section save(Section section) {
-        checkRepository.checkLineExist(section.getLineId());
-        checkRepository.checkStationsExist(section);
+        checkService.checkLineExist(section.getLineId());
+        checkService.checkStationsExist(section);
         Sections sections = Sections.forSave(sectionDao.findAllByLineId(section.getLineId()), section);
         sections.findMiddleBase(section).ifPresent(base -> {
             sectionDao.save(base.calculateRemainSection(section));
@@ -42,19 +41,19 @@ public class SectionsService {
     }
 
     public Section findById(Long id) {
-        checkRepository.checkSectionExist(id);
+        checkService.checkSectionExist(id);
         return sectionDao.findById(id);
     }
 
     public List<Station> findStationsOfLine(Long lineId) {
-        checkRepository.checkLineExist(lineId);
+        checkService.checkLineExist(lineId);
         return new Sections(sectionDao.findAllByLineId(lineId)).calculateStations();
     }
 
     @Transactional
     public void delete(Long lineId, Long stationId) {
-        checkRepository.checkLineExist(lineId);
-        checkRepository.checkStationExist(stationId);
+        checkService.checkLineExist(lineId);
+        checkService.checkStationExist(stationId);
         Sections sections = Sections.forDelete(sectionDao.findAllByLineId(lineId));
         Station station = stationDao.findById(stationId);
         sections.findSide(station).ifPresentOrElse(section -> sectionDao.delete(section.getId()),
@@ -66,14 +65,14 @@ public class SectionsService {
 
     @Transactional
     public void deleteStationById(Long stationId) {
-        checkRepository.checkStationExist(stationId);
+        checkService.checkStationExist(stationId);
         validateStationNotLinked(stationId);
         stationDao.delete(stationId);
     }
 
     @Transactional
     public void deleteLineById(Long id) {
-        checkRepository.checkLineExist(id);
+        checkService.checkLineExist(id);
         sectionDao.deleteAllByLineId(id);
         lineDao.delete(id);
     }

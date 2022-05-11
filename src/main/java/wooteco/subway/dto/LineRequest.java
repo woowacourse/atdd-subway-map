@@ -29,8 +29,8 @@ public class LineRequest {
 
     public Section toSection(Long lineId) {
         return new Section(lineId,
-                new Station(upStationId, ""),
-                new Station(downStationId, ""), distance);
+                new Station(upStationId),
+                new Station(downStationId), distance);
     }
 
     public String getName() {

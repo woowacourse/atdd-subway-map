@@ -1,13 +1,13 @@
-package wooteco.subway.repository;
+package wooteco.subway.service;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 
-@Repository
-public class CheckRepository {
+@Service
+public class CheckService {
     private static final String NO_STATION_ID_ERROR_MESSAGE = "해당 아이디의 역을 찾을 수 없습니다.";
     private static final String NO_LINE_ID_ERROR_MESSAGE = "해당 아이디의 노선을 찾을 수 없습니다.";
     private static final String NO_SECTION_ID_ERROR_MESSAGE = "해당 아이디의 구간을 찾을 수 없습니다.";
@@ -16,7 +16,7 @@ public class CheckRepository {
     private final StationDao stationDao;
     private final LineDao lineDao;
 
-    public CheckRepository(SectionDao sectionDao, StationDao stationDao, LineDao lineDao) {
+    public CheckService(SectionDao sectionDao, StationDao stationDao, LineDao lineDao) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
         this.lineDao = lineDao;

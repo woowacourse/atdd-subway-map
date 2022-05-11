@@ -9,12 +9,13 @@ import wooteco.subway.domain.Station;
 @Service
 public class StationService {
     private static final String ALREADY_IN_STATION_ERROR_MESSAGE = "이미 해당 이름의 역이 있습니다.";
-    private static final String NO_STATION_ID_ERROR_MESSAGE = "해당 아이디의 역이 없습니다.";
 
     private final StationDao stationDao;
+    private final CheckService checkService;
 
-    public StationService(StationDao stationDao) {
+    public StationService(StationDao stationDao, CheckService checkService) {
         this.stationDao = stationDao;
+        this.checkService = checkService;
     }
 
     @Transactional
@@ -31,17 +32,11 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        checkStationExist(id);
+        checkService.checkStationExist(id);
         return stationDao.findById(id);
     }
 
     public List<Station> findAll() {
         return stationDao.findAll();
-    }
-
-    private void checkStationExist(Long id) {
-        if (!stationDao.hasStation(id)) {
-            throw new IllegalArgumentException(NO_STATION_ID_ERROR_MESSAGE);
-        }
     }
 }

@@ -5,18 +5,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.repository.CheckRepository;
 
 @Service
 public class LineService {
     private static final String ALREADY_IN_LINE_ERROR_MESSAGE = "이미 해당 이름의 노선이 있습니다.";
 
     private final LineDao lineDao;
-    private final CheckRepository checkRepository;
+    private final CheckService checkService;
 
-    public LineService(LineDao lineDao, CheckRepository checkRepository) {
+    public LineService(LineDao lineDao, CheckService checkService) {
         this.lineDao = lineDao;
-        this.checkRepository = checkRepository;
+        this.checkService = checkService;
     }
 
     @Transactional
@@ -33,13 +32,13 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        checkRepository.checkLineExist(id);
+        checkService.checkLineExist(id);
         return lineDao.findById(id);
     }
 
     @Transactional
     public void update(Long id, Line line) {
-        checkRepository.checkLineExist(id);
+        checkService.checkLineExist(id);
         lineDao.update(id, line);
     }
 }
