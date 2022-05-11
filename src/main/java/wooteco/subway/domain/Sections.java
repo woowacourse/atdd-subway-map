@@ -61,6 +61,12 @@ public class Sections {
         return Optional.empty();
     }
 
+    public List<Station> extractStations() {
+        return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
     public boolean isBranched(final Section other) {
         final Optional<Section> upSection = findUpSection(other);
         final Optional<Section> downSection = findDownSection(other);
@@ -145,14 +151,8 @@ public class Sections {
     }
 
     private void validateCanAdd(final Section other) {
-        final List<Station> stations = collectExistingStations();
+        final List<Station> stations = extractStations();
         validateSectionInsertion(other, stations);
-    }
-
-    private List<Station> collectExistingStations() {
-        return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation))
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     private Stream<Station> getStations(Function<Section, Station> function) {

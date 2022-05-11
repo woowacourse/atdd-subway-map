@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,5 +46,12 @@ public class SectionService {
     @Transactional(readOnly = true)
     public List<Section> getSectionsByLine(final long lineId) {
         return sectionDao.findAllByLineId(lineId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Station> getStationsByLine(final long lineId) {
+        final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
+        final Sections sections = new Sections(lineSections);
+        return sections.extractStations();
     }
 }

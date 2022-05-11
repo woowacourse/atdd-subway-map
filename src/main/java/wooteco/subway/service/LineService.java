@@ -25,6 +25,7 @@ public class LineService {
         if (checkExistByName(line.getName())) {
             throw new IllegalArgumentException("이미 같은 이름의 노선이 존재합니다.");
         }
+
         final Line savedLine = lineDao.save(line);
         sectionDao.save(new Section(section.getUpStation(), section.getDownStation(), section.getDistance(), savedLine.getId()));
         return savedLine;
