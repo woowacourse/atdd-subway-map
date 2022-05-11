@@ -1,11 +1,10 @@
-package wooteco.subway.entity;
+package wooteco.subway.domain;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionMap;
-import wooteco.subway.domain.StationEntityMap;
+import wooteco.subway.entity.SectionViewEntity;
+import wooteco.subway.entity.StationEntity;
 
 public class SectionViews {
 
@@ -19,15 +18,12 @@ public class SectionViews {
     }
 
     public static SectionViews of(List<SectionViewEntity> sectionViewEntities) {
-        return new SectionViews(
-                SectionMap.of(toSections(sectionViewEntities)),
-                StationEntityMap.of(sectionViewEntities));
-    }
-
-    private static List<Section> toSections(List<SectionViewEntity> sectionViewEntities) {
-        return sectionViewEntities.stream()
+        List<Section> sections = sectionViewEntities.stream()
                 .map(SectionViewEntity::toSection)
                 .collect(Collectors.toList());
+
+        return new SectionViews(SectionMap.of(sections),
+                StationEntityMap.of(sectionViewEntities));
     }
 
     public List<StationEntity> getSortedStationsList() {

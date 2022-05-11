@@ -19,7 +19,7 @@ import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.FullStationEntity;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.SectionEntity;
-import wooteco.subway.entity.SectionViews;
+import wooteco.subway.domain.SectionViews;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
 
