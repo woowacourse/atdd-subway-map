@@ -129,14 +129,16 @@ public class Sections {
     private void cutUpSection(Section includingSection, Section newSection) {
         Section anotherNewSection = new Section(newSection.getDownStation(), includingSection.getDownStation(),
                 includingSection.getDistance() - newSection.getDistance());
-        values.remove(includingSection);
-        values.add(newSection);
-        values.add(anotherNewSection);
+        cutSection(includingSection, newSection, anotherNewSection);
     }
 
     private void cutDownSection(Section includingSection, Section newSection) {
         Section anotherNewSection = new Section(includingSection.getUpStation(), newSection.getUpStation(),
                 includingSection.getDistance() - newSection.getDistance());
+        cutSection(includingSection, newSection, anotherNewSection);
+    }
+
+    private void cutSection(Section includingSection, Section newSection, Section anotherNewSection) {
         values.remove(includingSection);
         values.add(newSection);
         values.add(anotherNewSection);
