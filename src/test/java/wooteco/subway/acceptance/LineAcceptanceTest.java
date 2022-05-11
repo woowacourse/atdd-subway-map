@@ -35,8 +35,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createLineResponse(lineRequest);
 
         // then
-        List<Long> resultStationIds = response.jsonPath().getList("stations", StationResponse.class).stream()
-                .map(StationResponse::getId)
+        List<String> resultStationNames = response.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getName)
                 .collect(Collectors.toList());
 
         assertAll(
@@ -45,7 +45,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.body().jsonPath().getLong("id")).isNotZero(),
                 () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("5호선"),
                 () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("rgb-purple-600"),
-                () -> assertThat(resultStationIds).containsExactly(1L, 2L)
+                () -> assertThat(resultStationNames).containsExactly("상일동역", "아차산역")
         );
     }
 
