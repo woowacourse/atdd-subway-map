@@ -21,10 +21,14 @@ class StationServiceTest {
     private final MockStationDao mockStationDao = new MockStationDao();
     private final MockSectionDao mockSectionDao = new MockSectionDao();
 
-    private final StationService service = new StationService(mockStationDao, mockSectionDao);
+    private final StationService stationService = new StationService(mockStationDao, mockSectionDao);
+
+    StationRequestDto stationRequestDto_SL = new StationRequestDto("선릉역");
+    StationRequestDto stationRequestDto_GN = new StationRequestDto("강남역");
+    StationRequestDto stationRequestDto_JS = new StationRequestDto("잠실역");
 
     @BeforeEach
-    void initStore() {
+    void setUp() {
         mockStationDao.removeAll();
         mockSectionDao.removeAll();
     }
@@ -32,7 +36,7 @@ class StationServiceTest {
     @DisplayName("역 이름을 입력받아서 해당 이름을 가진 역을 등록한다.")
     @Test
     void register() {
-        final Station created = service.register(new StationRequestDto("선릉역"));
+        final Station created = stationService.register(stationRequestDto_SL);
 
         assertThat(created.getName()).isEqualTo("선릉역");
     }
@@ -40,10 +44,9 @@ class StationServiceTest {
     @DisplayName("이미 존재하는 역이름으로 등록하려할 시 예외가 발생한다.")
     @Test
     void registerDuplicateName() {
-        StationRequestDto stationRequestDto = new StationRequestDto("선릉역");
-        service.register(stationRequestDto);
+        stationService.register(stationRequestDto_SL);
 
-        assertThatThrownBy(() -> service.register(stationRequestDto))
+        assertThatThrownBy(() -> stationService.register(stationRequestDto_SL))
                 .isInstanceOf(DuplicateStationNameException.class)
                 .hasMessage("[ERROR] 이미 존재하는 역 이름입니다.");
     }
@@ -51,11 +54,11 @@ class StationServiceTest {
     @DisplayName("등록된 모든 역 리스트를 조회한다.")
     @Test
     void searchAll() {
-        service.register(new StationRequestDto("선릉역"));
-        service.register(new StationRequestDto("강남역"));
-        service.register(new StationRequestDto("잠실역"));
+        stationService.register(stationRequestDto_SL);
+        stationService.register(stationRequestDto_GN);
+        stationService.register(stationRequestDto_JS);
 
-        List<Station> stations = service.searchAll();
+        List<Station> stations = stationService.searchAll();
         List<String> names = stations.stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
@@ -66,22 +69,22 @@ class StationServiceTest {
     @DisplayName("id 로 역을 삭제한다.")
     @Test
     void remove() {
-        service.register(new StationRequestDto("강남역"));
-        Station station = service.register(new StationRequestDto("신림역"));
+        stationService.register(stationRequestDto_JS);
+        Station station = stationService.register(stationRequestDto_GN);
 
-        service.remove(station.getId());
+        stationService.remove(station.getId());
 
-        assertThat(service.searchAll().size()).isEqualTo(1);
+        assertThat(stationService.searchAll().size()).isEqualTo(1);
     }
 
-    @DisplayName("역이 구간으로 사용되었다면 예외발생")
+    @DisplayName("역이 구간으로 사용되었다면 예외발생가 발생한다.")
     @Test
     void removeUsed() {
-        Station station1 = service.register(new StationRequestDto("강남역"));
-        Station station2 = service.register(new StationRequestDto("신림역"));
+        Station station1 = stationService.register(stationRequestDto_SL);
+        Station station2 = stationService.register(stationRequestDto_GN);
         mockSectionDao.save(new SectionEntity(1L, 1L, station1.getId(), station2.getId(), 100));
 
-        assertThatThrownBy(() -> service.remove(station1.getId()))
+        assertThatThrownBy(() -> stationService.remove(station1.getId()))
                 .isInstanceOf(CanNotDeleteException.class)
                 .hasMessage("[ERROR] 삭제 할 수 없습니다.");
     }

@@ -77,13 +77,13 @@ public class LineService {
         final SectionsOnTheLine sectionsOnTheLine = new SectionsOnTheLine(searchSectionsByLineId(line.getId()));
         if (sectionsOnTheLine.isAddableOnTheLine(section)) {
             final Section overlapSection = sectionsOnTheLine.findOverlapSection(section);
-            registerSectionWhenOnLine(line.getId(), section, overlapSection);
+            registerSectionWhenOnTheLine(line.getId(), section, overlapSection);
             return;
         }
         sectionDao.save(new SectionEntity(lineId, section));
     }
 
-    private void registerSectionWhenOnLine(final Long lineId, final Section section, final Section overlapSection) {
+    private void registerSectionWhenOnTheLine(final Long lineId, final Section section, final Section overlapSection) {
         if (overlapSection.isUpStation(section.getUpStation())) {
             final SectionEntity sectionEntity = new SectionEntity(
                     overlapSection.getId(),

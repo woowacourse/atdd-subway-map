@@ -65,13 +65,11 @@ public class MockSectionDao implements SectionDao {
 
     @Override
     public void deleteByLineIdAndStationId(final Long lineId, final Long stationId) {
-        store.stream()
-                .forEach(sectionEntity -> {
-                    if (sectionEntity.getLineId().equals(lineId) &&
-                            (sectionEntity.getUpStationId().equals(stationId) ||
-                                    sectionEntity.getDownStationId().equals(stationId))) {
-                        store.remove(sectionEntity);
-                    }
-                });
+        findByLineId(lineId).forEach(sectionEntity -> {
+            if (sectionEntity.getUpStationId().equals(stationId) ||
+                    sectionEntity.getDownStationId().equals(stationId)) {
+                store.remove(sectionEntity);
+            }
+        });
     }
 }
