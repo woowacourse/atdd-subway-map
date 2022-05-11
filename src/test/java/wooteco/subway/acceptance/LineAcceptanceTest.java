@@ -2,12 +2,12 @@ package wooteco.subway.acceptance;
 
 import static io.restassured.RestAssured.get;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.checkProperResponseStatus;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.checkSameResponseIds;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.createData;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.getData;
 import static wooteco.subway.acceptance.util.RestAssuredUtils.getLocationId;
+import static wooteco.subway.acceptance.util.RestAssuredUtils.modifyData;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -41,7 +41,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         checkProperResponseStatus(createResponse, HttpStatus.CREATED);
         Line line = new Line(getLocationId(createResponse), lineName, lineColor);
-        //checkProperData("/lines/" + getLocationId(createResponse), line, upStationId, downStationId);
+        checkProperData("/lines/" + getLocationId(createResponse),
+                new Line(lineName, lineColor),
+                new Station(getLocationId(createStation1), "지하철역"),
+                new Station(getLocationId(createStation2), "새로운지하철역"));
     }
 
     @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
@@ -94,26 +97,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         checkProperResponseStatus(getLineResponse, HttpStatus.OK);
-        //checkProperData("/lines/" + getLocationId(createResponse), line, upStationId, downStationId);
     }
 
-    /*
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        // given
-        final Line line = new Line(lineName, lineColor);
-        ExtractableResponse<Response> createResponse = createData("/lines", line);
+        ExtractableResponse<Response> createStation1 = createData("/stations", new Station("지하철역"));
+        ExtractableResponse<Response> createStation2 = createData("/stations", new Station("새로운지하철역"));
+        final LineRequest lineRequest = new LineRequest(lineName, lineColor, getLocationId(createStation1), getLocationId(createStation2), distance);
+        ExtractableResponse<Response> createResponse = createData("/lines", lineRequest);
 
         // when
-        final Line line2 = new Line("다른분당선", "bg-red-600");
-        ExtractableResponse<Response> modifyResponse = modifyData("/lines/" + getLocationId(createResponse), line2);
+        final String newName = "다른분당선";
+        final String newColor = "bg-red-600";
+        ExtractableResponse<Response> modifyResponse
+                = modifyData("/lines/" + getLocationId(createResponse), new LineRequest(newName, newColor));
 
         // then
         checkProperResponseStatus(modifyResponse, HttpStatus.OK);
-        checkProperData("/lines/" + getLocationId(createResponse), line2, upStationId, downStationId);
+        checkProperData("/lines/" + getLocationId(createResponse),
+                new Line(newName, newColor),
+                new Station(getLocationId(createStation1), "지하철역"),
+                new Station(getLocationId(createStation2), "새로운지하철역"));
     }
 
+    /*
     @DisplayName("지하철노선을 제거한다.")
     @Test
     void deleteStation() {
@@ -130,12 +138,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
      */
 
-    private void checkProperData(String url, Line line, Long upStationId, Long downStationId) {
+    private void checkProperData(String url, Line line, Station upStation, Station downStation) {
         get(url).then()
                 .assertThat()
                 .body("id", equalTo(Integer.parseInt(url.split("/")[2])))
                 .body("name", equalTo(line.getName()))
                 .body("color", equalTo(line.getColor()))
-                .body("stations.id", hasItems(upStationId, downStationId));
+                .body("stations[0].id", equalTo(upStation.getId().intValue()))
+                .body("stations[0].name", equalTo(upStation.getName()))
+                .body("stations[1].id", equalTo(downStation.getId().intValue()))
+                .body("stations[1].name", equalTo(downStation.getName()));
     }
 }
