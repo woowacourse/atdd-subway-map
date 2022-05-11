@@ -3,11 +3,15 @@ package wooteco.subway.application;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.dao.MemorySectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.exception.constant.SectionNotRegisterException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionServiceTest {
@@ -111,6 +115,14 @@ class SectionServiceTest {
                 () -> assertThat(newSection.getDownStation().getId()).isEqualTo(2L),
                 () -> assertThat(newSection.getDistance()).isEqualTo(4)
         );
+    }
 
+    @DisplayName("[갈림길 방지] 역과 역사이의 길이가 기존보다 길다면 구간을 추가할 수 없다")
+    @ParameterizedTest
+    @CsvSource(value = {"1 - 3", "3 - 2"}, delimiterString = " - ")
+    void can_not_register_if_new_distance_is_longer(long upStationId, long downStationId) {
+        sectionService.createSection(1L, 1L, 2L, 7);
+        assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
+                .isInstanceOf(SectionNotRegisterException.class);
     }
 }

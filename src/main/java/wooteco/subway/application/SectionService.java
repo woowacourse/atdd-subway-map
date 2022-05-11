@@ -2,8 +2,10 @@ package wooteco.subway.application;
 
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.exception.constant.SectionNotRegisterException;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class SectionService {
 
@@ -15,8 +17,8 @@ public class SectionService {
 
     public Long createSection(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         List<Section> sections = sectionDao.findByLineId(lineId);
-        Section sectionWithSameUpStation = sectionWithSameUpStation(upStationId, sections);
-        Section sectionWithSameDownStation = sectionWithSameDownStation(downStationId, sections);
+        Section sectionWithSameUpStation = getSectionWithSameUpStation(sections, upStationId);
+        Section sectionWithSameDownStation = getSectionWithSameDownStation(sections, downStationId);
 
         if (conditionForInsertStationInMiddle(distance, sectionWithSameUpStation)) {
             return insertDownStationInMiddle(lineId, upStationId, downStationId, distance, sectionWithSameUpStation);
@@ -30,7 +32,13 @@ public class SectionService {
     }
 
     private boolean conditionForInsertStationInMiddle(Integer distance, Section section) {
-        return section != null && distance < section.getDistance();
+        if (section == null) {
+            return false;
+        }
+        if (distance >= section.getDistance()) {
+            throw new SectionNotRegisterException();
+        }
+        return true;
     }
 
     private long insertDownStationInMiddle(Long lineId, Long upStationId, Long downStationId, Integer distance, Section existingSection) {
@@ -53,18 +61,19 @@ public class SectionService {
         return createdSectionId;
     }
 
-    private Section sectionWithSameDownStation(Long downStationId, List<Section> sections) {
+    private Section getSectionWithCondition(List<Section> sections, Predicate<Section> condition) {
         return sections.stream()
-                .filter(section -> section.getDownStation().isSameId(downStationId))
+                .filter(condition)
                 .findAny()
                 .orElse(null);
     }
 
-    private Section sectionWithSameUpStation(Long upStationId, List<Section> sections) {
-        return sections.stream()
-                .filter(section -> section.getUpStation().isSameId(upStationId))
-                .findAny()
-                .orElse(null);
+    private Section getSectionWithSameUpStation(List<Section> sections, Long upStationId) {
+        return getSectionWithCondition(sections, section -> section.getUpStation().isSameId(upStationId));
+    }
+
+    private Section getSectionWithSameDownStation(List<Section> sections, Long downStationId) {
+        return getSectionWithCondition(sections, section -> section.getDownStation().isSameId(downStationId));
     }
 
     private long saveSection(Long lineId, Long upStationId, Long downStationId, Integer distance) {
