@@ -107,11 +107,68 @@ public class Sections {
                 oldSection.calculateDistanceDifference(section));
     }
 
+    public void validateRemovable(Long stationId) {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException();
+        }
+        List<Long> stationIds = findStationIds();
+        if (!stationIds.contains(stationId)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public boolean isEndStation(Long stationId) {
+        long matchedCount = sections.stream()
+                .filter(it -> it.isSameUpStationId(stationId) || it.isSameDownStationId(stationId))
+                .count();
+        return matchedCount == 1;
+    }
+
+    public Long findEndSectionIdToRemove(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.isSameUpStationId(stationId)
+                        || it.isSameDownStationId(stationId))
+                .map(Section::getId)
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public Section makeNewSection(Long stationId) {
+        Section newUpStation = sections.stream().filter(it -> it.isSameDownStationId(stationId))
+                .findFirst()
+                .orElseThrow();
+
+        Section newDownStation = sections.stream().filter(it -> it.isSameUpStationId(stationId))
+                .findFirst()
+                .orElseThrow();
+
+        return new Section(newUpStation.getLineId(),
+                newUpStation.getUpStationId(),
+                newDownStation.getDownStationId(),
+                newUpStation.getDistance() + newDownStation.getDistance());
+    }
+
+    public List<Long> findSectionIdsToRemove(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.isSameUpStationId(stationId)
+                        || it.isSameDownStationId(stationId))
+                .map(Section::getId)
+                .collect(Collectors.toList());
+    }
+
     public List<Section> getSections() {
         return sections;
     }
 
     public Long getLineId() {
         return lineId;
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "sections=" + sections +
+                ", lineId=" + lineId +
+                '}';
     }
 }

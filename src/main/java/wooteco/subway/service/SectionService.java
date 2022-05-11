@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -45,5 +46,21 @@ public class SectionService {
         collect.addAll(collect2);
 
         return new ArrayList<>(collect);
+    }
+
+    @Transactional
+    public void remove(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findByLineId(lineId), lineId);
+        sections.validateRemovable(stationId);
+        if (sections.isEndStation(stationId)) {
+            Long sectionId = sections.findEndSectionIdToRemove(stationId);
+            sectionDao.delete(sectionId);
+            return;
+        }
+        List<Long> sectionIds = sections.findSectionIdsToRemove(stationId);
+        Section newSection = sections.makeNewSection(stationId);
+
+        sectionDao.deleteByIds(sectionIds);
+        sectionDao.save(newSection);
     }
 }

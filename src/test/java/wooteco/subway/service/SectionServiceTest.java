@@ -158,7 +158,65 @@ public class SectionServiceTest {
 
         List<Long> stationIds = sectionService.findStationIdsByLineId(1L);
 
-        assertThat(stationIds).contains(1L, 2L, 3L);
+        assertThat(stationIds).containsExactly(1L, 2L, 3L);
     }
 
+    @DisplayName("종점이 상행선인 경우, 종점의 하행선이 종점이 된다.")
+    @Test
+    void remove_upStation() {
+        sectionService.save(new Section(1L, 2L, 3L, 5));
+        sectionService.save(new Section(1L, 3L, 4L, 10));
+
+        sectionService.remove(1L, 1L);
+
+        List<Long> stationIds = sectionService.findStationIdsByLineId(1L);
+
+        assertThat(stationIds).containsExactly(2L, 3L, 4L);
+    }
+
+    @DisplayName("종점이 하행선인 경우, 종점의 상행선이 종점이 된다.")
+    @Test
+    void remove_downStation() {
+        sectionService.save(new Section(1L, 2L, 3L, 5));
+        sectionService.save(new Section(1L, 3L, 4L, 10));
+
+        sectionService.remove(1L, 4L);
+
+        List<Long> stationIds = sectionService.findStationIdsByLineId(1L);
+
+        assertThat(stationIds).containsExactly(1L, 2L, 3L);
+    }
+
+    @DisplayName("A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 된다.")
+    @Test
+    void remove_middleStation() {
+        sectionService.save(new Section(1L, 2L, 3L, 5));
+        sectionService.save(new Section(1L, 3L, 4L, 10));
+
+        sectionService.remove(1L, 2L);
+
+        List<Long> stationIds = sectionService.findStationIdsByLineId(1L);
+        Section newSection = sectionService.findByLineId(1L)
+                .stream()
+                .filter(it -> it.isSameUpStationId(1L))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(stationIds).containsExactly(1L, 3L, 4L);
+        assertThat(newSection.getDistance()).isEqualTo(15);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거하려고 하면 예외가 발생한다.")
+    @Test
+    void remove_onlySection() {
+        assertThatThrownBy(() -> sectionService.remove(1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("입력받은 지하철 역이 노선에 존재하지 않는 경우 예외가 발생한다.")
+    @Test
+    void remove_notExist() {
+        assertThatThrownBy(() -> sectionService.remove(1L, 2L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

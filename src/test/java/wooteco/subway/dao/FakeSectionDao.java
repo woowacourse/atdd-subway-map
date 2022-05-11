@@ -8,6 +8,9 @@ import wooteco.subway.domain.Section;
 
 public class FakeSectionDao implements SectionDao {
 
+    private static final int EXECUTED_COLUMN_COUNT_ONE = 1;
+    private static final int EXECUTED_COLUMN_COUNT_NONE = 0;
+
     private Long seq = 0L;
     private final Map<Long, Section> sections = new HashMap<>();
 
@@ -28,6 +31,24 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
+    public int delete(Long id) {
+        if (sections.containsKey(id)) {
+            sections.remove(id);
+            return EXECUTED_COLUMN_COUNT_ONE;
+        }
+        return EXECUTED_COLUMN_COUNT_NONE;
+    }
+
+    @Override
+    public int deleteByIds(List<Long> ids) {
+        System.out.println(ids);
+        for (Long id : ids) {
+            sections.remove(id);
+        }
+        return ids.size();
+    }
+
+    @Override
     public int update(Section section) {
         Long id = section.getId();
         if (sections.containsKey(id)) {
@@ -36,6 +57,4 @@ public class FakeSectionDao implements SectionDao {
         }
         return 0;
     }
-
-
 }

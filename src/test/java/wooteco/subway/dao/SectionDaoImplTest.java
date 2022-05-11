@@ -75,4 +75,27 @@ public class SectionDaoImplTest {
 
         assertThat(sections).hasSize(2);
     }
+
+    @DisplayName("section에 해당하는 구간을 삭제한다.")
+    @Test
+    void delete() {
+        section = sectionDao.save(new Section(1L, 2L, 3L, 5));
+
+        sectionDao.delete(section.getId());
+        List<Section> sections = sectionDao.findByLineId(1L);
+
+        assertThat(sections).hasSize(1);
+    }
+
+    @DisplayName("ids에 해당하는 모든 구간을 삭제한다.")
+    @Test
+    void deleteByIds() {
+        section = sectionDao.save(new Section(1L, 2L, 3L, 5));
+        List<Long> ids = List.of(1L, 2L);
+
+        sectionDao.deleteByIds(ids);
+
+        List<Section> sections = sectionDao.findByLineId(1L);
+        assertThat(sections).hasSize(0);
+    }
 }

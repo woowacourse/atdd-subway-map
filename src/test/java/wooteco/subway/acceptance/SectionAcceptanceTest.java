@@ -112,4 +112,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void remove() {
+        createStation("선릉역");
+        createStation("잠실역");
+
+        createResponse = crateSection(1L, 2L, 3L, 5);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/1/sections?stationId=1")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

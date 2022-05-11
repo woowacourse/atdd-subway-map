@@ -57,4 +57,18 @@ public class SectionDaoImpl implements SectionDao {
         SqlParameterSource namedParameter = new MapSqlParameterSource("lineId", lineId);
         return namedParameterJdbcTemplate.query(sql, namedParameter, ACTOR_ROW_MAPPER);
     }
+
+    @Override
+    public int delete(Long id) {
+        String sql = "delete from section where id = :id";
+        SqlParameterSource namedParameter = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.update(sql, namedParameter);
+    }
+
+    @Override
+    public int deleteByIds(List<Long> ids) {
+        String sql = "delete from section where id in (:ids)";
+        SqlParameterSource namedParameter = new MapSqlParameterSource("ids", ids);
+        return namedParameterJdbcTemplate.update(sql, namedParameter);
+    }
 }
