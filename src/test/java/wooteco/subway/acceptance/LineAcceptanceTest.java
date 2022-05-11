@@ -105,6 +105,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
         assertThat(response.jsonPath().getString("color")).isEqualTo("GREEN");
+        List<String> expectedStationNames = List.of("신설동역", "용두역");
+        List<String> resultStationNames = response.jsonPath().getList("stations", StationResponse.class).stream()
+            .map(StationResponse::getName)
+            .collect(Collectors.toList());
+        assertThat(resultStationNames).containsAll(expectedStationNames);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 

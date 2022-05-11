@@ -133,6 +133,17 @@ public class LineServiceTest {
         // given
         given(lineDao.findById(1L))
             .willReturn(Optional.of(new Line(1L, "test1", "GREEN")));
+        given(stationDao.findAll())
+            .willReturn(
+                List.of(
+                    new Station(1L, "신설동역"),
+                    new Station(2L, "용두역"),
+                    new Station(3L, "성수역")
+                )
+            );
+        given(sectionDao.findByLineId(1L))
+            .willReturn(new Sections(
+                List.of(new Section(1L,2L,10))));
         // when
         LineResponse response = lineService.showLine(1L);
         // then

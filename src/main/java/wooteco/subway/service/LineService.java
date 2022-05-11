@@ -61,7 +61,7 @@ public class LineService {
         for (Line line : lines) {
             Sections sections = sectionDao.findByLineId(line.getId());
             List<Long> stationsIds = sections.getStationIds();
-            List<StationResponse> stationResponses = stations.stream().filter(station->stationsIds.contains(station.getId()))
+            List<StationResponse> stationResponses = stations.stream().filter(station -> stationsIds.contains(station.getId()))
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
             responses.add(new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses));
@@ -71,7 +71,13 @@ public class LineService {
 
     public LineResponse showLine(Long id) {
         Line line = findLineById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        List<Station> stations = stationDao.findAll();
+        Sections sections = sectionDao.findByLineId(line.getId());
+        List<Long> stationsIds = sections.getStationIds();
+        List<StationResponse> stationResponses = stations.stream().filter(station -> stationsIds.contains(station.getId()))
+            .map(station -> new StationResponse(station.getId(), station.getName()))
+            .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
     private Line findLineById(Long id) {
