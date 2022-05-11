@@ -34,7 +34,7 @@
 - [x] 노선에 구간 추가
 - [x] post / 구간추가 api 등록
 - [x] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답하기
-- [ ] 구간 제거하기
+- [x] 구간 제거하기
 - [ ] delete / 구간삭제 api 등록
 - 변경된 API 스펙은 [API 문서 v2](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/c682be69ae4e412c9e3905a59ef7b7ed) 참고
 

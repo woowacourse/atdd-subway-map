@@ -131,4 +131,51 @@ class SectionsTest {
             Arguments.of(Section.from(new Station("2"), new Station("4"), 3), "상행선과 하행선이 이미 있는 구간일 때")
         );
     }
+
+    @Test
+    @DisplayName("맨 앞의 station이 삭제되어야 한다.")
+    void deleteFirst() {
+        Sections sections1 = Sections.of(sections);
+        Station station = new Station("2");
+        sections1.delete(station);
+        List<Section> newSections = sections1.getSections();
+        assertThat(newSections)
+            .hasSize(3)
+            .containsExactly(
+                Section.from(new Station("4"), new Station("6"), 5),
+                Section.from(new Station("6"), new Station("8"), 5),
+                Section.from(new Station("8"), new Station("10"), 5));
+    }
+
+    @Test
+    @DisplayName("맨 마지막의 station이 삭제되어야 한다.")
+    void deleteLast() {
+        Sections sections1 = Sections.of(sections);
+        Station station = new Station("10");
+        sections1.delete(station);
+        List<Section> newSections = sections1.getSections();
+        assertThat(newSections)
+            .hasSize(3)
+            .containsExactly(
+                Section.from(new Station("2"), new Station("4"), 5),
+                Section.from(new Station("4"), new Station("6"), 5),
+                Section.from(new Station("6"), new Station("8"), 5)
+            );
+    }
+
+    @Test
+    @DisplayName("역 4를 삭제하면 4 -> 6 구간이 삭제되고 2 -> 6 구간의 길이가 10이 되어야 합니다.")
+    void delete() {
+        Sections sections1 = Sections.of(sections);
+        Station station = new Station("4");
+        sections1.delete(station);
+        List<Section> newSections = sections1.getSections();
+        assertThat(newSections)
+            .hasSize(3)
+            .containsExactly(
+                Section.from(new Station("2"), new Station("6"), 10),
+                Section.from(new Station("6"), new Station("8"), 5),
+                Section.from(new Station("8"), new Station("10"), 5)
+            );
+    }
 }

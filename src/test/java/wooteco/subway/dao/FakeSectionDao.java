@@ -21,4 +21,9 @@ public class FakeSectionDao implements SectionDao {
     public boolean update(Section section) {
         return sections.replace(section.getId(), section) != null;
     }
+
+    @Override
+    public boolean delete(Long id) {
+        return sections.remove(id) != null;
+    }
 }

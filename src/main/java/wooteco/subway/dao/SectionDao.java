@@ -6,4 +6,6 @@ public interface SectionDao {
     Long save(Section section, Long lineId);
 
     boolean update(Section value);
+
+    boolean delete(Long deletedSectionId);
 }

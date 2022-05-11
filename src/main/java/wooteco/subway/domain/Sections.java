@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
+    private static final int MIN_SIZE = 1;
+
     private List<Section> sections;
 
     private Sections(List<Section> sections) {
@@ -71,13 +73,15 @@ public class Sections {
 
     private boolean insertSection(Section section, LinkedList<Section> flexibleSections, int i, Section sectionInLine) {
         if (canInsertUpStation(section, sectionInLine) && !canInsertDownStation(section, sectionInLine)) {
-            sectionInLine.updateUpStation(section.getDownStation(), section.getDistance());
+            sectionInLine.updateUpStation(section.getDownStation(),
+                sectionInLine.getDistance() - section.getDistance());
             flexibleSections.add(i, section);
             sections = flexibleSections;
             return true;
         }
         if (canInsertDownStation(section, sectionInLine) && !canInsertUpStation(section, sectionInLine)) {
-            sectionInLine.updateDownStation(section.getUpStation(), section.getDistance());
+            sectionInLine.updateDownStation(section.getUpStation(),
+                sectionInLine.getDistance() - section.getDistance());
             flexibleSections.add(i + 1, section);
             sections = flexibleSections;
             return true;
@@ -112,6 +116,43 @@ public class Sections {
     private boolean canInsertUpStation(Section section, Section sectionInLine) {
         return sectionInLine.isUpStation(section.getUpStation())
             && sectionInLine.isLongerThan(section.getDistance());
+    }
+
+    public UpdatedSection delete(Station station) {
+        LinkedList<Section> flexibleSections = new LinkedList<>(this.sections);
+        validateMinSize(flexibleSections);
+        if (flexibleSections.get(0).isUpStation(station)) {
+            Section section = flexibleSections.remove(0);
+            sections = flexibleSections;
+            return UpdatedSection.of(section.getId());
+        }
+
+        int lastIndex = flexibleSections.size() - 1;
+        if (flexibleSections.get(lastIndex).isDownStation(station)) {
+            Section section = flexibleSections.remove(lastIndex);
+            sections = flexibleSections;
+            return UpdatedSection.of(section.getId());
+        }
+
+        for (int i = 0; i < flexibleSections.size(); i++) {
+            Section leftSection = sections.get(i);
+            if (leftSection.isDownStation(station) && i != lastIndex) {
+                Section rightSection = sections.get(i + 1);
+                leftSection.updateDownStation(rightSection.getDownStation(),
+                    leftSection.getDistance() + rightSection.getDistance());
+                flexibleSections.remove(rightSection);
+                sections = flexibleSections;
+                return UpdatedSection.from(rightSection.getId(), leftSection);
+            }
+        }
+
+        throw new IllegalArgumentException("삭제시에 오류가 발생했습니다.");
+    }
+
+    private void validateMinSize(LinkedList<Section> flexibleSections) {
+        if (flexibleSections.size() == MIN_SIZE) {
+            throw new IllegalArgumentException("한개 남은 구간은 제거할 수 없습니다.");
+        }
     }
 
     public List<Section> getSections() {

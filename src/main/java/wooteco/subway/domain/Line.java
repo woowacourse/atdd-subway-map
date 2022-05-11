@@ -38,6 +38,10 @@ public class Line {
         return sections.insert(section);
     }
 
+    public UpdatedSection deleteStation(Station station) {
+        return sections.delete(station);
+    }
+
     public List<Station> getStations() {
         return sections.getStations();
     }
