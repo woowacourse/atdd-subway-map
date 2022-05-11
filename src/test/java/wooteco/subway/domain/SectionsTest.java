@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test;
 class SectionsTest {
 
     private static final Section SECTION_LINE_1_2_10 = new Section(1L, 1L, 2L, 10);
-    private static final Section SECTION_LINE_1_3_12 = new Section(1L, 1L, 3L, 12);
+    private static final Section SECTION_LINE_2_3_12 = new Section(1L, 2L, 3L, 12);
 
     @DisplayName("특정 노선에 속한 구간정보를 생성한다")
     @Test
     void create_success() {
-        final List<Section> sections = List.of(SECTION_LINE_1_2_10, SECTION_LINE_1_3_12);
+        final List<Section> sections = List.of(SECTION_LINE_1_2_10, SECTION_LINE_2_3_12);
 
         assertDoesNotThrow(() -> new Sections(sections));
     }
@@ -33,33 +33,42 @@ class SectionsTest {
     @DisplayName("기존 구간정보와 상행, 하행 종점 중 하나만 같은 구간은 구간 등록이 가능하다.")
     @Test
     void canAddSection_valid_only_one_station_same() {
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_2_10, SECTION_LINE_1_3_12));
-        final Section targetSection = new Section(1L, 1L, 3L, 12);
+        final Sections sections = new Sections(List.of(SECTION_LINE_1_2_10, SECTION_LINE_2_3_12));
+        final Section targetSection = new Section(1L, 1L, 4L, 12);
 
-        Assertions.assertThatThrownBy(() -> sections.canAddSection(targetSection))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("[ERROR] 구간을 추가하기 위해선 상행 종점 혹은 하행 종점 둘 중 하나만 포함한 구간만 가능합니다.");
+        assertDoesNotThrow(() -> sections.canAddSection(targetSection));
     }
 
-    @DisplayName("기존 구간정보와 상행, 하행 종점 모두 같은 구간은 추가시 예외가 발생한다.")
+    @DisplayName("기존 구간정보와 같은, 상행/하행 종점을 포함하는 경우 예외가 발생한다.")
     @Test
     void canAddSection_invalid_all_same_up_and_down_station() {
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_2_10, SECTION_LINE_1_3_12));
-        final Section targetSection = new Section(1L, 1L, 3L, 12);
+        final Sections sections = new Sections(List.of(SECTION_LINE_1_2_10, SECTION_LINE_2_3_12));
+        final Section targetSection = new Section(1L, 1L, 2L, 12);
 
         Assertions.assertThatThrownBy(() -> sections.canAddSection(targetSection))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessage("[ERROR] 구간을 추가하기 위해선 상행 종점 혹은 하행 종점 둘 중 하나만 포함한 구간만 가능합니다.");
+            .hasMessage("[ERROR] 추가할 구간 속 지하철역이 기존 구간에 이미 존재합니다.");
     }
 
     @DisplayName("기존 구간정보와 상행, 하행 종점 모두 다른 구간은 추가시 예외가 발생한다.")
     @Test
     void canAddSection_invalid_all_not_same_up_and_down_station() {
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_2_10, SECTION_LINE_1_3_12));
+        final Sections sections = new Sections(List.of(SECTION_LINE_1_2_10, SECTION_LINE_2_3_12));
         final Section targetSection = new Section(1L, 2L, 4L, 12);
 
         Assertions.assertThatThrownBy(() -> sections.canAddSection(targetSection))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessage("[ERROR] 구간을 추가하기 위해선 상행 종점 혹은 하행 종점 둘 중 하나만 포함한 구간만 가능합니다.");
+            .hasMessage("[ERROR] 구간을 추가하기 위해선 상행 혹은 하행 종점 둘 중 하나만 포함해야 합니다.");
+    }
+
+    @DisplayName("상행 종점이 같은 구간을 추가할 때, 거리가 더 클 경우 예외가 발생한다.")
+    @Test
+    void canAddSection_invalid_distance() {
+        final Sections sections = new Sections(List.of(SECTION_LINE_1_2_10, SECTION_LINE_2_3_12));
+        final Section targetSection = new Section(1L, 1L, 4L, 15);
+
+        assertThatThrownBy(() -> sections.canAddSection(targetSection))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("[ERROR] 기존 구간보다 긴 구간을 추가할 순 없습니다.");
     }
 }
