@@ -13,6 +13,12 @@ public class SectionRequest {
     private SectionRequest() {
     }
 
+    public SectionRequest(long upStationId, long downStationId, int distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
     public Section toSectionWithLineId(Long lindId) {
         return new Section(lindId, upStationId, downStationId, distance);
     }
