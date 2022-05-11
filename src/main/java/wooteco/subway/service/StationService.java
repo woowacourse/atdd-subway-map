@@ -41,6 +41,7 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public void delete(Long id) {
         if (!stationDao.existById(id)) {
             throw new IllegalArgumentException(ERROR_MESSAGE_NOT_EXISTS_ID);

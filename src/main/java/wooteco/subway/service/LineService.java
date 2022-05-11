@@ -82,12 +82,6 @@ public class LineService {
         return responseLineInfos;
     }
 
-    private List<StationInfo> convertStationToInfo(List<Station> stations) {
-        return stations.stream()
-            .map(station -> new StationInfo(station.getId(), station.getName()))
-            .collect(Collectors.toList());
-    }
-
     public ResponseLineInfo find(Long id) {
         validateNotExists(id);
         LineEntity lineEntity = lineDao.find(id);
@@ -97,6 +91,13 @@ public class LineService {
             convertStationToInfo(line.getStations()));
     }
 
+    private List<StationInfo> convertStationToInfo(List<Station> stations) {
+        return stations.stream()
+            .map(station -> new StationInfo(station.getId(), station.getName()))
+            .collect(Collectors.toList());
+    }
+
+    @Transactional
     public void update(RequestLineInfoToUpdate requestLineInfoToUpdate) {
         Long id = requestLineInfoToUpdate.getId();
         String name = requestLineInfoToUpdate.getName();
@@ -107,6 +108,7 @@ public class LineService {
         lineDao.update(line);
     }
 
+    @Transactional
     public void delete(Long id) {
         validateNotExists(id);
         sectionDao.deleteAll(id);
