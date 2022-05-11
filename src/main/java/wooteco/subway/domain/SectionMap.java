@@ -52,4 +52,12 @@ public class SectionMap {
     public int getSize() {
         return upToDownStationIdMap.size();
     }
+
+    public boolean isFinalUpStation(Long stationId) {
+       return !hasUpStation(stationId) && hasDownStation(stationId);
+    }
+
+    public boolean isFinalDownStation(Long stationId) {
+        return hasUpStation(stationId) && !hasDownStation(stationId);
+    }
 }
