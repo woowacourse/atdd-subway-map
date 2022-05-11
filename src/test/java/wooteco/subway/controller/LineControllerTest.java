@@ -20,6 +20,7 @@ import wooteco.subway.dto.LineResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import wooteco.subway.dto.StationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -105,7 +106,10 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
+        Station upStation = stationDao.save(new Station("동천역"));
+        Station downStation = stationDao.save(new Station("판교역"));
         Line line = lineDao.save(new Line("신분당선", "red"));
+        sectionDao.save(new Section(upStation.getId(), downStation.getId(), line.getId(), 5));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -113,12 +117,8 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
-
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor())
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
         );
     }
 

@@ -71,7 +71,7 @@ public class LineService {
 
     public LineResponse findById(Long lineId) {
         Line line = getLineOrThrowException(lineId);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        return new LineResponse(line, findAllStationResponseByLineId(line.getId()));
     }
 
     public void update(Long lineId, String name, String color) {
