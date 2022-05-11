@@ -1,0 +1,112 @@
+package wooteco.subway.acceptance;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
+
+public class SectionAcceptanceTest extends AcceptanceTest {
+
+    private static final LineRequest lineRequest1 = new LineRequest("2호선", "GREEN", 1L, 2L, 20);
+    private static final LineRequest lineRequest2 = new LineRequest("3호선", "ORANGE", 2L, 3L, 20);
+
+    @BeforeEach
+    void setup() {
+        createStationByMap(new StationRequest("신설동역"));
+        createStationByMap(new StationRequest("용두역"));
+        createStationByMap(new StationRequest("신답역"));
+        createStationByMap(new StationRequest("성수역"));
+    }
+
+    @DisplayName("구간 등록 성공 시 상태코드 200을 반환한다.")
+    @Test
+    void addSection() {
+        // given
+        createLineFixture(lineRequest1);
+
+        SectionRequest firstSection = new SectionRequest(2L, 4L, 10);
+        ExtractableResponse<Response> response = addSectionAssured(firstSection);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("등록하려는 구간의 상,하행 지하철역이 노선 구간 목록에 이미 모두 존재한다면 상태코드 400을 반환한다.")
+    @Test
+    void addSection_duplicate_station_id() {
+        // given
+        createLineFixture(lineRequest1);
+        // when
+        SectionRequest firstSection = new SectionRequest(1L, 2L, 10);
+        ExtractableResponse<Response> response = addSectionAssured(firstSection);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("등록하려는 구간의 상,하행 지하철역이 노선 구간 목록에 없다면 상태코드 400을 반환한다.")
+    @Test
+    void addSection_no_exist_station_id() {
+        // given
+        createLineFixture(lineRequest1);
+        // when
+        SectionRequest firstSection = new SectionRequest(3L, 4L, 10);
+        ExtractableResponse<Response> response = addSectionAssured(firstSection);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("기존에 존재하는 구간에 삽입할 때 기존 구간의 길이보다 크거나 같다면 상태코드 400을 반환한다.")
+    @Test
+    void addSection_in_line_distance_exception() {
+        // given
+        createLineFixture(lineRequest1);
+        // when
+        SectionRequest firstSection = new SectionRequest(1L, 3L, 20);
+        ExtractableResponse<Response> response = addSectionAssured(firstSection);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> addSectionAssured(SectionRequest sectionRequest) {
+        // when
+        return RestAssured.given().log().all()
+            .body(sectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> createStationByMap(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+            .body(stationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> createLineFixture(LineRequest lineRequest) {
+        // when
+        return RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+    }
+}

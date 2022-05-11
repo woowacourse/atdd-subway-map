@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
 
 @WebMvcTest(LineController.class)
@@ -233,5 +234,21 @@ public class LineControllerTest {
         // then
         perform.andExpect(status().isBadRequest())
             .andExpect(jsonPath("message").value("해당하는 ID의 지하철 노선이 존재하지 않습니다."));
+    }
+
+    @DisplayName("노선 구간에 새로운 구간을 등록한다.")
+    @Test
+    void addSection() throws Exception {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        doNothing()
+            .when(lineService)
+            .addSection(anyLong(), any(SectionRequest.class));
+        // when
+        ResultActions perform = mockMvc.perform(post("/lines/1/sections")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(sectionRequest)));
+        // then
+        perform.andExpect(status().isOk());
     }
 }

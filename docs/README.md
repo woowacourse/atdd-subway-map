@@ -64,7 +64,7 @@
   - [ ] 노선 삭제 `DELETE /lines/{id}`
     - 결과 상태 코드는 `204 No Content` 이다. 
 - [ ] 구간 관리 API 구현
-  - [ ] 구간 등록 `POST /lines/{id}/sections`
+  - [x] 구간 등록 `POST /lines/{id}/sections`
     - `요청` json으로 upStationId, downStationId, distance를 전송한다.
       - 결과 상태 코드는 `200 OK` 이다.
     - [ ] 노선 삭제 `DELETE /lines/{lineId}/sections?stations={stationId}`

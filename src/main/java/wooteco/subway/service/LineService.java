@@ -15,6 +15,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @Service
@@ -115,5 +116,31 @@ public class LineService {
 
     private boolean isNotSameColor(String originColor, String updateColor) {
         return !originColor.equals(updateColor);
+    }
+
+    public void addSection(long id, SectionRequest sectionRequest) {
+        List<Section> originSections = sectionDao.findByLineId(id).getSections();
+        Sections addedSections = new Sections(originSections);
+        Section addSection = new Section(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        addedSections.add(addSection);
+        List<Section> fullSection = new ArrayList<>((addedSections.getSections()));
+        List<Section> deleteSection = new ArrayList<>();
+        for (Section section : originSections) {
+            if (fullSection.contains(section)) {
+                fullSection.remove(section);
+                continue;
+            }
+            deleteSection.add(section);
+            fullSection.remove(section);
+        }
+        List<Section> newSection = fullSection.stream()
+            .map(section -> new Section(id, section.getUpStationId(), section.getDownStationId(), section.getDistance())
+            ).collect(Collectors.toList());
+        if (!deleteSection.isEmpty()) {
+            deleteSection.forEach(section -> sectionDao.delete(section.getId()));
+        }
+        if (!newSection.isEmpty()) {
+            newSection.forEach(sectionDao::save);
+        }
     }
 }
