@@ -1,11 +1,13 @@
 package wooteco.subway.domain;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-
 import java.util.List;
 
 class SectionsTest {
@@ -23,7 +25,7 @@ class SectionsTest {
 
         final Sections sections = new Sections(List.of(section));
 
-        Assertions.assertThatThrownBy(() -> sections.add(newSection))
+        assertThatThrownBy(() -> sections.add(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
     }
@@ -39,7 +41,7 @@ class SectionsTest {
 
         final Sections sections = new Sections(List.of(section));
 
-        Assertions.assertThatThrownBy(() -> sections.add(newSection))
+        assertThatThrownBy(() -> sections.add(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
     }
@@ -58,7 +60,7 @@ class SectionsTest {
 
         final Sections sections = new Sections(List.of(section));
 
-        Assertions.assertThatThrownBy(() -> sections.add(newSection))
+        assertThatThrownBy(() -> sections.add(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
     }
@@ -77,8 +79,26 @@ class SectionsTest {
 
         final Sections sections = new Sections(List.of(section));
 
-        Assertions.assertThatThrownBy(() -> sections.add(newSection))
+        assertThatThrownBy(() -> sections.add(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
+    }
+
+    @DisplayName("등록할 구간이 갈래길인지 확인한다.")
+    @ParameterizedTest
+    @CsvSource(value = {"1,아차산역,3,장한평역,true", "3,천호역,1,아차산역,false"})
+    void isBranched(final long stationId1, final String stationName1,
+                    final long stationId2, final String stationName2, final boolean expected) {
+        final Station station1 = new Station(1L, "아차산역");
+        final Station station2 = new Station(2L, "마장역");
+        final Section section = new Section(1L, station1, station2, 10, 1L);
+
+        final Station newStation1 = new Station(stationId1, stationName1);
+        final Station newStation2 = new Station(stationId2, stationName2);
+        final Section newSection = new Section(newStation1, newStation2, 5, 1L);
+
+        final Sections sections = new Sections(List.of(section));
+
+        assertThat(sections.isBranched(newSection)).isEqualTo(expected);
     }
 }
