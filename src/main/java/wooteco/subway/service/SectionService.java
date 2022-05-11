@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.DeletableSections;
 import wooteco.subway.domain.Section;
@@ -9,6 +10,7 @@ import wooteco.subway.dto.SectionDeleteRequest;
 import wooteco.subway.dto.SectionSaveRequest;
 
 @Service
+@Transactional
 public class SectionService {
 
     private final SectionDao sectionDao;

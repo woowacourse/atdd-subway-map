@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -17,6 +18,7 @@ import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
+@Transactional
 public class LineService {
 
     private final LineDao lineDao;
