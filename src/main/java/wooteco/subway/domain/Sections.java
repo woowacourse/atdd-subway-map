@@ -109,6 +109,26 @@ public class Sections {
             sections.remove(section);
             return;
         }
+
+        if (sections.stream()
+                .anyMatch(it -> it.getDownStation().equals(station)) &&
+                sections.stream()
+                        .anyMatch(it -> it.getUpStation().equals(station))) {
+            final Section section = sections.stream()
+                    .filter(it -> it.getUpStation().equals(station))
+                    .findFirst()
+                    .orElseThrow();
+            final Section upSection = sections.stream()
+                    .filter(it -> it.getDownStation().equals(station))
+                    .findFirst()
+                    .orElseThrow();
+            sections.remove(section);
+            sections.remove(upSection);
+            final Section editedSection = new Section(upSection.getUpStation(), section.getDownStation(),
+                    upSection.getDistance() + section
+                            .getDistance());
+            sections.add(editedSection);
+        }
     }
 
     public List<Station> getStations() {

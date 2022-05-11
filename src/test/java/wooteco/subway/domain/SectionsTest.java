@@ -224,6 +224,29 @@ public class SectionsTest {
                 () -> assertThat(stations.contains(newDownStation)).isFalse(),
                 () -> assertThat(sections.stream().anyMatch(it -> it.getUpStation().equals(downStation))).isFalse()
         );
-
+    }
+    
+    @Test
+    @DisplayName("강남-청계산입구-양재역 에서 청계산입구가 제거되면 강남-양재가 된다.")
+    void deleteSectionOnMiddle() {
+        //given
+        final Station newDownStation = new Station("정자역");
+        final Section section = new Section(downStation, newDownStation, 10);
+        line.addSection(section);
+        //when
+        line.deleteSection(downStation);
+        //then
+        final List<Station> stations = line.getStations();
+        final List<Section> sections = line.getSections();
+        final Section section1 = sections.stream()
+                .filter(it -> it.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseThrow();
+        assertAll(
+                () -> assertThat(stations.contains(downStation)).isFalse(),
+                () -> assertThat(section1.getDownStation()).isEqualTo(newDownStation),
+                () -> assertThat(section1.getDistance()).isEqualTo(17)
+        );
     }
 }
+
