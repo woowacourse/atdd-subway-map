@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
+    private static final int MINIMUM_SIZE = 1;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -75,9 +76,7 @@ public class Sections {
     }
 
     public List<Section> delete(Station station) {
-        if (sections.size() == 1){
-            throw new NotDeleteException("[ERROR] 구간이 한개있을때는 삭제할수 없습니다.");
-        }
+        validateMinSize();
         List<Section> bucket = new LinkedList<>();
         sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
@@ -93,10 +92,22 @@ public class Sections {
 
     }
 
+    private void validateMinSize() {
+        if (sections.size() == MINIMUM_SIZE) {
+            throw new NotDeleteException("[ERROR] 구간이 한개있을때는 삭제할수 없습니다.");
+        }
+    }
+
     private void validateNoneStation(List<Section> bucket) {
         if (bucket.isEmpty()) {
             throw new NotFoundException("[ERROR] 구간들중에 해당 역을 찾을수 없습니다.");
         }
     }
 
+    public Optional<Section> findTargetWithNotTerminal(Long upStationId, Long downStationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId().equals(upStationId) ||
+                        section.getDownStation().getId().equals(downStationId))
+                .findFirst();
+    }
 }

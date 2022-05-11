@@ -12,6 +12,7 @@ import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -28,30 +29,31 @@ public class SectionService {
     }
 
     public void add(Long lineId, SectionRequest sectionRequest) {
-
         Sections sections = new Sections(sectionRepository.findAllByLineId(lineId));
         validateDuplicate(sectionRequest, sections);
         validateNonMatchStations(sectionRequest, sections);
-        if (sectionRepository.existsByUpStationIdWithLineId(sectionRequest.getUpStationId(), lineId)) {
-            Section section = sections.getSectionByUpStationId(sectionRequest.getUpStationId());
-            sectionRepository.deleteById(section.getId());
 
-            Station upStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow();
-            validateDistance(sectionRequest, section);
-            int dist = section.getDistance() - sectionRequest.getDistance();
-            sectionRepository.save(new Section(lineId, upStation, section.getDownStation(), dist));
-        }
-        if (sectionRepository.existsByDownStationIdWithLineId(sectionRequest.getDownStationId(), lineId)) {
-            Section section = sections.getSectionByDownStationId(sectionRequest.getDownStationId());
-            sectionRepository.deleteById(section.getId());
+        Section section = getTargetWithNotTerminal(sections, sectionRequest)
+                .orElseGet(() -> sectionRepository.save(createMemorySection(sectionRequest, lineId)));
 
-            Station downStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow();
+        if (getTargetWithNotTerminal(sections, sectionRequest).isPresent()) {
             validateDistance(sectionRequest, section);
-            int dist = section.getDistance() - sectionRequest.getDistance();
-            sectionRepository.save(new Section(lineId, section.getUpStation(), downStation, dist));
+            sectionRepository.deleteById(section.getId());
+            stationRepository.findById(sectionRequest.getUpStationId())
+                    .ifPresent(station ->
+                            sectionRepository.save(
+                                    new Section(
+                                            lineId,
+                                            section.getDownStation(),
+                                            station,
+                                            section.getDistance() - sectionRequest.getDistance())
+                            ));
+            sectionRepository.save(createMemorySection(sectionRequest, lineId));
         }
-        Section section = createMemorySection(sectionRequest, lineId);
-        sectionRepository.save(section);
+    }
+
+    private Optional<Section> getTargetWithNotTerminal(Sections sections, SectionRequest sectionRequest) {
+        return sections.findTargetWithNotTerminal(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
     }
 
     private void validateNonMatchStations(SectionRequest sectionRequest, Sections sections) {
@@ -89,14 +91,19 @@ public class SectionService {
         Station station = stationRepository.findById(stationId)
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, stationId)));
         Sections sections = new Sections(sectionRepository.findAllByLineId(lineId));
-        
+
         List<Section> deleteSections = sections.delete(station);
         Section leftSection = deleteSections.get(0);
         sectionRepository.deleteById(leftSection.getId());
 
         if (deleteSections.size() == DELETE_BETWEEN_STATION_STANDARD) {
             Section rightSection = deleteSections.get(1);
-            Section section = new Section(lineId, leftSection.getUpStation(), rightSection.getDownStation(), leftSection.getDistance() + rightSection.getDistance());
+            Section section = new Section(
+                    lineId,
+                    leftSection.getUpStation(),
+                    rightSection.getDownStation(),
+                    leftSection.getDistance() + rightSection.getDistance()
+            );
             sectionRepository.deleteById(rightSection.getId());
             sectionRepository.save(section);
         }

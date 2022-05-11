@@ -59,12 +59,51 @@ class SectionServiceTest {
         assertThat(section.getId()).isNotNull();
     }
 
-    @DisplayName("종점에 구간을 추가한다.")
+    @DisplayName("하행 종점에 구간을 추가한다.")
     @Test
-    void create() {
+    void addDownTerminal() {
         //given
         Station downStation = stationRepository.save(new Station("신도림역"));
         SectionRequest sectionRequest = new SectionRequest(DOWN_STATION_ID, downStation.getId(), 5);
+        //when
+        sectionService.add(LINE_ID, sectionRequest);
+        List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
+        //then
+        assertThat(sections).hasSize(3);
+    }
+
+    @DisplayName("상행 종점에 구간을 추가한다.")
+    @Test
+    void addUpTerminal() {
+        //given
+        Station station = stationRepository.save(new Station("신도림역"));
+        SectionRequest sectionRequest = new SectionRequest(station.getId(), UP_STATION_ID, 5);
+        //when
+        sectionService.add(LINE_ID, sectionRequest);
+        List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
+        //then
+        assertThat(sections).hasSize(3);
+    }
+
+    @DisplayName("역 중간에 넣을 구간중 하행역이 일치할때 구간을 추가한다.")
+    @Test
+    void addDown() {
+        //given
+        Station station = stationRepository.save(new Station("신도림역"));
+        SectionRequest sectionRequest = new SectionRequest(station.getId(), MIDDLE_STATION_ID, 3);
+        //when
+        sectionService.add(LINE_ID, sectionRequest);
+        List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
+        //then
+        assertThat(sections).hasSize(3);
+    }
+
+    @DisplayName("역 중간에 넣을 구간중 상행역이 일치할때 구간을 추가한다.")
+    @Test
+    void addUp() {
+        //given
+        Station station = stationRepository.save(new Station("신도림역"));
+        SectionRequest sectionRequest = new SectionRequest(MIDDLE_STATION_ID, station.getId(), 3);
         //when
         sectionService.add(LINE_ID, sectionRequest);
         List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);

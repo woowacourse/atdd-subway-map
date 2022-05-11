@@ -13,19 +13,19 @@ class SectionsTest {
 
     private Sections sections;
 
-    private Station terminalUpStation;
     private Station upStation;
+    private Station middleStation;
     private Station downStation;
 
     @BeforeEach
     void setUp() {
-        terminalUpStation = new Station(1L, "홍대입구역");
-        upStation = new Station(2L, "신촌역");
+        upStation = new Station(1L, "홍대입구역");
+        middleStation = new Station(2L, "신촌역");
         downStation = new Station(3L, "이대역");
 
         sections = new Sections(List.of(
-                new Section(1L, terminalUpStation, upStation, 5),
-                new Section(1L, upStation, downStation, 5)
+                new Section(1L, upStation, middleStation, 5),
+                new Section(1L, middleStation, downStation, 5)
         ));
     }
 
@@ -35,8 +35,8 @@ class SectionsTest {
         List<Station> stations = sections.getStations();
         assertAll(
                 () -> assertThat(stations).hasSize(3),
-                () -> assertThat(stations.get(0)).isEqualTo(terminalUpStation),
-                () -> assertThat(stations.get(1)).isEqualTo(upStation),
+                () -> assertThat(stations.get(0)).isEqualTo(upStation),
+                () -> assertThat(stations.get(1)).isEqualTo(middleStation),
                 () -> assertThat(stations.get(2)).isEqualTo(downStation)
         );
     }
@@ -47,14 +47,14 @@ class SectionsTest {
         Station newStation = new Station(4L, "하행종점역");
         Sections sections = new Sections(List.of(
                 new Section(1L, downStation, newStation, 4),
-                new Section(1L, terminalUpStation, upStation, 5),
-                new Section(1L, upStation, downStation, 5)
+                new Section(1L, upStation, middleStation, 5),
+                new Section(1L, middleStation, downStation, 5)
         ));
         List<Station> stations = sections.getStations();
         assertAll(
                 () -> assertThat(stations).hasSize(4),
-                () -> assertThat(stations.get(0)).isEqualTo(terminalUpStation),
-                () -> assertThat(stations.get(1)).isEqualTo(upStation),
+                () -> assertThat(stations.get(0)).isEqualTo(upStation),
+                () -> assertThat(stations.get(1)).isEqualTo(middleStation),
                 () -> assertThat(stations.get(2)).isEqualTo(downStation),
                 () -> assertThat(stations.get(3)).isEqualTo(newStation)
         );
@@ -75,8 +75,8 @@ class SectionsTest {
     @DisplayName("구간들 중에서 상행역을 같는 구간을 찾는다.")
     @Test
     void getSectionByUpStationId() {
-        Section section = sections.getSectionByUpStationId(upStation.getId());
-        assertThat(section.getUpStation()).isEqualTo(upStation);
+        Section section = sections.getSectionByUpStationId(middleStation.getId());
+        assertThat(section.getUpStation()).isEqualTo(middleStation);
     }
 
     @DisplayName("구간들 중에서 하행역을 같는 구간을 찾는다.")
@@ -85,4 +85,15 @@ class SectionsTest {
         Section section = sections.getSectionByDownStationId(downStation.getId());
         assertThat(section.getDownStation()).isEqualTo(downStation);
     }
+
+    @DisplayName("종점이 아닌 구간 중 해당하는 구간을 찾는다.")
+    @Test
+    void findTargetWithNotTerminal(){
+        Section section = sections.findTargetWithNotTerminal(upStation.getId(), middleStation.getId()).get();
+        assertAll(
+                () -> assertThat(section.getUpStation()).isEqualTo(upStation),
+                () -> assertThat(section.getDownStation()).isEqualTo(middleStation)
+        );
+    }
+
 }
