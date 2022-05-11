@@ -18,6 +18,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.error.exception.NotFoundException;
 
 @SpringBootTest
@@ -173,6 +174,31 @@ class LineServiceTest {
     void 존재하지_않는_노선_삭제_예외발생() {
         assertThatThrownBy(() -> lineService.deleteById(0L))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("특정 노선의 구간을 추가한다.")
+    @Test
+    void 구간_추가() {
+        Station upStation1 = generateStation("선릉역");
+        Station downStation1 = generateStation("잠실역");
+        Integer distance1 = 10;
+        LineResponse line = generateLine(
+                "2호선", "bg-green-600", upStation1.getId(), downStation1.getId(), distance1);
+
+        Station upStation2 = generateStation("신대방역");
+        Station downStation2 = upStation1;
+        Integer distance2 = 7;
+        SectionRequest sectionRequest2 = new SectionRequest(upStation2.getId(), downStation2.getId(), distance2);
+
+        lineService.addSection(line.getId(), sectionRequest2);
+
+        LineResponse lineResponse = lineService.findById(line.getId());
+        assertThat(lineResponse.getStations().size()).isEqualTo(3);
+    }
+
+    private LineResponse generateLine(String name, String color, Long upStationId, Long downStationId,
+                                      Integer distance) {
+        return lineService.save(new LineRequest(name, color, upStationId, downStationId, distance));
     }
 
     private Station generateStation(String name) {

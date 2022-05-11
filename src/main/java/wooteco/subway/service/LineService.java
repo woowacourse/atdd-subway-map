@@ -11,9 +11,11 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.error.exception.NotFoundException;
 
@@ -55,21 +57,52 @@ public class LineService {
         return new LineResponse(line, stationResponses);
     }
 
+    @Transactional
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Section saveSection = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
+
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        sections.append(saveSection);
+
+        sectionDao.deleteByLineId(lineId);
+        sectionDao.saveAll(sections.getValue());
+    }
+
+    public LineResponse findById(Long id) {
+        Line line = getLine(id);
+
+        Sections sections = new Sections(sectionDao.findByLineId(id));
+        List<Long> stationIds = sections.getStationIds();
+
+        List<StationResponse> stations = stationIds.stream()
+                .map(this::getStation)
+                .map(StationResponse::new)
+                .collect(toList());
+
+        return new LineResponse(line, stations);
+    }
+
     private Station getStation(Long id) {
         return stationDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(id + "의 지하철역은 존재하지 않습니다."));
     }
 
-    public LineResponse findById(Long id) {
-        Line line = getLine(id);
-        return new LineResponse(line);
-    }
-
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
-                .map(LineResponse::new)
+                .map(this::getLineResponse)
                 .collect(toList());
+    }
+
+    private LineResponse getLineResponse(Line line) {
+        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
+        List<StationResponse> stationResponses = sections.getStationIds()
+                .stream()
+                .map(this::getStation)
+                .map(StationResponse::new)
+                .collect(toList());
+        return new LineResponse(line, stationResponses);
     }
 
     @Transactional
