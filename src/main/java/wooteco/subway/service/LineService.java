@@ -108,6 +108,7 @@ public class LineService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> showAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
@@ -115,6 +116,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse show(Long id) {
         validateExist(id);
         Line line = lineDao.findById(id);
@@ -135,6 +137,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void delete(Long id) {
         validateExist(id);
         lineDao.deleteById(id);
