@@ -49,6 +49,36 @@ public class SectionDaoImpl implements SectionDao {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    @Override
+    public void update(Section newSection) {
+        final Long newSectionId = newSection.getId();
+        Section existSection = sections.stream()
+                .filter(section -> section.getId() == newSectionId)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
+
+        existSection.setLine(newSection.getLine());
+        existSection.setUpStation(newSection.getUpStation());
+        existSection.setDownStation(newSection.getDownStation());
+        existSection.setDistance(newSection.getDistance());
+    }
+
+    @Override
+    public Section findByUpStationId(Long upStationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId() == upStationId)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
+    }
+
+    @Override
+    public Section findByDownStationId(Long downStationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().getId() == downStationId)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
+    }
+
     private Section createNewObject(Section section) {
         Field field = ReflectionUtils.findField(Section.class, "id");
         field.setAccessible(true);

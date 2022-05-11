@@ -90,4 +90,45 @@ public class JdbcSectionDao implements SectionDao{
             return null;
         }
     }
+
+    @Override
+    public void update(Section section) {
+        final String sql = "UPDATE SECTION SET line_id = ?, up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
+        jdbcTemplate.update(sql,
+                section.getLine().getId(),
+                section.getUpStation().getId(),
+                section.getDownStation().getId(),
+                section.getDistance(),
+                section.getId());
+    }
+
+    @Override
+    public Section findByUpStationId(Long upStationId) {
+        try {
+            final String sql = "SELECT * FROM SECTION WHERE up_station_id = ?";
+            SectionEntity sectionEntity = jdbcTemplate.queryForObject(sql, stationRowMapper, upStationId);
+            return new Section(sectionEntity.getId(),
+                    lineDao.findById(sectionEntity.getLineId()),
+                    stationDao.findById(sectionEntity.getUpStationId()),
+                    stationDao.findById(sectionEntity.getDownStationId()),
+                    sectionEntity.getDistance());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Section findByDownStationId(Long downStationId) {
+        try {
+            final String sql = "SELECT * FROM SECTION WHERE down_station_id = ?";
+            SectionEntity sectionEntity = jdbcTemplate.queryForObject(sql, stationRowMapper, downStationId);
+            return new Section(sectionEntity.getId(),
+                    lineDao.findById(sectionEntity.getLineId()),
+                    stationDao.findById(sectionEntity.getUpStationId()),
+                    stationDao.findById(sectionEntity.getDownStationId()),
+                    sectionEntity.getDistance());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }

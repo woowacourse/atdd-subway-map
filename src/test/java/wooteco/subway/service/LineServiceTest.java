@@ -1,7 +1,13 @@
 package wooteco.subway.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import org.assertj.core.api.Assertions;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,8 +15,10 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.service.fakeDao.LineDaoImpl;
 import wooteco.subway.service.fakeDao.SectionDaoImpl;
@@ -40,7 +48,7 @@ public class LineServiceTest {
         final LineRequest lineRequest2 = new LineRequest("신분당선", "bg-green-600", station1.getId(), station2.getId(), 10);
         lineService.saveLine(lineRequest1);
 
-        Assertions.assertThatThrownBy(() -> lineService.saveLine(lineRequest2))
+        assertThatThrownBy(() -> lineService.saveLine(lineRequest2))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("같은 이름의 노선이 존재합니다.");
     }
@@ -55,8 +63,172 @@ public class LineServiceTest {
         final LineResponse lineResponse = lineService.saveLine(lineRequest);
         final Long invalidLineId = lineResponse.getId() + 1L;
 
-        Assertions.assertThatThrownBy(() -> lineService.deleteLine(invalidLineId))
+        assertThatThrownBy(() -> lineService.deleteLine(invalidLineId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당하는 노선이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("상행 종점을 등록한다.")
+    void saveSectionToLastUpStation() {
+        // given
+        final Station station1 = stationDao.save(new Station("새로운상행종점"));
+        final Station station2 = stationDao.save(new Station("기존상행종점"));
+        final Station station3 = stationDao.save(new Station("기존하행종점"));
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station2.getId(), station3.getId(), 10);
+        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+        final SectionRequest sectionRequest = new SectionRequest(station1.getId(), station2.getId(), 10);
+
+        // when
+        final Long expected = station1.getId();
+        lineService.saveSection(lineResponse.getId(), sectionRequest);
+
+        // then
+        final Line updatedLine = lineDao.findById(lineResponse.getId());
+        final Long actual = getUpStationId(getSections(updatedLine));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("하행 종점을 등록한다.")
+    void saveSectionToLastDownStation() {
+        // given
+        final Station station1 = stationDao.save(new Station("기존상행종점"));
+        final Station station2 = stationDao.save(new Station("기존하행종점"));
+        final Station station3 = stationDao.save(new Station("새로운하행종점"));
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+        final SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 10);
+
+        // when
+        final Long expected = station3.getId();
+        lineService.saveSection(lineResponse.getId(), sectionRequest);
+
+        // then
+        final Line updatedLine = lineDao.findById(lineResponse.getId());
+        final Long actual = getDownStationId(getSections(updatedLine));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("등록하려는 구간의 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 에러를 발생한다.")
+    void saveAllEqualsStation() {
+        // given
+        final Station station1 = stationDao.save(new Station("기존상행종점"));
+        final Station station2 = stationDao.save(new Station("기존하행종점"));
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+        final SectionRequest sectionRequest = new SectionRequest(station1.getId(), station2.getId(), 10);
+
+        // when and then
+        assertThatThrownBy(() -> lineService.saveSection(lineResponse.getId(), sectionRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("등록하려는 구간의 상행역과 하행역이 모두 노선에 등록되어 있지 않다면 에러를 발생한다.")
+    void saveAllNotEqualsStation() {
+        // given
+        final Station station1 = stationDao.save(new Station("기존상행종점"));
+        final Station station2 = stationDao.save(new Station("기존하행종점"));
+        final Station station3 = stationDao.save(new Station("새로운상행역"));
+        final Station station4 = stationDao.save(new Station("새로운하행역"));
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+        final SectionRequest sectionRequest = new SectionRequest(station3.getId(), station4.getId(), 10);
+
+        // when and then
+        assertThatThrownBy(() -> lineService.saveSection(lineResponse.getId(), sectionRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("갈래길방지1 - 기존 구간의 상행역과 같고 하행역이 다를 경우, 기존 구간을 변경하고 등록한다.")
+    void saveInterruptSameUpStation() {
+        // given
+        final Station station1 = stationDao.save(new Station("기존상행종점"));
+        final Station station2 = stationDao.save(new Station("새로운하행"));
+        final Station station3 = stationDao.save(new Station("기존하행종점"));
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station3.getId(), 10);
+        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+        final SectionRequest sectionRequest = new SectionRequest(station1.getId(), station2.getId(), 3);
+
+        // when
+        lineService.saveSection(lineResponse.getId(), sectionRequest);
+
+        // then
+        final Line updatedLine = lineDao.findById(lineResponse.getId());
+        Map<Long, Long> sections = getSections(updatedLine);
+        assertAll(() -> assertThat(sections.get(station1.getId())).isEqualTo(station2.getId()),
+                () -> assertThat(sections.get(station2.getId())).isEqualTo(station3.getId()));
+    }
+
+    @Test
+    @DisplayName("갈래길방지2 - 기존 구간의 하행역과 같고 상행역이 다를 경우, 기존 구간을 변경하고 등록한다.")
+    void saveInterruptSameDownStation() {
+        // given
+        final Station station1 = stationDao.save(new Station("기존상행종점"));
+        final Station station2 = stationDao.save(new Station("새로운상행"));
+        final Station station3 = stationDao.save(new Station("기존하행종점"));
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station3.getId(), 10);
+        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+        final SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 3);
+
+        // when
+        lineService.saveSection(lineResponse.getId(), sectionRequest);
+
+        // then
+        final Line updatedLine = lineDao.findById(lineResponse.getId());
+        Map<Long, Long> sections = getSections(updatedLine);
+        assertAll(() -> assertThat(sections.get(station1.getId())).isEqualTo(station2.getId()),
+                () -> assertThat(sections.get(station2.getId())).isEqualTo(station3.getId()));
+    }
+
+    @Test
+    @DisplayName("갈래길방지3 -  역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 같거나 길면 등록할 수 없다.")
+    void saveInterruptSameDistance() {
+        // given
+        final Station station1 = stationDao.save(new Station("기존상행종점"));
+        final Station station2 = stationDao.save(new Station("새로운상행"));
+        final Station station3 = stationDao.save(new Station("기존하행종점"));
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station3.getId(), 10);
+        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+        final SectionRequest sectionRequest1 = new SectionRequest(station2.getId(), station3.getId(), 10);
+        final SectionRequest sectionRequest2 = new SectionRequest(station2.getId(), station3.getId(), 11);
+
+        // when and then
+        assertAll(() -> assertThatThrownBy(() -> lineService.saveSection(lineResponse.getId(), sectionRequest1))
+                        .isInstanceOf(IllegalArgumentException.class),
+                () -> assertThatThrownBy(() -> lineService.saveSection(lineResponse.getId(), sectionRequest2))
+                        .isInstanceOf(IllegalArgumentException.class));
+    }
+
+    private Map<Long, Long> getSections(Line line) {
+        List<Section> sections = sectionDao.findByLineId(line.getId());
+        Map<Long, Long> map = new HashMap<>();
+        for (Section section : sections) {
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+            map.put(upStation.getId(), downStation.getId());
+        }
+        return map;
+    }
+
+    private Long getUpStationId(Map<Long, Long> sections) {
+        List<Long> keys = new ArrayList<>(sections.keySet());
+        List<Long> values = new ArrayList<>(sections.values());
+        return keys.stream()
+                .filter(key -> !values.contains(key))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private Long getDownStationId(Map<Long, Long> sections) {
+        List<Long> keys = new ArrayList<>(sections.keySet());
+        List<Long> values = new ArrayList<>(sections.values());
+        return values.stream()
+                .filter(value -> !keys.contains(value))
+                .findFirst()
+                .orElseThrow();
     }
 }

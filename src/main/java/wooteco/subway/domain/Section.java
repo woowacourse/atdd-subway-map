@@ -12,11 +12,18 @@ public class Section {
     }
 
     public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        checkPositiveDistance(distance);
         this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void checkPositiveDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간거리는 음수일 수 없습니다.");
+        }
     }
 
     public Long getId() {
@@ -37,5 +44,21 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 }

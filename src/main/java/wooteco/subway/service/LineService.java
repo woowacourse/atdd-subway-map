@@ -13,6 +13,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.dto.response.LineResponse;
 
 @Transactional
@@ -83,6 +84,59 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
+    public void saveSection(Long id, SectionRequest sectionRequest) {
+        final Line line = lineDao.findById(id);
+        Map<Long, Long> sections = getSections(line);
+        final Long lastUpStationId = getUpStationId(sections);
+        final Long lastDownStationId = getDownStationId(sections);
+
+        final Long upStationId = sectionRequest.getUpStationId();
+        final Long downStationId = sectionRequest.getDownStationId();
+        final int distance = sectionRequest.getDistance();
+
+        checkNotContainSection(sections, upStationId, downStationId);
+
+        //상행종점등록
+        if (downStationId == lastUpStationId) {
+            sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
+            return;
+        }
+
+        //하행종점등록
+        if (upStationId == lastDownStationId) {
+            sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
+            return;
+        }
+
+        //상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+        if (!sections.keySet().contains(upStationId) && !sections.values().contains(downStationId)) {
+            throw new IllegalArgumentException();
+        }
+
+        //갈래길 추가
+        //1.상행이 같을 경우
+        if (sections.keySet().contains(upStationId)) {
+            Section existSection = sectionDao.findByUpStationId(upStationId);
+            int existDistance = existSection.getDistance();
+            Section updateSection = new Section(existSection.getId(), line, stationDao.findById(downStationId),
+                    existSection.getDownStation(), existDistance - distance);
+            sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
+            sectionDao.update(updateSection);
+            return;
+        }
+
+        //2.하행이 같을 경우
+        if (sections.values().contains(downStationId)) {
+            Section existSection = sectionDao.findByDownStationId(downStationId);
+            int existDistance = existSection.getDistance();
+            Section updateSection = new Section(existSection.getId(), line, existSection.getUpStation(),
+                    stationDao.findById(upStationId), existDistance - distance);
+            sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
+            sectionDao.update(updateSection);
+            return;
+        }
+    }
+
     private void checkExistLine(Long id) {
         final Line line = lineDao.findById(id);
         if (line == null) {
@@ -100,7 +154,9 @@ public class LineService {
         if (lineDao.hasLine(lineRequest.getName())) {
             throw new IllegalArgumentException("같은 이름의 노선이 존재합니다.");
         }
-    }    private Map<Long, Long> getSections(Line line) {
+    }
+
+    private Map<Long, Long> getSections(Line line) {
         List<Section> sections = sectionDao.findByLineId(line.getId());
         Map<Long, Long> map = new HashMap<>();
         for (Section section : sections) {
@@ -127,5 +183,14 @@ public class LineService {
                 .filter(value -> !keys.contains(value))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    private void checkNotContainSection(Map<Long, Long> sections, Long upStationId, Long downStationId) {
+        final boolean result = sections.keySet()
+                .stream()
+                .anyMatch(key -> key == upStationId && sections.get(key) == downStationId);
+        if (result) {
+            throw new IllegalArgumentException();
+        }
     }
 }
