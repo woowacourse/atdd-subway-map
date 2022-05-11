@@ -11,4 +11,6 @@ public interface StationService {
     List<Station> findAll();
 
     void deleteById(Long id);
+
+    Station findById(Long stationId);
 }

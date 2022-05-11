@@ -6,5 +6,7 @@ public enum SectionResult {
     DOWN_EXTENDED,
     MIDDLE_ADDED,
     REMOVE_FAIL_LAST_SECTION,
-    REMOVE_SUCCESS,
+    UP_REDUCED,
+    DOWN_REDUCED,
+    MIDDLE_REMOVED,
 }

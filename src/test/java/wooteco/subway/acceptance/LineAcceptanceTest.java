@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,14 +16,27 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.ui.dto.ExceptionResponse;
 import wooteco.subway.ui.dto.LineRequest;
 import wooteco.subway.ui.dto.LineResponse;
+import wooteco.subway.ui.dto.StationRequest;
 
 @DisplayName("노선 E2E")
-@Sql
+@Sql("classpath:/schema.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final LineRequest BOONDANGLINE_REQUEST = new LineRequest("신분당선", "bg-red-600");
-    private static final LineRequest SECONDLINE_REQUEST = new LineRequest("2호선", "bg-green-600");
+    private static final LineRequest BOONDANGLINE_REQUEST = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+    private static final LineRequest SECONDLINE_REQUEST = new LineRequest("2호선", "bg-green-600", 2L, 3L, 10);
     private static final String LINES_URI = "/lines";
+
+    @BeforeEach
+    void setupStations() {
+        final List<String> jsons = Stream.of("잠실역", "역삼역", "강남역", "대림역")
+                .map(StationRequest::new)
+                .map(this::toJson)
+                .collect(Collectors.toList());
+
+        for (String json : jsons) {
+            post("/stations", json);
+        }
+    }
 
     @Test
     @DisplayName("노선 생성 요청 성공 시, 응답코드는 201 CREATED 이고 응답헤더에는 Location 이 있다")
@@ -87,7 +101,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("노선을 제거 시 응답코드는 NO_CONTENT 이다. 존재하지 않는 노선 조회 시, 응답코드는 BAD_REQUEST 이다")
+    @DisplayName("노선을 제거 시 응답코드는 NO_CONTENT 이다. 존재하지 않는 노선 조회 시, 응답코드는 NOT_FOUND 이다")
     void deleteLine() {
         // given
         final ExtractableResponse<Response> createResponse = post(LINES_URI, toJson(BOONDANGLINE_REQUEST));
@@ -103,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> assertThat(findResponseAfterDeletion.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(findResponseAfterDeletion.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
                 () -> assertThat(exceptionResponseForNotExists.getMessage()).contains("요청한 노선이 존재하지 않습니다")
         );
     }

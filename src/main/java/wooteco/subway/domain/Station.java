@@ -18,6 +18,10 @@ public class Station {
         this.name = name;
     }
 
+    public boolean isSameId(Long id) {
+        return Objects.equals(this.id, id);
+    }
+
     public Long getId() {
         return id;
     }

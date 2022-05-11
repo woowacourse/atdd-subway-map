@@ -4,7 +4,7 @@ import java.util.Objects;
 import wooteco.subway.exception.SectionDistanceExceedException;
 import wooteco.subway.exception.SubwayUnknownException;
 
-public class Section {
+public class Section implements Comparable<Section> {
 
     private final Long id;
     private final Long lineId;
@@ -20,6 +20,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Long lineId, Station upStation, Station downStation, int distance) {
+        this(null, lineId, upStation, downStation, distance);
+    }
+
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, null, upStation, downStation, distance);
+    }
+
     public boolean isSameLineId(Long lineId) {
         return Objects.equals(this.lineId, lineId);
     }
@@ -33,20 +41,17 @@ public class Section {
     }
 
     public boolean isAddable(Section other) {
-        return hasSameUpStation(other)
-                || hasSameDownStation(other)
-                || Objects.equals(upStation, other.downStation)
-                || Objects.equals(downStation, other.upStation);
+        return hasSameUpStation(other) || hasSameDownStation(other);
     }
 
     public SectionResult sync(Section input) {
         // 상행 확장
-        if (this.upStation == input.downStation) {
+        if (Objects.equals(this.upStation, input.downStation)) {
             return SectionResult.UP_EXTENDED;
         }
 
         // 하행 확장
-        if (this.downStation == input.upStation) {
+        if (Objects.equals(this.downStation, input.upStation)) {
             return SectionResult.DOWN_EXTENDED;
         }
 
@@ -76,6 +81,10 @@ public class Section {
         return this.distance > input.distance;
     }
 
+    public boolean hasStationById(Long stationId) {
+        return upStation.isSameId(stationId) || downStation.isSameId(stationId);
+    }
+
     public Long getId() {
         return id;
     }
@@ -94,6 +103,17 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public int compareTo(Section o) {
+        if (Objects.equals(this.downStation, o.upStation)) {
+            return -1;
+        }
+        if (Objects.equals(this.upStation, o.downStation)) {
+            return 1;
+        }
+        return 0;
     }
 
     @Override
