@@ -88,6 +88,11 @@ public class JdbcSectionDao {
         return jdbcTemplate.update(sql, downStationId, lineId, upStationId) == FUNCTION_SUCCESS;
     }
 
+    public boolean updateUpStationIdByLineIdAndDownStationId(Long lineId, Long downStationId, Long upStationId) {
+        String sql = "update section set up_station_id = ? where line_id = ? and down_station_id = ?";
+        return jdbcTemplate.update(sql, upStationId, lineId, downStationId) == FUNCTION_SUCCESS;
+    }
+
     public boolean deleteByLineIdAndUpStationId(Long lineId, Long upStationId) {
         String sql = "delete from section where line_id = ? and up_station_id = ?";
         return jdbcTemplate.update(sql, lineId, upStationId) == FUNCTION_SUCCESS;

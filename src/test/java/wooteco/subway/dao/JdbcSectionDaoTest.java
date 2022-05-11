@@ -149,7 +149,7 @@ class JdbcSectionDaoTest {
 
     @DisplayName("해당 라인과 지하철역 2개에 관련된 구간들을 조회한다.")
     @Test
-    void  findByLineIdAndStationIds() {
+    void findByLineIdAndStationIds() {
         Section section1 = new Section(lineId, 3L, 4L, 5);
         jdbcSectionDao.save(section1);
         Section section2 = new Section(lineId, 4L, 5L, 5);
@@ -157,5 +157,12 @@ class JdbcSectionDaoTest {
 
         Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, 4L, 6L);
         assertThat(sections.getSections().size()).isEqualTo(2);
+    }
+
+    @DisplayName("지하철 호선과 행역을 기준으로 구간의 상행역을 바꾼다")
+    @Test
+    void updateUpStationIdByLineIdAndDownStationId() {
+        boolean isUpdated = jdbcSectionDao.updateUpStationIdByLineIdAndDownStationId(lineId, 3L, 4L);
+        assertThat(isUpdated).isTrue();
     }
 }
