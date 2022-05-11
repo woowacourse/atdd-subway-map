@@ -100,6 +100,18 @@ public class LineService {
         return null;
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findExistLineById(lineId);
+        Station stationToDelete = findExistStationById(stationId);
+        List<Section> savedSections = sectionDao.findAllByLineId(line.getId());
+
+        Sections origin = new Sections(savedSections);
+        Sections results = new Sections(savedSections);
+        results.delete(stationToDelete);
+
+        deleteAndSaveSections(lineId, origin, results);
+    }
+
     private Line findExistLineById(Long id) {
         return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(

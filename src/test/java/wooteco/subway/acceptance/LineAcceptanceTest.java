@@ -32,6 +32,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createNewStation("신림역");
         createNewStation("봉천역");
         createNewStation("서울대입구역");
+        createNewStation("낙성대역");
+        createNewStation("사당역");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -181,6 +183,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // TODO 조회기능이 완성되면 조회해서 잘 들어갔는지 확인한다.
+    }
+
+    @DisplayName("노선에서 구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        // given
+        LineRequest lineRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
+        postRequest(LINES_URI, lineRequest);
+        postRequest("/lines/1/sections", new SectionRequest(2L, 3L, 10));
+        postRequest("/lines/1/sections", new SectionRequest(3L, 4L, 10));
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/1/sections?stationId=3")
+                .then().log().all()
+                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        //TODO 조회기능이 완성되면 조회해서 잘 들어갔는지 확인한다.
     }
 
     private ExtractableResponse<Response> postRequest(String path, Object body) {

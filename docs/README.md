@@ -102,7 +102,7 @@
         - 거리도 새로 할당해주어야한다.
       - `예외` 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.
       - `예외` 상행역, 하행역 둘 중 하나도 노선에 포함되있지 않으면 추가할 수 없다.
-    - [ ] 구간을 제거한다 (`DELETE /lines/{line_id}/sections?stationId={station_id})
+    - [x] 구간을 제거한다 (`DELETE /lines/{line_id}/sections?stationId={station_id})
       - 결과 상태 코드는 `200 OK` 이다. 
       - 구간에서 해당 station이 포함된 구간을 제거한다.
       - 종점이 제거될 경우 다음으로 오던 역이 종점이 된다.

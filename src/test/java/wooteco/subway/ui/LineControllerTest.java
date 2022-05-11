@@ -243,4 +243,16 @@ public class LineControllerTest {
                 () -> verify(lineService).addSection(anyLong(), any(SectionRequest.class))
         );
     }
+
+    @DisplayName("노선에서 구간을 제거한다.")
+    @Test
+    void deleteSection() throws Exception {
+        // when
+        ResultActions perform = mockMvc.perform(delete("/lines/1/sections?stationId=2"));
+        // then
+        assertAll(
+                () -> perform.andExpect(status().isOk()),
+                () -> verify(lineService).deleteSection(anyLong(), anyLong())
+        );
+    }
 }

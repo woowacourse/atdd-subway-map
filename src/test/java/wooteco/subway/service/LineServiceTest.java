@@ -28,7 +28,6 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -220,8 +219,7 @@ class LineServiceTest {
                 .thenReturn(List.of(
                         new Section(신림역, 봉천역, 5),
                         new Section(봉천역, 서울대입구역, 5),
-                        new Section(서울대입구역, 낙성대역, 5)
-                ));
+                        new Section(서울대입구역, 낙성대역, 5)));
         when(stationDao.findById(2L))
                 .thenReturn(Optional.of(봉천역));
         when(stationDao.findById(5L))
@@ -244,8 +242,7 @@ class LineServiceTest {
                 .thenReturn(List.of(
                         new Section(신림역, 봉천역, 5),
                         new Section(봉천역, 서울대입구역, 5),
-                        new Section(서울대입구역, 낙성대역, 5)
-                ));
+                        new Section(서울대입구역, 낙성대역, 5)));
         when(stationDao.findById(4L))
                 .thenReturn(Optional.of(낙성대역));
         when(stationDao.findById(5L))
@@ -255,5 +252,45 @@ class LineServiceTest {
         // then
         verify(sectionDao, times(0)).remove(any(Section.class));
         verify(sectionDao, times(1)).save(eq(1L), any(Section.class));
+    }
+
+    @DisplayName("노선에서 중간의 구간을 제거한다.")
+    @Test
+    void deleteSection_middle() {
+        // given
+        when(lineDao.findById(1L))
+                .thenReturn(Optional.of(new Line(1L, "2호선", "GREEN")));
+        when(stationDao.findById(2L))
+                .thenReturn(Optional.of(봉천역));
+        when(sectionDao.findAllByLineId(1L))
+                .thenReturn(List.of(
+                        new Section(신림역, 봉천역, 5),
+                        new Section(봉천역, 서울대입구역, 5),
+                        new Section(서울대입구역, 낙성대역, 5)));
+        // when
+        lineService.deleteSection(1L, 2L);
+        // then
+        verify(sectionDao, times(2)).remove(any(Section.class));
+        verify(sectionDao, times(1)).save(anyLong(), any(Section.class));
+    }
+
+    @DisplayName("노선에서 맨 앞 혹은 맨 뒤 구간을 제거한다.")
+    @Test
+    void deleteSection_frontOrBack() {
+        // given
+        when(lineDao.findById(1L))
+                .thenReturn(Optional.of(new Line(1L, "2호선", "GREEN")));
+        when(stationDao.findById(1L))
+                .thenReturn(Optional.of(신림역));
+        when(sectionDao.findAllByLineId(1L))
+                .thenReturn(List.of(
+                        new Section(신림역, 봉천역, 5),
+                        new Section(봉천역, 서울대입구역, 5),
+                        new Section(서울대입구역, 낙성대역, 5)));
+        // when
+        lineService.deleteSection(1L, 1L);
+        // then
+        verify(sectionDao, times(1)).remove(any(Section.class));
+        verify(sectionDao, times(0)).save(anyLong(), any(Section.class));
     }
 }
