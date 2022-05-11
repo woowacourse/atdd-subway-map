@@ -33,6 +33,10 @@ public class SectionMap {
         return (Long) upToDownStationIdMap.keySet().toArray()[0];
     }
 
+    public boolean hasUpStation(Long downStationId) {
+        return downToUpStationIdMap.containsKey(downStationId);
+    }
+
     public boolean hasDownStation(Long upStationId) {
         return upToDownStationIdMap.containsKey(upStationId);
     }
@@ -43,5 +47,9 @@ public class SectionMap {
 
     public Long getUpStationIdOf(Long downStationId) {
         return downToUpStationIdMap.get(downStationId);
+    }
+
+    public int getSize() {
+        return upToDownStationIdMap.size();
     }
 }
