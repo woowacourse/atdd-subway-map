@@ -65,12 +65,12 @@ public class Section {
     }
 
     public void changeUpStationAndDistance(Section section) {
-        this.upStation = section.downStation;
+        this.downStation = section.upStation;
         this.distance -= section.distance;
     }
 
     public void changeDownStationAndDistance(Section section) {
-        this.downStation = section.upStation;
+        this.upStation = section.downStation;
         this.distance -= section.distance;
     }
 

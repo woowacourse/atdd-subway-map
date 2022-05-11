@@ -67,6 +67,6 @@ public class SectionsTest {
 
         Section resultSection = sections.findById(1L);
         assertThat(resultSection.getDistance()).isEqualTo(3);
-        assertThat(resultSection.getDownStation()).isEqualTo(new Station(1L, "강남역"));
+        assertThat(resultSection.getUpStation()).isEqualTo(new Station(3L, "역삼역"));
     }
 }
