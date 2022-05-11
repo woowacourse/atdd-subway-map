@@ -49,7 +49,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("모든 노선을 조회한다.")
     @Test
     void getLines() {
         // given
