@@ -490,4 +490,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("기존 구간의 내부에 더 긴 구간을 등록 요청한다.(400에러)")
+    @Test
+    void saveSection_withBiggerInnerSection() {
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
+        createStationForTest("잠실역");
+
+        ExtractableResponse<Response> createLineResponse = createLineForTest("2호선", "green", "1", "2", "10");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "1");
+        params.put("downStationId", "3");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + createLineResponse.jsonPath().getLong("id") + "/sections")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
