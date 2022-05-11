@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.dao.LineRepository;
+import wooteco.subway.dao.repository.LineRepository;
+import wooteco.subway.dao.repository.SectionRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -15,9 +16,11 @@ import wooteco.subway.domain.Sections;
 public class LineService {
 
 	private final LineRepository lineRepository;
+	private final SectionRepository sectionRepository;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(LineRepository lineRepository, SectionRepository sectionRepository) {
 		this.lineRepository = lineRepository;
+		this.sectionRepository = sectionRepository;
 	}
 
 	@Transactional
@@ -56,8 +59,8 @@ public class LineService {
 	public void addSection(Long id, Section section) {
 		Line line = lineRepository.findById(id);
 		line.findUpdatedSectionByAdd(section)
-			.ifPresent(lineRepository::updateSection);
-		lineRepository.saveSection(id, section);
+			.ifPresent(sectionRepository::update);
+		sectionRepository.save(id, section);
 	}
 
 	@Transactional
@@ -67,7 +70,7 @@ public class LineService {
 		Sections deletedSections = line.deleteSectionByStation(stationId);
 		validateSectionExist(deletedSections);
 
-		deletedSections.executeEach(lineRepository::removeSection);
+		deletedSections.executeEach(section -> sectionRepository.remove(section.getId()));
 		saveSectionIfUpdated(lineId, deletedSections);
 	}
 
@@ -80,7 +83,7 @@ public class LineService {
 	private void saveSectionIfUpdated(Long lineId, Sections deletedSections) {
 		Section newSection = deletedSections.sum();
 		if (deletedSections.isNotExist(newSection)) {
-			lineRepository.saveSection(lineId, newSection);
+			sectionRepository.save(lineId, newSection);
 		}
 	}
 }

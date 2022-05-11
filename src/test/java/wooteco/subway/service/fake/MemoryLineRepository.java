@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import wooteco.subway.dao.LineRepository;
+import wooteco.subway.dao.repository.LineRepository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 
 public class MemoryLineRepository implements LineRepository {
 
@@ -48,20 +47,5 @@ public class MemoryLineRepository implements LineRepository {
 	public Boolean existsByName(String name) {
 		return lines.stream()
 			.anyMatch(line -> line.isSameName(name));
-	}
-
-	@Override
-	public void updateSection(Section section) {
-
-	}
-
-	@Override
-	public void removeSection(Section section) {
-
-	}
-
-	@Override
-	public void saveSection(Long id, Section section) {
-
 	}
 }

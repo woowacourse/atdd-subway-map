@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.repository;
 
 import java.util.List;
 
@@ -17,10 +17,4 @@ public interface LineRepository {
 	void remove(Long id);
 
 	Boolean existsByName(String name);
-
-	void saveSection(Long id, Section section);
-
-	void updateSection(Section section);
-
-	void removeSection(Section section);
 }

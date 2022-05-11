@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import wooteco.subway.dao.repository.JdbcLineRepository;
+import wooteco.subway.dao.repository.JdbcSectionRepository;
+import wooteco.subway.dao.repository.LineRepository;
+import wooteco.subway.dao.repository.SectionRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -34,8 +38,8 @@ class SectionRepositoryTest {
 	@BeforeEach
 	void init() {
 		StationDao stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
-		sectionRepository = new JdbcSectionRepository(stationDao, new SectionDao(dataSource, jdbcTemplate));
-		lineRepository = new JdbcLineRepository(dataSource, jdbcTemplate, sectionRepository);
+		sectionRepository = new JdbcSectionRepository(new SectionDao(dataSource, jdbcTemplate), stationDao);
+		lineRepository = new JdbcLineRepository(new LineDao(dataSource, jdbcTemplate), sectionRepository);
 		Long upStationId = stationDao.save(new Station("강남역"));
 		Long downStationId = stationDao.save(new Station("역삼역"));
 		upStation = new Station(upStationId, "강남역");

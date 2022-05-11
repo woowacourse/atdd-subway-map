@@ -1,21 +1,24 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.repository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.table.SectionTable;
 import wooteco.subway.domain.Section;
 
 @Repository
 public class JdbcSectionRepository implements SectionRepository {
 
-	private final StationDao stationDao;
 	private final SectionDao sectionDao;
+	private final StationDao stationDao;
 
-	public JdbcSectionRepository(StationDao stationDao, SectionDao sectionDao) {
-		this.stationDao = stationDao;
+	public JdbcSectionRepository(SectionDao sectionDao, StationDao stationDao) {
 		this.sectionDao = sectionDao;
+		this.stationDao = stationDao;
 	}
 
 	@Override

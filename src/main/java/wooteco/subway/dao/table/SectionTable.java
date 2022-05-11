@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.table;
 
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;

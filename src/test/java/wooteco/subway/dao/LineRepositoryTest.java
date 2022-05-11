@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import wooteco.subway.dao.repository.JdbcLineRepository;
+import wooteco.subway.dao.repository.JdbcSectionRepository;
+import wooteco.subway.dao.repository.LineRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -31,9 +34,8 @@ class LineRepositoryTest {
 	@BeforeEach
 	void init() {
 		stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
-		lineRepository = new JdbcLineRepository(dataSource, jdbcTemplate,
-			new JdbcSectionRepository(stationDao, new SectionDao(dataSource, jdbcTemplate))
-		);
+		lineRepository = new JdbcLineRepository(new LineDao(dataSource, jdbcTemplate),
+			new JdbcSectionRepository(new SectionDao(dataSource, jdbcTemplate), stationDao));
 	}
 
 	@DisplayName("지하철 노선을 저장한다.")

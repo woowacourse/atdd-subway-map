@@ -12,10 +12,11 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.fake.MemoryLineRepository;
+import wooteco.subway.service.fake.MemorySectionRepository;
 
 class LineServiceTest {
 
-	private final LineService lineService = new LineService(new MemoryLineRepository());
+	private final LineService lineService = new LineService(new MemoryLineRepository(), new MemorySectionRepository());
 	private final Section section = new Section(
 		new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
 
