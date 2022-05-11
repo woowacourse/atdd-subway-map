@@ -26,10 +26,10 @@ public class Line {
 
     private void validateDataSize(String name, String color) {
         if (name.isEmpty() || name.length() > LINE_NAME_LENGTH) {
-            throw new DataLengthException("노선 이름이 빈 값이거나 최대 범위를 초과했습니다.");
+            throw new DataLengthException("노선 이름이 빈 값이거나 최대 범위(" + LINE_NAME_LENGTH + ")를 초과했습니다.");
         }
         if (color.isEmpty() || color.length() > LINE_COLOR_LENGTH) {
-            throw new DataLengthException("노선 색이 빈 값이거나 최대 범위를 초과했습니다.");
+            throw new DataLengthException("노선 색이 빈 값이거나 최대 범위(" + LINE_COLOR_LENGTH + "를 초과했습니다.");
         }
     }
 
