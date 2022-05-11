@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.service.fake.MemoryLineDao;
+import wooteco.subway.service.fake.MemoryLineRepository;
 
 class LineServiceTest {
 
-	private final LineService lineService = new LineService(new MemoryLineDao());
+	private final LineService lineService = new LineService(new MemoryLineRepository());
 	private final Section section = new Section(
 		new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
 

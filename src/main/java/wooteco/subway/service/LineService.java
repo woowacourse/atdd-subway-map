@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.LineRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -14,60 +14,60 @@ import wooteco.subway.domain.Sections;
 @Transactional(readOnly = true)
 public class LineService {
 
-	private final LineDao lineDao;
+	private final LineRepository lineRepository;
 
-	public LineService(LineDao lineDao) {
-		this.lineDao = lineDao;
+	public LineService(LineRepository lineRepository) {
+		this.lineRepository = lineRepository;
 	}
 
 	@Transactional
 	public Line create(String name, String color, Section section) {
 		validateNameNotDuplicated(name);
-		Long lineId = lineDao.save(new Line(name, color, List.of(section)));
-		return lineDao.findById(lineId);
+		Long lineId = lineRepository.save(new Line(name, color, List.of(section)));
+		return lineRepository.findById(lineId);
 	}
 
 	private void validateNameNotDuplicated(String name) {
-		if (lineDao.existsByName(name)) {
+		if (lineRepository.existsByName(name)) {
 			throw new IllegalArgumentException("해당 이름의 지하철 노선이 이미 존재합니다");
 		}
 	}
 
 	public List<Line> listLines() {
-		return lineDao.findAll();
+		return lineRepository.findAll();
 	}
 
 	public Line findOne(Long id) {
-		return lineDao.findById(id);
+		return lineRepository.findById(id);
 	}
 
 	@Transactional
 	public Line update(Line line) {
-		lineDao.update(line);
+		lineRepository.update(line);
 		return findOne(line.getId());
 	}
 
 	@Transactional
 	public void remove(Long id) {
-		lineDao.remove(id);
+		lineRepository.remove(id);
 	}
 
 	@Transactional
 	public void addSection(Long id, Section section) {
-		Line line = lineDao.findById(id);
+		Line line = lineRepository.findById(id);
 		line.findUpdatedSectionByAdd(section)
-			.ifPresent(lineDao::updateSection);
-		lineDao.saveSection(id, section);
+			.ifPresent(lineRepository::updateSection);
+		lineRepository.saveSection(id, section);
 	}
 
 	@Transactional
 	public void deleteSection(Long lineId, Long stationId) {
-		Line line = lineDao.findById(lineId);
+		Line line = lineRepository.findById(lineId);
 
 		Sections deletedSections = line.deleteSectionByStation(stationId);
 		validateSectionExist(deletedSections);
 
-		deletedSections.executeEach(lineDao::removeSection);
+		deletedSections.executeEach(lineRepository::removeSection);
 		saveSectionIfUpdated(lineId, deletedSections);
 	}
 
@@ -80,7 +80,7 @@ public class LineService {
 	private void saveSectionIfUpdated(Long lineId, Sections deletedSections) {
 		Section newSection = deletedSections.sum();
 		if (deletedSections.isNotExist(newSection)) {
-			lineDao.saveSection(lineId, newSection);
+			lineRepository.saveSection(lineId, newSection);
 		}
 	}
 }

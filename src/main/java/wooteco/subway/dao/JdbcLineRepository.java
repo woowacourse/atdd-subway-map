@@ -19,28 +19,28 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
 @Repository
-public class JdbcLineDao implements LineDao {
+public class JdbcLineRepository implements LineRepository {
 
 	private static final String NO_SUCH_ID_ERROR = "해당 id에 맞는 지하철 노선이 없습니다.";
 
 	private final SimpleJdbcInsert insertActor;
 	private final NamedParameterJdbcTemplate jdbcTemplate;
-	private final SectionDao sectionDao;
+	private final SectionRepository sectionRepository;
 
-	public JdbcLineDao(DataSource dataSource, NamedParameterJdbcTemplate jdbcTemplate,
-		SectionDao sectionDao) {
+	public JdbcLineRepository(DataSource dataSource, NamedParameterJdbcTemplate jdbcTemplate,
+		SectionRepository sectionRepository) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.insertActor = new SimpleJdbcInsert(dataSource)
 			.withTableName("line")
 			.usingGeneratedKeyColumns("id");
-		this.sectionDao = sectionDao;
+		this.sectionRepository = sectionRepository;
 	}
 
 	@Override
 	public Long save(Line line) {
 		long lineId = insertActor.executeAndReturnKey(new BeanPropertySqlParameterSource(line))
 			.longValue();
-		line.getSections().forEach(section -> sectionDao.save(lineId, section));
+		line.getSections().forEach(section -> sectionRepository.save(lineId, section));
 		return lineId;
 	}
 
@@ -48,7 +48,7 @@ public class JdbcLineDao implements LineDao {
 	public List<Line> findAll() {
 		String sql = "select * from line";
 		return jdbcTemplate.query(sql, getLineMapper()).stream()
-			.map(line -> line.createWithSection(sectionDao.findByLineId(line.getId())))
+			.map(line -> line.createWithSection(sectionRepository.findByLineId(line.getId())))
 			.collect(Collectors.toList());
 	}
 
@@ -58,7 +58,7 @@ public class JdbcLineDao implements LineDao {
 		try {
 			Line line = jdbcTemplate.queryForObject(sql, Map.of("id", id), getLineMapper());
 			return Objects.requireNonNull(line)
-				.createWithSection(sectionDao.findByLineId(line.getId()));
+				.createWithSection(sectionRepository.findByLineId(line.getId()));
 		} catch (EmptyResultDataAccessException exception) {
 			throw new NoSuchElementException(NO_SUCH_ID_ERROR);
 		}
@@ -99,16 +99,16 @@ public class JdbcLineDao implements LineDao {
 
 	@Override
 	public void saveSection(Long lineId, Section section) {
-		sectionDao.save(lineId, section);
+		sectionRepository.save(lineId, section);
 	}
 
 	@Override
 	public void updateSection(Section section) {
-		sectionDao.update(section);
+		sectionRepository.update(section);
 	}
 
 	@Override
 	public void removeSection(Section section) {
-		sectionDao.remove(section.getId());
+		sectionRepository.remove(section.getId());
 	}
 }

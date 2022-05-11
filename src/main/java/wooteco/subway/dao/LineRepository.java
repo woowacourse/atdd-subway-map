@@ -5,7 +5,7 @@ import java.util.List;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
-public interface LineDao {
+public interface LineRepository {
 	Long save(Line line);
 
 	List<Line> findAll();

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.LineRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
-public class MemoryLineDao implements LineDao {
+public class MemoryLineRepository implements LineRepository {
 
 	private Long seq = 0L;
 	private final List<Line> lines = new ArrayList<>();
