@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -118,6 +119,48 @@ class SectionsTest {
                     Section appendSection = new Section(1L, 1L, 2L, 3);
 
                     assertThatThrownBy(() -> sections.append(appendSection))
+                            .isInstanceOf(IllegalArgumentException.class);
+                })
+        );
+    }
+
+    @DisplayName("구간 삭제 기능")
+    @TestFactory
+    @Disabled
+    Stream<DynamicTest> dynamicTestRemoveSection() {
+        Long stationId1 = 1L;
+        Long stationId2 = 2L;
+        Long stationId3 = 3L;
+        Long stationId4 = 4L;
+        Long stationId5 = 5L;
+
+        Section basedSection1 = new Section(1L, 1L, 2L, 10);
+        Section basedSection2 = new Section(1L, 2L, 3L, 10);
+        Section basedSection3 = new Section(1L, 3L, 4L, 10);
+        Section basedSection4 = new Section(1L, 4L, 5L, 10);
+
+        Sections sections = new Sections(List.of(basedSection1, basedSection2, basedSection3, basedSection4));
+
+        return Stream.of(
+                dynamicTest("중간에 위치한 역을 삭제한다.", () -> {
+                    assertDoesNotThrow(() -> sections.remove(stationId2));
+                }),
+
+                dynamicTest("상행 종점의 구간을 삭제한다.", () -> {
+                    assertDoesNotThrow(() -> sections.remove(stationId1));
+                }),
+
+                dynamicTest("존재하지 않는 역을 삭제할 경우 예외를 던진다.", () -> {
+                    assertThatThrownBy(() -> sections.remove(stationId1))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("하행 종점의 구간을 삭제한다.", () -> {
+                    assertDoesNotThrow(() -> sections.remove(stationId5));
+                }),
+
+                dynamicTest("구간이 한개 뿐인 경우 예외를 던진다.", () -> {
+                    assertThatThrownBy(() -> sections.remove(stationId2))
                             .isInstanceOf(IllegalArgumentException.class);
                 })
         );

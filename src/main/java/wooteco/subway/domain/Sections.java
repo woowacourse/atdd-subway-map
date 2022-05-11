@@ -125,6 +125,23 @@ public class Sections {
             value.remove(findByDownStationId(getDownStationId()));
             return;
         }
+
+        removeMiddleStation(stationId);
+    }
+
+    private void removeMiddleStation(Long stationId) {
+        Section frontSection = findByDownStationId(stationId);
+        Section backSection = findByUpStationId(stationId);
+
+        Long lineId = frontSection.getLineId();
+        Long upStationId = frontSection.getUpStationId();
+        Long downStationId = backSection.getDownStationId();
+        Integer distance = frontSection.getDistance() + backSection.getDistance();
+
+        value.remove(frontSection);
+        value.remove(backSection);
+
+        value.add(new Section(lineId, upStationId, downStationId, distance));
     }
 
     public List<Long> getStationIds() {
