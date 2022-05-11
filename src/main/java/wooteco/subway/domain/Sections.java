@@ -2,6 +2,9 @@ package wooteco.subway.domain;
 
 import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_DOWN_STATION;
 import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_UP_STATION;
+import static wooteco.subway.domain.SectionDeleteStatus.DELETE_DOWN_STATION;
+import static wooteco.subway.domain.SectionDeleteStatus.DELETE_MIDDLE;
+import static wooteco.subway.domain.SectionDeleteStatus.DELETE_UP_STATION;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,7 +41,6 @@ public class Sections {
             addMiddleSection(section, sectionAddStatus);
             return getSortedByUpStationIdSections();
         }
-
         value.add(section);
         return getSortedByUpStationIdSections();
     }
@@ -94,7 +96,6 @@ public class Sections {
     private SectionAddStatus getAddSectionStatus(final Section section) {
         final List<Long> totalStationIds = getTotalStationIds();
         validateSection(totalStationIds, section);
-
         return SectionAddStatus.from(value, section);
     }
 
@@ -112,13 +113,41 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public void deleteSectionByStationId(final Long stationId) {
+    public List<Section> deleteSectionByStationId(final Long stationId) {
         validateDeleteSection(stationId);
+        final SectionDeleteStatus deleteSectionStatus = getDeleteSectionStatus(stationId);
+        // 1. 중간역 제거
+        if (deleteSectionStatus == DELETE_MIDDLE) {
+
+        }
+        //2. 종점들 제거
+        //2-1. 상행종점 제거
+        if (deleteSectionStatus == DELETE_UP_STATION) {
+            value.removeIf(it -> Objects.equals(it.getUpStationId(), stationId));
+        }
+        //2-2. 하행종점 제거
+        if (deleteSectionStatus == DELETE_DOWN_STATION) {
+            value.removeIf(it -> Objects.equals(it.getDownStationId(), stationId));
+        }
+        return getSortedByUpStationIdSections();
     }
 
     private void validateDeleteSection(final Long stationId) {
         checkExistingStationId(stationId);
         checkOnlyDefaultSection();
+    }
+
+    private SectionDeleteStatus getDeleteSectionStatus(final Long stationId) {
+        final List<Long> totalStationIds = getTotalStationIds();
+        final Long upStationId = getTotalStationIds().get(0);
+        final Long downStationId = getTotalStationIds().get(totalStationIds.size() - 1);
+        if (Objects.equals(stationId, upStationId)) {
+            return DELETE_UP_STATION;
+        }
+        if (Objects.equals(stationId, downStationId)) {
+            return DELETE_DOWN_STATION;
+        }
+        return DELETE_MIDDLE;
     }
 
     private void checkExistingStationId(final Long stationId) {
@@ -134,8 +163,6 @@ public class Sections {
     }
 
     public boolean containsStationId(final Long stationId) {
-
-        final List<Long> totalStationIds = getTotalStationIds();
-        return totalStationIds.contains(stationId);
+        return getTotalStationIds().contains(stationId);
     }
 }

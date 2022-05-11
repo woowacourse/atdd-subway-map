@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.LineDuplicateException;
 import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.SectionNotFoundException;
 import wooteco.subway.exception.StationDuplicateException;
 import wooteco.subway.exception.StationNotFoundException;
 
@@ -15,20 +16,18 @@ public class ControllerAdvice {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity handleIllegalException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @ExceptionHandler(value = {LineNotFoundException.class, StationNotFoundException.class})
+    @ExceptionHandler(value = {LineNotFoundException.class, StationNotFoundException.class,
+        SectionNotFoundException.class})
     public ResponseEntity handleNotFoundException(Exception e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @ExceptionHandler(value = {LineDuplicateException.class, StationDuplicateException.class})
     public ResponseEntity handleDuplicateException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
 //    @ExceptionHandler(value = Exception.class)

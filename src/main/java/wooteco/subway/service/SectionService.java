@@ -58,6 +58,5 @@ public class SectionService {
 
         sections.deleteSectionByStationId(stationId);
 
-
     }
 }
