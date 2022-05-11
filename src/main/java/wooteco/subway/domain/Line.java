@@ -7,7 +7,6 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private Sections sections;
 
     public Line(String name, String color) {
         this(null, name, color);
@@ -19,15 +18,6 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
-    }
-
-    public Line(Long id, String name, String color, Sections sections) {
-        validateArgument(name, color);
-
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.sections = sections;
     }
 
     private void validateArgument(String name, String color) {
@@ -49,10 +39,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public Sections getSections() {
-        return sections;
     }
 
     @Override
