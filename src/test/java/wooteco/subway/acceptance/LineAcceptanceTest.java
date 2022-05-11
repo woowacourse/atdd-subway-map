@@ -428,4 +428,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("상행역, 하행역이 이미 노선에 있는 구간을 등록 요청한다.(400에러)")
+    @Test
+    void saveSection_withAlreadyExistSection() {
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
+        createStationForTest("잠실역");
+
+        ExtractableResponse<Response> createLineResponse = createLineForTest("2호선", "green", "1", "2", "10");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "2");
+        params.put("downStationId", "3");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> createSectionResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + createLineResponse.jsonPath().getLong("id") + "/sections")
+            .then().log().all()
+            .extract();
+
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("upStationId", "1");
+        params1.put("downStationId", "3");
+        params1.put("distance", "20");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + createLineResponse.jsonPath().getLong("id") + "/sections")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
