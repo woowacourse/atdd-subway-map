@@ -56,7 +56,7 @@ public class Line {
 		return color;
 	}
 
-	public List<Station> listOrderedStations() {
+	public List<Station> findOrderedStations() {
 		return sections.sortStations();
 	}
 
