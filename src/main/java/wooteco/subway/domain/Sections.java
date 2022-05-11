@@ -55,10 +55,6 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public Section findSectionWithUpperStation(Station upStation) {
         return sections.stream()
                 .filter(it -> it.getUpStation().equals(upStation))
@@ -81,5 +77,13 @@ public class Sections {
 
     public int size() {
         return sections.size();
+    }
+
+    public void remove(Section section) {
+        sections.remove(section);
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

@@ -52,7 +52,6 @@ public class Line {
                 sections.add(section);
                 return List.of(section);
             }
-            // TODO: 갈래길 방지 및 거리 validate  (기존 section 갱신)
             // 기존에 노선에 있던 역을 하행 삼아 그 역 사이에 들어가기
             Section sectionWithLowerStation = sections.findSectionWithLowerStation(section.getDownStation());
             List<Section> newAddedSections = sectionWithLowerStation.putBetweenDownStation(section);
@@ -69,7 +68,6 @@ public class Line {
                 return List.of(section);
             }
 
-            // TODO: 갈래길 방지 및 거리 validate (기존 section 갱신)
             // 기존에 노선에 있던 역을 상행 삼아 그 역 사이에 들어가기
             Section sectionWithUpperStation = sections.findSectionWithUpperStation(section.getUpStation());
             List<Section> newAddedSections = sectionWithUpperStation.putBetweenUpStation(section);
@@ -118,6 +116,48 @@ public class Line {
         }
         Line line = (Line) o;
         return Objects.equals(getId(), line.getId());
+    }
+
+    public List<Section> removeStation(Station station) {
+        validateCanRemoveStation(station);
+        // 상행 종점인 경우
+        Station upStation = getUpStation();
+        Station downStation = getDownStation();
+        if (station.equals(upStation)) {
+            Section sectionWithUpperStation = sections.findSectionWithUpperStation(station);
+            sections.remove(sectionWithUpperStation);
+            return List.of(sectionWithUpperStation);
+        }
+        // 하행 종점인 경우
+        if (station.equals(downStation)) {
+            Section sectionWithLowerStation = sections.findSectionWithLowerStation(station);
+            sections.remove(sectionWithLowerStation);
+            return List.of(sectionWithLowerStation);
+        }
+        // 중간에 낀 경우 제거하려는 역을 상행으로 잡고 제거한다.
+        Section sectionWithUpperStation = sections.findSectionWithUpperStation(station);
+        Section sectionWithLowerStation = sections.findSectionWithLowerStation(station);
+        sections.remove(sectionWithUpperStation);
+        sections.remove(sectionWithLowerStation);
+        Section mergedSection = new Section(sectionWithLowerStation.getLineId(), sectionWithUpperStation.getUpStation(),
+                sectionWithLowerStation.getDownStation(), sectionWithUpperStation.getDistance() + sectionWithLowerStation
+                .getDistance());
+
+        return List.of(mergedSection, sectionWithUpperStation, sectionWithLowerStation);
+    }
+
+    private void validateCanRemoveStation(Station station) {
+        if (sections.size() <= 1) {
+            throw new IllegalStateException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
+        }
+
+        if (!sections.containsStation(station)) {
+            throw new IllegalArgumentException("존재하지 않는 역을 제거할 수 없습니다");
+        }
+    }
+
+    public boolean contains(Station station) {
+        return sections.containsStation(station);
     }
 
     @Override

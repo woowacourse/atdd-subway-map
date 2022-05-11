@@ -21,9 +21,9 @@ class SectionsTest {
     private Section section2;
     private Section section3;
     private Section section4;
-    private Section section5;
 
     private List<Section> sections = new ArrayList<>();
+    Sections testSections;
 
     @BeforeEach
     public void setUp() {
@@ -38,23 +38,47 @@ class SectionsTest {
         section2 = new Section(2L, 1L, station2, station3, 10L);
         section3 = new Section(3L, 1L, station3, station4, 10L);
         section4 = new Section(4L, 1L, station4, station5, 10L);
-        section5 = new Section(5L, 1L, station5, station6, 10L);
-        sections = List.of(section1, section2, section3, section4, section5);
+
+        sections = new ArrayList<Section>() {
+            {
+                add(section1);
+                add(section2);
+                add(section3);
+                add(section4);
+            }
+        };
+
+        testSections = new Sections(sections);
     }
 
     @Test
-    void containsStation() {
+    void containsStation_success() {
+        assertThat(testSections.containsStation(station1)).isTrue();
+    }
 
+    @Test
+    void containsStation_fail() {
+        assertThat(testSections.containsStation(station6)).isFalse();
     }
 
     @Test
     void calculateUpStation() {
-        Sections testSections = new Sections(sections);
+        testSections = new Sections(sections);
         Station station = testSections.calculateUpStation();
         assertThat(station).isEqualTo(station1);
     }
 
     @Test
     void calculateDownStation() {
+        testSections = new Sections(sections);
+        Station station = testSections.calculateDownStation();
+        assertThat(station).isEqualTo(station5);
+    }
+
+    @Test
+    void remove() {
+        testSections.remove(section4);
+
+        assertThat(testSections.containsStation(station5)).isFalse();
     }
 }

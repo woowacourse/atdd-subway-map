@@ -75,4 +75,17 @@ class SectionControllerTest {
                     statusCode(HttpStatus.OK.value()).
                     extract();
     }
+
+    @DisplayName("구간을 제거한다")
+    @Test
+    void deleteSection_success() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10L);
+        ExtractableResponse<Response> extract = RestAssured.
+                given().log().all().
+                when().
+                    delete("/lines/1/sections?stationId=2").
+                then().log().all().
+                    statusCode(HttpStatus.OK.value()).
+                    extract();
+    }
 }

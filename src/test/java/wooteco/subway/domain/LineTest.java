@@ -97,7 +97,7 @@ class LineTest {
         assertThat(line.getSections().containsStation(station5)).isTrue();
     }
 
-    @DisplayName("추가하려는 구간의 길이가 기존 존재하는 구간의 길이보다 기렴ㄴ 예외 반환")
+    @DisplayName("추가하려는 구간의 길이가 기존 존재하는 구간의 길이보다 같거나 길면 예외 반환")
     @Test
     public void add_longerSection() {
         Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
@@ -105,5 +105,35 @@ class LineTest {
 
         assertThatThrownBy(() -> line.addSection(newSection))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행역을 제거")
+    @Test
+    public void remove_upEndStation() {
+        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
+
+        line.removeStation(station1);
+
+        assertThat(line.contains(station1)).isFalse();
+    }
+
+    @DisplayName("하행역을 제거")
+    @Test
+    public void remove_downEndStation() {
+        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
+
+        line.removeStation(station4);
+
+        assertThat(line.contains(station4)).isFalse();
+    }
+
+    @DisplayName("가운데 위치한 역을 제거")
+    @Test
+    public void remove_betweenStation() {
+        Line line = new Line(1L, "testLine", "color", station1, station4, 10L, sections);
+
+        line.removeStation(station3);
+
+        assertThat(line.contains(station3)).isFalse();
     }
 }
