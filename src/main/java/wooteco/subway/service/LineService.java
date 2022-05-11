@@ -11,8 +11,10 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.SectionRequest;
 import wooteco.subway.service.dto.StationResponse;
 
 @Service
@@ -38,6 +40,17 @@ public class LineService {
         long lineId = lineDao.save(line);
         sectionDao.save(lineId, section);
         return find(lineId);
+    }
+
+    @Transactional
+    public void saveSection(final Long lineId, final SectionRequest sectionRequest) {
+        validateStationInSection(sectionRequest);
+
+        Section newSection = convertSection(sectionRequest);
+        Sections sections = new Sections(sectionDao.findAllById(lineId));
+        sections.add(newSection);
+
+//        sectionDao.replace(sections);
     }
 
     public List<LineResponse> findAll() {
@@ -92,6 +105,15 @@ public class LineService {
         }
     }
 
+    private void validateStationInSection(final SectionRequest sectionRequest) {
+        if (!stationDao.existStationById(sectionRequest.getUpStationId())) {
+            throw new IllegalArgumentException("상행역이 존재하지 않습니다.");
+        }
+        if (!stationDao.existStationById(sectionRequest.getDownStationId())) {
+            throw new IllegalArgumentException("하행역이 존재하지 않습니다.");
+        }
+    }
+
     private void validateExistedLine(final Long id) {
         if (!lineDao.existLineById(id)) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
@@ -104,6 +126,10 @@ public class LineService {
 
     private Section convertSection(final LineRequest lineRequest) {
         return new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+    }
+
+    private Section convertSection(final SectionRequest sectionRequest) {
+        return new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
     }
 
     private List<StationResponse> convertStationResponses(final List<Station> stations) {

@@ -1,0 +1,42 @@
+package wooteco.subway.domain;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@DisplayName("Sections 도메인 객체 테스트")
+class SectionsTest {
+
+    private final Section section1 = new Section(1L, 2L, 10);
+    private final Section section2 = new Section(2L, 3L, 10);
+    private final Section section3 = new Section(3L, 4L, 10);
+
+    private final Sections sections = new Sections(List.of(section1, section2, section3));
+
+    @DisplayName("상행역과 하행역이 구간 목록에 존재할 경우 예외가 발생한다.")
+    @Test
+    void addAlreadyExistUpAndDownStation() {
+        // given
+        Section newSection = new Section(1L, 2L, 10);
+
+        // when & then
+        assertThatThrownBy(() -> sections.add(newSection))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역이 이미 지하철 노선에 존재합니다.");
+    }
+
+    @DisplayName("추가하려는 구간의 지하철역들이 구간 목록에 없을 경우 예외가 발생한다.")
+    @Test
+    void addNotExistUpAndDownStation() {
+        // given
+        Section newSection = new Section(5L, 6L, 10);
+
+        // when & then
+        assertThatThrownBy(() -> sections.add(newSection))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("추가하려는 구간이 노선에 포함되어 있지 않습니다.");
+    }
+}
