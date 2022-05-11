@@ -35,6 +35,15 @@ public class RestUtil {
 			.extract();
 	}
 
+	public static ExtractableResponse<Response> get(String url) {
+		return RestAssured.given()
+			.when()
+			.get(url)
+			.then()
+			.extract();
+	}
+
+
 	public static Long getIdFromStation(ExtractableResponse<Response> response) {
 		return response.jsonPath()
 			.getObject(".", StationResponse.class)
