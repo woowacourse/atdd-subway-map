@@ -125,7 +125,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 }),
 
                 dynamicTest("존재하지 않는 노선을 수정할 경우 404를 반환한다.", () -> {
-                    Long id = 10L;
+                    Long id = 0L;
                     String name = "2호선";
                     String color = "bg-blue-600";
 

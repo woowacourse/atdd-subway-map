@@ -112,6 +112,13 @@ class SectionsTest {
 
                     assertThatThrownBy(() -> sections.append(appendSection))
                             .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("상행역 하행역이 모두 포함하는 경우 예외를 던진다.", () -> {
+                    Section appendSection = new Section(1L, 1L, 2L, 3);
+
+                    assertThatThrownBy(() -> sections.append(appendSection))
+                            .isInstanceOf(IllegalArgumentException.class);
                 })
         );
     }

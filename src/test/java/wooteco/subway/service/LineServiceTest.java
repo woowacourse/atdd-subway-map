@@ -196,6 +196,43 @@ class LineServiceTest {
         assertThat(lineResponse.getStations().size()).isEqualTo(3);
     }
 
+    @DisplayName("특정 노선에 모두 존재하는 구간 추가 시 예외가 발생한다.")
+    @Test
+    void 존재하는_구간_추가_예외발생() {
+        Station upStation1 = generateStation("선릉역");
+        Station downStation1 = generateStation("잠실역");
+        Integer distance1 = 10;
+        LineResponse line = generateLine(
+                "2호선", "bg-green-600", upStation1.getId(), downStation1.getId(), distance1);
+
+        Station upStation2 = downStation1;
+        Station downStation2 = upStation1;
+        Integer distance2 = 7;
+        SectionRequest sectionRequest2 = new SectionRequest(upStation2.getId(), downStation2.getId(), distance2);
+
+        assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest2))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+
+    @DisplayName("특정 노선에 존재하지 않는 구간 추가 시 예외가 발생한다.")
+    @Test
+    void 존재하지_않는_구간_추가_예외발생() {
+        Station upStation1 = generateStation("선릉역");
+        Station downStation1 = generateStation("잠실역");
+        Integer distance1 = 10;
+        LineResponse line = generateLine(
+                "2호선", "bg-green-600", upStation1.getId(), downStation1.getId(), distance1);
+
+        Station upStation2 = generateStation("신대방역");
+        Station downStation2 = generateStation("신림역");
+        Integer distance2 = 7;
+        SectionRequest sectionRequest2 = new SectionRequest(upStation2.getId(), downStation2.getId(), distance2);
+
+        assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest2))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     private LineResponse generateLine(String name, String color, Long upStationId, Long downStationId,
                                       Integer distance) {
         return lineService.save(new LineRequest(name, color, upStationId, downStationId, distance));

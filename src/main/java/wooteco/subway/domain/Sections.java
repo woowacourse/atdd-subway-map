@@ -14,11 +14,12 @@ public class Sections {
     }
 
     public void append(Section section) {
-        validateSameStation(section);
+        validateStation(section);
 
-        if ((isUpTerminus(section) || isDownTerminus(section))
-                || (section.isSameUpStation(findByUpStationId(getUpStationId())) && !isFrontForkedLoad(section))
-                || (section.isSameDownStation(findByDownStationId(getDownStationId())) && !isBackForkedLoad(section))) {
+        if ((isUpTerminus(section)
+                || isDownTerminus(section))
+                || existsStationId(section.getUpStationId()) && !isFrontForkedLoad(section)
+                || existsStationId(section.getDownStationId()) && !isBackForkedLoad(section)) {
             value.add(section);
             return;
         }
@@ -26,8 +27,9 @@ public class Sections {
         throw new IllegalArgumentException("구간 추가가 불가능 합니다.");
     }
 
-    private void validateSameStation(Section section) {
-        if (value.stream().anyMatch(section::isSameUpAndDownStation)) {
+    private void validateStation(Section section) {
+        if (value.stream().anyMatch(section::isSameUpAndDownStation)
+                || existsStationId(section.getUpStationId()) && existsStationId(section.getDownStationId())) {
             throw new IllegalArgumentException("구간 추가가 불가능 합니다.");
         }
     }
@@ -99,14 +101,30 @@ public class Sections {
         return value.stream()
                 .filter(section -> section.getUpStationId().equals(upStationId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("일치하는 구간이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 존재하지 않습니다."));
     }
 
     private Section findByDownStationId(Long downStationId) {
         return value.stream()
                 .filter(section -> section.getDownStationId().equals(downStationId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("일치하는 구간이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 존재하지 않습니다."));
+    }
+
+    public void remove(Long stationId) {
+        if (value.size() == 1) {
+            throw new IllegalArgumentException("역 삭제가 불가능 합니다.");
+        }
+
+        if (getUpStationId().equals(stationId)) {
+            value.remove(findByUpStationId(getUpStationId()));
+            return;
+        }
+
+        if (getDownStationId().equals(stationId)) {
+            value.remove(findByDownStationId(getDownStationId()));
+            return;
+        }
     }
 
     public List<Long> getStationIds() {
