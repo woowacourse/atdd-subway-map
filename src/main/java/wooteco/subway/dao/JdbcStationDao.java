@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
@@ -41,6 +43,13 @@ public class JdbcStationDao implements StationDao {
     public List<Station> findAll() {
         String sql = "select * from STATION";
         return jdbcTemplate.query(sql, generateMapper());
+    }
+
+    @Override
+    public List<Station> findByIdIn(List<Long> ids) {
+        SqlParameterSource parameters = new MapSqlParameterSource("ids", ids);
+        String sql = "select * from STATION where id in (:ids)";
+        return jdbcTemplate.query(sql, parameters, generateMapper());
     }
 
     @Override

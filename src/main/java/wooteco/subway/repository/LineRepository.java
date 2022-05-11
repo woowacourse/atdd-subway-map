@@ -1,7 +1,9 @@
 package wooteco.subway.repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.LineDao;
@@ -39,13 +41,30 @@ public class LineRepository {
     public Line findById(Long id) {
         LineDto lineDto = lineDao.findById(id);
         List<SectionDto> sectionDtos = sectionDao.findByLineId(id);
-        ArrayList<Section> sections = new ArrayList<>();
+        List<Station> stations = stationDao.findByIdIn(collectStationIds(sectionDtos));
+        Sections sections = buildSections(sectionDtos, stations);
+        return new Line(lineDto.getId(), lineDto.getName(), lineDto.getColor(), sections);
+    }
+
+    private Sections buildSections(List<SectionDto> sectionDtos, List<Station> stations) {
+        Map<Long, Station> allStations = new HashMap<>();
+        stations.forEach(station -> allStations.put(station.getId(), station));
+        List<Section> sections = sectionDtos.stream()
+                .map(sectionDto -> new Section(sectionDto.getId(),
+                        allStations.get(sectionDto.getUpStationId()),
+                        allStations.get(sectionDto.getDownStationId()),
+                        sectionDto.getDistance()))
+                .collect(Collectors.toList());
+        return new Sections(sections);
+    }
+
+    private List<Long> collectStationIds(List<SectionDto> sectionDtos) {
+        List<Long> stationIds = new ArrayList<>();
         for (SectionDto sectionDto : sectionDtos) {
-            Station up = stationDao.findById(sectionDto.getUpStationId());
-            Station down = stationDao.findById(sectionDto.getDownStationId());
-            sections.add(new Section(sectionDto.getId(), up, down, sectionDto.getDistance()));
+            stationIds.add(sectionDto.getUpStationId());
         }
-        return new Line(lineDto.getId(), lineDto.getName(), lineDto.getColor(), Sections.from(sections));
+        stationIds.add(sectionDtos.get(sectionDtos.size() - 1).getDownStationId());
+        return stationIds;
     }
 
     public List<Line> findAll() {
