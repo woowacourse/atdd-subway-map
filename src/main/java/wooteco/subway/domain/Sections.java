@@ -2,11 +2,14 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class Sections {
+public class Sections implements Iterable<Section> {
     private static final int LIMIT_LOW_SIZE = 1;
     private final List<Section> sections;
 
@@ -21,7 +24,7 @@ public class Sections {
         }
     }
 
-    public void add(Section section) {
+    public void checkCanAddAndUpdate(Section section) {
         validateCanConnect(section);
         validateAlreadyConnected(section);
         validateSectionCanDividedWithSameUpStation(section);
@@ -103,5 +106,33 @@ public class Sections {
         stations.addAll(downStations);
 
         return new ArrayList<>(stations);
+    }
+
+    private class SectionIterator implements Iterator<Section> {
+
+        private int current = 0;
+
+        @Override
+        public boolean hasNext() {
+            return current < sections.size();
+        }
+
+        @Override
+        public Section next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            return sections.get(current++);
+        }
+    }
+
+    @Override
+    public Iterator<Section> iterator() {
+        return new SectionIterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Section> action) {
+        Iterable.super.forEach(action);
     }
 }

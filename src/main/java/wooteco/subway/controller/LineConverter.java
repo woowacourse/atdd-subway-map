@@ -5,8 +5,10 @@ import java.util.stream.Collectors;
 
 import wooteco.subway.dto.info.LineInfoToUpdate;
 import wooteco.subway.dto.info.RequestLineInfo;
+import wooteco.subway.dto.info.RequestSectionInfo;
 import wooteco.subway.dto.info.ResponseLineInfo;
 import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
 
@@ -26,5 +28,10 @@ public class LineConverter {
             .collect(Collectors.toList());
         return new LineResponse(responseLineInfo.getId(), responseLineInfo.getName(), responseLineInfo.getColor(),
             stationResponses);
+    }
+
+    static RequestSectionInfo toInfo(Long lineId, SectionRequest sectionRequest) {
+        return new RequestSectionInfo(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+            sectionRequest.getDistance());
     }
 }

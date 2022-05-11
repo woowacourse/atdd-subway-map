@@ -21,7 +21,7 @@ import wooteco.subway.dto.response.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private void createStation(String stationName) {
+    private void createStationForTest(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
@@ -38,8 +38,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        createStation("강남역");
-        createStation("선릉역");
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
@@ -66,8 +66,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        createStation("강남역");
-        createStation("선릉역");
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
@@ -101,8 +101,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        createStation("강남역");
-        createStation("선릉역");
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
 
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
@@ -154,8 +154,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        createStation("강남역");
-        createStation("선릉역");
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
 
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
@@ -208,8 +208,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        createStation("강남역");
-        createStation("선릉역");
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
 
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
@@ -262,8 +262,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicateName() {
         /// given
-        createStation("강남역");
-        createStation("선릉역");
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
 
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
@@ -314,8 +314,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        createStation("강남역");
-        createStation("선릉역");
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
@@ -357,5 +357,50 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간을 생성한다.")
+    @Test
+    void saveSection() {
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
+        createStationForTest("잠실역");
+
+        ExtractableResponse<Response> createLineResponse = createLineForTest("2호선", "green", "1", "2", "10");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "2");
+        params.put("downStationId", "3");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + createLineResponse.jsonPath().getLong("id") + "/sections")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+    }
+
+    private ExtractableResponse<Response> createLineForTest(String name, String color, String upStationId,
+        String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        return createResponse;
     }
 }

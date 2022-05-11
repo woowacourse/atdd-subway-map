@@ -18,6 +18,7 @@ import wooteco.subway.dto.LineEntity;
 import wooteco.subway.dto.SectionEntity;
 import wooteco.subway.dto.info.LineInfoToUpdate;
 import wooteco.subway.dto.info.RequestLineInfo;
+import wooteco.subway.dto.info.RequestSectionInfo;
 import wooteco.subway.dto.info.ResponseLineInfo;
 import wooteco.subway.dto.info.StationInfo;
 
@@ -141,5 +142,27 @@ public class LineService {
         if (!lineDao.existById(id)) {
             throw new IllegalArgumentException(ERROR_MESSAGE_NOT_EXISTS_ID);
         }
+    }
+
+    public void saveSection(RequestSectionInfo requestSectionInfo) {
+        Long lineId = requestSectionInfo.getLineId();
+        Long upStationId = requestSectionInfo.getUpStationId();
+        Long downStationId = requestSectionInfo.getDownStationId();
+        Integer distance = requestSectionInfo.getDistance();
+
+        validateNotExists(lineId);
+        validateNotExistStation(upStationId);
+        validateNotExistStation(downStationId);
+
+        Section section = new Section(stationDao.getStation(upStationId), stationDao.getStation(downStationId),
+            distance);
+        LineEntity lineEntity = lineDao.find(lineId);
+        Line line = new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(),
+            new Sections(findSections(lineEntity.getId())));
+        line.checkCanAddAndUpdate(section);
+
+        Sections sections = line.getSections();
+        sectionDao.save(line.getId(), section);
+        sections.forEach(section1 -> sectionDao.update(line.getId(), section1));
     }
 }

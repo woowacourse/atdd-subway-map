@@ -49,8 +49,8 @@ public class Line {
         }
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
+    public void checkCanAddAndUpdate(Section section) {
+        sections.checkCanAddAndUpdate(section);
     }
 
     public Long getId() {
@@ -63,6 +63,10 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     public List<Station> getStations() {
