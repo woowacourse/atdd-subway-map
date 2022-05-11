@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.service.fake.FakeLineDao;
 import wooteco.subway.service.fake.FakeSectionDao;
 
 class SectionServiceTest {
@@ -16,7 +15,7 @@ class SectionServiceTest {
 
     @BeforeEach
     void setUp() {
-        sectionService = new SectionService(new FakeSectionDao(), new FakeLineDao());
+        sectionService = new SectionService(new FakeSectionDao());
     }
 
     @DisplayName("구간을 등록할 수 있다.")

@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -12,14 +11,10 @@ import wooteco.subway.dto.SectionRequest;
 @Service
 public class SectionService {
 
-    private static final int DELETE_FAIL = 0;
-
     private final SectionDao sectionDao;
-    private final LineDao lineDao;
 
-    public SectionService(SectionDao sectionDao, LineDao lineDao) {
+    public SectionService(SectionDao sectionDao) {
         this.sectionDao = sectionDao;
-        this.lineDao = lineDao;
     }
 
     @Transactional
