@@ -51,4 +51,17 @@ class SectionDaoTest {
                 () -> assertThat(savedSection.getDownStation()).isEqualTo(section.getDownStation())
         );
     }
+
+    @DisplayName("모든 구간을 불러온다.")
+    @Test
+    void findAll() {
+        final Station station3 = stationDao.save(new Station("광나루역"));
+
+        final Section section1 = new Section(station1, station2, 10, line.getId());
+        final Section section2 = new Section(station2, station3, 10, line.getId());
+        sectionDao.save(section1);
+        sectionDao.save(section2);
+
+        assertThat(sectionDao.findAll().size()).isEqualTo(2);
+    }
 }
