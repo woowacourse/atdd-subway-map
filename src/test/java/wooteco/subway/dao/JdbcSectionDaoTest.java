@@ -109,11 +109,41 @@ class JdbcSectionDaoTest {
 
     @DisplayName("상행과 하행이 db에 있는지 확인한다.")
     @Test
-    void isExistByUpStationIdAndDownStationId() {
+    void isExistByUpStationIdAndDownStationIdForTrue() {
         Section section = new Section(lineId, 3L, 4L, 5);
         jdbcSectionDao.save(section);
 
         boolean isExist = jdbcSectionDao.isExistByUpStationIdAndDownStationId(3L, 4L);
+        assertThat(isExist).isTrue();
+    }
+
+    @DisplayName("상행과 하행이 db에 있는지 확인할 때 상행만 있으면 존재하지 않는다.")
+    @Test
+    void isExistByUpStationIdAndDownStationIdForFalse() {
+        Section section = new Section(lineId, 3L, 4L, 5);
+        jdbcSectionDao.save(section);
+
+        boolean isExist = jdbcSectionDao.isExistByUpStationIdAndDownStationId(3L, 5L);
+        assertThat(isExist).isFalse();
+    }
+
+    @DisplayName("상행이 db에 있는지 확인한다.")
+    @Test
+    void isExistByLineIdAndUpStationId() {
+        Section section = new Section(lineId, 3L, 4L, 5);
+        jdbcSectionDao.save(section);
+
+        boolean isExist = jdbcSectionDao.isExistByLineIdAndUpStationId(lineId, 3L);
+        assertThat(isExist).isTrue();
+    }
+
+    @DisplayName("하행이 db에 있는지 확인한다.")
+    @Test
+    void isExistByLineIdAndDownStationId() {
+        Section section = new Section(lineId, 3L, 4L, 5);
+        jdbcSectionDao.save(section);
+
+        boolean isExist = jdbcSectionDao.isExistByLineIdAndDownStationId(lineId, 4L);
         assertThat(isExist).isTrue();
     }
 }

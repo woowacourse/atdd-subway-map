@@ -61,7 +61,7 @@ public class JdbcSectionDao {
 
     public Sections findByLineIdAndStationId(Long lineId, Long stationId) {
         String sql = "select * from section where line_id = ? and (up_station_id = ? or down_station_id = ?)";
-        List<Section> sections =  jdbcTemplate.query(sql, rowMapper, lineId, stationId, stationId);
+        List<Section> sections = jdbcTemplate.query(sql, rowMapper, lineId, stationId, stationId);
         return new Sections(sections);
     }
 
@@ -87,6 +87,17 @@ public class JdbcSectionDao {
 
     public boolean isExistByUpStationIdAndDownStationId(Long upStationId, Long downStationId) {
         String sql = "select EXISTS (select * from section where up_station_id = ? and down_station_id = ?) as success";
-        return jdbcTemplate.queryForObject(sql, Integer.class, upStationId, downStationId) == 1;
+        return jdbcTemplate.queryForObject(sql, Integer.class, upStationId, downStationId) == FUNCTION_SUCCESS;
+    }
+
+    public boolean isExistByLineIdAndUpStationId(Long lineId, Long upStationId) {
+        String sql = "select EXISTS (select * from section where line_id = ? and up_station_id = ?) as success";
+        return jdbcTemplate.queryForObject(sql, Integer.class, lineId, upStationId) == FUNCTION_SUCCESS;
+    }
+
+
+    public boolean isExistByLineIdAndDownStationId(Long lineId, Long downStationId) {
+        String sql = "select EXISTS (select * from section where line_id = ? and down_station_id = ?) as success";
+        return jdbcTemplate.queryForObject(sql, Integer.class, lineId, downStationId) == FUNCTION_SUCCESS;
     }
 }
