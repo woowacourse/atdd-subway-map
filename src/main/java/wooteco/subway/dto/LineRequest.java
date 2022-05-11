@@ -42,11 +42,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toEntity() {
-        return new Line(name, color);
-    }
-
-    public Line toEntityWithId(Long id) {
+    public Line toLine(Long id) {
         return new Line(id, name, color);
     }
 
@@ -54,7 +50,7 @@ public class LineRequest {
         return new Line(name, color);
     }
 
-    public Section toSection(Long id) {
-        return new Section(id, upStationId, downStationId, distance);
+    public Section toSection() {
+        return new Section(upStationId, downStationId, distance);
     }
 }

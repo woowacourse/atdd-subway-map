@@ -23,6 +23,10 @@ public class Station {
         return this.name.equals(station.name);
     }
 
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
+    }
+
     public Long getId() {
         return id;
     }
@@ -55,5 +59,6 @@ public class Station {
                 ", name='" + name + '\'' +
                 '}';
     }
+
 }
 

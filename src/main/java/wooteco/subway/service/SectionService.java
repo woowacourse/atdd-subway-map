@@ -11,6 +11,8 @@ import wooteco.subway.domain.Sections;
 @Service
 public class SectionService {
 
+    private static final int END_UP_STATION_INDEX = 0;
+
     private final SectionDao sectionDao;
 
     public SectionService(SectionDao sectionDao) {
@@ -35,7 +37,7 @@ public class SectionService {
     public List<Long> findArrangedStationIdsByLineId(Long id) {
         Sections sections = sectionDao.findByLineId(id);
         List<Section> endSections = sections.findEndSections();
-        Section endUpSection = endSections.get(0);
+        Section endUpSection = endSections.get(END_UP_STATION_INDEX);
 
         return new ArrayList<>(sections.findArrangedStationIds(endUpSection));
     }
