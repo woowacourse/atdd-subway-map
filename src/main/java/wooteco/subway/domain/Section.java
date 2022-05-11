@@ -59,10 +59,6 @@ public class Section {
         return downStationId.equals(stationId);
     }
 
-    public boolean hasStationId(Long stationId) {
-        return hasStationIdAsUpStation(stationId) || hasStationIdAsDownStation(stationId);
-    }
-
     public Distance addDistance(Section other) {
         return distance.add(other.distance);
     }
