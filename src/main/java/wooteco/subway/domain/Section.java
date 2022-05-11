@@ -15,4 +15,12 @@ public class Section {
     public boolean isUpStation(Station station) {
         return upStation.equals(station);
     }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }
