@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +26,11 @@ public class SectionsTest {
     void addSectionToUpStation() {
         Section section = new Section(5L, 1L, 10);
         sections.add(section);
-        assertThat(sections.getSections().size()).isEqualTo(4);
-        assertThat(sections.hasSection(section)).isTrue();
+
+        assertAll(
+            () -> assertThat(sections.getSections().size()).isEqualTo(4),
+            () -> assertThat(sections.hasSection(section)).isTrue()
+        );
     }
 
     @DisplayName("하행 종점에 새로운 구간을 등록한다.")
@@ -65,8 +69,10 @@ public class SectionsTest {
         Section splitSection = new Section(6L, 2L, 6);
         sections.add(section);
 
-        assertThat(sections.hasSection(section)).isTrue();
-        assertThat(sections.hasSection(splitSection)).isTrue();
+        assertAll(
+            () -> assertThat(sections.hasSection(section)).isTrue(),
+            () -> assertThat(sections.hasSection(splitSection)).isTrue()
+        );
     }
 
     @DisplayName("상행이 동일한 구간이 존재한지만 새로 입력하는 구간의 길이가 크거나 같다면 예외가 발생한다.")
@@ -86,8 +92,10 @@ public class SectionsTest {
         Section splitSection = new Section(1L, 6L, 6);
         sections.add(section);
 
-        assertThat(sections.hasSection(section)).isTrue();
-        assertThat(sections.hasSection(splitSection)).isTrue();
+        assertAll(
+            () -> assertThat(sections.hasSection(section)).isTrue(),
+            () -> assertThat(sections.hasSection(splitSection)).isTrue()
+        );
     }
 
     @DisplayName("하행이 동일한 구간이 존재한지만 새로 입력하는 구간의 길이가 크거나 같다면 예외가 발생한다.")
@@ -108,8 +116,10 @@ public class SectionsTest {
         long stationId = 1L;
 
         sections.remove(stationId);
-        assertThat(sections.getSections().size()).isEqualTo(2);
-        assertThat(sections.hasSection(section)).isFalse();
+        assertAll(
+            () -> assertThat(sections.getSections().size()).isEqualTo(2),
+            () -> assertThat(sections.hasSection(section)).isFalse()
+        );
     }
 
     @DisplayName("하행 종점을 제거할 경우 이전에 있는 역이 종점이 된다.")
@@ -119,8 +129,10 @@ public class SectionsTest {
         long stationId = 4L;
 
         sections.remove(stationId);
-        assertThat(sections.getSections().size()).isEqualTo(2);
-        assertThat(sections.hasSection(section)).isFalse();
+        assertAll(
+            () -> assertThat(sections.getSections().size()).isEqualTo(2),
+            () -> assertThat(sections.hasSection(section)).isFalse()
+        );
     }
 
     @DisplayName("구간 중간에 있는 역 제거할 경우 각 양 옆의 구간의 합으로 재배치된다.")
@@ -132,10 +144,12 @@ public class SectionsTest {
         long stationId = 2L;
 
         sections.remove(stationId);
-        assertThat(sections.getSections().size()).isEqualTo(2);
-        assertThat(sections.hasSection(section1)).isFalse();
-        assertThat(sections.hasSection(section2)).isFalse();
-        assertThat(sections.hasSection(newSection)).isTrue();
+        assertAll(
+            () -> assertThat(sections.getSections().size()).isEqualTo(2),
+            () -> assertThat(sections.hasSection(section1)).isFalse(),
+            () -> assertThat(sections.hasSection(section2)).isFalse(),
+            () -> assertThat(sections.hasSection(newSection)).isTrue()
+        );
     }
 
     @DisplayName("구간 목록에 하나의 구간이 존재하는 경우 삭제 시 예외가 발생한다.")

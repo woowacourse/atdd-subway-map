@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -58,9 +59,11 @@ public class LineServiceTest {
         // when
         LineResponse lineResponse = lineService.createLine(lineRequest);
         // then
-        assertThat(lineResponse.getId()).isEqualTo(1L);
-        assertThat(lineResponse.getName()).isEqualTo("test");
-        assertThat(lineResponse.getColor()).isEqualTo("GREEN");
+        assertAll(
+            () -> assertThat(lineResponse.getId()).isEqualTo(1L),
+            () -> assertThat(lineResponse.getName()).isEqualTo("test"),
+            () -> assertThat(lineResponse.getColor()).isEqualTo("GREEN")
+        );
     }
 
     @DisplayName("지하철 노선 생성 시 이름이 중복된다면 에러를 응답한다.")
@@ -119,13 +122,15 @@ public class LineServiceTest {
         // when
         List<LineResponse> responses = lineService.showLines();
         // then
-        assertThat(responses.size()).isEqualTo(2);
-        assertThat(responses.get(0).getId()).isEqualTo(1L);
-        assertThat(responses.get(0).getName()).isEqualTo("test1");
-        assertThat(responses.get(0).getColor()).isEqualTo("GREEN");
-        assertThat(responses.get(1).getId()).isEqualTo(2L);
-        assertThat(responses.get(1).getName()).isEqualTo("test2");
-        assertThat(responses.get(1).getColor()).isEqualTo("YELLOW");
+        assertAll(
+            () -> assertThat(responses.size()).isEqualTo(2),
+            () -> assertThat(responses.get(0).getId()).isEqualTo(1L),
+            () -> assertThat(responses.get(0).getName()).isEqualTo("test1"),
+            () -> assertThat(responses.get(0).getColor()).isEqualTo("GREEN"),
+            () -> assertThat(responses.get(1).getId()).isEqualTo(2L),
+            () -> assertThat(responses.get(1).getName()).isEqualTo("test2"),
+            () -> assertThat(responses.get(1).getColor()).isEqualTo("YELLOW")
+        );
     }
 
     @DisplayName("id를 이용해 지하철 노선을 조회한다.")
@@ -148,9 +153,11 @@ public class LineServiceTest {
         // when
         LineResponse response = lineService.showLine(1L);
         // then
-        assertThat(response.getId()).isEqualTo(1L);
-        assertThat(response.getName()).isEqualTo("test1");
-        assertThat(response.getColor()).isEqualTo("GREEN");
+        assertAll(
+            () -> assertThat(response.getId()).isEqualTo(1L),
+            () -> assertThat(response.getName()).isEqualTo("test1"),
+            () -> assertThat(response.getColor()).isEqualTo("GREEN")
+        );
     }
 
     @DisplayName("존재하지 않는 id를 이용해 지하철 노선을 조회할 경우 에러가 발생한다.")

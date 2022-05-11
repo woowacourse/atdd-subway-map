@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -40,8 +41,10 @@ public class StationServiceTest {
         // when
         StationResponse stationResponse = stationService.createStation(test);
         // then
-        assertThat(stationResponse.getId()).isEqualTo(1L);
-        assertThat(stationResponse.getName()).isEqualTo("test");
+        assertAll(
+            () -> assertThat(stationResponse.getId()).isEqualTo(1L),
+            () -> assertThat(stationResponse.getName()).isEqualTo("test")
+        );
     }
 
     @DisplayName("지하철 역 생성 시 이름이 중복된다면 에러를 응답한다.")
@@ -66,11 +69,13 @@ public class StationServiceTest {
         // when
         List<StationResponse> responses = stationService.showStations();
         // then
-        assertThat(responses.size()).isEqualTo(2);
-        assertThat(responses.get(0).getId()).isEqualTo(1L);
-        assertThat(responses.get(0).getName()).isEqualTo("test1");
-        assertThat(responses.get(1).getId()).isEqualTo(2L);
-        assertThat(responses.get(1).getName()).isEqualTo("test2");
+        assertAll(
+            () -> assertThat(responses.size()).isEqualTo(2),
+            () -> assertThat(responses.get(0).getId()).isEqualTo(1L),
+            () -> assertThat(responses.get(0).getName()).isEqualTo("test1"),
+            () -> assertThat(responses.get(1).getId()).isEqualTo(2L),
+            () -> assertThat(responses.get(1).getName()).isEqualTo("test2")
+        );
     }
 
     @DisplayName("지하철역을 제거한다.")

@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,26 +13,30 @@ import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     private static final LineRequest lineRequest1 = new LineRequest("2호선", "GREEN", 1L, 2L, 20);
     private static final LineRequest lineRequest2 = new LineRequest("3호선", "ORANGE", 2L, 3L, 20);
 
+    private static final StationRequest STATION_REQUEST_1 = new StationRequest("신설동역");
+    private static final StationRequest STATION_REQUEST_2 = new StationRequest("용두역");
+    private static final StationRequest STATION_REQUEST_3 = new StationRequest("신답역");
+    private static final StationRequest STATION_REQUEST_4 = new StationRequest("성수역");
+
     @BeforeEach
     void setup() {
-        createStationByMap(new StationRequest("신설동역"));
-        createStationByMap(new StationRequest("용두역"));
-        createStationByMap(new StationRequest("신답역"));
-        createStationByMap(new StationRequest("성수역"));
+        createStationAssured(STATION_REQUEST_1);
+        createStationAssured(STATION_REQUEST_2);
+        createStationAssured(STATION_REQUEST_3);
+        createStationAssured(STATION_REQUEST_4);
     }
 
     @DisplayName("구간 등록 성공 시 상태코드 200을 반환한다.")
     @Test
     void addSection() {
         // given
-        createLineFixture(lineRequest1);
+        createLineAssured(lineRequest1);
 
         SectionRequest firstSection = new SectionRequest(2L, 4L, 10);
         ExtractableResponse<Response> response = addSectionAssured(firstSection);
@@ -46,7 +48,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_duplicate_station_id() {
         // given
-        createLineFixture(lineRequest1);
+        createLineAssured(lineRequest1);
         // when
         SectionRequest firstSection = new SectionRequest(1L, 2L, 10);
         ExtractableResponse<Response> response = addSectionAssured(firstSection);
@@ -58,7 +60,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_no_exist_station_id() {
         // given
-        createLineFixture(lineRequest1);
+        createLineAssured(lineRequest1);
         // when
         SectionRequest firstSection = new SectionRequest(3L, 4L, 10);
         ExtractableResponse<Response> response = addSectionAssured(firstSection);
@@ -70,7 +72,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_in_line_distance_exception() {
         // given
-        createLineFixture(lineRequest1);
+        createLineAssured(lineRequest1);
         // when
         SectionRequest firstSection = new SectionRequest(1L, 3L, 20);
         ExtractableResponse<Response> response = addSectionAssured(firstSection);
@@ -82,7 +84,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection() {
         // given
-        createLineFixture(lineRequest1);
+        createLineAssured(lineRequest1);
         SectionRequest firstSection = new SectionRequest(2L, 4L, 10);
         addSectionAssured(firstSection);
         // when
@@ -99,7 +101,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_minimum_size_exception() {
         // given
-        createLineFixture(lineRequest1);
+        createLineAssured(lineRequest1);
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -109,8 +111,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
     private ExtractableResponse<Response> addSectionAssured(SectionRequest sectionRequest) {
-        // when
         return RestAssured.given().log().all()
             .body(sectionRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -120,7 +122,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> createStationByMap(StationRequest stationRequest) {
+    private ExtractableResponse<Response> createStationAssured(StationRequest stationRequest) {
         return RestAssured.given().log().all()
             .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -130,8 +132,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> createLineFixture(LineRequest lineRequest) {
-        // when
+    private ExtractableResponse<Response> createLineAssured(LineRequest lineRequest) {
         return RestAssured.given().log().all()
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
