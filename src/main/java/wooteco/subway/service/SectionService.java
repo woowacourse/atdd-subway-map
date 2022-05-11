@@ -11,6 +11,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.dto.AddSectionResult;
+import wooteco.subway.domain.dto.RemoveStationResult;
 import wooteco.subway.domain.entity.LineEntity;
 import wooteco.subway.domain.entity.SectionEntity;
 import wooteco.subway.dto.SectionInsertResponse;
@@ -67,23 +68,25 @@ public class SectionService {
     public Station deleteSection(Long lineId, Long stationId) {
         Line line = convertLineEntityToLine(getLineEntity(lineId));
         Station station = getStation(stationId);
-        List<Section> sections = line.removeStation(station);
-        updateAfterDelete(sections);
+        RemoveStationResult removeStationResult = line.removeStation(station);
+        updateAfterDelete(removeStationResult);
         return station;
     }
 
-    private void updateAfterDelete(List<Section> sections) {
-        if (sections.size() == 1) {
-            Section deletedSection = sections.get(0);
-            sectionDao.deleteById(deletedSection.getId());
+    private void updateAfterDelete(RemoveStationResult removeStationResult) {
+        if (removeStationResult.isUpperEndSectionDeleted()) {
+            sectionDao.deleteById(removeStationResult.getRemovedUpEndSection().getId());
             return;
         }
-        Section upDeletedSection = sections.get(1);
-        sectionDao.deleteById(upDeletedSection.getId());
-        Section downDeletedSection = sections.get(2);
-        sectionDao.deleteById(downDeletedSection.getId());
-        Section mergedSection = sections.get(0);
-        sectionDao.save(mergedSection);
+
+        if (removeStationResult.isDownEndSectionDeleted()) {
+            sectionDao.deleteById(removeStationResult.getRemovedDownEndSection().getId());
+            return;
+        }
+
+        sectionDao.deleteById(removeStationResult.getRemovedUpSection().getId());
+        sectionDao.deleteById(removeStationResult.getRemovedDownSection().getId());
+        sectionDao.save(removeStationResult.getMergedSection());
     }
 
     private Section convertSectionRequestToSection(Long lineId, SectionRequest sectionRequest) {

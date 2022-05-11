@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,10 @@ public class Sections {
 
     public Sections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public Sections(Section section) {
+        this.sections = Collections.singletonList(section);
     }
 
     public boolean containsStation(Station station) {
@@ -98,6 +103,7 @@ public class Sections {
             stations.add(upStation);
             stations.add(downStation);
         }
+
         return new ArrayList<>(stations);
     }
 }
