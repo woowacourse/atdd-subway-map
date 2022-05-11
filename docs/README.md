@@ -82,7 +82,7 @@
 - [x] 구간을 삭제한다. `DELETE /lines/{line_id}/sections?stationId={station_id} -> 200(OK)`
   - [x] 노선의 종점을 제거 -> 다음 순서의 역이 종점
   - [ ] 중간역 제거 -> 기존의 두 구간 병합
-  - [ ] [예외] 노선에 구간 하나만 존재 -> 제거 X
+  - [x] [예외] 노선에 구간 하나만 존재 -> 제거 X
 
 #### Spring
 - [x] JDBC 활용하여 H2 DB에 저장하기

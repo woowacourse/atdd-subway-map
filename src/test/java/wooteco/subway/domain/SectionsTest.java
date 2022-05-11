@@ -105,4 +105,12 @@ public class SectionsTest {
         List<Station> allStations = sections.getAllStations();
         assertThat(allStations.get(allStations.size() - 1)).isEqualTo(station);
     }
+
+    @DisplayName("노선에 구간이 하나 뿐일 때 삭제하면 예외가 발생한다.")
+    @Test
+    void delete_only_one_section() {
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> sections.delete(downTermination))
+                .withMessageContaining("하나 뿐");
+    }
 }

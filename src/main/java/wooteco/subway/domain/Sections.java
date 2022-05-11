@@ -51,6 +51,7 @@ public class Sections {
     }
 
     public Section delete(Station station) {
+        checkSize();
         if (station.equals(getUpTermination())) {
             return sections.removeFirst();
         }
@@ -58,6 +59,12 @@ public class Sections {
             return sections.removeLast();
         }
         return null;
+    }
+
+    private void checkSize() {
+        if (sections.size() <= 1) {
+            throw new IllegalStateException("노선에 구간이 하나 뿐일 때에는 삭제할 수 없습니다.");
+        }
     }
 
     private Section findSection(Predicate<Section> sectionPredicate) {
