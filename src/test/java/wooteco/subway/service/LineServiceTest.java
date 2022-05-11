@@ -65,6 +65,54 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("구간 사이에 앞역을 기준으로 추가한다. 강남-양재-광교 -> 강남-양재-판교-광교")
+    void addSectionFrontStation() {
+        Station 강남 = stationDao.save(new Station("강남"));
+        Station 양재 = stationDao.save(new Station("양재"));
+        Station 광교 = stationDao.save(new Station("광교"));
+        Station 판교 = stationDao.save(new Station("판교"));
+        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        sectionDao.save(new Section(신분당선, 강남, 광교, 10));
+        SectionRequest sectionRequest1 = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest1);
+
+        SectionRequest sectionRequest2 = new SectionRequest(양재.getId(), 판교.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest2);
+
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(신분당선.getId());
+        SectionEntity 구간2 = findSectionEntity(양재, sectionEntities);
+        SectionEntity 구간3 = findSectionEntity(판교, sectionEntities);
+        assertThat(구간2.getDownStationId()).isEqualTo(판교.getId());
+        assertThat(구간2.getDistance()).isEqualTo(4);
+        assertThat(구간3.getDownStationId()).isEqualTo(광교.getId());
+        assertThat(구간3.getDistance()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("구간 사이에 뒷역을 기준으로 추가한다. 강남-양재-광교 -> 강남-양재-판교-광교")
+    void addSectionBackStation() {
+        Station 강남 = stationDao.save(new Station("강남"));
+        Station 양재 = stationDao.save(new Station("양재"));
+        Station 광교 = stationDao.save(new Station("광교"));
+        Station 판교 = stationDao.save(new Station("판교"));
+        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        sectionDao.save(new Section(신분당선, 강남, 광교, 10));
+        SectionRequest sectionRequest1 = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest1);
+
+        SectionRequest sectionRequest2 = new SectionRequest(판교.getId(), 광교.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest2);
+
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(신분당선.getId());
+        SectionEntity 구간2 = findSectionEntity(양재, sectionEntities);
+        SectionEntity 구간3 = findSectionEntity(판교, sectionEntities);
+        assertThat(구간2.getDownStationId()).isEqualTo(판교.getId());
+        assertThat(구간2.getDistance()).isEqualTo(2);
+        assertThat(구간3.getDownStationId()).isEqualTo(광교.getId());
+        assertThat(구간3.getDistance()).isEqualTo(4);
+    }
+
+    @Test
     @DisplayName("상행 종점을 변경한다. 양재-광교 -> 강남-양재-광교")
     void addUpStation() {
         Station 양재 = stationDao.save(new Station("양재"));
@@ -74,6 +122,7 @@ class LineServiceTest {
         sectionDao.save(new Section(신분당선, 양재, 광교, 10));
 
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 5);
+
         lineService.createSection(신분당선.getId(), sectionRequest);
 
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(신분당선.getId());

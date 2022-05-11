@@ -23,6 +23,7 @@ public class LineService {
 
     private static final int BEFORE_SECTION = 0;
     private static final int AFTER_SECTION = 1;
+
     private final LineDao lineDao;
     private final StationDao stationDao;
     private final SectionDao sectionDao;
@@ -102,36 +103,17 @@ public class LineService {
         Station upStation = stationDao.findById(request.getUpStationId()).orElseThrow();
         Station downStation = stationDao.findById(request.getDownStationId()).orElseThrow();
         int distance = request.getDistance();
-        Section wait = new Section(line, upStation, downStation, distance);
+        Section newSection = new Section(line, upStation, downStation, distance);
 
-        if (sections.existUpStation(upStation) && sections.existDownStation(downStation)) {
-            throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
-        }
-
-        if ((sections.existUpStation(downStation) && !sections.existDownStation(upStation))
-            || (!sections.existUpStation(downStation) && sections.existDownStation(upStation))) {
+        List<Section> makeSections = sections.add(newSection);
+        if (makeSections.size() == 1) {
             sectionDao.save(new Section(line, upStation, downStation, distance));
             return;
         }
 
-        if (sections.existUpStation(upStation)) {
-            Section section = sections.findContainsUpStation(upStation);
-            List<Section> split = section.splitFromUpStation(wait);
-            sectionDao.update(split.get(BEFORE_SECTION));
-            sectionDao.save(split.get(AFTER_SECTION));
-            return;
-        }
-
-        if (sections.existDownStation(downStation)) {
-            Section section = sections.findContainsDownStation(downStation);
-            List<Section> split = section.splitFromDownStation(wait);
-            sectionDao.update(split.get(BEFORE_SECTION));
-            sectionDao.save(split.get(AFTER_SECTION));
-            return;
-        }
-
-        if (!sections.existUpStation(upStation) && !sections.existDownStation(downStation)) {
-            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
+        if (makeSections.size() == 2) {
+            sectionDao.update(makeSections.get(BEFORE_SECTION));
+            sectionDao.save(makeSections.get(AFTER_SECTION));
         }
     }
 

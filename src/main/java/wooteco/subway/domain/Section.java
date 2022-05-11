@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Section {
 
@@ -70,4 +71,35 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isEqualToUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isEqualToDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) && Objects
+            .equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation);
+    }
+
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
 }

@@ -16,7 +16,7 @@ public class Sections {
 
     public boolean existUpStation(Station station) {
         return values.stream()
-            .anyMatch(value -> value.getUpStation().equals(station));
+            .anyMatch(value -> value.isEqualToUpStation(station));
     }
 
     public boolean existDownStation(Station station) {
@@ -93,4 +93,43 @@ public class Sections {
     public List<Section> getValues() {
         return List.copyOf(values);
     }
+
+    public List<Section> add(Section section) {
+        if (containsSection(section)) {
+            throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
+        }
+
+        if (hasNotAnyStation(section)) {
+            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
+        }
+
+        if (existUpStation(section.getUpStation())) {
+            Section findSection = findContainsUpStation(section.getUpStation());
+            return findSection.splitFromUpStation(section);
+        }
+
+        if (existDownStation(section.getDownStation())) {
+            Section findSection = findContainsDownStation(section.getDownStation());
+            return findSection.splitFromDownStation(section);
+        }
+
+        return findSection(section);
+    }
+
+    private List<Section> findSection(Section section) {
+        return values.stream()
+            .filter(value -> value.hasStation(section.getUpStation()) || value.hasStation(section.getDownStation()))
+            .collect(Collectors.toList());
+    }
+
+    private boolean hasNotAnyStation(Section section) {
+        return values.stream()
+            .noneMatch(value -> value.hasStation(section.getUpStation()) || value.hasStation(section.getDownStation()));
+    }
+
+    private boolean containsSection(Section section) {
+        return values.stream()
+            .anyMatch(value -> value.equals(section));
+    }
+
 }
