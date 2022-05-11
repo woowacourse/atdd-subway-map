@@ -19,9 +19,9 @@ public class AcceptanceFixture {
     public static final Map<String, Object> 역삼역_인자 = new HashMap<>() {{
         put("name", "역삼역");
     }};
-    public static final Map<String, Object> 분당선_인자 = new HashMap<>() {{
-        put("name", "분당선");
-        put("color", "노랑이");
+    public static final Map<String, Object> LINE_2_인자 = new HashMap<>() {{
+        put("name", "2호선");
+        put("color", "초록이");
         put("upStationId", 1L);
         put("downStationId", 2L);
         put("distance", 5);
@@ -32,7 +32,7 @@ public class AcceptanceFixture {
     }};
     public static final String STATION_URL = "/stations";
     public static final String LINE_URL = "/lines";
-    public static final LineRequest 분당선_요청 = new LineRequest("분당선", "노랑이", 1L, 2L, 5);
+    public static final LineRequest LINE_2_요청 = new LineRequest("2호선", "초록이", 1L, 2L, 5);
 
     public static ExtractableResponse<Response> postMethodRequest(
             Map<String, Object> parameter, String path) {
