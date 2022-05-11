@@ -75,7 +75,7 @@ public class SectionsTest {
 
         assertThat(updatedSection)
                 .usingRecursiveComparison()
-                .isEqualTo(new Section(1L, 3L, 2L, 6));
+                .isEqualTo(new Section(1L, 1L, 3L, 2L, 6));
     }
 
     @DisplayName("구간 생성시 구간 수정이 필요한 경우 true를 반환한다.")

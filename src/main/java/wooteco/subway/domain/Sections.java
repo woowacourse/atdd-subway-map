@@ -1,6 +1,9 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -8,7 +11,7 @@ public class Sections {
 
     public Sections(List<Section> sections) {
         validateEmpty(sections);
-        this.sections = sections;
+        this.sections = sortSections(sections);
     }
 
     private void validateEmpty(List<Section> sections) {
@@ -17,26 +20,48 @@ public class Sections {
         }
     }
 
+    private List<Section> sortSections(List<Section> sections) {
+        List<Section> sortedSections = new ArrayList<>();
+        Long topStationId = getTopStationId(sections);
+
+        for (int i = 0; i < sections.size(); i++) {
+            Section nextSection = getNextSection(sections, topStationId);
+            sortedSections.add(nextSection);
+            topStationId = nextSection.getDownStationId();
+        }
+
+        return sortedSections;
+    }
+
+    private Long getTopStationId(List<Section> sections) {
+        Set<Long> downStationIds = getDownStationIds(sections);
+        return sections.stream()
+                .map(Section::getUpStationId)
+                .filter(sectionId -> !downStationIds.contains(sectionId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("상행종점을 찾을 수 없습니다."));
+    }
+
+    private Set<Long> getDownStationIds(List<Section> sections) {
+        return sections.stream()
+                .map(Section::getDownStationId)
+                .collect(Collectors.toSet());
+    }
+
+    private Section getNextSection(List<Section> sections, Long topStationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(topStationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("다음 역을 찾을 수 없습니다."));
+    }
+
     public void validateSectionInLine(Section newSection) {
-        boolean existUpStation = existStationByStationId(newSection.getUpStationId());
-        boolean existDownStation = existStationByStationId(newSection.getDownStationId());
+        List<Long> stationIds = findStationIds();
+        boolean existUpStation = stationIds.contains(newSection.getUpStationId());
+        boolean existDownStation = stationIds.contains(newSection.getDownStationId());
 
         validateBothStationsIncludeInLine(existUpStation, existDownStation);
         validateBothStationsExcludeInLine(existUpStation, existDownStation);
-    }
-
-    private boolean existStationByStationId(Long stationId) {
-        return includeUpStation(stationId) || includeDownStation(stationId);
-    }
-
-    private boolean includeUpStation(Long stationId) {
-        return sections.stream()
-                .anyMatch(section -> section.getUpStationId().equals(stationId));
-    }
-
-    private boolean includeDownStation(Long stationId) {
-        return sections.stream()
-                .anyMatch(section -> section.getDownStationId().equals(stationId));
     }
 
     private void validateBothStationsIncludeInLine(boolean existUpStation, boolean existDownStation) {
@@ -66,10 +91,11 @@ public class Sections {
     }
 
     public Section getUpdatedSection(Section newSection) {
+        List<Long> stationIds = findStationIds();
         Section existSection = getExistSection(newSection);
         int newDistance = existSection.getDistance() - newSection.getDistance();
 
-        if (!includeUpStation(newSection.getDownStationId()) && includeDownStation(newSection.getDownStationId())) {
+        if (stationIds.contains(newSection.getDownStationId())) {
             return new Section(existSection.getId(), existSection.getLineId(), existSection.getUpStationId(),
                     newSection.getUpStationId(), newDistance);
         }
@@ -79,13 +105,26 @@ public class Sections {
     }
 
     public boolean isRequireUpdate(Section newSection) {
-        if (!includeUpStation(newSection.getDownStationId()) && includeDownStation(newSection.getDownStationId())) {
-            return true;
-        }
-        return includeUpStation(newSection.getUpStationId()) && !includeDownStation(newSection.getUpStationId());
+        return !(isInsertTop(newSection) || isInsertBottom(newSection));
     }
 
-    public boolean isEmpty() {
-        return sections.isEmpty();
+    private boolean isInsertTop(Section newSection) {
+        Long upStationId = newSection.getUpStationId();
+        Long bottomStationId = sections.get(sections.size() - 1).getDownStationId();
+        return upStationId.equals(bottomStationId);
+    }
+
+    private boolean isInsertBottom(Section newSection) {
+        Long downStationId = newSection.getDownStationId();
+        Long topStationId = sections.get(0).getUpStationId();
+        return downStationId.equals(topStationId);
+    }
+
+    public List<Long> findStationIds() {
+        List<Long> stationIds = sections.stream()
+                .map(Section::getDownStationId)
+                .collect(Collectors.toList());
+        stationIds.add(0, sections.get(0).getUpStationId());
+        return stationIds;
     }
 }

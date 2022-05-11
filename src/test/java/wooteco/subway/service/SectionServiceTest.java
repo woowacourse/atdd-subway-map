@@ -8,12 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.SectionMockDao;
+import wooteco.subway.dao.StationMockDao;
 import wooteco.subway.domain.Section;
 
 public class SectionServiceTest {
 
     private final SectionMockDao sectionMockDao = new SectionMockDao();
-    private final SectionService sectionService = new SectionService(sectionMockDao);
+    private final StationMockDao stationMockDao = new StationMockDao();
+    private final SectionService sectionService = new SectionService(sectionMockDao, stationMockDao);
 
     @BeforeEach
     void setUp() {
@@ -23,6 +25,7 @@ public class SectionServiceTest {
     @AfterEach
     void afterEach() {
         sectionMockDao.clear();
+        stationMockDao.clear();
     }
 
     @DisplayName("상행종점 위에 있는 지하철 구간을 저장한다.")
@@ -30,7 +33,7 @@ public class SectionServiceTest {
     void saveTopSection() {
         sectionService.save(new Section(1L, 3L, 1L, 4));
 
-        assertThat(sectionService.findAll()).hasSize(2)
+        assertThat(sectionService.findAllByLineId(1L)).hasSize(2)
                 .extracting(Section::getUpStationId, Section::getDownStationId, Section::getDistance)
                 .contains(
                         tuple(3L, 1L, 4),
@@ -43,7 +46,7 @@ public class SectionServiceTest {
     void saveBottomSection() {
         sectionService.save(new Section(1L, 2L, 3L, 4));
 
-        assertThat(sectionService.findAll()).hasSize(2)
+        assertThat(sectionService.findAllByLineId(1L)).hasSize(2)
                 .extracting(Section::getUpStationId, Section::getDownStationId, Section::getDistance)
                 .contains(
                         tuple(2L, 3L, 4),
@@ -56,7 +59,7 @@ public class SectionServiceTest {
     void saveEqualsUpStation() {
         sectionService.save(new Section(1L, 1L, 3L, 4));
 
-        assertThat(sectionService.findAll()).hasSize(2)
+        assertThat(sectionService.findAllByLineId(1L)).hasSize(2)
                 .extracting(Section::getUpStationId, Section::getDownStationId, Section::getDistance)
                 .contains(
                         tuple(1L, 3L, 4),
@@ -69,7 +72,7 @@ public class SectionServiceTest {
     void saveEqualsDownStation() {
         sectionService.save(new Section(1L, 3L, 2L, 4));
 
-        assertThat(sectionService.findAll()).hasSize(2)
+        assertThat(sectionService.findAllByLineId(1L)).hasSize(2)
                 .extracting(Section::getUpStationId, Section::getDownStationId, Section::getDistance)
                 .contains(
                         tuple(1L, 3L, 6),

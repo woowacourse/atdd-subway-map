@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.StationMockDao;
@@ -17,8 +17,8 @@ class StationServiceTest {
     private final StationMockDao stationMockDao = new StationMockDao();
     private final StationService stationService = new StationService(stationMockDao);
 
-    @BeforeEach
-    void setUp() {
+    @AfterEach
+    void afterEach() {
         stationMockDao.clear();
     }
 
