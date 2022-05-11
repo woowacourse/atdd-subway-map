@@ -2,8 +2,6 @@ package wooteco.subway.domain.line;
 
 import java.util.List;
 
-import wooteco.subway.domain.line.Line;
-
 public interface LineRepository {
 
     Long saveLine(Line line);

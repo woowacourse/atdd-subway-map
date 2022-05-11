@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.StationRepository;
-import wooteco.subway.service.dto.ServiceDtoAssembler;
-import wooteco.subway.service.dto.station.StationResponseDto;
+import wooteco.subway.service.dto.DtoAssembler;
+import wooteco.subway.service.dto.station.StationResponse;
 
 @Service
 public class StationService {
@@ -21,16 +21,16 @@ public class StationService {
     }
 
     @Transactional
-    public StationResponseDto create(String name) {
+    public StationResponse create(String name) {
         Long stationId = stationRepository.saveStation(new Station(name));
         Station station = stationRepository.findStationById(stationId);
-        return ServiceDtoAssembler.stationResponseDto(station);
+        return DtoAssembler.stationResponse(station);
     }
 
-    public List<StationResponseDto> findAll() {
+    public List<StationResponse> findAll() {
         return stationRepository.findStations()
                 .stream()
-                .map(ServiceDtoAssembler::stationResponseDto)
+                .map(DtoAssembler::stationResponse)
                 .collect(Collectors.toUnmodifiableList());
     }
 

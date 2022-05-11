@@ -2,8 +2,6 @@ package wooteco.subway.domain.station;
 
 import java.util.List;
 
-import wooteco.subway.domain.station.Station;
-
 public interface StationRepository {
 
     Long saveStation(Station station);

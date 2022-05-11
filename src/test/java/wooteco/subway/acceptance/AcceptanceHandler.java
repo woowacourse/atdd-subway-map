@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.controller.dto.line.LineResponse;
+import wooteco.subway.service.dto.line.LineResponse;
 
 class AcceptanceHandler {
 

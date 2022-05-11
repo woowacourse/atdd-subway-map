@@ -1,10 +1,13 @@
 package wooteco.subway.service.dto.station;
 
-public class StationRequestDto {
+public class StationRequest {
 
-    private final String name;
+    private String name;
 
-    public StationRequestDto(String name) {
+    public StationRequest() {
+    }
+
+    public StationRequest(String name) {
         this.name = name;
     }
 

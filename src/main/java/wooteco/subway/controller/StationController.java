@@ -2,7 +2,6 @@ package wooteco.subway.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.controller.dto.ControllerDtoAssembler;
-import wooteco.subway.controller.dto.station.StationRequest;
-import wooteco.subway.controller.dto.station.StationResponse;
 import wooteco.subway.repository.exception.DuplicateStationNameException;
 import wooteco.subway.service.StationService;
+import wooteco.subway.service.dto.station.StationRequest;
+import wooteco.subway.service.dto.station.StationResponse;
 
 @RestController
 @RequestMapping("/stations")
@@ -33,17 +31,14 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse stationResponse = ControllerDtoAssembler.stationResponse(
-                stationService.create(stationRequest.getName()));
+        StationResponse stationResponse = stationService.create(stationRequest.getName());
         URI redirectUri = URI.create("/stations/" + stationResponse.getId());
         return ResponseEntity.created(redirectUri).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> stationResponses = stationService.findAll().stream()
-                .map(ControllerDtoAssembler::stationResponse)
-                .collect(Collectors.toList());
+        List<StationResponse> stationResponses = stationService.findAll();
         return ResponseEntity.ok(stationResponses);
     }
 

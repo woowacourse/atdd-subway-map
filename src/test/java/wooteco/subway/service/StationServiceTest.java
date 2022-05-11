@@ -19,7 +19,7 @@ import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.dao.jdbc.JdbcLineDao;
 import wooteco.subway.repository.dao.jdbc.JdbcStationDao;
 import wooteco.subway.repository.exception.DuplicateStationNameException;
-import wooteco.subway.service.dto.station.StationResponseDto;
+import wooteco.subway.service.dto.station.StationResponse;
 
 @JdbcTest
 class StationServiceTest {
@@ -39,7 +39,7 @@ class StationServiceTest {
     @DisplayName("이름으로 지하철 역을 저장한다.")
     @Test
     void create() {
-        StationResponseDto station = stationService.create("강남역");
+        StationResponse station = stationService.create("강남역");
         assertThat(station.getId()).isGreaterThan(0);
         assertThat(station.getName()).isEqualTo("강남역");
     }
@@ -64,7 +64,7 @@ class StationServiceTest {
     @DisplayName("지하철 역을 삭제한다.")
     @Test
     void delete() {
-        StationResponseDto station = stationService.create("강남역");
+        StationResponse station = stationService.create("강남역");
         stationService.remove(station.getId());
         assertThat(stationService.findAll()).isEmpty();
     }
