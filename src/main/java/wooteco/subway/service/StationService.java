@@ -3,12 +3,14 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.ui.dto.StationRequest;
 import wooteco.subway.service.dto.StationResponse;
+import wooteco.subway.ui.dto.StationRequest;
 
 @Service
+@Transactional
 public class StationService {
 
     private static final String DUPLICATED_NAME_ERROR_MESSAGE = "중복된 이름이 존재합니다.";
@@ -32,6 +34,7 @@ public class StationService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         return stationDao.findAll()
                 .stream()

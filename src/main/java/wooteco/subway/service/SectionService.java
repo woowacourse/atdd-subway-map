@@ -11,6 +11,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.ui.dto.SectionRequest;
 
 @Service
+@Transactional
 public class SectionService {
 
     private final StationDao stationDao;
@@ -23,7 +24,6 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    @Transactional
     public void create(Long lineId, SectionRequest sectionRequest) {
         validRequest(lineId, sectionRequest);
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
@@ -50,7 +50,6 @@ public class SectionService {
         }
     }
 
-    @Transactional
     public void deleteById(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByStationId(lineId, stationId));
         Optional<Section> updatedSection = sections.findUpdateWhenRemove(stationId);

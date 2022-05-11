@@ -21,6 +21,7 @@ import wooteco.subway.ui.dto.LineRequest;
 import wooteco.subway.ui.dto.SectionRequest;
 
 @Service
+@Transactional
 public class LineService {
 
     private static final String DUPLICATED_NAME_ERROR_MESSAGE = "중복된 이름이 존재합니다.";
@@ -37,7 +38,6 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
-    @Transactional
     public LineResponse save(LineCreateRequest line) {
         validDuplicatedName(line.getName());
         validStations(line.getDownStationId(), line.getUpStationId());
@@ -86,6 +86,7 @@ public class LineService {
         }
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         try {
             Line line = lineDao.findById(id);
@@ -95,6 +96,7 @@ public class LineService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
@@ -121,7 +123,6 @@ public class LineService {
         return map;
     }
 
-    @Transactional
     public void deleteById(Long id) {
         lineDao.deleteById(id);
         sectionDao.deleteByLineId(id);
