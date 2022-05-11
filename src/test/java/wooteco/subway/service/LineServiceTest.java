@@ -9,10 +9,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.EmptyResultDataAccessException;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.NotExistException;
 import wooteco.subway.service.fake.FakeLineDao;
 import wooteco.subway.service.fake.FakeSectionDao;
 import wooteco.subway.service.fake.FakeStationDao;
@@ -141,6 +141,6 @@ class LineServiceTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> lineService.findById(savedResponse.getId() + 1))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(NotExistException.class);
     }
 }

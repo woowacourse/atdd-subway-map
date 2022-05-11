@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.NotExistException;
 
 @JdbcTest
 class JdbcLineDaoTest {
@@ -64,7 +65,8 @@ class JdbcLineDaoTest {
         final Line savedLine = jdbcLineDao.save(line);
 
         // when
-        final Line findLine = jdbcLineDao.findById(savedLine.getId());
+        final Line findLine = jdbcLineDao.findById(savedLine.getId())
+                .orElseThrow(() -> new NotExistException("찾으려는 간선이 존재하지 않습니다."));
 
         // then
         assertThat(findLine).extracting("name", "color")
@@ -83,7 +85,8 @@ class JdbcLineDaoTest {
         jdbcLineDao.updateByLine(newLine);
 
         // then
-        final Line findLine = jdbcLineDao.findById(savedLine.getId());
+        final Line findLine = jdbcLineDao.findById(savedLine.getId())
+                .orElseThrow(() -> new NotExistException("찾으려는 간선이 존재하지 않습니다."));
         assertThat(findLine).extracting("name", "color")
                 .contains("다른분당선", "bg-red-600");
     }

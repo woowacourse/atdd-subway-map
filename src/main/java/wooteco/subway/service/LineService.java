@@ -44,8 +44,10 @@ public class LineService {
     }
 
     private List<StationResponse> makeStationResponseList(LineRequest request) {
-        final Station upStation = stationDao.findById(request.getUpStationId());
-        final Station downStation = stationDao.findById(request.getDownStationId());
+        final Station upStation = stationDao.findById(request.getUpStationId())
+                .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
+        final Station downStation = stationDao.findById(request.getDownStationId())
+                .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
 
         final StationResponse upStationResponse = new StationResponse(upStation);
         final StationResponse downStationResponse = new StationResponse(downStation);
@@ -54,7 +56,9 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        final Line line = lineDao.findById(id);
+        final Line line = lineDao.findById(id)
+                .orElseThrow(() -> new NotExistException("찾으려는 노선이 존재하지 않습니다."));
+
         final Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
 
         return new LineResponse(line, sortedStations(sections));
@@ -79,12 +83,14 @@ public class LineService {
         List<StationResponse> stations = new ArrayList<>();
 
         for (final Section section : sortedSections) {
-            final Station findStation = stationDao.findById(section.getUpStationId());
+            final Station findStation = stationDao.findById(section.getUpStationId())
+                    .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
             stations.add(new StationResponse(findStation));
         }
 
         final Section lastSection = sortedSections.get(sortedSections.size() - 1);
-        final Station lastStation = stationDao.findById(lastSection.getDownStationId());
+        final Station lastStation = stationDao.findById(lastSection.getDownStationId())
+                .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
         stations.add(new StationResponse(lastStation));
 
         return stations;

@@ -3,8 +3,8 @@ package wooteco.subway.service.fake;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -29,11 +29,10 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         return stations.stream()
                 .filter(station -> station.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new EmptyResultDataAccessException(EXPECTED_SIZE));
+                .findAny();
     }
 
     @Override
