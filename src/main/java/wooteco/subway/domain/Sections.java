@@ -115,4 +115,13 @@ public class Sections {
         }
         return upStation;
     }
+
+    public List<Section> findAffectedSectionByDeletingStation(Station station) {
+        if (this.sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 1개인 노선은 지하철역을 삭제할 수 없습니다.");
+        }
+        return this.sections.stream()
+                .filter(section -> section.hasStation(station))
+                .collect(Collectors.toList());
+    }
 }

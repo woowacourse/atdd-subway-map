@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
@@ -16,6 +17,7 @@ import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
 
 @Service
+@Transactional
 public class LineService {
 
     private static final String DUPLICATE_NAME_ERROR = "이미 같은 이름의 노선이 존재합니다.";
@@ -98,5 +100,10 @@ public class LineService {
     public void createSection(Long lineId, SectionRequest sectionRequest) {
         checkLineExist(lineDao.findById(lineId));
         sectionService.createSection(lineId, sectionRequest);
+    }
+
+    public void deleteStationInSection(Long lineId, Long stationId) {
+        checkLineExist(lineDao.findById(lineId));
+        sectionService.deleteSection(lineId, stationId);
     }
 }

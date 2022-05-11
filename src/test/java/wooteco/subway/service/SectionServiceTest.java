@@ -56,9 +56,9 @@ class SectionServiceTest {
         assertThat(orderedStationNames).containsExactly("A", "B");
     }
 
-    @DisplayName("구간이 이미 있을 때 상행 종점에 구간을 추가한다.")
+    @DisplayName("구간이 이미 있을 때 상행 종점에 새로운 상행 종점이 생기는 구간을 추가한다.")
     @Test
-    void createSectionInLastUpStation() {
+    void createSectionInLastUpStationWithNewLastUpStation() {
         SectionRequest sectionRequest = new SectionRequest(stationAId, stationBId, 10);
         sectionService.createSection(1L, sectionRequest);
 
@@ -72,9 +72,9 @@ class SectionServiceTest {
         assertThat(orderedStationNames).containsExactly("C", "A", "B");
     }
 
-    @DisplayName("구간이 이미 있을 때 하행 종점에 구간을 추가한다.")
+    @DisplayName("구간이 이미 있을 때 하행 종점에 새로운 하행 종점이 생기는 구간을 추가한다.")
     @Test
-    void createSectionInLastDownStation() {
+    void createSectionInLastDownStationWithNewLastDownStation() {
         SectionRequest sectionRequest = new SectionRequest(stationAId, stationBId, 10);
         sectionService.createSection(1L, sectionRequest);
 
@@ -137,5 +137,84 @@ class SectionServiceTest {
         assertThatThrownBy(() -> sectionService.createSection(1L, sectionRequest3))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("입력한 상행 하행 구간이 이미 연결되어 있는 구간입니다.");
+    }
+
+    @DisplayName("상행 종점을 삭제한다.")
+    @Test
+    void deleteSectionContainLastUpStation() {
+        SectionRequest sectionRequest = new SectionRequest(stationAId, stationBId, 10);
+        sectionService.createSection(1L, sectionRequest);
+        SectionRequest sectionRequest2 = new SectionRequest(stationBId, stationCId, 3);
+        sectionService.createSection(1L, sectionRequest2);
+
+        sectionService.deleteSection(1L, stationAId);
+
+        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(orderedStationNames).containsExactly("B", "C");
+    }
+
+    @DisplayName("하행 종점을 삭제한다.")
+    @Test
+    void deleteSectionContainLastDownStation() {
+        SectionRequest sectionRequest = new SectionRequest(stationAId, stationBId, 10);
+        sectionService.createSection(1L, sectionRequest);
+        SectionRequest sectionRequest2 = new SectionRequest(stationBId, stationCId, 3);
+        sectionService.createSection(1L, sectionRequest2);
+
+        sectionService.deleteSection(1L, stationCId);
+
+        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(orderedStationNames).containsExactly("A", "B");
+    }
+
+    @DisplayName("중간 역을 삭제한다.")
+    @Test
+    void deleteSectionContainMiddleStation() {
+        SectionRequest sectionRequest = new SectionRequest(stationAId, stationBId, 10);
+        sectionService.createSection(1L, sectionRequest);
+        SectionRequest sectionRequest2 = new SectionRequest(stationBId, stationCId, 3);
+        sectionService.createSection(1L, sectionRequest2);
+
+        sectionService.deleteSection(1L, stationBId);
+
+        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(orderedStationNames).containsExactly("A", "C");
+    }
+
+    @DisplayName("중간 역을 삭제하면 구간이 합쳐지면서 거리가 늘어난다.")
+    @Test
+    void deleteSectionAndUnionSection() {
+        SectionRequest sectionRequest = new SectionRequest(stationAId, stationBId, 5);
+        sectionService.createSection(1L, sectionRequest);
+        SectionRequest sectionRequest2 = new SectionRequest(stationBId, stationCId, 5);
+        sectionService.createSection(1L, sectionRequest2);
+
+        sectionService.deleteSection(1L, stationBId);
+
+        SectionRequest sectionRequest3 = new SectionRequest(stationAId, stationDId, 9);
+        sectionService.createSection(1L, sectionRequest3);
+
+        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(orderedStationNames).containsExactly("A", "D", "C");
+    }
+
+    @DisplayName("노선에 구간이 단 1개일 때 삭제하려고 하면 에러가 발생한다.")
+    @Test
+    void deleteSectionWithOnlyOneSections() {
+        SectionRequest sectionRequest = new SectionRequest(stationAId, stationBId, 10);
+        sectionService.createSection(1L, sectionRequest);
+
+        assertThatThrownBy(() -> sectionService.deleteSection(1L, stationAId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("구간이 1개인 노선은 지하철역을 삭제할 수 없습니다.");
+
     }
 }

@@ -20,6 +20,10 @@ public class Section {
         return upStation.equals(this.upStation) && downStation.equals(this.downStation);
     }
 
+    public boolean matchUpStation(Station station) {
+        return station.equals(this.upStation);
+    }
+
     public boolean hasStation(Station station) {
         return station.equals(this.upStation) || station.equals(this.downStation);
     }
@@ -34,8 +38,20 @@ public class Section {
         return this.distance - distance;
     }
 
+    public Section union(Section section, Station station) {
+        if (this.upStation.equals(station)) {
+            return new Section(null, this.lineId, section.upStation, this.downStation,
+                    section.distance + this.distance);
+        }
+        return new Section(null, this.lineId, this.upStation, section.downStation, section.distance + this.distance);
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public Long getLineId() {
+        return lineId;
     }
 
     public Station getUpStation() {
@@ -44,5 +60,9 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequest;
@@ -13,6 +14,7 @@ import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.StationEntity;
 
 @Service
+@Transactional
 public class StationService {
 
     private static final String DUPLICATE_NAME_ERROR = "이미 같은 이름의 지하철역이 존재합니다.";

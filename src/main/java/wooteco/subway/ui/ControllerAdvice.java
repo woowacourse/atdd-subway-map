@@ -23,9 +23,15 @@ public class ControllerAdvice {
         return ResponseEntity.badRequest().body(errorMessageResponse);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorMessageResponse> handleException(Exception e) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessageResponse> handleIllegalArgumentException(RuntimeException e) {
         ErrorMessageResponse errorMessageResponse = new ErrorMessageResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(errorMessageResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorMessageResponse> handleException() {
+        ErrorMessageResponse errorMessageResponse = new ErrorMessageResponse(INTERNAL_EXCEPTION_MESSAGE);
         return ResponseEntity.internalServerError().body(errorMessageResponse);
     }
 }

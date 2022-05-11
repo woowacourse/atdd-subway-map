@@ -287,7 +287,56 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간을 등록한다.")
     @Test
     void createSection() {
+        // given
+        Long upStationId = getSavedStationId("상일동역");
+        Long downStationId = getSavedStationId("아차산역");
+        LineRequest lineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId, 10);
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        Long addStationId = getSavedStationId("군자역");
+
         // when
+        SectionRequest sectionRequest = new SectionRequest(downStationId, addStationId, 10);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + id + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        List<String> resultStationNames = findResponse.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(resultStationNames).containsExactly("상일동역", "아차산역", "군자역")
+        );
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간이 있는 지하철역을 삭제한다.")
+    @Test
+    void deleteStationInSection() {
+        // given
         Long upStationId = getSavedStationId("상일동역");
         Long downStationId = getSavedStationId("아차산역");
         LineRequest lineRequest = new LineRequest("5호선", "rgb-purple-600", upStationId, downStationId, 10);
@@ -305,7 +354,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long addStationId = getSavedStationId("군자역");
         SectionRequest sectionRequest = new SectionRequest(downStationId, addStationId, 10);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -313,7 +362,29 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        // when
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + id + "/sections?stationId=" + downStationId)
+                .then().log().all()
+                .extract();
+
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        List<String> resultStationNames = response.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(resultStationNames).containsExactly("상일동역", "군자역")
+        );
     }
 }

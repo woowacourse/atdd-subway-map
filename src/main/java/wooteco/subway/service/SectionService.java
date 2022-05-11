@@ -105,4 +105,27 @@ public class SectionService {
     private Station getStation(Long id) {
         return stationService.findById(id);
     }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        Station station = getStation(stationId);
+        Sections sections = getSectionsByLineId(lineId);
+
+        List<Section> affectedSections = sections.findAffectedSectionByDeletingStation(station);
+
+        if (affectedSections.size() == 2) {
+            SectionEntity unionSectionEntity = getUnionSectionEntity(station, affectedSections);
+            sectionDao.save(unionSectionEntity);
+        }
+        for (Section section : affectedSections) {
+            sectionDao.deleteById(section.getId());
+        }
+    }
+
+    private SectionEntity getUnionSectionEntity(Station station, List<Section> affectedSections) {
+        Section section = affectedSections.get(0);
+        Section unionSection = section.union(affectedSections.get(1), station);
+        return new SectionEntity.Builder(unionSection.getLineId(),
+                unionSection.getUpStation().getId(), unionSection.getDownStation().getId(), unionSection.getDistance())
+                .build();
+    }
 }
