@@ -2,7 +2,7 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static wooteco.subway.testutils.Fixture.LINE_REQUEST_분당선;
+import static wooteco.subway.testutils.Fixture.LINE_REQUEST_분당선_STATION_1_3;
 import static wooteco.subway.testutils.Fixture.LINE_REQUEST_신분당선2_FOR_PUT;
 import static wooteco.subway.testutils.Fixture.LINE_REQUEST_신분당선_STATION_1_2;
 import static wooteco.subway.testutils.Fixture.STATION_REQUEST_강남역;
@@ -44,7 +44,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         AcceptanceTestUtil.requestPostStation(STATION_REQUEST_역삼역, "/stations");
 
         AcceptanceTestUtil.requestPostLine(LINE_REQUEST_신분당선_STATION_1_2, "/lines");
-        AcceptanceTestUtil.requestPostLine(LINE_REQUEST_분당선, "/lines");
+        AcceptanceTestUtil.requestPostLine(LINE_REQUEST_분당선_STATION_1_3, "/lines");
 
         //when
         ExtractableResponse<Response> response = AcceptanceTestUtil.requestGetLines("/lines");
