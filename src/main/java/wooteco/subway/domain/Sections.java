@@ -166,20 +166,7 @@ public class Sections {
     }
 
     public List<Section> findEndSections() {
-        Map<Long, Integer> stationCount = new HashMap<>();
-
-        //이름을 붙일만 한것 같다
-        //안심하고 한다.
-        //다른 사람이 볼 때 내부 구현은 관심 없고 이름만 보고 흐름만 보고 싶을 때
-        //ㅎㅅㅎ ;;
-
-        for (Section section : sections) {
-            stationCount.put(section.getUpStationId(),
-                    stationCount.getOrDefault(section.getUpStationId(), 0) + 1);
-
-            stationCount.put(section.getDownStationId(),
-                    stationCount.getOrDefault(section.getDownStationId(), 0) + 1);
-        }
+        Map<Long, Integer> stationCount = findStationCountMap();
 
         List<Long> endStationIds = stationCount.entrySet()
                 .stream()
@@ -188,6 +175,19 @@ public class Sections {
                 .collect(Collectors.toList());
 
         return List.of(findUpSection(endStationIds), findDownSection(endStationIds));
+    }
+
+    private Map<Long, Integer> findStationCountMap() {
+        Map<Long, Integer> stationCount = new HashMap<>();
+
+        for (Section section : sections) {
+            stationCount.put(section.getUpStationId(),
+                    stationCount.getOrDefault(section.getUpStationId(), 0) + 1);
+
+            stationCount.put(section.getDownStationId(),
+                    stationCount.getOrDefault(section.getDownStationId(), 0) + 1);
+        }
+        return stationCount;
     }
 
     private Section findUpSection(List<Long> endStationIds) {
