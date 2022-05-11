@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("구간 인수 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     private Long createdLineId;
@@ -29,6 +29,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createdSecondStationId = createStation("잠실역");
     }
 
+    @Disabled
     @DisplayName("구간을 생성한다.")
     @Test
     void createSection() {
