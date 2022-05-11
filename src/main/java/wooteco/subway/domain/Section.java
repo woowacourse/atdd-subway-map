@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.StationDuplicateException;
+
 public class Section {
 
     private static final int MIN_DISTANCE = 1;
@@ -9,6 +11,10 @@ public class Section {
     private final Station upStation;
     private final Station downStation;
     private final int distance;
+
+    public Section(final long lineId, final Station upStation, final Station downStation, final int distance) {
+        this(null, lineId, upStation, downStation, distance);
+    }
 
     public Section(final Long id, final long lineId, final Station upStation, final Station downStation,
             final int distance) {
@@ -29,8 +35,21 @@ public class Section {
 
     private void validateDuplicateStation(final Station upStation, final Station downStation) {
         if (upStation.isSameStation(downStation)) {
-            throw new IllegalArgumentException("두 종점은 같을 수 없습니다.");
+            throw new StationDuplicateException();
         }
+    }
+
+    public boolean isDuplicateSection(final Section section) {
+        return (isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation())) || (
+                isSameUpStation(section.getDownStation()) && isSameDownStation(section.getUpStation()));
+    }
+
+    private boolean isSameUpStation(final Station station) {
+        return upStation.isSameStation(station);
+    }
+
+    private boolean isSameDownStation(final Station station) {
+        return downStation.isSameStation(station);
     }
 
     public Long getId() {

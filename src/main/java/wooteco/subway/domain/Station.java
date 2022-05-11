@@ -23,6 +23,10 @@ public class Station {
         }
     }
 
+    public boolean isSameStation(Station downStation) {
+        return name.equals(downStation.getName());
+    }
+
     public Long getId() {
         return id;
     }
