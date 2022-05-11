@@ -14,17 +14,17 @@ import wooteco.subway.domain.Section;
 
 @JdbcTest
 public class SectionDaoTest {
-    
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    
+
     private JdbcSectionDao sectionDao;
 
     @BeforeEach
     void setUp() {
         sectionDao = new JdbcSectionDao(jdbcTemplate);
     }
-    
+
     @Test
     @DisplayName("Section 객체를 저장하기")
     void save() {
@@ -42,7 +42,7 @@ public class SectionDaoTest {
             assertThat(savedSection.getDistance()).isEqualTo(section.getDistance());
         });
     }
-    
+
     @Test
     @DisplayName("특정 노선의 구간 반환하기")
     void findByLineId() {
@@ -52,7 +52,7 @@ public class SectionDaoTest {
 
         // when
         List<Section> sections = sectionDao.findByLineId(1L);
-        
+
         // then
         assertThat(sections).hasSize(2);
     }

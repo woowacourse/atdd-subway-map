@@ -17,15 +17,9 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.service.LineService;
 
 class SectionAcceptanceTest extends AcceptanceTest {
-
-    @Autowired
-    private LineService lineService;
 
     @Autowired
     private StationDao stationDao;
@@ -60,13 +54,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(jamsil.getId(), gangnam.getId(), 5);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/" + line1.getId() + "/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response =
+                postWithBody("/lines/" + line1.getId() + "/sections", request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -83,7 +72,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .queryParam("stationId", gangnam.getId())
                 .when()
-                .delete("/lines/" + line1.getId()+"/sections")
+                .delete("/lines/" + line1.getId() + "/sections")
                 .then().log().all()
                 .extract();
 

@@ -14,6 +14,32 @@ import wooteco.subway.exception.ExceptionMessage;
 
 class SectionTest {
 
+    private static Stream<Arguments> provideSection_divide() {
+        return Stream.of(
+                Arguments.of(new Section(1L, 1L, 2L, 4),
+                        new Section(1L, 3L, 2L, 1),
+                        new Section(1L, 1L, 3L, 3)),
+                Arguments.of(new Section(1L, 1L, 2L, 4),
+                        new Section(1L, 1L, 3L, 1),
+                        new Section(1L, 3L, 2L, 3))
+        );
+    }
+
+    private static Stream<Arguments> provideSectionsForMergeTest() {
+        return Stream.of(
+                Arguments.of(
+                        new Section(1L, 1L, 2L, 4),
+                        new Section(1L, 2L, 3L, 5),
+                        new Section(1L, 1L, 3L, 9)
+                ),
+                Arguments.of(
+                        new Section(1L, 2L, 3L, 5),
+                        new Section(1L, 1L, 2L, 4),
+                        new Section(1L, 1L, 3L, 9)
+                )
+        );
+    }
+
     @ParameterizedTest
     @DisplayName("구간을 다른 구간으로 쪼개기")
     @MethodSource("provideSection_divide")
@@ -27,17 +53,6 @@ class SectionTest {
             assertThat(actual.getDownStationId()).isEqualTo(expect.getDownStationId());
             assertThat(actual.getDistance()).isEqualTo(expect.getDistance());
         });
-    }
-
-    private static Stream<Arguments> provideSection_divide() {
-        return Stream.of(
-                Arguments.of(new Section(1L, 1L, 2L, 4),
-                        new Section(1L, 3L, 2L, 1),
-                        new Section(1L, 1L, 3L, 3)),
-                Arguments.of(new Section(1L, 1L, 2L, 4),
-                        new Section(1L, 1L, 3L, 1),
-                        new Section(1L, 3L, 2L, 3))
-        );
     }
 
     @Test
@@ -88,25 +103,10 @@ class SectionTest {
 
         // then
         assertAll(() -> {
-           assertThat(merged.getUpStationId()).isEqualTo(expected.getUpStationId());
-           assertThat(merged.getDownStationId()).isEqualTo(expected.getDownStationId());
-           assertThat(merged.getDistance()).isEqualTo(expected.getDistance());
+            assertThat(merged.getUpStationId()).isEqualTo(expected.getUpStationId());
+            assertThat(merged.getDownStationId()).isEqualTo(expected.getDownStationId());
+            assertThat(merged.getDistance()).isEqualTo(expected.getDistance());
         });
-    }
-
-    private static Stream<Arguments> provideSectionsForMergeTest() {
-        return Stream.of(
-                Arguments.of(
-                        new Section(1L, 1L, 2L, 4),
-                        new Section(1L, 2L, 3L, 5),
-                        new Section(1L, 1L, 3L, 9)
-                ),
-                Arguments.of(
-                        new Section(1L, 2L, 3L, 5),
-                        new Section(1L, 1L, 2L, 4),
-                        new Section(1L, 1L, 3L, 9)
-                )
-        );
     }
 
     @Test
