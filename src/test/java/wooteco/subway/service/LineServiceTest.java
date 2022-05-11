@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,10 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateLineException;
@@ -28,6 +33,8 @@ class LineServiceTest {
     private LineService lineService;
     @Autowired
     private StationDao stationDao;
+    @Autowired
+    private SectionDao sectionDao;
 
     @Disabled
     @DisplayName("지하철 노선을 저장한다.")
@@ -197,6 +204,30 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.delete(Long.MAX_VALUE))
                 .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
+    }
+
+    @DisplayName("특정 노선에 새 구간을 추가한다.")
+    @Test
+    void addSection() {
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station middleStation = stationDao.save(new Station("역삼역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "green", upStation.getId(), downStation.getId(), 2);
+        LineResponse lineResponse = lineService.create(lineRequest);
+        Line line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
+        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), middleStation.getId(), 1);
+
+        lineService.createSectionBySectionRequest(line.getId(), sectionRequest);
+
+        List<Section> sections = sectionDao.findAllByLine(line);
+
+        assertThat(sections).hasSize(2)
+                .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
+                .contains(
+                        tuple(upStation, middleStation, 1),
+                        tuple(middleStation, downStation, 1)
+                );
     }
 
     private void assertEquals(LineResponse expected, LineResponse actual) {

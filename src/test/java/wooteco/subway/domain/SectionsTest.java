@@ -118,7 +118,7 @@ class SectionsTest {
     void invalidDeleteRequest() {
         Sections sections = new Sections(new ArrayList<>());
 
-        assertThatThrownBy(() -> sections.deleteSectionByStation(new Station("강남역")))
+        assertThatThrownBy(() -> sections.removeSectionByStation(new Station("강남역")))
                 .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("요청하는 역을 포함하는 구간이 없습니다.");
     }
@@ -130,7 +130,7 @@ class SectionsTest {
         Section section2 = new Section(station2, station3, 1);
         Sections sections = new Sections(List.of(section1, section2));
 
-        sections.deleteSectionByStation(station1);
+        sections.removeSectionByStation(station1);
 
         assertThat(sections.getValues()).hasSize(1)
                 .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
@@ -146,7 +146,7 @@ class SectionsTest {
         Section section2 = new Section(station2, station3, 1);
         Sections sections = new Sections(List.of(section1, section2));
 
-        sections.deleteSectionByStation(station2);
+        sections.removeSectionByStation(station2);
 
         assertThat(sections.getValues()).hasSize(1)
                 .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)

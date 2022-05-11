@@ -88,22 +88,22 @@ public class Sections {
 
     private boolean canBeStartSection(Section newSection) {
         return values.stream()
-                .anyMatch(savedSection -> savedSection.getUpStation().equals(newSection.getDownStation()))
+                .anyMatch(savedSection -> savedSection.getUpStation().hasSameName(newSection.getDownStation()))
                 && values.stream()
-                .noneMatch(savedSection -> savedSection.getDownStation().equals(newSection.getDownStation()));
+                .noneMatch(savedSection -> savedSection.getDownStation().hasSameName(newSection.getDownStation()));
     }
 
     private boolean canBeEndSection(Section newSection) {
         return values.stream()
-                .anyMatch(savedSection -> savedSection.getDownStation().equals(newSection.getUpStation()))
+                .anyMatch(savedSection -> savedSection.getDownStation().hasSameName(newSection.getUpStation()))
                 && values.stream()
-                .noneMatch(savedSection -> savedSection.getUpStation().equals(newSection.getUpStation()));
+                .noneMatch(savedSection -> savedSection.getUpStation().hasSameName(newSection.getUpStation()));
     }
 
     private Section findIncludingSection(Section section) {
         return values.stream()
-                .filter(savedSection -> savedSection.getUpStation().equals(section.getUpStation())
-                        || savedSection.getDownStation().equals(section.getDownStation()))
+                .filter(savedSection -> savedSection.getUpStation().hasSameName(section.getUpStation())
+                        || savedSection.getDownStation().hasSameName(section.getDownStation()))
                 .findAny()
                 .orElseThrow(
                         () -> new InvalidSectionCreateRequestException("구간 시작 역과 끝 역이 모두 노선에 존재하지 않아 추가할 수 없습니다."));
@@ -142,7 +142,7 @@ public class Sections {
         values.add(anotherNewSection);
     }
 
-    public void deleteSectionByStation(Station station) {
+    public void removeSectionByStation(Station station) {
         validateContainsTargetStation(station);
         List<Station> sortedStations = getSortedStations();
         int index = sortedStations.indexOf(station);

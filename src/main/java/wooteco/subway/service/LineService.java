@@ -9,9 +9,11 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateLineException;
 
@@ -30,12 +32,12 @@ public class LineService {
 
     @Transactional
     public LineResponse create(LineRequest lineRequest) {
-        Line newLine = createLine(lineRequest);
+        Line persistLine = createLine(lineRequest);
 
-        Section newSection = createSectionByLineRequest(lineRequest, newLine);
-        List<Station> stations = List.of(newSection.getUpStation(), newSection.getDownStation());
+        Section persistSection = createSectionByLineRequest(lineRequest, persistLine);
+        List<Station> stations = List.of(persistSection.getUpStation(), persistSection.getDownStation());
 
-        return new LineResponse(newLine, stations);
+        return new LineResponse(persistLine, stations);
     }
 
     private Line createLine(LineRequest lineRequest) {
@@ -63,6 +65,41 @@ public class LineService {
                 lineRequest.getDistance()
         );
         return sectionDao.save(line, section);
+    }
+
+    @Transactional
+    public void createSectionBySectionRequest(Long lineId, SectionRequest sectionRequest) {
+        validateExist(lineId);
+        Line line = lineDao.findById(lineId);
+        Station upStation = stationDao.findById(sectionRequest.getUpStationId());
+        Station downStation = stationDao.findById(sectionRequest.getDownStationId());
+        int distance = sectionRequest.getDistance();
+        Section newSection = new Section(upStation, downStation, distance);
+
+        addNewSection(line, newSection);
+    }
+
+    private void addNewSection(Line line, Section newSection) {
+        Sections originSections = new Sections(sectionDao.findAllByLine(line));
+        Sections newSections = new Sections(originSections.getValues());
+
+        newSections.addSection(newSection);
+        List<Section> removedSections = originSections.getNotContainSections(newSections);
+        removeDeletedSections(line, removedSections);
+        List<Section> addedSections = newSections.getNotContainSections(originSections);
+        insertAddedSections(line, addedSections);
+    }
+
+    private void removeDeletedSections(Line line, List<Section> deleteSections) {
+        for (Section section : deleteSections) {
+            sectionDao.deleteByLineAndSection(line, section);
+        }
+    }
+
+    private void insertAddedSections(Line line, List<Section> insertSections) {
+        for (Section section : insertSections) {
+            sectionDao.save(line, section);
+        }
     }
 
     private void validateStationsExist(Long upStationId, Long downStationId) {
