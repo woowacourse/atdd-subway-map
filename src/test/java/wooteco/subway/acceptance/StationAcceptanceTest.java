@@ -25,7 +25,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> createResponse = createStationByMap("선릉역");
+        ExtractableResponse<Response> createResponse = createStationByMap("서울역");
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(createResponse.header("Location")).isNotBlank();
@@ -45,8 +45,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createStationByMap("선릉역");
-        ExtractableResponse<Response> createResponse2 = createStationByMap("신설동역");
+        ExtractableResponse<Response> createResponse1 = createStationByMap("종로3가역");
+        ExtractableResponse<Response> createResponse2 = createStationByMap("동묘앞역");
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()

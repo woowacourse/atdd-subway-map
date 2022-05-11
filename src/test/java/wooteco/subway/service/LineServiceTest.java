@@ -15,7 +15,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -28,6 +33,12 @@ public class LineServiceTest {
     @Mock
     private LineDao lineDao;
 
+    @Mock
+    private SectionDao sectionDao;
+
+    @Mock
+    private StationDao stationDao;
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -37,6 +48,12 @@ public class LineServiceTest {
             .willReturn(Optional.empty());
         given(lineDao.save(any(Line.class)))
             .willReturn(new Line(1L, lineRequest.getName(), lineRequest.getColor()));
+        given(sectionDao.save(any()))
+            .willReturn(new Section(1L, 1L, 1L, 2L, 10));
+        given(stationDao.findById(any()))
+            .willReturn(Optional.of(new Station(1L, "신설동역")));
+        given(stationDao.findById(any()))
+            .willReturn(Optional.of(new Station(2L, "성수역")));
         // when
         LineResponse lineResponse = lineService.createLine(lineRequest);
         // then
@@ -78,7 +95,26 @@ public class LineServiceTest {
     void getLines() {
         // given
         given(lineDao.findAll())
-            .willReturn(List.of(new Line(1L, "test1", "GREEN"), new Line(2L, "test2", "YELLOW")));
+            .willReturn(
+                List.of(
+                    new Line(1L, "test1", "GREEN"),
+                    new Line(2L, "test2", "YELLOW")
+                )
+            );
+        given(stationDao.findAll())
+            .willReturn(
+                List.of(
+                    new Station(1L, "신설동역"),
+                    new Station(2L, "용두역"),
+                    new Station(3L, "성수역")
+                )
+            );
+        given(sectionDao.findByLineId(1L))
+            .willReturn(new Sections(
+                List.of(new Section(1L,2L,10))));
+        given(sectionDao.findByLineId(2L))
+            .willReturn(new Sections(
+                List.of(new Section(2L,3L,10))));
         // when
         List<LineResponse> responses = lineService.showLines();
         // then
