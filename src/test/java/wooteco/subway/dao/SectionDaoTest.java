@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -33,10 +32,10 @@ class SectionDaoTest {
     }
 
     @Autowired
-    private SectionDaoTest(final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final JdbcTemplate jdbcTemplate) {
-        this.stationDao = new StationDao(jdbcTemplate);
+    private SectionDaoTest(final NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.stationDao = new StationDao(namedParameterJdbcTemplate);
         this.sectionDao = new SectionDao(namedParameterJdbcTemplate);
-        this.lineDao = new LineDao(jdbcTemplate);
+        this.lineDao = new LineDao(namedParameterJdbcTemplate);
     }
 
     @DisplayName("구간을 저장한다.")

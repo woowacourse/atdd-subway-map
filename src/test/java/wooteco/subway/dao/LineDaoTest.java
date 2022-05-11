@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,16 +17,14 @@ import java.util.stream.Collectors;
 @JdbcTest
 class LineDaoTest {
 
+    private final LineDao lineDao;
+
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    private LineDao lineDao;
-
-    @BeforeEach
-    void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+    private LineDaoTest(final NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.lineDao = new LineDao(namedParameterJdbcTemplate);
     }
 
+    @DisplayName("노선을 저장한다.")
     @Test
     void save() {
         final Line line = new Line("신분당선", "bg-red-600");
@@ -33,6 +33,7 @@ class LineDaoTest {
         assertThat(savedLine).isNotNull();
     }
 
+    @DisplayName("모든 노선을 불러온다.")
     @Test
     void findAll() {
         final Line line1 = new Line("신분당선", "bg-red-600");
@@ -55,6 +56,7 @@ class LineDaoTest {
         );
     }
 
+    @DisplayName("아이디로 노선 하나를 불러온다.")
     @Test
     void findById() {
         final Line line1 = new Line("신분당선", "bg-red-600");
@@ -67,6 +69,7 @@ class LineDaoTest {
         );
     }
 
+    @DisplayName("노선을 변경한다.")
     @Test
     void update() {
         final Line line1 = new Line("신분당선", "bg-red-600");
@@ -85,6 +88,7 @@ class LineDaoTest {
         );
     }
 
+    @DisplayName("아이디로 노선을 삭제한다.")
     @Test
     void deleteById() {
         final Line line1 = new Line("신분당선", "bg-red-600");
