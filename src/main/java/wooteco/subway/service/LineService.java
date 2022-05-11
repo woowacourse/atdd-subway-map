@@ -18,7 +18,9 @@ import wooteco.subway.dto.StationResponse;
 @Service
 public class LineService {
 
-    public static final int midPointCount = 2;
+    private static final int midPointCount = 2;
+    private static final int MINIMUM_SECTIONS_SIZE = 1;
+
     private final StationDao stationDao;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -67,10 +69,11 @@ public class LineService {
     }
 
     private void processBiDirectionSection(SectionRequest sectionRequest, Sections sections) {
-        sections.findUpSection(sectionRequest)
+        sections.findUpSection(sectionRequest.getUpStationId())
                 .ifPresent(section -> sectionDao.deleteById(section.getId()));
-        sections.findDownSection(sectionRequest).ifPresent(section -> sectionDao.updateDistanceById(section.getId(),
-                section.getDistance() - sectionRequest.getDistance()));
+        sections.findDownSection(sectionRequest.getDownStationId())
+                .ifPresent(section -> sectionDao.updateDistanceById(section.getId(),
+                        section.getDistance() - sectionRequest.getDistance()));
     }
 
     private void validSection(Sections sections, SectionRequest sectionRequest) {
@@ -110,14 +113,23 @@ public class LineService {
 
     public void deleteSectionByLineIdAndStationId(Long lineId, Long stationId) {
         validSectionSize(lineId);
+        linkSection(lineId, stationId);
         sectionDao.deleteByLineIdAndStationId(lineId, stationId);
-
     }
 
     private void validSectionSize(Long lineId) {
         List<Section> sections = sectionDao.findByLineId(lineId);
-        if (sections.size() <= 1) {
+        if (sections.size() <= MINIMUM_SECTIONS_SIZE) {
             throw new IllegalArgumentException("노선에 구간이 1개 이상은 존재해야합니다.");
+        }
+    }
+
+    private void linkSection(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        if (sections.requiredLink(stationId)) {
+            sections.findUpSection(stationId).ifPresent(section -> sectionDao.deleteById(section.getId()));
+            sections.findDownSection(stationId).ifPresent(section -> sectionDao.deleteById(section.getId()));
+            sectionDao.save(sections.findLinkSection(lineId, stationId));
         }
     }
 }

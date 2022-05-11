@@ -78,15 +78,32 @@ public class Sections {
         }
     }
 
-    public Optional<Section> findUpSection(SectionRequest sectionRequest) {
+    public Optional<Section> findUpSection(Long upStationId) {
         return sections.stream()
-                .filter(section -> section.getDownStationId().equals(sectionRequest.getUpStationId()))
+                .filter(section -> section.getDownStationId().equals(upStationId))
                 .findFirst();
     }
 
-    public Optional<Section> findDownSection(SectionRequest sectionRequest) {
+    public Optional<Section> findDownSection(Long downStationId) {
         return sections.stream()
-                .filter(section -> section.getUpStationId().equals(sectionRequest.getDownStationId()))
+                .filter(section -> section.getUpStationId().equals(downStationId))
                 .findFirst();
+    }
+
+    public boolean requiredLink(Long stationId) {
+        List<Section> sections = new ArrayList<>(this.sections);
+        findUpSection(stationId).ifPresent(sections::remove);
+        findDownSection(stationId).ifPresent(sections::remove);
+        return sections.size() < findStationIdsInOrder().size() - 2;
+    }
+
+    public Section findLinkSection(Long lineId, Long stationId) {
+        Section upSection = findUpSection(stationId).get();
+        Section downSection = findDownSection(stationId).get();
+        Long upStationId = upSection.getUpStationId();
+        Long downStationId = downSection.getDownStationId();
+        int distance = upSection.getDistance() + downSection.getDistance();
+
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 }
