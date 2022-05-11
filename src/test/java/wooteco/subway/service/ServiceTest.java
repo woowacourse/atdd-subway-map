@@ -7,7 +7,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 @SpringBootTest
@@ -16,9 +15,6 @@ public class ServiceTest {
 
     @Autowired
     private DataSource dataSource;
-
-    @Autowired
-    protected JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void cleanseAndSetUp() throws Exception {

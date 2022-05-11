@@ -8,16 +8,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import wooteco.subway.dao.DaoTest;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.exception.NotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
-@SpringBootTest // TODO: should be replaced
-class StationServiceTest extends DaoTest {
+class StationServiceTest extends ServiceTest {
 
     @Autowired
     private StationService service;

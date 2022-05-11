@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionViewDao;
 import wooteco.subway.dto.request.CreateLineRequest;
@@ -17,7 +16,6 @@ import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.exception.NotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
-@SpringBootTest
 class LineServiceTest extends ServiceTest {
 
     private static final StationResponse STATION_RESPONSE_1 = new StationResponse(1L, "이미 존재하는 역 이름");
