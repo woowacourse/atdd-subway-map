@@ -44,39 +44,39 @@ public class Section {
         checkDistance(other);
         int distanceGap = this.distance - other.distance;
         if (isUpDivide(other)) {
-            return new Section(this.line_id, other.downStationId, this.downStationId, distanceGap);
+            return new Section(id, line_id, other.downStationId, downStationId, distanceGap);
         }
         if (isDownDivide(other)) {
-            return new Section(this.line_id, this.upStationId, other.upStationId, distanceGap);
+            return new Section(id, line_id, upStationId, other.upStationId, distanceGap);
         }
         throw new IllegalArgumentException(ExceptionMessage.INVALID_DIVIDE_SECTION.getContent());
     }
 
     private void checkStationsNotSame(Section other) {
-        if (this.upStationId.equals(other.upStationId) && this.downStationId.equals(other.downStationId)) {
+        if (upStationId.equals(other.upStationId) && downStationId.equals(other.downStationId)) {
             throw new IllegalArgumentException(ExceptionMessage.SAME_STATIONS_SECTION.getContent());
         }
     }
 
     private void checkDistance(Section other) {
-        if (this.distance <= other.distance) {
+        if (distance <= other.distance) {
             throw new IllegalArgumentException(ExceptionMessage.INVALID_INSERT_SECTION_DISTANCE.getContent());
         }
     }
 
     public boolean hasStation(Long stationId) {
-        return this.downStationId.equals(stationId) || this.upStationId.equals(stationId);
+        return this.downStationId.equals(stationId) || upStationId.equals(stationId);
     }
 
     public Section merge(Section other) {
         checkStationsNotSame(other);
-        int mergedDistance = this.distance + other.distance;
+        int mergedDistance = distance + other.distance;
 
-        if (this.upStationId.equals(other.downStationId)) {
-            return new Section(this.line_id, other.upStationId, this.downStationId, mergedDistance);
+        if (upStationId.equals(other.downStationId)) {
+            return new Section(id, line_id, other.upStationId, downStationId, mergedDistance);
         }
-        if (this.downStationId.equals(other.upStationId)) {
-            return new Section(this.line_id, this.upStationId, other.downStationId, mergedDistance);
+        if (downStationId.equals(other.upStationId)) {
+            return new Section(id, line_id, upStationId, other.downStationId, mergedDistance);
         }
         throw new IllegalArgumentException(ExceptionMessage.NOT_CONNECTED_SECTIONS.getContent());
     }
