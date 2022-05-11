@@ -70,7 +70,7 @@ class SectionServiceTest {
         assertThatThrownBy(
                 () -> sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10))
         ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("현재 위치에 구간을 저장할 수 없습니다.");
+                .hasMessage("상행역과 하행역이 이미 지하철 노선에 존재합니다.");
     }
 
     @DisplayName("구간 생성 시 상행역 또는 하행역 중 하나만 지하철 노선에 포함되어 있으면 등록 가능하다.")
@@ -85,7 +85,7 @@ class SectionServiceTest {
 
         // when & then
         assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(station1Id, station3Id, 10)))
+                () -> sectionService.save(1L, new SectionRequest(station1Id, station3Id, 5)))
                 .doesNotThrowAnyException();
     }
 
@@ -109,15 +109,47 @@ class SectionServiceTest {
     @Test
     void saveNewDownStation() {
         // given
-        stationDao.save(new Station(1L, "강남역"));
-        stationDao.save(new Station(2L, "역삼역"));
-        stationDao.save(new Station(3L, "삼성역"));
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        long station3Id = stationDao.save(new Station(3L, "삼성역"));
 
-        sectionDao.save(1L, new Section(1L, 2L, 10));
+        sectionDao.save(1L, new Section(station1Id, station2Id, 10));
 
         // when & then
         assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(2L, 3L, 10))
+                () -> sectionService.save(1L, new SectionRequest(station2Id, station3Id, 10))
+        ).doesNotThrowAnyException();
+    }
+
+    @DisplayName("구간 생성 시 상행역을 등록한다.")
+    @Test
+    void saveUpStation() {
+        // given
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        long station3Id = stationDao.save(new Station(3L, "삼성역"));
+
+        sectionDao.save(1L, new Section(station1Id, station2Id, 10));
+
+        // when & then
+        assertThatCode(
+                () -> sectionService.save(1L, new SectionRequest(station3Id, station1Id, 5))
+        ).doesNotThrowAnyException();
+    }
+
+    @DisplayName("구간 생성 시 하행역을 등록한다.")
+    @Test
+    void saveDownStation() {
+        // given
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        long station3Id = stationDao.save(new Station(3L, "삼성역"));
+
+        sectionDao.save(1L, new Section(station1Id, station2Id, 10));
+
+        // when & then
+        assertThatCode(
+                () -> sectionService.save(1L, new SectionRequest(station1Id, station3Id, 5))
         ).doesNotThrowAnyException();
     }
 
@@ -132,6 +164,6 @@ class SectionServiceTest {
         assertThatThrownBy(
                 () -> sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10))
         ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("현재 위치에 구간을 저장할 수 없습니다.");
+                .hasMessage("추가하려는 구간이 노선에 포함되어 있지 않습니다.");
     }
 }
