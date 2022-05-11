@@ -84,6 +84,11 @@ public class Section {
         return new Section(lineId, section.downStation, upStation, sumDistance);
     }
 
+    public boolean isSameSection(final Section section) {
+        return equals(section) && isSameUpStation(section.getUpStation()) && isSameDownStation(
+                section.getDownStation());
+    }
+
     public Long getId() {
         return id;
     }
@@ -102,11 +107,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public boolean isSameSection(final Section section) {
-        return equals(section) && isSameUpStation(section.getUpStation()) && isSameDownStation(
-                section.getDownStation());
     }
 
     @Override

@@ -38,6 +38,10 @@ public class Sections {
         }
     }
 
+    private boolean isSectionConnected(final Station upStation, final Station downStation) {
+        return getUpStations().contains(upStation) && getDownStations().contains(downStation);
+    }
+
     private List<Station> getUpStations() {
         return values.stream()
                 .map(Section::getUpStation)
@@ -48,10 +52,6 @@ public class Sections {
         return values.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
-    }
-
-    private boolean isSectionConnected(final Station upStation, final Station downStation) {
-        return getUpStations().contains(upStation) && getDownStations().contains(downStation);
     }
 
     private void validateDuplicateSection(final Section section) {
@@ -82,19 +82,26 @@ public class Sections {
         }
     }
 
-    private void updateCutInSection(final Section section, final Section foundSection) {
-        if (foundSection.isSameUpStation(section.getUpStation())) {
-            foundSection.updateStations(section.getDownStation(), foundSection.getDownStation());
-            return;
-        }
-        foundSection.updateStations(foundSection.getUpStation(), section.getUpStation());
-        foundSection.subtractDistance(section.getDistance());
-    }
-
     private void validateCutInDistance(final Section section, final Section foundSection) {
         if (!foundSection.isLongerThan(section.getDistance())) {
             throw new SectionCreateException(SECTION_MUST_SHORTER_MESSAGE);
         }
+    }
+
+    private void updateCutInSection(final Section section, final Section foundSection) {
+        if (foundSection.isSameUpStation(section.getUpStation())) {
+            doUpdate(foundSection, section.getDownStation(), foundSection.getDownStation(), section.getDistance());
+            return;
+        }
+        doUpdate(foundSection, foundSection.getUpStation(), section.getUpStation(), section.getDistance());
+    }
+
+    private void doUpdate(final Section section,
+                          final Station upStation,
+                          final Station downStation,
+                          final int distance) {
+        section.updateStations(upStation, downStation);
+        section.subtractDistance(distance);
     }
 
     public Optional<Section> pickUpdate(List<Section> sections) {
