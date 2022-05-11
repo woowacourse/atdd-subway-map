@@ -22,15 +22,14 @@ public class Section {
         this.id = id;
     }
 
-    public boolean canConnectWithDownStation(Section section) {
-        return downStationId.equals(section.upStationId);
+    public void reduceDistance(Section other) {
+        if (distance >= other.distance) {
+            throw new IllegalArgumentException("distance 는 0 이하가 될 수 없습니다.");
+        }
+        reduceDistance(other.distance);
     }
 
-    public boolean canConnectWithUpStation(Section section) {
-        return upStationId.equals(section.downStationId);
-    }
-
-    public void reduceDistance(int distance) {
+    private void reduceDistance(int distance) {
         this.distance -= distance;
     }
 
@@ -52,14 +51,6 @@ public class Section {
 
     public boolean isSameUpStationId(Long id) {
         return id.equals(upStationId);
-    }
-
-    public boolean isSameId(Long id) {
-        return id.equals(this.id);
-    }
-
-    public void updateDownStationId(Long id) {
-        this.downStationId = id;
     }
 
     public void updateUpStationId(Long id) {

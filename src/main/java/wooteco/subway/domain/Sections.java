@@ -1,10 +1,12 @@
 package wooteco.subway.domain;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class Sections {
 
@@ -61,54 +63,32 @@ public class Sections {
      * @return 데이터가 변경된 Section
      */
     public Optional<Section> add(Section newSection) {
+        validNewSection(newSection);
+
         for (Section section : value) {
-            validSection(newSection, section);
-
-            if (newSection.canConnectWithUpStation(section)) {
-                return connectWithUpStationId(newSection);
-            }
-
-            if (newSection.canConnectWithDownStation(section)) {
-                return connectWithDownStationId(newSection);
+            if (newSection.isSameUpStationId(section)) {
+                section.updateUpStationId(newSection.getDownStationId());
+                section.reduceDistance(newSection);
+                return Optional.of(section);
             }
         }
         return Optional.empty();
     }
 
-    private void validSection(Section newSection, Section section) {
-        if (newSection.isSameDownStationId(section) && newSection.isSameUpStationId(section)) {
+    private void validNewSection(Section section) {
+        Set<Long> ids = findStationIds();
+        if (ids.contains(section.getDownStationId()) && ids.contains(section.getUpStationId())) {
             throw new IllegalArgumentException("해당 구간은 이미 등록되어 있습니다.");
         }
     }
 
-    private Optional<Section> connectWithUpStationId(Section newSection) {
-        Optional<Section> foundSection = findByUpStationId(newSection.getUpStationId());
-        if (foundSection.isPresent()) {
-            foundSection.get().updateUpStationId(newSection.getDownStationId());
-            foundSection.get().reduceDistance(newSection.getDistance());
+    private Set<Long> findStationIds() {
+        Set<Long> ids = new HashSet<>();
+        for (Section section : value) {
+            ids.add(section.getUpStationId());
+            ids.add(section.getDownStationId());
         }
-        return foundSection;
-    }
-
-    private Optional<Section> findByUpStationId(Long id) {
-        return value.stream()
-                .filter(section -> section.isSameUpStationId(id))
-                .findFirst();
-    }
-
-    private Optional<Section> connectWithDownStationId(Section newSection) {
-        Optional<Section> foundSection = findByDownStationId(newSection.getDownStationId());
-        if (foundSection.isPresent()) {
-            foundSection.get().updateDownStationId(newSection.getUpStationId());
-            foundSection.get().reduceDistance(newSection.getDistance());
-        }
-        return foundSection;
-    }
-
-    private Optional<Section> findByDownStationId(Long id) {
-        return value.stream()
-                .filter(section -> section.isSameDownStationId(id))
-                .findFirst();
+        return ids;
     }
 
     public List<Section> getValue() {
