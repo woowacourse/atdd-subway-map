@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -53,7 +54,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest firstSection = new SectionRequest(1L, 2L, 10);
         ExtractableResponse<Response> response = addSectionAssured(firstSection);
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 상,하행 Station이 구간에 모두 포함된 경우 추가할 수 없습니다.")
+        );
     }
 
     @DisplayName("등록하려는 구간의 상,하행 지하철역이 노선 구간 목록에 없다면 상태코드 400을 반환한다.")
@@ -65,7 +69,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest firstSection = new SectionRequest(3L, 4L, 10);
         ExtractableResponse<Response> response = addSectionAssured(firstSection);
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 상,하행 Station 모두 구간에 존재하지 않는다면 추가할 수 없습니다.")
+        );
     }
 
     @DisplayName("기존에 존재하는 구간에 삽입할 때 기존 구간의 길이보다 크거나 같다면 상태코드 400을 반환한다.")
@@ -77,7 +84,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest firstSection = new SectionRequest(1L, 3L, 20);
         ExtractableResponse<Response> response = addSectionAssured(firstSection);
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.")
+        );
     }
 
     @DisplayName("구간 삭제 성공 시 상태코드 200을 반환한다.")
@@ -109,7 +119,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 최소 하나 이상의 구간이 존재하여야합니다.")
+        );
     }
 
     private ExtractableResponse<Response> addSectionAssured(SectionRequest sectionRequest) {

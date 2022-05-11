@@ -11,8 +11,8 @@ import wooteco.subway.dto.StationResponse;
 @Service
 public class StationService {
 
-    private static final String STATION_DUPLICATION_EXCEPTION_MESSAGE = "중복되는 지하철역이 존재합니다.";
-    private static final String NO_SUCH_STATION_EXCEPTION_MESSAGE = "해당 ID의 지하철역이 존재하지 않습니다.";
+    private static final String STATION_DUPLICATION_EXCEPTION_MESSAGE = "[ERROR] 중복되는 지하철역이 존재합니다.";
+    private static final String NO_SUCH_STATION_EXCEPTION_MESSAGE = "[ERROR] 해당 ID의 지하철역이 존재하지 않습니다.";
 
     private final StationDao stationDao;
 

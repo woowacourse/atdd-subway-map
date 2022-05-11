@@ -34,11 +34,11 @@
 
 ### 지하철 노선도 미션 1,2단계 - 2차 피드백
 - [ ] `RequestBody`의 사용 목적(용도)
-- [ ] `LineAcceptaceTest`
-  - [ ] when 주석 제거
-  - [ ] TODO 제거 
-  - [ ] 예외 상태 코드 검증에 메시지 검증 추가하기
-- [ ] `InjectMock`과 `@Mock`의 차이점
+- [x] `LineAcceptaceTest`
+  - [x] when 주석 제거
+  - [x] TODO 제거 
+  - [x] 예외 상태 코드 검증에 메시지 검증 추가하기
+- [x] `InjectMock`과 `@Mock`의 차이점
 - [ ] `JdbcTemplate` 빈으로 등록한 적이 없으나 빈으로 관리되는 이유
 - [ ] 예외 메시지 - 톤 앤 매너
 - [ ] `ControllerAdvice`

@@ -21,9 +21,9 @@ import wooteco.subway.dto.StationResponse;
 @Service
 public class LineService {
 
-    private static final String LINE_DUPLICATION_NAME_EXCEPTION_MESSAGE = "중복되는 이름의 지하철 노선이 존재합니다.";
-    private static final String LINE_DUPLICATION_COLOR_EXCEPTION_MESSAGE = "중복되는 색깔의 지하철 노선이 존재합니다.";
-    private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "해당하는 ID의 지하철 노선이 존재하지 않습니다.";
+    private static final String LINE_DUPLICATION_NAME_EXCEPTION_MESSAGE = "[ERROR] 중복되는 이름의 지하철 노선이 존재합니다.";
+    private static final String LINE_DUPLICATION_COLOR_EXCEPTION_MESSAGE = "[ERROR] 중복되는 색깔의 지하철 노선이 존재합니다.";
+    private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "[ERROR] 해당하는 ID의 지하철 노선이 존재하지 않습니다.";
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -59,7 +59,6 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        List<LineResponse> responses = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
         List<Station> stations = stationDao.findAll();
         return lines.stream()

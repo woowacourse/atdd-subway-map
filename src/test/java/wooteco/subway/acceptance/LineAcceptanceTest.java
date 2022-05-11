@@ -147,7 +147,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 해당하는 ID의 지하철 노선이 존재하지 않습니다.")
+        );
     }
 
     //
@@ -169,7 +172,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 중복되는 이름의 지하철 노선이 존재합니다.")
+        );
     }
 
     @DisplayName("중복된 색깔로 노선 수정 시 상태 코드 400을 반환한다.")
@@ -190,7 +196,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 중복되는 색깔의 지하철 노선이 존재합니다.")
+        );
     }
 
     @DisplayName("노선 제거 성공 시 상태 코드 204를 반환한다.")

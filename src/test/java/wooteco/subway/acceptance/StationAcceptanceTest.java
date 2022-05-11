@@ -38,7 +38,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse1 = createStationAssured(new StationRequest("선릉역"));
         ExtractableResponse<Response> createResponse2 = createStationAssured(new StationRequest("선릉역"));
         // then
-        assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(createResponse2.jsonPath().getString("message")).isEqualTo("[ERROR] 중복되는 지하철역이 존재합니다.")
+        );
     }
 
     @DisplayName("지하철역 목록을 조회 시 상태 코드 200을 반환하고 Station 목록을 반환한다.")
@@ -92,7 +95,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 해당 ID의 지하철역이 존재하지 않습니다.")
+        );
     }
 
     private ExtractableResponse<Response> createStationAssured(StationRequest stationRequest) {
