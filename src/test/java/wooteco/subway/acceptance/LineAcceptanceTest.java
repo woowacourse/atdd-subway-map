@@ -34,6 +34,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
+    private ExtractableResponse<Response> createLineForTest(String name, String color, String upStationId,
+        String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        return createResponse;
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -385,22 +404,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> createLineForTest(String name, String color, String upStationId,
-        String downStationId, String distance) {
+    @DisplayName("등록되지 않은 id의 자하철 노선에 등록 요청한다.(400 에러)")
+    @Test
+    void saveSection_withNotExistLineId() {
+        createStationForTest("강남역");
+        createStationForTest("선릉역");
+        createStationForTest("잠실역");
+
+        ExtractableResponse<Response> createLineResponse = createLineForTest("2호선", "green", "1", "2", "10");
+
         Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+        params.put("upStationId", "2");
+        params.put("downStationId", "3");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .post("/lines")
+            .post("/lines/" + 2 + "/sections")
             .then().log().all()
             .extract();
 
-        return createResponse;
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
