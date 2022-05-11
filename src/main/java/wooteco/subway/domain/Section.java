@@ -42,6 +42,10 @@ public class Section {
         return distance;
     }
 
+    public boolean isGreaterOrEqualTo(final Section other) {
+        return this.distance >= other.distance;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
