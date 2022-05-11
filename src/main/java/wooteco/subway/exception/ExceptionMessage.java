@@ -16,7 +16,8 @@ public enum ExceptionMessage {
     INSERT_DUPLICATED_SECTION("이미 연결된 구간입니다."),
     INVALID_DIVIDE_SECTION("역을 쪼개지 못하는 경우입니다."),
     NEAR_SECTIONS_OVER_SIZE("근접한 역이 너무 많습니다."),
-    SECTIONS_NOT_DELETABLE("구간을 삭제할 수 없습니다.");
+    SECTIONS_NOT_DELETABLE("구간을 삭제할 수 없습니다."),
+    STATION_ID_NOT_FOUND("ID에 맞는 역이 존재하지 않습니다.");
 
     private final String content;
 

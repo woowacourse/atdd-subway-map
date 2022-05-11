@@ -6,7 +6,7 @@ public class Station {
 
     private static final int MAX_NAME_LENGTH = 15;
 
-    private Long id;
+    private final Long id;
     private final String name;
 
     public Station(Long id, String name) {
@@ -29,8 +29,8 @@ public class Station {
         }
     }
 
-    public boolean isSameName(final Station station) {
-        return name.equals(station.name);
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
     }
 
     public Long getId() {
