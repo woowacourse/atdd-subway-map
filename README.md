@@ -1,38 +1,27 @@
-<p align="center">
-    <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
-</p>
-<p align="center">
-  <a href="https://techcourse.woowahan.com/c/Dr6fhku7" alt="woowacourse subway">
-    <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fedu.nextstep.camp%2Fc%2FR89PYi5H">
-  </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/woowacourse/atdd-subway-map">
-</p>
 
-<br>
+# 1단계 - 지하철역/노선 관리 기능
+### 기능 요구 사항
+1. 지하철 역 관리 API 기능 완성하기
+- [x] 지하철 역 이름 중복 생성 불가
+- [x] 지하철 역 삭제
+2. 지하철 노선 관리 API 구현하기
+- [x] 노선 생성
+- [x] 노선이름 중복 생성 불가
+- [x] 노선 조회
+- [x] 노선 수정
+- [x] 노선 삭제
+3. End to End 테스트 작성하기
+- [x] 노선 기능 E2E 테스트 작성
 
-# 지하철 노선도 미션
-스프링 과정 실습을 위한 지하철 노선도 애플리케이션
-
-<br>
-
-## 🚀 Getting Started
-### Usage
-#### application 구동
-```
-./gradlew bootRun
-```
-<br>
-
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
-
-<br>
-
-## 🐞 Bug Report
-
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
-
-<br>
+# 2단계 - 프레임워크 적용
+### 기능 요구 사항
+1. 스프링 JDBC 활용하여 H2 DB에 저장하기
+- [x] Dao 객체를 H2 Database에서 관리하기
+- [x] spring jdbc 라이브러리 활용하기
+2. H2 DB를 통해 저장된 값 확인하기
+- [ ] H2 콘솔 로그 남기기
+3. 스프링 빈 활용하기
+- [x] 스프링 빈으로 관리하기
 
 ## 📝 License
 
