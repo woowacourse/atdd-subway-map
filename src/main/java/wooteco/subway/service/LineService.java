@@ -123,6 +123,7 @@ public class LineService {
     @Transactional
     public void deleteById(Long id) {
         getLine(id);
+        sectionDao.deleteByLineId(id);
         lineDao.deleteById(id);
     }
 
