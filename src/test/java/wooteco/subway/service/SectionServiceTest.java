@@ -42,7 +42,10 @@ class SectionServiceTest {
         final Long downStationId = Fixture.saveStation("잠실역");
         final LineEntity line = lineDao.save(new LineEntity(null, "2호선", "bg-green-600"));
 
-        final Section created = sectionService.resisterFirst(line.getId(), upStationId, downStationId, 10);
+        sectionService.resisterFirst(line.getId(), upStationId, downStationId, 10);
+
+        final Sections sections = sectionService.searchSectionsByLineId(line.getId());
+        final Section created = sections.getValue().get(0);
 
         assertAll(
                 () -> assertThat(created.getUpStation().getId()).isEqualTo(upStationId),

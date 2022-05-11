@@ -25,21 +25,14 @@ public class SectionService {
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public Section resisterFirst(final Long lineId, final Long upStationId, final Long downStationId,
+    public void resisterFirst(final Long lineId, final Long upStationId, final Long downStationId,
                                  final Integer distance) {
         final Station upStation = stationService.searchById(upStationId);
         final Station downStation = stationService.searchById(downStationId);
 
         final Section section = Section.createWithoutId(upStation, downStation, distance);
         final SectionEntity sectionEntity = new SectionEntity(section, lineId);
-        final SectionEntity savedSectionEntity = sectionDao.save(sectionEntity);
-
-        return new Section(
-                savedSectionEntity.getId(),
-                section.getUpStation(),
-                section.getDownStation(),
-                section.getDistance()
-        );
+        sectionDao.save(sectionEntity);
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
