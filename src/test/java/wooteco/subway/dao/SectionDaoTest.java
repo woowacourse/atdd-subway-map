@@ -6,11 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import wooteco.subway.domain.Section;
 
 import javax.sql.DataSource;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,19 +20,11 @@ class SectionDaoTest {
     private DataSource dataSource;
 
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert LineSimpleJdbcInsert;
-    private SimpleJdbcInsert StationSimpleJdbcInsert;
     private SectionDao dao;
 
     @BeforeEach
     void setUp() {
         dao = new SectionDao(dataSource);
-        LineSimpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("LINE")
-                .usingGeneratedKeyColumns("id");
-        StationSimpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("STATION")
-                .usingGeneratedKeyColumns("id");
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
@@ -67,5 +57,21 @@ class SectionDaoTest {
         dao.delete(id);
 
         assertThat(dao.findAllByLineId(1L).size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("구간에 존재하는 역이라면 true 반환")
+    void isStationExistWhenTrue() {
+        dao.save(new Section(0L, 1L, 1L, 2L, 5));
+
+        assertThat(dao.isStationExist(1L)).isTrue();
+    }
+
+    @Test
+    @DisplayName("구간에 존재하지 않는 역이라면 false 반환")
+    void isStationExistWhenFalse() {
+        dao.save(new Section(0L, 1L, 1L, 2L, 5));
+
+        assertThat(dao.isStationExist(3L)).isFalse();
     }
 }

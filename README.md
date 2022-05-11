@@ -90,3 +90,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 종점이 제거된 경우 다음으로 오던 역이 새로운 종점이 된다.
     - [x] 삭제된 구간은 재배치 된다. (이때, 거리는 두 구간의 합으로 한다.)
     - [x] 구간이 하나인 노선에서는 삭제할 수 없다.
+- [x] 노선에 등록되어있는 지하철역은 삭제할 수 없다.

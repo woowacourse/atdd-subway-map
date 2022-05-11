@@ -45,6 +45,11 @@ public class SectionDao {
 
     public void delete(Long id) {
         final String sql = "DELETE FROM SECTION WHERE id = ?";
-        jdbcTemplate.update(sql,id);
+        jdbcTemplate.update(sql, id);
+    }
+
+    public boolean isStationExist(Long stationId) {
+        final String sql = "SELECT EXISTS ( SELECT * FROM SECTION WHERE up_station_id = ? OR down_station_id = ? )";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, stationId, stationId);
     }
 }
