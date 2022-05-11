@@ -97,20 +97,6 @@ public class Sections {
                 .collect(toList());
     }
 
-    private Section findByUpStationId(Long upStationId) {
-        return value.stream()
-                .filter(section -> section.getUpStationId().equals(upStationId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 존재하지 않습니다."));
-    }
-
-    private Section findByDownStationId(Long downStationId) {
-        return value.stream()
-                .filter(section -> section.getDownStationId().equals(downStationId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 존재하지 않습니다."));
-    }
-
     public void remove(Long stationId) {
         if (value.size() == 1) {
             throw new IllegalArgumentException("역 삭제가 불가능 합니다.");
@@ -163,6 +149,20 @@ public class Sections {
         addSection(sections, firstSection);
 
         return sections;
+    }
+
+    private Section findByUpStationId(Long upStationId) {
+        return value.stream()
+                .filter(section -> section.getUpStationId().equals(upStationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 존재하지 않습니다."));
+    }
+
+    private Section findByDownStationId(Long downStationId) {
+        return value.stream()
+                .filter(section -> section.getDownStationId().equals(downStationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 존재하지 않습니다."));
     }
 
     private void addSection(List<Section> sections, Section prevSection) {
