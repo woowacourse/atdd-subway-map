@@ -5,7 +5,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.DataNotFoundException;
@@ -15,17 +19,29 @@ import wooteco.subway.exception.DuplicateLineException;
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     @Transactional
     public LineResponse create(LineRequest lineRequest) {
+        Line newLine = createLine(lineRequest);
+
+        Section newSection = createSectionByLineRequest(lineRequest, newLine);
+        List<Station> stations = List.of(newSection.getUpStation(), newSection.getDownStation());
+
+        return new LineResponse(newLine, stations);
+    }
+
+    private Line createLine(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         validateUnique(line);
-        Line newLine = lineDao.save(line);
-        return new LineResponse(newLine);
+        return lineDao.save(line);
     }
 
     private void validateUnique(Line line) {
@@ -34,6 +50,24 @@ public class LineService {
         }
         if (lineDao.existsColor(line)) {
             throw new DuplicateLineException("이미 존재하는 노선 색상입니다.");
+        }
+    }
+
+    private Section createSectionByLineRequest(LineRequest lineRequest, Line line) {
+        Long upStationId = lineRequest.getUpStationId();
+        Long downStationId = lineRequest.getDownStationId();
+        validateStationsExist(upStationId, downStationId);
+        Section section = new Section(
+                stationDao.findById(lineRequest.getUpStationId()),
+                stationDao.findById(lineRequest.getDownStationId()),
+                lineRequest.getDistance()
+        );
+        return sectionDao.save(line, section);
+    }
+
+    private void validateStationsExist(Long upStationId, Long downStationId) {
+        if (!(stationDao.existsId(upStationId) && stationDao.existsId(downStationId))) {
+            throw new DataNotFoundException("노선에 있는 역이 존재하지 않습니다.");
         }
     }
 
