@@ -73,4 +73,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 ### 구간 관리 API 구현
 - [x] 노선에 구간을 추가
 - [x] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
-- [ ] 구간 제거
+- [x] 구간 제거
