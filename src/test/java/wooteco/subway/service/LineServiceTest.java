@@ -33,6 +33,7 @@ class LineServiceTest {
     @DisplayName("노선 생성")
     void saveLine() {
         var lineResponse = lineService.createLine(new LineRequest("2호선", "테스트색20"));
+
         assertThat(lineResponse.getName()).isEqualTo("2호선");
     }
 
@@ -82,8 +83,10 @@ class LineServiceTest {
                 .collect(Collectors.toList());
 
         //then
-        assertThat(ids.contains(lineResponse1.getId())).isTrue();
-        assertThat(ids.contains(lineResponse2.getId())).isTrue();
+        assertAll(
+                () -> assertThat(ids.contains(lineResponse1.getId())).isTrue(),
+                () -> assertThat(ids.contains(lineResponse2.getId())).isTrue()
+        );
     }
 
     @Test
@@ -98,8 +101,10 @@ class LineServiceTest {
         var lineInfos = lineService.findLineInfos(lineResponse.getId());
 
         //then
-        assertThat(lineInfos.getName()).isEqualTo("2호선");
-        assertThat(lineInfos.getColor()).isEqualTo("green");
+        assertAll(
+                () -> assertThat(lineInfos.getName()).isEqualTo("2호선"),
+                () -> assertThat(lineInfos.getColor()).isEqualTo("green")
+        );
     }
 
     @Test

@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,9 +28,10 @@ class LineDaoTest {
     @DisplayName("노선을 추가한다")
     void save() {
         var line = lineDao.save(new Line("1호선", "blue"));
-
-        assertThat(line.getName()).isEqualTo("1호선");
-        assertThat(line.getColor()).isEqualTo("blue");
+        assertAll(
+                () -> assertThat(line.getName()).isEqualTo("1호선"),
+                () -> assertThat(line.getColor()).isEqualTo("blue")
+        );
     }
 
     @Test
