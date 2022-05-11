@@ -9,5 +9,7 @@ public interface CommonStationDao {
 
     List<Station> findAll();
 
+    Station findById(final Long id);
+
     int deleteById(final Long id);
 }

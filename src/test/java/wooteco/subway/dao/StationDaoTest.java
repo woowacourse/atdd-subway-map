@@ -71,6 +71,14 @@ class StationDaoTest {
     }
 
     @Test
+    @DisplayName("특정 지하철 역을 조회할 수 있다.")
+    void findById() {
+        final Station station = stationDao.save(STATION_FIXTURE);
+
+        assertThat(stationDao.findById(station.getId()).getName()).isEqualTo(STATION_FIXTURE.getName());
+    }
+
+    @Test
     @DisplayName("아이디가 존재하면 아이디로 지하철역을 삭제할 수 있다")
     void deleteById() {
         final Station station = stationDao.save(STATION_FIXTURE);
