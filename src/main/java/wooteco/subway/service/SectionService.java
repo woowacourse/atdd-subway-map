@@ -13,6 +13,7 @@ import wooteco.subway.domain.SectionEntity;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.StationEntity;
+import wooteco.subway.service.dto.SectionDto;
 
 @Service
 public class SectionService {
@@ -25,8 +26,9 @@ public class SectionService {
         this.stationService = stationService;
     }
 
-    public void createSection(Long lineId, Long upDestinationId, Long downDestinationId, int distance) {
-        sectionDao.save(lineId, upDestinationId, downDestinationId, distance);
+    public void createSection(SectionDto sectionDto) {
+        sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(), sectionDto.getDownStationId(),
+            sectionDto.getDistance());
     }
 
     public void saveSection(Long lineId, Long upDestinationId, Long downDestinationId, int distance) {

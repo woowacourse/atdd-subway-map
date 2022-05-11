@@ -49,7 +49,7 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("모든 station 목록을 조회한다.")
+    @DisplayName("모든 역 목록을 조회한다.")
     void findAll() {
         //given
         StationEntity station1 = new StationEntity("lala");
@@ -68,7 +68,7 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("id 로 Line 을 조회한다.")
+    @DisplayName("id 로 노선을 조회한다.")
     void findById() {
         //given
         StationEntity station = new StationEntity("lala");
@@ -95,7 +95,7 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("Station 을 삭제한다.")
+    @DisplayName("역을 삭제한다.")
     void deleteById() {
         //given
         StationEntity station = new StationEntity("이수");
