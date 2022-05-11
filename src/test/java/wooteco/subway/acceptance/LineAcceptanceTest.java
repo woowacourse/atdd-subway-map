@@ -42,9 +42,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("노선을 관리한다.")
+    @DisplayName("노선 관리")
     @TestFactory
-    Stream<DynamicTest> dynamicTestStream() {
+    Stream<DynamicTest> dynamicTestFromLine() {
         String name1 = "1호선";
         String color1 = "bg-blue-600";
         Long upStationId1 = generateStationId("중동역");
@@ -180,9 +180,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("노선에 구간을 추가한다.")
+    @DisplayName("노선에 구간 추가")
     @TestFactory
-    Stream<DynamicTest> dynamicTestSection() {
+    Stream<DynamicTest> dynamicTestFromAddSection() {
         String name = "1호선";
         String color = "bg-blue-600";
         Long basedUpStationId = generateStationId("중동역");
@@ -373,7 +373,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("구간 삭제 기능")
     @TestFactory
-    Stream<DynamicTest> dynamicTestRemoveSection() {
+    Stream<DynamicTest> dynamicTestFromRemoveSection() {
         Long stationId1 = generateStationId("신도림역");
         Long stationId2 = generateStationId("온수역");
         Long stationId3 = generateStationId("역곡역");

@@ -52,7 +52,7 @@ class SectionDaoTest {
 
     @DisplayName("노선 조작 기능")
     @TestFactory
-    Stream<DynamicTest> dynamicTestFromStream() {
+    Stream<DynamicTest> dynamicTestFromLine() {
         Line line = generateLine("2호선", "bg-green-600");
         Station upStation1 = generateStation("선릉역");
         Station downStation1 = generateStation("잠실역");

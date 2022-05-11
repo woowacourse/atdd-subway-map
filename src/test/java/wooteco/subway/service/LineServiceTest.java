@@ -20,6 +20,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.error.exception.NotFoundException;
 
 @SpringBootTest
@@ -37,7 +38,7 @@ class LineServiceTest {
 
     @DisplayName("노선 저장과 관련된 기능")
     @TestFactory
-    Stream<DynamicTest> dynamicTestFromStationSave() {
+    Stream<DynamicTest> dynamicTestFromSvaeStation() {
         Station upStation = generateStation("선릉역");
         Station downStation = generateStation("잠실역");
 
@@ -89,7 +90,7 @@ class LineServiceTest {
 
     @DisplayName("노선 조작과 관련된 기능")
     @TestFactory
-    Stream<DynamicTest> dynamicTestFromStationManipulate() {
+    Stream<DynamicTest> dynamicTestFromStation() {
         Station upStation = generateStation("선릉역");
         Station downStation = generateStation("잠실역");
 
@@ -177,60 +178,129 @@ class LineServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
-    @DisplayName("특정 노선의 구간을 추가한다.")
-    @Test
-    void 구간_추가() {
-        Station upStation1 = generateStation("선릉역");
-        Station downStation1 = generateStation("잠실역");
-        Integer distance1 = 10;
-        LineResponse line = generateLine(
-                "2호선", "bg-green-600", upStation1.getId(), downStation1.getId(), distance1);
+    @DisplayName("노선에 구간을 추가하는 기능")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestFromAddSection() {
+        Long basedUpStationId = generateStation("신도림역").getId();
+        Long basedDownStationId = generateStation("중동역").getId();
+        Integer basedDistance = 10;
 
-        Station upStation2 = generateStation("신대방역");
-        Station downStation2 = upStation1;
-        Integer distance2 = 7;
-        SectionRequest sectionRequest2 = new SectionRequest(upStation2.getId(), downStation2.getId(), distance2);
+        String name = "1호선";
+        String color = "bg-blue-600";
+        LineResponse line = generateLine(name, color, basedUpStationId, basedDownStationId, basedDistance);
 
-        lineService.addSection(line.getId(), sectionRequest2);
+        return Stream.of(
+                dynamicTest("상행 종점이 같은 경우 가장 앞단의 구간 보다 길이가 크거나 같으면 예외를 던진다.", () -> {
+                    Long upStationId = basedUpStationId;
+                    Long downStationId = generateStation("온수역").getId();
+                    Integer distance = 10;
 
-        LineResponse lineResponse = lineService.findById(line.getId());
-        assertThat(lineResponse.getStations().size()).isEqualTo(3);
-    }
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+                    assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
 
-    @DisplayName("특정 노선에 모두 존재하는 구간 추가 시 예외가 발생한다.")
-    @Test
-    void 존재하는_구간_추가_예외발생() {
-        Station upStation1 = generateStation("선릉역");
-        Station downStation1 = generateStation("잠실역");
-        Integer distance1 = 10;
-        LineResponse line = generateLine(
-                "2호선", "bg-green-600", upStation1.getId(), downStation1.getId(), distance1);
+                dynamicTest("상행 종점이 같은 경우 가장 앞단의 구간 보다 길이가 작으면 추가한다.", () -> {
+                    Long upStationId = basedUpStationId;
+                    Long downStationId = generateStation("개봉역").getId();
+                    Integer distance = 4;
 
-        Station upStation2 = downStation1;
-        Station downStation2 = upStation1;
-        Integer distance2 = 7;
-        SectionRequest sectionRequest2 = new SectionRequest(upStation2.getId(), downStation2.getId(), distance2);
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+                    assertDoesNotThrow(() -> lineService.addSection(line.getId(), sectionRequest));
+                }),
 
-        assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest2))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+                dynamicTest("상행 종점에 구간을 추가한다.", () -> {
+                    Long upStationId = generateStation("영등포역").getId();
+                    Long downStationId = basedUpStationId;
+                    Integer distance = 7;
 
-    @DisplayName("특정 노선에 존재하지 않는 구간 추가 시 예외가 발생한다.")
-    @Test
-    void 존재하지_않는_구간_추가_예외발생() {
-        Station upStation1 = generateStation("선릉역");
-        Station downStation1 = generateStation("잠실역");
-        Integer distance1 = 10;
-        LineResponse line = generateLine(
-                "2호선", "bg-green-600", upStation1.getId(), downStation1.getId(), distance1);
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+                    assertDoesNotThrow(() -> lineService.addSection(line.getId(), sectionRequest));
+                }),
 
-        Station upStation2 = generateStation("신대방역");
-        Station downStation2 = generateStation("신림역");
-        Integer distance2 = 7;
-        SectionRequest sectionRequest2 = new SectionRequest(upStation2.getId(), downStation2.getId(), distance2);
+                dynamicTest("노선 조회 시 등록된 지하철 목록을 확인할 수 있다.", () -> {
+                    LineResponse response = lineService.findById(line.getId());
 
-        assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest2))
-                .isInstanceOf(IllegalArgumentException.class);
+                    List<StationResponse> stations = response.getStations();
+
+                    assertThat(stations.size()).isEqualTo(4);
+                }),
+
+                dynamicTest("상행 종점 추가 시 지하철이 존재하지 않는 경우 예외를 던진다.", () -> {
+                    Long upStationId = 0L;
+                    Long downStationId = basedUpStationId;
+                    Integer distance = 7;
+
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+                    assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("상행 종점 추가 시 상행역이 기존 노선에 존재하는 경우 예외를 던진다.", () -> {
+                    Long upStationId = basedDownStationId;
+                    Long downStationId = basedUpStationId;
+                    Integer distance = 7;
+
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+                    assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("하행 종점이 같은 경우 가장 뒷간의 구간 보다 길이가 크거나 같으면 예외를 던진다.", () -> {
+                    Long upStationId = generateStation("역곡역").getId();
+                    Long downStationId = basedDownStationId;
+                    Integer distance = 10;
+
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+                    assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("하행 종점이 같은 경우 가장 앞단의 구간보다 길이가 작으면 추가한다.", () -> {
+                    Long upStationId = generateStation("부천역").getId();
+                    Long downStationId = basedDownStationId;
+                    Integer distance = 3;
+
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+                    assertDoesNotThrow(() -> lineService.addSection(line.getId(), sectionRequest));
+                }),
+
+                dynamicTest("하행 종점에 구간을 추가한다.", () -> {
+                    Long upStationId = basedDownStationId;
+                    Long downStationId = generateStation("부평역").getId();
+                    Integer distance = 10;
+
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+                    assertDoesNotThrow(() -> lineService.addSection(line.getId(), sectionRequest));
+                }),
+
+                dynamicTest("상행역과 하행역이 노선에 모두 존재하면 예외를 던진다.", () -> {
+                    Long upStationId = basedUpStationId;
+                    Long downStationId = basedDownStationId;
+                    Integer distance = 1;
+
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+                    assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("상행역과 하행역이 노선에 모두 존재하지 않으면 예외를 던진다.", () -> {
+                    Long upStationId = generateStation("서울역").getId();
+                    Long downStationId = generateStation("노량진역").getId();
+                    Integer distance = 1;
+
+                    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+                    assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
+                            .isInstanceOf(IllegalArgumentException.class);
+                })
+        );
     }
 
     @DisplayName("구간 삭제 기능")

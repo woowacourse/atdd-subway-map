@@ -17,7 +17,7 @@ class SectionsTest {
 
     @DisplayName("구간 추가 기능")
     @TestFactory
-    Stream<DynamicTest> dynamicTestAppendSection() {
+    Stream<DynamicTest> dynamicTestFromAppendSection() {
         Section basedSection = new Section(1L, 1L, 3L, 7);
         Sections sections = new Sections(List.of(basedSection));
 
@@ -52,7 +52,7 @@ class SectionsTest {
 
     @DisplayName("갈래길 방지")
     @TestFactory
-    Stream<DynamicTest> dynamicTestForkedLoad() {
+    Stream<DynamicTest> dynamicTestFromForkedLoad() {
         Section basedSection = new Section(1L, 1L, 3L, 7);
         Sections sections = new Sections(List.of(basedSection));
 
@@ -87,7 +87,7 @@ class SectionsTest {
 
     @DisplayName("상행역 하행역 중복 검증")
     @TestFactory
-    Stream<DynamicTest> dynamicTestDuplicateStation() {
+    Stream<DynamicTest> dynamicTestFromDuplicateStation() {
         Section basedSection1 = new Section(1L, 2L, 1L, 4);
         Section basedSection2 = new Section(1L, 1L, 3L, 7);
         Sections sections = new Sections(List.of(basedSection1, basedSection2));
@@ -125,7 +125,7 @@ class SectionsTest {
 
     @DisplayName("구간 삭제 기능")
     @TestFactory
-    Stream<DynamicTest> dynamicTestRemoveSection() {
+    Stream<DynamicTest> dynamicTestFromRemoveSection() {
         Long stationId1 = 1L;
         Long stationId2 = 2L;
         Long stationId3 = 3L;

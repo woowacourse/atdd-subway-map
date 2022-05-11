@@ -25,7 +25,7 @@ public class LineDaoTest {
         this.lineDao = new LineDao(jdbcTemplate);
     }
 
-    @DisplayName("노선을 저장한다")
+    @DisplayName("노선을 저장한다.")
     @Test
     void 노선_저장() {
         Line line = new Line("2호선", "bg-green-600");
