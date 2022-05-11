@@ -1,6 +1,5 @@
 package wooteco.subway.controller;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +30,8 @@ class LineControllerTest extends AcceptanceTest {
     private Station savedStation1;
     private Station savedStation2;
 
+    private final String basicPath = "lines";
+
     @BeforeEach
     void setUpStations() {
         savedStation1 = stationDao.insert(new Station("선릉역"));
@@ -42,63 +43,72 @@ class LineControllerTest extends AcceptanceTest {
     void createLine() {
         LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(),10);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("비어있는 이름으로 역을 생성하면 400 상태코드를 받게 된다.")
+    @DisplayName("비어있는 이름으로 역을 생성하면 400번 코드를 반환한다.")
     @Test
     void createLineWithInvalidNameDateSize() {
-        LineRequest request = new LineRequest("", "red", null, null, 0);
+        LineRequest request = new LineRequest("", "red", savedStation1.getId(), savedStation2.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("비어있는 색으로 역을 생성하면 400 상태코드를 받게 된다.")
+    @DisplayName("비어있는 색으로 역을 생성하면 400번 코드를 반환한다.")
     @Test
     void createLineWithInvalidColorDateSize() {
-        LineRequest request = new LineRequest("신분당선", "", null, null, 0);
+        LineRequest request = new LineRequest("신분당선", "", savedStation1.getId(), savedStation2.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 예외를 발생시킨다.")
+    @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 400번 코드를 반환한다.")
     @Test
     void throwsExceptionWhenCreateDuplicatedName() {
         lineDao.insert(new Line("신분당선", "red"));
-        LineRequest request = new LineRequest("신분당선", "red", null, null, 0);
+        LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행, 역이 같은 가진 지하철 노선을 등록할 때 400번 코드를 반환한다.")
+    @Test
+    void throwsExceptionWhenCreateLineWithSameUpDownStation() {
+        lineDao.insert(new Line("신분당선", "red"));
+        LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 10);
+
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("존재하지 않는 역으로 지하철 노선을 등록할 때 400번 코드를 반환한다.")
+    @Test
+    void throwsExceptionWhenCreateLineWithNonExistStation() {
+        lineDao.insert(new Line("신분당선", "red"));
+        LineRequest request = new LineRequest("신분당선", "red", 100L, savedStation1.getId(), 10);
+
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("0이하의 거리를 가진 구간으로 지하철 노선을 등록할 때 400번 코드를 반환한다.")
+    @Test
+    void throwsExceptionWhenCreateLineWithInvalidDistance() {
+        lineDao.insert(new Line("신분당선", "red"));
+        LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 0);
+
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -109,11 +119,7 @@ class LineControllerTest extends AcceptanceTest {
         Line savedLine1 = lineDao.insert(new Line("신분당선", "red"));
         Line savedLine2 = lineDao.insert(new Line("1호선", "blue"));
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.getRequest(basicPath);
         List<LineResponse> actual = response.jsonPath().getList(".", LineResponse.class);
 
         assertAll(
@@ -132,12 +138,7 @@ class LineControllerTest extends AcceptanceTest {
     void getLine() {
         Line line = lineDao.insert(new Line("신분당선", "red"));
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + line.getId())
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.getRequest("/lines/" + line.getId());
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
 
         assertAll(
@@ -151,14 +152,10 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void updateLine() {
         Line line = lineDao.insert(new Line("신분당선", "red"));
+        Line requestBody = new Line("다른분당선", "blue");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(new Line("다른분당선", "blue"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + line.getId())
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.putRequest(requestBody,
+                MediaType.APPLICATION_JSON_VALUE, "/lines/" + line.getId());
 
         Line updatedLine = lineDao.findById(line.getId());
         assertAll(
@@ -173,27 +170,18 @@ class LineControllerTest extends AcceptanceTest {
     void deleteLine() {
         Line savedLine = lineDao.insert(new Line("신분당선", "red"));
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/" + savedLine.getId())
-                .then().log().all()
-                .extract();
-
+        RestAssureConvenienceMethod.deleteRequest("/lines/" + savedLine.getId());
         List<Line> lines = lineDao.findAll();
 
         assertThat(lines.contains(savedLine)).isFalse();
     }
 
-    @DisplayName("존재하지 않는 데이터를 삭제하려고 한다면 400예외가 발생한다.")
+    @DisplayName("존재하지 않는 데이터를 삭제하려고 한다면 400번 코드를 반환한다.")
     @Test
     void deleteLineWithNotExistData() {
         Line savedLine = lineDao.insert(new Line("신분당선", "red"));
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/" + (savedLine.getId() + 1))
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssureConvenienceMethod.deleteRequest("/lines/" + (savedLine.getId() + 1));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
