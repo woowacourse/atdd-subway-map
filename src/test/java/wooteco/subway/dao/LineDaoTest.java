@@ -64,7 +64,7 @@ public class LineDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("id에 맞는 노선이 없을 경우 예외를 발생시킨다.")
+    @DisplayName("노선 조회중 id에 맞는 노선이 없을 경우 예외를 발생시킨다.")
     @Test
     void findByIdException() {
         assertThatThrownBy(() -> lineDao.findById(1L))
