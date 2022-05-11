@@ -28,41 +28,41 @@ public class Section {
         this.distance = distance;
     }
 
-    public List<Section> insert(Section other) {
-        checkStationsNotSame(other);
-        if (isForAdd(other)) {
-            return add(other);
-        }
-        if (isForDivide(other)) {
-            return divide(other);
-        }
-        throw new IllegalArgumentException(ExceptionMessage.INSERT_SECTION_NOT_MATCH.getContent());
-    }
-
     private void checkStationsNotSame(Section other) {
-        if (this.upStationId == other.upStationId && this.downStationId == other.downStationId) {
+        if (this.upStationId.equals(other.upStationId) && this.downStationId.equals(other.downStationId)) {
             throw new IllegalArgumentException(ExceptionMessage.SAME_STATIONS_SECTION.getContent());
         }
     }
 
-    private boolean isForAdd(Section other) {
-        return other.upStationId == this.downStationId || other.downStationId == this.upStationId;
+    public boolean isForDivide(Section other) {
+        return isDownDivide(other) || isUpDivide(other);
     }
 
-    private boolean isForDivide(Section other) {
-        return other.downStationId == this.downStationId || other.upStationId == this.upStationId;
+    private boolean isDownDivide(Section other) {
+        return this.downStationId.equals(other.downStationId);
     }
 
-    private List<Section> divide(Section other) {
+    private boolean isUpDivide(Section other) {
+        return this.upStationId.equals(other.upStationId);
+    }
+
+    public Section divideFrom(Section other) {
+        checkStationsNotSame(other);
+        checkDistance(other);
+        int distanceGap = this.distance - other.distance;
+        if (isUpDivide(other)) {
+            return new Section(this.line_id, other.downStationId, this.downStationId, distanceGap);
+        }
+        if (isDownDivide(other)) {
+            return new Section(this.line_id, this.upStationId, other.upStationId, distanceGap);
+        }
+        throw new IllegalArgumentException("섹션을 나누지 못했습니다.");
+    }
+
+    private void checkDistance(Section other) {
         if (this.distance <= other.distance) {
             throw new IllegalArgumentException(ExceptionMessage.INVALID_INSERT_SECTION_DISTANCE.getContent());
         }
-        Section dividedSection = new Section(this.line_id, other.downStationId, this.downStationId, this.distance - other.distance);
-        return List.of(other, dividedSection);
-    }
-
-    private List<Section> add(Section other) {
-        return List.of(this, other);
     }
 
     public Section merge(Section other) {

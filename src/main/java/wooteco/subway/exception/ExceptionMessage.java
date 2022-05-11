@@ -12,7 +12,8 @@ public enum ExceptionMessage {
     INSERT_SECTION_NOT_MATCH("삽입할 구간이 연결될 역이 없습니다."),
     INVALID_INSERT_SECTION_DISTANCE("삽입 되는 구간의 길이가 기존의 구간보다 깁니다."),
     SAME_STATIONS_SECTION("같은 출발지와 도착지를 가진 구간은 진행 할 수 없습니다."),
-    NOT_CONNECTED_SECTIONS("구간이 서로 연결되지 않았습니다.");
+    NOT_CONNECTED_SECTIONS("구간이 서로 연결되지 않았습니다."),
+    INSERT_DUPLICATED_SECTION("이미 연결된 구간입니다.");
 
     private final String content;
 
