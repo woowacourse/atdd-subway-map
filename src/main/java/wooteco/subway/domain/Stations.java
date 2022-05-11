@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
@@ -110,5 +111,21 @@ public class Stations {
         adjacencies.put(rightStationId, new Adjacency(leftInfo.copyInfo(), adjacencies.get(rightStationId).copyRight()));
         adjacencies.put(leftStationId, new Adjacency(adjacencies.get(leftStationId).copyLeft(), rightInfo.copyInfo()));
         adjacencies.remove(stationId);
+    }
+
+    public Long findUpStationEnd() {
+        return adjacencies.entrySet().stream()
+                .filter(station -> station.getValue().isLeftBlank())
+                .mapToLong(Entry::getKey)
+                .findFirst()
+                .orElseGet(() -> NO_EXIST);
+    }
+
+    public Long findDownStationEnd() {
+        return adjacencies.entrySet().stream()
+                .filter(station -> station.getValue().isRightBlank())
+                .mapToLong(Entry::getKey)
+                .findFirst()
+                .orElseGet(() -> NO_EXIST);
     }
 }
