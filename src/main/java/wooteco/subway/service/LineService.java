@@ -8,8 +8,10 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.entity.LineEntity;
+import wooteco.subway.domain.entity.SectionEntity;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -81,7 +83,8 @@ public class LineService {
 
     private List<StationResponse> extractUniqueStationsFromSections(LineEntity lineEntity) {
         Line line = convertLineEntityToLine(lineEntity);
-        return line.getUniqueStations().stream()
+
+        return line.getSortedStations().stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
@@ -90,7 +93,22 @@ public class LineService {
         Station upStation = getStation(lineEntity.getUpStationId());
         Station downStation = getStation(lineEntity.getDownStationId());
 
-        return new Line(lineEntity.getName(), lineEntity.getColor(), upStation, downStation,
-                lineEntity.getDistance());
+        List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(lineEntity.getId());
+        List<Section> sections = sectionEntities.stream()
+                .map(this::convertSectionEntityToSection)
+                .collect(Collectors.toList());
+
+        return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), upStation, downStation,
+                lineEntity.getDistance(), new Sections(sections));
+    }
+
+    private Section convertSectionEntityToSection(SectionEntity sectionEntity) {
+       Station upStation = stationDao.findById(sectionEntity.getUpStationId())
+                .orElseThrow(() -> new StationNotFoundException(sectionEntity.getUpStationId()));
+
+        Station downStation = stationDao.findById(sectionEntity.getDownStationId())
+                .orElseThrow(() -> new StationNotFoundException(sectionEntity.getDownStationId()));
+
+        return new Section(sectionEntity.getLineId(), upStation, downStation, sectionEntity.getDistance());
     }
 }

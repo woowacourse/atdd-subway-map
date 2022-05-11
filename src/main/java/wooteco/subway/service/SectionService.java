@@ -56,6 +56,12 @@ public class SectionService {
 
         SectionEntity firstSplitSectionEntity = sectionDao.save(addSectionResult.getFirstSplitSection());
         SectionEntity secondSplitSectionEntity = sectionDao.save(addSectionResult.getSecondSplitSection());
+
+        System.out.println("====================");
+        Section removedSection = addSectionResult.getRemovedSection();
+        Long deleteId = removedSection.getId();
+        System.out.println(addSectionResult.getRemovedSection().getId());
+        System.out.println("====================");
         sectionDao.deleteById(addSectionResult.getRemovedSection().getId());
 
         return new SectionInsertResponse(
@@ -113,7 +119,7 @@ public class SectionService {
         Station upStation = getStationFromId(sectionEntity.getUpStationId());
         Station downStation = getStationFromId(sectionEntity.getDownStationId());
 
-        return new Section(sectionEntity.getLineId(), upStation, downStation,
+        return new Section(sectionEntity.getId(), sectionEntity.getLineId(), upStation, downStation,
                 sectionEntity.getDistance());
     }
 

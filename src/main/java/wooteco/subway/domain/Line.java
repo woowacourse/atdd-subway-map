@@ -145,7 +145,18 @@ public class Line {
         return station.equals(getUpStation());
     }
 
-    public ArrayList<Station> getUniqueStations() {
+    public List<Station> getSortedStations() {
+        List<Station> result = new ArrayList<>();
+        List<Station> stations = sections.getStations();
+        Station startUpEndStation = sections.calculateUpStation();
+        Section currentSection = sections.findSectionWithUpperStation(startUpEndStation);
+        result.add(startUpEndStation);
+
+        while (result.size() < stations.size() - 1) {
+            result.add(currentSection.getDownStation());
+            currentSection = sections.findSectionWithUpperStation(currentSection.getDownStation());
+        }
+        result.add(currentSection.getDownStation());
         return sections.getStations();
     }
 

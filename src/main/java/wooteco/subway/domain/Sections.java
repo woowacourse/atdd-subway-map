@@ -8,13 +8,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Sections {
-    List<Section> sections = new ArrayList<>();
-
-    public Sections() {
-    }
+    List<Section> sections;
 
     public Sections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
     }
 
     public Sections(Section section) {
@@ -90,11 +87,7 @@ public class Sections {
         sections.remove(section);
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public ArrayList<Station> getStations() {
+    public List<Station> getStations() {
         Set<Station> stations = new LinkedHashSet<>();
 
         for (Section section : sections) {
