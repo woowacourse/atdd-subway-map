@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
 import javax.validation.Valid;
@@ -26,9 +27,11 @@ import javax.validation.Valid;
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(final LineService lineService) {
+    public LineController(final LineService lineService, final SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
@@ -36,7 +39,8 @@ public class LineController {
         final Line line = lineRequest.toEntity();
 
         final Line newLine = lineService.createLine(line, lineRequest.toSectionEntity());
-        final LineResponse lineResponse = LineResponse.from(newLine);
+        final List<Station> stations = getStationsByLine(newLine);
+        final LineResponse lineResponse = LineResponse.from(newLine, stations);
 
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
@@ -45,7 +49,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         final List<Line> lines = lineService.getAllLines();
         final List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::from)
+                .map(line -> LineResponse.from(line, getStationsByLine(line)))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(lineResponses);
@@ -54,7 +58,7 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         final Line line = lineService.getLineById(id);
-        final LineResponse lineResponse = LineResponse.from(line);
+        final LineResponse lineResponse = LineResponse.from(line, getStationsByLine(line));
 
         return ResponseEntity.ok().body(lineResponse);
     }
@@ -72,5 +76,9 @@ public class LineController {
         lineService.delete(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private List<Station> getStationsByLine(final Line line) {
+        return sectionService.getStationsByLine(line.getId());
     }
 }

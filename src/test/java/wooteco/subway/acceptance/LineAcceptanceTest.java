@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,18 +14,26 @@ import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private StationRequest stationRequest1;
+    private StationRequest stationRequest2;
     private Long upStationId;
     private Long downStationId;
     private LineRequest lineRequest;
 
     @BeforeEach
     void setup() {
-        upStationId = createStation(new StationRequest("아차산역"));
-        downStationId = createStation(new StationRequest("군자역"));
+        stationRequest1 = new StationRequest("아차산역");
+        stationRequest2 = new StationRequest("군자역");
+        upStationId = createStation(stationRequest1);
+        downStationId = createStation(stationRequest2);
         lineRequest = new LineRequest("5호선", "bg-purple-600", upStationId, downStationId, 10);
     }
 
@@ -45,9 +50,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        final List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
+
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.header("Location")).isNotBlank()
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(stations).usingRecursiveComparison()
+                        .ignoringFields("id")
+                        .isEqualTo(List.of(stationRequest1, stationRequest2))
         );
     }
 
@@ -95,12 +105,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
+
         final List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
+
+        final List<List<StationResponse>> stationsResponses = response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getStations)
+                .collect(Collectors.toList());
+
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(resultLineIds).containsAll(expectedLineIds)
+                () -> assertThat(resultLineIds).containsAll(expectedLineIds),
+                () -> assertThat(stationsResponses.get(0)).usingRecursiveComparison()
+                        .ignoringFields("id")
+                        .isEqualTo(List.of(stationRequest1, stationRequest2)),
+                () -> assertThat(stationsResponses.get(1)).usingRecursiveComparison()
+                        .ignoringFields("id")
+                        .isEqualTo(List.of(stationRequest1, stationRequest2))
         );
     }
 
@@ -114,6 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
+
         final Long createId = createResponse.jsonPath().getLong("id");
 
         // when
@@ -127,11 +150,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final Long id = response.jsonPath().getLong("id");
         final String name = response.jsonPath().getString("name");
         final String color = response.jsonPath().getString("color");
+        final List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
 
         assertAll(
                 () -> assertThat(id).isEqualTo(createId),
                 () -> assertThat(name).isEqualTo("5호선"),
-                () -> assertThat(color).isEqualTo("bg-purple-600")
+                () -> assertThat(color).isEqualTo("bg-purple-600"),
+                () -> assertThat(stations).usingRecursiveComparison()
+                        .ignoringFields("id")
+                        .isEqualTo(List.of(stationRequest1, stationRequest2))
         );
     }
 
@@ -211,7 +238,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
