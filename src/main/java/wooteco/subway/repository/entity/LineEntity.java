@@ -20,6 +20,10 @@ public class LineEntity {
         this.color = line.getColor();
     }
 
+    public static LineEntity createWithoutId(final String name, final String color) {
+        return new LineEntity(null, name, color);
+    }
+
     public Long getId() {
         return id;
     }

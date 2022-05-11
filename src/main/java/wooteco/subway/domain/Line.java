@@ -1,19 +1,23 @@
 package wooteco.subway.domain;
 
+import java.util.List;
+
 public class Line {
 
     private final Long id;
     private final String name;
     private final String color;
+    private final Sections sections;
 
-    public Line(final Long id, final String name, final String color) {
+    public Line(final Long id, final String name, final String color, final Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = sections;
     }
 
-    public static Line createWithoutId(final String name, final String color) {
-        return new Line(null, name, color);
+    public static Line createWithoutId(final String name, final String color, final Sections sections) {
+        return new Line(null, name, color, sections);
     }
 
     public Long getId() {
@@ -26,5 +30,9 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 }

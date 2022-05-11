@@ -37,7 +37,7 @@ public class LineController {
                 lineRequestDto.getDownStationId(),
                 lineRequestDto.getDistance());
         final LineResponseDto lineResponseDto =
-                new LineResponseDto(newLine.getId(), newLine.getName(), newLine.getColor());
+                new LineResponseDto(newLine.getId(), newLine.getName(), newLine.getColor(), newLine.getStations());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponseDto);
     }
 
@@ -45,7 +45,7 @@ public class LineController {
     public ResponseEntity<List<LineResponseDto>> showLines() {
         final List<Line> lines = lineService.searchAll();
         final List<LineResponseDto> lineResponseDtos = lines.stream()
-                .map(line -> new LineResponseDto(line.getId(), line.getName(), line.getColor()))
+                .map(line -> new LineResponseDto(line.getId(), line.getName(), line.getColor(), line.getStations()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponseDtos);
     }
@@ -54,7 +54,7 @@ public class LineController {
     public ResponseEntity<LineResponseDto> showLine(@PathVariable final Long id) {
         final Line line = lineService.searchById(id);
         return ResponseEntity.ok()
-                .body(new LineResponseDto(line.getId(), line.getName(), line.getColor()));
+                .body(new LineResponseDto(line.getId(), line.getName(), line.getColor(), line.getStations()));
     }
 
     @PutMapping("/lines/{id}")

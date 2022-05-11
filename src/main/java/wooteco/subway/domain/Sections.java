@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import wooteco.subway.exception.NotFoundStationException;
 
 public class Sections {
@@ -268,5 +270,14 @@ public class Sections {
         final List<Section> deletedSections = new ArrayList<>();
         deletedSections.add(value.removeLast());
         return new SectionsUpdateResult(deletedSections, new ArrayList<>());
+    }
+
+    public List<Station> getStations() {
+        final List<Station> stations = value.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        stations.add(value.getLast().getDownStation());
+
+        return Collections.unmodifiableList(stations);
     }
 }

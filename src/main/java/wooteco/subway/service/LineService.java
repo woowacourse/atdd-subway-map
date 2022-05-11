@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.NotFoundStationException;
@@ -24,24 +25,28 @@ import wooteco.subway.repository.entity.StationEntity;
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationService stationService;
     private final SectionService sectionService;
 
-    public LineService(final LineDao lineDao, final SectionService sectionService) {
+    public LineService(final LineDao lineDao, final StationService stationService,final SectionService sectionService) {
         this.lineDao = lineDao;
+        this.stationService = stationService;
         this.sectionService = sectionService;
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public Line register(
-            final String name,
-            final String color,
-            final Long upStationId,
-            final Long downStationId,
-            final int distance) {
+    public Line register(final String name,
+                         final String color,
+                         final Long upStationId,
+                         final Long downStationId,
+                         final int distance) {
         try {
-            final LineEntity lineEntity = new LineEntity(Line.createWithoutId(name, color));
+            final LineEntity lineEntity = LineEntity.createWithoutId(name, color);
             final LineEntity savedLineEntity = lineDao.save(lineEntity);
-            final Line line = new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
+            final Station upStation = stationService.searchById(upStationId);
+            final Station downStation = stationService.searchById(downStationId);
+            final Sections sections = new Sections(new Section(savedLineEntity.getId(), upStation, downStation, distance));
+            final Line line = new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor(), sections);
             sectionService.resisterFirst(line.getId(), upStationId, downStationId, distance);
             return line;
         } catch (DataIntegrityViolationException e) {
@@ -53,15 +58,22 @@ public class LineService {
     public Line searchById(final Long id) {
         LineEntity lineEntity = lineDao.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다"));
-        return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
+        final Sections sections = sectionService.searchSectionsByLineId(id);
+        return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), sections);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     public List<Line> searchAll() {
         return lineDao.findAll()
                 .stream()
-                .map(lineEntity -> new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor()))
-                .collect(Collectors.toList());
+                .map(lineEntity ->
+                        new Line(
+                                lineEntity.getId(),
+                                lineEntity.getName(),
+                                lineEntity.getColor(),
+                                sectionService.searchSectionsByLineId(lineEntity.getId())
+                        )
+                ).collect(Collectors.toList());
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -79,7 +91,8 @@ public class LineService {
 
     private void updateLineData(final Long id, final String name, final String color) {
         try {
-            Line newLine = new Line(id, name, color);
+            final Sections sections = sectionService.searchSectionsByLineId(id);
+            final Line newLine = new Line(id, name, color, sections);
             lineDao.update(new LineEntity(newLine));
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateNameException("[ERROR] 이름이 중복되어 데이터를 수정할 수 없습니다.");
