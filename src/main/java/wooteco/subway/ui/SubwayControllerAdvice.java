@@ -14,6 +14,12 @@ public class SubwayControllerAdvice {
         e.printStackTrace();
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleIllegalStateException(IllegalStateException e) {
+        e.printStackTrace();
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handleException(Exception e) {
