@@ -74,6 +74,42 @@ public class SectionDao {
         }
     }
 
+    public Optional<Long> findByUpStation(long lineId, long upStationId) {
+        String sql = "SELECT id FROM section WHERE line_id = :lineId AND up_station_id = :upStationId";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
+                .addValue("lineId", lineId);
+        try {
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Long.class));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Long> findByDownStation(long lineId, long downStationId) {
+        String sql = "SELECT id FROM section WHERE line_id = :lineId AND down_station_id = :downStationId";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("downStationId", downStationId)
+                .addValue("lineId", lineId);
+        try {
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Long.class));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public void updateUpStation(long id, long upStationId) {
+        String sql = "UPDATE section SET up_station_id = :upStationId WHERE id = :id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
+                .addValue("id", id);
+        namedParameterJdbcTemplate.update(sql, parameterSource);
+    }
+
+    public void updateDownStation(long id, long downStationId) {
+        String sql = "UPDATE section SET down_station_id = :downStationId WHERE id = :id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("downStationId", downStationId)
+                .addValue("id", id);
+        namedParameterJdbcTemplate.update(sql, parameterSource);
+    }
+
     public void updateDistance(long id, int distance) {
         String sql = "UPDATE section SET distance = :distance WHERE id = :id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("distance", distance)

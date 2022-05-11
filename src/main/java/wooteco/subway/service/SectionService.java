@@ -61,8 +61,8 @@ public class SectionService {
     }
 
     private void checkBothDoNotExist(long id, long upStationId, long downStationId) {
-        if (sectionDao.findDistanceByUpStationId(id, upStationId).isEmpty() && sectionDao.findDistanceByDownStationId(
-                id, downStationId).isEmpty()) {
+        if (sectionDao.findByUpStation(id, upStationId).isEmpty()
+                && sectionDao.findByDownStation(id, downStationId).isEmpty()) {
             throw new IllegalArgumentException("상행역과 하행역 모두 존재하지 않습니다.");
         }
     }
