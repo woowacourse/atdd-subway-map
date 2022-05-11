@@ -195,4 +195,22 @@ class SectionsTest {
                         tuple(station1, station3, 2)
                 );
     }
+
+    @DisplayName("다른 Sections가 포함하지 않는 구간들을 반환한다.")
+    @Test
+    void getNotContainSections() {
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("역삼역");
+        Station station3 = new Station("선릉역");
+
+        Section section1 = new Section(station1, station2, 1);
+        Section section2 = new Section(station2, station3, 1);
+
+        Sections origin = new Sections(List.of(section1, section2));
+        Sections compareTarget = new Sections(List.of(section2));
+
+        List<Section> actual = origin.getNotContainSections(compareTarget);
+
+        assertThat(actual).hasSize(1).containsOnly(section1);
+    }
 }

@@ -192,6 +192,11 @@ public class Sections {
                 .orElseThrow(() -> new DataNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
     }
 
+    public List<Section> getNotContainSections(Sections sections) {
+        values.removeAll(sections.values);
+        return values;
+    }
+
     public List<Section> getValues() {
         return values;
     }
