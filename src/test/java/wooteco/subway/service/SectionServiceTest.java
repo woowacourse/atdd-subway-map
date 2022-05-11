@@ -13,6 +13,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.RemoveSectionException;
 import wooteco.subway.mockDao.MockLineDao;
 import wooteco.subway.mockDao.MockSectionDao;
 import wooteco.subway.mockDao.MockStationDao;
@@ -150,7 +151,7 @@ class SectionServiceTest {
         final Line line = lineService.register("2호선", "bg-green-600", upStationId, downStationId, 10);
 
         assertThatThrownBy(() -> sectionService.removeStation(line.getId(), downStationId))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(RemoveSectionException.class)
                 .hasMessage("[ERROR] 구간이 한개일 경우엔 삭제할 수 없습니다.");
 
         final Sections sections = sectionService.searchSectionsByLineId(line.getId());

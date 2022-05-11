@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.ResisterSectionException;
 
 class SectionsTest {
 
@@ -117,7 +118,7 @@ class SectionsTest {
 
         sections.addSection(station2, station4, 10);
         assertThatThrownBy(() -> sections.addSection(station3, station4, 10))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResisterSectionException.class)
                 .hasMessage("[ERROR] 역 사이에 새 역을 등록할 경우엔 길이가 원래 있던 길이보다 짧아야합니다.");
     }
 

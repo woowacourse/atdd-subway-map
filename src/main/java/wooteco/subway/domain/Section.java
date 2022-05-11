@@ -41,10 +41,6 @@ public class Section {
         return distance;
     }
 
-    public Section changeDownStation(final Station newStation, final Integer newDistance) {
-        return new Section(id, upStation, newStation, newDistance);
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

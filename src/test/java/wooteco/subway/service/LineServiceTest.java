@@ -77,8 +77,8 @@ class LineServiceTest {
                 .collect(Collectors.toList());
 
         assertAll(
-                () -> assertThat(names).isEqualTo(List.of("2호선", "신분당선", "분당선")),
-                () -> assertThat(colors).isEqualTo(List.of("bg-green-600", "bg-red-600", "bg-yellow-600"))
+                () -> assertThat(names.containsAll(List.of("2호선", "신분당선", "분당선"))).isTrue(),
+                () -> assertThat(colors.containsAll(List.of("bg-green-600", "bg-red-600", "bg-yellow-600"))).isTrue()
         );
     }
 

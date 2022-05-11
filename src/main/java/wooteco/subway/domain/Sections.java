@@ -5,7 +5,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.NoElementSectionsException;
 import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.exception.RemoveSectionException;
+import wooteco.subway.exception.ResisterSectionException;
 
 public class Sections {
 
@@ -18,7 +21,7 @@ public class Sections {
 
     private void validateSize(final LinkedList<Section> value) {
         if (value.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 최소 한 개의 구간이 있어야 Sections 객체를 생성할 수 있습니다.");
+            throw new NoElementSectionsException("[ERROR] 최소 한 개의 구간이 있어야 Sections 객체를 생성할 수 있습니다.");
         }
     }
 
@@ -75,11 +78,11 @@ public class Sections {
 
     private void validateStationRegistration(final Station newUpStation, final Station newDownStation) {
         if (!isResistedStation(newUpStation) && !isResistedStation(newDownStation)) {
-            throw new IllegalArgumentException("[ERROR] 등록하려는 구간의 상행선 또는 하행선 중 한개는 노선에 존재해야합니다.");
+            throw new ResisterSectionException("[ERROR] 등록하려는 구간의 상행선 또는 하행선 중 한개는 노선에 존재해야합니다.");
         }
 
         if (isResistedStation(newUpStation) && isResistedStation(newDownStation)) {
-            throw new IllegalArgumentException("[ERROR] 등록하려는 구간의 상행선 또는 하행선 중 한개만 노선에 존재해야합니다.");
+            throw new ResisterSectionException("[ERROR] 등록하려는 구간의 상행선 또는 하행선 중 한개만 노선에 존재해야합니다.");
         }
     }
 
@@ -170,7 +173,7 @@ public class Sections {
 
     private void validateDistance(final Integer distance, final Section oldSection) {
         if (distance >= oldSection.getDistance()) {
-            throw new IllegalArgumentException("[ERROR] 역 사이에 새 역을 등록할 경우엔 길이가 원래 있던 길이보다 짧아야합니다.");
+            throw new ResisterSectionException("[ERROR] 역 사이에 새 역을 등록할 경우엔 길이가 원래 있던 길이보다 짧아야합니다.");
         }
     }
 
@@ -204,7 +207,7 @@ public class Sections {
             throw new NotFoundStationException("[ERROR] 해당 구간이 존재하지 않습니다.");
         }
         if (value.size() <= 1) {
-            throw new IllegalStateException("[ERROR] 구간이 한개일 경우엔 삭제할 수 없습니다.");
+            throw new RemoveSectionException("[ERROR] 구간이 한개일 경우엔 삭제할 수 없습니다.");
         }
     }
 

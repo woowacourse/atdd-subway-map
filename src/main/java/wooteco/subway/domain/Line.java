@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.List;
+import wooteco.subway.exception.LineColorLengthException;
 
 public class Line {
 
@@ -19,7 +20,7 @@ public class Line {
 
     private void validateColor(final String color) {
         if (color.length() > 20) {
-            throw new IllegalArgumentException("[ERROR] 노선 색은 20자 이하여야 합니다.");
+            throw new LineColorLengthException("[ERROR] 노선 색은 20자 이하여야 합니다.");
         }
     }
 
