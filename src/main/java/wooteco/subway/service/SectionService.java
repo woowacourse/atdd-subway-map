@@ -32,23 +32,20 @@ public class SectionService {
         Sections sections = new Sections(sectionRepository.findAllByLineId(lineId));
         validateDuplicate(sectionRequest, sections);
         validateNonMatchStations(sectionRequest, sections);
-
-        Section section = getTargetWithNotTerminal(sections, sectionRequest)
-                .orElseGet(() -> sectionRepository.save(createMemorySection(sectionRequest, lineId)));
+        Section newSection = sectionRepository.save(createMemorySection(sectionRequest, lineId));
 
         if (getTargetWithNotTerminal(sections, sectionRequest).isPresent()) {
+            Section section = getTargetWithNotTerminal(sections, sectionRequest).get();
             validateDistance(sectionRequest, section);
+            if (newSection.getUpStation().equals(section.getUpStation())) {
+                Station newUpStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new NotFoundException("[ERROR]없는 역입니다."));
+                sectionRepository.save(new Section(lineId, newUpStation, section.getDownStation(), section.getDistance() - sectionRequest.getDistance()));
+            }
+            if (newSection.getDownStation().equals(section.getDownStation())) {
+                Station newDownStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new NotFoundException("[ERROR]없는 역입니다."));
+                sectionRepository.save(new Section(lineId, section.getUpStation(), newDownStation, section.getDistance() - sectionRequest.getDistance()));
+            }
             sectionRepository.deleteById(section.getId());
-            stationRepository.findById(sectionRequest.getUpStationId())
-                    .ifPresent(station ->
-                            sectionRepository.save(
-                                    new Section(
-                                            lineId,
-                                            section.getDownStation(),
-                                            station,
-                                            section.getDistance() - sectionRequest.getDistance())
-                            ));
-            sectionRepository.save(createMemorySection(sectionRequest, lineId));
         }
     }
 

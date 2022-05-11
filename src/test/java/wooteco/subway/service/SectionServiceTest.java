@@ -59,6 +59,20 @@ class SectionServiceTest {
         assertThat(section.getId()).isNotNull();
     }
 
+    @DisplayName("구간이 2개있을 때 구간을 추가한다.")
+    @Test
+    void add() {
+        //given
+        sectionRepository.deleteById(UP_STATION_ID);
+        Station station = stationRepository.save(new Station("신도림역"));
+        SectionRequest sectionRequest = new SectionRequest(MIDDLE_STATION_ID, station.getId(), 2);
+        //when
+        sectionService.add(LINE_ID, sectionRequest);
+        List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
+        //then
+        assertThat(sections).hasSize(2);
+    }
+
     @DisplayName("하행 종점에 구간을 추가한다.")
     @Test
     void addDownTerminal() {
@@ -95,6 +109,9 @@ class SectionServiceTest {
         sectionService.add(LINE_ID, sectionRequest);
         List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
         //then
+        for (Section section : sections) {
+            System.out.println("상행 > " + section.getUpStation().getName() + " , 하행 > " + section.getDownStation().getName());
+        }
         assertThat(sections).hasSize(3);
     }
 

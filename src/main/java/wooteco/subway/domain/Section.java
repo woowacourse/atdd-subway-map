@@ -33,7 +33,8 @@ public class Section {
     }
 
     public boolean haveStationId(Long upStationId, Long downStationId) {
-        return this.upStation.getId().equals(downStationId) || this.downStation.getId().equals(upStationId);
+        return this.upStation.getId().equals(downStationId) || this.downStation.getId().equals(upStationId) ||
+                this.upStation.getId().equals(upStationId) || this.downStation.getId().equals(downStationId);
     }
 
     public Long getId() {
