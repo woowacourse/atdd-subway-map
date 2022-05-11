@@ -39,7 +39,7 @@ public class SectionService {
     }
 
     private boolean canSaving(final Long lineId, final Section section) {
-        if (isEqualAllStation(lineId, section)) {
+        if (existAllStation(lineId, section)) {
             return false;
         }
         if (canSavingLastUpStation(lineId, section.getDownStationId())) {
@@ -51,8 +51,9 @@ public class SectionService {
         return false;
     }
 
-    private boolean isEqualAllStation(final Long lineId, final Section section) {
-        return sectionDao.equalAllStation(lineId, section);
+    private boolean existAllStation(final Long lineId, final Section section) {
+        return sectionDao.existStation(lineId, section.getUpStationId())
+                && sectionDao.existDownStation(lineId, section.getDownStationId());
     }
 
     private boolean canSavingLastUpStation(final Long lineId, final Long downStationId) {

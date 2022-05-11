@@ -18,10 +18,10 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
-    public boolean equalAllStation(final Long lineId, final Section section) {
+    public boolean existStation(final Long lineId, final Long stationId) {
         final String sql = "select exists " +
-                "(select * from SECTION where line_id = ? and up_station_id = ? and down_station_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, section.getUpStationId(), section.getDownStationId());
+                "(select * from SECTION where line_id = ? and (up_station_id = ? or down_station_id = ?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
     }
 
     public boolean existUpStation(final Long lineId, final Long stationId) {
