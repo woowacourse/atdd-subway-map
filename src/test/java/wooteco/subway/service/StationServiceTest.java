@@ -32,9 +32,9 @@ class StationServiceTest {
     void saveStation() {
         //given
         //when
-        StationResponseDto stationResponseDTO = stationService.createStation("낙성대");
+        StationResponseDto stationResponseDto = stationService.createStation("낙성대");
         //then
-        Assertions.assertThat(stationResponseDTO.getName()).isEqualTo("낙성대");
+        Assertions.assertThat(stationResponseDto.getName()).isEqualTo("낙성대");
     }
 
     @Test

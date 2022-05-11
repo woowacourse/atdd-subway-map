@@ -3,10 +3,10 @@ package wooteco.subway.service.dto.line;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.station.StationResponseDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponseDto {
-
     private Long id;
     private String name;
     private String color;
@@ -20,6 +20,10 @@ public class LineResponseDto {
         this.name = line.getName();
         this.color = line.getColor();
         this.stations = stations;
+    }
+
+    public LineResponseDto(Line line) {
+        this(line, new ArrayList<>());
     }
 
     public Long getId() {

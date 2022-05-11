@@ -47,14 +47,14 @@ class LineServiceTest {
     @DisplayName("노선 생성")
     void saveLine() {
         //given
-        LineRequestDto lineRequestDTO = new LineRequestDto("2호선", "bg-green-300", 1L, 2L, 10);
+        LineRequestDto lineRequestDto = new LineRequestDto("2호선", "bg-green-300", 1L, 2L, 10);
         //when
-        LineResponseDto lineResponseDTO = lineService.create(lineRequestDTO);
+        LineResponseDto lineResponseDto = lineService.create(lineRequestDto);
         //then
         assertAll(
-                () -> assertThat(lineResponseDTO.getId()).isEqualTo(1L),
-                () -> assertThat(lineResponseDTO.getName()).isEqualTo("2호선"),
-                () -> assertThat(lineResponseDTO.getColor()).isEqualTo("bg-green-300")
+                () -> assertThat(lineResponseDto.getId()).isEqualTo(1L),
+                () -> assertThat(lineResponseDto.getName()).isEqualTo("2호선"),
+                () -> assertThat(lineResponseDto.getColor()).isEqualTo("bg-green-300")
         );
     }
 
@@ -73,13 +73,13 @@ class LineServiceTest {
     @DisplayName("노선 조회")
     void findLine() {
         //given
-        LineRequestDto lineRequestDTO = new LineRequestDto("2호선", "bg-green-300", 1L, 2L, 10);
+        LineRequestDto lineRequestDto = new LineRequestDto("2호선", "bg-green-300", 1L, 2L, 10);
         //when
-        LineResponseDto lineResponseDTO = lineService.create(lineRequestDTO);
-        LineResponseDto findResult = lineService.findById(lineResponseDTO.getId());
+        LineResponseDto lineResponseDto = lineService.create(lineRequestDto);
+        LineResponseDto findResult = lineService.findById(lineResponseDto.getId());
 
         assertAll(
-                () -> assertThat(findResult.getId()).isEqualTo(lineResponseDTO.getId()),
+                () -> assertThat(findResult.getId()).isEqualTo(lineResponseDto.getId()),
                 () -> assertThat(findResult.getName()).isEqualTo("2호선"),
                 () -> assertThat(findResult.getColor()).isEqualTo("bg-green-300")
         );

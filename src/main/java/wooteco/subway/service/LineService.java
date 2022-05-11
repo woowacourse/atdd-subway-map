@@ -53,10 +53,10 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponseDto create(LineRequestDto lineRequestDTO) {
-        validateDuplicate(lineRequestDTO);
-        Line line = lineDao.create(new Line(lineRequestDTO.getName(), lineRequestDTO.getColor()));
-        Section newSection = new Section(line.getId(), lineRequestDTO.getUpStationId(), lineRequestDTO.getDownStationId(), lineRequestDTO.getDistance());
+    public LineResponseDto create(LineRequestDto lineRequestDto) {
+        validateDuplicate(lineRequestDto);
+        Line line = lineDao.create(new Line(lineRequestDto.getName(), lineRequestDto.getColor()));
+        Section newSection = new Section(line.getId(), lineRequestDto.getUpStationId(), lineRequestDto.getDownStationId(), lineRequestDto.getDistance());
         Sections sections = new Sections(sectionDao.findAllByLineId(newSection.getLineId()));
         sections.validateAddNewSection(newSection);
         sectionDao.create(newSection);
@@ -85,9 +85,9 @@ public class LineService {
         stations.add(new StationResponseDto(station));
     }
 
-    private void validateDuplicate(LineRequestDto lineRequestDTO) {
-        validateDuplicateName(lineRequestDTO.getName());
-        validateDuplicateColor(lineRequestDTO.getColor());
+    private void validateDuplicate(LineRequestDto lineRequestDto) {
+        validateDuplicateName(lineRequestDto.getName());
+        validateDuplicateColor(lineRequestDto.getColor());
     }
 
     private void validateDuplicateName(String name) {
@@ -102,12 +102,12 @@ public class LineService {
         }
     }
 
-    public void updateById(Long id, LineRequestDto lineRequestDTO) {
+    public void updateById(Long id, LineRequestDto lineRequestDto) {
         validateNonFoundId(id);
-        validateExistName(id, lineRequestDTO.getName());
-        validateExistColor(id, lineRequestDTO.getColor());
+        validateExistName(id, lineRequestDto.getName());
+        validateExistColor(id, lineRequestDto.getColor());
 
-        lineDao.update(id, lineRequestDTO.getName(), lineRequestDTO.getColor());
+        lineDao.update(id, lineRequestDto.getName(), lineRequestDto.getColor());
     }
 
     public void deleteById(Long id) {

@@ -23,14 +23,14 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse stationResponse = ControllerDtoAssembler.stationResponseByDTO(stationService.createStation(stationRequest.getName()));
+        StationResponse stationResponse = ControllerDtoAssembler.stationResponseByDto(stationService.createStation(stationRequest.getName()));
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> stationResponses = stationService.showStations().stream()
-                .map(ControllerDtoAssembler::stationResponseByDTO)
+                .map(ControllerDtoAssembler::stationResponseByDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(stationResponses);
     }

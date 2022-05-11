@@ -17,18 +17,18 @@ public class ControllerDtoAssembler {
     private ControllerDtoAssembler() {
     }
 
-    public static StationResponse stationResponseByDTO(StationResponseDto stationResponseDTO){
-        return new StationResponse(stationResponseDTO.getId(), stationResponseDTO.getName());
+    public static StationResponse stationResponseByDto(StationResponseDto stationResponseDto){
+        return new StationResponse(stationResponseDto.getId(), stationResponseDto.getName());
     }
 
-    public static LineResponse lineResponseByDTO(LineResponseDto lineResponseDTO) {
-        List<StationResponse> stations = lineResponseDTO.getStations().stream()
+    public static LineResponse lineResponseByDto(LineResponseDto lineResponseDto) {
+        List<StationResponse> stations = lineResponseDto.getStations().stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
-        return new LineResponse(lineResponseDTO.getId(), lineResponseDTO.getName(), lineResponseDTO.getColor(), stations);
+        return new LineResponse(lineResponseDto.getId(), lineResponseDto.getName(), lineResponseDto.getColor(), stations);
     }
 
-    public static LineRequestDto lineRequestDTO(LineRequest lineRequest) {
+    public static LineRequestDto lineRequestDto(LineRequest lineRequest) {
         return new LineRequestDto(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 

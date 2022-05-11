@@ -23,14 +23,14 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = ControllerDtoAssembler.lineResponseByDTO(lineService.create(ControllerDtoAssembler.lineRequestDTO(lineRequest)));
+        LineResponse lineResponse = ControllerDtoAssembler.lineResponseByDto(lineService.create(ControllerDtoAssembler.lineRequestDto(lineRequest)));
 
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        LineResponse lineResponse = ControllerDtoAssembler.lineResponseByDTO(lineService.findById(id));
+        LineResponse lineResponse = ControllerDtoAssembler.lineResponseByDto(lineService.findById(id));
 
         return ResponseEntity.ok(lineResponse);
     }
@@ -38,7 +38,7 @@ public class LineController {
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findAll().stream()
-                .map(ControllerDtoAssembler::lineResponseByDTO)
+                .map(ControllerDtoAssembler::lineResponseByDto)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(lineResponses);
@@ -46,7 +46,7 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateById(id, ControllerDtoAssembler.lineRequestDTO(lineRequest));
+        lineService.updateById(id, ControllerDtoAssembler.lineRequestDto(lineRequest));
 
         return ResponseEntity.ok().build();
     }
