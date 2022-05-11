@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,9 @@ public class LineService {
     }
 
     public LineResponse save(LineRequest lineRequest) {
-        final Line savedLine = saveLine(lineRequest);
+        Line savedLine = saveLine(lineRequest);
         saveSection(lineRequest, savedLine.getId());
-        final List<StationResponse> stationResponses =
+        List<StationResponse> stationResponses =
                 findStations(lineRequest.getUpStationId(), lineRequest.getDownStationId());
         return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), stationResponses);
     }
@@ -57,7 +58,7 @@ public class LineService {
     }
 
     private void saveSection(LineRequest lineRequest, Long lineId) {
-        final Section section = new Section(lineId, lineRequest.getUpStationId(),
+        Section section = new Section(lineId, lineRequest.getUpStationId(),
                 lineRequest.getDownStationId(), lineRequest.getDistance());
         sectionDao.save(section);
     }
@@ -92,7 +93,8 @@ public class LineService {
         validateId(id);
         Line line = lineDao.findById(id);
         Sections sections = new Sections(sectionDao.findByLineId(id));
-        final List<StationResponse> stations = stationDao.findByIds(sections.getStationIds())
+        List<StationResponse> stations = stationDao
+                .findByIds(Arrays.asList(sections.findUpStationId(), sections.findDownStationId()))
                 .stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());

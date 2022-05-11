@@ -156,6 +156,36 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("구간이 추가되면 상행선 혹은 하행선이 변경이 될 수 있다.")
+    @Test
+    void connectNewSection() {
+        //given
+        requestToCreateStation("강남역");
+        requestToCreateStation("사당역");
+        requestToCreateStation("선릉역");
+        requestToCreateLine("신분당선", "red", "1", "2", "10");
+        requestToConnectNewSection(1L, "2", "3", "4");
+
+        //when
+        final ExtractableResponse<Response> response = requestToFindLineById(1L);
+        LineResponse lineResponse = response.jsonPath()
+                .getObject(".", LineResponse.class);
+        StationResponse upStation = lineResponse.getStations().get(0);
+        StationResponse downStation = lineResponse.getStations().get(1);
+
+        //then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineResponse.getId()).isEqualTo(1L),
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
+                () -> assertThat(upStation.getId()).isEqualTo(1L),
+                () -> assertThat(upStation.getName()).isEqualTo("강남역"),
+                () -> assertThat(downStation.getId()).isEqualTo(3L),
+                () -> assertThat(downStation.getName()).isEqualTo("선릉역")
+        );
+    }
+
     @DisplayName("지하철노선을 제거한다.")
     @Test
     void deleteLine_success() {
@@ -250,6 +280,22 @@ class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .when()
                 .delete("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> requestToConnectNewSection(Long lineId, String upStationId,
+                                                                     String downStationId, String distance) {
+        Map<String, String> param = Map.of(
+                "upStationId", upStationId,
+                "downStationId", downStationId,
+                "distance", distance
+        );
+        return RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract();
     }
