@@ -81,16 +81,16 @@ Line의 종착 하행구간: endDownSection
 
 ### 지하철 노선을 생성한다.
 
-- 성공 : Http status(201) / 식별자(id)와 노선 이름(name), 노선 색(color)를 응답한다.
+- 성공 : Http status(201) / 식별자(id)와 노선 이름(name), 지하철역 목록(stations)를 반환한다.
 - 실패(이미 존재하는 노선 이름) : Http status(400) / 에러 메시지를 응답한다.
 
 ### 지하철 노선 목록을 조회한다.
 
-- 성공 : Http status(200) / 모든 노선의 식별자(id)와 노선 이름(name), 노선 색(color)를 응답한다.
+- 성공 : Http status(200) / 모든 노선의 식별자(id)와 노선 이름(name), 노선 색(color), 지하철역 목록(stations)를 응답한다.
 
 ### 지하철 노선을 조회한다.
 
-- 성공 : Http status(200) / 노선의 식별자(id)와 노선 이름(name), 노선 색(color)를 응답한다.
+- 성공 : Http status(200) / 노선의 식별자(id)와 노선 이름(name), 노선 색(color), 지하철역 목록(stations)를 응답한다.
 - 실패(존재하지 않는 노선) : Http status(400) / 에러 메시지를 응답한다.
 
 ### 지하철 노선을 수정한다.
@@ -104,13 +104,27 @@ Line의 종착 하행구간: endDownSection
 - 성공 : Http status(204)
 - 실패(존재하지 않는 노선) : Http status(400) / 에러 메시지를 응답한다.
 
+## 지하철 구간 관리
+
+### 지하철 구간을 생성한다.
+
+- 성공 : Http status(200)
+- 실패 : Http status(400) / 에러 메시지를 응답한다.
+
+### 지하철 구간을 삭제한다.
+
+- 성공 : Http status(200)
+- 실패 : Http status(400) / 에러 메시지를 응답한다.
+
 <br>
 
 
 <br>
 
 ## 🚀 Getting Started
+
 ### Usage
+
 #### application 구동
 
 ```
