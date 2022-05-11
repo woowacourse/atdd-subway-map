@@ -5,6 +5,9 @@ import java.util.Map;
 
 public class SectionLinks {
 
+    private static final String ALREADY_EXIST_SECTION_STATIONS = "상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.";
+    private static final String ALL_SECTION_STATIONS_NOT_EXIST = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.";
+
     private final Map<Long, Long> sections;
 
     public SectionLinks(Map<Long, Long> sections) {
@@ -38,13 +41,13 @@ public class SectionLinks {
 
     private void validateAllSectionStationsExist(Section section) {
         if (isDuplicatedSection(section)) {
-            throw new IllegalStateException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+            throw new IllegalStateException(ALREADY_EXIST_SECTION_STATIONS);
         }
     }
 
     private void validateSectionStationsExist(Section section) {
         if (isNotAddableSection(section)) {
-            throw new IllegalStateException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+            throw new IllegalStateException(ALL_SECTION_STATIONS_NOT_EXIST);
         }
     }
 

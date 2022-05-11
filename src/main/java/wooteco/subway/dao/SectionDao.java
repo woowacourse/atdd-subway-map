@@ -37,20 +37,13 @@ public class SectionDao {
         return jdbcTemplate.query(sql, sectionRowMapper, id);
     }
 
-    public void updateByUpStationId(Section section) {
-        final String sql = "UPDATE section SET down_station_id = ?, distance = ? WHERE line_id = ? AND up_station_id = ?";
-        jdbcTemplate.update(sql, section.getDownStationId(), section.getDistance(), section.getLineId(),
-            section.getUpStationId());
-    }
-
-    public void updateByDownStationId(Section section) {
-        final String sql = "UPDATE section SET up_station_id = ?, distance = ? WHERE line_id = ? AND down_station_id = ?";
-        jdbcTemplate.update(sql, section.getUpStationId(), section.getDistance(), section.getLineId(),
-            section.getDownStationId());
-    }
-
     public void delete(Long lineId, Long stationId) {
         final String sql = "DELETE FROM section WHERE line_id = ? AND (down_station_id = ? OR up_station_id = ?)";
         jdbcTemplate.update(sql, lineId, stationId, stationId);
+    }
+
+    public void delete(Long id) {
+        final String sql = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

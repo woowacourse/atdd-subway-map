@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
@@ -14,6 +13,8 @@ import wooteco.subway.domain.Sections;
 
 @Service
 public class SectionService {
+
+    private static final String NOT_EXIST_STATION = "역이 존재하지 않습니다.";
 
     private final SectionDao sectionDao;
 
@@ -28,13 +29,13 @@ public class SectionService {
 
     public void save(Section section) {
         List<Section> savedSections = sectionDao.findAllByLineId(section.getLineId());
-        SectionLinks sectionLinks = createStations(savedSections);
+        SectionLinks sectionLinks = createStationLinks(savedSections);
         Sections sections = new Sections(savedSections);
         sectionLinks.validateAddableSection(section);
         updateSection(section, sectionLinks, sections);
     }
 
-    private SectionLinks createStations(List<Section> sections) {
+    private SectionLinks createStationLinks(List<Section> sections) {
         Map<Long, Long> stationIds = new HashMap<>();
         for (Section existingSection : sections) {
             stationIds.put(existingSection.getUpStationId(), existingSection.getDownStationId());
@@ -47,31 +48,38 @@ public class SectionService {
             sectionDao.save(section);
             return;
         }
+        updateMiddleSection(section, sectionLinks, sections);
+    }
+
+    private void updateMiddleSection(Section section, SectionLinks sectionLinks, Sections sections) {
         if (sectionLinks.isExistUpStation(section.getUpStationId())) {
-            Section findSection = sections.getSameUpStationSection(section);
-            validateDistance(section, findSection);
-            sectionDao.updateByUpStationId(section);
-            sectionDao.save(findSection.createExceptUpSection(section));
+            Section existing = sections.getSameUpStationSection(section);
+            updateNewSections(existing, section, existing.createExceptUpSection(section));
             return;
         }
         if (sectionLinks.isExistDownStation(section.getDownStationId())) {
-            Section findSection = sections.getSameDownStationSection(section);
-            validateDistance(section, findSection);
-            sectionDao.updateByDownStationId(section);
-            sectionDao.save(findSection.createExceptDownSection(section));
+            Section existing = sections.getSameDownStationSection(section);
+            updateNewSections(existing, section, existing.createExceptDownSection(section));
         }
     }
 
-    private void validateDistance(Section section, Section existingSection) {
-        if (!existingSection.isLong(section)) {
-            throw new IllegalStateException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
-        }
+    private void updateNewSections(Section existingSection, Section additionalSection, Section newSection) {
+        sectionDao.delete(existingSection.getId());
+        sectionDao.save(additionalSection);
+        sectionDao.save(newSection);
     }
 
     public void delete(Long lineId, Long stationId) {
         List<Section> lineSections = sectionDao.findAllByLineId(lineId);
-        SectionLinks sectionLinks = createStations(lineSections);
+        SectionLinks sectionLinks = createStationLinks(lineSections);
         Sections sections = new Sections(lineSections);
+        if (sectionLinks.isNotExistStation(stationId)) {
+            throw new IllegalArgumentException(NOT_EXIST_STATION);
+        }
+        deleteSection(lineId, stationId, sectionLinks, sections);
+    }
+
+    private void deleteSection(Long lineId, Long stationId, SectionLinks sectionLinks, Sections sections) {
         sections.validateDeletableSize();
         if (sectionLinks.isExistUpStation(stationId) && sectionLinks.isExistDownStation(stationId)) {
             deleteAndSaveSections(lineId, stationId, sections);
@@ -79,20 +87,13 @@ public class SectionService {
         }
         if (sectionLinks.isEndStation(stationId)) {
             sectionDao.delete(lineId, stationId);
-            return;
         }
-        throw new NoSuchElementException("구간이 존재하지 않음");
     }
 
     private void deleteAndSaveSections(Long lineId, Long stationId, Sections sections) {
         Section upSection = sections.getSameUpStationSection(stationId);
         Section downSection = sections.getSameDownStationSection(stationId);
         sectionDao.delete(lineId, stationId);
-        sectionDao.save(new Section(
-            lineId,
-            downSection.getUpStationId(),
-            upSection.getDownStationId(),
-            upSection.getDistance() + downSection.getDistance()
-        ));
+        sectionDao.save(upSection.createCombineSection(downSection));
     }
 }

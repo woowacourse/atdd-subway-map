@@ -55,7 +55,7 @@ public class SectionServiceTest {
 
         assertThatThrownBy(() -> sectionService.save(section))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessage("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+            .hasMessage("추가하려는 구간이 기존 역 사이 길이보다 크거나 같습니다.");
     }
 
     @DisplayName("지하철 구간을 추가한다. - 모두 등록되어 있는 역일 경우")
@@ -65,7 +65,7 @@ public class SectionServiceTest {
 
         assertThatThrownBy(() -> sectionService.save(section))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+            .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
     }
 
     @DisplayName("지하철 구간을 추가한다. - 모두 등록되지 않는 역일 경우")
@@ -75,7 +75,7 @@ public class SectionServiceTest {
 
         assertThatThrownBy(() -> sectionService.save(section))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+            .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
     }
 
     @DisplayName("지하철 구간을 삭제한다. - 종단점 삭제")
