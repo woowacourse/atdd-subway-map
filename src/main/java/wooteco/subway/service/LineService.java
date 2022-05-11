@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
@@ -15,7 +14,6 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.BadRequestLineException;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
@@ -32,40 +30,23 @@ public class LineService {
     }
 
     public LineResponse save(LineRequest lineRequest) {
-        if (lineRequest.getName().isBlank()) {
-            throw new BadRequestLineException("이름은 공백, 빈값이면 안됩니다.");
-        }
-
-        if (lineRequest.getColor().isBlank()) {
-            throw new BadRequestLineException("색깔은 공백, 빈값이면 안됩니다.");
-        }
-
-        if (lineRequest.getUpStationId() == lineRequest.getDownStationId()) {
-            throw new BadRequestLineException("상행선과 하행선은 같은 지하철 역이면 안됩니다.");
-        }
-
-        if (lineRequest.getDistance() < 1) {
-            throw new BadRequestLineException("상행선과 하행선의 거리는 1 이상이어야 합니다.");
-        }
-
-        Station upStation = getStationOrException(lineRequest.getUpStationId());
-        Station downStation = getStationOrException(lineRequest.getDownStationId());
-
         try {
             Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
             sectionDao.save(
                     new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), line.getId(),
                             lineRequest.getDistance()));
-
-            List<StationResponse> stations = List.of(upStation, downStation)
-                    .stream()
-                    .map(StationResponse::new)
-                    .collect(Collectors.toList());
-
-            return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+            return new LineResponse(line.getId(), line.getName(), line.getColor(), toStationsResponse(lineRequest));
         } catch (DuplicateKeyException e) {
             throw new DuplicateKeyException("이미 존재하는 이름 또는 색깔이 있습니다.");
         }
+    }
+
+    private List<StationResponse> toStationsResponse(LineRequest lineRequest) {
+        return List.of(getStationOrException(lineRequest.getUpStationId()),
+                        getStationOrException(lineRequest.getDownStationId()))
+                .stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
     }
 
     public List<LineResponse> findAll() {
@@ -79,7 +60,7 @@ public class LineService {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         return sections.getStationsId().stream()
                 .map(this::getStationOrException)
-                .map(s -> new StationResponse(s.getId(), s.getName()))
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
 

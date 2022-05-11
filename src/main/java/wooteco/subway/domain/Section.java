@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import wooteco.subway.exception.BadRequestLineException;
 
 public class Section {
 
@@ -16,6 +17,17 @@ public class Section {
         this.downStationId = downStationId;
         this.lineId = lineId;
         this.distance = distance;
+        validateField();
+    }
+
+    private void validateField() {
+        if (upStationId.equals(downStationId)) {
+            throw new IllegalArgumentException("구간에서 상행선과 하행선은 같은 역으로 할 수 없습니다.");
+        }
+
+        if (distance < 1) {
+            throw new IllegalArgumentException("상행선과 하행선의 거리는 1 이상이어야 합니다.");
+        }
     }
 
     public Section(Long upStationId, Long downStationId, Long lineId, int distance) {

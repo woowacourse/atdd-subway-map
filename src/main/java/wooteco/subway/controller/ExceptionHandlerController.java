@@ -29,4 +29,10 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessageResponse> badRequestException(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessageResponse(e.getMessage()));
+    }
 }
