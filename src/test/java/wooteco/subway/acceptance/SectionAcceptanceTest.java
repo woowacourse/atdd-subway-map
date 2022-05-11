@@ -137,7 +137,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             final ExtractableResponse<Response> response = deleteMethodRequest(LINE_URL +
                     "/1/sections?stationId=1");
             //then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
         @Test
@@ -153,7 +153,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             final ExtractableResponse<Response> response = deleteMethodRequest(LINE_URL +
                     "/1/sections?stationId=3");
             //then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
         @Test
@@ -169,7 +169,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             final ExtractableResponse<Response> response = deleteMethodRequest(LINE_URL +
                     "/1/sections?stationId=3");
             //then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
         @Test
