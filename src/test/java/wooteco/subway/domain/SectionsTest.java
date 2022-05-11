@@ -184,10 +184,22 @@ class SectionsTest {
     @DisplayName("존재하지 않는 구간에 대해 삭제를 시도할 경우 예외를 발생한다.")
     @Test
     void delete_throwsNotFoundException() {
-        final long stationId = 3L;
+        final Station newStation1 = new Station(1L, "아차산역");
+        final Station newStation2 = new Station(3L, "어린이대공원역");
+        final Section newSection = new Section(newStation1, newStation2, 5, 1L);
+        final Sections newSections = new Sections(List.of(section, newSection));
+        final long stationId = 4L;
 
-        assertThatThrownBy(() -> sections.delete(stationId))
+        assertThatThrownBy(() -> newSections.delete(stationId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간에 존재하지 않는 지하철 역입니다.");
+    }
+
+    @DisplayName("구간이 1개일 때 삭제를 시도할 경우 예외를 발생한다.")
+    @Test
+    void delete_throwsSectionsSizeException() {
+        assertThatThrownBy(() -> sections.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간이 1개 이므로 삭제할 수 없습니다.");
     }
 }
