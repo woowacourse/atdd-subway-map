@@ -1,6 +1,10 @@
 package wooteco.subway.dao;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -33,8 +37,35 @@ public class SectionDao {
         return section;
     };
 
-    public long save(Section section) {
+    public Section save(Section section) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(section);
-        return simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return new Section(id, section.getLineId(), section.getUpStationId(), section.getDownStationId(),
+                section.getDistance());
+    }
+
+    public List<Section> findByLineId(long lineId) {
+        String sql = "select * from SECTION where line_id = (?)";
+        return jdbcTemplate.query(sql, stationRowMapper, lineId);
+    }
+
+    public void update(List<Section> value) {
+        final String sql = "update SECTION set up_station_id = (?), down_station_id = (?), distance = (?) "
+                + "where id = (?)";
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                Section section = value.get(i);
+                ps.setLong(1, section.getUpStationId());
+                ps.setLong(2, section.getDownStationId());
+                ps.setInt(3, section.getDistance());
+                ps.setLong(4, section.getId());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return value.size();
+            }
+        });
     }
 }

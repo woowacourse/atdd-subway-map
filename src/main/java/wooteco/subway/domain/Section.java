@@ -27,6 +27,38 @@ public class Section {
         }
     }
 
+    public boolean matchUpStationWithUpStationOf(Section newSection) {
+        return this.upStationId == newSection.upStationId;
+    }
+
+    public boolean matchUpStationWithDownStationOf(Section newSection) {
+        return this.upStationId == newSection.downStationId;
+    }
+
+    public boolean matchDownStationWithUpStationOf(Section newSection) {
+        return this.downStationId == newSection.upStationId;
+    }
+
+    public boolean matchDownStationWithDownStationOf(Section newSection) {
+        return this.downStationId == newSection.downStationId;
+    }
+
+    public boolean isLessThan(Section newSection) {
+        return distance <= newSection.distance;
+    }
+
+    public void updateDownStationId(Section newSection) {
+        this.downStationId = newSection.upStationId;
+    }
+
+    public void updateUpStationId(Section newSection) {
+        this.upStationId = newSection.downStationId;
+    }
+
+    public void updateDistance(Section newSection) {
+        this.distance = this.distance - newSection.distance;
+    }
+
     public Long getId() {
         return id;
     }
