@@ -19,6 +19,10 @@ public class SectionDto {
         this.distance = distance;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public long getLineId() {
         return lineId;
     }

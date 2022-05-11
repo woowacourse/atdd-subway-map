@@ -74,6 +74,13 @@ public class SectionDao {
         }
     }
 
+    public void updateDistance(long id, int distance) {
+        String sql = "UPDATE section SET distance = :distance WHERE id = :id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("distance", distance)
+                .addValue("id", id);
+        namedParameterJdbcTemplate.update(sql, parameterSource);
+    }
+
     public void deleteAll() {
         String sql = "TRUNCATE TABLE section";
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());

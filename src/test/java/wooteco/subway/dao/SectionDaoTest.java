@@ -61,4 +61,16 @@ public class SectionDaoTest {
 
         assertThat(actualId).isEqualTo(1L);
     }
+
+    @Test
+    @DisplayName("거리를 수정한다.")
+    void updateDistance() {
+        SectionDto sectionDto = sectionDao.save(1L, 2L, 3L, 5);
+
+        int expectedDistance = 8;
+        sectionDao.updateDistance(sectionDto.getId(), expectedDistance);
+
+        int actualDistance = sectionDao.findDistance(1L, 2L, 3L).orElse(0);
+        assertThat(actualDistance).isEqualTo(expectedDistance);
+    }
 }
