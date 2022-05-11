@@ -20,7 +20,7 @@ public class SectionService {
     @Transactional
     public void save(Long lineId, SectionRequest sectionRequest) {
         Section section = sectionRequest.toSection(lineId);
-        Sections sections = new Sections(sectionDao.findAll());
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
         Optional<Section> revisedSection = sections.save(section);
 
@@ -29,10 +29,9 @@ public class SectionService {
     }
 
     public void delete(Long lineId, Long stationId) {
-        Sections sections = new Sections(sectionDao.findAll());
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
         Optional<Section> connectedSection = sections.delete(lineId, stationId);
-                //sections.fixDisconnectedSection(lineId, stationId);
 
         sectionDao.delete(lineId, stationId);
         connectedSection.ifPresent(sectionDao::save);

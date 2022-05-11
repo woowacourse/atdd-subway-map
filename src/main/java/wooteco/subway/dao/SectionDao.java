@@ -34,13 +34,8 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, stationId, stationId);
     }
 
-    public List<Section> findSectionsIn(Line line) {
-        String sql = String.format("select * from SECTION where line_id = %d", line.getId());
-        return jdbcTemplate.query(sql, new SectionMapper());
-    }
-
-    public List<Section> findAll() {
-        String sql = "select * from SECTION";
+    public List<Section> findByLineId(Long lineId) {
+        String sql = String.format("select * from SECTION where line_id = %d", lineId);
         return jdbcTemplate.query(sql, new SectionMapper());
     }
 

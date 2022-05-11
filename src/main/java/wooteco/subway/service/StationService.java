@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
@@ -18,16 +19,11 @@ public class StationService {
     }
 
     public StationResponse save(StationRequest stationRequest) {
-        Station station = stationRequest.toStation();
-        checkDuplication(station);
-        stationDao.save(station);
-        return new StationResponse(station.getId(), station.getName());
-    }
+        Stations stations = new Stations(stationDao.findAll());
+        Station station = stations.save(stationRequest.toStation());
 
-    private void checkDuplication(Station station) {
-        if(stationDao.existByName(station.getName())){
-            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
-        }
+        Station newStation = stationDao.save(station);
+        return new StationResponse(newStation.getId(), newStation.getName());
     }
 
     public List<StationResponse> findAll(){

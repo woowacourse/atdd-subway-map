@@ -12,4 +12,8 @@ public class Station {
     public Station(String name) {
         this(null, name);
     }
+
+    public boolean hasSameName(Station station){
+        return name.equals(station.getName());
+    }
 }

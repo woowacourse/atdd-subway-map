@@ -33,11 +33,6 @@ public class StationDao {
         return new Station(id, station.getName());
     }
 
-    public boolean existByName(String name) {
-        String sql = "select EXISTS (select id from STATION where name = ?) as success";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
-    }
-
     public List<Station> findAll() {
         String sql = "select * from STATION";
         return jdbcTemplate.query(sql, new StationMapper());

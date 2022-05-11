@@ -31,11 +31,6 @@ public class LineDao {
         return new Line(id, line.getName(), line.getColor());
     }
 
-    public boolean existByName(String name) {
-        String sql = "select EXISTS (select id from LINE where name = ?) as success";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
-    }
-
     public List<Line> findAll() {
         String sql = "select * from LINE";
         return jdbcTemplate.query(sql, new LineMapper());

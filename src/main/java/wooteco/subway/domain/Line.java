@@ -13,4 +13,8 @@ public class Line {
     public Line(String name, String color) {
         this(null, name, color);
     }
+
+    public boolean hasSameName(Line line) {
+        return name.equals(line.getName());
+    }
 }

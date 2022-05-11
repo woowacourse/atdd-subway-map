@@ -3,8 +3,10 @@ package wooteco.subway.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -14,11 +16,8 @@ public class Sections {
 
     public Optional<Section> save(Section section) {
         checkSavable(section);
-
         Optional<Section> fixedSection = fixOverLappedSection(section);
-
         sections.add(section);
-
         return fixedSection;
     }
 
@@ -87,7 +86,6 @@ public class Sections {
 
     public Optional<Section> delete(Long lineId, Long stationId) {
         checkDelete(lineId);
-
         Optional<Section> connectedSection = fixDisconnectedSection(lineId, stationId);
 
         List<Section> adjacentSections = sections.stream()
@@ -96,7 +94,6 @@ public class Sections {
                 .collect(Collectors.toList());
 
         adjacentSections.forEach(sections::remove);
-
         return connectedSection;
     }
 
@@ -127,12 +124,20 @@ public class Sections {
             connectedSection = createConnectedSection(lineId, upSection.get(), downSection.get());
             sections.add(connectedSection);
         }
-
         return Optional.ofNullable(connectedSection);
     }
 
     private Section createConnectedSection(Long lineId, Section upSection, Section downSection) {
         return new Section(lineId, upSection.getUpStationId(), downSection.getDownStationId(),
                 upSection.getDistance() + downSection.getDistance());
+    }
+
+    public Set<Long> getStationIds() {
+        Set<Long> stationIds = new HashSet<>();
+        for (Section section : sections) {
+            stationIds.add(section.getUpStationId());
+            stationIds.add(section.getDownStationId());
+        }
+        return stationIds;
     }
 }
