@@ -15,23 +15,21 @@ import wooteco.subway.dto.response.StationResponse;
 public class AcceptanceTestUtil {
     public static ExtractableResponse<Response> requestPostStation(final StationRequest stationRequest,
                                                                    final String URI) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(URI)
             .then().log().all()
             .extract();
-        return response;
     }
 
     public static ExtractableResponse<Response> requestGetStations(final String URI) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .when()
             .get(URI)
             .then().log().all()
             .extract();
-        return response;
     }
 
     public static List<Long> getResultStationIds(final ExtractableResponse<Response> response) {
@@ -59,14 +57,13 @@ public class AcceptanceTestUtil {
     }
 
     public static ExtractableResponse<Response> requestPostLine(final LineRequest lineRequest, final String URI) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(URI)
             .then().log().all()
             .extract();
-        return response;
     }
 
     public static ExtractableResponse<Response> requestGetLines(final String URI) {
@@ -89,13 +86,12 @@ public class AcceptanceTestUtil {
     }
 
     public static ExtractableResponse<Response> requestDeleteLine(final String URI) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .delete(URI)
             .then().log().all()
             .extract();
-        return response;
     }
 
     public static ExtractableResponse<Response> requestPostSection(final SectionRequest sectionRequest,
@@ -110,12 +106,11 @@ public class AcceptanceTestUtil {
     }
 
     public static ExtractableResponse<Response> requestDeleteSection(final String URI) {
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .delete(URI)
             .then().log().all()
             .extract();
-        return response;
     }
 }

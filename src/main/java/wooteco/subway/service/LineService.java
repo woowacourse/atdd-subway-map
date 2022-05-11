@@ -27,8 +27,6 @@ public class LineService {
         final Line targetLine = lineRequest.toEntity();
         checkDuplicateName(targetLine);
         final Line createdLine = lineDao.save(targetLine);
-
-        // 구간1) Line생성시 상-하행으로 만들어지는 default 구간 생성
         final Section targetSection = new Section(createdLine.getId(), lineRequest);
         sectionDao.save(targetSection);
 
