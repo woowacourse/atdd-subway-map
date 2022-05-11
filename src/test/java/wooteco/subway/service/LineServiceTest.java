@@ -11,6 +11,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -19,17 +22,24 @@ import wooteco.subway.dto.LineResponse;
 @Sql("classpath:schema.sql")
 class LineServiceTest {
 
+    private final StationDao stationDao;
     private final LineService lineService;
+    private final SectionDao sectionDao;
 
     @Autowired
-    public LineServiceTest(LineService lineService) {
+    public LineServiceTest(StationDao stationDao, LineService lineService, SectionDao sectionDao) {
+        this.stationDao = stationDao;
         this.lineService = lineService;
+        this.sectionDao = sectionDao;
     }
 
     @DisplayName("노선을 저장한다.")
     @Test
     void save() {
-        LineRequest lineRequest = new LineRequest("2호선", "green");
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "green", upStation.getId(), downStation.getId(), 10);
 
         LineResponse lineResponse = lineService.save(lineRequest);
 
@@ -39,7 +49,10 @@ class LineServiceTest {
     @DisplayName("같은 이름의 노선을 저장하는 경우 예외가 발생한다.")
     @Test
     void saveExistingName() {
-        LineRequest lineRequest = new LineRequest("2호선", "green");
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "green", upStation.getId(), downStation.getId(), 10);
 
         lineService.save(lineRequest);
 
@@ -50,21 +63,30 @@ class LineServiceTest {
     @DisplayName("모든 지하철 노선을 조회한다.")
     @Test
     void findAll() {
-        LineRequest line1 = new LineRequest("2호선", "green");
-        LineRequest line2 = new LineRequest("3호선", "orange");
-        LineRequest line3 = new LineRequest("8호선", "pink");
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
 
-        lineService.save(line1);
-        lineService.save(line2);
-        lineService.save(line3);
+        LineRequest lineRequest = new LineRequest("2호선", "green", upStation.getId(), downStation.getId(), 10);
 
-        assertThat(lineService.findAll().size()).isEqualTo(3);
+        Station upStation2 = stationDao.save(new Station("교대역"));
+        Station downStation2 = stationDao.save(new Station("수서역"));
+
+        LineRequest lineRequest2 = new LineRequest("3호선", "orange", upStation2.getId(), downStation2.getId(), 10);
+
+        lineService.save(lineRequest);
+        lineService.save(lineRequest2);
+
+        assertThat(lineService.findAll().size()).isEqualTo(2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void findById() {
-        LineRequest lineRequest = new LineRequest("2호선", "green");
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "green", upStation.getId(), downStation.getId(), 10);
+
         LineResponse lineResponse = lineService.save(lineRequest);
 
         LineResponse foundLine = lineService.findById(lineResponse.getId());
@@ -82,18 +104,24 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void update() {
-        LineRequest lineRequest = new LineRequest("2호선", "green");
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "green", upStation.getId(), downStation.getId(), 10);
         LineResponse lineResponse = lineService.save(lineRequest);
 
-        LineResponse update = lineService.update(lineResponse.getId(), new LineRequest("3호선", "orange"));
+        lineService.update(lineResponse.getId(), new LineRequest("3호선", "orange"));
 
-        assertThat(update.getName()).isEqualTo("3호선");
+        assertThat(lineService.findById(lineResponse.getId()).getName()).isEqualTo("3호선");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteById() {
-        LineRequest lineRequest = new LineRequest("2호선", "green");
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "green", upStation.getId(), downStation.getId(), 10);
         LineResponse lineResponse = lineService.save(lineRequest);
 
         lineService.deleteById(lineResponse.getId());

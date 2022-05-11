@@ -51,7 +51,7 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, params, getRowMapper());
     }
 
-    public Line update(Long id, Line line) {
+    public void updateById(Long id, Line line) {
         String sql = "UPDATE line SET name=:name, color=:color where id=:id";
 
         Map<String, Object> params = new HashMap<>();
@@ -60,8 +60,6 @@ public class LineDao {
         params.put("color", line.getColor());
 
         jdbcTemplate.update(sql, params);
-
-        return new Line(id, line.getName(), line.getColor());
     }
 
     public void deleteById(Long id) {
