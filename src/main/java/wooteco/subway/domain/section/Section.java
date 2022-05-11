@@ -9,13 +9,13 @@ public class Section {
     private final Long id;
     private final Station upStation;
     private final Station downStation;
-    private final int distance;
+    private final Distance distance;
 
     public Section(Long id, Station upStation, Station downStation, int distance) {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Section(Station upStation, Station downStation, int distance) {
@@ -39,11 +39,11 @@ public class Section {
     }
 
     public boolean isCloserThan(Section section) {
-        return this.distance < section.distance;
+        return distance.isCloserThan(section.distance);
     }
 
     public int calculateDifferenceOfDistance(Section section) {
-        return Math.abs(this.distance - section.distance);
+        return distance.calculateDifferenceBetween(section.distance);
     }
 
     public Long getId() {
@@ -59,6 +59,6 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 }
