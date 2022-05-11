@@ -9,6 +9,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.DuplicateLineException;
 
 @Service
@@ -16,18 +17,28 @@ import wooteco.subway.exception.DuplicateLineException;
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationService stationService,
+                       SectionService sectionService) {
         this.lineDao = lineDao;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
-    public LineResponse save(LineRequest lineRequest) {
+    public LineResponse save(final LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
         validateCreateRequest(newLine);
 
         Long lineId = lineDao.save(newLine);
 
-        return createLineResponse(lineDao.findById(lineId));
+        Line savedLine = lineDao.findById(lineId);
+        sectionService.firstSave(lineId, new SectionRequest(
+            lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
+
+        return new LineResponse(lineId, savedLine.getName(), savedLine.getColor(),
+            stationService.findByStationsId(sectionService.findAllStationByLineId(lineId)));
     }
 
     private void validateCreateRequest(Line line) {
