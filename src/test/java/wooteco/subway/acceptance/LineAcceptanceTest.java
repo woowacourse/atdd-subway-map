@@ -571,4 +571,20 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(longs = {1, 2})
+    @DisplayName("구간이 하나인 노선에서 역을 삭제하려 할 경우 400 응답을 던진다.")
+    void deleteInOneSection(long id) {
+        //given
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        // when
+        ExtractableResponse<Response> actualResponse = getExtractableDeleteResponse(
+            defaultUri + "/" + lineId + "/sections?stationId=" + id);
+
+        //then
+        assertThat(actualResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
