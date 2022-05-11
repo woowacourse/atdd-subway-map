@@ -2,66 +2,54 @@ package wooteco.subway.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Transactional
 class LineServiceTest {
 
-    @MockBean
-    private LineDao lineDao;
-
-    @MockBean
-    private SectionDao sectionDao;
-
-    private final LineService lineService;
-
     @Autowired
-    public LineServiceTest(LineService lineService) {
-        this.lineService = lineService;
-    }
+    private LineDao lineDao;
+    @Autowired
+    private StationDao stationDao;
+    @Autowired
+    private LineService lineService;
 
     @DisplayName("노선을 생성한다.")
     @Test
     void lineCreateTest() {
-        Line line = new Line("2호선", "bg-green-600");
-        final Section section = new Section(new Station(1L, null), new Station(2L, null), 3, 1L);
-
-        given(lineDao.save(line)).willReturn(new Line(1L, "2호선", "bg-green-600"));
-        given(sectionDao.save(section)).willReturn(section);
+        final Line line = new Line("2호선", "bg-green-600");
+        final Station upStation = stationDao.save(new Station("아차산역"));
+        final Station downStation = stationDao.save(new Station("군자역"));
+        final Section section = new Section(upStation, downStation, 3);
 
         final Line savedLine = lineService.create(line, section);
 
         assertAll(
-                () -> assertThat(savedLine.getId()).isEqualTo(1L),
-                () -> assertThat(savedLine.getName()).isEqualTo("2호선"),
-                () -> assertThat(savedLine.getColor()).isEqualTo("bg-green-600")
+                () -> assertThat(savedLine.getId()).isNotNull(),
+                () -> assertThat(savedLine.getName()).isEqualTo(line.getName()),
+                () -> assertThat(savedLine.getColor()).isEqualTo(line.getColor())
         );
     }
 
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void queryAllTest() {
-        given(lineDao.findAll()).willReturn(List.of(new Line(1L, "2호선", "bg-green-600"), new Line("5호선", "bg-purple-600")));
+        lineDao.save(new Line("2호선", "bg-green-600"));
+        lineDao.save(new Line("5호선", "bg-purple-600"));
 
         final List<Line> lines = lineService.queryAll();
 
@@ -71,37 +59,29 @@ class LineServiceTest {
     @DisplayName("특정 노선을 조회한다.")
     @Test
     void queryByIdTest() {
-        given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "2호선", "bg-green-600")));
+        final Line line = lineDao.save(new Line("2호선", "bg-green-600"));
 
-        final Line line = lineService.queryById(1L);
+        final Line foundLine = lineService.queryById(line.getId());
 
-        assertAll(
-                () -> assertThat(line.getId()).isEqualTo(1L),
-                () -> assertThat(line.getName()).isEqualTo("2호선"),
-                () -> assertThat(line.getColor()).isEqualTo("bg-green-600")
-        );
+        assertThat(line).isEqualTo(foundLine);
     }
 
     @DisplayName("특정 노선을 수정한다.")
     @Test
     void modifyTest() {
-        final Line savedLine = new Line(1L, "2호선", "bg-green-600");
-        given(lineDao.findById(1L)).willReturn(Optional.of(savedLine));
+        final Line savedLine = lineDao.save(new Line("2호선", "bg-green-600"));
 
-        final Line line = new Line("5호선", "bg-purple-600");
-        lineService.modify(1L, line);
+        lineService.modify(savedLine.getId(), new Line("5호선", "bg-green-600"));
 
-        // lineDao의 update가 1번 실행됐는지 확인
-        verify(lineDao, times(1)).update(savedLine.getId(), line);
+        final Line foundLine = lineService.queryById(savedLine.getId());
 
+        assertThat(foundLine).isEqualTo(new Line(savedLine.getId(), "5호선", "bg-green-600"));
     }
 
     @DisplayName("존재하지 않는 노선을 수정하려고 하면 예외가 발생한다.")
     @Test
     void modifyWithExceptionTest() {
-        final Line line = new Line("5호선", "bg-purple-600");
-
-        assertThatThrownBy(() -> lineService.modify(1L, line))
+        assertThatThrownBy(() -> lineService.modify(1L, new Line("5호선", "bg-purple-600")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 노선이 존재하지 않습니다.");
     }
@@ -109,12 +89,13 @@ class LineServiceTest {
     @DisplayName("특정 노선을 삭제한다.")
     @Test
     void removeTest() {
-        final Line savedLine = new Line(1L, "2호선", "bg-green-600");
-        given(lineDao.findById(1L)).willReturn(Optional.of(savedLine));
+        final Line savedLine = lineDao.save(new Line(1L, "2호선", "bg-green-600"));
 
-        lineService.remove(1L);
+        lineService.remove(savedLine.getId());
 
-        verify(lineDao, times(1)).deleteById(savedLine.getId());
+        assertThatThrownBy(() -> lineService.queryById(savedLine.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 노선이 존재하지 않습니다.");
     }
 
     @DisplayName("존재하지 않는 노선을 삭제하려고 하면 예외가 발생한다.")
