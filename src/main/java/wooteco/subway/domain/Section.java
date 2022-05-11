@@ -1,7 +1,6 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.exception.ClientException;
 
 public class Section {
 
@@ -31,22 +30,22 @@ public class Section {
         return distance > sectionRequest.getDistance();
     }
 
-    public Section createBySameUpStationId(Long id, SectionRequest request) {
-        return new Section(0L, id, request.getDownStationId(), downStationId, distance - request.getDistance());
-    }
-
-    public Section createBySameDownStationId(Long id, SectionRequest request) {
+    public Section createBySameStationId(Long id, SectionRequest request) {
+        if (isSameUpStationId(request)) {
+            return new Section(0L, id, request.getDownStationId(), downStationId, distance - request.getDistance());
+        }
         return new Section(0L, id, upStationId, request.getUpStationId(), distance - request.getDistance());
     }
 
-    public void updateSameUpStationId(SectionRequest request) {
-        this.downStationId = request.getDownStationId();
-        this.distance = request.getDistance();
-    }
-
-    public void updateSameDownStationId(SectionRequest request) {
-        this.upStationId = request.getUpStationId();
-        this.distance = request.getDistance();
+    public void updateSameStationId(SectionRequest request) {
+        if (isSameUpStationId(request)) {
+            this.downStationId = request.getDownStationId();
+            this.distance = request.getDistance();
+        }
+        if (isSameDownStationId(request)) {
+            this.upStationId = request.getUpStationId();
+            this.distance = request.getDistance();
+        }
     }
 
     public Long getId() {

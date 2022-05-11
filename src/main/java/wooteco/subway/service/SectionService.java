@@ -42,47 +42,45 @@ public class SectionService {
 
     private void addSectionMiddle(Long id, SectionRequest sectionRequest, Sections sections) {
         for (Section section : sections.getSections()) {
-            if (section.isSameUpStationId(sectionRequest)) {
-                sectionJdbcDao.save(id, section.createBySameUpStationId(id, sectionRequest));
-                sectionJdbcDao.delete(id, section);
-
-                section.updateSameUpStationId(sectionRequest);
-                sectionJdbcDao.save(id, section);
-                return;
-            }
-
-            if (section.isSameDownStationId(sectionRequest)) {
-                sectionJdbcDao.save(id, section.createBySameDownStationId(id, sectionRequest));
-                sectionJdbcDao.delete(id, section);
-
-                section.updateSameDownStationId(sectionRequest);
-                sectionJdbcDao.save(id, section);
-                return;
+            if (section.isSameUpStationId(sectionRequest) || section.isSameDownStationId(sectionRequest)) {
+                addSameStationId(id, sectionRequest, section);
             }
         }
+    }
+
+    private void addSameStationId(Long id, SectionRequest sectionRequest, Section section) {
+        sectionJdbcDao.save(id, section.createBySameStationId(id, sectionRequest));
+        sectionJdbcDao.delete(id, section);
+
+        section.updateSameStationId(sectionRequest);
+        sectionJdbcDao.save(id, section);
     }
 
     public void delete(Long id, Long stationId) {
         sectionJdbcDao.find(id).validateDeleteCondition();
-
         Sections sections = sectionJdbcDao.find(id);
+
         Optional<Section> downSection = sections.findDownSection(stationId);
         Optional<Section> upSection = sections.findUpSection(stationId);
         if (upSection.isPresent() && downSection.isPresent()) {
-            sectionJdbcDao.save(id, new Section(0L, id, upSection.get().getUpStationId(), downSection.get().getDownStationId(), upSection.get().getDistance() + downSection.get().getDistance()));
-            deleteSection(id, downSection.get());
-            deleteSection(id, upSection.get());
+            deleteMiddleSection(id, downSection, upSection);
             return;
         }
-        if (upSection.isEmpty()) {
-            deleteSection(id, downSection.get());
-        }
-        if (downSection.isEmpty()) {
-            deleteSection(id, upSection.get());
-        }
+        deleteEndSection(id, downSection, upSection);
     }
 
-    private void deleteSection(Long id, Section section) {
-        sectionJdbcDao.delete(id, section);
+    private void deleteMiddleSection(Long id, Optional<Section> downSection, Optional<Section> upSection) {
+        sectionJdbcDao.save(id, new Section(0L, id, upSection.get().getUpStationId(), downSection.get().getDownStationId(), upSection.get().getDistance() + downSection.get().getDistance()));
+        sectionJdbcDao.delete(id, downSection.get());
+        sectionJdbcDao.delete(id, upSection.get());
+    }
+
+    private void deleteEndSection(Long id, Optional<Section> downSection, Optional<Section> upSection) {
+        if (upSection.isEmpty()) {
+            sectionJdbcDao.delete(id, downSection.get());
+        }
+        if (downSection.isEmpty()) {
+            sectionJdbcDao.delete(id, upSection.get());
+        }
     }
 }
