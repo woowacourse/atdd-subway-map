@@ -31,6 +31,10 @@ public class Section {
         return this.downStationId.equals(downStationId);
     }
 
+    public boolean isPossibleDistance(int distance) {
+        return this.distance > distance;
+    }
+
     public Long getId() {
         return id;
     }

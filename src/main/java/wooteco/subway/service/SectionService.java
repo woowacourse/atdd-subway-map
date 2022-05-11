@@ -28,16 +28,45 @@ public class SectionService {
         if (jdbcSectionDao.isExistByUpStationIdAndDownStationId(upStationId, downStationId)) {
             throw new IllegalArgumentException("이미 존재하기 때문에 구간을 등록할 수 없습니다.");
         }
+        if (!jdbcSectionDao.isExistByLineIdAndUpStationId(lineId, upStationId) && !jdbcSectionDao
+                .isExistByLineIdAndDownStationId(lineId, downStationId)) {
+            throw new IllegalArgumentException("연결된 역이 없기 때문에 구간을 등록할 수 없습니다.");
+        }
 
-        //2. up이 있으면 down이 있어야 하고 down이 있으면 up이 있어야한다.
+        checkAddingBranch(upStationId, downStationId, distance, lineId);
+        return saveSection(sectionRequest, lineId);
+    }
 
-        //3. 갈래길
-        //  상행선이 이미 db에 있는 경우.(db에 있는 상행선 = 들어오는 값의 상행선)
+    private void checkAddingBranch(Long upStationId, Long downStationId, int distance, Long lineId) {
+        Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, upStationId, downStationId);
+        Section section = sections.getSectionForCombine(upStationId, downStationId);
 
-        // 하행선이 이미 db에 있는 경우. (db에 있는 하행선 = 들어오는 값의 하행선)
+        if (section.isSameAsDownStation(downStationId) || section.isSameAsUpStation(upStationId)) {
+            addBranch(section, upStationId, downStationId, distance, lineId);
+        }
+    }
 
-        // -> db에 있는 거리보다 들어오는 값의 거리가 작으면 갈래길 처리해줘야 한다.
-        //
+    private void addBranch(Section section, Long upStationId, Long downStationId, int distance, Long lineId) {
+        validateDistance(section, distance);
+
+        if (section.isSameAsDownStation(downStationId)) {
+            jdbcSectionDao.updateDownStationIdByLineIdAndUpStationId(lineId, section.getUpStationId(), upStationId);
+        }
+        if (section.isSameAsUpStation(upStationId)) {
+            jdbcSectionDao.updateUpStationIdByLineIdAndDownStationId(lineId, section.getDownStationId(), downStationId);
+        }
+    }
+
+    private void validateDistance(Section section, int distance) {
+        if (!section.isPossibleDistance(distance)) {
+            throw new IllegalArgumentException("거리문제로 구간을 등록할 수 없습니다.");
+        }
+    }
+
+    public Long saveSection(SectionRequest sectionRequest, Long lineId) {
+        Long upStationId = sectionRequest.getUpStationId();
+        Long downStationId = sectionRequest.getDownStationId();
+        int distance = sectionRequest.getDistance();
 
         Section newSection = new Section(lineId, upStationId, downStationId, distance);
         return jdbcSectionDao.save(newSection);
