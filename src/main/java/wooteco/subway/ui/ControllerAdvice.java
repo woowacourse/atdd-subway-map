@@ -23,6 +23,7 @@ public class ControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleServerException(final Exception e) {
+        e.printStackTrace();
         return ResponseEntity.internalServerError().body("서버에 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     }
 

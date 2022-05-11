@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 
 public class Sections {
     private static final int MINIMUM_SIZE = 1;
-
     private static final int NEEDS_MERGE_SIZE = 2;
 
     private final List<Section> value;
@@ -53,6 +52,13 @@ public class Sections {
     }
 
     public Optional<Section> findMergedSection(final List<Section> sections) {
+        if (sections.size() == NEEDS_MERGE_SIZE) {
+            return mergeSection(sections);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Section> mergeSection(final List<Section> sections) {
         final Section section1 = sections.get(0);
         final Section section2 = sections.get(1);
 
@@ -62,7 +68,7 @@ public class Sections {
         if (section1.getUpStation().equals(section2.getDownStation())) {
             return findSection(section2.merge(section1));
         }
-        return Optional.empty();
+        throw new IllegalStateException("서버에 오류가 발생했습니다.");
     }
 
     public List<Station> extractStations() {
@@ -102,6 +108,7 @@ public class Sections {
     }
 
     private void mergeSections(final List<Section> sections) {
+        System.out.println(sections);
         final Section section1 = sections.get(0);
         final Section section2 = sections.get(1);
 
