@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,9 +38,9 @@ class SectionServiceTest {
 
         doReturn(1L)
                 .when(jdbcSectionDao)
-                .save(section);
+                .save(any(Section.class));
 
-        Long id = sectionService.createSection(section);
+        Long id = sectionService.createSection(new SectionRequest(1L, 2L, 5), 1L);
 
         assertThat(id).isEqualTo(1L);
     }

@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @Service
@@ -34,7 +34,7 @@ public class LineService {
         Long downStationId = lineRequest.getDownStationId();
         int distance = lineRequest.getDistance();
 
-        sectionService.createSection(new Section(lineId, upStationId, downStationId, distance));
+        sectionService.createSection(new SectionRequest(upStationId, downStationId, distance), lineId);
         List<StationResponse> stationResponses = sectionService.getStationsByLineId(lineId);
 
         return new LineResponse(lineId, name, color, stationResponses);
