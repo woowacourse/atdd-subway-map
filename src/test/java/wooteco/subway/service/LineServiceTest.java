@@ -102,7 +102,7 @@ class LineServiceTest {
         lineService.create(request1);
         lineService.create(request2);
 
-        List<LineResponse> lineResponses = lineService.showAll();
+        List<LineResponse> lineResponses = lineService.findAll();
 
         assertThat(lineResponses).hasSize(2);
     }
@@ -114,7 +114,7 @@ class LineServiceTest {
         LineRequest lineRequest = new LineRequest("2호선", "초록색");
         Long id = lineService.create(lineRequest).getId();
 
-        LineResponse actual = lineService.show(id);
+        LineResponse actual = lineService.find(id);
         LineResponse expected = new LineResponse(id, "2호선", "초록색");
 
         assertEquals(expected, actual);
@@ -123,7 +123,7 @@ class LineServiceTest {
     @DisplayName("지정한 id에 해당하는 노선이 없으면 예외가 발생한다.")
     @Test
     void showNotExist() {
-        assertThatThrownBy(() -> lineService.show(Long.MAX_VALUE))
+        assertThatThrownBy(() -> lineService.find(Long.MAX_VALUE))
                 .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
@@ -138,7 +138,7 @@ class LineServiceTest {
         LineRequest updateRequest = new LineRequest("1호선", "군청색");
         lineService.update(id, updateRequest);
         LineResponse expected = new LineResponse(id, "1호선", "군청색");
-        LineResponse actual = lineService.show(id);
+        LineResponse actual = lineService.find(id);
 
         assertEquals(expected, actual);
     }
@@ -193,7 +193,7 @@ class LineServiceTest {
         Long id = lineService.create(lineRequest).getId();
 
         lineService.delete(id);
-        List<LineResponse> lineResponses = lineService.showAll();
+        List<LineResponse> lineResponses = lineService.findAll();
 
         assertThat(lineResponses).isEmpty();
     }

@@ -34,7 +34,7 @@ public class StationService {
         }
     }
 
-    public List<StationResponse> showAll() {
+    public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
 
         return stations.stream()

@@ -51,7 +51,7 @@ class StationServiceTest {
         stationService.create(request1);
         stationService.create(request2);
 
-        List<StationResponse> stationResponses = stationService.showAll();
+        List<StationResponse> stationResponses = stationService.findAll();
 
         assertThat(stationResponses).hasSize(2);
     }
@@ -63,7 +63,7 @@ class StationServiceTest {
         StationResponse stationResponse = stationService.create(stationRequest);
 
         stationService.delete(stationResponse.getId());
-        List<StationResponse> stationResponses = stationService.showAll();
+        List<StationResponse> stationResponses = stationService.findAll();
 
         assertThat(stationResponses).isEmpty();
     }

@@ -85,18 +85,18 @@ public class LineService {
 
         newSections.addSection(newSection);
         List<Section> removedSections = originSections.getNotContainSections(newSections);
-        removeDeletedSections(line, removedSections);
+        deleteRemovedSections(line, removedSections);
         List<Section> addedSections = newSections.getNotContainSections(originSections);
-        insertAddedSections(line, addedSections);
+        saveAddedLine(line, addedSections);
     }
 
-    private void removeDeletedSections(Line line, List<Section> deleteSections) {
+    private void deleteRemovedSections(Line line, List<Section> deleteSections) {
         for (Section section : deleteSections) {
             sectionDao.deleteByLineAndSection(line, section);
         }
     }
 
-    private void insertAddedSections(Line line, List<Section> insertSections) {
+    private void saveAddedLine(Line line, List<Section> insertSections) {
         for (Section section : insertSections) {
             sectionDao.save(line, section);
         }
@@ -109,7 +109,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> showAll() {
+    public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
                 .map(LineResponse::new)
@@ -117,7 +117,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse show(Long id) {
+    public LineResponse find(Long id) {
         validateExist(id);
         Line line = lineDao.findById(id);
         return new LineResponse(line);
