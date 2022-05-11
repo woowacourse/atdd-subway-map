@@ -33,8 +33,8 @@ public class JdbcSectionDao implements SectionDao {
 
     @Override
     public SectionEntity save(final SectionEntity sectionEntity) {
-        final String sql = "insert into SECTION(line_id, up_station_id, down_station_id, distance)"
-                + " values(:lineId, :upStationId, :downStationId, :distance)";
+        final String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance)"
+                + " values (:lineId, :upStationId, :downStationId, :distance)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final SqlParameterSource source = new BeanPropertySqlParameterSource(sectionEntity);
         jdbcTemplate.update(sql, source, keyHolder);

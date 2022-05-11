@@ -32,7 +32,7 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public StationEntity save(final StationEntity stationEntity) {
-        final String sql = "insert into STATION(name) values(:name)";
+        final String sql = "insert into STATION (name) values (:name)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final SqlParameterSource source = new BeanPropertySqlParameterSource(stationEntity);
         jdbcTemplate.update(sql, source, keyHolder);
