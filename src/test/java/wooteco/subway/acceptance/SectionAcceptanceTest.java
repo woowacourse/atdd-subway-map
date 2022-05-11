@@ -16,10 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.request.SectionRequest;
 
-@DisplayName("지하철 노선 관련 기능")
+@DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("")
+    @DisplayName("특정 구간을 등록한다")
     @Test
     void addSection() {
         requestPostStation(STATION_REQUEST_강남역, "/stations");

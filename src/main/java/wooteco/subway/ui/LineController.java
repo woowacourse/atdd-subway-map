@@ -49,7 +49,11 @@ public class LineController {
     public List<LineResponse> findAllLine() {
         final List<Line> lines = lineService.findAll();
         final List<LineResponse> lineResponses = lines.stream()
-            .map(line -> new LineResponse(line, sectionService.findUniqueSectionStationsByLineId(line.getId())))
+            .map(line -> {
+                final List<Station> stations = sectionService.findSectionStationsByLineId(
+                    line.getId());
+                return new LineResponse(line, stations);
+            })
             .collect(Collectors.toList());
         return lineResponses;
     }
@@ -58,7 +62,7 @@ public class LineController {
     public ResponseEntity<LineResponse> findLineById(@PathVariable Long id) {
         final Line targetLine = lineService.findById(id);
         final LineResponse lineResponse = new LineResponse(targetLine,
-            sectionService.findUniqueSectionStationsByLineId(targetLine.getId()));
+            sectionService.findSectionStationsByLineId(targetLine.getId()));
         return ResponseEntity.ok(lineResponse);
     }
 

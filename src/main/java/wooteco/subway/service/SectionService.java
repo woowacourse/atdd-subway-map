@@ -24,7 +24,7 @@ public class SectionService {
     }
 
     @Transactional
-    public List<Station> findUniqueSectionStationsByLineId(final Long lineId) {
+    public List<Station> findSectionStationsByLineId(final Long lineId) {
         return sectionDao.findSectionStationsByLineId(lineId)
             .stream()
             .flatMap(section -> Stream.of(section.getUpStationId(), section.getDownStationId()))
@@ -37,12 +37,9 @@ public class SectionService {
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
         final List<Section> sectionsBeforeAddSection = sectionDao.findSectionStationsByLineId(lineId);
-
         Section newSection = sectionRequest.toEntity(lineId);
         newSection = sectionDao.save(newSection);
-
         final List<Section> sectionsAfterAddSection = new Sections(sectionsBeforeAddSection).addSection(newSection);
-
         sectionDao.batchUpdate(sectionsAfterAddSection);
     }
 }

@@ -62,7 +62,6 @@ public enum SectionAddStatus {
             .anyMatch(it -> addNewDownStationCase(section, it.getDownStationId()));
     }
 
-
     private static boolean addNewDownStationCase(final Section section, final Long downStationId) {
         return Objects.equals(section.getUpStationId(), downStationId);
     }
