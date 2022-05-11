@@ -28,7 +28,33 @@ class SectionsTest {
                 Arguments.of(SectionFactory.from("ac3"), List.of(SectionFactory.from("ac3"),
                         SectionFactory.from("cb3"))),
                 Arguments.of(SectionFactory.from ("cb3"), List.of(
-                        SectionFactory.from("ac3"),SectionFactory.from("cb3")))
+                        SectionFactory.from("ac3"),SectionFactory.from("cb3"))),
+                Arguments.of(SectionFactory.from("bc3"), List.of(
+                        SectionFactory.from("ab3"), SectionFactory.from("bc3"))),
+                Arguments.of(SectionFactory.from("ca3"), List.of(
+                        SectionFactory.from("ca3"), SectionFactory.from("ab3")))
+        );
+    }
+
+    @DisplayName("지울 역을 찾고 역을 지워야 한다.")
+    @ParameterizedTest(name = "{index} {displayName} section={0} expectedResult={1}")
+    @MethodSource("provideDeleteSectionSource")
+    void delete_Section(final Section section, final Station targetStation, final List<Section> expectedResult) {
+        final Sections sections = new Sections(new ArrayList<>());
+        sections.addIfPossible(SectionFactory.from("ab3"));
+        sections.addIfPossible(section);
+        sections.deleteIfPossible(targetStation);
+        assertThat(sections).extracting("value").isEqualTo(expectedResult);
+    }
+
+    private static Stream<Arguments> provideDeleteSectionSource() {
+        return Stream.of(
+                Arguments.of(SectionFactory.from("ac3"), StationFactory.from("c"),
+                        List.of(SectionFactory.from("ab3"))),
+                Arguments.of(SectionFactory.from ("ca3"), StationFactory.from("c"),
+                        List.of(SectionFactory.from("ab3"))),
+                Arguments.of(SectionFactory.from("bc3"), StationFactory.from("c"),
+                        List.of(SectionFactory.from("ab3")))
         );
     }
 }

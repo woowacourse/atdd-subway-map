@@ -65,6 +65,31 @@ public class Section {
         return new Section(newStation, this.downStation, distance - newSection.distance);
     }
 
+    public Section combineTwoSection(final Section section) {
+        return new Section(upStation, section.downStation, distance + section.distance);
+    }
+
+    public MatchingResult matchStation(final Station target) {
+        if (this.downStation.isSameName(target)) {
+            return MatchingResult.POSSIBLE_TO_DELETE;
+        }
+        return MatchingResult.NO_MATCHED;
+    }
+
+    public MatchingResult matchWithLastUpStation(final Station target) {
+        if (this.upStation.isSameName(target)) {
+            return MatchingResult.POSSIBLE_TO_DELETE;
+        }
+        return MatchingResult.NO_MATCHED;
+    }
+
+    public MatchingResult matchWithLastDownStation(final Station taret) {
+        if (this.downStation.isSameName(taret)) {
+            return MatchingResult.POSSIBLE_TO_DELETE;
+        }
+        return MatchingResult.NO_MATCHED;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

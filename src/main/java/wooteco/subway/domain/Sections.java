@@ -69,4 +69,59 @@ public class Sections {
         final Section downSection = section.changeUpStationAndDistance(newSection, newStation);
         return List.of(upSection, downSection);
     }
+
+    public void deleteIfPossible(final Station target) {
+        if (!canDelete()) {
+            return;
+        }
+        if (sameWithLastUpStation(target) == MatchingResult.POSSIBLE_TO_DELETE) {
+            value = value.subList(1, value.size());
+            return;
+        }
+        if (sameWithLastDownStation(target) == MatchingResult.POSSIBLE_TO_DELETE) {
+            value = value.subList(0, value.size() - 1);
+            return;
+        }
+        final List<Section> existedStations = new ArrayList<>(value);
+        for (Section section : existedStations) {
+            final MatchingResult result = section.matchStation(target);
+            if (canDeleteStation(result)) {
+                deleteStation(section, target);
+                break;
+            }
+        }
+    }
+
+    private MatchingResult sameWithLastDownStation(final Station target) {
+        return value.get(value.size() - 1).matchWithLastDownStation(target);
+    }
+
+    private MatchingResult sameWithLastUpStation(final Station target) {
+        return value.get(0).matchWithLastUpStation(target);
+    }
+
+    private void deleteStation(final Section section, final Station target) {
+        final int targetIndex = value.indexOf(section);
+        final int targetNextIndex = targetIndex + 1;
+        final Section targetNext = value.get(targetNextIndex);
+        final Section newSection = section.combineTwoSection(targetNext);
+        if (value.size() == 2) {
+            value = new ArrayList<>(List.of(newSection));
+            return;
+        }
+        final List<Section> leftSections = value.subList(0, targetIndex);
+        final List<Section> rightSections = value.subList(targetIndex + 2, value.size());
+        leftSections.add(newSection);
+        leftSections.addAll(rightSections);
+        value = new ArrayList<>(leftSections);
+    }
+
+    private boolean canDeleteStation(final MatchingResult result) {
+        return result == MatchingResult.POSSIBLE_TO_DELETE;
+    }
+
+    private boolean canDelete() {
+        return value.size() >= 2;
+    }
+
 }

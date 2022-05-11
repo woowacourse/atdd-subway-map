@@ -5,4 +5,5 @@ public enum MatchingResult {
     ADD_TO_LEFT,
     SAME_SECTION,
     NO_MATCHED,
+    POSSIBLE_TO_DELETE
 }

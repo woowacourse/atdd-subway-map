@@ -15,6 +15,7 @@ public class SectionFactory {
         cache.put("cd3", new Section(StationFactory.from ("c"), StationFactory.from("d"), 3));
         cache.put("ca3", new Section(StationFactory.from("c"), StationFactory.from("a"), 3));
         cache.put("ba3", new Section(StationFactory.from("b"), StationFactory.from("a"), 3));
+        cache.put("bc3", new Section(StationFactory.from("b"), StationFactory.from("c"), 3));
     }
 
     public static Section from(final String key) {
