@@ -1,6 +1,6 @@
 package wooteco.subway.dto.response;
 
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.section.Section;
 
 public class SectionResponse {
     private Section section;

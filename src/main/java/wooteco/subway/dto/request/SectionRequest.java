@@ -1,7 +1,7 @@
 package wooteco.subway.dto.request;
 
 import java.util.Objects;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.section.Section;
 
 public class SectionRequest {
 

@@ -2,7 +2,7 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import java.util.Optional;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.section.Section;
 
 public interface SectionDao {
 

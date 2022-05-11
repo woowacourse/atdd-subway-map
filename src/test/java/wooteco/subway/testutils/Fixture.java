@@ -1,8 +1,8 @@
 package wooteco.subway.testutils;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.section.Section;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.request.StationRequest;
 

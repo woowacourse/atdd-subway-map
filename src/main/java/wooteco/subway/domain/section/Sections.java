@@ -1,10 +1,10 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.section;
 
-import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_DOWN_STATION;
-import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_UP_STATION;
-import static wooteco.subway.domain.SectionDeleteStatus.DELETE_DOWN_STATION;
-import static wooteco.subway.domain.SectionDeleteStatus.DELETE_MIDDLE;
-import static wooteco.subway.domain.SectionDeleteStatus.DELETE_UP_STATION;
+import static wooteco.subway.domain.section.SectionAddStatus.ADD_MIDDLE_FROM_DOWN_STATION;
+import static wooteco.subway.domain.section.SectionAddStatus.ADD_MIDDLE_FROM_UP_STATION;
+import static wooteco.subway.domain.section.SectionDeleteStatus.DELETE_DOWN_STATION;
+import static wooteco.subway.domain.section.SectionDeleteStatus.DELETE_MIDDLE;
+import static wooteco.subway.domain.section.SectionDeleteStatus.DELETE_UP_STATION;
 
 import java.util.ArrayList;
 import java.util.Comparator;

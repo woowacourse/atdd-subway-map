@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.section.Section;
 
 @JdbcTest
 class JdbcSectionDaoTest {
@@ -78,6 +78,7 @@ class JdbcSectionDaoTest {
         sectionDao.deleteById(createdB.getId());
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @DisplayName("수정된 구간정보를 일괄 업데이트 한다.")
     @Test
     void batchUpdate() {
