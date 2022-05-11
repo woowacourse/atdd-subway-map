@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface StationRepository {
 
-    Long saveStation(Station station);
+    Station saveStation(Station station);
 
     List<Station> findStations();
 

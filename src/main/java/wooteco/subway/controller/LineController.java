@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.repository.exception.DuplicateLineColorException;
-import wooteco.subway.repository.exception.DuplicateLineNameException;
+import wooteco.subway.repository.exception.line.DuplicateLineColorException;
+import wooteco.subway.repository.exception.line.DuplicateLineNameException;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.dto.line.LineRequest;
 import wooteco.subway.service.dto.line.LineResponse;
+import wooteco.subway.service.dto.line.LineUpdateRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -33,7 +34,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.create(lineRequest.getName(), lineRequest.getColor());
+        LineResponse lineResponse = lineService.create(lineRequest);
         URI redirectUri = URI.create("/lines/" + lineResponse.getId());
         return ResponseEntity.created(redirectUri).body(lineResponse);
     }
@@ -50,9 +51,9 @@ public class LineController {
         return ResponseEntity.ok(lineResponse);
     }
 
-    @PutMapping("/{lineId}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
-        lineService.update(lineId, lineRequest);
+    @PutMapping(value = "/{lineId}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody LineUpdateRequest lineUpdateRequest) {
+        lineService.update(lineId, lineUpdateRequest);
         return ResponseEntity.ok().build();
     }
 

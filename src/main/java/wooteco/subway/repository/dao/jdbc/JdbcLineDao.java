@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import wooteco.subway.repository.dao.LineDao;
-import wooteco.subway.repository.dao.entity.LineEntity;
+import wooteco.subway.repository.dao.entity.line.LineEntity;
 
 @Component
 public class JdbcLineDao implements LineDao {
@@ -58,6 +58,14 @@ public class JdbcLineDao implements LineDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Boolean existsById(Long id) {
+        String query = "SELECT EXISTS(SELECT id FROM Line WHERE id=(:id)) as existable";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(query, parameters,
+                (resultSet, rowNum) -> resultSet.getBoolean("existable"));
     }
 
     @Override

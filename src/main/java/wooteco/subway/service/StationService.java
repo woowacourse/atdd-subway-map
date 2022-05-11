@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +21,12 @@ public class StationService {
 
     @Transactional
     public StationResponse create(String name) {
-        Long stationId = stationRepository.saveStation(new Station(name));
-        Station station = stationRepository.findStationById(stationId);
+        Station station = stationRepository.saveStation(new Station(name));
         return DtoAssembler.stationResponse(station);
     }
 
     public List<StationResponse> findAll() {
-        return stationRepository.findStations()
-                .stream()
-                .map(DtoAssembler::stationResponse)
-                .collect(Collectors.toUnmodifiableList());
+        return DtoAssembler.stationResponses(stationRepository.findStations());
     }
 
     @Transactional

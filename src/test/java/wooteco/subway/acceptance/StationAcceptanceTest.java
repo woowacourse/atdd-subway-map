@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,21 +14,18 @@ import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.service.dto.station.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
 
-    private static final String PREFIX_URL = "/stations";
-
-    private final AcceptanceHandler acceptanceHandler = new AcceptanceHandler(PREFIX_URL);
+    private final StationRequestHandler requestHandler = new StationRequestHandler();
 
     @DisplayName("지하철 역을 생성한다.")
     @Test
     void createStation() {
         // given
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.save(Map.of("name", "강남역"));
+        ExtractableResponse<Response> response = requestHandler.createStation(Map.of("name", "강남역"));
 
         // then
         assertAll(() -> {
@@ -43,10 +39,10 @@ class StationAcceptanceTest extends AcceptanceTest {
     @ValueSource(strings = {"강남역", "선릉역"})
     void createStationWithDuplicateName(String name) {
         // given
-        acceptanceHandler.save(Map.of("name", name));
+        requestHandler.createStation(Map.of("name", name));
 
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.save(Map.of("name", name));
+        ExtractableResponse<Response> response = requestHandler.createStation(Map.of("name", name));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -56,16 +52,16 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        Long createdId1 = extractId(acceptanceHandler.save(Map.of("name", "강남역")));
-        Long createdId2 = extractId(acceptanceHandler.save(Map.of("name", "선릉역")));
+        Long createdId1 = requestHandler.extractId(requestHandler.createStation(Map.of("name", "강남역")));
+        Long createdId2 = requestHandler.extractId(requestHandler.createStation(Map.of("name", "선릉역")));
 
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.findAll();
+        ExtractableResponse<Response> response = requestHandler.findStations();
 
         // then
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(extractIds(response)).containsAll(List.of(createdId1, createdId2));
+            assertThat(requestHandler.extractIds(response)).containsAll(List.of(createdId1, createdId2));
         });
     }
 
@@ -73,26 +69,12 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long createdId = extractId(acceptanceHandler.save(Map.of("name", "강남역")));
+        Long createdId = requestHandler.extractId(requestHandler.createStation(Map.of("name", "강남역")));
 
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.remove(createdId);
+        ExtractableResponse<Response> response = requestHandler.removeStation(createdId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private Long extractId(ExtractableResponse<Response> response) {
-        return response.jsonPath()
-                .getObject(".", StationResponse.class)
-                .getId();
-    }
-
-    private List<Long> extractIds(ExtractableResponse<Response> response) {
-        return response.jsonPath()
-                .getList(".", StationResponse.class)
-                .stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toUnmodifiableList());
     }
 }

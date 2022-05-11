@@ -15,10 +15,12 @@ import javax.sql.DataSource;
 import wooteco.subway.domain.station.StationRepository;
 import wooteco.subway.repository.SubwayRepository;
 import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.dao.jdbc.JdbcLineDao;
+import wooteco.subway.repository.dao.jdbc.JdbcSectionDao;
 import wooteco.subway.repository.dao.jdbc.JdbcStationDao;
-import wooteco.subway.repository.exception.DuplicateStationNameException;
+import wooteco.subway.repository.exception.station.DuplicateStationNameException;
 import wooteco.subway.service.dto.station.StationResponse;
 
 @JdbcTest
@@ -31,8 +33,9 @@ class StationServiceTest {
     @BeforeEach
     void setUp() {
         LineDao lineDao = new JdbcLineDao(dataSource);
+        SectionDao sectionDao = new JdbcSectionDao(dataSource);
         StationDao stationDao = new JdbcStationDao(dataSource);
-        StationRepository stationRepository = new SubwayRepository(lineDao, stationDao);
+        StationRepository stationRepository = new SubwayRepository(lineDao, sectionDao, stationDao);
         this.stationService = new StationService(stationRepository);
     }
 

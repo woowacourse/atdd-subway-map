@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import wooteco.subway.repository.dao.SectionDao;
-import wooteco.subway.repository.dao.entity.SectionEntity;
+import wooteco.subway.repository.dao.entity.section.SectionEntity;
 
 @Component
 public class JdbcSectionDao implements SectionDao {
@@ -49,6 +49,24 @@ public class JdbcSectionDao implements SectionDao {
                 + " where line_id=(:lineId)";
         SqlParameterSource parameters = new MapSqlParameterSource("lineId", lineId);
         return jdbcTemplate.query(query, parameters, ROW_MAPPER);
+    }
+
+    @Override
+    public Boolean existsById(Long id) {
+        String query = "SELECT EXISTS(SELECT id FROM Section WHERE id=(:id)) as existable";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(query, parameters,
+                (resultSet, rowNum) -> resultSet.getBoolean("existable"));
+    }
+
+    @Override
+    public Boolean existsByStationId(Long stationId) {
+        String query = "SELECT EXISTS(SELECT id FROM Section"
+                + " WHERE up_station_id=(:upStationId) or down_station_id=(:downStationId)) as existable";
+        SqlParameterSource parameters = new MapSqlParameterSource("upStationId", stationId)
+                .addValue("downStationId", stationId);
+        return jdbcTemplate.queryForObject(query, parameters,
+                (resultSet, rowNum) -> resultSet.getBoolean("existable"));
     }
 
     @Override

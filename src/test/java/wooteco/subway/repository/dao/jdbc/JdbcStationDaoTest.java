@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.dao.entity.EntityAssembler;
-import wooteco.subway.repository.dao.entity.StationEntity;
+import wooteco.subway.repository.dao.entity.station.StationEntity;
 
 @JdbcTest
 class JdbcStationDaoTest {

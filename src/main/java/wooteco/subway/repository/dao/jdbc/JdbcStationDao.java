@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import wooteco.subway.repository.dao.StationDao;
-import wooteco.subway.repository.dao.entity.StationEntity;
+import wooteco.subway.repository.dao.entity.station.StationEntity;
 
 @Component
 public class JdbcStationDao implements StationDao {
@@ -57,6 +57,14 @@ public class JdbcStationDao implements StationDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Boolean existsById(Long id) {
+        String query = "SELECT EXISTS(SELECT id FROM Station WHERE id=(:id)) as existable";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(query, parameters,
+                (resultSet, rowNum) -> resultSet.getBoolean("existable"));
     }
 
     @Override

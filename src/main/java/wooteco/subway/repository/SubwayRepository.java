@@ -1,41 +1,57 @@
 package wooteco.subway.repository;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineRepository;
+import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.StationRepository;
 import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.dao.entity.EntityAssembler;
-import wooteco.subway.repository.exception.DuplicateLineColorException;
-import wooteco.subway.repository.exception.DuplicateLineNameException;
-import wooteco.subway.repository.exception.DuplicateStationNameException;
+import wooteco.subway.repository.dao.entity.line.LineEntity;
+import wooteco.subway.repository.dao.entity.section.SectionEntity;
+import wooteco.subway.repository.dao.entity.station.StationEntity;
+import wooteco.subway.repository.exception.line.DuplicateLineColorException;
+import wooteco.subway.repository.exception.line.DuplicateLineNameException;
+import wooteco.subway.repository.exception.line.NoSuchLineException;
+import wooteco.subway.repository.exception.section.NoSuchSectionException;
+import wooteco.subway.repository.exception.station.DuplicateStationNameException;
+import wooteco.subway.repository.exception.station.NoSuchStationException;
 
 @Repository
 public class SubwayRepository implements LineRepository, StationRepository {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public SubwayRepository(LineDao lineDao, StationDao stationDao) {
+    public SubwayRepository(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
 
     @Override
-    public Long saveLine(Line line) {
-        validateLineNotDuplicated(line);
-        return lineDao.save(EntityAssembler.lineEntity(line));
+    public Line saveLine(Line line) {
+        Long lineId = saveLine(EntityAssembler.lineEntity(line));
+        saveSections(lineId, line);
+        return findLineById(lineId);
     }
 
-    private void validateLineNotDuplicated(Line line) {
-        validateLineNameNotDuplicated(line.getName());
-        validateLineColorNotDuplicated(line.getColor());
+    private Long saveLine(LineEntity lineEntity) {
+        validateLineBeforeSave(lineEntity);
+        return lineDao.save(lineEntity);
+    }
+
+    private void validateLineBeforeSave(LineEntity lineEntity) {
+        validateLineNameNotDuplicated(lineEntity.getName());
+        validateLineColorNotDuplicated(lineEntity.getColor());
     }
 
     private void validateLineNameNotDuplicated(String name) {
@@ -50,14 +66,92 @@ public class SubwayRepository implements LineRepository, StationRepository {
         }
     }
 
-    @Override
-    public Long saveStation(Station station) {
-        validateStationNotDuplicated(station);
-        return stationDao.save(EntityAssembler.stationEntity(station));
+    private void saveSections(Long lineId, Line line) {
+        validateSectionsBeforeSave(lineId, line.getSections());
+        List<SectionEntity> sectionEntities = EntityAssembler.sectionEntities(lineId, line);
+        sectionEntities.forEach(sectionDao::save);
     }
 
-    private void validateStationNotDuplicated(Station station) {
-        validateStationNameNotDuplicated(station.getName());
+    private void validateSectionsBeforeSave(Long lineId, List<Section> sections) {
+        validateLineExist(lineId);
+        validateStationsExist(sections);
+    }
+
+    private void validateStationsExist(List<Section> sections) {
+        sections.forEach(section -> {
+            validateStationExist(section.getUpStation().getId());
+            validateStationExist(section.getDownStation().getId());
+        });
+    }
+
+    @Override
+    public List<Line> findLines() {
+        return lineDao.findAll()
+                .stream()
+                .map(lineEntity -> EntityAssembler.line(lineEntity, findSectionsByLineId(lineEntity.getId())))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    @Override
+    public Line findLineById(Long lineId) {
+        return lineDao.findById(lineId)
+                .map(lineEntity -> EntityAssembler.line(lineEntity, findSectionsByLineId(lineEntity.getId())))
+                .orElseThrow(() -> new NoSuchLineException(lineId));
+    }
+
+    private List<Section> findSectionsByLineId(Long lineId) {
+        return sectionDao.findAllByLineId(lineId)
+                .stream()
+                .map(sectionEntity -> EntityAssembler.section(
+                        findStationById(sectionEntity.getUpStationId()),
+                        findStationById(sectionEntity.getDownStationId()),
+                        sectionEntity))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    @Override
+    public Station findStationById(Long stationId) {
+        return stationDao.findById(stationId)
+                .map(EntityAssembler::station)
+                .orElseThrow(() -> new NoSuchStationException(stationId));
+    }
+
+    @Override
+    public Line updateLine(Line line) {
+        validateLineExist(line.getId());
+        lineDao.update(EntityAssembler.lineEntity(line));
+        return findLineById(line.getId());
+    }
+
+    @Override
+    public void removeLine(Long lineId) {
+        Line line = findLineById(lineId);
+        removeSections(line.getSectionIds());
+        lineDao.remove(lineId);
+    }
+
+    private void removeSections(List<Long> sectionIds) {
+        sectionIds.forEach(this::removeSection);
+    }
+
+    private void removeSection(Long sectionId) {
+        validateSectionExist(sectionId);
+        sectionDao.remove(sectionId);
+    }
+
+    @Override
+    public Station saveStation(Station station) {
+        Long stationId = saveStation(EntityAssembler.stationEntity(station));
+        return findStationById(stationId);
+    }
+
+    private Long saveStation(StationEntity stationEntity) {
+        validateStationBeforeSave(stationEntity);
+        return stationDao.save(stationEntity);
+    }
+
+    private void validateStationBeforeSave(StationEntity stationEntity) {
+        validateStationNameNotDuplicated(stationEntity.getName());
     }
 
     private void validateStationNameNotDuplicated(String name) {
@@ -67,51 +161,42 @@ public class SubwayRepository implements LineRepository, StationRepository {
     }
 
     @Override
-    public List<Line> findLines() {
-        return EntityAssembler.lines(lineDao.findAll());
-    }
-
-    @Override
-    public Line findLineById(Long lineId) {
-        return lineDao.findById(lineId)
-                .map(EntityAssembler::line)
-                .orElseThrow(() -> new NoSuchElementException("조회하고자 하는 지하철노선이 존재하지 않습니다."));
-    }
-
-    @Override
     public List<Station> findStations() {
-        return EntityAssembler.stations(stationDao.findAll());
-    }
-
-    @Override
-    public Station findStationById(Long stationId) {
-        return stationDao.findById(stationId)
+        return stationDao.findAll()
+                .stream()
                 .map(EntityAssembler::station)
-                .orElseThrow(() -> new NoSuchElementException("조회하고자 하는 지하철역이 존재하지 않습니다."));
-    }
-
-    @Override
-    public void updateLine(Line line) {
-        if (lineDao.findById(line.getId()).isEmpty()) {
-            throw new NoSuchElementException("수정하고자 하는 지하철노선이 존재하지 않습니다.");
-        }
-        validateLineNotDuplicated(line);
-        lineDao.update(EntityAssembler.lineEntity(line));
-    }
-
-    @Override
-    public void removeLine(Long lineId) {
-        if (lineDao.findById(lineId).isEmpty()) {
-            throw new NoSuchElementException("삭제하고자 하는 지하철노선이 존재하지 않습니다.");
-        }
-        lineDao.remove(lineId);
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Override
     public void removeStation(Long stationId) {
-        if (stationDao.findById(stationId).isEmpty()) {
-            throw new NoSuchElementException("삭제하고자 하는 지하철역이 존재하지 않습니다.");
+        Station station = findStationById(stationId);
+        validateSectionsNotExistByStationId(station);
+        stationDao.remove(station.getId());
+    }
+
+    private void validateSectionsNotExistByStationId(Station station) {
+        if (sectionDao.existsByStationId(station.getId())) {
+            throw new IllegalStateException(
+                    String.format("지하철역을 구간으로 지니고 있는 지하철노선이 존재합니다. [지하철역 : %s]", station.getName()));
         }
-        stationDao.remove(stationId);
+    }
+
+    private void validateLineExist(Long lineId) {
+        if (!lineDao.existsById(lineId)) {
+            throw new NoSuchLineException(lineId);
+        }
+    }
+
+    private void validateSectionExist(Long sectionId) {
+        if (!sectionDao.existsById(sectionId)) {
+            throw new NoSuchSectionException(sectionId);
+        }
+    }
+
+    private void validateStationExist(Long stationId) {
+        if (!stationDao.existsById(stationId)) {
+            throw new NoSuchStationException(stationId);
+        }
     }
 }

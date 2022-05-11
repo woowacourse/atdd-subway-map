@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
 import javax.sql.DataSource;
 import wooteco.subway.repository.dao.SectionDao;
-import wooteco.subway.repository.dao.entity.SectionEntity;
+import wooteco.subway.repository.dao.entity.section.SectionEntity;
 
 @JdbcTest
 class JdbcSectionDaoTest {

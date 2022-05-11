@@ -13,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.station.Station;
 
 class SectionsTest {
@@ -26,7 +27,7 @@ class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        this.sections = Sections.orderSections(STATION1, List.of(
+        this.sections = new Sections(List.of(
                 new Section(1L, STATION2, STATION3, 5),
                 new Section(2L, STATION1, STATION2, 5)
         ));

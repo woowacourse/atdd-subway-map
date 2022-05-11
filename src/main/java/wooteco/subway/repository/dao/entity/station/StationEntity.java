@@ -1,4 +1,4 @@
-package wooteco.subway.repository.dao.entity;
+package wooteco.subway.repository.dao.entity.station;
 
 public class StationEntity {
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import wooteco.subway.domain.station.Station;
 
@@ -11,18 +12,41 @@ public class Sections {
 
     private final List<Section> sections;
 
-    private Sections(List<Section> sections) {
-        this.sections = sections;
+    public Sections(List<Section> sections) {
+        validateSectionsNotEmpty(sections);
+        this.sections = orderSections(sections);
     }
 
-    public static Sections orderSections(Station upStation, List<Section> sections) {
+    private void validateSectionsNotEmpty(List<Section> sections) {
+        if (sections.size() == 0) {
+            throw new IllegalArgumentException("지하철구간이 필요합니다.");
+        }
+    }
+
+    private List<Section> orderSections(List<Section> sections) {
+        Station upStation = figureOutUpStation(sections);
         List<Section> orderedSections = new LinkedList<>();
         while (orderedSections.size() < sections.size()) {
             Section section = findSectionByUpStation(upStation, sections);
             orderedSections.add(section);
             upStation = section.getDownStation();
         }
-        return new Sections(orderedSections);
+        return orderedSections;
+    }
+
+    private static Station figureOutUpStation(List<Section> sections) {
+        Section upSection = sections.get(0);
+        while (true) {
+            Section tmpSection = upSection;
+            if (sections.stream().noneMatch(section -> tmpSection.equalsUpStation(section.getDownStation()))) {
+                break;
+            }
+            upSection = sections.stream()
+                    .filter(section -> tmpSection.equalsUpStation(section.getDownStation()))
+                    .findAny()
+                    .orElse(tmpSection);
+        }
+        return upSection.getUpStation();
     }
 
     private static Section findSectionByUpStation(Station station, List<Section> sections) {
@@ -90,11 +114,21 @@ public class Sections {
         throw new IllegalArgumentException("상행역과 하행역이 존재하지 않는 구간입니다.");
     }
 
+    public List<Section> getSections() {
+        return List.copyOf(sections);
+    }
+
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>(List.of(sections.get(0).getUpStation()));
         for (Section section : sections) {
             stations.add(section.getDownStation());
         }
         return stations;
+    }
+
+    public List<Long> getSectionIds() {
+        return sections.stream()
+                .map(Section::getId)
+                .collect(Collectors.toUnmodifiableList());
     }
 }
