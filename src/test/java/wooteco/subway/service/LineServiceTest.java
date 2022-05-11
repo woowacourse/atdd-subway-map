@@ -24,7 +24,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("Line 을 저장한다.")
+    @DisplayName("노선을 저장한다.")
     void create() {
         //given
         LineEntity line = new LineEntity("7호선", "khaki");
@@ -41,7 +41,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("중복된 Line 을 저장할 수 없다.")
+    @DisplayName("중복된 노선을 저장할 수 없다.")
     void createDuplicateName() {
         //given
         LineEntity line = new LineEntity("7호선", "khaki");
@@ -73,7 +73,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("id로 Line 을 조회한다.")
+    @DisplayName("id로 노선을 조회한다.")
     void findById() {
         //given
         LineEntity line = new LineEntity("7호선", "khaki");
@@ -100,7 +100,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("Line 을 수정한다.")
+    @DisplayName("노선을 수정한다.")
     void update() {
         //given
         LineEntity line = new LineEntity("4호선", "sky-blue");
@@ -132,7 +132,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("Line 을 삭제한다.")
+    @DisplayName("노선을 삭제한다.")
     void delete() {
         //given
         LineEntity line = new LineEntity("4호선", "sky-blue");

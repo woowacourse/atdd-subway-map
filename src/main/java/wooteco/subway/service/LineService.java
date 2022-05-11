@@ -9,6 +9,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.LineEntity;
 import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.service.dto.SectionDto;
 
 @Service
 public class LineService {
@@ -33,7 +34,7 @@ public class LineService {
 
     public LineEntity createLine(LineEntity lineEntity, Long upStationId, Long downStationId, int distance) {
         LineEntity line = createLine(lineEntity);
-        sectionService.createSection(line.getId(), upStationId, downStationId, distance);
+        sectionService.createSection(new SectionDto(line.getId(), upStationId, downStationId, distance));
         return line;
     }
 

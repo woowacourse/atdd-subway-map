@@ -14,7 +14,8 @@ public class FakeSectionDao implements SectionDao {
 
     @Override
     public Long save(Long lineId, Long upStationId, Long downStationId, int distance) {
-        return ++seq;
+        sections.add(new SectionEntity(++seq, lineId, upStationId, downStationId, distance));
+        return seq;
     }
 
     @Override
