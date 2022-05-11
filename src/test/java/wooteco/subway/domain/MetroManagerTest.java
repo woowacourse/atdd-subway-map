@@ -197,7 +197,7 @@ public class MetroManagerTest {
     @Test
     void delete_cycle() {
         MetroManager metroManager = new MetroManager(List.of(new Section(1L, 2L, 10L), new Section(2L, 3L, 10L), new Section(3L, 1L, 10L)));
-        metroManager.delete_cycle(1L);
+        metroManager.delete_cycle(1L, 1L);
         Adjacency result1 = metroManager.getAdjacency(2L);
         Adjacency result2 = metroManager.getAdjacency(3L);
         assertAll(() -> assertThat(result1).isEqualTo(new Adjacency(new StationInfo(-1L, 0L), new StationInfo(3L, 10L))),
@@ -211,7 +211,7 @@ public class MetroManagerTest {
     @Test
     void delete() {
         MetroManager metroManager = new MetroManager(List.of(new Section(1L, 2L, 10L), new Section(2L, 3L, 10L)));
-        metroManager.delete(2L);
+        metroManager.delete(1L, 2L);
         Adjacency result1 = metroManager.getAdjacency(1L);
         Adjacency result2 = metroManager.getAdjacency(3L);
         assertAll(() -> assertThat(result1).isEqualTo(new Adjacency(new StationInfo(-1L, 0L), new StationInfo(3L, 10L))),

@@ -11,6 +11,14 @@ public class Adjacency {
         this.right = right;
     }
 
+    public boolean isRightDivisible(Long distance) {
+        return this.right.canDivisible(distance);
+    }
+
+    public boolean isLeftDivisible(Long distance) {
+        return this.left.canDivisible(distance);
+    }
+
     public boolean isRightBlank() {
         return this.right.isBlankLink();
     }

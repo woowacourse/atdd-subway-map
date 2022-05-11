@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -88,7 +89,7 @@ public class MetroManager {
         return this.adjacencies.get(stationId);
     }
 
-    public void delete_cycle(Long stationId) {
+    public List<Section> delete_cycle(Long lineId, Long stationId) {
         StationInfo rightInfo = adjacencies.get(stationId).getRight();
         StationInfo leftInfo = adjacencies.get(stationId).getLeft();
         Long rightStationId = rightInfo.getLinkedStationId();
@@ -96,6 +97,14 @@ public class MetroManager {
         adjacencies.put(rightStationId, new Adjacency(new StationInfo(NO_EXIST, 0L), adjacencies.get(rightStationId).copyRight()));
         adjacencies.put(leftStationId, new Adjacency(adjacencies.get(leftStationId).copyLeft(), new StationInfo(NO_EXIST, 0L)));
         adjacencies.remove(stationId);
+        List<Section> deletedSections = new ArrayList<>();
+        if (!rightInfo.isBlankLink()) {
+            deletedSections.add(new Section(lineId, stationId, rightStationId, rightInfo.getDistance()));
+        }
+        if (!leftInfo.isBlankLink()) {
+            deletedSections.add(new Section(lineId, leftStationId, stationId, leftInfo.getDistance()));
+        }
+        return deletedSections;
     }
 
     public boolean isCycle() {
@@ -103,14 +112,33 @@ public class MetroManager {
                 .noneMatch(adjacency -> adjacency.isLeftBlank() || adjacency.isRightBlank());
     }
 
-    public void delete(Long stationId) {
+    public Map<DeleteResult, List<Section>> delete(Long lineId, Long stationId) {
         StationInfo rightInfo = adjacencies.get(stationId).getRight();
         StationInfo leftInfo = adjacencies.get(stationId).getLeft();
         Long rightStationId = rightInfo.getLinkedStationId();
         Long leftStationId = leftInfo.getLinkedStationId();
-        adjacencies.put(rightStationId, new Adjacency(leftInfo.copyInfo(), adjacencies.get(rightStationId).copyRight()));
-        adjacencies.put(leftStationId, new Adjacency(adjacencies.get(leftStationId).copyLeft(), rightInfo.copyInfo()));
+        Map<DeleteResult, List<Section>> deleteResult = new HashMap<>();
+        List<Section> deletedSections = new ArrayList<>();
+        List<Section> savedSections = new ArrayList<>();
+        deleteResult.put(DeleteResult.NEW_SAVE, savedSections);
+        deleteResult.put(DeleteResult.NEW_DELETE, deletedSections);
+        if (rightStationId != NO_EXIST.longValue() && leftStationId != NO_EXIST.longValue()) {
+            adjacencies.put(rightStationId, new Adjacency(new StationInfo(leftStationId, leftInfo.getDistance() + rightInfo.getDistance()), adjacencies.get(rightStationId).copyRight()));
+            adjacencies.put(leftStationId, new Adjacency(adjacencies.get(leftStationId).copyLeft(), new StationInfo(rightStationId, rightInfo.getDistance() + leftInfo.getDistance())));
+            StationInfo newLeftInfo = adjacencies.get(rightStationId).getLeft();
+            Long newLeftStationId = newLeftInfo.getLinkedStationId();
+            savedSections.add(new Section(lineId, newLeftStationId, rightStationId, newLeftInfo.getDistance()));
+        }
+        deleteResult.put(DeleteResult.NEW_SAVE, savedSections);
         adjacencies.remove(stationId);
+        if (!rightInfo.isBlankLink()) {
+            deletedSections.add(new Section(lineId, stationId, rightStationId, rightInfo.getDistance()));
+        }
+        if (!leftInfo.isBlankLink()) {
+            deletedSections.add(new Section(lineId, leftStationId, stationId, leftInfo.getDistance()));
+        }
+        deleteResult.put(DeleteResult.NEW_DELETE, deletedSections);
+        return deleteResult;
     }
 
     public Long findUpStationEnd() {
@@ -127,5 +155,9 @@ public class MetroManager {
                 .mapToLong(Entry::getKey)
                 .findFirst()
                 .orElseGet(() -> NO_EXIST);
+    }
+
+    public boolean isIn(Long stationId) {
+        return this.adjacencies.containsKey(stationId);
     }
 }

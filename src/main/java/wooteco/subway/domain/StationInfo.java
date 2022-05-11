@@ -15,6 +15,13 @@ public class StationInfo {
         return linkedStationId < 0;
     }
 
+    public boolean canDivisible(Long distance) {
+        if (this.distance <= 0) {
+            return true;
+        }
+        return this.distance > distance;
+    }
+
     public StationInfo copyInfo() {
         return new StationInfo(this.linkedStationId, this.distance);
     }
