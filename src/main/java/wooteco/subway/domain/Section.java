@@ -50,10 +50,6 @@ public class Section {
         return this.distance >= other.distance;
     }
 
-    private int calculateDistance(final Section section) {
-        return this.distance - section.distance;
-    }
-
     public Section createSectionByUpStation(final Section section) {
         return new Section(this.id, this.upStation, section.upStation, calculateDistance(section), this.lineId);
     }
@@ -71,6 +67,10 @@ public class Section {
 
     public Section merge(final Section section) {
         return new Section(this.upStation, section.downStation, mergeDistance(section), this.lineId);
+    }
+
+    private int calculateDistance(final Section section) {
+        return this.distance - section.distance;
     }
 
     private int mergeDistance(final Section section) {
