@@ -178,4 +178,30 @@ class LineServiceTest {
             () -> lineService.insertSection(lineResponse.getId(), sectionRequest)
         ).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void deleteStation() {
+        // given
+        LineRequest originLine = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
+        LineResponse lineResponse = lineService.save(originLine);
+        Long newDownStationId = stationDao.save(new Station("교대역")).getId();
+        SectionRequest sectionRequest = new SectionRequest(upStationId, newDownStationId, 3);
+        lineService.insertSection(lineResponse.getId(), sectionRequest);
+
+        // when
+        lineService.deleteStation(lineResponse.getId(), newDownStationId);
+
+        // then
+        LineResponse newLineResponse = lineService.findById(lineResponse.getId());
+        assertAll(
+            () -> assertThat(lineResponse.getId()).isEqualTo(newLineResponse.getId()),
+            () -> assertThat(lineResponse.getName()).isEqualTo(newLineResponse.getName()),
+            () -> assertThat(lineResponse.getColor()).isEqualTo(newLineResponse.getColor()),
+            () -> assertThat(newLineResponse.getStations().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList()))
+                .hasSize(2)
+                .contains("강남역", "선릉역")
+        );
+    }
 }

@@ -278,6 +278,54 @@ class LineAcceptanceTest extends AcceptanceTest {
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Test
+    @DisplayName("구간 삭제가 성공하면 상태코드 200을 반환해야 한다.")
+    void deleteSection() {
+        //given
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", stationId1, stationId2, 5);
+        ExtractableResponse<Response> createResponse = extractCreateLineRequest(lineRequest);
+
+        StationRequest newStationRequest = new StationRequest("교대역");
+        ExtractableResponse<Response> response = createStation(newStationRequest);
+        Long newDownStationId = getSavedStationIdByResponse(response);
+
+        // when
+        SectionRequest sectionRequest = new SectionRequest(stationId1, newDownStationId, 3);
+        String uri = createResponse.header("Location");
+        createSectionRequest(sectionRequest, uri);
+
+        // then
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete(uri + "/sections?stationId=" + newDownStationId)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("구간 삭제가 실패하면 bad request을 반환해야 한다.")
+    void deleteInvalidSection() {
+        //given
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", stationId1, stationId2, 5);
+        ExtractableResponse<Response> createResponse = extractCreateLineRequest(lineRequest);
+
+        StationRequest newStationRequest = new StationRequest("교대역");
+        ExtractableResponse<Response> response = createStation(newStationRequest);
+        Long newDownStationId = getSavedStationIdByResponse(response);
+
+        // when
+        String uri = createResponse.header("Location");
+
+        // then
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete(uri + "/sections?stationId=" + newDownStationId)
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ValidatableResponse createSectionRequest(SectionRequest sectionRequest, String uri) {
         return RestAssured.given().log().all()
             .body(sectionRequest)

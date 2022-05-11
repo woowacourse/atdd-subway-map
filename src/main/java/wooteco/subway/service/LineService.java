@@ -13,6 +13,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.UpdatedSection;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -79,6 +80,18 @@ public class LineService {
         Optional<Section> updatedSection = line.insertSection(section);
         updatedSection.ifPresent(sectionDao::update);
         sectionDao.save(section, line.getId());
+    }
+
+    public void deleteStation(Long lineId, Long stationId) {
+        Station station = stationDao.findById(stationId)
+            .orElseThrow(throwEmptyStationException());
+        Line line = lineDao.findById(lineId)
+            .orElseThrow(throwEmptyLineResultException());
+        UpdatedSection updatedSection = line.deleteStation(station);
+        if (updatedSection.hasUpdatedSection()) {
+            sectionDao.update(updatedSection.getUpdatedSection());
+        }
+        sectionDao.delete(updatedSection.getDeletedSectionId());
     }
 
     private Supplier<EmptyResultException> throwEmptyStationException() {
