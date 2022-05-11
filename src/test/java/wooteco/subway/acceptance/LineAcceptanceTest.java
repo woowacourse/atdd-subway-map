@@ -371,38 +371,115 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private long generateStationId(String name) {
-        ExtractableResponse<Response> response = generateStation(name);
-        return response.jsonPath().getLong("id");
+    @DisplayName("구간 삭제 기능")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestRemoveSection() {
+        Long stationId1 = generateStationId("신도림역");
+        Long stationId2 = generateStationId("온수역");
+        Long stationId3 = generateStationId("역곡역");
+        Long stationId4 = generateStationId("부천역");
+        Long stationId5 = generateStationId("중동역");
+
+        ExtractableResponse<Response> lineResponse = generateLine(
+                "1호선", "bg-blue-600", stationId1, stationId2, 5);
+        Long lineId = lineResponse.jsonPath().getLong("id");
+
+        addSection(lineId, stationId2, stationId3, 5);
+        addSection(lineId, stationId3, stationId4, 5);
+        addSection(lineId, stationId4, stationId5, 5);
+
+        return Stream.of(
+                dynamicTest("중간에 위치한 역을 삭제한다.", () -> {
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .when()
+                            .delete("/lines/{id}/sections?stationId={stationId}", lineId, stationId2)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+
+                dynamicTest("상행 종점의 구간을 삭제한다.", () -> {
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .when()
+                            .delete("/lines/{id}/sections?stationId={stationId}", lineId, stationId1)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+
+                dynamicTest("존재하지 않는 역을 삭제할 경우 예외를 던진다.", () -> {
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .when()
+                            .delete("/lines/{id}/sections?stationId={stationId}", lineId, stationId1)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("하행 종점의 구간을 삭제한다.", () -> {
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .when()
+                            .delete("/lines/{id}/sections?stationId={stationId}", lineId, stationId5)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+
+                dynamicTest("구간이 한개 뿐인 경우 예외를 던진다.", () -> {
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .when()
+                            .delete("/lines/{id}/sections?stationId={stationId}", lineId, stationId2)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                })
+        );
     }
 
-    private ExtractableResponse<Response> generateStation(String name) {
+    private Long generateStationId(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
-        return RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then().log().all()
                 .extract();
+
+        return response.jsonPath().getLong("id");
     }
 
     private ExtractableResponse<Response> generateLine(String name, String color, Long upStationId,
                                                        Long downStationId, Integer distance) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
-        params.put("upStationId", String.valueOf(upStationId));
-        params.put("downStationId", String.valueOf(downStationId));
-        params.put("distance", String.valueOf(distance));
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private void addSection(Long id, Long upStationId, Long downStationId, Integer distance) {
+        RestAssured.given().log().all()
+                .body(new SectionRequest(upStationId, downStationId, distance))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", id)
                 .then().log().all()
                 .extract();
     }
