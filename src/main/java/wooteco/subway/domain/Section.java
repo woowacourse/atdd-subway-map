@@ -36,6 +36,17 @@ public class Section {
         return distance;
     }
 
+    public boolean isExistSameStation(Section anotherSection) {
+        return (upStationId == anotherSection.upStationId) || (upStationId == anotherSection.downStationId)
+                || (downStationId == anotherSection.upStationId) || (downStationId == anotherSection.downStationId);
+    }
+
+    public void update(Long inputUpStationId, Long inputDownStationId, int distance) {
+        this.upStationId = inputUpStationId;
+        this.downStationId = inputDownStationId;
+        this.distance = distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -45,12 +56,12 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return distance == section.distance && Objects.equals(upStationId, section.upStationId)
-                && Objects.equals(downStationId, section.downStationId);
+        return Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId,
+                section.downStationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStationId, downStationId, distance);
+        return Objects.hash(upStationId, downStationId);
     }
 }
