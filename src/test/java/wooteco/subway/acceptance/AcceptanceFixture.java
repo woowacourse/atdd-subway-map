@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 
 public class AcceptanceFixture {
 
@@ -18,6 +19,12 @@ public class AcceptanceFixture {
     }};
     public static final Map<String, Object> 역삼역_인자 = new HashMap<>() {{
         put("name", "역삼역");
+    }};
+    public static final Map<String, Object> 왕십리역_인자 = new HashMap<>() {{
+        put("name", "왕십리역");
+    }};
+    public static final Map<String, Object> 서울숲역_인자 = new HashMap<>() {{
+        put("name", "서울숲역");
     }};
     public static final Map<String, Object> LINE_2_인자 = new HashMap<>() {{
         put("name", "2호선");
@@ -32,6 +39,7 @@ public class AcceptanceFixture {
     }};
     public static final String STATION_URL = "/stations";
     public static final String LINE_URL = "/lines";
+    public static final String SECTION_URL = "/sections";
     public static final LineRequest LINE_2_요청 = new LineRequest("2호선", "초록이", 1L, 2L, 5);
 
     public static ExtractableResponse<Response> postMethodRequest(
@@ -49,6 +57,17 @@ public class AcceptanceFixture {
             LineRequest lineRequest, String path) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(path)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> postMethodRequest(
+            SectionRequest sectionRequest, String path) {
+        return RestAssured.given().log().all()
+                .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(path)
@@ -76,6 +95,14 @@ public class AcceptanceFixture {
 
     public static ExtractableResponse<Response> deleteMethodRequest(String path) {
         return RestAssured.given().log().all()
+                .when()
+                .delete(path)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> deleteSectionMethodRequest(String path, int stationId) {
+        return RestAssured.given().param("stationId", stationId).log().all()
                 .when()
                 .delete(path)
                 .then().log().all()
