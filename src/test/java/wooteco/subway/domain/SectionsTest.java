@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,13 +30,18 @@ class SectionsTest {
     @DisplayName("Section 추가 확인")
     @ParameterizedTest
     @MethodSource("parameterProvider")
-    void add(Section newSection, Section updateSection) {
+    void add(Section newSection, Section expected) {
         // given
 
         // when
+        Optional<Section> section = sections.add(newSection);
 
         // then
-        assertThat(sections.add(newSection).get()).isEqualTo(updateSection);
+        if (section.isPresent()) {
+            assertThat(section.get()).isEqualTo(expected);
+            return;
+        }
+        assertThat(section).isEqualTo(Optional.empty());
     }
 
     private static Stream<Arguments> parameterProvider() {
@@ -45,8 +51,8 @@ class SectionsTest {
                         new Section(3L, 1L, 6L, 2L, 5)
                 ),
                 Arguments.arguments(
-                        new Section(1L, 6L, 4L, 5),
-                        new Section(4L, 1L, 5L, 6L, 5)
+                        new Section(1L, 6L, 5L, 5),
+                        null
                 )
         );
     }

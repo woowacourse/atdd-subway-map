@@ -66,6 +66,10 @@ public class Sections {
         validNewSection(newSection);
 
         for (Section section : value) {
+            if (newSection.isSameDownStationId(section)) {
+                throw new IllegalArgumentException("갈림길을 생성할 수 없습니다.");
+            }
+
             if (newSection.isSameUpStationId(section)) {
                 section.updateUpStationId(newSection.getDownStationId());
                 section.reduceDistance(newSection);
@@ -89,6 +93,39 @@ public class Sections {
             ids.add(section.getDownStationId());
         }
         return ids;
+    }
+
+    /**
+     * 기존 구간을 삭제하는 메서드
+     *
+     * @param stationId 삭제하고자 하는 역
+     * @return 삭제로 인해 변경 사항이 있는 Section
+     */
+    public Optional<Section> findUpdateWhenRemove(Long stationId) {
+        validSize();
+        Section removedSection = findByDownStationId(stationId);
+
+        for (Section section : value) {
+            if (section.isSameUpStationId(stationId)) {
+                section.updateUpStationId(removedSection.getUpStationId());
+                section.addDistance(removedSection);
+                return Optional.of(section);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Section findByDownStationId(Long stationId) {
+        return value.stream()
+                .filter(section -> section.isSameDownStationId(stationId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당 stationId를 하행역으로 둔 구간은 존재하지 않습니다."));
+    }
+
+    private void validSize() {
+        if (value.size() == 0) {
+            throw new IllegalArgumentException("section 목록이 존재하지 않습니다.");
+        }
     }
 
     public List<Section> getValue() {
