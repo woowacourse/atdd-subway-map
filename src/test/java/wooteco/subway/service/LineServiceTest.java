@@ -43,11 +43,12 @@ class LineServiceTest {
     @Test
     void save() {
         // given
-        stationDao.save(new Station(1L, "강남역"));
-        stationDao.save(new Station(2L, "역삼역"));
+        long station1Id = stationDao.save(new Station(1L, "강남역"));
+        long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1Id, station2Id, 10);
 
         // when
-        LineResponse lineResponse = lineService.save(LINE_REQUEST);
+        LineResponse lineResponse = lineService.save(lineRequest);
 
         // then
         assertAll(
