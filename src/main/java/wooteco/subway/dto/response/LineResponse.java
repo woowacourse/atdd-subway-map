@@ -1,7 +1,5 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponse {
