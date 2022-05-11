@@ -28,6 +28,10 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public boolean containsSameStations(final Section other) {
+        return this.contains(other.getUpStation()) && this.contains(other.getDownStation());
+    }
+
     private void validateDistance(final int distance) {
         if (distance < 1) {
             throw new IllegalArgumentException("거리가 1 미만인 구간 정보는 생성할 수 없습니다.");
