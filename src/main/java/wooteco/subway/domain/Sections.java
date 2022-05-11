@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sections {
+
     private final List<Section> sections;
 
     public Sections(Section section) {
@@ -60,15 +61,15 @@ public class Sections {
         this.sections.remove(currentSection);
     }
 
+    private boolean isUpSection(Section section) {
+        return sections.stream()
+                .noneMatch(s -> s.isContainStationId(section.getUpStationId()));
+    }
+
     private boolean isAnotherUpSection(Section section) {
         return sections.stream()
                 .filter(another -> section.isSameDownStationId(another.getDownStationId()))
                 .anyMatch(another -> !section.isSameUpStationId(another.getUpStationId()));
-    }
-
-    private boolean isUpSection(Section section) {
-        return sections.stream()
-                .noneMatch(s -> s.isContainStationId(section.getUpStationId()));
     }
 
     private Section getAnotherUpSection(Section section) {
@@ -78,6 +79,7 @@ public class Sections {
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("다른 구간을 찾을 수 없습니다."));
     }
+
     private void checkForkDownSection(Section section) {
         if (isDownSection(section) && isAnotherDownSection(section)) {
             Section currentSection = getAnotherDownSection(section);
