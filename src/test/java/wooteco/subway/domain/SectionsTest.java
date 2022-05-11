@@ -105,7 +105,7 @@ class SectionsTest {
 
     @DisplayName("갈래길이 아닌 경우 하행 종점으로 등록된다.")
     @Test
-    void addDownStation() {
+    void addDoDwnStation() {
         final Station newStation1 = new Station(2L, "군자역");
         final Station newStation2 = new Station(3L, "장한평역");
         final Section newSection = new Section(newStation1, newStation2, 5, 1L);
@@ -189,7 +189,7 @@ class SectionsTest {
         final Sections newSections = new Sections(List.of(section, newSection));
         final long stationId = 4L;
 
-        assertThatThrownBy(() -> newSections.delete(stationId))
+        assertThatThrownBy(() -> newSections.pop(stationId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간에 존재하지 않는 지하철 역입니다.");
     }
@@ -197,7 +197,7 @@ class SectionsTest {
     @DisplayName("구간이 1개일 때 삭제를 시도할 경우 예외를 발생한다.")
     @Test
     void delete_throwsSectionsSizeException() {
-        assertThatThrownBy(() -> sections.delete(1L))
+        assertThatThrownBy(() -> sections.pop(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간이 1개 이므로 삭제할 수 없습니다.");
     }
@@ -210,7 +210,7 @@ class SectionsTest {
         final Section newSection = new Section(2L, station, upStation, 10, 1L);
         final Sections newSections = new Sections(List.of(section, newSection));
 
-        newSections.delete(stationId);
+        newSections.pop(stationId);
 
         assertThat(newSections.getSections().size()).isOne();
     }
@@ -222,7 +222,7 @@ class SectionsTest {
         final Section newSection = new Section(2L, station, upStation, 10, 1L);
         final Sections newSections = new Sections(List.of(section, newSection));
         // 광나루 - 아차산 - 군자
-        newSections.delete(1L);
+        newSections.pop(1L);
 
         final Optional<Section> foundSection = newSections.getSections()
                 .stream()

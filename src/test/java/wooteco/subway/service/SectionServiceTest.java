@@ -15,6 +15,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -81,5 +82,26 @@ class SectionServiceTest {
                 () -> assertThat(foundSection.get()).usingRecursiveComparison()
                         .isEqualTo(new Section(section.getId(), upStation, newStation, 1, savedLine.getId()))
         );
+    }
+
+    @DisplayName("특정 노선에 구간을 삭제한다.")
+    @Test
+    void delete() {
+        final Station newStation = stationDao.save(new Station("마장역"));
+        sectionDao.save(new Section(downStation, newStation, 10, savedLine.getId()));
+
+        sectionService.delete(savedLine.getId(), downStation.getId());
+
+        final List<Section> list = sectionService.getSectionsByLine(savedLine.getId());
+        // 아차산 - 마장
+        Optional<Section> foundSection = list.stream()
+                .filter(section -> section.getDownStation().equals(newStation))
+                .findAny();
+
+        assert (foundSection.isPresent());
+
+        assertThat(foundSection.get()).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(new Section(upStation, newStation, 20, savedLine.getId()));
     }
 }
