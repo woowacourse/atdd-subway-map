@@ -66,16 +66,15 @@ public class Sections {
             return;
         }
 
+        addSectionInside(section);
+    }
+
+    private void addSectionInside(Section section) {
         for (int i = 0; i < sections.size(); i++) {
             Section origin = sections.get(i);
-            if (origin.isSameUpStation(section)) {
+            if (origin.isSameUpStation(section) || origin.isSameDownStation(section)) {
                 sections.remove(i);
-                sections.addAll(i, List.of(section, origin.divideBy(section)));
-                return;
-            }
-            if (origin.isSameDownStation(section)) {
-                sections.remove(i);
-                sections.addAll(i, List.of(origin.divideBy(section), section));
+                sections.addAll(origin.divideBy(section));
                 return;
             }
         }

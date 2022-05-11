@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,10 +38,10 @@ class SectionTest {
         Section origin = new Section(new Station("강남역"), new Station("사당역"), 2);
         Section other = new Section(new Station("강남역"), new Station("방배역"), 1);
 
-        Section divided = origin.divideBy(other);
-        Section expected = new Section(new Station("방배역"), new Station("사당역"), 1);
+        List<Section> result = origin.divideBy(other);
+        List<Section> expected = List.of(other, new Section(new Station("방배역"), new Station("사당역"), 1));
 
-        assertThat(divided).isEqualTo(expected);
+        assertThat(result).isEqualTo(expected);
     }
 
     @DisplayName("하행이 겹치는 경우 겹치는 구간을 제외한 나머지 구간 반환")
@@ -51,10 +50,10 @@ class SectionTest {
         Section origin = new Section(new Station("강남역"), new Station("양재시민의숲역"), 5);
         Section other = new Section(new Station("양재역"), new Station("양재시민의숲역"), 3);
 
-        Section divided = origin.divideBy(other);
-        Section expected = new Section(new Station("강남역"), new Station("양재역"), 2);
+        List<Section> result = origin.divideBy(other);
+        List<Section> expected = List.of(new Section(new Station("강남역"), new Station("양재역"), 2), other);
 
-        assertThat(divided).isEqualTo(expected);
+        assertThat(result).isEqualTo(expected);
     }
 
     @DisplayName("겹치는 역이 없다면 예외 발생")
@@ -168,7 +167,7 @@ class SectionTest {
 
         assertThat(section.isAlreadyIn(stations)).isFalse();
     }
-    
+
     @DisplayName("두 구간을 한 구간으로 합침")
     @Test
     void 두_구간_합치기() {

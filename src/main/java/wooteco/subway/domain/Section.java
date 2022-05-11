@@ -43,12 +43,12 @@ public class Section {
         return stations.containsAll(List.of(up, down));
     }
 
-    public Section divideBy(Section section) {
+    public List<Section> divideBy(Section section) {
         if (this.up.equals(section.up)) {
-            return new Section(section.down, this.down, this.distance - section.distance);
+            return List.of(section, new Section(section.down, this.down, this.distance - section.distance));
         }
         if (this.down.equals(section.down)) {
-            return new Section(this.up, section.up, this.distance - section.distance);
+            return List.of(new Section(this.up, section.up, this.distance - section.distance), section);
         }
         throw new IllegalArgumentException("겹치는 역이 없어 나눌 수 없습니다");
     }
