@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MetroManager {
     private static final Long NO_EXIST = -1L;
@@ -159,5 +160,21 @@ public class MetroManager {
 
     public boolean isIn(Long stationId) {
         return this.adjacencies.containsKey(stationId);
+    }
+
+    public List<Long> getStationsId() {
+        Long now = new ArrayList<Long>(this.adjacencies.keySet()).get(0);
+        List<Long> result = new ArrayList<>();
+        result.add(now);
+        Map<Long, Boolean> visited = new HashMap<>();
+        for (Long ids : this.adjacencies.keySet()) {
+            visited.put(ids, false);
+        }
+        while (now != NO_EXIST.longValue() && !visited.get(now)) {
+            now = this.adjacencies.get(now).getRight().getLinkedStationId();
+            result.add(now);
+            visited.put(now, true);
+        }
+        return result;
     }
 }
