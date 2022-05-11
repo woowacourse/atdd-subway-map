@@ -35,7 +35,7 @@ public class LineService {
 
     private void checkDuplicateName(final Line line) {
         if (lineDao.existsName(line)) {
-            throw new LineDuplicateException("이미 존재하는 노선입니다.");
+            throw new LineDuplicateException("[ERROR] 이미 존재하는 노선입니다.");
         }
     }
 
@@ -46,7 +46,7 @@ public class LineService {
 
     public Line findById(final Long id) {
         return lineDao.findById(id)
-            .orElseThrow(() -> new LineNotFoundException("해당 노선이 없습니다."));
+            .orElseThrow(() -> new LineNotFoundException("[ERROR] 해당 노선이 없습니다."));
     }
 
     @Transactional
