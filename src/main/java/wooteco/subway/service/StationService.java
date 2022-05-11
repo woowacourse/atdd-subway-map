@@ -41,6 +41,11 @@ public class StationService {
                 .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
     }
+    
+    public Station findById(Long id) {
+        validateExist(id);
+        return stationDao.findById(id);
+    }
 
     public void delete(Long id) {
         validateExist(id);

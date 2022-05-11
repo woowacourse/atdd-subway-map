@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -21,13 +20,14 @@ import wooteco.subway.exception.DuplicateLineException;
 public class LineService {
 
     private final LineDao lineDao;
-    private final StationDao stationDao;
     private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    private final StationService stationService;
+
+    public LineService(LineDao lineDao, SectionDao sectionDao, StationService stationService) {
         this.lineDao = lineDao;
-        this.stationDao = stationDao;
         this.sectionDao = sectionDao;
+        this.stationService = stationService;
     }
 
     @Transactional
@@ -56,12 +56,9 @@ public class LineService {
     }
 
     private Section createSectionByLineRequest(LineRequest lineRequest, Line line) {
-        Long upStationId = lineRequest.getUpStationId();
-        Long downStationId = lineRequest.getDownStationId();
-        validateStationsExist(upStationId, downStationId);
         Section section = new Section(
-                stationDao.findById(lineRequest.getUpStationId()),
-                stationDao.findById(lineRequest.getDownStationId()),
+                stationService.findById(lineRequest.getUpStationId()),
+                stationService.findById(lineRequest.getDownStationId()),
                 lineRequest.getDistance()
         );
         return sectionDao.save(line, section);
@@ -71,8 +68,8 @@ public class LineService {
     public void createSectionBySectionRequest(Long lineId, SectionRequest sectionRequest) {
         validateExist(lineId);
         Line line = lineDao.findById(lineId);
-        Station upStation = stationDao.findById(sectionRequest.getUpStationId());
-        Station downStation = stationDao.findById(sectionRequest.getDownStationId());
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
         int distance = sectionRequest.getDistance();
         Section newSection = new Section(upStation, downStation, distance);
 
@@ -99,12 +96,6 @@ public class LineService {
     private void saveAddedLine(Line line, List<Section> insertSections) {
         for (Section section : insertSections) {
             sectionDao.save(line, section);
-        }
-    }
-
-    private void validateStationsExist(Long upStationId, Long downStationId) {
-        if (!(stationDao.existsId(upStationId) && stationDao.existsId(downStationId))) {
-            throw new DataNotFoundException("노선에 있는 역이 존재하지 않습니다.");
         }
     }
 
