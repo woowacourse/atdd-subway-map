@@ -9,6 +9,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.AccessNoneDataException;
+import wooteco.subway.exception.SectionServiceException;
 
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class SectionService {
     private void createMiddleSection(Long lineId, SectionRequest request, Sections sections) {
         Section existNearSection = sections.findNearSection(request.getUpStationId(), request.getDownStationId());
         if (request.getDistance() >= existNearSection.getDistance()) {
-            throw new IllegalArgumentException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
+            throw new SectionServiceException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
         }
         sectionDao.insert(new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
         Section updateExistSection = new Section(existNearSection.getId(), existNearSection.getLineId(), request.getUpStationId(),
@@ -62,10 +63,10 @@ public class SectionService {
         boolean isExistUpStation = sections.hasStation(upStationId);
         boolean isExistDownStation = sections.hasStation(downStationId);
         if (!isExistUpStation && !isExistDownStation) {
-            throw new IllegalArgumentException("구간을 추가하기 위해서는 노선에 들어있는 역이 필요합니다.");
+            throw new SectionServiceException("구간을 추가하기 위해서는 노선에 들어있는 역이 필요합니다.");
         }
         if (isExistUpStation && isExistDownStation) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+            throw new SectionServiceException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
     }
 
@@ -86,13 +87,13 @@ public class SectionService {
 
     private void validateExistStationInLine(Sections sections, Long stationId) {
         if (!sections.hasStation(stationId)) {
-            throw new IllegalArgumentException("현재 라인에 존재하지 않는 역입니다.");
+            throw new AccessNoneDataException("현재 라인에 존재하지 않는 역입니다.");
         }
     }
 
     private void validateRemainOneSection(Sections sections) {
         if (sections.hasOneSection()) {
-            throw new IllegalArgumentException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
+            throw new SectionServiceException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
         }
     }
 

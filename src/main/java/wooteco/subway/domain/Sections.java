@@ -1,7 +1,8 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.SectionServiceException;
+
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class Sections {
@@ -40,7 +41,7 @@ public class Sections {
         return values.stream()
                 .filter(s -> s.getUpStationId().equals(newUpStationId) || s.getDownStationId().equals(newDownStationId))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new SectionServiceException("중간역 생성중 기존역을 찾지 못하였습니다."));
     }
 
     public boolean hasStation(Long stationId) {
@@ -70,13 +71,13 @@ public class Sections {
         return values.stream()
                 .filter(s -> s.getDownStationId().equals(stationId))
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new SectionServiceException("중간역 삭제중 상행역을 찾지 못하였습니다."));
     }
 
     public Section extractDownSideStation(Long stationId) {
         return values.stream()
                 .filter(s -> s.getUpStationId().equals(stationId))
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new SectionServiceException("중간역 삭제중 하행역을 찾지 못하였습니다."));
     }
 }

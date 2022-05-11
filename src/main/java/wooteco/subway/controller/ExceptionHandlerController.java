@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.dto.ErrorMessageResponse;
 import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.DataLengthException;
+import wooteco.subway.exception.SectionServiceException;
 
 @ControllerAdvice
 public class ExceptionHandlerController {
@@ -22,6 +23,12 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(AccessNoneDataException.class)
     public ResponseEntity<ErrorMessageResponse> handleAccessNoneDataException(AccessNoneDataException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessageResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(SectionServiceException.class)
+    public ResponseEntity<ErrorMessageResponse> handleSectionServiceException(SectionServiceException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
