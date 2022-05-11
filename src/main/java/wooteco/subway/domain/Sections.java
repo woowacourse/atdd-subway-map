@@ -12,6 +12,10 @@ public class Sections {
         values.add(section);
     }
 
+    public Sections(List<Section> sections) {
+        values.addAll(sections);
+    }
+
     public void add(Section newSection) {
         validateAddable(newSection);
 
@@ -29,14 +33,15 @@ public class Sections {
             if (section.getUpStation().equals(newSection.getUpStation())) {
                 int index = values.indexOf(section);
                 values.set(index, newSection);
-                values.add(index + 1, new Section(newSection.getDownStation(), section.getDownStation(),
-                    section.getDistance() - newSection.getDistance()));
+                values.add(index + 1,
+                    new Section(section.getId(), newSection.getDownStation(), section.getDownStation(),
+                        section.getDistance() - newSection.getDistance()));
                 return;
             }
 
             if (section.getDownStation().equals(newSection.getDownStation())) {
                 int index = values.indexOf(section);
-                values.set(index, new Section(section.getUpStation(), newSection.getUpStation(),
+                values.set(index, new Section(section.getId(), section.getUpStation(), newSection.getUpStation(),
                     section.getDistance() - newSection.getDistance()));
                 values.add(index + 1, newSection);
                 return;
@@ -73,7 +78,7 @@ public class Sections {
     }
 
     private boolean isSameWithDestinations(List<Section> foundSections) {
-        return foundSections.size() == 2 &&
+        return values.size() > 2 && foundSections.size() == 2 &&
             foundSections.containsAll(List.of(values.get(0), values.get(values.size() - 1)));
     }
 

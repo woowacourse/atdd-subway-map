@@ -4,22 +4,22 @@ import java.util.Objects;
 
 public class SectionEntity {
 
-    private final Long sectionId;
+    private final Long id;
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
     private final int distance;
 
-    public SectionEntity(Long sectionId, Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.sectionId = sectionId;
+    public SectionEntity(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public Long getSectionId() {
-        return sectionId;
+    public Long getId() {
+        return id;
     }
 
     public Long getLineId() {
@@ -45,20 +45,20 @@ public class SectionEntity {
         if (o == null || getClass() != o.getClass())
             return false;
         SectionEntity that = (SectionEntity)o;
-        return distance == that.distance && Objects.equals(sectionId, that.sectionId) && Objects.equals(
+        return distance == that.distance && Objects.equals(id, that.id) && Objects.equals(
             lineId, that.lineId) && Objects.equals(upStationId, that.upStationId) && Objects.equals(
             downStationId, that.downStationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionId, lineId, upStationId, downStationId, distance);
+        return Objects.hash(id, lineId, upStationId, downStationId, distance);
     }
 
     @Override
     public String toString() {
         return "SectionEntity{" +
-            "sectionId=" + sectionId +
+            "id=" + id +
             ", lineId=" + lineId +
             ", upStationId=" + upStationId +
             ", downStationId=" + downStationId +

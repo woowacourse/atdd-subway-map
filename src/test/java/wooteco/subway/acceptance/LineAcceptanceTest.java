@@ -18,8 +18,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.ui.request.LineRequest;
+import wooteco.subway.ui.request.SectionRequest;
 import wooteco.subway.ui.request.StationRequest;
 import wooteco.subway.ui.response.LineResponse;
+import wooteco.subway.ui.response.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -230,5 +232,128 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    @DisplayName("상행 종점 좌우측에 구간을 추가한다(C -> D -> A -> B).")
+    void addUpDestination() {
+        //given
+        StationRequest stationRequest = new StationRequest("선릉");
+        ExtractableResponse<Response> createStationResponse = getExtractablePostResponse(stationRequest, "/stations");
+        long stationIdC = Long.parseLong(createStationResponse.header("Location").split("/")[2]);
+
+        StationRequest stationRequest1 = new StationRequest("삼성");
+        ExtractableResponse<Response> createStationResponse1 = getExtractablePostResponse(stationRequest1, "/stations");
+        long stationIdD = Long.parseLong(createStationResponse1.header("Location").split("/")[2]);
+
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        //when
+        SectionRequest sectionRequestA = new SectionRequest(stationIdC, stationIdA, 10);
+        ExtractableResponse<Response> responseA = getExtractablePostResponse(sectionRequestA,
+            defaultUri + "/" + lineId + "/sections");
+
+        SectionRequest sectionRequestB = new SectionRequest(stationIdC, stationIdD, 2);
+        ExtractableResponse<Response> responseB = getExtractablePostResponse(sectionRequestB,
+            defaultUri + "/" + lineId + "/sections");
+
+        ExtractableResponse<Response> actual = getExtractableGetResponse(defaultUri);
+        List<LineResponse> actualLineResponses = actual.jsonPath().getList(".", LineResponse.class);
+        List<LineResponse> expectedLineResponses = List.of(
+            new LineResponse(1L, "7호선", "khaki", List.of(new StationResponse(3L, "선릉"),
+                new StationResponse(4L, "삼성"), new StationResponse(1L, "강남"),
+                new StationResponse(2L, "역삼"))));
+
+        //then
+        assertAll(
+            () -> assertThat(responseA.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(responseB.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualLineResponses).isEqualTo(expectedLineResponses)
+        );
+    }
+
+    @Test
+    @DisplayName("하행 종점 좌우측에 구간을 추가한다(A -> B -> D -> C).")
+    void addDownDestination() {
+        //given
+        StationRequest stationRequestC = new StationRequest("선릉");
+        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
+        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
+
+        StationRequest stationRequestD = new StationRequest("삼성");
+        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
+        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        //when
+        SectionRequest sectionRequestA = new SectionRequest(stationIdB, stationIdC, 10);
+        ExtractableResponse<Response> responseA = getExtractablePostResponse(sectionRequestA,
+            defaultUri + "/" + lineId + "/sections");
+
+        SectionRequest sectionRequestB = new SectionRequest(stationIdD, stationIdC, 2);
+        ExtractableResponse<Response> responseB = getExtractablePostResponse(sectionRequestB,
+            defaultUri + "/" + lineId + "/sections");
+
+        ExtractableResponse<Response> actual = getExtractableGetResponse(defaultUri);
+        List<LineResponse> actualLineResponses = actual.jsonPath().getList(".", LineResponse.class);
+        List<LineResponse> expectedLineResponses = List.of(
+            new LineResponse(1L, "7호선", "khaki", List.of(new StationResponse(1L, "강남"),
+                new StationResponse(2L, "역삼"), new StationResponse(4L, "삼성"),
+                new StationResponse(3L, "선릉"))));
+
+        //then
+        assertAll(
+            () -> assertThat(responseA.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(responseB.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualLineResponses).isEqualTo(expectedLineResponses)
+        );
+    }
+
+    @Test
+    @DisplayName("역 목록의 중간에 구간을 추가한다(A -> C -> D -> B).")
+    void addSectionsInMiddle() {
+        //given
+        StationRequest stationRequestC = new StationRequest("선릉");
+        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
+        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
+
+        StationRequest stationRequestD = new StationRequest("삼성");
+        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
+        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        //when
+        SectionRequest sectionRequestA = new SectionRequest(stationIdC, stationIdB, 4);
+        ExtractableResponse<Response> responseA = getExtractablePostResponse(sectionRequestA,
+            defaultUri + "/" + lineId + "/sections");
+
+        SectionRequest sectionRequestB = new SectionRequest(stationIdC, stationIdD, 2);
+        ExtractableResponse<Response> responseB = getExtractablePostResponse(sectionRequestB,
+            defaultUri + "/" + lineId + "/sections");
+
+        ExtractableResponse<Response> actual = getExtractableGetResponse(defaultUri);
+        List<LineResponse> actualLineResponses = actual.jsonPath().getList(".", LineResponse.class);
+        List<LineResponse> expectedLineResponses = List.of(
+            new LineResponse(1L, "7호선", "khaki",
+                List.of(new StationResponse(1L, "강남"),
+                    new StationResponse(3L, "선릉"),
+                    new StationResponse(4L, "삼성"),
+                    new StationResponse(2L, "역삼")
+                )));
+
+        //then
+        assertAll(
+            () -> assertThat(responseA.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(responseB.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualLineResponses).isEqualTo(expectedLineResponses)
+        );
     }
 }

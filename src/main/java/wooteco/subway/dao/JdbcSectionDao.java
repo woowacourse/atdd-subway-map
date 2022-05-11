@@ -44,6 +44,13 @@ public class JdbcSectionDao implements SectionDao {
         return jdbcTemplate.query(sql, (rs, rowNum) -> createSection(rs), lineId);
     }
 
+    @Override
+    public void update(SectionEntity sectionEntity) {
+        String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
+        jdbcTemplate.update(sql, sectionEntity.getUpStationId(), sectionEntity.getDownStationId(),
+            sectionEntity.getDistance(), sectionEntity.getId());
+    }
+
     private SectionEntity createSection(ResultSet rs) throws SQLException {
         return new SectionEntity(
             rs.getLong("id"),
