@@ -65,7 +65,7 @@ class StationServiceTest {
         stationService.save(new Station("오리"));
         stationService.save(new Station("배카라"));
 
-        assertThat(stationService.findAll()).hasSize(2);
+        assertThat(stationService.findAll()).hasSize(6);
     }
 
 }

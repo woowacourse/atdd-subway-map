@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,27 +8,20 @@ public class Sections {
 
     private final List<Section> sections;
 
-
     public Sections(List<Section> sections) {
         this.sections = sections;
     }
 
-
     public void validateSection(long upStationId, long downStationId, int distance) {
+        validateBothStationExist(upStationId, downStationId);
+        validateNoneStationExist(upStationId, downStationId);
+        validateDistance(upStationId, downStationId, distance);
+    }
+
+    private void validateBothStationExist(long upStationId, long downStationId) {
         if (existByStationId(upStationId)
                 && existByStationId(downStationId)) {
             throw new IllegalArgumentException("상행, 하행이 대상 노선에 둘 다 존재합니다.");
-        }
-
-        if (!existByStationId(upStationId)
-                && !existByStationId(downStationId)) {
-            throw new IllegalArgumentException("상행, 하행이 대상 노선에 둘 다 존재하지 않습니다.");
-        }
-
-        if ((existByDownStationId(downStationId) && findDistanceById(findIdByDownStationId(downStationId)) <= distance)
-                || (existByUpStationId(upStationId)
-                && findDistanceById(findIdByUpStationId(upStationId)) <= distance)) {
-            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우, 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
         }
     }
 
@@ -47,6 +39,30 @@ public class Sections {
         return sections.stream()
                 .map(Section::getDownStationId)
                 .anyMatch(id -> id == stationId);
+    }
+
+    private void validateNoneStationExist(long upStationId, long downStationId) {
+        if (!existByStationId(upStationId)
+                && !existByStationId(downStationId)) {
+            throw new IllegalArgumentException("상행, 하행이 대상 노선에 둘 다 존재하지 않습니다.");
+        }
+    }
+
+    private void validateDistance(long upStationId, long downStationId, int distance) {
+        if (isInvalidDistanceWithDownStationOverlap(downStationId, distance)
+                || isInvalidDistanceWithUpStationOverlap(upStationId, distance)) {
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우, 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
+        }
+    }
+
+    private boolean isInvalidDistanceWithDownStationOverlap(long downStationId, int distance) {
+        return existByDownStationId(downStationId)
+                && findDistanceById(findIdByDownStationId(downStationId)) <= distance;
+    }
+
+    private boolean isInvalidDistanceWithUpStationOverlap(long upStationId, int distance) {
+        return existByUpStationId(upStationId)
+                && findDistanceById(findIdByUpStationId(upStationId)) <= distance;
     }
 
     private long findIdByUpStationId(long stationId) {
@@ -73,7 +89,7 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("없음"));
     }
 
-    public Section find겹치는SectionId(long upStationId, long downStationId, int distance) {
+    public Section findOverlapSection(long upStationId, long downStationId, int distance) {
         if (existByUpStationId(upStationId)) {
             Section section = findById(findIdByUpStationId(upStationId));
             return new Section(
@@ -107,14 +123,12 @@ public class Sections {
 
     public List<Long> getStationsId() {
         List<Section> sortedSections = createSortedSection();
+        List<Long> stationIds = createSortedSection().stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toList());
+        stationIds.add(sortedSections.get(sortedSections.size() - 1).getDownStationId());
 
-        List<Long> stationsId = new ArrayList<>();
-        for (Section section : sortedSections) {
-            stationsId.add(section.getUpStationId());
-        }
-        stationsId.add(sortedSections.get(sortedSections.size() - 1).getDownStationId());
-
-        return stationsId;
+        return stationIds;
     }
 
     private List<Section> createSortedSection() {
@@ -127,15 +141,16 @@ public class Sections {
         return sections.size() == 2;
     }
 
-    public Section getDeleteSection() {
+    public Section getSingleDeleteSection() {
         return sections.get(0);
     }
 
-    public Section getUpsideSection() {
+    public Section getUpsideEndSection() {
         return createSortedSection().get(0);
     }
 
-    public Section getDownsideSection() {
-        return createSortedSection().get(1);
+    public Section getDownsideEndSection() {
+        List<Section> sortedSection = createSortedSection();
+        return sortedSection.get(sortedSection.size() - 1);
     }
 }

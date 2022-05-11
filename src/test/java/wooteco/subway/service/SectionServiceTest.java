@@ -29,7 +29,7 @@ class SectionServiceTest {
     @DisplayName("추가할 구간의 상행, 하행이 대상 노선에 둘 다 존재하는 경우 예외가 발생한다.")
     void bothStationExistException() {
         // given
-        sectionService.save(1L, GIVEN_SECTION_REQ);
+        sectionService.firstSave(1L, GIVEN_SECTION_REQ);
 
         // when
         Throwable thrown = catchThrowable(() -> sectionService.save(1L, GIVEN_SECTION_REQ));
@@ -46,7 +46,7 @@ class SectionServiceTest {
 
         // when, then
         assertThatCode(() ->
-                sectionService.save(1L, new SectionRequest(1L, 2L, 6)))
+                sectionService.firstSave(1L, new SectionRequest(1L, 2L, 6)))
                 .doesNotThrowAnyException();
     }
 
@@ -54,7 +54,7 @@ class SectionServiceTest {
     @DisplayName("초기 등록이 아닌데 추가할 구간의 상행, 하행이 대상 노선에 둘 다 존재하지 않는 경우 예외가 발생한다.")
     void bothStationNotExistException() {
         // given
-        sectionService.save(1L, GIVEN_SECTION_REQ);
+        sectionService.firstSave(1L, GIVEN_SECTION_REQ);
 
         // when
         Throwable thrown = catchThrowable(() -> sectionService.save(1L, new SectionRequest(3L, 4L, 6)));
@@ -68,7 +68,7 @@ class SectionServiceTest {
     @DisplayName("두 개의 역 중 하나가 노선에 상행으로 존재할 때, 등록할 구간의 거리가 기존 구간의 거리보다 크면 예외가 발생한다.")
     void upStationDistanceException() {
         // given
-        sectionService.save(1L, GIVEN_SECTION_REQ);
+        sectionService.firstSave(1L, GIVEN_SECTION_REQ);
 
         // when
         Throwable thrown = catchThrowable(() -> sectionService.save(1L, new SectionRequest(1L, 3L, 6)));
@@ -82,7 +82,7 @@ class SectionServiceTest {
     @DisplayName("두 개의 역 중 하나가 노선에 하행으로 존재할 때, 등록할 구간의 거리가 기존 구간의 거리보다 크면 예외가 발생한다.")
     void downStationDistanceException() {
         // given
-        sectionService.save(1L, GIVEN_SECTION_REQ);
+        sectionService.firstSave(1L, GIVEN_SECTION_REQ);
 
         // when
         Throwable thrown = catchThrowable(() -> sectionService.save(1L, new SectionRequest(3L, 2L, 6)));
@@ -96,7 +96,7 @@ class SectionServiceTest {
     @DisplayName("구간 등록 테스트")
     void saveTest() {
         // given
-        sectionService.save(1L, new SectionRequest(1L, 3L, 6));
+        sectionService.firstSave(1L, new SectionRequest(1L, 3L, 6));
 
         // when
         sectionService.save(1L, new SectionRequest(1L, 2L, 3));
@@ -110,7 +110,7 @@ class SectionServiceTest {
     @DisplayName("상행종점을 삭제한다.")
     void deleteUpEndStation() {
         // given
-        sectionService.save(1L, new SectionRequest(1L, 3L, 6));
+        sectionService.firstSave(1L, new SectionRequest(1L, 3L, 6));
         sectionService.save(1L, new SectionRequest(1L, 2L, 3));
 
         // when
@@ -125,7 +125,7 @@ class SectionServiceTest {
     @DisplayName("하행종점을 삭제한다.")
     void deleteDownEndStation() {
         // given
-        sectionService.save(1L, new SectionRequest(1L, 3L, 6));
+        sectionService.firstSave(1L, new SectionRequest(1L, 3L, 6));
         sectionService.save(1L, new SectionRequest(1L, 2L, 3));
 
         // when
@@ -140,7 +140,7 @@ class SectionServiceTest {
     @DisplayName("양방향 구간이 모두 존재하는 지하철 역을 삭제한다.")
     void deleteStation() {
         // given
-        sectionService.save(1L, new SectionRequest(1L, 3L, 6));
+        sectionService.firstSave(1L, new SectionRequest(1L, 3L, 6));
         sectionService.save(1L, new SectionRequest(1L, 2L, 3));
 
         // when

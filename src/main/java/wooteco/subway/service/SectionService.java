@@ -16,41 +16,38 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    public void firstSave(Long lineId, SectionRequest sectionRequest) {
+        sectionDao.save(
+                createSection(lineId,
+                        sectionRequest.getUpStationId(),
+                        sectionRequest.getDownStationId(),
+                        sectionRequest.getDistance(),
+                        1L));
+    }
 
     public void save(Long lineId, SectionRequest sectionReq) {
-        if (!sectionDao.existByLineId(lineId)) {
-            sectionDao.save(createSection(lineId, sectionReq, 1L));
-            return;
-        }
+        save(lineId, sectionReq.getUpStationId(), sectionReq.getDownStationId(), sectionReq.getDistance());
+    }
 
+    private void save(Long lineId, long upStationId, long downStationId, int distance) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-
-        long upStationId = sectionReq.getUpStationId();
-        long downStationId = sectionReq.getDownStationId();
-        int distance = sectionReq.getDistance();
-
         sections.validateSection(upStationId, downStationId, distance);
+        Section section = sections.findOverlapSection(upStationId, downStationId, distance);
 
-        Section section = sections.find겹치는SectionId(upStationId, downStationId, distance);
+        updateSections(lineId, section);
+        sectionDao.save(createSection(lineId, upStationId, downStationId, distance, section.getLineOrder()));
+    }
+
+    private void updateSections(Long lineId, Section section) {
         if (section.getId() != null) {
             sectionDao.deleteById(section.getId());
             sectionDao.save(section);
         }
-        Sections sectionsss = new Sections(sectionDao.findAllByLineId(lineId));
         sectionDao.updateLineOrder(lineId, section.getLineOrder());
-        sectionDao.save(createSection(lineId, sectionReq, section.getLineOrder()));
-        Sections sectionss = new Sections(sectionDao.findAllByLineId(lineId));
     }
 
-    private Section createSection(Long lineId, SectionRequest sectionReq, Long lineOrder) {
-        return new Section(
-                null,
-                lineId,
-                sectionReq.getUpStationId(),
-                sectionReq.getDownStationId(),
-                sectionReq.getDistance(),
-                lineOrder
-        );
+    private Section createSection(Long lineId, long upStationId, long downStationId, int distance, Long lineOrder) {
+        return new Section(null, lineId, upStationId, downStationId, distance, lineOrder);
     }
 
     public List<Long> findAllStationByLineId(long lineId) {
@@ -60,29 +57,33 @@ public class SectionService {
 
     public void deleteByLineIdAndStationId(long lineId, long stationId) {
         Sections sections = new Sections(sectionDao.findByLineIdAndStationId(lineId, stationId));
-        long order;
 
         if (sections.hasTwoSection()) {
-            Section upsideSection = sections.getUpsideSection();
-            Section downsideSection = sections.getDownsideSection();
+            Section upsideSection = sections.getUpsideEndSection();
+            Section downsideSection = sections.getDownsideEndSection();
 
-            long upStationId = upsideSection.getUpStationId();
-            long downStationId = downsideSection.getDownStationId();
-            int distance = upsideSection.getDistance() + downsideSection.getDistance();
-            long lineOrder = upsideSection.getLineOrder();
-
-            sectionDao.deleteById(upsideSection.getId());
-            sectionDao.deleteById(downsideSection.getId());
-            sectionDao.save(new Section(null, lineId, upStationId, downStationId, distance, lineOrder));
-
-            order = downsideSection.getLineOrder(); // 2
+            deleteAndUnionTwoSection(lineId, upsideSection, downsideSection);
+            return;
         }
 
-        Section section = sections.getDeleteSection();
-        order = section.getLineOrder();
-        sectionDao.deleteById(section.getId());
-        // where order_line > order;
+        deleteSingleSection(lineId, sections);
+    }
 
-        sectionDao.updateLineOrderByDec(lineId, order);
+    private void deleteAndUnionTwoSection(long lineId, Section upsideSection, Section downsideSection) {
+        sectionDao.deleteById(upsideSection.getId());
+        sectionDao.deleteById(downsideSection.getId());
+        sectionDao.save(new Section(null, lineId,
+                upsideSection.getUpStationId(), downsideSection.getDownStationId(),
+                upsideSection.getDistance() + downsideSection.getDistance(),
+                upsideSection.getLineOrder()));
+
+        sectionDao.updateLineOrderByDec(lineId, downsideSection.getLineOrder());
+    }
+
+    private void deleteSingleSection(long lineId, Sections sections) {
+        Section section = sections.getSingleDeleteSection();
+        sectionDao.deleteById(section.getId());
+
+        sectionDao.updateLineOrderByDec(lineId, section.getLineOrder());
     }
 }

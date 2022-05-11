@@ -38,7 +38,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.jsonPath().getLong("id")).isEqualTo(1L);
+        assertThat(response.jsonPath().getLong("id")).isEqualTo(5L);
         assertThat(response.jsonPath().getString("name")).isEqualTo("강남역");
     }
 
