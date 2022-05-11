@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateSectionException;
 import wooteco.subway.exception.InvalidSectionCreateRequestException;
 
@@ -135,13 +137,62 @@ class SectionsTest {
         List<Section> values = sections.getValues();
         assertThat(values).hasSize(2)
                 .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
-                .contains(
-                        tuple(station1, station2, newSection.getDistance())
-                )
-                .contains(
+                .containsOnly(
+                        tuple(station1, station2, newSection.getDistance()),
                         tuple(station2, station3, 2)
                 );
         assertThat(values).doesNotContain(section1);
     }
 
+    @DisplayName("구간들에 존재하지 않는 역에 대해 구간 삭제 요청이 들어오면 예외를 반환한다.")
+    @Test
+    void invalidDeleteRequest() {
+        Sections sections = new Sections(new ArrayList<>());
+
+        assertThatThrownBy(() -> sections.deleteSectionByStation(new Station("강남역")))
+                .isInstanceOf(DataNotFoundException.class)
+                .hasMessage("요청하는 역을 포함하는 구간이 없습니다.");
+    }
+
+    @DisplayName("시점이나 종점 역에 대한 구간 삭제 요청이 들어오면 그대로 삭제한다.")
+    @Test
+    void deleteStartOrEnd() {
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("역삼역");
+        Station station3 = new Station("선릉역");
+
+        Section section1 = new Section(station1, station2, 1);
+        Section section2 = new Section(station2, station3, 1);
+
+        Sections sections = new Sections(List.of(section1, section2));
+
+        sections.deleteSectionByStation(station1);
+
+        assertThat(sections.getValues()).hasSize(1)
+                .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
+                .containsOnly(
+                        tuple(station2, station3, 1)
+                );
+    }
+
+    @DisplayName("중간에 있는 역에 대해 구간 삭제 요청이 들어올 경우 해당 역을 포함하는 구간들을 제거하고 구간들을 이어붙인다.")
+    @Test
+    void deleteMiddle() {
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("역삼역");
+        Station station3 = new Station("선릉역");
+
+        Section section1 = new Section(station1, station2, 1);
+        Section section2 = new Section(station2, station3, 1);
+
+        Sections sections = new Sections(List.of(section1, section2));
+
+        sections.deleteSectionByStation(station2);
+
+        assertThat(sections.getValues()).hasSize(1)
+                .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
+                .containsOnly(
+                        tuple(station1, station3, 2)
+                );
+    }
 }

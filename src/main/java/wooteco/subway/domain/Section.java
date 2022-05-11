@@ -1,7 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.stream.Stream;
-
 public class Section {
 
     private final Long id;
@@ -21,11 +19,13 @@ public class Section {
     }
 
     public boolean hasSameStations(Section section) {
-        return Stream.of(upStation, downStation)
-                .anyMatch(station -> station.hasSameName(section.upStation) && station.hasSameName(
-                        section.downStation)) || isReversed(section);
+        return isSame(section) || isReversed(section);
     }
-    
+
+    private boolean isSame(Section section) {
+        return upStation.hasSameName(section.upStation) && downStation.hasSameName(section.downStation);
+    }
+
     private boolean isReversed(Section section) {
         return upStation.hasSameName(section.downStation) && downStation.hasSameName(section.upStation);
     }
@@ -40,6 +40,10 @@ public class Section {
 
     public boolean canInclude(Section section) {
         return this.distance - section.distance > 0;
+    }
+
+    public boolean containStation(Station station) {
+        return upStation.hasSameName(station) || downStation.hasSameName(station);
     }
 
     public Long getId() {

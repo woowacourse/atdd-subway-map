@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateSectionException;
 import wooteco.subway.exception.InvalidSectionCreateRequestException;
 
@@ -139,6 +140,56 @@ public class Sections {
         values.remove(includingSection);
         values.add(newSection);
         values.add(anotherNewSection);
+    }
+
+    public void deleteSectionByStation(Station station) {
+        validateContainsTargetStation(station);
+        List<Station> sortedStations = getSortedStations();
+        int index = sortedStations.indexOf(station);
+        if (index == 0 || index == sortedStations.size() - 1) {
+            removeEndSection(station);
+            return;
+        }
+        removeMiddleSection(station);
+    }
+
+    private void validateContainsTargetStation(Station station) {
+        if (values.stream()
+                .noneMatch(section -> section.containStation(station))) {
+            throw new DataNotFoundException("요청하는 역을 포함하는 구간이 없습니다.");
+        }
+    }
+
+    private void removeEndSection(Station station) {
+        Section targetSection = values.stream()
+                .filter(savedSection -> savedSection.containStation(station))
+                .findFirst()
+                .orElseThrow(() -> new DataNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
+        values.remove(targetSection);
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section upSection = findUpSection(station);
+        Section downSection = findDownSection(station);
+        Section newSection = new Section(upSection.getUpStation(), downSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance());
+        values.remove(upSection);
+        values.remove(downSection);
+        values.add(newSection);
+    }
+
+    private Section findUpSection(Station station) {
+        return values.stream()
+                .filter(savedSection -> savedSection.getDownStation().hasSameName(station))
+                .findAny()
+                .orElseThrow(() -> new DataNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
+    }
+
+    private Section findDownSection(Station station) {
+        return values.stream()
+                .filter(savedSection -> savedSection.getUpStation().hasSameName(station))
+                .findAny()
+                .orElseThrow(() -> new DataNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
     }
 
     public List<Section> getValues() {
