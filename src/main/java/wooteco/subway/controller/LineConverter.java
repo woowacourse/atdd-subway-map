@@ -3,13 +3,10 @@ package wooteco.subway.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import wooteco.subway.dto.info.RequestCreateSectionInfo;
-import wooteco.subway.dto.info.RequestDeleteSectionInfo;
 import wooteco.subway.dto.info.RequestLineInfo;
 import wooteco.subway.dto.info.RequestLineInfoToUpdate;
 import wooteco.subway.dto.info.ResponseLineInfo;
 import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
 
@@ -29,14 +26,5 @@ public class LineConverter {
             .collect(Collectors.toList());
         return new LineResponse(responseLineInfo.getId(), responseLineInfo.getName(), responseLineInfo.getColor(),
             stationResponses);
-    }
-
-    static RequestCreateSectionInfo toInfo(Long lineId, SectionRequest sectionRequest) {
-        return new RequestCreateSectionInfo(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
-            sectionRequest.getDistance());
-    }
-
-    static RequestDeleteSectionInfo toInfo(Long lineId, Long stationId) {
-        return new RequestDeleteSectionInfo(lineId, stationId);
     }
 }
