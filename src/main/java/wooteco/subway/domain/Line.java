@@ -40,17 +40,17 @@ public class Line {
 		return this.id.equals(id);
 	}
 
-	public Optional<Section> findUpdatedSectionByAdd(Section section) {
-		return sections.add(section);
+	public void addSection(Section section) {
+		sections.add(section);
 	}
 
 	public int sizeOfSection() {
 		return sections.size();
 	}
 
-	public Sections deleteSectionByStation(Long stationId) {
+	public void deleteSectionByStation(Long stationId) {
 		validateSectionSize();
-		return sections.deleteByStation(stationId);
+		sections.deleteByStation(stationId);
 	}
 
 	private void validateSectionSize() {

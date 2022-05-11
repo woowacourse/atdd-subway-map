@@ -120,11 +120,7 @@ class SectionsTest {
 	@DisplayName("역 id로 구간을 삭제한다.")
 	@Test
 	void findByStation() {
-		Sections findSections = sections.deleteByStation(3L);
-		assertThat(findSections.getValues()).containsOnly(
-			new Section(station2, station3, 10),
-			new Section(station3, station4, 10)
-		);
+		sections.deleteByStation(3L);
 		assertThat(sections.getValues()).containsOnly(
 			new Section(station1, station2, 10),
 			new Section(station2, station4, 20),

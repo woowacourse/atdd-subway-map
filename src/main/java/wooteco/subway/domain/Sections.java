@@ -19,17 +19,16 @@ public class Sections {
 		this.values = new LinkedList<>(values);
 	}
 
-	public Optional<Section> add(Section section) {
+	public void add(Section section) {
 		List<Section> matchSections = findMatchStations(section);
 		validateSectionAddable(section, matchSections);
 		values.add(section);
 
-		return findSectionIfUpStationMatch(section, matchSections)
-			.map(matchSection -> updateSection(section, matchSection))
-			.orElseGet(
-				() -> findSectionIfDownStationMatch(section, matchSections)
-					.flatMap(matchSection -> updateSection(section, matchSection))
-			);
+		findSectionIfUpStationMatch(section, matchSections).ifPresentOrElse(
+			matchSection -> updateSection(section, matchSection),
+			() -> findSectionIfDownStationMatch(section, matchSections)
+				.ifPresent(matchSection -> updateSection(section, matchSection))
+		);
 	}
 
 	private List<Section> findMatchStations(Section section) {
@@ -51,11 +50,10 @@ public class Sections {
 		return findSectionByCondition(matchSections, each -> each.hasSameUpStation(section));
 	}
 
-	private Optional<Section> updateSection(Section section, Section existSection) {
+	private void updateSection(Section section, Section existSection) {
 		Section updatedSection = existSection.dividedBy(section);
 		values.remove(existSection);
 		values.add(updatedSection);
-		return Optional.of(updatedSection);
 	}
 
 	private Optional<Section> findSectionIfDownStationMatch(Section section, List<Section> matchSections) {
@@ -113,18 +111,20 @@ public class Sections {
 		values.forEach(consumer);
 	}
 
-	public boolean isEmpty() {
-		return values.isEmpty();
-	}
-
-	public Sections deleteByStation(Long stationId) {
+	public void deleteByStation(Long stationId) {
 		List<Section> sections = values.stream()
 			.filter(section -> section.matchAnyStation(stationId))
 			.collect(toList());
+		validateSectionExist(sections);
 		sections.forEach(values::remove);
 		Sections resultSections = new Sections(sections);
 		addUpdatedSection(resultSections);
-		return resultSections;
+	}
+
+	private void validateSectionExist(List<Section> deletedSections) {
+		if (deletedSections.isEmpty()) {
+			throw new IllegalArgumentException("삭제하려는 역 구간이 없습니다.");
+		}
 	}
 
 	private void addUpdatedSection(Sections resultSections) {

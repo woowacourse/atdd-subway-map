@@ -9,7 +9,7 @@ import wooteco.subway.dao.repository.LineRepository;
 import wooteco.subway.dao.repository.SectionRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.SectionsDirtyChecker;
 
 @Service
 @Transactional(readOnly = true)
@@ -58,32 +58,29 @@ public class LineService {
 	@Transactional
 	public void addSection(Long id, Section section) {
 		Line line = lineRepository.findById(id);
-		line.findUpdatedSectionByAdd(section)
-			.ifPresent(sectionRepository::update);
-		sectionRepository.save(id, section);
+		SectionsDirtyChecker checker = SectionsDirtyChecker.from(line.getSections());
+
+		line.addSection(section);
+
+		executeDirtyChecking(id, line, checker);
 	}
 
 	@Transactional
 	public void deleteSection(Long lineId, Long stationId) {
 		Line line = lineRepository.findById(lineId);
+		SectionsDirtyChecker checker = SectionsDirtyChecker.from(line.getSections());
 
-		Sections deletedSections = line.deleteSectionByStation(stationId);
-		validateSectionExist(deletedSections);
+		line.deleteSectionByStation(stationId);
 
-		deletedSections.executeEach(section -> sectionRepository.remove(section.getId()));
-		saveSectionIfUpdated(lineId, deletedSections);
+		executeDirtyChecking(lineId, line, checker);
 	}
 
-	private void validateSectionExist(Sections deletedSections) {
-		if (deletedSections.isEmpty()) {
-			throw new IllegalArgumentException("삭제하려는 역 구간이 없습니다.");
-		}
-	}
-
-	private void saveSectionIfUpdated(Long lineId, Sections deletedSections) {
-		Section newSection = deletedSections.sum();
-		if (deletedSections.isNotExist(newSection)) {
-			sectionRepository.save(lineId, newSection);
-		}
+	private void executeDirtyChecking(Long lineId, Line line, SectionsDirtyChecker checker) {
+		checker.findUpdated(line.getSections())
+			.executeEach(sectionRepository::update);
+		checker.findDeleted(line.getSections())
+			.executeEach(section -> sectionRepository.remove(section.getId()));
+		checker.findSaved(line.getSections())
+			.executeEach(section -> sectionRepository.save(lineId, section));
 	}
 }

@@ -138,4 +138,8 @@ public class Section {
 			", distance=" + distance +
 			'}';
 	}
+
+	public boolean isSameId(Section section) {
+		return this.id.equals(section.id);
+	}
 }
