@@ -5,7 +5,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
 
@@ -13,18 +17,32 @@ import wooteco.subway.dto.response.LineResponse;
 @Service
 public class LineService {
     private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        if (lineDao.hasLine(lineRequest.getName())) {
-            throw new IllegalArgumentException("같은 이름의 노선이 존재합니다.");
-        }
-        final Long newLineId = lineDao.save(line);
-        return new LineResponse(newLineId, line.getName(), line.getColor());
+        final Station upStation = stationDao.findById(lineRequest.getUpStationId());
+        final Station downStation = stationDao.findById(lineRequest.getDownStationId());
+
+        checkExistStation(upStation);
+        checkExistStation(downStation);
+        checkDuplicateLine(lineRequest);
+
+        //노선추가
+        final Line savedLine = lineDao.save(line);
+
+        //구간정보 추가
+        final Section section = new Section(savedLine, upStation, downStation, lineRequest.getDistance());
+        sectionDao.save(section);
+
+        return LineResponse.of(savedLine, upStation, downStation);
     }
 
     @Transactional(readOnly = true)
@@ -56,6 +74,18 @@ public class LineService {
         final Line line = lineDao.findById(id);
         if (line == null) {
             throw new IllegalArgumentException("해당하는 노선이 존재하지 않습니다.");
+        }
+    }
+
+    private void checkExistStation(Station station) {
+        if (station == null) {
+            throw new IllegalArgumentException("해당하는 역이 존재하지 않습니다.");
+        }
+    }
+
+    private void checkDuplicateLine(LineRequest lineRequest) {
+        if (lineDao.hasLine(lineRequest.getName())) {
+            throw new IllegalArgumentException("같은 이름의 노선이 존재합니다.");
         }
     }
 }

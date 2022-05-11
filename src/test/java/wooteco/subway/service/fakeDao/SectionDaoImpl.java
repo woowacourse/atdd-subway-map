@@ -19,10 +19,10 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public Long save(Section section) {
+    public Section save(Section section) {
         Section persistSection = createNewObject(section);
         sections.add(persistSection);
-        return persistSection.getId();
+        return persistSection;
     }
 
     @Override
@@ -31,6 +31,14 @@ public class SectionDaoImpl implements SectionDao {
         if (!result) {
             throw new NoSuchElementException("해당하는 구간이 존재하지 않습니다.");
         }
+    }
+
+    @Override
+    public Section findById(Long id) {
+        return sections.stream()
+                .filter(section -> section.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
     }
 
     private Section createNewObject(Section section) {

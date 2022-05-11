@@ -19,18 +19,21 @@ public class StationDaoImpl implements StationDao {
     }
 
     @Override
-    public Long save(Station station) {
+    public Station save(Station station) {
         Station persistStation = createNewObject(station);
         if (hasStation(persistStation.getName())) {
             throw new IllegalArgumentException("같은 이름의 역이 존재합니다.");
         }
         stations.add(persistStation);
-        return persistStation.getId();
+        return new Station(persistStation.getId(), station.getName());
     }
 
     @Override
     public Station findById(Long id) {
-        return null;
+        return stations.stream()
+                .filter(station -> station.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 역이 존재하지 않습니다."));
     }
 
     @Override

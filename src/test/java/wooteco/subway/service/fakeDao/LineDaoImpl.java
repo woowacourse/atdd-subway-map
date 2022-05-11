@@ -19,13 +19,13 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public Long save(Line line) {
+    public Line save(Line line) {
         Line persistLine = createNewObject(line);
         if (hasLine(persistLine.getName())) {
             throw new IllegalArgumentException("같은 이름의 노선이 존재합니다.");
         }
         lines.add(persistLine);
-        return persistLine.getId();
+        return persistLine;
     }
 
     @Override

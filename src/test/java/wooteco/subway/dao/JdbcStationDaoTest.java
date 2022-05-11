@@ -58,8 +58,8 @@ public class JdbcStationDaoTest {
     @DisplayName("지하철역을 삭제한다.")
     void delete() {
         final Station station3 = new Station("또다른지하철역이름");
-        final Long stationId = stationDao.save(station3);
-        stationDao.deleteById(stationId);
+        final Station savedStation = stationDao.save(station3);
+        stationDao.deleteById(savedStation.getId());
         final int expected = 2;
 
         final int actual = stationDao.findAll().size();

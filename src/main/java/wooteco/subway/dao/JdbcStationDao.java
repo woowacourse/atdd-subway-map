@@ -25,7 +25,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Long save(Station station) {
+    public Station save(Station station) {
         final String sql = "INSERT INTO station (name) VALUES (?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -34,7 +34,9 @@ public class JdbcStationDao implements StationDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        final Long newStationId = keyHolder.getKey().longValue();
+
+        return new Station(newStationId, station.getName());
     }
 
     @Override

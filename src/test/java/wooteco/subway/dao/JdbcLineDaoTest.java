@@ -59,9 +59,9 @@ public class JdbcLineDaoTest {
     @DisplayName("지하철 단일 노선을 조회한다.")
     void findLine() {
         final Line expected = new Line("다른분당선", "bg-blue-600");
-        final long lineId = lineDao.save(expected);
+        final Line savedLine = lineDao.save(expected);
 
-        final Line actual = lineDao.findById(lineId);
+        final Line actual = lineDao.findById(savedLine.getId());
 
         assertThat(actual.getName()).isEqualTo(expected.getName());
     }
@@ -70,11 +70,11 @@ public class JdbcLineDaoTest {
     @DisplayName("지하철 노선을 수정한다.")
     void update() {
         final Line line3 = new Line("다른분당선", "bg-blue-600");
-        final long lineId = lineDao.save(line3);
+        final Line savedLine = lineDao.save(line3);
         final String expected = "또다른분당선";
-        lineDao.updateById(lineId, expected, line3.getColor());
+        lineDao.updateById(savedLine.getId(), expected, line3.getColor());
 
-        final Line updatedLine = lineDao.findById(lineId);
+        final Line updatedLine = lineDao.findById(savedLine.getId());
         final String actual = updatedLine.getName();
 
         assertThat(actual).isEqualTo(expected);
@@ -84,8 +84,8 @@ public class JdbcLineDaoTest {
     @DisplayName("지하철 노선을 삭제한다.")
     void delete() {
         final Line line3 = new Line("다른분당선", "bg-blue-600");
-        final long lineId = lineDao.save(line3);
-        lineDao.deleteById(lineId);
+        final Line savedLine = lineDao.save(line3);
+        lineDao.deleteById(savedLine.getId());
         final int expected = 2;
 
         final int actual = lineDao.findAll().size();

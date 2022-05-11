@@ -23,8 +23,8 @@ public class StationService {
         if (stationDao.hasStation(stationRequest.getName())) {
             throw new IllegalArgumentException("같은 이름의 역이 존재합니다.");
         }
-        final Long newStationId = stationDao.save(station);
-        return new StationResponse(newStationId, station.getName());
+        final Station savedStation = stationDao.save(station);
+        return StationResponse.of(savedStation);
     }
 
     @Transactional(readOnly = true)

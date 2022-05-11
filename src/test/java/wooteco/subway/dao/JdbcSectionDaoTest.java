@@ -28,16 +28,10 @@ public class JdbcSectionDaoTest {
         sectionDao = new JdbcSectionDao(jdbcTemplate, lineDao, stationDao);
         createTables();
 
-        final Line line = new Line("분당선", "bg-red-600");
-        final Station upStation = new Station("지하철역이름");
-        final Station downStation = new Station("새로운지하철역이름");
-        final Section section = new Section(line, upStation, downStation, 10);
-        Long lineId = lineDao.save(line);
-        line.setId(lineId);
-        Long upStationId = stationDao.save(upStation);
-        upStation.setId(upStationId);
-        Long downStationId = stationDao.save(downStation);
-        downStation.setId(downStationId);
+        final Line savedLine = lineDao.save(new Line("분당선", "bg-red-600"));
+        final Station savedStation1 = stationDao.save(new Station("지하철역이름"));
+        final Station savedStation2 = stationDao.save(new Station("새로운지하철역이름"));
+        final Section section = new Section(savedLine, savedStation1, savedStation2, 10);
         sectionDao.save(section);
     }
 
@@ -56,20 +50,13 @@ public class JdbcSectionDaoTest {
     @DisplayName("지하철 구간을 삭제한다.")
     void delete() {
         // given
-        final Line line = new Line("신분당선", "bg-blue-600");
-        final Station upStation = new Station("지하철역");
-        final Station downStation = new Station("새로운지하철역");
-        final Section section2 = new Section(line, upStation, downStation, 10);
-        Long lineId = lineDao.save(line);
-        line.setId(lineId);
-        Long upStationId = stationDao.save(upStation);
-        upStation.setId(upStationId);
-        Long downStationId = stationDao.save(downStation);
-        downStation.setId(downStationId);
-        Long stationId = sectionDao.save(section2);
+        final Line savedLine = lineDao.save(new Line("신분당선", "bg-blue-600"));
+        final Station savedStation1 = stationDao.save(new Station("지하철역"));
+        final Station savedStation2 = stationDao.save(new Station("새로운지하철역"));
+        final Section savedSection = sectionDao.save(new Section(savedLine, savedStation1, savedStation2, 10));
 
         // when
-        sectionDao.deleteById(stationId);
+        sectionDao.deleteById(savedSection.getId());
         final int expected = 1;
 
         // then

@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -30,7 +31,7 @@ public class JdbcSectionDao implements SectionDao{
     }
 
     @Override
-    public Long save(Section section) {
+    public Section save(Section section) {
         final String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -42,12 +43,29 @@ public class JdbcSectionDao implements SectionDao{
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        final Long newSectionId = keyHolder.getKey().longValue();
+
+        return new Section(newSectionId, section.getLine(), section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
     @Override
     public void deleteById(Long id) {
         final String sql = "DELETE FROM SECTION WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Section findById(Long id) {
+        try {
+            final String sql = "SELECT * FROM SECTION WHERE id = ?";
+            SectionEntity sectionEntity = jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+            return new Section(sectionEntity.getId(),
+                    lineDao.findById(sectionEntity.getLineId()),
+                    stationDao.findById(sectionEntity.getUpStationId()),
+                    stationDao.findById(sectionEntity.getDownStationId()),
+                    sectionEntity.getDistance());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }

@@ -4,7 +4,9 @@ import wooteco.subway.domain.Section;
 
 public interface SectionDao {
 
-    Long save(Section section);
+    Section save(Section section);
 
     void deleteById(Long id);
+
+    Section findById(Long id);
 }
