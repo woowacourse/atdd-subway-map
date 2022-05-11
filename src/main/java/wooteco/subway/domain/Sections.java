@@ -22,41 +22,58 @@ public class Sections {
 
     public void addSection(Section section) {
         validateAlreadyRegistered(section);
-
         if (belongsToUpLine(section.getUpStation())) {
-            final Section upLineSection = getUpLineSection(section.getUpStation());
-            validateDistance(section, upLineSection);
-            sections.remove(upLineSection);
-            sections.add(section);
-            sections.add(new Section(section.getDownStation(), upLineSection.getDownStation(),
-                    upLineSection.getDistance() - section.getDistance()));
+            updateSectionWithUpBranch(section);
             return;
         }
-
         if (belongsToDownLine(section.getDownStation())) {
-            final Section section1 = getDownLineSection(section.getDownStation());
-            validateDistance(section, section1);
-            sections.remove(section1);
-            sections.add(new Section(section1.getUpStation(), section.getUpStation(), section1.getDistance() - section
-                    .getDistance()));
-            sections.add(section);
+            updateSectionWithDownBranch(section);
             return;
         }
-
         if (belongsToUpLine(section.getDownStation())) {
-            final Section section1 = getUpTerminalSection(section.getDownStation());
-            sections.remove(section1);
-            sections.add(section);
-            sections.add(section1);
+            updateSectionWithUpTerminal(section);
             return;
         }
-
         if (belongsToDownLine(section.getUpStation())) {
-            sections.add(section);
+            updateSectionWithDownTerminal(section);
             return;
         }
-
         throw new IllegalArgumentException("상행역과 하행역 둘 다 노선에 포함되어 있지 않아 등록이 불가합니다.");
+    }
+
+    private void validateAlreadyRegistered(Section section) {
+        if (isAllRegistered(section)) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있어 등록이 불가능합니다.");
+        }
+    }
+
+    private void updateSectionWithUpBranch(Section section) {
+        final Section upLineSection = getUpLineSection(section.getUpStation());
+        validateDistance(section, upLineSection);
+        sections.remove(upLineSection);
+        sections.add(section);
+        sections.add(new Section(section.getDownStation(), upLineSection.getDownStation(),
+                upLineSection.getDistance() - section.getDistance()));
+    }
+
+    private void updateSectionWithDownBranch(Section section) {
+        final Section downLineSection = getDownLineSection(section.getDownStation());
+        validateDistance(section, downLineSection);
+        sections.remove(downLineSection);
+        sections.add(new Section(downLineSection.getUpStation(), section.getUpStation(), downLineSection.getDistance() - section
+                .getDistance()));
+        sections.add(section);
+    }
+
+    private void updateSectionWithUpTerminal(Section section) {
+        final Section upTerminalSection = getUpTerminalSection(section.getDownStation());
+        sections.remove(upTerminalSection);
+        sections.add(section);
+        sections.add(upTerminalSection);
+    }
+
+    private void updateSectionWithDownTerminal(Section section) {
+        sections.add(section);
     }
 
     private Section getUpTerminalSection(Station downStation) {
@@ -78,12 +95,6 @@ public class Sections {
                 .filter(it -> it.isEqualToUpStation(upStation))
                 .findFirst()
                 .orElseThrow();
-    }
-
-    private void validateAlreadyRegistered(Section section) {
-        if (isAllRegistered(section)) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있어 등록이 불가능합니다.");
-        }
     }
 
     private boolean isAllRegistered(Section section) {
@@ -108,32 +119,39 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
+        validateFinalSection();
+        if (isUpLineTerminalStation(station)) {
+            removeSection(getUpLineSection(station));
+            return;
+        }
+        if (isDownLineTerminalStation(station)) {
+            removeSection(getDownLineSection(station));
+            return;
+        }
+        if (isNotTerminalStation(station)) {
+            removeSectionOnMiddleLine(station);
+        }
+    }
+
+    private void validateFinalSection() {
         if (sections.size() <= 1) {
             throw new IllegalArgumentException("마지막 구간은 제거할 수 없습니다.");
         }
+    }
 
-        if (isUpLineTerminalStation(station)) {
-            final Section section = getUpLineSection(station);
-            sections.remove(section);
-            return;
-        }
+    private void removeSection(Section section) {
+        sections.remove(section);
+    }
 
-        if (isDownLineTerminalStation(station)) {
-            final Section section = getDownLineSection(station);
-            sections.remove(section);
-            return;
-        }
-
-        if (isNotTerminalStation(station)) {
-            final Section section = getUpLineSection(station);
-            final Section upSection = getDownLineSection(station);
-            sections.remove(section);
-            sections.remove(upSection);
-            final Section editedSection = new Section(upSection.getUpStation(), section.getDownStation(),
-                    upSection.getDistance() + section
-                            .getDistance());
-            sections.add(editedSection);
-        }
+    private void removeSectionOnMiddleLine(Station station) {
+        final Section section = getUpLineSection(station);
+        final Section upSection = getDownLineSection(station);
+        sections.remove(section);
+        sections.remove(upSection);
+        final Section editedSection = new Section(upSection.getUpStation(), section.getDownStation(),
+                upSection.getDistance() + section
+                        .getDistance());
+        sections.add(editedSection);
     }
 
     private boolean isUpLineTerminalStation(Station station) {
