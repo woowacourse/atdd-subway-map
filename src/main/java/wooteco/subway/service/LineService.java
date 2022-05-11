@@ -37,19 +37,24 @@ public class LineService {
                          final Long downStationId,
                          final int distance) {
         try {
-            final LineEntity lineEntity = LineEntity.createWithoutId(name, color);
-            final LineEntity savedLineEntity = lineDao.save(lineEntity);
-            final Station upStation = stationService.searchById(upStationId);
-            final Station downStation = stationService.searchById(downStationId);
-            final Sections sections = new Sections(
-                    new Section(savedLineEntity.getId(), upStation, downStation, distance));
-            final Line line = new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor(),
-                    sections);
-            sectionService.resisterFirst(line.getId(), upStationId, downStationId, distance);
-            return line;
+            return saveLineAndFirstSection(name, color, upStationId, downStationId, distance);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateNameException("[ERROR] 이미 존재하는 노선 이름입니다.");
         }
+    }
+
+    private Line saveLineAndFirstSection(final String name,
+                                         final String color,
+                                         final Long upStationId,
+                                         final Long downStationId,
+                                         final int distance) {
+        final LineEntity savedLineEntity = lineDao.save(LineEntity.createWithoutId(name, color));
+        final Station upStation = stationService.searchById(upStationId);
+        final Station downStation = stationService.searchById(downStationId);
+        final Sections sections = new Sections(new Section(savedLineEntity.getId(), upStation, downStation, distance));
+        final Line line = new Line(savedLineEntity.getId(), name, color, sections);
+        sectionService.resisterFirst(line.getId(), upStationId, downStationId, distance);
+        return line;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
