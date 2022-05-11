@@ -6,13 +6,13 @@ import java.util.Objects;
 
 public class Line {
     private Long id;
-    private String name;
+    private Name name;
     private String color;
     private Sections sections;
 
     private Line(Long id, String name, String color, Sections sections) {
         this.id = id;
-        this.name = name;
+        this.name = new Name(name);
         this.color = color;
         this.sections = sections;
     }
@@ -58,7 +58,7 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getColor() {
