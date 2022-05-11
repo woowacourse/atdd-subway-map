@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Section2;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.entity.SectionEntity;
@@ -29,7 +29,7 @@ public class SectionService {
 
     @Transactional
     public void save(Long lineId, CreateSectionRequest sectionRequest) {
-        Section2 newSection = sectionRequest.toSection();
+        Section newSection = sectionRequest.toSection();
         Sections sections = Sections.of(findValidSections(lineId));
         validateExistingStations(newSection);
         sections.validateSingleRegisteredStation(newSection);
@@ -51,7 +51,7 @@ public class SectionService {
         sectionDao.updateDownStationIdAndDistance(updatedPreviousSection);
     }
 
-    private void validateExistingStations(Section2 section) {
+    private void validateExistingStations(Section section) {
         List<Long> stationIds = section.getStationIds();
         List<StationEntity> stations = stationDao.findAllByIds(stationIds);
         if (stations.size() != stationIds.size()) {

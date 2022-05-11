@@ -20,11 +20,11 @@ public class Sections {
     }
 
     public static Sections of(List<SectionEntity> entities) {
-        List<SectionStationInfo> stationPairs = entities.stream()
+        List<SectionStationInfo> sectionStationInfos = entities.stream()
                 .map(SectionEntity::toSectionStationInfo)
                 .collect(Collectors.toList());
 
-        return new Sections(SectionStationMap.of(stationPairs), SectionDistanceMap.of(entities));
+        return new Sections(SectionStationMap.of(sectionStationInfos), SectionDistanceMap.of(entities));
     }
 
     public boolean hasSingleSection() {
@@ -44,7 +44,7 @@ public class Sections {
                 sectionDistanceMap.getCombinedDistanceOverStationOf(stationId));
     }
 
-    public boolean isEndSection(Section2 section) {
+    public boolean isEndSection(Section section) {
         Long upStationId = section.getUpStationId();
         Long downStationId = section.getDownStationId();
         return sectionMap.isFinalUpStation(downStationId) ||
@@ -57,7 +57,7 @@ public class Sections {
         }
     }
 
-    public void validateSingleRegisteredStation(Section2 section) {
+    public void validateSingleRegisteredStation(Section section) {
         boolean isRegisteredUpStation = isRegisteredStation(section.getUpStationId());
         boolean isRegisteredDownStation = isRegisteredStation(section.getDownStationId());
         if (isRegisteredUpStation && isRegisteredDownStation) {
@@ -69,14 +69,14 @@ public class Sections {
     }
 
     public SectionEntity toUpdatedSection(Long lineId,
-                                          Section2 section) {
+                                          Section section) {
         if (hasRegisteredUpStation(section)) {
             return toUpdatedDownSectionEntity(lineId, section);
         }
         return toUpdatedUpperSectionEntity(lineId, section);
     }
 
-    private SectionEntity toUpdatedDownSectionEntity(Long lineId, Section2 section) {
+    private SectionEntity toUpdatedDownSectionEntity(Long lineId, Section section) {
         Long registeredUpStationId = section.getUpStationId();
         Long newStationId = section.getDownStationId();
 
@@ -86,7 +86,7 @@ public class Sections {
         return new SectionEntity(lineId, newStationId, registeredDownStationId, remainderDistance);
     }
 
-    private SectionEntity toUpdatedUpperSectionEntity(Long lineId, Section2 section) {
+    private SectionEntity toUpdatedUpperSectionEntity(Long lineId, Section section) {
         Long newStationId = section.getUpStationId();
         Long registeredDownStationId = section.getDownStationId();
 
@@ -96,7 +96,7 @@ public class Sections {
         return new SectionEntity(lineId, registeredUpStation, newStationId, remainderDistance);
     }
 
-    public boolean hasRegisteredUpStation(Section2 section) {
+    public boolean hasRegisteredUpStation(Section section) {
         return sectionMap.hasDownStation(section.getUpStationId());
     }
 

@@ -3,7 +3,7 @@ package wooteco.subway.domain;
 import java.util.List;
 import wooteco.subway.entity.SectionEntity;
 
-public class Section2 {
+public class Section {
 
     private static final String SAME_STATION_INPUT_EXCEPTION = "서로 다른 두 개의 역을 입력해야 합니다.";
 
@@ -11,7 +11,7 @@ public class Section2 {
     private final Long downStationId;
     private final int distance;
 
-    public Section2(Long upStationId, Long downStationId, int distance) {
+    public Section(Long upStationId, Long downStationId, int distance) {
         validateDifferentStations(upStationId, downStationId);
         this.upStationId = upStationId;
         this.downStationId = downStationId;
