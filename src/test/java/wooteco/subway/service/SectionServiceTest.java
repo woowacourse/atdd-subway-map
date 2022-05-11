@@ -20,8 +20,8 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.BothUpAndDownStationAlreadyExistException;
 import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
+import wooteco.subway.exception.BothUpAndDownStationExistException;
 import wooteco.subway.exception.CanNotInsertSectionException;
 import wooteco.subway.exception.OnlyOneSectionException;
 
@@ -150,7 +150,7 @@ class SectionServiceTest {
 
         // when & then
         assertThatThrownBy(() -> sectionService.createSection(lineId, sectionRequest))
-                .isInstanceOf(BothUpAndDownStationAlreadyExistException.class);
+                .isInstanceOf(BothUpAndDownStationExistException.class);
     }
 
     @DisplayName("추가하려는 구간의 모든 역이 구간 목록에 모두 존재하지 않을 경우 예외가 발생한다")

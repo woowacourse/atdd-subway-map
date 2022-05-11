@@ -25,16 +25,16 @@ public class Section {
         this(id, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
-    public boolean isSameUpStation(Section other) {
+    public boolean isUpStationSame(Section other) {
         return upStationId.equals(other.upStationId);
     }
 
-    public boolean isSameDownStation(Section other) {
+    public boolean isDownStationSame(Section other) {
         return downStationId.equals(other.downStationId);
     }
 
-    public boolean isSameEitherUpOrDownStation(Section other) {
-        return isSameUpStation(other) || isSameDownStation(other);
+    public boolean isEitherUpStationOrDownStationSame(Section other) {
+        return isUpStationSame(other) || isDownStationSame(other);
     }
 
     public boolean isDistanceLessThanOrEqualTo(Section other) {

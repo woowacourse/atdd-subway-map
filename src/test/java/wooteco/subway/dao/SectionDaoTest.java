@@ -1,18 +1,21 @@
 package wooteco.subway.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.domain.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import wooteco.subway.domain.Distance;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 class SectionDaoTest {
@@ -77,7 +80,8 @@ class SectionDaoTest {
 
         List<Section> expected = sections.getValue();
         List<Long> expectedUpStationIds = expected.stream().map(Section::getUpStationId).collect(Collectors.toList());
-        List<Long> expectedDownStationIds = expected.stream().map(Section::getDownStationId).collect(Collectors.toList());
+        List<Long> expectedDownStationIds = expected.stream().map(Section::getDownStationId)
+                .collect(Collectors.toList());
         List<Distance> expectedDistances = expected.stream().map(Section::getDistance).collect(Collectors.toList());
 
         // then

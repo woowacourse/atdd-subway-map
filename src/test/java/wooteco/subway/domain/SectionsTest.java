@@ -9,8 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import wooteco.subway.exception.BothUpAndDownStationAlreadyExistException;
 import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
+import wooteco.subway.exception.BothUpAndDownStationExistException;
 import wooteco.subway.exception.CanNotInsertSectionException;
 import wooteco.subway.exception.OnlyOneSectionException;
 
@@ -117,7 +117,7 @@ class SectionsTest {
 
         // when & then
         assertThatThrownBy(() -> sections.addSection(newSection))
-                .isInstanceOf(BothUpAndDownStationAlreadyExistException.class);
+                .isInstanceOf(BothUpAndDownStationExistException.class);
     }
 
     @DisplayName("구간 추가시 새로운 구간의 상행역과 하행역이 모두 구간 목록에 등록되어 있지 않다면 예외가 발생한다.")

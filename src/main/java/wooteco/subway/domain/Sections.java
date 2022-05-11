@@ -2,22 +2,22 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import wooteco.subway.exception.BothUpAndDownStationAlreadyExistException;
 import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
+import wooteco.subway.exception.BothUpAndDownStationExistException;
 import wooteco.subway.exception.CanNotInsertSectionException;
 import wooteco.subway.exception.OnlyOneSectionException;
 
 public class Sections {
 
-    private final List<Section> value;
+    private final List<Section> sections;
 
     public Sections(Long upStationId, Long downStationId, Distance distance) {
         Section initialSection = new Section(upStationId, downStationId, distance);
-        this.value = new ArrayList<>(List.of(initialSection));
+        this.sections = new ArrayList<>(List.of(initialSection));
     }
 
     public Sections(Section section) {
-        this.value = new ArrayList<>(List.of(section));
+        this.sections = new ArrayList<>(List.of(section));
     }
 
     // TODO: 리팩토링
@@ -39,135 +39,127 @@ public class Sections {
 
     // TODO: 구간 삽입 로직 리팩토링
     public void addSection(Section newSection) {
-        validateHasSameStation(newSection);
-        validateBothUpAndDownStationAlreadyExisting(newSection);
+        validateBothStationsExisting(newSection);
+        validateBothStationsNotExisting(newSection);
 
-        if (shouldInsert(newSection)) {
+        if (isNeededToInsert(newSection)) {
             insertSection(newSection);
-            return;
         }
 
-        value.add(newSection);
+        sections.add(newSection);
     }
 
-    private void validateBothUpAndDownStationAlreadyExisting(Section newSection) {
-        boolean isUpStationExisting = value.stream().anyMatch(section -> section.isSameUpStation(newSection));
-        boolean isDownStationExisting = value.stream().anyMatch(section -> section.isSameDownStation(newSection));
+    private void validateBothStationsExisting(Section newSection) {
+        boolean isBothStationsExisting = sections.stream()
+                .filter(section -> section.isUpStationSame(newSection))
+                .anyMatch(section -> section.isDownStationSame(newSection));
 
-        if (isUpStationExisting && isDownStationExisting) {
-            throw new BothUpAndDownStationAlreadyExistException();
+        if (isBothStationsExisting) {
+            throw new BothUpAndDownStationExistException();
         }
     }
 
-    private void validateHasSameStation(Section newSection) {
-        boolean hasSameStation = value.stream().anyMatch(section -> section.hasSameStation(newSection));
+    private void validateBothStationsNotExisting(Section newSection) {
+        boolean hasNotSameStation = sections.stream()
+                .noneMatch(section -> section.hasSameStation(newSection));
 
-        if (!hasSameStation) {
+        if (hasNotSameStation) {
             throw new BothUpAndDownStationDoNotExistException();
         }
     }
 
-    private boolean shouldInsert(Section newSection) {
-        return value.stream()
-                .anyMatch(section -> section.isSameEitherUpOrDownStation(newSection));
+    private boolean isNeededToInsert(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> section.isEitherUpStationOrDownStationSame(newSection));
     }
 
-    private void insertSection(Section insertedSection) {
-        Section insertTargetSection = getInsertTargetSection(insertedSection);
-        validateDistanceOnInserting(insertedSection, insertTargetSection);
+    private void insertSection(Section newSection) {
+        Section baseSection = findBaseSection(newSection);
+        validateDistanceOnInserting(baseSection, newSection);
 
-        Section shortenedTargetSection = shortenInsertTargetSection(insertTargetSection, insertedSection);
+        Section shortenedBaseSection = shortenBaseSection(baseSection, newSection);
 
-        value.remove(insertTargetSection);
-        value.add(shortenedTargetSection);
-        value.add(insertedSection);
+        sections.remove(baseSection);
+        sections.add(shortenedBaseSection);
     }
 
-    private void validateDistanceOnInserting(Section insertedSection, Section insertTargetSection) {
-        if (insertTargetSection.isDistanceLessThanOrEqualTo(insertedSection)) {
-            throw new CanNotInsertSectionException();
-        }
-    }
-
-    private Section getInsertTargetSection(Section insertedSection) {
-        return value.stream()
-                .filter(section -> section.isSameEitherUpOrDownStation(insertedSection))
+    private Section findBaseSection(Section newSection) {
+        return sections.stream()
+                .filter(section -> section.isEitherUpStationOrDownStationSame(newSection))
                 .findAny()
                 .orElseThrow(CanNotInsertSectionException::new);
     }
 
-    private Section shortenInsertTargetSection(Section insertTargetSection, Section insertedSection) {
-        Long upStationId = getUpStationIdOfShortenedTargetSection(insertTargetSection, insertedSection);
-        Long downStationId = getDownStationIdOfShortenedTargetSection(insertTargetSection, insertedSection);
-
-        return new Section(upStationId, downStationId, insertTargetSection.subtractDistance(insertedSection));
+    private void validateDistanceOnInserting(Section baseSection, Section newSection) {
+        if (baseSection.isDistanceLessThanOrEqualTo(newSection)) {
+            throw new CanNotInsertSectionException();
+        }
     }
 
-    private Long getUpStationIdOfShortenedTargetSection(Section insertTargetSection, Section insertedSection) {
-        if (insertedSection.isSameUpStation(insertTargetSection)) {
-            return insertedSection.getDownStationId();
+    private Section shortenBaseSection(Section baseSection, Section newSection) {
+        Long baseUp = baseSection.getUpStationId();
+        Long newUp = newSection.getUpStationId();
+        Long newDown = newSection.getDownStationId();
+        Long baseDown = baseSection.getDownStationId();
+        Distance shortenedDistance = baseSection.subtractDistance(newSection);
+
+        if (newSection.isUpStationSame(baseSection)) {
+            return new Section(newDown, baseDown, shortenedDistance);
         }
 
-        return insertTargetSection.getUpStationId();
-    }
-
-    private Long getDownStationIdOfShortenedTargetSection(Section insertTargetSection, Section insertedSection) {
-        if (insertedSection.isSameUpStation(insertTargetSection)) {
-            return insertTargetSection.getDownStationId();
-        }
-
-        return insertedSection.getUpStationId();
+        return new Section(baseUp, newUp, shortenedDistance);
     }
 
     // TODO: 리팩토링
     public void deleteStation(Long stationId) {
-        validateOnlyOneSection();
+        validateHasSingleSection();
 
-        boolean isExistingSameUpStation = value.stream()
+        boolean isExistingSameUpStation = sections.stream()
                 .anyMatch(section -> section.getUpStationId().equals(stationId));
-        boolean isExistingSameDownStation = value.stream()
+        boolean isExistingSameDownStation = sections.stream()
                 .anyMatch(section -> section.getDownStationId().equals(stationId));
 
         // 구간 목록의 상행역을 제거
         if (isExistingSameUpStation && !isExistingSameDownStation) {
-            value.remove(value.stream().filter(section -> section.getUpStationId().equals(stationId)).findAny().get());
+            sections.remove(
+                    sections.stream().filter(section -> section.getUpStationId().equals(stationId)).findAny().get());
         }
 
         // 구간 목록의 하행역을 제거
         if (!isExistingSameUpStation && isExistingSameDownStation) {
-            value.remove(
-                    value.stream().filter(section -> section.getDownStationId().equals(stationId)).findAny().get());
+            sections.remove(
+                    sections.stream().filter(section -> section.getDownStationId().equals(stationId)).findAny().get());
         }
 
         // 구간 목록의 중간역을 제거
         if (isExistingSameUpStation && isExistingSameDownStation) {
-            Section leftSection = value.stream().filter(section -> section.getDownStationId().equals(stationId))
+            Section leftSection = sections.stream().filter(section -> section.getDownStationId().equals(stationId))
                     .findAny().get();
-            Section rightSection = value.stream().filter(section -> section.getUpStationId().equals(stationId))
+            Section rightSection = sections.stream().filter(section -> section.getUpStationId().equals(stationId))
                     .findAny().get();
 
             Section newSection = new Section(leftSection.getUpStationId(), rightSection.getDownStationId(),
                     leftSection.addDistance(rightSection));
-            value.remove(leftSection);
-            value.remove(rightSection);
-            value.add(newSection);
+            sections.remove(leftSection);
+            sections.remove(rightSection);
+            sections.add(newSection);
         }
     }
 
-    private void validateOnlyOneSection() {
-        if (value.size() == 1) {
+    private void validateHasSingleSection() {
+        if (sections.size() == 1) {
             throw new OnlyOneSectionException();
         }
     }
 
     public List<Section> getValue() {
-        return List.copyOf(value);
+        return List.copyOf(sections);
     }
 
     @Override
     public String toString() {
         return "Sections{" +
-                "value=" + value +
+                "value=" + sections +
                 '}';
     }
 }
