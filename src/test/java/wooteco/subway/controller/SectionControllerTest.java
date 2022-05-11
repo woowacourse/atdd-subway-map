@@ -71,7 +71,7 @@ class SectionControllerTest {
         testStation6 = stationDao.save(new Station("testStation6"));
 
         LineResponse lineResponse = lineService
-                .create(new LineRequest("testLine", "color", testStation3.getId(), testStation4.getId(), 10L));
+                .createLineAndRegisterSection(new LineRequest("testLine", "color", testStation3.getId(), testStation4.getId(), 10L));
 
         sectionService.insertSection(lineResponse.getId(), new SectionRequest(testStation4.getId(), testStation5.getId(), 20L));
     }

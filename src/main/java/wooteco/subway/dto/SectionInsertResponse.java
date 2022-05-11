@@ -19,8 +19,4 @@ public class SectionInsertResponse {
     public SectionInsertResponse(SectionResponse deletedSectionResponse) {
         this.deletedSectionResponse = deletedSectionResponse;
     }
-
-    public SectionResponse getDeletedSectionResponse() {
-        return deletedSectionResponse;
-    }
 }

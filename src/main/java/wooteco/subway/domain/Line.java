@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import wooteco.subway.domain.dto.AddSectionResult;
 
 public class Line {
     private Long id;
@@ -40,7 +41,7 @@ public class Line {
                 Collections.singletonList(new Section(id, upStation, downStation, distance)));
     }
 
-    public List<Section> addSection(Section section) {
+    public AddSectionResult addSection(Section section) {
         validateCanAddSection(section);
         boolean upStationExist = sections.containsStation(section.getUpStation());
         boolean downStationExist = sections.containsStation(section.getDownStation());
@@ -50,13 +51,13 @@ public class Line {
             // 상행 종점 등록
             if (section.getDownStation().equals(lineUpEndStation)) {
                 sections.add(section);
-                return List.of(section);
+                return AddSectionResult.createWithNewEndSection(section);
             }
             // 기존에 노선에 있던 역을 하행 삼아 그 역 사이에 들어가기
             Section sectionWithLowerStation = sections.findSectionWithLowerStation(section.getDownStation());
             List<Section> newAddedSections = sectionWithLowerStation.putBetweenDownStation(section);
             Section removedSection = sections.changeSectionWithNewSections(sectionWithLowerStation, newAddedSections);
-            return extractResultList(newAddedSections, removedSection);
+            return AddSectionResult.createSplitSections(newAddedSections, removedSection);
         }
 
         // 하행 종점 등록 || 하행 구간 사이에 들어가기
@@ -65,14 +66,14 @@ public class Line {
             // 하행 종점 등록
             if (section.getUpStation().equals(lineDownEndStation)) {
                 sections.add(section);
-                return List.of(section);
+                return AddSectionResult.createWithNewEndSection(section);
             }
 
             // 기존에 노선에 있던 역을 상행 삼아 그 역 사이에 들어가기
             Section sectionWithUpperStation = sections.findSectionWithUpperStation(section.getUpStation());
             List<Section> newAddedSections = sectionWithUpperStation.putBetweenUpStation(section);
             Section removedSection = sections.changeSectionWithNewSections(sectionWithUpperStation, newAddedSections);
-            return extractResultList(newAddedSections, removedSection);
+            return AddSectionResult.createSplitSections(newAddedSections, removedSection);
         }
         throw new IllegalArgumentException("구간을 추가하지 못하는 예외가 발생하였습니다.");
     }

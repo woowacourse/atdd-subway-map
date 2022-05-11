@@ -28,7 +28,7 @@ public class LineService {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
-    
+
     public LineResponse createLineAndRegisterSection(LineRequest lineRequest) {
         Line line = convertLineRequestToLine(lineRequest);
         LineEntity newLine = lineDao.save(line);
@@ -38,20 +38,6 @@ public class LineService {
 
         List<StationResponse> stations = extractUniqueStationsFromSections(newLine);
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
-    }
-
-    private Line convertLineRequestToLine(LineRequest lineRequest) {
-        Station upStation = getStation(lineRequest.getUpStationId());
-        Station downStation = getStation(lineRequest.getDownStationId());
-
-        return new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
-                lineRequest.getDistance());
-    }
-
-    private Station getStation(Long stationId) {
-        return stationDao.findById(stationId)
-                .orElseThrow(() -> new StationNotFoundException(
-                        stationId));
     }
 
     public List<LineResponse> findAll() {
@@ -69,6 +55,20 @@ public class LineService {
         LineEntity lineEntity = lineDao.findById(id).orElseThrow(() -> new LineNotFoundException(id));
         List<StationResponse> stations = extractUniqueStationsFromSections(lineEntity);
         return new LineResponse(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), stations);
+    }
+
+    private Line convertLineRequestToLine(LineRequest lineRequest) {
+        Station upStation = getStation(lineRequest.getUpStationId());
+        Station downStation = getStation(lineRequest.getDownStationId());
+
+        return new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
+                lineRequest.getDistance());
+    }
+
+    private Station getStation(Long stationId) {
+        return stationDao.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException(
+                        stationId));
     }
 
     public void changeField(LineResponse findLine, LineRequest lineRequest) {
