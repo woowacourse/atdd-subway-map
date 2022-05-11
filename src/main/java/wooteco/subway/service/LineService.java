@@ -59,7 +59,7 @@ public class LineService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     public Line searchById(final Long id) {
-        LineEntity lineEntity = lineDao.findById(id)
+        final LineEntity lineEntity = lineDao.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다"));
         final Sections sections = sectionService.searchSectionsByLineId(id);
         return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), sections);

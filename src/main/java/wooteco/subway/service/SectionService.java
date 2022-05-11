@@ -26,7 +26,7 @@ public class SectionService {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void resisterFirst(final Long lineId, final Long upStationId, final Long downStationId,
-                                 final Integer distance) {
+                              final Integer distance) {
         final Station upStation = stationService.searchById(upStationId);
         final Station downStation = stationService.searchById(downStationId);
 
