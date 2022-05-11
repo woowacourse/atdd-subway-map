@@ -1,4 +1,4 @@
-package wooteco.subway.ui.dto;
+package wooteco.subway.controller.dto;
 
 public class ErrorResponse {
 

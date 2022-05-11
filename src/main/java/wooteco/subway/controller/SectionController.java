@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
