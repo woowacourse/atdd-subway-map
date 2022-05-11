@@ -27,7 +27,6 @@ public class Sections {
         return new Sections(SectionMap.of(sections), SectionDistanceMap.of(entities));
     }
 
-
     public boolean hasSingleSection() {
         return sectionMap.getSize() == 1;
     }
@@ -45,7 +44,9 @@ public class Sections {
                 sectionDistanceMap.getCombinedDistanceOverStationOf(stationId));
     }
 
-    public boolean isEndSection(Long upStationId, Long downStationId) {
+    public boolean isEndSection(Section2 section) {
+        Long upStationId = section.getUpStationId();
+        Long downStationId = section.getDownStationId();
         return sectionMap.isFinalUpStation(downStationId) ||
                 sectionMap.isFinalDownStation(upStationId);
     }
@@ -56,47 +57,47 @@ public class Sections {
         }
     }
 
-    public void validateSingleRegisteredStation(Long stationId1, Long stationId2) {
-        boolean isRegisteredStation1 = isRegisteredStation(stationId1);
-        boolean isRegisteredStation2 = isRegisteredStation(stationId2);
-        if (isRegisteredStation1 && isRegisteredStation2) {
+    public void validateSingleRegisteredStation(Section2 section) {
+        boolean isRegisteredUpStation = isRegisteredStation(section.getUpStationId());
+        boolean isRegisteredDownStation = isRegisteredStation(section.getDownStationId());
+        if (isRegisteredUpStation && isRegisteredDownStation) {
             throw new IllegalArgumentException(ALL_STATIONS_REGISTERED_EXCEPTION);
         }
-        if (!isRegisteredStation1 && !isRegisteredStation2) {
+        if (!isRegisteredUpStation && !isRegisteredDownStation) {
             throw new IllegalArgumentException(NO_STATION_REGISTERED_EXCEPTION);
         }
     }
 
-    public boolean isRegisteredUpStation(Long stationId) {
-        return sectionMap.hasDownStation(stationId);
-    }
-
-    public int calculateRemainderDistance(Long upStationId,
-                                          Long downStationId,
-                                          int distance) {
-        validateNewSectionDistance(upStationId, downStationId, distance);
-        if (isRegisteredUpStation(upStationId)) {
-            return sectionDistanceMap.getRemainderDistanceToDownStation(distance, upStationId);
+    public SectionEntity toUpdatedSection(Long lineId,
+                                          Section2 section) {
+        if (hasRegisteredUpStation(section)) {
+            return toUpdatedDownSectionEntity(lineId, section);
         }
-        return sectionDistanceMap.getRemainderDistanceToUpStation(distance, downStationId);
+        return toUpdatedUpperSectionEntity(lineId, section);
     }
 
-    public Long getCurrentDownStationOf(Long upStationId) {
-        return sectionMap.getDownStationIdOf(upStationId);
+    private SectionEntity toUpdatedDownSectionEntity(Long lineId, Section2 section) {
+        Long registeredUpStationId = section.getUpStationId();
+        Long newStationId = section.getDownStationId();
+
+        int remainderDistance = sectionDistanceMap.getRemainderDistanceToDownStation(
+                section.getDistance(), registeredUpStationId);
+        Long registeredDownStationId = sectionMap.getDownStationIdOf(registeredUpStationId);
+        return new SectionEntity(lineId, newStationId, registeredDownStationId, remainderDistance);
     }
 
-    public Long getCurrentUpStationOf(Long downStationId) {
-        return sectionMap.getUpStationIdOf(downStationId);
+    private SectionEntity toUpdatedUpperSectionEntity(Long lineId, Section2 section) {
+        Long newStationId = section.getUpStationId();
+        Long registeredDownStationId = section.getDownStationId();
+
+        int remainderDistance = sectionDistanceMap.getRemainderDistanceToUpStation(
+                section.getDistance(), registeredDownStationId);
+        Long registeredUpStation = sectionMap.getUpStationIdOf(registeredDownStationId);
+        return new SectionEntity(lineId, registeredUpStation, newStationId, remainderDistance);
     }
 
-    private void validateNewSectionDistance(Long upStationId,
-                                            Long downStationId,
-                                            int distance) {
-        if (isRegisteredUpStation(upStationId)) {
-            sectionDistanceMap.validateCloserThanPreviousSectionFromUpStation(distance, upStationId);
-            return;
-        }
-        sectionDistanceMap.validateCloserThanPreviousSectionFromDownStation(distance, downStationId);
+    public boolean hasRegisteredUpStation(Section2 section) {
+        return sectionMap.hasDownStation(section.getUpStationId());
     }
 
     private boolean isRegisteredStation(Long stationId) {

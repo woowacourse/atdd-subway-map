@@ -35,23 +35,17 @@ public class SectionDistanceMap {
                 + downToUpDistanceMap.get(stationId);
     }
 
-    public void validateCloserThanPreviousSectionFromUpStation(int distance, Long upStationId) {
+    public int getRemainderDistanceToDownStation(int distance, Long upStationId) {
         if (distance >= upToDownDistanceMap.get(upStationId)) {
             throw new IllegalArgumentException(LONGER_THAN_PREVIOUS_SECTION_EXCEPTION);
         }
-    }
-
-    public void validateCloserThanPreviousSectionFromDownStation(int distance, Long downStationId) {
-        if (distance >= downToUpDistanceMap.get(downStationId)) {
-            throw new IllegalArgumentException(LONGER_THAN_PREVIOUS_SECTION_EXCEPTION);
-        }
-    }
-
-    public int getRemainderDistanceToDownStation(int distance, Long upStationId) {
         return upToDownDistanceMap.get(upStationId) - distance;
     }
 
     public int getRemainderDistanceToUpStation(int distance, Long downStationId) {
+        if (distance >= downToUpDistanceMap.get(downStationId)) {
+            throw new IllegalArgumentException(LONGER_THAN_PREVIOUS_SECTION_EXCEPTION);
+        }
         return downToUpDistanceMap.get(downStationId) - distance;
     }
 }
