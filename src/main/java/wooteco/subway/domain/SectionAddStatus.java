@@ -59,7 +59,7 @@ public enum SectionAddStatus {
 
     private static boolean existAnyNewDownStation(final List<Section> sections, final Section section) {
         return sections.stream()
-            .anyMatch(it -> addNewDownStationCase(section, it.getUpStationId()));
+            .anyMatch(it -> addNewDownStationCase(section, it.getDownStationId()));
     }
 
 
