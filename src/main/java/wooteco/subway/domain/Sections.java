@@ -23,7 +23,7 @@ public class Sections {
         sections.add(section);
     }
 
-    public static Sections from(ArrayList<Section> mixedSections) {
+    public static Sections from(List<Section> mixedSections) {
         LinkedList<Section> sections = new LinkedList<>(List.of(mixedSections.remove(0)));
         while (!mixedSections.isEmpty()) {
             for (int i = 0; i < mixedSections.size(); i++) {
