@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,7 +60,7 @@ class SectionsTest {
         List<Long> ids = sections.getSortedStationIds();
 
         // then
-        assertThat(ids).containsExactly(section1.getDownStationId(), section2.getDownStationId(),
-                section3.getDownStationId(), section4.getDownStationId(), section4.getUpStationId());
+        assertThat(ids).containsExactly(section4.getUpStationId(), section4.getDownStationId(),
+                section3.getDownStationId(), section2.getDownStationId(), section1.getDownStationId());
     }
 }

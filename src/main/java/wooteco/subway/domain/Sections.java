@@ -24,14 +24,14 @@ public class Sections {
         Map<Long, Long> sectionMap = initByUpStationKey();
         Long nowId = value.get(0).getDownStationId();
         while (nowId != null) {
-            ids.add(0, nowId);
+            ids.add(nowId);
             nowId = sectionMap.get(nowId);
         }
 
         sectionMap = initByDownStationKey();
         nowId = value.get(0).getUpStationId();
         while (nowId != null) {
-            ids.add(nowId);
+            ids.add(0, nowId);
             nowId = sectionMap.get(nowId);
         }
 
