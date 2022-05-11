@@ -106,7 +106,7 @@ public class SectionService {
             return;
         }
         if (sectionLinks.isEndStation(stationId)) {
-            sectionDao.deleteEndStation(lineId, stationId);
+            sectionDao.delete(lineId, stationId);
             return;
         }
         throw new NoSuchElementException("구간이 존재하지 않음");
@@ -116,7 +116,6 @@ public class SectionService {
         Section upSection = getSameUpSection(stationId, lineSections);
         Section downSection = getSameDownSection(stationId, lineSections);
         sectionDao.delete(lineId, stationId);
-        sectionDao.delete(lineId, downSection.getUpStationId());
         sectionDao.save(new Section(lineId, downSection.getUpStationId(), upSection.getDownStationId(),
             upSection.getDistance() + downSection.getDistance()));
     }
