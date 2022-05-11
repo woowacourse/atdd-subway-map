@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.ClientException;
+
 public class Station {
 
     private Long id;
@@ -9,8 +11,15 @@ public class Station {
     }
 
     public Station(Long id, String name) {
+        validateNull(name);
         this.id = id;
         this.name = name;
+    }
+
+    private void validateNull(String name) {
+        if (name.isBlank()) {
+            throw new ClientException("지하철 역의 이름을 입력해주세요.");
+        }
     }
 
     public Long getId() {

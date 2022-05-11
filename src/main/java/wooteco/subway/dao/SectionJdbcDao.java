@@ -46,4 +46,3 @@ public class SectionJdbcDao {
         jdbcTemplate.update(sql, lineId, section.getUpStationId(), section.getDownStationId());
     }
 }
-
