@@ -78,6 +78,25 @@ class SectionDaoTest {
                 })
         );
     }
+    
+    @DisplayName("구간을 전체 저장한다.")
+    @Test
+    void 구간_전체_저장() {
+        Line line = generateLine("2호선", "bg-green-600");
+        Station upStation1 = generateStation("선릉역");
+        Station downStation1 = generateStation("잠실역");
+        Integer distance1 = 10;
+        Station upStation2 = generateStation("신도림역");
+        Station downStation2 = generateStation("신대방역");
+        Integer distance2 = 7;
+        Section section1 = new Section(line.getId(), upStation1.getId(), downStation1.getId(), distance1);
+        Section section2 = new Section(line.getId(), upStation2.getId(), downStation2.getId(), distance2);
+
+        sectionDao.saveAll(List.of(section1, section2));
+
+        List<Section> sections = sectionDao.findByLineId(line.getId());
+        assertThat(sections.size()).isEqualTo(2);
+    }
 
     private Line generateLine(String name, String color) {
         return lineDao.save(new Line(name, color));

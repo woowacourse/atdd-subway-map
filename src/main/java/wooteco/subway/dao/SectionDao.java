@@ -7,6 +7,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
@@ -37,6 +39,14 @@ public class SectionDao {
         Long id = insertActor.executeAndReturnKey(params).longValue();
 
         return findById(id).get();
+    }
+
+    public void saveAll(List<Section> sections) {
+        String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) "
+                + "values (:lineId, :upStationId, :downStationId, :distance)";
+
+        SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(sections.toArray());
+        jdbcTemplate.batchUpdate(sql, batch);
     }
 
     public Optional<Section> findById(Long id) {
