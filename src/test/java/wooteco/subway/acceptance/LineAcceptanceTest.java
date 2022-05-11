@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
@@ -24,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineTest() {
         //given, when
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", 1L, 2L, 0);
+                "신분당선", "red", 1L, 2L, 5);
         ExtractableResponse<Response> response = extractPostResponse(lineRequest, "/lines");
 
         // then
@@ -38,7 +39,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateInfoTest() {
         // given
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", 1L, 2L, 0);
+                "신분당선", "red", 1L, 2L, 5);
         ExtractableResponse<Response> response = extractPostResponse(lineRequest, "/lines");
 
         // when
@@ -53,11 +54,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         LineRequest lineRequest1 = new LineRequest(
-                "신분당선", "red", 1L, 2L, 0);
+                "신분당선", "red", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse1 = extractPostResponse(lineRequest1, "/lines");
 
         LineRequest lineRequest2 = new LineRequest(
-                "분당선", "green", 1L, 2L, 0);
+                "분당선", "green", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse2 = extractPostResponse(lineRequest2, "/lines");
 
         // when
@@ -79,7 +80,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", 1L, 2L, 0);
+                "신분당선", "red", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse = extractPostResponse(lineRequest, "/lines");
 
         // when
@@ -95,7 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getStationByIdTest() {
         // given
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", 1L, 2L, 0);
+                "신분당선", "red", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse = extractPostResponse(lineRequest, "/lines");
 
         // when
@@ -115,12 +116,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         LineRequest lineRequest = new LineRequest(
-                "신분당선", "red", 1L, 2L, 0);
+                "신분당선", "red", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse = extractPostResponse(lineRequest, "/lines");
 
         // when, then
         LineRequest updateLineRequest = new LineRequest(
-                "분당선", "green", 1L, 2L, 0);
+                "분당선", "green", 1L, 2L, 5);
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> updateResponse = extractPutResponse(updateLineRequest, uri);
@@ -130,5 +131,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(getResponse.jsonPath().getObject(".", LineResponse.class))
                 .extracting("name", "color")
                 .containsExactly("분당선", "green");
+    }
+
+    @DisplayName("구간을 등록한다.")
+    @Test
+    void addSection() {
+        LineRequest lineRequest = new LineRequest(
+                "신분당선", "red", 1L, 2L, 5);
+        extractPostResponse(lineRequest, "/lines");
+
+        //when
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        ExtractableResponse<Response> response = extractPostResponse(sectionRequest,
+                "/lines/1/sections");
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

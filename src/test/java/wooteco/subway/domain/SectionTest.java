@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 class SectionTest {
 
+    private final Section section = new Section(1L, 1L, 2L, 5);
+
     @Test
     @DisplayName("상행과 하행이 같은 역이면 예외가 발생한다.")
     void validateStationId() {
