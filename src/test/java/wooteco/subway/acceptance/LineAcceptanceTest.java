@@ -69,7 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList(".", LineResponse.class)).hasSize(5);
+        assertThat(response.body().jsonPath().getList(".", LineResponse.class)).hasSize(2);
     }
 
     @DisplayName("지하철 노선 조회")

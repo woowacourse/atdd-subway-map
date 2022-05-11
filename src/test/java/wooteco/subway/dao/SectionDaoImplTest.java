@@ -41,4 +41,20 @@ public class SectionDaoImplTest extends DaoImplTest {
         assertThat(newSection.getDownStation()).isEqualTo(downStation);
         assertThat(newSection.getDistance()).isEqualTo(12);
     }
+
+    @DisplayName("구간 정보들을 업데이트 한다.")
+    @Test
+    void update() {
+        Station upStation = stationDaoImpl.findById(1L);
+        Station downStation = stationDaoImpl.findById(2L);
+        Section section = new Section(1L, upStation, downStation, 12);
+
+        Section savedSection = sectionDaoImpl.save(section);
+
+        Station newDownStation = new Station(3L, "이수역");
+        Section newSection = new Section(savedSection.getId(), 1L, upStation, newDownStation, 7);
+        List<Section> sections = List.of(newSection);
+
+        assertThat(sectionDaoImpl.update(sections)).isEqualTo(1);
+    }
 }

@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
@@ -19,10 +20,13 @@ public class SectionService {
         this.stationDao = stationDao;
     }
 
-    public void save(final Long lineId, final SectionRequest sectionRequest) {
+    @Transactional
+    public int save(final Long lineId, final SectionRequest sectionRequest) {
         final Section section = createSection(lineId, sectionRequest);
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        sections.addSection(section);
+        final Section newSection = sectionDao.save(section);
+        sections.addSection(newSection);
+        return sectionDao.update(sections.getSections());
     }
 
     private Section createSection(final Long lineId, final SectionRequest sectionRequest) {

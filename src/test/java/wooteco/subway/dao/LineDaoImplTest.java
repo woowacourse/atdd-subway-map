@@ -35,9 +35,14 @@ public class LineDaoImplTest extends DaoImplTest{
     @DisplayName("노선정보들을 가져온다.")
     @Test
     void findAll() {
+        Line line = new Line("분당선", "green");
+        Line nextLine = new Line("신분당선", "green");
+        lineDao.save(line);
+        lineDao.save(nextLine);
+
         List<Line> lines = lineDao.findAll();
 
-        assertThat(lines.size()).isEqualTo(3);
+        assertThat(lines.size()).isEqualTo(2);
     }
 
     @DisplayName("노선 정보를 삭제한다.")

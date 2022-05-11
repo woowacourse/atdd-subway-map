@@ -4,8 +4,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotFoundException;
 
 public class FakeSectionDao implements SectionDao {
 
@@ -15,6 +18,7 @@ public class FakeSectionDao implements SectionDao {
     public static void init() {
         seq = 0L;
         sections = new ArrayList<>();
+        sections.add(new Section(1L, new Station(1L, "선릉역"), new Station(2L, "잠실역"), 15));
     }
 
     @Override
@@ -29,6 +33,22 @@ public class FakeSectionDao implements SectionDao {
         return sections.stream()
                 .filter(section -> section.getLineId() == lineId)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public int update(List<Section> sections) {
+        for (Section section : sections) {
+            updateBy(section);
+        }
+        return this.sections.size();
+    }
+
+    private void updateBy(final Section otherSection) {
+        int targetIndex = IntStream.range(0, sections.size())
+                .filter(index -> sections.get(index).getId() == otherSection.getId())
+                .findAny()
+                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 노선입니다."));
+        sections.set(targetIndex, otherSection);
     }
 
     private Section createNewObject(Section section) {

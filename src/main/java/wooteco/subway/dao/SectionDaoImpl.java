@@ -1,7 +1,9 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -47,12 +49,30 @@ public class SectionDaoImpl implements SectionDao {
 
     @Override
     public List<Section> findByLineId(long lineId) {
-        final String sql =
-                "select section.id as id, line_id, up_station_id, down_station_id, distance, "
-                        + "upstation.name as up_name, downstation.name as dw_name from section "
-                        + "join station as upstation on upstation.id = section.up_station_id "
-                        + "join station as downstation on downstation.id = section.down_station_id "
-                        + "where line_id = (?);";
+        final String sql = "select section.id as id, line_id, up_station_id, down_station_id, distance, "
+                + "upstation.name as up_name, downstation.name as dw_name from section "
+                + "join station as upstation on upstation.id = section.up_station_id "
+                + "join station as downstation on downstation.id = section.down_station_id "
+                + "where line_id = (?);";
         return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
+    }
+
+    @Override
+    public int update(List<Section> sections) {
+        final String sql = "update section set (up_station_id, down_station_id, distance) = (?, ?, ?) where id = (?)";
+        return jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setLong(1, sections.get(i).getUpStation().getId());
+                ps.setLong(2, sections.get(i).getDownStation().getId());
+                ps.setInt(3, sections.get(i).getDistance());
+                ps.setLong(4, sections.get(i).getId());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return sections.size();
+            }
+        }).length;
     }
 }

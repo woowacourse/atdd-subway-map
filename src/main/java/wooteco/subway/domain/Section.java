@@ -22,6 +22,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Long getLineId() {
         return lineId;
     }
@@ -55,11 +59,11 @@ public class Section {
     }
 
     public boolean equalsWithUpStation(final Section otherSection) {
-        return this.upStation.equals(otherSection.upStation) || this.upStation.equals(otherSection.downStation);
+        return this.upStation.equals(otherSection.upStation) || this.downStation.equals(otherSection.upStation);
     }
 
     public boolean equalsWithDownStation(final Section otherSection) {
-        return this.downStation.equals(otherSection.upStation) || this.downStation.equals(otherSection.downStation);
+        return this.downStation.equals(otherSection.downStation) || this.upStation.equals(otherSection.downStation);
     }
 
     public boolean hasSameUpStation(final Section otherSection) {
