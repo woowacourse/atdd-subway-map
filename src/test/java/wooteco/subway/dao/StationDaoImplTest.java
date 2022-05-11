@@ -74,4 +74,12 @@ class StationDaoImplTest {
 
         assertThat(stations).isEmpty();
     }
+
+    @DisplayName("id 값을 받아, 해당 id 값이 존재하는지 반환한다.")
+    @ParameterizedTest
+    @CsvSource({"1, true", "2, false"})
+    void exists_id(Long id, boolean expected) {
+        boolean actual = stationDao.exists(id);
+        assertThat(actual).isEqualTo(expected);
+    }
 }
