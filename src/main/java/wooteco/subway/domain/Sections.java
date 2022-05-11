@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import wooteco.subway.exception.ExceptionMessage;
 
 public class Sections {
+    private static final int MINIMUM_SECTIONS_FOR_DELETE = 2;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -61,7 +62,10 @@ public class Sections {
         return new ArrayList<>(ids);
     }
 
-    public List<Section> findNearByStationId(Long stationId) {
+    public List<Section> findDeletableByStationId(Long stationId) {
+        if (sections.size() < MINIMUM_SECTIONS_FOR_DELETE) {
+            throw new IllegalArgumentException(ExceptionMessage.SECTIONS_NOT_DELETABLE.getContent());
+        }
         return sections.stream()
                 .filter(it -> it.hasStation(stationId))
                 .collect(Collectors.toList());
