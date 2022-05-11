@@ -14,11 +14,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Distance;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.BothUpAndDownStationAlreadyExistsException;
@@ -66,17 +65,17 @@ class SectionServiceTest {
         Long lineId = lineResponse.getId();
         Long upStationId = stationResponse1.getId();
         Long downStationId = stationResponse2.getId();
-        Section newSection = new Section(upStationId, downStationId, new Distance(10));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 10);
 
         // when
-        sectionService.createSection(lineId, newSection);
+        sectionService.createSection(lineId, sectionRequest);
 
         // then
         Sections sections = sectionService.getSectionsByLineId(lineId);
         boolean isCreatedSectionExisting = sections.getValue()
                 .stream()
-                .anyMatch(section -> section.getUpStationId().equals(newSection.getUpStationId())
-                        && section.getDownStationId().equals(newSection.getDownStationId()));
+                .anyMatch(section -> section.getUpStationId().equals(sectionRequest.getUpStationId())
+                        && section.getDownStationId().equals(sectionRequest.getDownStationId()));
 
         assertThat(isCreatedSectionExisting).isTrue();
     }
@@ -88,17 +87,17 @@ class SectionServiceTest {
         Long lineId = lineResponse.getId();
         Long upStationId = stationResponse4.getId();
         Long downStationId = stationResponse5.getId();
-        Section newSection = new Section(upStationId, downStationId, new Distance(10));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 10);
 
         // when
-        sectionService.createSection(lineId, newSection);
+        sectionService.createSection(lineId, sectionRequest);
 
         // then
         Sections sections = sectionService.getSectionsByLineId(lineId);
         boolean isCreatedSectionExisting = sections.getValue()
                 .stream()
-                .anyMatch(section -> section.getUpStationId().equals(newSection.getUpStationId())
-                        && section.getDownStationId().equals(newSection.getDownStationId()));
+                .anyMatch(section -> section.getUpStationId().equals(sectionRequest.getUpStationId())
+                        && section.getDownStationId().equals(sectionRequest.getDownStationId()));
 
         assertThat(isCreatedSectionExisting).isTrue();
     }
@@ -110,17 +109,17 @@ class SectionServiceTest {
         Long lineId = lineResponse.getId();
         Long upStationId = stationResponse2.getId();
         Long downStationId = stationResponse3.getId();
-        Section newSection = new Section(upStationId, downStationId, new Distance(5));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 5);
 
         // when
-        sectionService.createSection(lineId, newSection);
+        sectionService.createSection(lineId, sectionRequest);
 
         // then
         Sections sections = sectionService.getSectionsByLineId(lineId);
         boolean isCreatedSectionExisting = sections.getValue()
                 .stream()
-                .anyMatch(section -> section.getUpStationId().equals(newSection.getUpStationId())
-                        && section.getDownStationId().equals(newSection.getDownStationId()));
+                .anyMatch(section -> section.getUpStationId().equals(sectionRequest.getUpStationId())
+                        && section.getDownStationId().equals(sectionRequest.getDownStationId()));
 
         assertThat(isCreatedSectionExisting).isTrue();
     }
@@ -133,10 +132,10 @@ class SectionServiceTest {
         Long lineId = lineResponse.getId();
         Long upStationId = stationResponse2.getId();
         Long downStationId = stationResponse3.getId();
-        Section newSection = new Section(upStationId, downStationId, new Distance(distance));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         // when & then
-        assertThatThrownBy(() -> sectionService.createSection(lineId, newSection))
+        assertThatThrownBy(() -> sectionService.createSection(lineId, sectionRequest))
                 .isInstanceOf(CanNotInsertSectionException.class);
     }
 
@@ -147,10 +146,10 @@ class SectionServiceTest {
         Long lineId = lineResponse.getId();
         Long upStationId = stationResponse2.getId();
         Long downStationId = stationResponse4.getId();
-        Section newSection = new Section(upStationId, downStationId, new Distance(10));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 10);
 
         // when & then
-        assertThatThrownBy(() -> sectionService.createSection(lineId, newSection))
+        assertThatThrownBy(() -> sectionService.createSection(lineId, sectionRequest))
                 .isInstanceOf(BothUpAndDownStationAlreadyExistsException.class);
     }
 
@@ -161,10 +160,10 @@ class SectionServiceTest {
         Long lineId = lineResponse.getId();
         Long upStationId = stationResponse1.getId();
         Long downStationId = stationResponse5.getId();
-        Section newSection = new Section(upStationId, downStationId, new Distance(10));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 10);
 
         // when & then
-        assertThatThrownBy(() -> sectionService.createSection(lineId, newSection))
+        assertThatThrownBy(() -> sectionService.createSection(lineId, sectionRequest))
                 .isInstanceOf(BothUpAndDownStationDoNotExistException.class);
     }
 
@@ -175,9 +174,9 @@ class SectionServiceTest {
         Long lineId = lineResponse.getId();
         Long upStationId = stationResponse1.getId();
         Long downStationId = stationResponse2.getId();
-        Section newSection = new Section(upStationId, downStationId, new Distance(10));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 10);
 
-        sectionService.createSection(lineId, newSection);
+        sectionService.createSection(lineId, sectionRequest);
 
         // when
         sectionService.deleteStationById(lineId, upStationId);
@@ -194,9 +193,9 @@ class SectionServiceTest {
         Long lineId = lineResponse.getId();
         Long upStationId = stationResponse4.getId();
         Long downStationId = stationResponse5.getId();
-        Section newSection = new Section(upStationId, downStationId, new Distance(10));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 10);
 
-        sectionService.createSection(lineId, newSection);
+        sectionService.createSection(lineId, sectionRequest);
 
         // when
         sectionService.deleteStationById(lineId, downStationId);
@@ -213,9 +212,9 @@ class SectionServiceTest {
         Long lineId = lineResponse.getId();
         Long upStationId = stationResponse2.getId();
         Long downStationId = stationResponse3.getId();
-        Section newSection = new Section(upStationId, downStationId, new Distance(5));
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 5);
 
-        sectionService.createSection(lineId, newSection);
+        sectionService.createSection(lineId, sectionRequest);
 
         // when
         sectionService.deleteStationById(lineId, downStationId);

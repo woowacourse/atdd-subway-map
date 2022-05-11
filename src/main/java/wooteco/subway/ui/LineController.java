@@ -10,19 +10,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 
 @RestController
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping(value = "/lines", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -53,5 +58,17 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity<Void> createSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        sectionService.createSection(id, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}/sections")
+    public ResponseEntity<Void> createSection(@PathVariable Long id, @RequestParam Long stationId) {
+        sectionService.deleteStationById(id, stationId);
+        return ResponseEntity.ok().build();
     }
 }

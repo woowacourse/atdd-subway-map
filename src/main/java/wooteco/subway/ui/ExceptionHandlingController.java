@@ -3,9 +3,13 @@ package wooteco.subway.ui;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.exception.BothUpAndDownStationAlreadyExistsException;
+import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
+import wooteco.subway.exception.CanNotInsertSectionException;
 import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.exception.OnlyOneSectionException;
 
 @RestControllerAdvice
 public class ExceptionHandlingController {
@@ -15,8 +19,10 @@ public class ExceptionHandlingController {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(DuplicateNameException.class)
-    public ResponseEntity<String> handleDuplicateName(DuplicateNameException e) {
+    @ExceptionHandler({DuplicateNameException.class, CanNotInsertSectionException.class, OnlyOneSectionException.class,
+            BothUpAndDownStationAlreadyExistsException.class,
+            BothUpAndDownStationDoNotExistException.class})
+    public ResponseEntity<String> handleDuplicateName(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

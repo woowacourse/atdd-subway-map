@@ -2,8 +2,8 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.dto.SectionRequest;
 
 @Service
 public class SectionService {
@@ -14,10 +14,9 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public void createSection(Long lineId, Section section) {
+    public void createSection(Long lineId, SectionRequest sectionRequest) {
         Sections sections = sectionDao.findSectionsByLineId(lineId);
-        sections.addSection(section);
-
+        sections.addSection(sectionRequest.toSection());
         sectionDao.saveSections(lineId, sections);
     }
 
