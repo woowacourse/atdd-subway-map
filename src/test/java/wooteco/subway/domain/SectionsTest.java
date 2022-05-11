@@ -16,9 +16,9 @@ import java.util.Optional;
 
 class SectionsTest {
 
-    private final Station station1 = new Station(1L, "아차산역");
-    private final Station station2 = new Station(2L, "군자역");
-    private final Section section = new Section(1L, station1, station2, 10, 1L);
+    private final Station upStation = new Station(1L, "아차산역");
+    private final Station downStation = new Station(2L, "군자역");
+    private final Section section = new Section(1L, upStation, downStation, 10, 1L);
     private Sections sections;
 
     @BeforeEach
@@ -42,7 +42,7 @@ class SectionsTest {
     @DisplayName("추가하려는 구간의 역들이 기존 구간에 모두 존재하면 예외를 발생한다.")
     @Test
     void add_throwsAllStationExistException() {
-        final Section newSection = new Section(station1, station2, 5, 1L);
+        final Section newSection = new Section(upStation, downStation, 5, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -141,7 +141,7 @@ class SectionsTest {
         assert (updatedSection.isPresent() && addedSection.isPresent());
 
         assertAll(
-                () -> assertThat(updatedSection.get().getUpStation()).isEqualTo(station1),
+                () -> assertThat(updatedSection.get().getUpStation()).isEqualTo(upStation),
                 () -> assertThat(updatedSection.get().getDownStation()).isEqualTo(newStation1),
                 () -> assertThat(updatedSection.get().getDistance()).isEqualTo(5),
 
@@ -172,7 +172,7 @@ class SectionsTest {
 
         assertAll(
                 () -> assertThat(updatedSection.get().getUpStation()).isEqualTo(newStation2),
-                () -> assertThat(updatedSection.get().getDownStation()).isEqualTo(station2),
+                () -> assertThat(updatedSection.get().getDownStation()).isEqualTo(downStation),
                 () -> assertThat(updatedSection.get().getDistance()).isEqualTo(5),
 
                 () -> assertThat(addedSection.get().getUpStation()).isEqualTo(newStation1),
@@ -203,17 +203,39 @@ class SectionsTest {
                 .hasMessage("구간이 1개 이므로 삭제할 수 없습니다.");
     }
 
-    @DisplayName("종점 구간을 삭제한다.")
+    @DisplayName("종점 구간의 역을 삭제한다.")
     @ParameterizedTest
     @ValueSource(longs = {2, 3})
     void deleteEndSection(final long stationId) {
-
         final Station station = new Station(3L, "광나루역");
-        final Section newSection = new Section(2L, station, station1, 10, 1L);
+        final Section newSection = new Section(2L, station, upStation, 10, 1L);
         final Sections newSections = new Sections(List.of(section, newSection));
 
         newSections.delete(stationId);
 
         assertThat(newSections.getSections().size()).isOne();
+    }
+
+    @DisplayName("중간 구간의 역을 삭제한다.")
+    @Test
+    void deleteBranchedSection() {
+        final Station station = new Station(3L, "광나루역");
+        final Section newSection = new Section(2L, station, upStation, 10, 1L);
+        final Sections newSections = new Sections(List.of(section, newSection));
+        // 광나루 - 아차산 - 군자
+        newSections.delete(1L);
+
+        final Optional<Section> foundSection = newSections.getSections()
+                .stream()
+                .filter(section1 -> section1.getUpStation().equals(station))
+                .findAny();
+
+        assert (foundSection.isPresent());
+
+        assertAll(
+                () -> assertThat(foundSection.get().getUpStation()).isEqualTo(station),
+                () -> assertThat(foundSection.get().getDownStation()).isEqualTo(downStation),
+                () -> assertThat(foundSection.get().getDistance()).isEqualTo(20)
+        );
     }
 }
