@@ -39,13 +39,12 @@ public class SectionService {
 
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
-        final Section targetSection = sectionRequest.toEntity(lineId);
-        // 기존에 존재하는 sections을 가져와서 시작/끝을 일일히 확인한다. 가장 시작과 가장끝을 확인할 수 있나?
-        //객체 vs List객체 비교를 위해, 일급컬렉션 생성
-        //final List<Section> sectionList = sectionDao.findUniqueSectionStationsByLineId(lineId);
+        Section targetSection = sectionRequest.toEntity(lineId);
+        //트랜잭셔널을 달았으므로, 일단 section Id부여를 위해 (Id 부여되있어야 일괄 업데이트 됨)
+        targetSection = sectionDao.save(targetSection);
         final Sections sections = new Sections(sectionDao.findSectionStationsByLineId(lineId));
 
         //1) sections - station id별로 정렬해서 나열한다
-        sections.canAddSection(targetSection);
+        final List<Section> updatedSections = sections.addSection(targetSection);
     }
 }

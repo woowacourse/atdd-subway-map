@@ -2,6 +2,8 @@ package wooteco.subway.domain;
 
 import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_DOWN_STATION;
 import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_UP_STATION;
+import static wooteco.subway.domain.SectionAddStatus.ADD_NEW_DOWN_STATION;
+import static wooteco.subway.domain.SectionAddStatus.ADD_NEW_UP_STATION;
 import static wooteco.subway.domain.SectionAddStatus.from;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ public class Sections {
         }
     }
 
-    public void canAddSection(final Section section) {
+    public List<Section> addSection(final Section section) {
         //1. 둘중에 하나만 같아야함. (둘다 기존에 존재시 예외 + (개별구간) 하나도 같지 않다면 예외
         final SectionAddStatus sectionAddStatus = getAddSectionStatus(section);
 
@@ -36,27 +38,34 @@ public class Sections {
         if (hasMiddleSection(sectionAddStatus)) {
             //1) 상행이 같아서 middle을 추가하는 경우, 추가section distance vs 기존 sections -> 상행-하행 distance 거리 검증이 필요하다.
             //1-1) 상행or하행 같은 기존section 찾아, 거리 비교하기 
-            validateDistance(section, sectionAddStatus);
-            // 추가하기
+            return addMiddleSection(section, sectionAddStatus);
         }
 
-//        if (hasMiddleStation(section, standardStation)) {
-        // --> 안쪽이면, 반대station까지의 거리를 비교로 검증해야함.
-//            validateDistance(section);
-        // ---> 정말 안쪽이면, 구간을 새로 바꿔주야함.
-//        }
-        // --> 바깥쪽이면, 방향에 맞게 노선의 추가만 해주면 된다?
+        if (sectionAddStatus == ADD_NEW_UP_STATION) {
+            return null;
+        }
+        if (sectionAddStatus == ADD_NEW_DOWN_STATION) {
+            return null;
+        }
+        return null;
     }
 
-    private void validateDistance(final Section section, final SectionAddStatus sectionAddStatus) {
+    private List<Section> addMiddleSection(final Section section, final SectionAddStatus sectionAddStatus) {
         if (sectionAddStatus == ADD_MIDDLE_FROM_UP_STATION) {
             final Section sameUpStationSection = getSameUpStationSection(section);
             checkDistance(section, sameUpStationSection);
+            value.removeIf(it -> Objects.equals(it.getId(), sameUpStationSection.getId()));
+            value.add(section); // up--middle
+            value.add(section.createMiddleToDownSection(sameUpStationSection));
         }
         if (sectionAddStatus == ADD_MIDDLE_FROM_DOWN_STATION) {
             final Section sameDownStationSection = getSameDownStationSection(section);
             checkDistance(section, sameDownStationSection);
+            value.removeIf(it -> Objects.equals(it.getId(), sameDownStationSection.getId()));
+            value.add(section); // middle--down
+            value.add(section.createUpToMiddleSection(sameDownStationSection));
         }
+        return value;
     }
 
     private void checkDistance(final Section section, final Section sameStandardStationSection) {

@@ -14,11 +14,9 @@ public enum SectionAddStatus {
                                         final Long upStationId,
                                         final Long downStationId) {
         if (isOnlyUpStationSame(section, upStationId, downStationId)) {
-            // TODO 거리 검증 필요
             return ADD_MIDDLE_FROM_UP_STATION;
         }
         if (isOnlyDownStationSame(section, upStationId, downStationId)) {
-            // TODO 거리 검증 필요
             return ADD_MIDDLE_FROM_DOWN_STATION;
         }
         if (Objects.equals(section.getDownStationId(), upStationId)) {

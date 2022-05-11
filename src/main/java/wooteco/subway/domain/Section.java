@@ -72,6 +72,16 @@ public class Section implements Comparator<Section> {
         return Long.compare(section1.getId(), section2.getId());
     }
 
+    public Section createMiddleToDownSection(final Section unSplitSection) {
+        return new Section(unSplitSection.id, lineId, downStationId, unSplitSection.getDownStationId(),
+            unSplitSection.getDistance() - distance);
+    }
+
+    public Section createUpToMiddleSection(final Section unSplitSection) {
+        return new Section(unSplitSection.id, lineId, unSplitSection.upStationId, upStationId,
+            unSplitSection.getDistance() - distance);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -108,5 +118,16 @@ public class Section implements Comparator<Section> {
         result = 31 * result + (getUpStationId() != null ? getUpStationId().hashCode() : 0);
         result = 31 * result + (getDownStationId() != null ? getDownStationId().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+            "id=" + id +
+            ", lineId=" + lineId +
+            ", distance=" + distance +
+            ", upStationId=" + upStationId +
+            ", downStationId=" + downStationId +
+            '}';
     }
 }
