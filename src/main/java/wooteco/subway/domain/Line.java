@@ -134,6 +134,10 @@ public class Line {
         return List.of(mergedSection, sectionWithUpperStation, sectionWithLowerStation);
     }
 
+    public ArrayList<Station> getUniqueStations() {
+        return sections.getStations();
+    }
+
     private void validateCanRemoveStation(Station station) {
         if (sections.size() <= 1) {
             throw new IllegalStateException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");

@@ -1,9 +1,6 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
@@ -13,7 +10,6 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.entity.LineEntity;
-import wooteco.subway.domain.entity.SectionEntity;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -22,8 +18,8 @@ import wooteco.subway.utils.exceptions.StationNotFoundException;
 
 @Service
 public class LineService {
-
     private final LineDao lineDao;
+
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
@@ -32,8 +28,8 @@ public class LineService {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
-
-    public LineResponse create(LineRequest lineRequest) {
+    
+    public LineResponse createLineAndRegisterSection(LineRequest lineRequest) {
         Line line = convertLineRequestToLine(lineRequest);
         LineEntity newLine = lineDao.save(line);
 
@@ -45,16 +41,17 @@ public class LineService {
     }
 
     private Line convertLineRequestToLine(LineRequest lineRequest) {
-        Station upStation = stationDao.findById(lineRequest.getUpStationId())
-                .orElseThrow(() -> new StationNotFoundException(
-                        lineRequest.getUpStationId()));
-        Station downStation = stationDao.findById(lineRequest.getDownStationId())
-                .orElseThrow(() -> new StationNotFoundException(
-                        lineRequest.getDownStationId()));
+        Station upStation = getStation(lineRequest.getUpStationId());
+        Station downStation = getStation(lineRequest.getDownStationId());
 
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
+        return new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
                 lineRequest.getDistance());
-        return line;
+    }
+
+    private Station getStation(Long stationId) {
+        return stationDao.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException(
+                        stationId));
     }
 
     public List<LineResponse> findAll() {
@@ -82,20 +79,18 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    private ArrayList<StationResponse> extractUniqueStationsFromSections(LineEntity line) {
-        List<SectionEntity> sections = sectionDao.findAllByLineId(line.getId());
-        Set<StationResponse> stations = new LinkedHashSet<>();
+    private List<StationResponse> extractUniqueStationsFromSections(LineEntity lineEntity) {
+        Line line = convertLineEntityToLine(lineEntity);
+        return line.getUniqueStations().stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+    }
 
-        for (SectionEntity sectionEntity : sections) {
-            Station upStation = stationDao.findById(sectionEntity.getUpStationId())
-                    .orElseThrow(() -> new StationNotFoundException(
-                            sectionEntity.getUpStationId()));
-            Station downStation = stationDao.findById(sectionEntity.getDownStationId())
-                    .orElseThrow(() -> new StationNotFoundException(
-                            sectionEntity.getDownStationId()));
-            stations.add(new StationResponse(upStation));
-            stations.add(new StationResponse(downStation));
-        }
-        return new ArrayList<>(stations);
+    private Line convertLineEntityToLine(LineEntity lineEntity) {
+        Station upStation = getStation(lineEntity.getUpStationId());
+        Station downStation = getStation(lineEntity.getDownStationId());
+
+        return new Line(lineEntity.getName(), lineEntity.getColor(), upStation, downStation,
+                lineEntity.getDistance());
     }
 }

@@ -50,4 +50,5 @@ public class LineEntity {
     public Long getDistance() {
         return distance;
     }
+
 }
