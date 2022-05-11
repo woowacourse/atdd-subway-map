@@ -4,23 +4,26 @@ import java.util.List;
 import java.util.Objects;
 
 public class Line {
-    private Long id;
+    private final Long id;
     private String name;
     private String color;
     private final Sections sections = new Sections();
 
     public Line(final Long id, final String name, final String color) {
+        validateNotBlank(name);
+        validateNotBlank(color);
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
     public Line(final String name, final String color) {
-        this.name = name;
-        this.color = color;
+        this(null, name, color);
     }
 
     public void update(final String name, final String color) {
+        validateNotBlank(name);
+        validateNotBlank(color);
         this.name = name;
         this.color = color;
     }
@@ -30,10 +33,10 @@ public class Line {
             this.sections.add(section);
         }
     }
+
     public void addSection(final Section section) {
         sections.add(section);
     }
-
     public void removeStation(final Station station) {
         sections.removeStation(station);
     }
@@ -44,6 +47,12 @@ public class Line {
 
     public List<Station> getStations() {
         return List.copyOf(sections.stations());
+    }
+
+    private void validateNotBlank(final String string) {
+        if (string.isBlank()) {
+            throw new IllegalArgumentException("빈 값이 들어올 수 없습니다.");
+        }
     }
 
     public Long getId() {

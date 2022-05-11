@@ -38,27 +38,29 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void registerLine() {
         // given
-        long upStationId = registerStationAndReturnId("서울역");
-        long downStationId = registerStationAndReturnId("시청");
+        long id1 = registerStationAndReturnId("station1");
+        long id2 = registerStationAndReturnId("station2");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse(
-                "1호선", "파란색", upStationId, downStationId, 10);
+        String lineName = "line1";
+        String lineColor = "color1";
+        ExtractableResponse<Response> response = registerLineAndReturnResponse(lineName, lineColor, id1, id2, 10);
 
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank(),
-                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("1호선"),
-                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("파란색")
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineName),
+                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineColor)
         );
 
-        List<Long> expectedStationIds = List.of(upStationId, downStationId);
+        List<Long> expectedStationIds = List.of(id1, id2);
         List<Long> stationIds = response.body().jsonPath().getList("stations", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(stationIds).containsAll(expectedStationIds);
     }
+
 
     /*
      * given
@@ -74,14 +76,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void registerLineWithNonExistLine() {
         // given
-        long idWillBeDeleted = registerStationAndReturnId("서울역");
+        long idWillBeDeleted = registerStationAndReturnId("station1");
         RestAssured.when()
                 .delete("/stations/" + idWillBeDeleted);
 
-        long downStationId = registerStationAndReturnId("시청");
+        long downStationId = registerStationAndReturnId("station2");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse("1호선", "파란색", idWillBeDeleted,
+        ExtractableResponse<Response> response = registerLineAndReturnResponse("line1", "color1", idWillBeDeleted,
                 downStationId, 10);
 
         assertAll(
@@ -104,11 +106,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void registerLineWithDistanceZero() {
         // given
-        long upStationId = registerStationAndReturnId("서울역");
-        long downStationId = registerStationAndReturnId("시청");
+        long upStationId = registerStationAndReturnId("station1");
+        long downStationId = registerStationAndReturnId("station2");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse("1호선", "파란색", upStationId, downStationId,
+        ExtractableResponse<Response> response = registerLineAndReturnResponse("line1", "color1", upStationId,
+                downStationId,
                 0);
 
         // then
@@ -132,16 +135,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void registerLineWithDuplicateName() {
         // given
-        String lineName = "1호선";
-        long id1 = registerStationAndReturnId("서울역");
-        long id2 = registerStationAndReturnId("시청");
-        registerLineAndReturnResponse(lineName, "파란색", id1, id2, 10);
+        String lineName = "line1";
+        long id1 = registerStationAndReturnId("station1");
+        long id2 = registerStationAndReturnId("station2");
+        registerLineAndReturnResponse(lineName, "color1", id1, id2, 10);
 
-        long upStationId = registerStationAndReturnId("사당");
-        long downStationId = registerStationAndReturnId("성수");
+        long upStationId = registerStationAndReturnId("station3");
+        long downStationId = registerStationAndReturnId("station4");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse(lineName, "초록색", upStationId,
+        ExtractableResponse<Response> response = registerLineAndReturnResponse(lineName, "color2", upStationId,
                 downStationId, 10);
 
         // then
@@ -165,25 +168,71 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        String lineColor = "파란색";
-        long id1 = registerStationAndReturnId("서울역");
-        long id2 = registerStationAndReturnId("시청");
+        String lineColor = "color1";
+        long id1 = registerStationAndReturnId("station1");
+        long id2 = registerStationAndReturnId("station2");
 
-        LineRequest lineRequest1 = new LineRequest("1호선", lineColor, id1, id2, 10);
-        RestAssured.given().log().all()
+        LineRequest lineRequest1 = new LineRequest("line1", lineColor, id1, id2, 10);
+        RestAssured.given()
                 .body(lineRequest1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then().log().all()
+                .then()
                 .extract();
 
-        long upStationId = registerStationAndReturnId("사당");
-        long downStationId = registerStationAndReturnId("성수");
+        // when
+        ExtractableResponse<Response> response = registerLineAndReturnResponse("line2", lineColor, id1, id2, 10);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+        );
+    }
+
+    @DisplayName("노선 이름을 빈 값으로 등록한다")
+    @Test
+    void registerLineWithNameBlank() {
+        // given
+        long id1 = registerStationAndReturnId("station1");
+        long id2 = registerStationAndReturnId("station2");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse("2호선", lineColor, upStationId,
-                downStationId, 10);
+        ExtractableResponse<Response> response = registerLineAndReturnResponse("", "color1", id1, id2, 10);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+        );
+    }
+
+    @DisplayName("노선 이름을 빈 값으로 등록한다")
+    @Test
+    void registerLineWithColorBlank() {
+        // given
+        long id1 = registerStationAndReturnId("station1");
+        long id2 = registerStationAndReturnId("station2");
+
+        // when
+        ExtractableResponse<Response> response = registerLineAndReturnResponse("line1", "", id1, id2, 10);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+        );
+    }
+
+    @DisplayName("같은 역으로 노선을 등록한다.")
+    @Test
+    void registerLineWithSameStation() {
+        // given
+        long id1 = registerStationAndReturnId("station1");
+
+        // when
+        ExtractableResponse<Response> response = registerLineAndReturnResponse("line1", "color1", id1, id1, 10);
 
         // then
         assertAll(
@@ -464,15 +513,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /*
-    * given
-    * station1, station2를 상행종점, 하행종점으로 하는 line1이 등록되어 있다.
-    *
-    * when
-    * station2를 상행, station3을 하행으로 하는 거리 5짜리 구간을 등록한다.
-    *
-    * then
-    * 성공 응답을 반환한다.
-    * */
+     * given
+     * station1, station2를 상행종점, 하행종점으로 하는 line1이 등록되어 있다.
+     *
+     * when
+     * station2를 상행, station3을 하행으로 하는 거리 5짜리 구간을 등록한다.
+     *
+     * then
+     * 성공 응답을 반환한다.
+     * */
     @DisplayName("구간을 추가한다")
     @Test
     void addSection() {
