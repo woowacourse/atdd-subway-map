@@ -10,13 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
 @JdbcTest
 class SectionDaoTest {
 
     private Long savedId1;
-    private final long lineId = 1L;
+    private Long lineId;
 
     private SectionDao sectionDao;
 
@@ -26,6 +27,8 @@ class SectionDaoTest {
     @BeforeEach
     void setUp() {
         sectionDao = new SectionDao(jdbcTemplate);
+        LineDao lineDao = new LineDao(jdbcTemplate);
+        lineId = lineDao.save(new Line("2호선", "green"));
         savedId1 = sectionDao.save(new Section(lineId, 1L, 2L, 10));
         sectionDao.save(new Section(lineId, 2L, 3L, 5));
     }
@@ -34,7 +37,7 @@ class SectionDaoTest {
     @Test
     void save() {
         //given
-        Section section = new Section(1L, 1L, 2L, 10);
+        Section section = new Section(lineId, 1L, 2L, 10);
         //when
         Long sectionId = sectionDao.save(section);
         //then
@@ -45,7 +48,7 @@ class SectionDaoTest {
     @Test
     void findByLineId() {
         //given
-        Long lineId = 1L;
+
         //when
         List<Section> sections = sectionDao.findByLineId(lineId);
         //then
