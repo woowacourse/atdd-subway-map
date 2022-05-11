@@ -81,6 +81,10 @@ public class LineService {
         Sections newSections = new Sections(originSections.getValues());
 
         newSections.addSection(newSection);
+        saveModifications(line, originSections, newSections);
+    }
+
+    private void saveModifications(Line line, Sections originSections, Sections newSections) {
         List<Section> removedSections = originSections.getNotContainSections(newSections);
         deleteRemovedSections(line, removedSections);
         List<Section> addedSections = newSections.getNotContainSections(originSections);
@@ -132,6 +136,17 @@ public class LineService {
     public void delete(Long id) {
         validateExist(id);
         lineDao.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Station station = stationService.findById(stationId);
+        Line line = lineDao.findById(lineId);
+        Sections originSections = new Sections(sectionDao.findAllByLine(line));
+        Sections newSections = new Sections(originSections.getValues());
+
+        newSections.removeSectionByStation(station);
+        saveModifications(line, originSections, newSections);
     }
 
 }

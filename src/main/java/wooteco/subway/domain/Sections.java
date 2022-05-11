@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateSectionException;
 import wooteco.subway.exception.InvalidSectionCreateRequestException;
@@ -195,8 +196,15 @@ public class Sections {
     }
 
     public List<Section> getNotContainSections(Sections sections) {
-        values.removeAll(sections.values);
-        return values;
+        return values.stream()
+                .filter(sections::doesNotContain)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private boolean doesNotContain(Section target) {
+        return values.stream()
+                .noneMatch(section -> section.containStation(target.getUpStation()) && section.containStation(
+                        target.getDownStation()));
     }
 
     public List<Section> getValues() {

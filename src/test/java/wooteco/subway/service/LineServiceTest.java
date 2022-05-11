@@ -230,6 +230,32 @@ class LineServiceTest {
                 );
     }
 
+    @DisplayName("특정 노선에서 요청으로 받은 역을 포함하는 구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station middleStation = stationDao.save(new Station("역삼역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "green", upStation.getId(), middleStation.getId(), 1);
+        LineResponse lineResponse = lineService.create(lineRequest);
+        Line line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
+
+        SectionRequest newSectionRequest = new SectionRequest(middleStation.getId(), downStation.getId(), 1);
+
+        lineService.createSectionBySectionRequest(line.getId(), newSectionRequest);
+
+        lineService.deleteSection(line.getId(), middleStation.getId());
+
+        List<Section> sections = sectionDao.findAllByLine(line);
+
+        assertThat(sections).hasSize(1)
+                .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
+                .containsOnly(
+                        tuple(upStation, downStation, 2)
+                );
+    }
+
     private void assertEquals(LineResponse expected, LineResponse actual) {
         assertThat(expected.getId()).isEqualTo(actual.getId());
         assertThat(expected.getName()).isEqualTo(actual.getName());
