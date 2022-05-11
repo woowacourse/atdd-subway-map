@@ -33,6 +33,10 @@ public class Line {
         this(id, name, color, new LinkedList<>());
     }
 
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
     public boolean hasSameNameWith(Line otherLine) {
         return this.name.equals(otherLine.name);
     }
@@ -47,6 +51,10 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     public List<Station> getStations() {

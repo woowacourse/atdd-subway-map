@@ -15,6 +15,20 @@ public class Sections {
         this(new LinkedList<>(rawSections));
     }
 
+    public void add(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        if (section.isDownStation(getUpTermination())) {
+            sections.addFirst(section);
+            return;
+        }
+        if (section.isUpStation(getDownTermination())) {
+            sections.addLast(section);
+        }
+    }
+
     public List<Station> getAllStations() {
         List<Station> stations = sections.stream()
                 .map(Section::getUpStation)
@@ -31,5 +45,9 @@ public class Sections {
     private Station getDownTermination() {
         Section lastSection = sections.get(sections.size() - 1);
         return lastSection.getDownStation();
+    }
+
+    public LinkedList<Section> getSections() {
+        return sections;
     }
 }

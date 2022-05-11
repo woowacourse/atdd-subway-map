@@ -17,6 +17,14 @@ public class Section {
         this(null, upStation, downStation, distance);
     }
 
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }
