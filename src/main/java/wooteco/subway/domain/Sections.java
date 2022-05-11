@@ -99,8 +99,8 @@ public class Sections {
     }
 
     public void remove(final Long stationId) {
-        final Optional<Section> upperSection = findSameDownStationIdSection2(stationId);
-        final Optional<Section> lowerSection = findSameUpStationIdSection2(stationId);
+        final Optional<Section> upperSection = findSameDownStationIdSection(stationId);
+        final Optional<Section> lowerSection = findSameUpStationIdSection(stationId);
         if (upperSection.isPresent() && lowerSection.isPresent()) {
             removeAtMiddle(upperSection.get(), lowerSection.get());
             return;
@@ -108,13 +108,13 @@ public class Sections {
         removeAtSide(upperSection, lowerSection);
     }
 
-    private Optional<Section> findSameUpStationIdSection2(final Long stationId) {
+    private Optional<Section> findSameUpStationIdSection(final Long stationId) {
         return sections.stream()
                 .filter(s -> s.getUpStationId().equals(stationId))
                 .findFirst();
     }
 
-    private Optional<Section> findSameDownStationIdSection2(final Long stationId) {
+    private Optional<Section> findSameDownStationIdSection(final Long stationId) {
         return sections.stream()
                 .filter(s -> s.getDownStationId().equals(stationId))
                 .findFirst();

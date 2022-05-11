@@ -98,23 +98,6 @@ public class SectionDaoTest {
     }
 
     @Test
-    @DisplayName("지하철 노선 ID로 구간을 모두 삭제한다.")
-    void deleteAllByLineId() {
-        // given
-        final Long upStationId = stationDao.save(new Station(HYEHWA));
-        final Long downStationId = stationDao.save(new Station(SINSA));
-        final Long lineId = lineDao.save(new Line(LINE_2, RED));
-        final Section section = new Section(lineId, upStationId, downStationId, 10);
-        sectionDao.save(section);
-
-        // when
-        sectionDao.deleteAllByLineId(lineId);
-
-        // then
-        assertThat(sectionDao.findAllByLineId(lineId).getSections()).hasSize(0);
-    }
-
-    @Test
     @DisplayName("지하철 구간 ID로 구간을 삭제한다.")
     void deleteById() {
         // given
