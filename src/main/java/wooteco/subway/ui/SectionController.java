@@ -18,4 +18,9 @@ public class SectionController {
     public void add(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
         sectionService.add(lineId, sectionRequest);
     }
+
+    @DeleteMapping
+    public void delete(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.delete(lineId, stationId);
+    }
 }

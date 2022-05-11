@@ -43,7 +43,7 @@ public class SectionService {
         return stations;
     }
 
-    public void add(long lineId, SectionRequest sectionRequest) {
+    public void add(Long lineId, SectionRequest sectionRequest) {
         validateSectionRequest(sectionRequest);
 
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
@@ -56,12 +56,28 @@ public class SectionService {
             return;
         }
 
-        processMiddle(lineId, sections, target);
+        processMiddle(sections, target);
     }
 
-    private void processMiddle(long lineId, Sections sections, Section target) {
+    public void delete(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        sections.validateDelete();
+
+        List<Section> source = sections.findSectionByStationId(stationId);
+
+        for (Section section : source) {
+            sectionDao.delete(section.getId());
+        }
+
+        if (source.size() > 1) {
+            Section combinedSection = source.get(0).combine(source.get(1));
+            sectionDao.save(combinedSection);
+        }
+    }
+
+    private void processMiddle(Sections sections, Section target) {
         Section source = sections.findSource(target);
-        Section rest = source.makeRest(lineId, target);
+        Section rest = source.makeRest(target);
 
         sectionDao.delete(source.getId());
         sectionDao.save(target);

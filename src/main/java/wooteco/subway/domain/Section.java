@@ -53,12 +53,19 @@ public class Section {
         return distance <= target.distance;
     }
 
-    public Section makeRest(Long lineId, Section target) {
+    public Section makeRest(Section target) {
         if (upStationId == target.upStationId) {
             return new Section(0L, lineId, target.downStationId, downStationId, distance - target.distance);
         }
 
         return new Section(0L, lineId, upStationId, target.upStationId, distance - target.distance);
+    }
+
+    public Section combine(Section target) {
+        if (downStationId == target.upStationId) {
+            return new Section(0L, lineId, upStationId, target.downStationId, distance + target.distance);
+        }
+        return new Section(0L, lineId, target.upStationId, downStationId, distance + target.distance);
     }
 
     public Long getId() {

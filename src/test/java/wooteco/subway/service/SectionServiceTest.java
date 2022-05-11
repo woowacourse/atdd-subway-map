@@ -107,4 +107,40 @@ class SectionServiceTest {
                 .hasMessageContaining("해당 구간의 거리가 추가하려는 구간보다 더 짧습니다.");
     }
 
+    @Test
+    @DisplayName("구간 삭제")
+    void delete() {
+        given(sectionDao.findAllByLineId(1L)).willReturn(List.of(
+                new Section(1L, 1L, 3L, 4L, 5),
+                new Section(2L, 1L, 2L, 3L, 5)
+        ));
+
+        assertDoesNotThrow(() -> sectionService.delete(1L, 3L));
+    }
+
+    @Test
+    @DisplayName("구간정보가 하나 뿐이라면 삭제 불가능 예외 발생")
+    void cantDelete() {
+        given(sectionDao.findAllByLineId(1L)).willReturn(List.of(
+                new Section(1L, 1L, 1L, 2L, 5)
+        ));
+
+        assertThatThrownBy(() -> sectionService.delete(1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("하나의 노선에는 최소 하나의 구간이 필요합니다.");
+    }
+
+    @Test
+    @DisplayName("삭제하려는 역이 구간에 존재하지 않다면 예외 발생")
+    void notExistStation() {
+        given(sectionDao.findAllByLineId(1L)).willReturn(List.of(
+                new Section(1L, 1L, 1L, 2L, 5),
+                new Section(2L, 1L, 2L, 3L, 5)
+        ));
+
+        assertThatThrownBy(() -> sectionService.delete(1L, 5L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("해당 노선에 존재하는 역이 아닙니다.");
+    }
+
 }

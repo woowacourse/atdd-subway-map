@@ -5,9 +5,12 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
+    private static final int MIN_COUNT_OF_SECTION = 1;
+    private static final String NOT_EXIST_STATION = "해당 노선에 존재하는 역이 아닙니다.";
     private static final String ALREADY_ADDED = "이미 등록되어있는 구간입니다.";
     private static final String NO_SECTION = "추가할 수 있는 구간이 없습니다.";
     private static final String TOO_LONG_DISTANCE = "해당 구간의 거리가 추가하려는 구간보다 더 짧습니다.";
+    private static final String CAN_NOT_DELETE = "하나의 노선에는 최소 하나의 구간이 필요합니다.";
 
     private final List<Section> sections;
 
@@ -59,6 +62,24 @@ public class Sections {
         }
 
         return source;
+    }
+
+    public void validateDelete() {
+        if (sections.size() == MIN_COUNT_OF_SECTION) {
+            throw new IllegalArgumentException(CAN_NOT_DELETE);
+        }
+    }
+
+    public List<Section> findSectionByStationId(Long stationId) {
+        List<Section> result = sections.stream()
+                .filter(s -> s.isSameUp(stationId) || s.isSameDown(stationId))
+                .collect(Collectors.toList());
+
+        if (result.size() == 0) {
+            throw new IllegalArgumentException(NOT_EXIST_STATION);
+        }
+
+        return result;
     }
 
     private void addUpStream(LinkedList<Long> result, Long key) {
