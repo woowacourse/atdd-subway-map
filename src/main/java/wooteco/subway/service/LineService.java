@@ -16,8 +16,6 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineEntity;
 import wooteco.subway.dto.SectionEntity;
-import wooteco.subway.dto.info.RequestCreateSectionInfo;
-import wooteco.subway.dto.info.RequestDeleteSectionInfo;
 import wooteco.subway.dto.info.RequestLineInfo;
 import wooteco.subway.dto.info.RequestLineInfoToUpdate;
 import wooteco.subway.dto.info.ResponseLineInfo;
@@ -67,18 +65,6 @@ public class LineService {
         return new ResponseLineInfo(resultLine.getId(), resultLine.getName(), resultLine.getColor(), stationInfos);
     }
 
-    private void validateNotExistStation(Long stationId) {
-        if (!stationDao.existById(stationId)) {
-            throw new IllegalArgumentException("존재하지 않는 역을 지나는 노선은 만들 수 없습니다.");
-        }
-    }
-
-    private void validateNameDuplication(String name) {
-        if (lineDao.existByName(name)) {
-            throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_NAME);
-        }
-    }
-
     public List<ResponseLineInfo> findAll() {
         List<Line> lines = new ArrayList<>();
         List<LineEntity> lineEntities = lineDao.findAll();
@@ -94,18 +80,6 @@ public class LineService {
                 convertStationToInfo(line.getStations())));
         }
         return responseLineInfos;
-    }
-
-    private List<Section> findSections(Long lineId) {
-        List<SectionEntity> sectionEntities = sectionDao.findByLine(lineId);
-        return sectionEntities.stream()
-            .map(this::findSection)
-            .collect(Collectors.toList());
-    }
-
-    private Section findSection(SectionEntity sectionEntity) {
-        return new Section(sectionEntity.getId(), stationDao.getStation(sectionEntity.getUpStationId())
-            , stationDao.getStation(sectionEntity.getDownStationId()), sectionEntity.getDistance());
     }
 
     private List<StationInfo> convertStationToInfo(List<Station> stations) {
@@ -145,46 +119,33 @@ public class LineService {
         }
     }
 
-    public void saveSection(RequestCreateSectionInfo requestCreateSectionInfo) {
-        Long lineId = requestCreateSectionInfo.getLineId();
-        Long upStationId = requestCreateSectionInfo.getUpStationId();
-        Long downStationId = requestCreateSectionInfo.getDownStationId();
-        Integer distance = requestCreateSectionInfo.getDistance();
-
-        validateNotExists(lineId);
-        validateNotExistStation(upStationId);
-        validateNotExistStation(downStationId);
-
-        Section section = new Section(stationDao.getStation(upStationId), stationDao.getStation(downStationId),
-            distance);
-        LineEntity lineEntity = lineDao.find(lineId);
-        Line line = new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(),
-            new Sections(findSections(lineEntity.getId())));
-        line.checkCanAddAndUpdate(section);
-
-        Sections sections = line.getSections();
-        sectionDao.save(line.getId(), section);
-        sections.forEach(section1 -> sectionDao.update(line.getId(), section1));
+    private void validateNotExistStation(Long stationId) {
+        if (!stationDao.existById(stationId)) {
+            throw new IllegalArgumentException("존재하지 않는 역을 지나는 노선은 만들 수 없습니다.");
+        }
     }
 
-    public void deleteSection(RequestDeleteSectionInfo requestDeleteSectionInfo) {
-        Long lineId = requestDeleteSectionInfo.getLineId();
-        Long stationId = requestDeleteSectionInfo.getStationId();
-
-        validateNotExists(lineId);
-        validateNotExistStation(stationId);
-
-        Line line = createLine(lineId);
-        Station station = stationDao.getStation(stationId);
-        Section deletedSection = line.delete(station);
-
-        sectionDao.delete(lineId, deletedSection);
-        line.getSections().forEach(section -> sectionDao.update(lineId, section));
+    private void validateNameDuplication(String name) {
+        if (lineDao.existByName(name)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_NAME);
+        }
     }
 
     private Line createLine(Long lineId) {
         LineEntity lineEntity = lineDao.find(lineId);
         return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(),
             new Sections(findSections(lineEntity.getId())));
+    }
+
+    private List<Section> findSections(Long lineId) {
+        List<SectionEntity> sectionEntities = sectionDao.findByLine(lineId);
+        return sectionEntities.stream()
+            .map(this::findSection)
+            .collect(Collectors.toList());
+    }
+
+    private Section findSection(SectionEntity sectionEntity) {
+        return new Section(sectionEntity.getId(), stationDao.getStation(sectionEntity.getUpStationId())
+            , stationDao.getStation(sectionEntity.getDownStationId()), sectionEntity.getDistance());
     }
 }
