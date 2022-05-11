@@ -75,43 +75,36 @@ public class LineService {
     }
 
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
-        // line 초기화
-        Line line = lineDao.findById(lineId)
-                .orElseThrow(NoSuchLineException::new);
-        List<Section> sections = sectionDao.findByLineId(lineId);
-        for (Section each : sections) {
-            line.addSection(each);
-        }
+        Line line = loadLine(lineId);
 
-        // section 초기화
         Station upStation = stationDao.findById(sectionRequest.getUpStationId())
                 .orElseThrow(NoSuchLineException::new);
         Station downStation = stationDao.findById(sectionRequest.getDownStationId())
                 .orElseThrow(NoSuchLineException::new);
         Section section = sectionDao.save(lineId, new Section(upStation, downStation, sectionRequest.getDistance()));
 
-        // section 추가
         line.addSection(section);
 
-        // section 정보 업데이트
         sectionDao.batchUpdate(line.getSections());
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {
-        // line 초기화
+        Line line = loadLine(lineId);
+
+        Station station = stationDao.findById(stationId)
+                .orElseThrow(NoSuchStationException::new);
+        line.removeStation(station);
+
+        sectionDao.batchUpdate(line.getSections());
+    }
+
+    private Line loadLine(final Long lineId) {
         Line line = lineDao.findById(lineId)
                 .orElseThrow(NoSuchLineException::new);
         List<Section> sections = sectionDao.findByLineId(lineId);
         for (Section each : sections) {
             line.addSection(each);
         }
-
-        // section 제거
-        Station station = stationDao.findById(stationId)
-                .orElseThrow(NoSuchStationException::new);
-        line.removeStation(station);
-
-        // section 정보 업데이트
-        sectionDao.batchUpdate(line.getSections());
+        return line;
     }
 }

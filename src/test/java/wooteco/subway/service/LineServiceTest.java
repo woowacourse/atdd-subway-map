@@ -32,7 +32,6 @@ class LineServiceTest {
     private Station station1;
     private Station station2;
     private Station station3;
-    private Station station4;
     private Line line1;
     private Line line2;
     private Section section1To2;
@@ -43,7 +42,6 @@ class LineServiceTest {
         station1 = new Station(1L, "station1");
         station2 = new Station(2L, "station2");
         station3 = new Station(3L, "station3");
-        station4 = new Station(4L, "station4");
         line1 = new Line(1L, "line1", "color1");
         line2 = new Line(2L, "line2", "color2");
         section1To2 = new Section(1L, station1, station2, 10);
@@ -115,7 +113,7 @@ class LineServiceTest {
 
         SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(),
                 section2To3.getDistance());
-        when(stationDao.findById(sectionRequest.getUpStationId())).thenReturn(Optional.of(station2));
+        when(stationDao.findById(sectionRequest.getUpStationId())).thenReturn(Optional.of(station1));
         when(stationDao.findById(sectionRequest.getDownStationId())).thenReturn(Optional.of(station2));
         when(sectionDao.save(anyLong(), any(Section.class))).thenReturn(section2To3);
 
