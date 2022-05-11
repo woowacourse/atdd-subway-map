@@ -87,7 +87,11 @@ class SectionTest {
         Section merged = section.merge(other);
 
         // then
-        assertThat(merged).isEqualTo(expected);
+        assertAll(() -> {
+           assertThat(merged.getUpStationId()).isEqualTo(expected.getUpStationId());
+           assertThat(merged.getDownStationId()).isEqualTo(expected.getDownStationId());
+           assertThat(merged.getDistance()).isEqualTo(expected.getDistance());
+        });
     }
 
     private static Stream<Arguments> provideSectionsForMergeTest() {

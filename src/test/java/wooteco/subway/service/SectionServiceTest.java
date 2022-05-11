@@ -50,9 +50,9 @@ class SectionServiceTest {
 
         given(sectionDao.findByLineId(request.getLineId()))
                 .willReturn(sections);
-        given(sectionDao.update(section))
+        given(sectionDao.update(any(Section.class)))
                 .willReturn(1);
-        given(sectionDao.save(section))
+        given(sectionDao.save(any(Section.class)))
                 .willReturn(section);
 
         Section savedSection = sectionService.save(request);
@@ -76,6 +76,7 @@ class SectionServiceTest {
                 .willReturn(1);
 
         // then
-        assertThatCode(() -> sectionService.delete(request));
+        assertThatCode(() -> sectionService.delete(request))
+                .doesNotThrowAnyException();
     }
 }

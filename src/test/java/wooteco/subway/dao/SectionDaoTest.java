@@ -29,7 +29,7 @@ public class SectionDaoTest {
     @DisplayName("Section 객체를 저장하기")
     void save() {
         // given
-        Section section = new Section(null, 1L, 1L, 2L, 1);
+        Section section = new Section(1L, 1L, 2L, 1);
 
         // when
         Section savedSection = sectionDao.save(section);
@@ -37,7 +37,9 @@ public class SectionDaoTest {
         // then
         assertAll(() -> {
             assertThat(savedSection.getId()).isNotNull();
-            assertThat(savedSection).isEqualTo(section);
+            assertThat(savedSection.getUpStationId()).isEqualTo(section.getUpStationId());
+            assertThat(savedSection.getDownStationId()).isEqualTo(section.getDownStationId());
+            assertThat(savedSection.getDistance()).isEqualTo(section.getDistance());
         });
     }
     
@@ -45,14 +47,14 @@ public class SectionDaoTest {
     @DisplayName("특정 노선의 구간 반환하기")
     void findByLineId() {
         // given
-        Section savedSection1 = sectionDao.save(new Section(null, 1L, 1L, 2L, 1));
-        Section savedSection2 = sectionDao.save(new Section(null, 1L, 2L, 3L, 2));
+        Section savedSection1 = sectionDao.save(new Section(1L, 1L, 2L, 1));
+        Section savedSection2 = sectionDao.save(new Section(1L, 2L, 3L, 2));
 
         // when
         List<Section> sections = sectionDao.findByLineId(1L);
         
         // then
-        assertThat(sections).containsOnly(savedSection1, savedSection2);
+        assertThat(sections).hasSize(2);
     }
 
     @Test

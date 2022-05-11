@@ -1,15 +1,14 @@
 package wooteco.subway.domain;
 
-import java.util.Objects;
 import wooteco.subway.exception.ExceptionMessage;
 
 public class Section {
 
-    private Long id;
-    private Long line_id;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+    private final Long id;
+    private final Long line_id;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
 
     public Section(Long id, Long line_id, Long upStationId, Long downStationId, int distance) {
         this.id = id;
@@ -20,11 +19,7 @@ public class Section {
     }
 
     public Section(Long line_id, Long upStationId, Long downStationId, int distance) {
-        this.id = null;
-        this.line_id = line_id;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this(null, line_id, upStationId, downStationId, distance);
     }
 
     public boolean isForDivide(Section other) {
@@ -107,24 +102,5 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Section section = (Section) o;
-        return distance == section.distance && Objects.equals(line_id, section.line_id)
-                && Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId,
-                section.downStationId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(line_id, upStationId, downStationId, distance);
     }
 }

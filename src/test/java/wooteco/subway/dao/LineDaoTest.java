@@ -1,8 +1,10 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +44,9 @@ public class LineDaoTest {
     @DisplayName("모든 노선을 조회한다.")
     void findAll() {
         // given
-        final Line line7 = new Line("7호선", "bg-red-600");
+        String line7Name = "7호선";
+        String line7Color = "bg-red-600";
+        final Line line7 = new Line(line7Name, line7Color);
         lineDao.save(line7);
 
         final String line5Name = "5호선";
@@ -52,10 +56,13 @@ public class LineDaoTest {
 
         // when
         final List<Line> lines = lineDao.findAll();
+        List<String> names = lines.stream()
+                .map(Line::getName)
+                .collect(Collectors.toList());
 
         // then
         assertThat(lines.size()).isEqualTo(2);
-        assertThat(lines).contains(line7, new Line(line5Name, line5Color));
+        assertThat(names).containsOnly(line5Name, line7Name);
     }
 
     @Test
@@ -69,7 +76,10 @@ public class LineDaoTest {
         Line actual = lineDao.findById(persistLine.getId()).get();
 
         // then
-        assertThat(actual).isEqualTo(persistLine);
+        assertAll(() -> {
+            assertThat(actual.getName()).isEqualTo(persistLine.getName());
+            assertThat(actual.getColor()).isEqualTo(persistLine.getColor());
+        });
     }
 
     @Test
@@ -79,12 +89,14 @@ public class LineDaoTest {
         final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600"));
 
         // when
-        final Line line = new Line("5호선", "bg-green-600");
-        persistLine.update(line);
-        final Line updatedLine = lineDao.update(persistLine).get();
+        final Line lineForUpdate = new Line(persistLine.getId(), "5호선", "bg-green-600");
+        final Line updatedLine = lineDao.update(lineForUpdate).get();
 
         // then
-        assertThat(updatedLine).isEqualTo(line);
+        assertAll(() -> {
+            assertThat(lineForUpdate.getName()).isEqualTo(updatedLine.getName());
+            assertThat(lineForUpdate.getColor()).isEqualTo(updatedLine.getColor());
+        });
     }
 
     @Test
