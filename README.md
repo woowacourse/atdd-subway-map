@@ -49,11 +49,11 @@
 
 > 등록 - POST /lines
   - 노선과 동시에 상행선, 하행선에 관한 구간도 등록한다.
-  - [ ]  [예외] 이름, 색깔은 빈값이면 안된다. (Bad Request 400) - `Line`
-  - [ ]  [예외] 이름, 색깔은 중복이 있으면 안된다. (Bad Request 400) - `LineDao`
-  - [ ]  [예외] 지하철이 있는 id 값이어야 한다. (Not Found 400) - `StationDao`
-  - [ ]  [예외] upStationId와 downStationId는 같아선 안된다. (Bad Request 400) - `Section`
-  - [ ]  [예외] 거리는 1 이상이어야 한다. (Bad Request 400) - `Section`
+  - [x]  [예외] 이름, 색깔은 빈값이면 안된다. (Bad Request 400) - `Line`
+  - [x]  [예외] 이름, 색깔은 중복이 있으면 안된다. (Bad Request 400) - `LineDao`
+  - [x]  [예외] 지하철이 있는 id 값이어야 한다. (Not Found 404) - `StationDao`
+  - [x]  [예외] upStationId와 downStationId는 같아선 안된다. (Bad Request 400) - `Section`
+  - [x]  [예외] 거리는 1 이상이어야 한다. (Bad Request 400) - `Section`
 > 목록 - GET /lines
 
 > 조회 - GET /lines/{id}

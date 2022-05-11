@@ -3,8 +3,13 @@ package wooteco.subway.controller;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,16 +41,18 @@ class LineControllerTest extends AcceptanceTest {
     private StationDao stationDao;
 
     @DisplayName("지하철 노선을 등록한다.")
-    @Test
-    void createLine() {
-        Station upStation = stationDao.save(new Station("동천역"));
-        Station downStation = stationDao.save(new Station("판교역"));
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        params.put("upStationId", upStation.getId().toString());
-        params.put("downStationId", downStation.getId().toString());
-        params.put("distance", "10");
+    @ParameterizedTest
+    @MethodSource("params")
+    void createLine(String name, String color, Long upStationId, Long downStationId,
+                                         int distance, int httpStatusCode) {
+        stationDao.save(new Station("동천역"));
+        stationDao.save(new Station("판교역"));
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -55,33 +62,18 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.statusCode()).isEqualTo(httpStatusCode);
     }
 
-    @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 400 상태코드로 응답한다.")
-    @Test
-    void throwsExceptionWhenCreateDuplicatedName() {
-        Station upStation = stationDao.save(new Station("동천역"));
-        Station downStation = stationDao.save(new Station("판교역"));
-        lineDao.save(new Line("신분당선", "red"));
-
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        params.put("upStationId", upStation.getId().toString());
-        params.put("downStationId", downStation.getId().toString());
-        params.put("distance", "10");
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    private static Stream<Arguments> params() {
+        return Stream.of(
+                Arguments.of("신분당선", "red", 1L, 2L, 1, 201),
+                Arguments.of("신분당선", " ", 1L, 2L, 1, 400),
+                Arguments.of(" ", "red", 1L, 2L, 1, 400),
+                Arguments.of("신분당선", "red", 2L, 3L, 1, 404),
+                Arguments.of("신분당선", "red", 1L, 1L, 1, 400),
+                Arguments.of("신분당선", "red", 1L, 2L, 0, 400)
+        );
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
