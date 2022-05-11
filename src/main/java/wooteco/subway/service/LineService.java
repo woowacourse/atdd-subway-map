@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -17,6 +18,7 @@ import wooteco.subway.service.dto.line.LineSaveResponse;
 import wooteco.subway.ui.dto.StationResponse;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
 
     private final LineDao lineDao;
@@ -29,6 +31,7 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public LineSaveResponse save(LineSaveRequest lineSaveRequest) {
         validateDuplicationName(lineSaveRequest.getName());
         Line line = new Line(lineSaveRequest.getName(), lineSaveRequest.getColor());
