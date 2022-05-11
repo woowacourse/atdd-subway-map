@@ -122,31 +122,43 @@ public class Sections {
         LinkedList<Section> flexibleSections = new LinkedList<>(this.sections);
         validateMinSize(flexibleSections);
         if (flexibleSections.get(0).isUpStation(station)) {
-            Section section = flexibleSections.remove(0);
-            sections = flexibleSections;
-            return UpdatedSection.of(section.getId());
+            return removeTopStation(flexibleSections);
         }
 
         int lastIndex = flexibleSections.size() - 1;
         if (flexibleSections.get(lastIndex).isDownStation(station)) {
-            Section section = flexibleSections.remove(lastIndex);
-            sections = flexibleSections;
-            return UpdatedSection.of(section.getId());
+            return removeBottomStation(flexibleSections, lastIndex);
         }
 
         for (int i = 0; i < flexibleSections.size(); i++) {
             Section leftSection = sections.get(i);
             if (leftSection.isDownStation(station) && i != lastIndex) {
-                Section rightSection = sections.get(i + 1);
-                leftSection.updateDownStation(rightSection.getDownStation(),
-                    leftSection.getDistance() + rightSection.getDistance());
-                flexibleSections.remove(rightSection);
-                sections = flexibleSections;
-                return UpdatedSection.from(rightSection.getId(), leftSection);
+                return removeMiddleStation(flexibleSections, i, leftSection);
             }
         }
 
         throw new IllegalArgumentException("삭제시에 오류가 발생했습니다.");
+    }
+
+    private UpdatedSection removeMiddleStation(LinkedList<Section> flexibleSections, int i, Section leftSection) {
+        Section rightSection = sections.get(i + 1);
+        leftSection.updateDownStation(rightSection.getDownStation(),
+            leftSection.getDistance() + rightSection.getDistance());
+        flexibleSections.remove(rightSection);
+        sections = flexibleSections;
+        return UpdatedSection.from(rightSection.getId(), leftSection);
+    }
+
+    private UpdatedSection removeBottomStation(LinkedList<Section> flexibleSections, int lastIndex) {
+        Section section = flexibleSections.remove(lastIndex);
+        sections = flexibleSections;
+        return UpdatedSection.of(section.getId());
+    }
+
+    private UpdatedSection removeTopStation(LinkedList<Section> flexibleSections) {
+        Section section = flexibleSections.remove(0);
+        sections = flexibleSections;
+        return UpdatedSection.of(section.getId());
     }
 
     private void validateMinSize(LinkedList<Section> flexibleSections) {
