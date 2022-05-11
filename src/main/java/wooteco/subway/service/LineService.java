@@ -49,12 +49,7 @@ public class LineService {
         Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         sectionDao.save(new Section(line.getId(), upStation.getId(), downStation.getId(), lineRequest.getDistance()));
 
-        List<StationResponse> stationResponses = List.of(upStation, downStation)
-                .stream()
-                .map(StationResponse::new)
-                .collect(toList());
-
-        return new LineResponse(line, stationResponses);
+        return findById(line.getId());
     }
 
     @Transactional
