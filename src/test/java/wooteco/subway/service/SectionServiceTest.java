@@ -24,7 +24,7 @@ class SectionServiceTest {
     private final MockSectionDao sectionDao = new MockSectionDao();
     private final StationService stationService  = new StationService(stationDao);
     private final SectionService sectionService = new SectionService(sectionDao, stationService);
-    private final LineService lineService = new LineService(lineDao, sectionService);
+    private final LineService lineService = new LineService(lineDao, stationService, sectionService);
 
     @BeforeEach
     void initStore() {

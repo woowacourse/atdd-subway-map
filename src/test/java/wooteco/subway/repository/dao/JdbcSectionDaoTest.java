@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.repository.entity.LineEntity;
 import wooteco.subway.repository.entity.SectionEntity;
@@ -47,7 +48,7 @@ class JdbcSectionDaoTest {
                 new Station(savedStation2.getId(), savedStation2.getName()),
                 10
         );
-        final Line line = Line.createWithoutId("2호선", "bg-green-600");
+        final Line line = Line.createWithoutId("2호선", "bg-green-600", new Sections(section));
         final LineEntity lineEntity = lineDao.save(new LineEntity(line));
         final SectionEntity saved = sectionDao.save(new SectionEntity(section, lineEntity.getId()));
 
@@ -74,7 +75,7 @@ class JdbcSectionDaoTest {
                 new Station(savedStation2.getId(), savedStation2.getName()),
                 10
         );
-        final Line line = Line.createWithoutId("2호선", "bg-green-600");
+        final Line line = Line.createWithoutId("2호선", "bg-green-600", new Sections(section));
         final LineEntity lineEntity = lineDao.save(new LineEntity(line));
         final SectionEntity saved = sectionDao.save(new SectionEntity(section, lineEntity.getId()));
 
