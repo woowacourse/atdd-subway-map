@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class MetroManager {
     private static final Long NO_EXIST = -1L;
@@ -176,5 +175,9 @@ public class MetroManager {
             visited.put(now, true);
         }
         return result;
+    }
+
+    public boolean isOneExist() {
+        return this.adjacencies.keySet().size() == 2;
     }
 }

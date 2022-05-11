@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.WooTecoException;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.DeleteResult;
 import wooteco.subway.domain.MetroManager;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.StationInfo;
+import wooteco.subway.dto.SectionRequest;
 
 @Service
 @Transactional
@@ -20,7 +22,9 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public Section enroll(Section section) {
+    public Section save(SectionRequest sectionRequest, Long lineId) {
+        Section section = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
         MetroManager metroManager = new MetroManager(sectionDao.findAll(section.getLineId()));
         validateNonExistSection(section, metroManager);
         if ((metroManager.findUpStationEnd() == section.getDownStationId().longValue()) && (metroManager.findDownStationEnd() == section.getUpStationId().longValue())) {
@@ -33,13 +37,13 @@ public class SectionService {
 
     private void validateExistSection(Section section, MetroManager metroManager) {
         if ((metroManager.isIn(section.getUpStationId())) && (metroManager.isIn(section.getDownStationId()))) {
-            throw new IllegalArgumentException();
+            throw new WooTecoException("[ERROR] 이미 존재하는 구간입니다.");
         }
     }
 
     private void validateNonExistSection(Section section, MetroManager metroManager) {
         if ((!metroManager.isIn(section.getUpStationId())) && (!metroManager.isIn(section.getDownStationId()))) {
-            throw new IllegalArgumentException();
+            throw new WooTecoException("[ERROR] 공유하는 역이 없습니다.");
         }
     }
 
@@ -58,12 +62,13 @@ public class SectionService {
 
     private void validateDistance(Section section, StationInfo stationInfo) {
         if (!stationInfo.canDivisible(section.getDistance())) {
-            throw new IllegalArgumentException();
+            throw new WooTecoException("[ERROR] 포함되는 구간보다 더 큰 거리를 가질 수 없습니다.");
         }
     }
 
     public void delete(Long lineId, Long stationId) {
         MetroManager metroManager = new MetroManager(sectionDao.findAll(lineId));
+        validateOneSectionExist(metroManager);
         if (metroManager.isCycle()) {
             List<Section> deletedSections = metroManager.delete_cycle(lineId, stationId);
             for (Section section : deletedSections) {
@@ -77,6 +82,12 @@ public class SectionService {
         }
         for (Section section : deleteResult.get(DeleteResult.NEW_SAVE)) {
             sectionDao.save(section, lineId);
+        }
+    }
+
+    private void validateOneSectionExist(MetroManager metroManager) {
+        if (metroManager.isOneExist()) {
+            throw new WooTecoException("[ERROR] 하나의 구간만 남았을 때는 삭제할 수 없습니다.");
         }
     }
 }
