@@ -21,6 +21,8 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.StationResponse;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -174,6 +176,197 @@ public class LineAcceptanceTest extends AcceptanceTest {
                             .extract();
 
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                })
+        );
+    }
+
+    @DisplayName("노선에 구간을 추가한다.")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestSection() {
+        String name = "1호선";
+        String color = "bg-blue-600";
+        Long basedUpStationId = generateStationId("중동역");
+        Long basedDownStationId = generateStationId("신도림역");
+        Integer basedDistance = 10;
+
+        ExtractableResponse<Response> createdResponse = generateLine(name, color, basedUpStationId, basedDownStationId,
+                basedDistance);
+
+        Long lineId = createdResponse.jsonPath().getLong("id");
+
+        return Stream.of(
+                dynamicTest("상행 종점이 같은 경우 가장 앞단의 구간 보다 길이가 크거나 같으면 400을 반환한다.", () -> {
+                    Long upStationId = basedUpStationId;
+                    Long downStationId = generateStationId("부천역");
+                    Integer distance = 10;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("상행 종점이 같은 경우 가장 앞단의 구간 보다 길이가 작으면 추가한다.", () -> {
+                    Long upStationId = basedUpStationId;
+                    Long downStationId = generateStationId("역곡역");
+                    Integer distance = 4;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+
+                dynamicTest("상행 종점에 구간을 추가한다.", () -> {
+                    Long upStationId = generateStationId("부평역");
+                    Long downStationId = basedUpStationId;
+                    Integer distance = 7;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+
+                dynamicTest("노선 조회 시 등록된 지하철 목록을 확인할 수 있다.", () -> {
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .when()
+                            .get("/lines/{id}", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
+                    assertAll(
+                            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                            () -> assertThat(stations.size()).isEqualTo(4)
+                    );
+                }),
+
+                dynamicTest("상행 종점 추가 시 지하철이 존재하지 않는 경우 400을 반환한다.", () -> {
+                    Long upStationId = 0L;
+                    Long downStationId = basedUpStationId;
+                    Integer distance = 7;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("상행 종점 추가 시 상행역이 기존 노선에 존재하는 경우 400을 반환한다.", () -> {
+                    Long upStationId = basedDownStationId;
+                    Long downStationId = basedUpStationId;
+                    Integer distance = 7;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("하행 종점이 같은 경우 가장 뒷단의 구간보다 길이가 크거나 같으면 400을 반환한디.", () -> {
+                    Long upStationId = generateStationId("온수역");
+                    Long downStationId = basedDownStationId;
+                    Integer distance = 10;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("하행 종점이 같은 경우 가장 앞단의 구간보다 길이가 작으면 추가한다.", () -> {
+                    Long upStationId = generateStationId("개봉역");
+                    Long downStationId = basedDownStationId;
+                    Integer distance = 3;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+
+                dynamicTest("하행 종점에 구간을 추가한다.", () -> {
+                    Long upStationId = basedDownStationId;
+                    Long downStationId = generateStationId("영등포역");
+                    Integer distance = 10;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+
+                dynamicTest("상행역과 하행역이 노선에 모두 존재하면 예외를 던진다.", () -> {
+                    Long upStationId = basedUpStationId;
+                    Long downStationId = basedDownStationId;
+                    Integer distance = 1;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("상행역과 하행역이 노선에 모두 존재하지 않으면 예외를 던진다.", () -> {
+                    Long upStationId = generateStationId("서울역");
+                    Long downStationId = generateStationId("노량진역");
+                    Integer distance = 1;
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(new SectionRequest(upStationId, downStationId, distance))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .post("/lines/{id}/sections", lineId)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 })
         );
     }
