@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
     private Long id;
     private Station upStation;
@@ -83,6 +85,10 @@ public class Section {
         return new SectionBuilder();
     }
 
+    public boolean isSameDownStationId(Long downStationId) {
+        return this.downStation.isSameId(downStationId);
+    }
+
     public Long getId() {
         return id;
     }
@@ -111,9 +117,18 @@ public class Section {
         this.upStation = upStation;
     }
 
+    public void setUpStationId(Long upStationId) {
+        this.upStation = new Station(upStationId);
+    }
+
     public void setDownStation(Station downStation) {
         this.downStation = downStation;
     }
+
+    public void setDownStationId(Long downStationId) {
+        this.downStation = new Station(downStationId);
+    }
+
 
     public void setDistance(Integer distance) {
         this.distance = distance;
@@ -121,5 +136,29 @@ public class Section {
 
     public void setLine(Line line) {
         this.line = line;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, distance, line);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                ", line=" + line +
+                '}';
     }
 }

@@ -66,4 +66,8 @@ public class Line {
                 ", color='" + color + '\'' +
                 '}';
     }
+
+    public boolean isSameLineId(Long lineId) {
+        return this.id.equals(lineId);
+    }
 }

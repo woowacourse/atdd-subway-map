@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class MemorySectionDao implements SectionDao {
 
@@ -20,9 +21,24 @@ public class MemorySectionDao implements SectionDao {
     }
 
     @Override
-    public Optional<Section> findById(long id) {
+    public Optional<Section> findById(Long id) {
         return sections.stream()
                 .filter(section -> section.getId().equals(id))
                 .findAny();
+    }
+
+    @Override
+    public List<Section> findByLineId(Long lineId) {
+        return sections.stream()
+                .filter(section -> section.getLine().isSameLineId(lineId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public long update(Section section) {
+        Section found = findById(section.getId()).get();
+        sections.remove(found);
+        sections.add(section);
+        return section.getId();
     }
 }
