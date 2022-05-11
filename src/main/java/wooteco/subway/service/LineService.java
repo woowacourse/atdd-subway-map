@@ -16,10 +16,10 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineEntity;
 import wooteco.subway.dto.SectionEntity;
-import wooteco.subway.dto.info.LineInfoToUpdate;
 import wooteco.subway.dto.info.RequestCreateSectionInfo;
 import wooteco.subway.dto.info.RequestDeleteSectionInfo;
 import wooteco.subway.dto.info.RequestLineInfo;
+import wooteco.subway.dto.info.RequestLineInfoToUpdate;
 import wooteco.subway.dto.info.ResponseLineInfo;
 import wooteco.subway.dto.info.StationInfo;
 
@@ -123,13 +123,13 @@ public class LineService {
             convertStationToInfo(line.getStations()));
     }
 
-    public void update(LineInfoToUpdate lineInfoToUpdate) {
-        Long id = lineInfoToUpdate.getId();
-        String name = lineInfoToUpdate.getName();
+    public void update(RequestLineInfoToUpdate requestLineInfoToUpdate) {
+        Long id = requestLineInfoToUpdate.getId();
+        String name = requestLineInfoToUpdate.getName();
 
         validateNotExists(id);
         validateNameDuplication(name);
-        Line line = new Line(id, name, lineInfoToUpdate.getColor());
+        Line line = new Line(id, name, requestLineInfoToUpdate.getColor());
         lineDao.update(line);
     }
 

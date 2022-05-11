@@ -7,8 +7,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.info.LineInfoToUpdate;
 import wooteco.subway.dto.info.RequestLineInfo;
+import wooteco.subway.dto.info.RequestLineInfoToUpdate;
 import wooteco.subway.dto.info.ResponseLineInfo;
 
 public class LineServiceTest {
@@ -81,17 +81,19 @@ public class LineServiceTest {
         RequestLineInfo lineInfoToRequest = new RequestLineInfo("2호선", "red", 1L, 2L, 10);
         ResponseLineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
 
-        LineInfoToUpdate lineInfoToUpdate = new LineInfoToUpdate(lineInfoToResponse.getId(), "3호선", "red");
-        lineService.update(lineInfoToUpdate);
+        RequestLineInfoToUpdate requestLineInfoToUpdate = new RequestLineInfoToUpdate(lineInfoToResponse.getId(), "3호선",
+            "red");
+        lineService.update(requestLineInfoToUpdate);
         assertThat(lineService.find(lineInfoToResponse.getId()).getName()).isEqualTo(
-            lineInfoToUpdate.getName());
+            requestLineInfoToUpdate.getName());
     }
 
     @DisplayName("존재하지 않는 지하철 노선 수정 요청 시 예외를 던진다.")
     @Test
     void updateLineNotExists() {
-        LineInfoToUpdate lineInfoToUpdate = new LineInfoToUpdate(1L, "2호선", "green");
-        assertThatThrownBy(() -> lineService.update(lineInfoToUpdate)).isInstanceOf(IllegalArgumentException.class)
+        RequestLineInfoToUpdate requestLineInfoToUpdate = new RequestLineInfoToUpdate(1L, "2호선", "green");
+        assertThatThrownBy(() -> lineService.update(requestLineInfoToUpdate)).isInstanceOf(
+            IllegalArgumentException.class)
             .hasMessage("존재하지 않는 지하철 노선 id입니다.");
     }
 
