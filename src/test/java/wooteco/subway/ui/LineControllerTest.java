@@ -251,4 +251,20 @@ public class LineControllerTest {
         // then
         perform.andExpect(status().isOk());
     }
+
+    @DisplayName("노선 구간 목록 중 지하철역 ID를 통해 삭제한다.")
+    @Test
+    void deleteSection() throws Exception {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        doNothing()
+            .when(lineService)
+            .addSection(anyLong(), any(SectionRequest.class));
+        // when
+        ResultActions perform = mockMvc.perform(delete("/lines/1/sections?stationId=2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(sectionRequest)));
+        // then
+        perform.andExpect(status().isOk());
+    }
 }

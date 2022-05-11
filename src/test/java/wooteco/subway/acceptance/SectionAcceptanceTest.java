@@ -78,6 +78,37 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("구간 삭제 성공 시 상태코드 200을 반환한다.")
+    @Test
+    void deleteSection() {
+        // given
+        createLineFixture(lineRequest1);
+        SectionRequest firstSection = new SectionRequest(2L, 4L, 10);
+        addSectionAssured(firstSection);
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/1/sections?stationId=4")
+            .then().log().all()
+            .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간이 1개 존재하는 경우 삭제 시 상태코드 400을 반환한다.")
+    @Test
+    void deleteSection_minimum_size_exception() {
+        // given
+        createLineFixture(lineRequest1);
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/1/sections?stationId=2")
+            .then().log().all()
+            .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
     private ExtractableResponse<Response> addSectionAssured(SectionRequest sectionRequest) {
         // when
         return RestAssured.given().log().all()

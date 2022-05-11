@@ -66,9 +66,9 @@
 - [ ] 구간 관리 API 구현
   - [x] 구간 등록 `POST /lines/{id}/sections`
     - `요청` json으로 upStationId, downStationId, distance를 전송한다.
-      - 결과 상태 코드는 `200 OK` 이다.
-    - [ ] 노선 삭제 `DELETE /lines/{lineId}/sections?stations={stationId}`
-      - 결과 상태 코드는 `200 OK` 이다.
+    - 결과 상태 코드는 `200 OK` 이다.
+  - [x] 노선 삭제 `DELETE /lines/{lineId}/sections?stations={stationId}`
+    - 결과 상태 코드는 `200 OK` 이다.
 - 구간 등록 방식
   - 상행 종점 등록
     - 기존 노선에 등록된 상행 종점을 기준으로 새로운 역을 추가한다.(새로운 역이 상행 종점이 됨)

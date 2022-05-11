@@ -143,4 +143,29 @@ public class LineService {
             newSection.forEach(sectionDao::save);
         }
     }
+
+    public void deleteSection(long id, Long stationId) {
+        List<Section> originSections = sectionDao.findByLineId(id).getSections();
+        Sections removedSection = new Sections(originSections);
+        removedSection.remove(stationId);
+        List<Section> fullSection = new ArrayList<>((removedSection.getSections()));
+        List<Section> deleteSection = new ArrayList<>();
+        for (Section section : originSections) {
+            if (fullSection.contains(section)) {
+                fullSection.remove(section);
+                continue;
+            }
+            deleteSection.add(section);
+            fullSection.remove(section);
+        }
+        List<Section> newSection = fullSection.stream()
+            .map(section -> new Section(id, section.getUpStationId(), section.getDownStationId(), section.getDistance())
+            ).collect(Collectors.toList());
+        if (!deleteSection.isEmpty()) {
+            deleteSection.forEach(section -> sectionDao.delete(section.getId()));
+        }
+        if (!newSection.isEmpty()) {
+            newSection.forEach(sectionDao::save);
+        }
+    }
 }
