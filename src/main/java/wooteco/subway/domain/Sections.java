@@ -58,6 +58,10 @@ public class Sections {
         return upSection.isPresent() || downSection.isPresent();
     }
 
+    public Section findLastInsert() {
+        return value.get(value.size() - 2);
+    }
+
     private void validateSection(final Section other) {
         validateUpSection(other);
         validateDownSection(other);
