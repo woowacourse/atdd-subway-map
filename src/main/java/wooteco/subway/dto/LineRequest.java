@@ -43,6 +43,9 @@ public class LineRequest {
         return "LineRequest{" +
                 "name='" + name + '\'' +
                 ", color='" + color + '\'' +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
                 '}';
     }
 }

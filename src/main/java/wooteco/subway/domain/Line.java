@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
 import wooteco.subway.dto.LineRequest;
 
 public class Line {
@@ -38,22 +39,20 @@ public class Line {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Line line = (Line) o;
-
-        if (id != null ? !id.equals(line.id) : line.id != null) return false;
-        if (name != null ? !name.equals(line.name) : line.name != null) return false;
-        return color != null ? color.equals(line.color) : line.color == null;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name)
+                && Objects.equals(color, line.color);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (color != null ? color.hashCode() : 0);
-        return result;
+        return Objects.hash(id, name, color);
     }
 
     @Override

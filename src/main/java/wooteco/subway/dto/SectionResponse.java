@@ -34,4 +34,14 @@ public class SectionResponse {
     public Integer getDistance() {
         return distance;
     }
+
+    @Override
+    public String toString() {
+        return "SectionResponse{" +
+                "id=" + id +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
+    }
 }

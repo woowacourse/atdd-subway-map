@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 public class Section {
     private final Long id;
@@ -78,28 +79,15 @@ public class Section {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         Section section = (Section) o;
-
-        if (id != null ? !id.equals(section.id) : section.id != null) {
-            return false;
-        }
-        if (upStationId != null ? !upStationId.equals(section.upStationId) : section.upStationId != null) {
-            return false;
-        }
-        if (downStationId != null ? !downStationId.equals(section.downStationId) : section.downStationId != null) {
-            return false;
-        }
-        return distance != null ? distance.equals(section.distance) : section.distance == null;
+        return Objects.equals(id, section.id) && Objects.equals(upStationId, section.upStationId)
+                && Objects.equals(downStationId, section.downStationId) && Objects.equals(distance,
+                section.distance);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (upStationId != null ? upStationId.hashCode() : 0);
-        result = 31 * result + (downStationId != null ? downStationId.hashCode() : 0);
-        result = 31 * result + (distance != null ? distance.hashCode() : 0);
-        return result;
+        return Objects.hash(id, upStationId, downStationId, distance);
     }
 
     @Override
