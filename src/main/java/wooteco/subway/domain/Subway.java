@@ -16,15 +16,13 @@ public class Subway {
         stations.checkAbleToAdd(newStation);
     }
 
-    public List<Section> addSection(List<Section> presentSections, Section newSection) {
+    public SectionBuffer addSection(List<Section> presentSections, Section newSection) {
         Sections sections = new Sections(presentSections);
-        sections.add(newSection);
-        return sections.getSections();
+        return sections.add(newSection);
     }
 
-    public List<Section> deleteSection(List<Section> presentSections, Station deleteStation) {
+    public SectionBuffer deleteSection(List<Section> presentSections, Station deleteStation) {
         Sections sections = new Sections(presentSections);
-        sections.delete(deleteStation);
-        return sections.getSections();
+        return sections.delete(deleteStation);
     }
 }

@@ -8,6 +8,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionBuffer;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.Subway;
 import wooteco.subway.domain.entity.SectionEntity;
@@ -87,17 +88,17 @@ public class SubwayService {
 
         List<Section> presentSections = toSections(sectionDao.findByLineId(lineId));
         Section newSection = Section.of(line, upStation, downStation, sectionRequest.getDistance());
-        List<Section> sections = subway.addSection(presentSections, newSection);
-        sectionDao.delete(lineId);
-        sectionDao.saveAll(SectionEntity.of(sections));
+        SectionBuffer buffer = subway.addSection(presentSections, newSection);
+        sectionDao.deleteALl(SectionEntity.of(buffer.getDeleteBuffer()));
+        sectionDao.saveAll(SectionEntity.of(buffer.getAddBuffer()));
     }
 
     public void deleteSection(Long lineId, Long stationId) {
         List<Section> presentSections = toSections(sectionDao.findByLineId(lineId));
         Station deleteStation = stationDao.findById(stationId);
-        List<Section> sections = subway.deleteSection(presentSections, deleteStation);
-        sectionDao.delete(lineId);
-        sectionDao.saveAll(SectionEntity.of(sections));
+        SectionBuffer buffer = subway.deleteSection(presentSections, deleteStation);
+        sectionDao.deleteALl(SectionEntity.of(buffer.getDeleteBuffer()));
+        sectionDao.saveAll(SectionEntity.of(buffer.getAddBuffer()));
     }
 
     private void saveSection(Long lineId, LineRequest lineRequest) {

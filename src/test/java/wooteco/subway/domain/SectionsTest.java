@@ -146,17 +146,12 @@ public class SectionsTest {
         Station station1 = Station.of("1");
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
-        Station station7 = Station.of("7");
         Line line = Line.of("2호선", "초록색");
 
-        Section section1 = Section.of(line, station1, station7, 10);
+        Section section1 = Section.of(line, station1, station3, 5);
         Sections sections = new Sections(List.of(section1));
-        Section section2 = Section.of(line, station1, station2, 5);
-        sections.add(section2);
-
-        Section section = Section.of(line, station1, station3, 7);
-
-        assertThatThrownBy(() -> sections.add(section))
+        Section section2 = Section.of(line, station1, station2, 8);
+        assertThatThrownBy(() -> sections.add(section2))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -172,11 +167,10 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(section1));
 
         Section section = Section.of(line, station0, station1, 5);
-        sections.add(section);
+        SectionBuffer sectionBuffer = sections.add(section);
 
-        List<Section> ordered = sections.getSections();
-        assertThat(ordered.get(0).getUpStation()).isEqualTo(station1);
-        assertThat(ordered.get(1).getUpStation()).isEqualTo(station0);
+        assertThat(sectionBuffer.getAddBuffer().size()).isEqualTo(1);
+        assertThat(sectionBuffer.getDeleteBuffer().size()).isEqualTo(0);
     }
 
     @DisplayName("하행 종점 연장")
@@ -191,11 +185,10 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(section1));
 
         Section section = Section.of(line, station2, station3, 5);
-        sections.add(section);
+        SectionBuffer sectionBuffer = sections.add(section);
 
-        List<Section> ordered = sections.getSections();
-        assertThat(ordered.get(0).getUpStation()).isEqualTo(station2);
-        assertThat(ordered.get(1).getUpStation()).isEqualTo(station1);
+        assertThat(sectionBuffer.getAddBuffer().size()).isEqualTo(1);
+        assertThat(sectionBuffer.getDeleteBuffer().size()).isEqualTo(0);
     }
 
     @DisplayName("노선에 section이 1개이면 section삭제 시 예외가 발생한다.")
@@ -225,16 +218,19 @@ public class SectionsTest {
         Section section3 = Section.of(line, station3, station4, 10);
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        sections.delete(station2);
+        SectionBuffer sectionBuffer = sections.delete(station2);
 
-        List<Section> orderedSections = sections.getSections();
-        assertThat(orderedSections.size()).isEqualTo(2);
-        assertThat(orderedSections.get(0).getUpStation()).isEqualTo(station3);
-        assertThat(orderedSections.get(0).getDownStation()).isEqualTo(station4);
-        assertThat(orderedSections.get(0).getDistance()).isEqualTo(10);
-        assertThat(orderedSections.get(1).getUpStation()).isEqualTo(station1);
-        assertThat(orderedSections.get(1).getDownStation()).isEqualTo(station3);
-        assertThat(orderedSections.get(1).getDistance()).isEqualTo(20);
+        assertThat(sectionBuffer.getAddBuffer().size()).isEqualTo(1);
+        assertThat(sectionBuffer.getAddBuffer().get(0).getUpStation()).isEqualTo(station1);
+        assertThat(sectionBuffer.getAddBuffer().get(0).getDownStation()).isEqualTo(station3);
+        assertThat(sectionBuffer.getAddBuffer().get(0).getDistance()).isEqualTo(20);
+        assertThat(sectionBuffer.getDeleteBuffer().size()).isEqualTo(2);
+        assertThat(sectionBuffer.getDeleteBuffer().get(0).getUpStation()).isEqualTo(station2);
+        assertThat(sectionBuffer.getDeleteBuffer().get(0).getDownStation()).isEqualTo(station3);
+        assertThat(sectionBuffer.getDeleteBuffer().get(0).getDistance()).isEqualTo(10);
+        assertThat(sectionBuffer.getDeleteBuffer().get(1).getUpStation()).isEqualTo(station1);
+        assertThat(sectionBuffer.getDeleteBuffer().get(1).getDownStation()).isEqualTo(station2);
+        assertThat(sectionBuffer.getDeleteBuffer().get(1).getDistance()).isEqualTo(10);
     }
 
     @DisplayName("노선에서 상행 종점 section이 삭제한다.")
@@ -251,16 +247,13 @@ public class SectionsTest {
         Section section3 = Section.of(line, station3, station4, 10);
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        sections.delete(station1);
+        SectionBuffer sectionBuffer = sections.delete(station1);
 
-        List<Section> orderedSections = sections.getSections();
-        assertThat(orderedSections.size()).isEqualTo(2);
-        assertThat(orderedSections.get(0).getUpStation()).isEqualTo(station3);
-        assertThat(orderedSections.get(0).getDownStation()).isEqualTo(station4);
-        assertThat(orderedSections.get(0).getDistance()).isEqualTo(10);
-        assertThat(orderedSections.get(1).getUpStation()).isEqualTo(station2);
-        assertThat(orderedSections.get(1).getDownStation()).isEqualTo(station3);
-        assertThat(orderedSections.get(1).getDistance()).isEqualTo(10);
+        assertThat(sectionBuffer.getAddBuffer().size()).isEqualTo(0);
+        assertThat(sectionBuffer.getDeleteBuffer().size()).isEqualTo(1);
+        assertThat(sectionBuffer.getDeleteBuffer().get(0).getUpStation()).isEqualTo(station1);
+        assertThat(sectionBuffer.getDeleteBuffer().get(0).getDownStation()).isEqualTo(station2);
+        assertThat(sectionBuffer.getDeleteBuffer().get(0).getDistance()).isEqualTo(10);
     }
 
     @DisplayName("노선에서 하행 종점 section이 삭제한다.")
@@ -277,15 +270,12 @@ public class SectionsTest {
         Section section3 = Section.of(line, station3, station4, 10);
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        sections.delete(station4);
+        SectionBuffer sectionBuffer = sections.delete(station4);
 
-        List<Section> orderedSections = sections.getSections();
-        assertThat(orderedSections.size()).isEqualTo(2);
-        assertThat(orderedSections.get(0).getUpStation()).isEqualTo(station2);
-        assertThat(orderedSections.get(0).getDownStation()).isEqualTo(station3);
-        assertThat(orderedSections.get(0).getDistance()).isEqualTo(10);
-        assertThat(orderedSections.get(1).getUpStation()).isEqualTo(station1);
-        assertThat(orderedSections.get(1).getDownStation()).isEqualTo(station2);
-        assertThat(orderedSections.get(1).getDistance()).isEqualTo(10);
+        assertThat(sectionBuffer.getAddBuffer().size()).isEqualTo(0);
+        assertThat(sectionBuffer.getDeleteBuffer().size()).isEqualTo(1);
+        assertThat(sectionBuffer.getDeleteBuffer().get(0).getUpStation()).isEqualTo(station3);
+        assertThat(sectionBuffer.getDeleteBuffer().get(0).getDownStation()).isEqualTo(station4);
+        assertThat(sectionBuffer.getDeleteBuffer().get(0).getDistance()).isEqualTo(10);
     }
 }

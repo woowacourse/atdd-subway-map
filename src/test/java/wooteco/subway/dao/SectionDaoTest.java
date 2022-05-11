@@ -9,10 +9,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.entity.SectionEntity;
 
 @JdbcTest
+@Sql(scripts = {"classpath:schema.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class SectionDaoTest {
 
     @Autowired
@@ -60,17 +63,32 @@ public class SectionDaoTest {
     }
 
     @Test
-    @DisplayName("특정 lineId에 해당되는 section을 모두 삭제한다.")
+    @DisplayName("section을 삭제한다.")
     void delete() {
-        SectionEntity section1 = SectionEntity.of(lineId, 1L, 2L, 3);
-        SectionEntity section2 = SectionEntity.of(lineId, 2L, 3L, 3);
-        SectionEntity section3 = SectionEntity.of(lineId, 3L, 4L, 3);
+        SectionEntity section1 = SectionEntity.of(1L, lineId, 1L, 2L, 3);
+        SectionEntity section2 = SectionEntity.of(2L, lineId, 2L, 3L, 3);
+        SectionEntity section3 = SectionEntity.of(3L, lineId, 3L, 4L, 3);
         sectionDao.save(section1);
         sectionDao.save(section2);
         sectionDao.save(section3);
 
-        sectionDao.delete(lineId);
+        sectionDao.delete(section1);
         List<SectionEntity> sections = sectionDao.findByLineId(lineId);
-        assertThat(sections.size()).isEqualTo(0);
+        assertThat(sections.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("section들을 삭제한다.")
+    void deleteAll() {
+        SectionEntity section1 = SectionEntity.of(1L, lineId, 1L, 2L, 3);
+        SectionEntity section2 = SectionEntity.of(2L, lineId, 2L, 3L, 3);
+        SectionEntity section3 = SectionEntity.of(3L, lineId, 3L, 4L, 3);
+        sectionDao.save(section1);
+        sectionDao.save(section2);
+        sectionDao.save(section3);
+
+        sectionDao.deleteALl(List.of(section1, section2));
+        List<SectionEntity> sections = sectionDao.findByLineId(lineId);
+        assertThat(sections.size()).isEqualTo(1);
     }
 }

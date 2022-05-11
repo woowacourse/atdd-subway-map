@@ -47,9 +47,13 @@ public class SectionDao {
         return jdbcTemplate.query(sql, parameters, SECTION_ENTITY_MAPPER);
     }
 
-    public void delete(Long lineId) {
-        String sql = "DELETE FROM SECTION WHERE line_id = :lineId";
-        SqlParameterSource parameters = new MapSqlParameterSource("lineId", lineId);
+    public void delete(SectionEntity sectionEntity) {
+        String sql = "DELETE FROM SECTION WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", sectionEntity.getId());
         jdbcTemplate.update(sql, parameters);
+    }
+
+    public void deleteALl(List<SectionEntity> sectionEntities) {
+        sectionEntities.forEach(this::delete);
     }
 }

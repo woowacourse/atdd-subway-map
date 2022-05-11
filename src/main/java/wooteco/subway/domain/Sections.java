@@ -66,18 +66,20 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    public void add(Section newSection) {
+    public SectionBuffer add(Section newSection) {
+        SectionBuffer sectionBuffer = new SectionBuffer();
         validateStationsInSection(newSection);
-        if (extendTerminalStationIfPossible(newSection)) {
-            return;
+        if (extendTerminalStationIfPossible(newSection, sectionBuffer)) {
+            return sectionBuffer;
         }
-        divideProperSection(newSection);
+        divideProperSection(newSection, sectionBuffer);
+        return sectionBuffer;
     }
 
-    private boolean extendTerminalStationIfPossible(Section newSection) {
+    private boolean extendTerminalStationIfPossible(Section newSection, SectionBuffer sectionBuffer) {
         if (downTerminalStation().isAbleToLinkOnDownStation(newSection)
                 || upTerminalStation().isAbleToLinkOnUpStation(newSection)) {
-            sections.add(newSection);
+            sectionBuffer.addToAddBuffer(newSection);
             sortDownToUp();
             return true;
         }
@@ -92,11 +94,11 @@ public class Sections implements Iterable<Section> {
         return sections.get(sections.size() - 1);
     }
 
-    private void divideProperSection(Section newSection) {
+    private void divideProperSection(Section newSection, SectionBuffer sectionBuffer) {
         Section targetSection = findTargetSection(newSection);
-        sections.remove(targetSection);
+        sectionBuffer.addToDeleteBuffer(targetSection);
         List<Section> parts = targetSection.divide(newSection);
-        sections.addAll(parts);
+        parts.forEach(sectionBuffer::addToAddBuffer);
         sortDownToUp();
     }
 
@@ -126,21 +128,23 @@ public class Sections implements Iterable<Section> {
         return sections.iterator();
     }
 
-    public void delete(Station station) {
+    public SectionBuffer delete(Station station) {
+        SectionBuffer sectionBuffer = new SectionBuffer();
         validateAbleToDelete();
 
         List<Section> sectionsContainDeleteStation = getSectionsContainDeleteStation(station);
-        sectionsContainDeleteStation.forEach(it -> sections.remove(it));
-        mergeIfPossible(sectionsContainDeleteStation);
+        sectionsContainDeleteStation.forEach(sectionBuffer::addToDeleteBuffer);
+        mergeIfPossible(sectionsContainDeleteStation, sectionBuffer);
         sortDownToUp();
+        return sectionBuffer;
     }
 
-    private void mergeIfPossible(List<Section> sectionsContainDeleteStation) {
+    private void mergeIfPossible(List<Section> sectionsContainDeleteStation, SectionBuffer sectionBuffer) {
         if (sectionsContainDeleteStation.size() == 2) {
             Section section1 = sectionsContainDeleteStation.get(0);
             Section section2 = sectionsContainDeleteStation.get(1);
             Section newSection = section1.merge(section2);
-            sections.add(newSection);
+            sectionBuffer.addToAddBuffer(newSection);
         }
     }
 
