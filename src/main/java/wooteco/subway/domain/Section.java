@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.List;
+
 public class Section {
     private final Long id;
     private final Station upStation;
@@ -15,6 +17,14 @@ public class Section {
 
     public Section(Station upStation, Station downStation, int distance) {
         this(null, upStation, downStation, distance);
+    }
+
+    public boolean hasSameUpStationWith(Section section) {
+        return isUpStation(section.upStation);
+    }
+
+    public boolean hasSameDownStationWith(Section section) {
+        return isDownStation(section.downStation);
     }
 
     public boolean isUpStation(Station station) {
