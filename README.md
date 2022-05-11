@@ -92,4 +92,6 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경
 - [x] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
 - [ ] 구간 제거
-    - [ ] 구간 관리 API 스펙은 [API 문서v2](https://github.com/jinyoungchoi95/atdd-subway-map.git) 참고
+    - [x] [예외] 구간내 존재하지 않는 지하철역은 구간 제거할 수 없음
+    - [x] [예외] 구간이 하나인 노선에서 마지막 구간을 제거할 수 없음
+- 구간 관리 API 스펙은 [API 문서v2](https://github.com/jinyoungchoi95/atdd-subway-map.git) 참고

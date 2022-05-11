@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import wooteco.subway.exception.SectionNotFoundException;
 
 public class Sections {
 
@@ -109,5 +110,32 @@ public class Sections {
             .distinct()
             .sorted()
             .collect(Collectors.toList());
+    }
+
+    public void deleteSectionByStationId(final Long stationId) {
+        validateDeleteSection(stationId);
+    }
+
+    private void validateDeleteSection(final Long stationId) {
+        checkExistingStationId(stationId);
+        checkOnlyDefaultSection();
+    }
+
+    private void checkExistingStationId(final Long stationId) {
+        if (!containsStationId(stationId)) {
+            throw new SectionNotFoundException("[ERROR] 해당 이름의 지하철역이 구간내 존재하지 않습니다.");
+        }
+    }
+
+    private void checkOnlyDefaultSection() {
+        if (getTotalStationIds().size() == 2) {
+            throw new IllegalStateException("[ERROR] 역 2개의 기본 구간만 존재하므로 더이상 구간 삭제할 수 없습니다.");
+        }
+    }
+
+    public boolean containsStationId(final Long stationId) {
+
+        final List<Long> totalStationIds = getTotalStationIds();
+        return totalStationIds.contains(stationId);
     }
 }

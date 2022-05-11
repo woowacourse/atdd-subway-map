@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.SectionNotFoundException;
 
 class SectionsTest {
 
@@ -122,5 +124,25 @@ class SectionsTest {
             () -> assertThat(actual.get(0).getUpStationId()).isEqualTo(1L),
             () -> assertThat(actual.get(actual.size() - 1).getDownStationId()).isEqualTo(3L)
         );
+    }
+
+    @DisplayName("구간 삭제시 존재하지 않는 지하철역 id가 입력되면 예외를 발생시킨다.")
+    @Test
+    void deleteSectionByStationId_invalid_not_existing_stationId() {
+        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_2_3_12));
+
+        Assertions.assertThatThrownBy(() -> sections.deleteSectionByStationId(1L))
+            .isInstanceOf(SectionNotFoundException.class)
+            .hasMessage("[ERROR] 해당 이름의 지하철역이 구간내 존재하지 않습니다.");
+    }
+
+    @DisplayName("구간 삭제시 기본 구간만 존재하면 예외를 발생시킨다.")
+    @Test
+    void deleteSectionByStationId_invalid_ony_default_section() {
+        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_2_3_12));
+
+        Assertions.assertThatThrownBy(() -> sections.deleteSectionByStationId(2L))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("[ERROR] 역 2개의 기본 구간만 존재하므로 더이상 구간 삭제할 수 없습니다.");
     }
 }
