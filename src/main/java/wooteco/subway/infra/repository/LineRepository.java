@@ -16,7 +16,11 @@ public interface LineRepository {
 
     boolean existByColor(String color);
 
-    int update(Line line);
+    long update(Line line);
 
-    int deleteById(Long id);
+    long deleteById(Long id);
+
+    boolean existSameNameWithDifferentId(String name, Long id);
+
+    boolean existById(Long id);
 }

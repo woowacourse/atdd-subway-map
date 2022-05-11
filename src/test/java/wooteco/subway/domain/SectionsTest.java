@@ -11,6 +11,7 @@ import static wooteco.subway.SubwayFixtures.SUNGDAM;
 import static wooteco.subway.SubwayFixtures.SUNNEUNG;
 import static wooteco.subway.SubwayFixtures.YEOKSAM;
 
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -119,5 +120,21 @@ public class SectionsTest {
                 .hasMessage(String.format("일치하는 역이 없어 구간 추가에 실패하였습니다 : 상행역 - %s, 하행역 - %s",
                         upStation.getName(),
                         downStation.getName()));
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역을 엮어 정렬이 가능하다")
+    void sectionsSortTest() {
+        // given
+        final Sections sections = new Sections(
+                List.of(SUNNEUNG_TO_SAMSUNG, GANGNAM_TO_YEOKSAM, YEOKSAM_TO_SUNNEUNG));
+
+        // when
+        final List<Section> ff = sections.getSections();
+        Collections.sort(ff);
+
+        // then
+        final List<Section> sections1 = sections.getSections();
+        System.out.println();
     }
 }

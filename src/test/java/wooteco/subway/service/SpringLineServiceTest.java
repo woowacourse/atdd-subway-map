@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import javax.sql.DataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,29 +16,59 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.notfound.NotFoundLineException;
 import wooteco.subway.exception.validation.LineColorDuplicateException;
 import wooteco.subway.exception.validation.LineNameDuplicateException;
 import wooteco.subway.infra.dao.LineDao;
+import wooteco.subway.infra.dao.SectionDao;
 import wooteco.subway.infra.dao.StationDao;
+import wooteco.subway.infra.repository.JdbcLineRepository;
+import wooteco.subway.infra.repository.JdbcSectionRepository;
+import wooteco.subway.infra.repository.JdbcStationRepository;
+import wooteco.subway.infra.repository.LineRepository;
+import wooteco.subway.infra.repository.SectionRepository;
+import wooteco.subway.infra.repository.StationRepository;
 import wooteco.subway.service.dto.LineServiceRequest;
 
 @JdbcTest
 @TestConstructor(autowireMode = AutowireMode.ALL)
 @DisplayName("노선 서비스")
+@Sql("classpath:/schema.sql")
 class SpringLineServiceTest {
 
-    private static final LineServiceRequest LINE_FIXTURE = new LineServiceRequest("2호선", "bg-color-600");
-    private static final LineServiceRequest LINE_FIXTURE2 = new LineServiceRequest("3호선", "bg-color-700");
-    private static final LineServiceRequest LINE_FIXTURE3 = new LineServiceRequest("4호선", "bg-color-800");
+    private static final LineServiceRequest LINE_FIXTURE = new LineServiceRequest("2호선", "bg-color-600", 1L, 2L, 10);
+    private static final LineServiceRequest LINE_FIXTURE2 = new LineServiceRequest("3호선", "bg-color-700", 1L, 2L, 10);
+    private static final LineServiceRequest LINE_FIXTURE3 = new LineServiceRequest("4호선", "bg-color-800", 1L, 2L, 10);
 
     private final LineService lineService;
 
+    private final JdbcTemplate jdbcTemplate;
+
     public SpringLineServiceTest(JdbcTemplate jdbcTemplate, DataSource dataSource,
                                  NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.lineService = new SpringLineService(
-                new LineDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate),
-                new SpringStationService(new StationDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate)));
+
+        final SectionDao sectionDao = new SectionDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate);
+        final StationDao stationDao = new StationDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate);
+        final LineDao lineDao = new LineDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate);
+
+        final SectionRepository jdbcSectionRepository = new JdbcSectionRepository(sectionDao);
+        final StationRepository jdbcStationRepository = new JdbcStationRepository(stationDao);
+        final LineRepository jdbcLineRepository = new JdbcLineRepository(lineDao, jdbcSectionRepository);
+
+        final StationService stationService = new SpringStationService(jdbcStationRepository);
+        final SectionService sectionService = new SpringSectionService(jdbcSectionRepository, stationService);
+
+        this.lineService = new SpringLineService(jdbcLineRepository, sectionService, stationService);
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @BeforeEach
+    void setup() {
+        jdbcTemplate.update("INSERT INTO station(name) values('잠실역')");
+        jdbcTemplate.update("INSERT INTO station(name) values('선릉역')");
+        jdbcTemplate.update("INSERT INTO station(name) values('강남역')");
     }
 
     @Nested
@@ -60,6 +91,7 @@ class SpringLineServiceTest {
             final LineServiceRequest nameDuplicate = new LineServiceRequest(
                     LINE_FIXTURE.getName(),
                     "new" + LINE_FIXTURE.getColor()
+                    , 1L, 2L, 10
             );
 
             // when & then
@@ -77,6 +109,7 @@ class SpringLineServiceTest {
             final LineServiceRequest colorDuplicate = new LineServiceRequest(
                     "new" + LINE_FIXTURE.getName(),
                     LINE_FIXTURE.getColor()
+                    , 1L, 2L, 10
             );
 
             // when & then
@@ -126,7 +159,7 @@ class SpringLineServiceTest {
             final Long id = line.getId();
 
             // when
-            final LineServiceRequest lineRequest = new LineServiceRequest("22호선", "bg-color-777");
+            final LineServiceRequest lineRequest = new LineServiceRequest("22호선", "bg-color-777", 1L, 2L, 10);
             lineService.update(id, lineRequest);
             final Line updated = lineService.findById(id);
 
@@ -139,38 +172,33 @@ class SpringLineServiceTest {
         }
 
         @Test
-        @DisplayName("아이디가 존재하지 않을 경우 수정 불가능하다")
+        @DisplayName("업데이트 하고자 하는 노선 아이디에 해당하는 데이터가 존재하지 않을 경우 수정 불가능하다")
         void updateWithNotExistIdShouldFail() {
             // given
-            final LineServiceRequest notExistId = new LineServiceRequest("22호선", "bg-color-777");
-            lineService.update(1L, notExistId);
-            final Line updated = lineService.findById(notExistId.getId());
+            final LineServiceRequest updateReuqest = new LineServiceRequest("22호선", "bg-color-777", 1L, 2L, 10);
+            final Long notExistId = -1L;
 
-            // then
-            assertAll(
-                    () -> assertThat(updated.getId()).isEqualTo(notExistId.getId()),
-                    () -> assertThat(updated.getName()).isEqualTo("22호선"),
-                    () -> assertThat(updated.getColor()).isEqualTo("bg-color-777")
-            );
+            //  when & then
+            assertThatThrownBy(() -> lineService.update(notExistId, updateReuqest))
+                    .isInstanceOf(NotFoundLineException.class)
+                    .hasMessage("요청한 노선이 존재하지 않습니다 : " + notExistId);
         }
 
         @Test
-        @DisplayName("이름이 중복될 경우 수정 불가능하다")
+        @DisplayName("변경하고자 하는 이름이 이미 등록된 노선 이름과 중복될 경우 수정 불가능하다")
         void updateWithDuplicateNameShouldFail() {
             // given
             final Line line = lineService.save(LINE_FIXTURE);
-            final Long id = line.getId();
+            final Line line2 = lineService.save(LINE_FIXTURE2);
 
             // when
-            final LineServiceRequest duplicateNameRequest = new LineServiceRequest(
-                    LINE_FIXTURE.getName(),
-                    "new" + LINE_FIXTURE.getColor()
-            );
+            final LineServiceRequest updateRequest = new LineServiceRequest(LINE_FIXTURE2.getName(),
+                    "new" + LINE_FIXTURE.getColor(), 1L, 2L, 10);
 
             // then
-            assertThatThrownBy(() -> lineService.update(id, duplicateNameRequest))
+            assertThatThrownBy(() -> lineService.update(line.getId(), updateRequest))
                     .isInstanceOf(LineNameDuplicateException.class)
-                    .hasMessage("이미 존재하는 노선 이름입니다 : " + duplicateNameRequest.getName());
+                    .hasMessage("이미 존재하는 노선 이름입니다 : " + updateRequest.getName());
         }
 
         @Test
@@ -181,7 +209,7 @@ class SpringLineServiceTest {
             final Long id = line.getId();
 
             // when
-            final LineServiceRequest lineRequest = new LineServiceRequest("22호선", "bg-color-777");
+            final LineServiceRequest lineRequest = new LineServiceRequest("22호선", "bg-color-777", 1L, 2L, 10);
             lineService.update(id, lineRequest);
             final Line updated = lineService.findById(id);
 

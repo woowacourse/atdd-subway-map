@@ -11,11 +11,13 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.ui.dto.ExceptionResponse;
 import wooteco.subway.ui.dto.StationRequest;
 import wooteco.subway.ui.dto.StationResponse;
 
 @DisplayName("지하철역 E2E")
+@Sql("classpath:/schema.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private static final StationRequest GANGNAM_REQUEST = new StationRequest("강남역");
@@ -49,7 +51,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         final ExtractableResponse<Response> duplicateCreateResponse = post(STATIONS_URI, toJson(GANGNAM_REQUEST));
         final ExceptionResponse exceptionResponse = duplicateCreateResponse.as(ExceptionResponse.class);
-        final String expectedMessage = "이미 존재하는 지하철역입니다. : " + GANGNAM_REQUEST.getName();
+        final String expectedMessage = "이미 존재하는 지하철역 이름입니다 : " + GANGNAM_REQUEST.getName();
 
         // then
         assertAll(

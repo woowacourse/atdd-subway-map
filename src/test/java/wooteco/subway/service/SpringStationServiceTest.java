@@ -15,14 +15,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.validation.StationNameDuplicateException;
 import wooteco.subway.infra.dao.StationDao;
+import wooteco.subway.infra.repository.JdbcStationRepository;
+import wooteco.subway.infra.repository.StationRepository;
 import wooteco.subway.service.dto.StationServiceRequest;
 
 @JdbcTest
 @TestConstructor(autowireMode = AutowireMode.ALL)
 @DisplayName("지하철역 서비스")
+@Sql("classpath:/schema.sql")
 class SpringStationServiceTest {
 
     private static final StationServiceRequest STATION_FIXTURE = new StationServiceRequest("선릉역");
@@ -33,8 +37,10 @@ class SpringStationServiceTest {
 
     public SpringStationServiceTest(DataSource dataSource, JdbcTemplate jdbcTemplate,
                                     NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.stationService = new SpringStationService(
-                new StationDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate));
+
+        final StationDao stationDao = new StationDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate);
+        final StationRepository stationRepository = new JdbcStationRepository(stationDao);
+        this.stationService = new SpringStationService(stationRepository);
     }
 
     @Nested
@@ -57,7 +63,7 @@ class SpringStationServiceTest {
             // then
             assertThatThrownBy(() -> stationService.save(STATION_FIXTURE))
                     .isInstanceOf(StationNameDuplicateException.class)
-                    .hasMessage("이미 존재하는 지하철역입니다. : " + STATION_FIXTURE.getName());
+                    .hasMessage("이미 존재하는 지하철역 이름입니다 : " + STATION_FIXTURE.getName());
         }
     }
 

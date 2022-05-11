@@ -17,8 +17,8 @@ public class LineServiceRequest {
         this.distance = distance;
     }
 
-    public LineServiceRequest(String name, String color) {
-        this(null, name, color, null, null, 0);
+    public LineServiceRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+        this(null, name, color, upStationId, downStationId, distance);
     }
 
     public void setId(Long id) {
