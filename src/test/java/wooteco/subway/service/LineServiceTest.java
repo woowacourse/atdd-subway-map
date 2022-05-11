@@ -51,7 +51,7 @@ class LineServiceTest {
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void queryAllTest() {
-        given(lineDao.findAll()).willReturn(List.of(new Line(1L, "2호선", "bg-green-600"), new Line("5호선", "")));
+        given(lineDao.findAll()).willReturn(List.of(new Line(1L, "2호선", "bg-green-600"), new Line("5호선", "bg-purple-600")));
 
         final List<Line> lines = lineService.queryAll();
 
