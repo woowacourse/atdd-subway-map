@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 import javax.validation.Valid;
 
 @RestController
@@ -32,7 +34,8 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid final LineRequest lineRequest) {
         final Line line = lineRequest.toEntity();
-        final Line newLine = lineService.createLine(line);
+
+        final Line newLine = lineService.createLine(line, lineRequest.toSectionEntity());
         final LineResponse lineResponse = LineResponse.from(newLine);
 
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);

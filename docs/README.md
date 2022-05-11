@@ -33,7 +33,7 @@
 
 ### 3단계 - 지하철 구간 관리 기능
 1. 노선 추가 시 3가지 정보를 추가로 입력받는다.
-   - [ ] upStationId, downStationId, distance를 추가로 받도록 변경한다.
+   - [x] upStationId, downStationId, distance를 추가로 받도록 변경한다.
    
 2. 위 3가지 정보는 구간으로 등록된다.
    - [x] 3가지 정보로 구간을 등록한다.

@@ -1,24 +1,30 @@
 package wooteco.subway.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateNameException;
+import java.util.List;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(final LineDao lineDao) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
-    public Line createLine(final Line line) {
+    public Line createLine(final Line line, final Section section) {
         validateDuplicateName(line);
-        return lineDao.save(line);
+        final Line savedLine = lineDao.save(line);
+        sectionDao.save(new Section(section.getUpStation(), section.getDownStation(), section.getDistance(), savedLine.getId()));
+        return savedLine;
     }
 
     public List<Line> getAllLines() {

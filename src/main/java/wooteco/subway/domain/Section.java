@@ -22,6 +22,10 @@ public class Section {
         this(null, upStation, downStation, distance, lineId);
     }
 
+    public Section(final Station upStation, final Station downStation, final int distance) {
+        this(null, upStation, downStation, distance, null);
+    }
+
     public Long getId() {
         return id;
     }

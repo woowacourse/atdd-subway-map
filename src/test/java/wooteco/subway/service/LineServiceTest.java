@@ -16,7 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateNameException;
 
@@ -26,18 +29,24 @@ class LineServiceTest {
     @Mock
     private LineDao lineDao;
 
+    @Mock
+    private SectionDao sectionDao;
+
     @InjectMocks
     private LineService lineService;
 
-    @DisplayName("새로운 노선을 등록한다.")
+    @DisplayName("새로운 노선과 첫 구간을 등록한다.")
     @Test
     void createLine() {
         final String lineName = "신분당선";
         final String lineColor = "bg-red-600";
         final Line line = new Line(lineName, lineColor);
-        given(lineDao.save(line)).willReturn(new Line(1L, lineName, lineColor));
+        final Section section = new Section(new Station(1L, null), new Station(2L, null), 3, 1L);
 
-        final Line actual = lineService.createLine(line);
+        given(lineDao.save(line)).willReturn(new Line(1L, lineName, lineColor));
+        given(sectionDao.save(section)).willReturn(section);
+
+        final Line actual = lineService.createLine(line, section);
 
         assertAll(
                 () -> assertThat(actual.getId()).isOne(),
@@ -54,7 +63,7 @@ class LineServiceTest {
         final Line line = new Line(lineName, lineColor);
         given(lineDao.existByName("신분당선")).willReturn(true);
 
-        assertThatThrownBy(() -> lineService.createLine(line))
+        assertThatThrownBy(() -> lineService.createLine(line, new Section(new Station(1L, null), new Station(2L, null), 3, 4L)))
                 .isInstanceOf(DuplicateNameException.class)
                 .hasMessage("이미 존재하는 노선입니다.");
     }
