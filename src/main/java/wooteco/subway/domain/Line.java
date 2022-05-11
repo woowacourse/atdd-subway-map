@@ -44,6 +44,21 @@ public class Line {
 		return sections.add(section);
 	}
 
+	public int sizeOfSection() {
+		return sections.size();
+	}
+
+	public Sections deleteSectionByStation(Long stationId) {
+		validateSectionSize();
+		return sections.deleteByStation(stationId);
+	}
+
+	private void validateSectionSize() {
+		if (sizeOfSection() == 1) {
+			throw new IllegalArgumentException("구간이 하나일 땐 삭제할 수 없습니다.");
+		}
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -58,14 +73,6 @@ public class Line {
 
 	public List<Station> findOrderedStations() {
 		return sections.sortStations();
-	}
-
-	public int sizeOfSection() {
-		return sections.size();
-	}
-
-	public Sections deleteSectionByStation(Long stationId) {
-		return sections.deleteByStation(stationId);
 	}
 
 	public List<Section> getSections() {

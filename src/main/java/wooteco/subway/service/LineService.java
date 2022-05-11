@@ -63,7 +63,6 @@ public class LineService {
 	@Transactional
 	public void deleteSection(Long lineId, Long stationId) {
 		Line line = lineDao.findById(lineId);
-		validateSectionSize(line);
 
 		Sections deletedSections = line.deleteSectionByStation(stationId);
 		validateSectionExist(deletedSections);
@@ -72,22 +71,16 @@ public class LineService {
 		saveSectionIfUpdated(lineId, deletedSections);
 	}
 
+	private void validateSectionExist(Sections deletedSections) {
+		if (deletedSections.isEmpty()) {
+			throw new IllegalArgumentException("삭제하려는 역 구간이 없습니다.");
+		}
+	}
+
 	private void saveSectionIfUpdated(Long lineId, Sections deletedSections) {
 		Section newSection = deletedSections.sum();
 		if (deletedSections.isNotExist(newSection)) {
 			lineDao.saveSection(lineId, newSection);
-		}
-	}
-
-	private void validateSectionSize(Line line) {
-		if (line.sizeOfSection() == 1) {
-			throw new IllegalArgumentException("구간이 하나일 땐 삭제할 수 없습니다.");
-		}
-	}
-
-	private void validateSectionExist(Sections deletedSections) {
-		if (deletedSections.isEmpty()) {
-			throw new IllegalArgumentException("삭제하려는 역 구간이 없습니다.");
 		}
 	}
 }

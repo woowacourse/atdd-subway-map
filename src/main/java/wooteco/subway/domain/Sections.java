@@ -21,13 +21,15 @@ public class Sections {
 
 	public Optional<Section> add(Section section) {
 		List<Section> matchSections = findMatchStations(section);
-		validateMatchAnyStation(matchSections);
-		validateNotHasBothStations(section, matchSections);
+		validateSectionAddable(section, matchSections);
 		values.add(section);
 
 		return findSectionIfUpStationMatch(section, matchSections)
-			.map(value -> updateSection(section, value))
-			.orElseGet(() -> findSectionIfDownStationMatch(section, matchSections));
+			.map(matchSection -> updateSection(section, matchSection))
+			.orElseGet(
+				() -> findSectionIfDownStationMatch(section, matchSections)
+					.flatMap(matchSection -> updateSection(section, matchSection))
+			);
 	}
 
 	private List<Section> findMatchStations(Section section) {
@@ -36,13 +38,10 @@ public class Sections {
 			.collect(toList());
 	}
 
-	private void validateMatchAnyStation(List<Section> matchSections) {
+	private void validateSectionAddable(Section section, List<Section> matchSections) {
 		if (matchSections.isEmpty()) {
 			throw new IllegalArgumentException("등록할 구간의 상행역과 하행역이 노선에 존재하지 않습니다.");
 		}
-	}
-
-	private void validateNotHasBothStations(Section section, List<Section> matchSections) {
 		if (section.isIncludedIn(matchSections)) {
 			throw new IllegalArgumentException("상행역과 하행역 둘 다 이미 노선에 존재합니다.");
 		}
@@ -60,8 +59,7 @@ public class Sections {
 	}
 
 	private Optional<Section> findSectionIfDownStationMatch(Section section, List<Section> matchSections) {
-		return findSectionByCondition(matchSections, each -> each.hasSameDownStation(section))
-			.flatMap(value -> updateSection(section, value));
+		return findSectionByCondition(matchSections, each -> each.hasSameDownStation(section));
 	}
 
 	private Optional<Section> findSectionByCondition(List<Section> matchSections, Predicate<Section> condition) {
