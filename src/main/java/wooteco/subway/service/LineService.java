@@ -13,6 +13,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.entity.LineEntity;
 
@@ -60,7 +61,7 @@ public class LineService {
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     public Line searchById(final Long id) {
         final LineEntity lineEntity = lineDao.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다"));
+                .orElseThrow(() -> new NotFoundLineException("[ERROR] 노선이 존재하지 않습니다"));
         final Sections sections = sectionService.searchSectionsByLineId(id);
         return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), sections);
     }

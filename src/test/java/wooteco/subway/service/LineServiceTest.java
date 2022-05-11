@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.Fixture;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.mockDao.MockLineDao;
 import wooteco.subway.mockDao.MockSectionDao;
 import wooteco.subway.mockDao.MockStationDao;
@@ -97,6 +98,20 @@ class LineServiceTest {
         );
     }
 
+    @DisplayName("없는 id로 노선을 조회시에 예외가 발생한다.")
+    @Test
+    void searchByNotExistId() {
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        final Line savedLine = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+
+        lineService.remove(savedLine.getId());
+
+        assertThatThrownBy(() -> lineService.searchById(savedLine.getId()))
+                .isInstanceOf(NotFoundLineException.class)
+                .hasMessage("[ERROR] 노선이 존재하지 않습니다");
+    }
+
     @DisplayName("노선을 수정한다.")
     @Test
     void modify() {
@@ -124,6 +139,19 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.modify(savedLine.getId(), "신분당선", "bg-red-600"))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("[ERROR] 노선이 존재하지 않습니다");
+    }
+
+    @DisplayName("이미 존재하는 이름으로 노선을 수정한다.")
+    @Test
+    void modifyDuplicateName() {
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        final Line savedLine2 = lineService.register("테스트선", "bg-yellow-600", station1Id, station2Id, 10);
+
+        assertThatThrownBy(() -> lineService.modify(savedLine2.getId(), "2호선", "bg-red-600"))
+                .isInstanceOf(DuplicateNameException.class)
+                .hasMessage("[ERROR] 이름이 중복되어 데이터를 수정할 수 없습니다.");
     }
 
     @DisplayName("id 로 노선을 삭제한다.")

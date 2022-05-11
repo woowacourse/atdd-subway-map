@@ -204,7 +204,7 @@ public class Sections {
 
     private void validateRemoveStation(final Station station) {
         if (!isUpStation(station) && !isDownStation(station)) {
-            throw new NotFoundStationException("[ERROR] 해당 구간이 존재하지 않습니다.");
+            throw new NotFoundStationException("[ERROR] 해당 지하철역이 존재하지 않습니다.");
         }
         if (value.size() <= 1) {
             throw new RemoveSectionException("[ERROR] 구간이 한개일 경우엔 삭제할 수 없습니다.");
