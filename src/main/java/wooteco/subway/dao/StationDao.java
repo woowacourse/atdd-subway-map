@@ -33,8 +33,8 @@ public class StationDao {
     }
 
     public boolean existsByName(String name) {
-        String sql = "select count(*) from STATION where name = :name";
-        return 0 != jdbcTemplate.queryForObject(sql, Map.of("name", name), Integer.class);
+        String sql = "select exists (select 1 from STATION where name = :name)";
+        return jdbcTemplate.queryForObject(sql, Map.of("name", name), Boolean.class);
     }
 
     public Optional<Station> findById(Long id) {
