@@ -43,4 +43,25 @@ public class SectionService {
                 .findAny();
         newSection.ifPresent(sectionDao::save);
     }
+
+    public void deleteStation(Long lineId, Long stationId) {
+        Sections previousSections = new Sections(sectionDao.findByLineId(lineId));
+        Sections deletedSections = previousSections.delete(stationId);
+        deletePrevious(previousSections, deletedSections);
+        addChanged(previousSections, deletedSections);
+    }
+
+    private void addChanged(Sections previousSections, Sections deletedSections) {
+        final List<Section> changed = deletedSections.findDifferentSections(previousSections);
+        for (Section section : changed) {
+            sectionDao.save(section);
+        }
+    }
+
+    private void deletePrevious(Sections previousSections, Sections deletedSections) {
+        final List<Section> deleted = previousSections.findDifferentSections(deletedSections);
+        for (Section section : deleted) {
+            sectionDao.deleteById(section.getId());
+        }
+    }
 }

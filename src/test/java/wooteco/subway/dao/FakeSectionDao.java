@@ -28,9 +28,17 @@ public class FakeSectionDao implements SectionDao {
 
     @Override
     public void update(final Section section) {
-        final Optional<Section> changedSection = sections.stream()
+        Optional<Section> changedSection = sections.stream()
                 .filter(it -> it.getId().equals(section.getId()))
                 .findAny();
         changedSection.ifPresent(value -> sections.set(sections.indexOf(value), section));
+    }
+
+    @Override
+    public void deleteById(final Long id) {
+        Optional<Section> changedSection = sections.stream()
+                .filter(it -> it.getId().equals(id))
+                .findAny();
+        changedSection.ifPresent(sections::remove);
     }
 }

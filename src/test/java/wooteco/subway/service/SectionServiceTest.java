@@ -71,4 +71,37 @@ class SectionServiceTest {
         List<Section> sections = sectionDao.findByLineId(1L);
         assertThat(sections).contains(first, changedSection, newSection);
     }
+
+    @DisplayName("상행역을 삭제할 수 있다.")
+    @Test
+    void deleteForth() {
+        sectionService.deleteStation(1L, 2L);
+
+        List<Section> sections = sectionDao.findByLineId(1L);
+
+        assertThat(sections).contains(second)
+                .hasSize(1);
+    }
+
+    @DisplayName("하행역을 삭제할 수 있다.")
+    @Test
+    void deleteBank() {
+        sectionService.deleteStation(1L, 4L);
+
+        List<Section> sections = sectionDao.findByLineId(1L);
+
+        assertThat(sections).contains(first)
+                .hasSize(1);
+    }
+
+    @DisplayName("구간의 사이에 있는 역을 삭제할 수 있다.")
+    @Test
+    void deleteBetween() {
+        sectionService.deleteStation(1L, 3L);
+
+        List<Section> sections = sectionDao.findByLineId(1L);
+
+        assertThat(sections).contains(new Section(1L, 2L, 4L, 16))
+                .hasSize(1);
+    }
 }
