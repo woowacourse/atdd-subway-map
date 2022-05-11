@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import wooteco.subway.domain.Section;
 import wooteco.subway.service.dto.SectionDto;
 
 public interface CommonSectionDao {

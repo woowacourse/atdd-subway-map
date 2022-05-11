@@ -2,10 +2,11 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import wooteco.subway.domain.Line;
+import wooteco.subway.service.dto.LineDto;
 
 public interface CommonLineDao {
 
-    Line save(final Line line);
+    Line save(final LineDto lineDto);
 
     List<Line> findAll();
 

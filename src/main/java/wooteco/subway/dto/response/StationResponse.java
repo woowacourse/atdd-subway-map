@@ -1,5 +1,7 @@
 package wooteco.subway.dto.response;
 
+import wooteco.subway.domain.Station;
+
 public class StationResponse {
     private Long id;
     private String name;
@@ -18,5 +20,9 @@ public class StationResponse {
 
     public String getName() {
         return name;
+    }
+
+    public static StationResponse from(final Station station) {
+        return new StationResponse(station.getId(), station.getName());
     }
 }

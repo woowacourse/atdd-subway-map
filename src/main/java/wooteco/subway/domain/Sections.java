@@ -125,4 +125,8 @@ public class Sections {
         return value.size() >= 2;
     }
 
+
+    public List<Section> getValue() {
+        return value;
+    }
 }

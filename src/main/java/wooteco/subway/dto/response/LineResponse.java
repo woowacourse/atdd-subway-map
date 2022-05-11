@@ -1,6 +1,10 @@
 package wooteco.subway.dto.response;
 
 import java.util.List;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.util.Converter;
 
 public class LineResponse {
     private Long id;
@@ -20,6 +24,11 @@ public class LineResponse {
 
     public LineResponse(final Long id, final String name, final String color) {
         this(id, name, color, List.of());
+    }
+
+    public static LineResponse from(final Line line) {
+        final Sections sections = line.getSections();
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), Converter.convertFromSections(sections));
     }
 
     public Long getId() {

@@ -90,6 +90,14 @@ public class Section {
         return MatchingResult.NO_MATCHED;
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

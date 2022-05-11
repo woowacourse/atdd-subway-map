@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.service.dto.LineDto;
 
 @Repository
 public class LineDao implements CommonLineDao {
@@ -26,12 +27,12 @@ public class LineDao implements CommonLineDao {
     }
 
     @Override
-    public Line save(final Line line) {
+    public Line save(final LineDto lineDto) {
         final Map<String, Object> params = new HashMap<>();
-        params.put("name", line.getName());
-        params.put("color", line.getColor());
+        params.put("name", lineDto.getName());
+        params.put("color", lineDto.getColor());
         final Long id = simpleInsert.executeAndReturnKey(params).longValue();
-        return new Line(id, line.getName(), line.getColor());
+        return new Line(id, lineDto.getName(), lineDto.getColor());
     }
 
     @Override

@@ -7,28 +7,32 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.CommonLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.service.dto.LineDto;
 
 @Service
 public class LineService {
 
     private static final int NO_ROW_AFFECTED = 0;
-    private static final String LINE_DUPLICATED = "이미 존재하는 노선입니다. ";
     private static final String LINE_NOT_FOUND = "요청한 노선이 존재하지 않습니다. ";
 
     private final CommonLineDao lineDao;
+    private final LineRepository lineRepository;
 
-    public LineService(final CommonLineDao lineDao) {
+    public LineService(final CommonLineDao lineDao, final LineRepository lineRepository) {
         this.lineDao = lineDao;
+        this.lineRepository = lineRepository;
     }
 
     @Transactional
-    public Line save(final LineRequest lineRequest) {
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        try {
-            return lineDao.save(line);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalStateException(LINE_DUPLICATED + line);
-        }
+    public LineResponse save(final LineRequest lineRequest) {
+//        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        final LineDto lineDto = new LineDto(lineRequest.getName(), lineRequest.getColor(),
+                lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        final Line line = lineRepository.save(lineDto);
+        return LineResponse.from(line);
+//        return lineRepository.save(lineDto);
     }
 
     @Transactional(readOnly = true)
