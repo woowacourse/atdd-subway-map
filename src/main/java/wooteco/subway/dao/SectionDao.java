@@ -41,22 +41,33 @@ public class SectionDao {
     }
 
     private Optional<Integer> findDistanceByUpStationId(long lineId, long upStationId) {
-        String sql = "SELECT distance FROM section WHERE line_id = :line_id AND up_station_id = :up_station_id";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("up_station_id", upStationId)
-                .addValue("line_id", lineId);
+        String sql = "SELECT distance FROM section WHERE line_id = :lineId AND up_station_id = :upStationId";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
+                .addValue("lineId", lineId);
         return getDistance(sql, parameterSource);
     }
 
     private Optional<Integer> findDistanceByDownStationId(long lineId, long downStationId) {
-        String sql = "SELECT distance FROM section WHERE line_id = :line_id AND down_station_id = :down_station_id";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("down_station_id", downStationId)
-                .addValue("line_id", lineId);
+        String sql = "SELECT distance FROM section WHERE line_id = :lineId AND down_station_id = :downStationId";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("downStationId", downStationId)
+                .addValue("lineId", lineId);
         return getDistance(sql, parameterSource);
     }
 
     private Optional<Integer> getDistance(String sql, SqlParameterSource parameterSource) {
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Integer.class));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Long> findByUpStationAndDownStation(long upStationId, long downStationId) {
+        String sql = "SELECT id FROM section WHERE up_station_id = :upStationId AND down_station_id = :downStationId";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
+                .addValue("downStationId", downStationId);
+        try {
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Long.class));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
