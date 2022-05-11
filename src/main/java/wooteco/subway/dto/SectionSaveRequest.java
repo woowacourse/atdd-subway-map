@@ -17,6 +17,11 @@ public class SectionSaveRequest {
         this.distance = distance;
     }
 
+    public static SectionSaveRequest of(Long lineId, SectionRequest request) {
+        return new SectionSaveRequest(lineId, request.getUpStationId(),
+                request.getDownStationId(), request.getDistance());
+    }
+
     public Long getLineId() {
         return lineId;
     }
