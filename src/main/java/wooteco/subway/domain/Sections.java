@@ -13,8 +13,7 @@ public class Sections {
     }
 
     public List<Station> getSortedStations() {
-        Section randomSection = findAnySection();
-        Section topSection = findTopSection(randomSection);
+        final Section topSection = findTopSection(findAnySection());
         return createSortedStations(topSection);
     }
 
@@ -31,42 +30,43 @@ public class Sections {
         return findTopSection(nextUpperSection(section));
     }
 
-    private boolean isTopSection(final Section section) {
+    private boolean isTopSection(final Section otherSection) {
         return sections.stream()
-                .noneMatch(existingSection -> existingSection.isUpperThan(section));
+                .noneMatch(section -> section.isUpperThan(otherSection));
     }
 
-    private Section nextUpperSection(final Section section) {
+    private Section nextUpperSection(final Section otherSection) {
         return sections.stream()
-                .filter(existingSection -> existingSection.isUpperThan(section))
+                .filter(section -> section.isUpperThan(otherSection))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("존재하는 구간 데이터가 없습니다."));
     }
 
-    private List<Station> createSortedStations(Section section) {
+    private List<Station> createSortedStations(final Section section) {
         final List<Station> stations = new ArrayList<>();
-        stations.add(section.getUpStation());
-        stations.add(section.getDownStation());
-
-        while (!isLastSection(section)) {
-            section = nextSection(section);
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        }
-
+        addStationInSection(stations, section);
         return stations.stream()
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    private boolean isLastSection(final Section section) {
-        return sections.stream()
-                .noneMatch(existingSection -> existingSection.isLowerThan(section));
+    private void addStationInSection(final List<Station> stations, final Section section) {
+        stations.add(section.getUpStation());
+        stations.add(section.getDownStation());
+        if (isLastSection(section)) {
+            return;
+        }
+        addStationInSection(stations, nextUnderSection(section));
     }
 
-    private Section nextSection(final Section section) {
+    private boolean isLastSection(final Section otherSection) {
         return sections.stream()
-                .filter(existingSection -> existingSection.isLowerThan(section))
+                .noneMatch(section -> section.isLowerThan(otherSection));
+    }
+
+    private Section nextUnderSection(final Section otherSection) {
+        return sections.stream()
+                .filter(section -> section.isLowerThan(otherSection))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("더이상 하행구간이 없습니다."));
     }
@@ -89,13 +89,23 @@ public class Sections {
         }
     }
 
-    private boolean hasNoConnectableSection(final Section section) {
+    private boolean hasNoConnectableSection(final Section otherSection) {
         return sections.stream()
-                .noneMatch(existingSection -> existingSection.isConnectedSection(section));
+                .noneMatch(section -> section.isConnectedWith(otherSection));
     }
 
     private boolean isAlreadyConnectedSection(final Section section) {
-        return hasEqualUpStationWith(section) && hasEqualDownStationWith(section);
+        return isConnectedWithUpStationOf(section) && isConnectedWithDownStationOf(section);
+    }
+
+    private boolean isConnectedWithUpStationOf(final Section otherSection) {
+        return sections.stream()
+                .anyMatch(section -> section.hasSameStationWith(otherSection.getUpStation()));
+    }
+
+    private boolean isConnectedWithDownStationOf(final Section otherSection) {
+        return sections.stream()
+                .anyMatch(section -> section.hasSameStationWith(otherSection.getDownStation()));
     }
 
     private boolean isOverThanTopSection(final Section section) {
@@ -112,55 +122,38 @@ public class Sections {
         if (isLastSection(section)) {
             return section;
         }
-        return findLastSection(nextLowerSection(section));
+        return findLastSection(nextUnderSection(section));
     }
 
-    private Section nextLowerSection(final Section section) {
-        return sections.stream()
-                .filter(existingSection -> existingSection.isLowerThan(section))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("존재하는 구간 데이터가 없습니다."));
-    }
-
-    private boolean hasEqualUpStationWith(final Section section) {
-        return sections.stream()
-                .anyMatch(existingSection -> existingSection.equalsWithUpStation(section));
-    }
-
-    private boolean hasEqualDownStationWith(final Section section) {
-        return sections.stream()
-                .anyMatch(existingSection -> existingSection.equalsWithDownStation(section));
-    }
-
-    private void addSectionToMiddle(final Section section) {
-        if (hasSameUpStation(section)) {
-            updateSectionWithSameUpStation(section);
-            sections.add(section);
+    private void addSectionToMiddle(final Section otherSection) {
+        if (hasSameUpStationWith(otherSection)) {
+            updateUpStationOfSectionFrom(otherSection);
+            sections.add(otherSection);
             return;
         }
-        updateSectionWithSameDownStation(section);
-        sections.add(section);
+        updateDownStationOfSectionFrom(otherSection);
+        sections.add(otherSection);
     }
 
-    private boolean hasSameUpStation(final Section section) {
+    private boolean hasSameUpStationWith(final Section otherSection) {
         return sections.stream()
-                .anyMatch(existingSection -> existingSection.hasSameUpStation(section));
+                .anyMatch(section -> section.hasSameUpStationWith(otherSection));
     }
 
-    private void updateSectionWithSameUpStation(final Section section) {
-        final Section sectionWithSameUpStation = sections.stream()
-                .filter(existingSection -> existingSection.hasSameUpStation(section))
+    private void updateUpStationOfSectionFrom(final Section otherSection) {
+        final Section section = sections.stream()
+                .filter(existingSection -> existingSection.hasSameUpStationWith(otherSection))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
-        sectionWithSameUpStation.updateSectionWithSameUpStation(section);
+        section.updateUpStationFrom(otherSection);
     }
 
-    private void updateSectionWithSameDownStation(final Section section) {
-        final Section sectionWithSameDownStation = sections.stream()
-                .filter(existingSection -> existingSection.hasSameDownStationWith(section))
+    private void updateDownStationOfSectionFrom(final Section otherSection) {
+        final Section section = sections.stream()
+                .filter(existingSection -> existingSection.hasSameDownStationWith(otherSection))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
-        sectionWithSameDownStation.updateSectionWithSameDownStation(section);
+        section.updateDownStationFrom(otherSection);
     }
 
     public List<Section> getSections() {

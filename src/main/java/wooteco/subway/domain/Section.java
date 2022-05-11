@@ -50,7 +50,7 @@ public class Section {
         return this.upStation.equals(otherSection.downStation);
     }
 
-    public boolean isConnectedSection(final Section otherSection) {
+    public boolean isConnectedWith(final Section otherSection) {
         return contain(otherSection.upStation) || contain(otherSection.downStation);
     }
 
@@ -58,29 +58,25 @@ public class Section {
         return this.upStation.equals(station) || this.downStation.equals(station);
     }
 
-    public boolean equalsWithUpStation(final Section otherSection) {
-        return this.upStation.equals(otherSection.upStation) || this.downStation.equals(otherSection.upStation);
+    public boolean hasSameStationWith(final Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
     }
 
-    public boolean equalsWithDownStation(final Section otherSection) {
-        return this.downStation.equals(otherSection.downStation) || this.upStation.equals(otherSection.downStation);
-    }
-
-    public boolean hasSameUpStation(final Section otherSection) {
+    public boolean hasSameUpStationWith(final Section otherSection) {
         return this.upStation.equals(otherSection.upStation);
-    }
-
-    public void updateSectionWithSameUpStation(final Section otherSection) {
-        validateLongerThan(otherSection);
-        this.upStation = otherSection.downStation;
-        this.distance = this.distance - otherSection.distance;
     }
 
     public boolean hasSameDownStationWith(final Section otherSection) {
         return this.downStation.equals(otherSection.downStation);
     }
 
-    public void updateSectionWithSameDownStation(final Section otherSection) {
+    public void updateUpStationFrom(final Section otherSection) {
+        validateLongerThan(otherSection);
+        this.upStation = otherSection.downStation;
+        this.distance = this.distance - otherSection.distance;
+    }
+
+    public void updateDownStationFrom(final Section otherSection) {
         validateLongerThan(otherSection);
         this.downStation = otherSection.upStation;
         this.distance = this.distance - otherSection.distance;
