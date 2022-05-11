@@ -2,8 +2,6 @@ package wooteco.subway.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
@@ -33,19 +31,28 @@ public class SectionService {
         return sectionDao.findByLineId(lineId);
     }
 
-    public List<Long> findStationIdsByLineId(Long id) {
-        List<Section> sections = sectionDao.findByLineId(id);
+//    public List<Long> findStationIdsByLineId(Long id) {
+//        List<Section> sections = sectionDao.findByLineId(id);
+//
+//        Set<Long> collect = sections.stream()
+//                .map(Section::getUpStationId)
+//                .collect(Collectors.toSet());
+//
+//        Set<Long> collect2 = sections.stream()
+//                .map(Section::getDownStationId)
+//                .collect(Collectors.toSet());
+//
+//        collect.addAll(collect2);
+//
+//        return new ArrayList<>(collect);
+//    }
 
-        Set<Long> collect = sections.stream()
-                .map(Section::getUpStationId)
-                .collect(Collectors.toSet());
+    public List<Long> findArrangedStationIdsByLineId(Long id) {
+        Sections sections = new Sections(sectionDao.findByLineId(id), id);
+        List<Section> endSections = sections.findEndSections();
+        Section endUpSection = endSections.get(0);
 
-        Set<Long> collect2 = sections.stream()
-                .map(Section::getDownStationId)
-                .collect(Collectors.toSet());
-        collect.addAll(collect2);
-
-        return new ArrayList<>(collect);
+        return new ArrayList<>(sections.findArrangedStationIdsByLineId(id, endUpSection));
     }
 
     @Transactional

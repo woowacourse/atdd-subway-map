@@ -68,4 +68,12 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.update(new Line(2L, "6호선", "brown")))
                 .isInstanceOf(LineNotFoundException.class);
     }
+
+//    @DisplayName("새로운 노선을 추가할 수 있다.")
+//    @Test
+//    void findLineById() {
+//        Line actual = lineService.findLineById(line.getId());
+//
+//        assertThat(actual).isEqualTo(new Line(1L, "신분당선", "red"));
+//    }
 }

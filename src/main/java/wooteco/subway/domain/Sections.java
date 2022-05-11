@@ -1,7 +1,11 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.section.DuplicatedSectionException;
@@ -170,5 +174,60 @@ public class Sections {
                 "sections=" + sections +
                 ", lineId=" + lineId +
                 '}';
+    }
+
+    public List<Section> findEndSections() {
+        Map<Long, Integer> stationCount = new HashMap<>();
+
+        for (Section section : sections) {
+            stationCount.put(section.getUpStationId(),
+                    stationCount.getOrDefault(section.getUpStationId(), 0) + 1);
+
+            stationCount.put(section.getDownStationId(),
+                    stationCount.getOrDefault(section.getDownStationId(), 0) + 1);
+        }
+
+        List<Long> endStationIds = new ArrayList<>();
+        for (Entry<Long, Integer> entrySet : stationCount.entrySet()) {
+            if (entrySet.getValue() == 1) {
+                endStationIds.add(entrySet.getKey());
+            }
+        }
+
+        return new ArrayList<>(List.of(findUpSection(endStationIds), findDownSection(endStationIds)));
+    }
+
+    private Section findUpSection(List<Long> endStationIds) {
+        return sections.stream()
+                .filter(it -> endStationIds.contains(it.getUpStationId()))
+                .findFirst()
+                .get();
+    }
+
+    private Section findDownSection(List<Long> endStationIds) {
+        return sections.stream()
+                .filter(it -> endStationIds.contains(it.getDownStationId()))
+                .findFirst()
+                .get();
+    }
+
+    public List<Long> findArrangedStationIdsByLineId(Long id, Section endUpSection) {
+        List<Long> stationIds = new ArrayList<>(
+                List.of(endUpSection.getUpStationId(), endUpSection.getDownStationId()));
+
+        Optional<Long> nextStationId = sections.stream()
+                .filter(it -> it.isSameUpStationId(stationIds.get(stationIds.size() - 1)))
+                .map(Section::getDownStationId)
+                .findFirst();
+
+        while (nextStationId.isPresent()) {
+            nextStationId = sections.stream()
+                    .filter(it -> it.isSameUpStationId(stationIds.get(stationIds.size() - 1)))
+                    .map(Section::getDownStationId)
+                    .findFirst();
+            nextStationId.ifPresent(stationIds::add);
+        }
+
+        return stationIds;
     }
 }

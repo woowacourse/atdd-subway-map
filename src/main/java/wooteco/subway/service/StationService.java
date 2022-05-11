@@ -1,6 +1,8 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -38,6 +40,17 @@ public class StationService {
     }
 
     public List<Station> findStationByIds(List<Long> ids) {
-        return stationDao.findStationByIds(ids);
+        List<Station> stations = stationDao.findStationByIds(ids);
+        List<Station> stationsWithIdOrder = new ArrayList<>();
+
+        for (Long id : ids) {
+            Optional<Station> station = stations.stream()
+                    .filter(it -> it.getId().equals(id))
+                    .findFirst();
+
+            station.ifPresent(stationsWithIdOrder::add);
+
+        }
+        return stationsWithIdOrder;
     }
 }

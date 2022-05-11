@@ -225,4 +225,33 @@ class SectionsTest {
 
         assertThat(sectionIdsToRemove).containsExactly(1L, 2L);
     }
+
+    @DisplayName("정렬테스트~일반 정렬 ~~~~~")
+    @Test
+    void 정렬테스트() {
+        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 1L, 2L, 10),
+                new Section(2L, 1L, 2L, 3L, 5),
+                new Section(3L, 1L, 3L, 4L, 7))), 1L);
+
+        Section endUpSection = sections.findEndSections().get(0);
+
+        List<Long> arrangedStationIdsByLineId = sections.findArrangedStationIdsByLineId(1L, endUpSection);
+
+        System.out.println(arrangedStationIdsByLineId);
+        assertThat(arrangedStationIdsByLineId).containsExactly(1L, 2L, 3L, 4L);
+    }
+
+    @DisplayName("정렬테스트~~")
+    @Test
+    void 정렬테스트2() {
+        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 1L, 10),
+                new Section(2L, 1L, 3L, 4L, 5),
+                new Section(3L, 1L, 1L, 3L, 7))), 1L);
+
+        Section endUpSection = sections.findEndSections().get(0);
+
+        List<Long> arrangedStationIdsByLineId = sections.findArrangedStationIdsByLineId(1L, endUpSection);
+
+        assertThat(arrangedStationIdsByLineId).containsExactly(2L, 1L, 3L, 4L);
+    }
 }

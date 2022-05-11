@@ -58,7 +58,7 @@ public class SectionServiceTest {
         List<Section> sections = sectionService.findByLineId(1L);
 
         Section targetSection = sections.stream()
-                .filter(section -> section.getId().equals(1L))
+                .filter(it -> it.getId().equals(1L))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
 
@@ -156,7 +156,7 @@ public class SectionServiceTest {
         Section newSection = new Section(1L, 2L, 3L, 5);
         sectionService.save(newSection);
 
-        List<Long> stationIds = sectionService.findStationIdsByLineId(1L);
+        List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(1L);
 
         assertThat(stationIds).containsExactly(1L, 2L, 3L);
     }
@@ -169,7 +169,7 @@ public class SectionServiceTest {
 
         sectionService.remove(1L, 1L);
 
-        List<Long> stationIds = sectionService.findStationIdsByLineId(1L);
+        List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(1L);
 
         assertThat(stationIds).containsExactly(2L, 3L, 4L);
     }
@@ -177,12 +177,12 @@ public class SectionServiceTest {
     @DisplayName("종점이 하행선인 경우, 종점의 상행선이 종점이 된다.")
     @Test
     void remove_downStation() {
-        sectionService.save(new Section(1L, 2L, 3L, 5));
-        sectionService.save(new Section(1L, 3L, 4L, 10));
+        sectionService.save(new Section(1L, 2L, 4L, 5));
+        sectionService.save(new Section(1L, 4L, 3L, 10));
 
         sectionService.remove(1L, 4L);
 
-        List<Long> stationIds = sectionService.findStationIdsByLineId(1L);
+        List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(1L);
 
         assertThat(stationIds).containsExactly(1L, 2L, 3L);
     }
@@ -195,7 +195,7 @@ public class SectionServiceTest {
 
         sectionService.remove(1L, 2L);
 
-        List<Long> stationIds = sectionService.findStationIdsByLineId(1L);
+        List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(1L);
         Section newSection = sectionService.findByLineId(1L)
                 .stream()
                 .filter(it -> it.isSameUpStationId(1L))
@@ -218,5 +218,17 @@ public class SectionServiceTest {
     void remove_notExist() {
         assertThatThrownBy(() -> sectionService.remove(1L, 2L))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행선부터 하행선으로 정렬된 역 아이디들을 반환한다.")
+    @Test
+    void findArrangedStationIdsByLineId() {
+        sectionService.save(new Section(1L, 2L, 4L, 5));
+        sectionService.save(new Section(1L, 4L, 3L, 10));
+        sectionService.save(new Section(1L, 3L, 6L, 10));
+
+        List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(1L);
+
+        assertThat(stationIds).containsExactly(1L, 2L, 4L, 3L, 6L);
     }
 }

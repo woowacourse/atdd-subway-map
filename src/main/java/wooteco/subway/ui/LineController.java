@@ -44,7 +44,7 @@ public class LineController {
         Section section = lineRequest.toSection(newLine.getId());
         Section newSection = sectionService.save(section);
 
-        List<Long> stationIds = sectionService.findStationIdsByLineId(newLine.getId());
+        List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(newLine.getId());
         List<Station> stations = stationService.findStationByIds(stationIds);
 
         List<StationResponse> stationResponses = StationResponse.from(stations);
@@ -58,7 +58,7 @@ public class LineController {
         List<LineResponse> lineResponses = new ArrayList<>();
         List<Line> lines = lineService.findAll();
         for (Line line : lines) {
-            List<Long> stationIds = sectionService.findStationIdsByLineId(line.getId());
+            List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(line.getId());
             List<Station> stations = stationService.findStationByIds(stationIds);
             List<StationResponse> stationResponses = StationResponse.from(stations);
             LineResponse lineResponse = LineResponse.of(line, stationResponses);
@@ -71,7 +71,8 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         Line line = lineService.findLineById(id);
-        List<Long> stationIds = sectionService.findStationIdsByLineId(line.getId());
+        List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(line.getId());
+        //여기서 재정렬이 되는군
         List<Station> stations = stationService.findStationByIds(stationIds);
 
         List<StationResponse> stationResponses = StationResponse.from(stations);
