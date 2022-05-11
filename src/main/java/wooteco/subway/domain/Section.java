@@ -17,15 +17,15 @@ public class Section {
         this(null, upStation, downStation, distance);
     }
 
-    public void splitRightBy(Section section) {
+    void splitRightBy(Section section) {
         splitBy(section, true);
     }
 
-    public void splitLeftBy(Section section) {
+    void splitLeftBy(Section section) {
         splitBy(section, false);
     }
 
-    public void splitBy(Section section, boolean direction) {
+    void splitBy(Section section, boolean direction) {
         checkStations(section);
         checkDistance(section);
         if (direction) {
@@ -49,19 +49,19 @@ public class Section {
         }
     }
 
-    public boolean hasSameUpStationWith(Section section) {
+    boolean hasSameUpStationWith(Section section) {
         return isUpStation(section.upStation);
     }
 
-    public boolean hasSameDownStationWith(Section section) {
+    boolean hasSameDownStationWith(Section section) {
         return isDownStation(section.downStation);
     }
 
-    public boolean isUpStation(Station station) {
+    boolean isUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    public boolean isDownStation(Station station) {
+    boolean isDownStation(Station station) {
         return downStation.equals(station);
     }
 
