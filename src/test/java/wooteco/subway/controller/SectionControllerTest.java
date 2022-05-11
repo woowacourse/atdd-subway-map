@@ -59,7 +59,8 @@ class SectionControllerTest extends AcceptanceTest {
     void createStationAtLastUp() {
         SectionRequest request = new SectionRequest(savedStation4.getId(), savedStation1.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -69,7 +70,8 @@ class SectionControllerTest extends AcceptanceTest {
     void createStationAtLastDown() {
         SectionRequest request = new SectionRequest(savedStation3.getId(), savedStation4.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -79,7 +81,8 @@ class SectionControllerTest extends AcceptanceTest {
     void createStationAtMiddle() {
         SectionRequest request = new SectionRequest(savedStation1.getId(), savedStation4.getId(), 7);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -89,7 +92,8 @@ class SectionControllerTest extends AcceptanceTest {
     void throwsExceptionWithNonExistStation() {
         SectionRequest request = new SectionRequest(100L, savedStation2.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -99,7 +103,8 @@ class SectionControllerTest extends AcceptanceTest {
     void throwsExceptionNotContainStationInLine() {
         SectionRequest request = new SectionRequest(savedStation4.getId(), savedStation5.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -109,7 +114,8 @@ class SectionControllerTest extends AcceptanceTest {
     void throwsExceptionContainExistTwoStationInLine() {
         SectionRequest request = new SectionRequest(savedStation3.getId(), savedStation2.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -119,7 +125,8 @@ class SectionControllerTest extends AcceptanceTest {
     void throwsExceptionWithNegativeDistance() {
         SectionRequest request = new SectionRequest(savedStation3.getId(), savedStation2.getId(), 0);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -129,7 +136,8 @@ class SectionControllerTest extends AcceptanceTest {
     void throwsExceptionWithLongerDistance() {
         SectionRequest request = new SectionRequest(savedStation1.getId(), savedStation2.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -137,7 +145,8 @@ class SectionControllerTest extends AcceptanceTest {
     @DisplayName("상행 종점 역이 포함된 구간을 올바르게 삭제한다.")
     @Test
     void deleteSectionAtLastUpStation() {
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation1.getId());
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation1.getId());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -145,7 +154,8 @@ class SectionControllerTest extends AcceptanceTest {
     @DisplayName("하행 종점 역이 포함된 구간을 올바르게 삭제한다.")
     @Test
     void deleteSectionAtLastDownStation() {
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation3.getId());
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation3.getId());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -153,7 +163,8 @@ class SectionControllerTest extends AcceptanceTest {
     @DisplayName("중간 역이 포함된 구간을 올바르게 삭제한다.")
     @Test
     void deleteSectionAtMiddleStation() {
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation2.getId());
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation2.getId());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -163,7 +174,8 @@ class SectionControllerTest extends AcceptanceTest {
     void throwsExceptionWithOneRemainSection() {
         sectionService.delete(savedLine.getId(), savedStation1.getId());
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation2.getId());
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation2.getId());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -171,7 +183,8 @@ class SectionControllerTest extends AcceptanceTest {
     @DisplayName("현재 라인에 존재하지 않는 역으로 삭제 시도시 예외가 발생한다.")
     @Test
     void throwsExceptionWithNotExistStationInLine() {
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation4.getId());
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.deleteRequest(deletePath + savedStation4.getId());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

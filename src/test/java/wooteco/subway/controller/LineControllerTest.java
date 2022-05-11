@@ -43,7 +43,8 @@ class LineControllerTest extends AcceptanceTest {
     void createLine() {
         LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(),10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -54,7 +55,8 @@ class LineControllerTest extends AcceptanceTest {
     void createLineWithInvalidNameDateSize() {
         LineRequest request = new LineRequest("", "red", savedStation1.getId(), savedStation2.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -64,7 +66,8 @@ class LineControllerTest extends AcceptanceTest {
     void createLineWithInvalidColorDateSize() {
         LineRequest request = new LineRequest("신분당선", "", savedStation1.getId(), savedStation2.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -75,7 +78,8 @@ class LineControllerTest extends AcceptanceTest {
         lineDao.insert(new Line("신분당선", "red"));
         LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -86,7 +90,8 @@ class LineControllerTest extends AcceptanceTest {
         lineDao.insert(new Line("신분당선", "red"));
         LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -97,7 +102,8 @@ class LineControllerTest extends AcceptanceTest {
         lineDao.insert(new Line("신분당선", "red"));
         LineRequest request = new LineRequest("신분당선", "red", 100L, savedStation1.getId(), 10);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -108,7 +114,8 @@ class LineControllerTest extends AcceptanceTest {
         lineDao.insert(new Line("신분당선", "red"));
         LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 0);
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -138,7 +145,8 @@ class LineControllerTest extends AcceptanceTest {
     void getLine() {
         Line line = lineDao.insert(new Line("신분당선", "red"));
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.getRequest("/lines/" + line.getId());
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.getRequest("/lines/" + line.getId());
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
 
         assertAll(
@@ -154,8 +162,8 @@ class LineControllerTest extends AcceptanceTest {
         Line line = lineDao.insert(new Line("신분당선", "red"));
         Line requestBody = new Line("다른분당선", "blue");
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.putRequest(requestBody,
-                MediaType.APPLICATION_JSON_VALUE, "/lines/" + line.getId());
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.putRequest(requestBody, MediaType.APPLICATION_JSON_VALUE, "/lines/" + line.getId());
 
         Line updatedLine = lineDao.findById(line.getId());
         assertAll(
@@ -181,7 +189,8 @@ class LineControllerTest extends AcceptanceTest {
     void deleteLineWithNotExistData() {
         Line savedLine = lineDao.insert(new Line("신분당선", "red"));
 
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.deleteRequest("/lines/" + (savedLine.getId() + 1));
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.deleteRequest("/lines/" + (savedLine.getId() + 1));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
