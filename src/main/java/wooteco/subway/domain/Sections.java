@@ -2,7 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import wooteco.subway.exception.BothUpAndDownStationAlreadyExistsException;
+import wooteco.subway.exception.BothUpAndDownStationAlreadyExistException;
 import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
 import wooteco.subway.exception.CanNotInsertSectionException;
 import wooteco.subway.exception.OnlyOneSectionException;
@@ -55,7 +55,7 @@ public class Sections {
         boolean isDownStationExisting = value.stream().anyMatch(section -> section.isSameDownStation(newSection));
 
         if (isUpStationExisting && isDownStationExisting) {
-            throw new BothUpAndDownStationAlreadyExistsException();
+            throw new BothUpAndDownStationAlreadyExistException();
         }
     }
 

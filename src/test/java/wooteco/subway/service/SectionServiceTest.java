@@ -20,7 +20,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.BothUpAndDownStationAlreadyExistsException;
+import wooteco.subway.exception.BothUpAndDownStationAlreadyExistException;
 import wooteco.subway.exception.BothUpAndDownStationDoNotExistException;
 import wooteco.subway.exception.CanNotInsertSectionException;
 import wooteco.subway.exception.OnlyOneSectionException;
@@ -31,8 +31,6 @@ class SectionServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private LineService lineService;
-    private StationService stationService;
     private SectionService sectionService;
 
     private LineResponse lineResponse;
@@ -44,10 +42,11 @@ class SectionServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(new LineDao(jdbcTemplate), new StationDao(jdbcTemplate),
-                new SectionDao(jdbcTemplate));
-        stationService = new StationService(new StationDao(jdbcTemplate));
         sectionService = new SectionService(new SectionDao(jdbcTemplate));
+
+        LineService lineService = new LineService(new LineDao(jdbcTemplate), new StationDao(jdbcTemplate),
+                new SectionDao(jdbcTemplate));
+        StationService stationService = new StationService(new StationDao(jdbcTemplate));
 
         stationResponse1 = stationService.createStation(new StationRequest("선릉역"));
         stationResponse2 = stationService.createStation(new StationRequest("삼성역"));
@@ -151,7 +150,7 @@ class SectionServiceTest {
 
         // when & then
         assertThatThrownBy(() -> sectionService.createSection(lineId, sectionRequest))
-                .isInstanceOf(BothUpAndDownStationAlreadyExistsException.class);
+                .isInstanceOf(BothUpAndDownStationAlreadyExistException.class);
     }
 
     @DisplayName("추가하려는 구간의 모든 역이 구간 목록에 모두 존재하지 않을 경우 예외가 발생한다")

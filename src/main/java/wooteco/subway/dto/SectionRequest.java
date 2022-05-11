@@ -17,10 +17,6 @@ public class SectionRequest {
         this.distance = distance;
     }
 
-    public SectionRequest(Section section) {
-        this(section.getUpStationId(), section.getDownStationId(), section.getDistance().getValue());
-    }
-
     public Section toSection() {
         return new Section(upStationId, downStationId, new Distance(distance));
     }

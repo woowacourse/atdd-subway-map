@@ -29,17 +29,6 @@ public class AcceptanceUtil {
         return Long.parseLong(response.header("Location").split("lines/")[1]);
     }
 
-    public static ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId,
-                                                              Integer distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("lineId", lineId.toString());
-        params.put("upStationId", upStationId.toString());
-        params.put("downStationId", downStationId.toString());
-        params.put("distance", distance.toString());
-
-        return AcceptanceUtil.postRequest(params, "/lines/" + lineId + "/sections");
-    }
-
     public static ExtractableResponse<Response> postRequest(Map<String, String> params, String path) {
         return RestAssured.given().log().all()
                 .body(params)
