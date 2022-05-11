@@ -97,6 +97,18 @@ public class Sections {
             sections.remove(section);
             return;
         }
+
+        if (sections.stream()
+                .anyMatch(it -> it.getDownStation().equals(station)) &&
+                sections.stream()
+                        .noneMatch(it -> it.getUpStation().equals(station))) {
+            final Section section = sections.stream()
+                    .filter(it -> it.getDownStation().equals(station))
+                    .findFirst()
+                    .orElseThrow();
+            sections.remove(section);
+            return;
+        }
     }
 
     public List<Station> getStations() {

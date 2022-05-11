@@ -192,7 +192,7 @@ public class SectionsTest {
     
     @Test
     @DisplayName("상행 종점이 제거될 경우 다음역이 종점이 됨")
-    void deleteSection() {
+    void deleteSectionWithUpTerminal() {
         //given
         final Station newDownStation = new Station("정자역");
         final Section section = new Section(downStation, newDownStation, 10);
@@ -206,5 +206,24 @@ public class SectionsTest {
                 () -> assertThat(stations.contains(upStation)).isFalse(),
                 () -> assertThat(sections.stream().anyMatch(it -> it.getDownStation().equals(downStation))).isFalse()
         );
+    }
+
+    @Test
+    @DisplayName("하행 종점이 제거될 경우 이전 역이 종점이 됨")
+    void deleteSectionWithDownTerminal() {
+        //given
+        final Station newDownStation = new Station("정자역");
+        final Section section = new Section(downStation, newDownStation, 10);
+        line.addSection(section);
+        //when
+        line.deleteSection(newDownStation);
+        //then
+        final List<Station> stations = line.getStations();
+        final List<Section> sections = line.getSections();
+        assertAll(
+                () -> assertThat(stations.contains(newDownStation)).isFalse(),
+                () -> assertThat(sections.stream().anyMatch(it -> it.getUpStation().equals(downStation))).isFalse()
+        );
+
     }
 }
