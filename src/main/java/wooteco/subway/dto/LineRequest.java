@@ -1,7 +1,11 @@
 package wooteco.subway.dto;
 
+import javax.validation.constraints.NotEmpty;
+
 public class LineRequest {
+    @NotEmpty(message = "이름을 입력해주세요!")
     private String name;
+    @NotEmpty(message = "색을 선택해야합니다!")
     private String color;
     private Long upStationId;
     private Long downStationId;

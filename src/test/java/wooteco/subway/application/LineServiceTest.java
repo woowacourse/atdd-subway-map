@@ -16,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
@@ -31,8 +30,6 @@ class LineServiceTest {
     private LineDao lineDao;
     @Mock
     private StationDao stationDao;
-    @Mock
-    private SectionDao sectionDao;
 
     @Test
     @DisplayName("중복되지 않은 이름의 노선을 저장")

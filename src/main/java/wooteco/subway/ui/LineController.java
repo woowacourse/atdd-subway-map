@@ -2,6 +2,7 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +33,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> create(@Valid @RequestBody LineRequest lineRequest) {
         final LineResponse lineResponse = lineService
                 .save(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(),
                         lineRequest.getDownStationId(), lineRequest.getDistance());
