@@ -99,7 +99,7 @@ class LineControllerTest extends AcceptanceTest {
                 .extract();
         List<LineResponse> actual = response.jsonPath().getList(".", LineResponse.class);
 
-        assertThat(actual.size()).isEqualTo(0);
+        assertThat(actual.size()).isEqualTo(1);
     }
 
     @DisplayName("지하철 노선을 조회한다.")

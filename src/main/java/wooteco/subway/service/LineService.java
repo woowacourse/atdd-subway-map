@@ -10,6 +10,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -67,18 +68,24 @@ public class LineService {
         }
     }
 
+    public List<LineResponse> findAll() {
+        return lineDao.findAll().stream()
+                .map(l -> new LineResponse(l.getId(), l.getName(), l.getColor(),
+                        findAllStationResponseByLineId(l.getId())))
+                .collect(Collectors.toList());
+    }
+
+    private List<StationResponse> findAllStationResponseByLineId(Long lineId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        return sections.getStationsId().stream()
+                .map(this::getStationOrException)
+                .map(s -> new StationResponse(s.getId(), s.getName()))
+                .collect(Collectors.toList());
+    }
+
     private Station getStationOrException(Long stationId) {
         return stationDao.findById(stationId)
                 .orElseThrow(() -> new NotFoundException(stationId + "에 해당하는 지하철 노선을 찾을 수 없습니다."));
-    }
-
-    public List<LineResponse> findAll() {
-        List<LineResponse> lineResponses = new ArrayList<>();
-        List<Line> lines = lineDao.findAll();
-        for (Line line : lines) {
-            List<Section> allByLineId = sectionDao.findAllByLineId(line.getId());
-        }
-        return lineResponses;
     }
 
     public LineResponse findById(Long lineId) {
