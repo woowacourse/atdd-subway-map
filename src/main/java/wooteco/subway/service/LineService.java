@@ -13,7 +13,6 @@ import java.util.Optional;
 public class LineService {
 
     private final LineDao lineDao;
-
     private final SectionDao sectionDao;
 
     public LineService(LineDao lineDao, SectionDao sectionDao) {
@@ -22,10 +21,7 @@ public class LineService {
     }
 
     public Line create(Line line, Section section) {
-        if (checkExistByName(line.getName())) {
-            throw new IllegalArgumentException("이미 같은 이름의 노선이 존재합니다.");
-        }
-
+        validateNameExist(line);
         final Line savedLine = lineDao.save(line);
         sectionDao.save(new Section(section.getUpStation(), section.getDownStation(), section.getDistance(), savedLine.getId()));
         return savedLine;
@@ -41,16 +37,19 @@ public class LineService {
 
     public void modify(Long id, Line line) {
         extractLine(lineDao.findById(id));
+        validateNameExist(line);
         lineDao.update(id, line);
+    }
+
+    private void validateNameExist(Line line) {
+        if (lineDao.findByName(line.getName()).isPresent()) {
+            throw new IllegalArgumentException("이미 같은 이름의 노선이 존재합니다.");
+        }
     }
 
     public void remove(Long id) {
         extractLine(lineDao.findById(id));
         lineDao.deleteById(id);
-    }
-
-    private boolean checkExistByName(String name) {
-        return lineDao.findByName(name).isPresent();
     }
 
     private Line extractLine(Optional<Line> wrappedLine) {
