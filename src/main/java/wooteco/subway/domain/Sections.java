@@ -92,7 +92,11 @@ public class Sections {
         final Section previousSection = getPreviousSection(stationId);
         final Section laterSection = getLaterSection(stationId);
 
-        deleteSection(previousSection, laterSection);
+        findAndRemoveFirstSection(stationId, previousSection);
+
+        findAndRemoveLastSection(stationId, laterSection);
+
+        removeMiddleSection(previousSection, laterSection);
 
         return sections;
     }
@@ -103,18 +107,52 @@ public class Sections {
         }
     }
 
+    private void findAndRemoveFirstSection(Long stationId, Section section) {
+        if (section == null) {
+            final Section findSection = getFirstSection(stationId);
+            sections.remove(findSection);
+        }
+    }
+
+    private void findAndRemoveLastSection(Long stationId, Section section) {
+        if (section == null) {
+            final Section findSection = getLastSection(stationId);
+            sections.remove(findSection);
+        }
+    }
+
+    private Section getFirstSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(stationId))
+                .findAny()
+                .orElseThrow(() -> new IllegalSectionException("첫역을 찾을 수 없습니다."));
+    }
+
+    private Section getLastSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStationId().equals(stationId))
+                .findAny()
+                .orElseThrow(() -> new IllegalSectionException("마지막역을 찾을 수 없습니다."));
+    }
+
+    private void removeMiddleSection(Section previousSection, Section laterSection) {
+        if (previousSection != null && laterSection != null) {
+            deleteSection(previousSection, laterSection);
+        }
+    }
+
     private Section getPreviousSection(Long stationId) {
         return sections.stream()
                 .filter(section -> section.getDownStationId().equals(stationId))
                 .findAny()
-                .orElseThrow(() -> new IllegalSectionException("삭제할 구간이 존재하지 않습니다."));
+                .orElse(null);
     }
 
     private Section getLaterSection(Long stationId) {
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(stationId))
                 .findAny()
-                .orElseThrow(() -> new IllegalSectionException("삭제할 구간이 존재하지 않습니다."));
+                .orElse(null);
     }
 
     private void deleteSection(Section previousSection, Section laterSection) {

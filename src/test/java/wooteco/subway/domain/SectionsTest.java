@@ -141,6 +141,50 @@ class SectionsTest {
                 .isInstanceOf(IllegalSectionException.class);
     }
 
+    @DisplayName("첫번째 역을 삭제할 수 있다.")
+    @Test
+    public void deleteFirstSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 2L, 7));
+        sectionList.add(new Section(1L, 1L, 2L, 3L, 7));
+        final Sections sections = new Sections(sectionList);
+
+        final Station deleteStation = new Station(1L, "첫번째역");
+
+        // when
+        sections.delete(deleteStation.getId());
+
+        //then
+        assertThat(sections.getSections().size()).isEqualTo(1);
+        final Section section = sections.getSections().get(0);
+        assertThat(section.getDistance()).isEqualTo(7);
+        assertThat(section.getUpStationId()).isEqualTo(2L);
+        assertThat(section.getDownStationId()).isEqualTo(3L);
+    }
+
+    @DisplayName("마지막 순서의 역을 삭제할 수 있다.")
+    @Test
+    public void deleteLastSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 2L, 7));
+        sectionList.add(new Section(1L, 1L, 2L, 3L, 7));
+        final Sections sections = new Sections(sectionList);
+
+        final Station deleteStation = new Station(3L, "마지막역");
+
+        // when
+        sections.delete(deleteStation.getId());
+
+        //then
+        assertThat(sections.getSections().size()).isEqualTo(1);
+        final Section section = sections.getSections().get(0);
+        assertThat(section.getDistance()).isEqualTo(7);
+        assertThat(section.getUpStationId()).isEqualTo(1L);
+        assertThat(section.getDownStationId()).isEqualTo(2L);
+    }
+
     @DisplayName("상행부터 하행의 순서로 정렬된 구간들을 구할 수 있다.")
     @Test
     public void sortedSection() {
