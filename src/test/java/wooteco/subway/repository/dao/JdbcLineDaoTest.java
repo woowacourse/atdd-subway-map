@@ -38,6 +38,17 @@ class JdbcLineDaoTest {
         );
     }
 
+    @DisplayName("없는 id로 노선을 조회할 시 빈 옵셔널을 반환한다.")
+    @Test
+    void findByNotExistId() {
+        Line line = Line.createWithoutId("2호선", "bg-green-600", null);
+        LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
+
+        lineDao.deleteById(savedLineEntity.getId());
+
+        assertThat(lineDao.findById(savedLineEntity.getId()).isEmpty()).isTrue();
+    }
+
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void findAll() {
@@ -61,6 +72,17 @@ class JdbcLineDaoTest {
                 () -> assertThat(lineEntity.getId()).isEqualTo(savedLineEntity.getId()),
                 () -> assertThat(lineEntity.getColor()).isEqualTo("bg-green-600")
         );
+    }
+
+    @DisplayName("없는 이름으로 노선을 조회할 시 빈 옵셔널을 반환한다.")
+    @Test
+    void findByNotExistName() {
+        Line line = Line.createWithoutId("2호선", "bg-green-600", null);
+        LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
+
+        lineDao.deleteById(savedLineEntity.getId());
+
+        assertThat(lineDao.findByName(savedLineEntity.getName()).isEmpty()).isTrue();
     }
 
     @DisplayName("id 로 노선을 삭제한다.")
