@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.List;
 import java.util.Objects;
 import wooteco.subway.exception.ExceptionMessage;
 
@@ -28,12 +27,6 @@ public class Section {
         this.distance = distance;
     }
 
-    private void checkStationsNotSame(Section other) {
-        if (this.upStationId.equals(other.upStationId) && this.downStationId.equals(other.downStationId)) {
-            throw new IllegalArgumentException(ExceptionMessage.SAME_STATIONS_SECTION.getContent());
-        }
-    }
-
     public boolean isForDivide(Section other) {
         return isDownDivide(other) || isUpDivide(other);
     }
@@ -56,7 +49,13 @@ public class Section {
         if (isDownDivide(other)) {
             return new Section(this.line_id, this.upStationId, other.upStationId, distanceGap);
         }
-        throw new IllegalArgumentException("섹션을 나누지 못했습니다.");
+        throw new IllegalArgumentException(ExceptionMessage.INVALID_DIVIDE_SECTION.getContent());
+    }
+
+    private void checkStationsNotSame(Section other) {
+        if (this.upStationId.equals(other.upStationId) && this.downStationId.equals(other.downStationId)) {
+            throw new IllegalArgumentException(ExceptionMessage.SAME_STATIONS_SECTION.getContent());
+        }
     }
 
     private void checkDistance(Section other) {
@@ -65,14 +64,18 @@ public class Section {
         }
     }
 
+    public boolean hasStation(Long stationId) {
+        return this.downStationId.equals(stationId) || this.upStationId.equals(stationId);
+    }
+
     public Section merge(Section other) {
         checkStationsNotSame(other);
         int mergedDistance = this.distance + other.distance;
 
-        if (this.upStationId == other.downStationId) {
+        if (this.upStationId.equals(other.downStationId)) {
             return new Section(this.line_id, other.upStationId, this.downStationId, mergedDistance);
         }
-        if (this.downStationId == other.upStationId) {
+        if (this.downStationId.equals(other.upStationId)) {
             return new Section(this.line_id, this.upStationId, other.downStationId, mergedDistance);
         }
         throw new IllegalArgumentException(ExceptionMessage.NOT_CONNECTED_SECTIONS.getContent());

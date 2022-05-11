@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import wooteco.subway.exception.ExceptionMessage;
 
 public class Sections {
@@ -32,7 +33,7 @@ public class Sections {
     }
 
     private void checkInsertSectionsStations(Section section) {
-        if (isSectionConnected(section)) {
+        if (isAlreadyConnected(section)) {
             throw new IllegalArgumentException(ExceptionMessage.INSERT_DUPLICATED_SECTION.getContent());
         }
         if (unableConnect(section)) {
@@ -46,7 +47,7 @@ public class Sections {
                 && !stationIds.contains(section.getUpStationId());
     }
 
-    private boolean isSectionConnected(Section section) {
+    private boolean isAlreadyConnected(Section section) {
         List<Long> stationIds = findStationIds();
         return stationIds.contains(section.getDownStationId()) && stationIds.contains(section.getUpStationId());
     }
@@ -58,5 +59,11 @@ public class Sections {
             ids.add(section.getDownStationId());
         }
         return new ArrayList<>(ids);
+    }
+
+    public List<Section> findNearByStationId(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.hasStation(stationId))
+                .collect(Collectors.toList());
     }
 }
