@@ -6,17 +6,23 @@ import org.junit.jupiter.api.Test;
 
 public class SectionTest {
 
-    @DisplayName("상행 종점과 하행 종점이 다르면 예외가 발생한다")
+    @DisplayName("상행 종점과 하행 종점이 같으면 예외가 발생한다")
     @Test
     void sameUpStationAndDownStation() {
-        Assertions.assertThatThrownBy(() -> Section.of(1L, 1L, 1L, 3))
+        Station station1 = Station.of("1");
+        Line line = Line.of("2호선", "초록색");
+
+        Assertions.assertThatThrownBy(() -> Section.of(line, station1, station1, 3))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("거리가 양의 정수가 아니면 예외가 발생한다")
     @Test
-    void unvalidDistanceValue() {
-        Assertions.assertThatThrownBy(() -> Section.of(1L, 1L, 2L, -3))
+    void unvalidDistanceValue() {Station station1 = Station.of("1");
+        Station station2 = Station.of("2");
+        Line line = Line.of("2호선", "초록색");
+
+        Assertions.assertThatThrownBy(() -> Section.of(line, station1, station2, -3))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

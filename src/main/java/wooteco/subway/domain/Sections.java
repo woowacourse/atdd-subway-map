@@ -21,13 +21,13 @@ public class Sections implements Iterable<Section> {
         return sections;
     }
 
-    public Set<Long> extractStationIds() {
-        Set<Long> stationIds = new HashSet<>();
+    public List<Station> extractStations() {
+        Set<Station> stations = new HashSet<>();
         for (Section section : sections) {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
         }
-        return stationIds;
+        return new ArrayList<>(stations);
     }
 
     private void sortDownToUp() {
@@ -108,17 +108,17 @@ public class Sections implements Iterable<Section> {
     }
 
     private void validateStationsInSection(Section section) {
-        boolean downStationExist = isStationExist(section.getDownStationId());
-        boolean upStationExist = isStationExist(section.getUpStationId());
+        boolean downStationExist = isStationExist(section.getDownStation());
+        boolean upStationExist = isStationExist(section.getUpStation());
 
         if (downStationExist == upStationExist) {
             throw new IllegalArgumentException("추가하려는 section의 역 중 하나는 기존 section에 포함되어 있어야 합니다.");
         }
     }
 
-    private boolean isStationExist(Long stationId) {
+    private boolean isStationExist(Station station) {
         return sections.stream()
-                .anyMatch(it -> it.hasStation(stationId));
+                .anyMatch(it -> it.hasStation(station));
     }
 
     @Override
@@ -126,10 +126,10 @@ public class Sections implements Iterable<Section> {
         return sections.iterator();
     }
 
-    public void delete(Long stationId) {
+    public void delete(Station station) {
         validateAbleToDelete();
 
-        List<Section> sectionsContainDeleteStation = getSectionsContainDeleteStation(stationId);
+        List<Section> sectionsContainDeleteStation = getSectionsContainDeleteStation(station);
         sectionsContainDeleteStation.forEach(it -> sections.remove(it));
         mergeIfPossible(sectionsContainDeleteStation);
         sortDownToUp();
@@ -144,9 +144,9 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    private List<Section> getSectionsContainDeleteStation(Long stationId) {
+    private List<Section> getSectionsContainDeleteStation(Station station) {
         return sections.stream()
-                .filter(it -> it.hasStation(stationId))
+                .filter(it -> it.hasStation(station))
                 .collect(Collectors.toList());
     }
 

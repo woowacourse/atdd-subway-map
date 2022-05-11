@@ -12,7 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.entity.SectionEntity;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -133,8 +133,8 @@ public class SubwayServiceTest {
     void addSection() {
         addSection("선릉역");
 
-        List<Section> sections = sectionDao.findByLineId(1L);
-        assertThat(sections.size()).isEqualTo(2);
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(1L);
+        assertThat(sectionEntities.size()).isEqualTo(2);
     }
 
     @DisplayName("section을 삭제한다")
@@ -143,9 +143,9 @@ public class SubwayServiceTest {
         addSection("선릉역");
 
         subwayService.deleteSection(1L, 3L);
-        List<Section> sections = sectionDao.findByLineId(1L);
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(1L);
 
-        assertThat(sections.size()).isEqualTo(1);
+        assertThat(sectionEntities.size()).isEqualTo(1);
     }
 
     private void addStation(String name) {

@@ -22,9 +22,9 @@ public class Subway {
         return sections.getSections();
     }
 
-    public List<Section> deleteSection(List<Section> presentSections, Long deleteStationId) {
+    public List<Section> deleteSection(List<Section> presentSections, Station deleteStation) {
         Sections sections = new Sections(presentSections);
-        sections.delete(deleteStationId);
+        sections.delete(deleteStation);
         return sections.getSections();
     }
 }

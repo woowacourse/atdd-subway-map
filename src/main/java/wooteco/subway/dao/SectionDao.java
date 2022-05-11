@@ -9,11 +9,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.entity.SectionEntity;
 
 @Repository
 public class SectionDao {
-    private static final RowMapper<Section> SECTION_MAPPER = (resultSet, rowNum) -> Section.of(
+    private static final RowMapper<SectionEntity> SECTION_ENTITY_MAPPER = (resultSet, rowNum) -> SectionEntity.of(
             resultSet.getLong("id"),
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),
@@ -31,20 +31,20 @@ public class SectionDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Section save(Section section) {
-        SqlParameterSource parameters = new BeanPropertySqlParameterSource(section);
+    public SectionEntity save(SectionEntity sectionEntity) {
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(sectionEntity);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return Section.of(id, section);
+        return SectionEntity.of(id, sectionEntity);
     }
 
-    public void saveAll(List<Section> sections) {
-        sections.forEach(this::save);
+    public void saveAll(List<SectionEntity> sectionEntities) {
+        sectionEntities.forEach(this::save);
     }
 
-    public List<Section> findByLineId(Long lineId) {
+    public List<SectionEntity> findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id = :lineId";
         SqlParameterSource parameters = new MapSqlParameterSource("lineId", lineId);
-        return jdbcTemplate.query(sql, parameters, SECTION_MAPPER);
+        return jdbcTemplate.query(sql, parameters, SECTION_ENTITY_MAPPER);
     }
 
     public void delete(Long lineId) {

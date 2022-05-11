@@ -8,9 +8,9 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.Subway;
+import wooteco.subway.domain.entity.SectionEntity;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -81,22 +81,29 @@ public class SubwayService {
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Section newSection = Section.of(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        List<Section> sections = subway.addSection(sectionDao.findByLineId(lineId), newSection);
+        Line line = lineDao.findById(lineId);
+        Station upStation = stationDao.findById(sectionRequest.getUpStationId());
+        Station downStation = stationDao.findById(sectionRequest.getDownStationId());
+
+        List<Section> presentSections = toSections(sectionDao.findByLineId(lineId));
+        Section newSection = Section.of(line, upStation, downStation, sectionRequest.getDistance());
+        List<Section> sections = subway.addSection(presentSections, newSection);
         sectionDao.delete(lineId);
-        sectionDao.saveAll(sections);
+        sectionDao.saveAll(SectionEntity.of(sections));
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        List<Section> sections = subway.deleteSection(sectionDao.findByLineId(lineId), stationId);
+        List<Section> presentSections = toSections(sectionDao.findByLineId(lineId));
+        Station deleteStation = stationDao.findById(stationId);
+        List<Section> sections = subway.deleteSection(presentSections, deleteStation);
         sectionDao.delete(lineId);
-        sectionDao.saveAll(sections);
+        sectionDao.saveAll(SectionEntity.of(sections));
     }
 
     private void saveSection(Long lineId, LineRequest lineRequest) {
         SectionRequest sectionRequest = toSectionRequest(lineRequest);
-        Section section = sectionRequest.toEntity(lineId);
-        sectionDao.save(section);
+        SectionEntity sectionEntity = sectionRequest.toEntity(lineId);
+        sectionDao.save(sectionEntity);
     }
 
     private List<StationResponse> makeStationResponses(List<Station> stations) {
@@ -106,8 +113,8 @@ public class SubwayService {
     }
 
     private LineResponse toLineResponse(Line line) {
-        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
-        List<Station> stations = sections.extractStationIds()
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(line.getId());
+        List<Station> stations = SectionEntity.extractStationIds(sectionEntities)
                 .stream()
                 .map(stationDao::findById)
                 .collect(Collectors.toList());
@@ -117,5 +124,18 @@ public class SubwayService {
     private SectionRequest toSectionRequest(LineRequest lineRequest) {
         return new SectionRequest(lineRequest.getUpStationId(), lineRequest.getDownStationId(),
                 lineRequest.getDistance());
+    }
+
+    public Section toSection(SectionEntity sectionEntity) {
+        Line line = lineDao.findById(sectionEntity.getLineId());
+        Station upStation = stationDao.findById(sectionEntity.getUpStationId());
+        Station downStation = stationDao.findById(sectionEntity.getDownStationId());
+        return new Section(sectionEntity.getId(), line, upStation, downStation, sectionEntity.getDistance());
+    }
+
+    public List<Section> toSections(List<SectionEntity> sectionEntities) {
+        return sectionEntities.stream()
+                .map(this::toSection)
+                .collect(Collectors.toList());
     }
 }
