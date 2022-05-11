@@ -84,4 +84,9 @@ public class JdbcSectionDao {
         String sql = "delete from section where line_id = ? and up_station_id = ?";
         return jdbcTemplate.update(sql, lineId, upStationId) == FUNCTION_SUCCESS;
     }
+
+    public boolean isExistByUpStationIdAndDownStationId(Long upStationId, Long downStationId) {
+        String sql = "select EXISTS (select * from section where up_station_id = ? and down_station_id = ?) as success";
+        return jdbcTemplate.queryForObject(sql, Integer.class, upStationId, downStationId) == 1;
+    }
 }

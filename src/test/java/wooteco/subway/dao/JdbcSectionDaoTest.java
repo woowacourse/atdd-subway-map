@@ -106,4 +106,14 @@ class JdbcSectionDaoTest {
         Sections sections = jdbcSectionDao.findByLineIdAndStationId(lineId, 3L);
         assertThat(sections.getSections().size()).isEqualTo(2);
     }
+
+    @DisplayName("상행과 하행이 db에 있는지 확인한다.")
+    @Test
+    void isExistByUpStationIdAndDownStationId() {
+        Section section = new Section(lineId, 3L, 4L, 5);
+        jdbcSectionDao.save(section);
+
+        boolean isExist = jdbcSectionDao.isExistByUpStationIdAndDownStationId(3L, 4L);
+        assertThat(isExist).isTrue();
+    }
 }

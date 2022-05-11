@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @Service
@@ -19,8 +20,27 @@ public class SectionService {
         this.jdbcSectionDao = jdbcSectionDao;
     }
 
-    public Long createSection(Section section) {
-        return jdbcSectionDao.save(section);
+    public Long createSection(SectionRequest sectionRequest, Long lineId) {
+        Long upStationId = sectionRequest.getUpStationId();
+        Long downStationId = sectionRequest.getDownStationId();
+        int distance = sectionRequest.getDistance();
+
+        if (jdbcSectionDao.isExistByUpStationIdAndDownStationId(upStationId, downStationId)) {
+            throw new IllegalArgumentException("이미 존재하기 때문에 구간을 등록할 수 없습니다.");
+        }
+
+        //2. up이 있으면 down이 있어야 하고 down이 있으면 up이 있어야한다.
+
+        //3. 갈래길
+        //  상행선이 이미 db에 있는 경우.(db에 있는 상행선 = 들어오는 값의 상행선)
+
+        // 하행선이 이미 db에 있는 경우. (db에 있는 하행선 = 들어오는 값의 하행선)
+
+        // -> db에 있는 거리보다 들어오는 값의 거리가 작으면 갈래길 처리해줘야 한다.
+        //
+
+        Section newSection = new Section(lineId, upStationId, downStationId, distance);
+        return jdbcSectionDao.save(newSection);
     }
 
     public List<StationResponse> getStationsByLineId(Long lineId) {
