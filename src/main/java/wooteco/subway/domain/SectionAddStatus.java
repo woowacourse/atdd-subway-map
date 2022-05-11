@@ -6,7 +6,8 @@ public enum SectionAddStatus {
 
     ADD_MIDDLE_FROM_UP_STATION,
     ADD_MIDDLE_FROM_DOWN_STATION,
-    ADD_NEW_UP_STATION, ADD_NEW_DOWN_STATION;
+    ADD_NEW_UP_STATION,
+    ADD_NEW_DOWN_STATION;
 
     private static final String ERROR_INVALID_STATIONS = "[ERROR] 구간을 추가하기 위해선 상행 혹은 하행 종점 둘 중 하나만 포함해야 합니다.";
 
@@ -40,7 +41,4 @@ public enum SectionAddStatus {
             Objects.equals(section.getDownStationId(), downStationId);
     }
 
-    public boolean getAddMiddleFromUpStation() {
-        return this == ADD_MIDDLE_FROM_UP_STATION;
-    }
 }

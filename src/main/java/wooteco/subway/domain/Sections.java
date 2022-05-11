@@ -2,8 +2,6 @@ package wooteco.subway.domain;
 
 import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_DOWN_STATION;
 import static wooteco.subway.domain.SectionAddStatus.ADD_MIDDLE_FROM_UP_STATION;
-import static wooteco.subway.domain.SectionAddStatus.ADD_NEW_DOWN_STATION;
-import static wooteco.subway.domain.SectionAddStatus.ADD_NEW_UP_STATION;
 import static wooteco.subway.domain.SectionAddStatus.from;
 
 import java.util.ArrayList;
@@ -16,6 +14,8 @@ public class Sections {
 
     private static final String ERROR_INVALID_SECTIONS = "[ERROR] 존재하지 않는 구간입니다.";
     private static final String ERROR_ALREADY_CONTAIN = "[ERROR] 추가할 구간 속 지하철역이 기존 구간에 이미 존재합니다.";
+    private static final String ERROR_INVALID_DISTANCE = "[ERROR] 기존 구간보다 긴 구간을 추가할 순 없습니다.";
+    private static final String ERROR_NO_STATION = "[ERROR] 해당 종점을 가지는 구간이 존재 하지 않습니다.";
 
     private final List<Section> value;
 
@@ -31,23 +31,13 @@ public class Sections {
     }
 
     public List<Section> addSection(final Section section) {
-        //1. 둘중에 하나만 같아야함. (둘다 기존에 존재시 예외 + (개별구간) 하나도 같지 않다면 예외
         final SectionAddStatus sectionAddStatus = getAddSectionStatus(section);
 
-        //2. 4가지 경우의 수 [중간에 추가되는 2가지] 경우
         if (hasMiddleSection(sectionAddStatus)) {
-            //1) 상행이 같아서 middle을 추가하는 경우, 추가section distance vs 기존 sections -> 상행-하행 distance 거리 검증이 필요하다.
-            //1-1) 상행or하행 같은 기존section 찾아, 거리 비교하기 
             return addMiddleSection(section, sectionAddStatus);
         }
-
-        if (sectionAddStatus == ADD_NEW_UP_STATION) {
-            return null;
-        }
-        if (sectionAddStatus == ADD_NEW_DOWN_STATION) {
-            return null;
-        }
-        return null;
+        value.add(section);
+        return value;
     }
 
     private List<Section> addMiddleSection(final Section section, final SectionAddStatus sectionAddStatus) {
@@ -55,14 +45,14 @@ public class Sections {
             final Section sameUpStationSection = getSameUpStationSection(section);
             checkDistance(section, sameUpStationSection);
             value.removeIf(it -> Objects.equals(it.getId(), sameUpStationSection.getId()));
-            value.add(section); // up--middle
+            value.add(section);
             value.add(section.createMiddleToDownSection(sameUpStationSection));
         }
         if (sectionAddStatus == ADD_MIDDLE_FROM_DOWN_STATION) {
             final Section sameDownStationSection = getSameDownStationSection(section);
             checkDistance(section, sameDownStationSection);
             value.removeIf(it -> Objects.equals(it.getId(), sameDownStationSection.getId()));
-            value.add(section); // middle--down
+            value.add(section);
             value.add(section.createUpToMiddleSection(sameDownStationSection));
         }
         return value;
@@ -70,7 +60,7 @@ public class Sections {
 
     private void checkDistance(final Section section, final Section sameStandardStationSection) {
         if (section.getDistance() >= sameStandardStationSection.getDistance()) {
-            throw new IllegalStateException("[ERROR] 기존 구간보다 긴 구간을 추가할 순 없습니다.");
+            throw new IllegalStateException(ERROR_INVALID_DISTANCE);
         }
     }
 
@@ -78,29 +68,18 @@ public class Sections {
         return value.stream()
             .filter(it -> Objects.equals(it.getUpStationId(), section.getUpStationId()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 상행 종점을 가지는 구간이 존재 하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException(ERROR_NO_STATION));
     }
 
     private Section getSameDownStationSection(final Section section) {
         return value.stream()
             .filter(it -> Objects.equals(it.getDownStationId(), section.getDownStationId()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 상행 종점을 가지는 구간이 존재 하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException(ERROR_NO_STATION));
     }
 
     private boolean hasMiddleSection(final SectionAddStatus sectionAddStatus) {
         return sectionAddStatus == ADD_MIDDLE_FROM_UP_STATION || sectionAddStatus == ADD_MIDDLE_FROM_DOWN_STATION;
-    }
-
-    private Object hasMiddleStation(final Section section, final SectionAddStatus standardStation) {
-        if (standardStation.getAddMiddleFromUpStation()) {
-            //상행이 서로 같다면,
-            // 1) section에서 하행이
-            // 1) section에서 상행-하행 중
-            // 2) sections 중 상행이 같은 section에서 상행-하행 길이를 비교한다.
-//            sections.
-        }
-        return null;
     }
 
     private SectionAddStatus getAddSectionStatus(final Section section) {
