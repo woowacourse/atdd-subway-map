@@ -49,10 +49,23 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         Section target = Section.of(lineId, sectionRequest);
 
+        sections.validateTarget(target);
+
         if (sections.isTerminus(target)) {
             sectionDao.save(target);
             return;
         }
+
+        processMiddle(lineId, sections, target);
+    }
+
+    private void processMiddle(long lineId, Sections sections, Section target) {
+        Section source = sections.findSource(target);
+        Section rest = source.makeRest(lineId, target);
+
+        sectionDao.delete(source.getId());
+        sectionDao.save(target);
+        sectionDao.save(rest);
     }
 
     private void validateSectionRequest(SectionRequest request) {

@@ -32,20 +32,33 @@ public class Section {
         );
     }
 
-    public boolean isFront(Section section) {
-        return this.downStationId == section.upStationId;
-    }
-
-    public boolean isBack(Section section) {
-        return this.upStationId == section.downStationId;
-    }
-
-    public boolean isSameUpStation(Long id) {
+    public boolean isSameUp(Long id) {
         return upStationId == id;
     }
 
-    public boolean isSameDownStation(Long id) {
+    public boolean isSameDown(Long id) {
         return downStationId == id;
+    }
+
+    public boolean isSameUpDown(Section target) {
+        return upStationId == target.upStationId && downStationId == target.downStationId;
+    }
+
+    public boolean isSource(Section target) {
+        return ((upStationId == target.upStationId && downStationId != target.downStationId) ||
+                (upStationId != target.upStationId && downStationId == target.downStationId));
+    }
+
+    public boolean isShorterDistance(Section target) {
+        return distance <= target.distance;
+    }
+
+    public Section makeRest(Long lineId, Section target) {
+        if (upStationId == target.upStationId) {
+            return new Section(0L, lineId, target.downStationId, downStationId, distance - target.distance);
+        }
+
+        return new Section(0L, lineId, upStationId, target.upStationId, distance - target.distance);
     }
 
     public Long getId() {
@@ -79,5 +92,6 @@ public class Section {
             throw new IllegalArgumentException(WRONG_DISTANCE);
         }
     }
+
 
 }
