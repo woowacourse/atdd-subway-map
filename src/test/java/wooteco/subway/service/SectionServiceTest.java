@@ -37,8 +37,10 @@ class SectionServiceTest {
                 .willReturn(true);
         given(stationDao.existStationById(2L))
                 .willReturn(true);
-        given(sectionDao.existUpStation(1L, 2L))
+        given(sectionDao.existStation(1L, 1L))
                 .willReturn(true);
+        given(sectionDao.existStation(1L, 2L))
+                .willReturn(false);
 
         // when & then
         assertThatCode(
@@ -94,40 +96,23 @@ class SectionServiceTest {
                 .hasMessage("현재 위치에 구간을 저장할 수 없습니다.");
     }
 
-    @DisplayName("구간 생성 시 상행 종점을 등록한다.")
+    @DisplayName("구간 생성 시 상행역 또는 하행역 중 하나만 지하철 노선에 포함되어 있으면 등록 가능하다.")
     @Test
-    void saveNewUpStation() {
+    void saveExistOneStation() {
         // mocking
         given(stationDao.existStationById(1L))
                 .willReturn(true);
         given(stationDao.existStationById(2L))
                 .willReturn(true);
-        given(sectionDao.existUpStation(1L, 2L))
+        given(sectionDao.existStation(1L, 1L))
                 .willReturn(true);
-
-        // when & then
-        assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
-        ).doesNotThrowAnyException();
-    }
-
-    @DisplayName("구간 생성 시 하행 종점을 등록한다.")
-    @Test
-    void saveNewDownStation() {
-        // mocking
-        given(stationDao.existStationById(1L))
-                .willReturn(true);
-        given(stationDao.existStationById(2L))
-                .willReturn(true);
-        given(sectionDao.existUpStation(1L, 2L))
+        given(sectionDao.existStation(1L, 2L))
                 .willReturn(false);
-        given(sectionDao.existDownStation(1L, 1L))
-                .willReturn(true);
 
         // when & then
         assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10))
-        ).doesNotThrowAnyException();
+                () -> sectionService.save(1L, new SectionRequest(1L, 2L, 10)))
+                .doesNotThrowAnyException();
     }
 
     @DisplayName("구간 생성 시 다른 구간과 연결되어 있지 않으면 예외가 발생한다.")
@@ -138,7 +123,9 @@ class SectionServiceTest {
                 .willReturn(true);
         given(stationDao.existStationById(888L))
                 .willReturn(true);
-        given(sectionDao.existUpStation(1L, 888L))
+        given(sectionDao.existStation(1L, 999L))
+                .willReturn(false);
+        given(sectionDao.existStation(1L, 888L))
                 .willReturn(false);
 
         // when & then

@@ -42,10 +42,7 @@ public class SectionService {
         if (existAllStation(lineId, section)) {
             return false;
         }
-        if (canSavingLastUpStation(lineId, section.getDownStationId())) {
-            return true;
-        }
-        if (canSavingLastDownStation(lineId, section.getUpStationId())) {
+        if (existOneStation(lineId, section)) {
             return true;
         }
         return false;
@@ -53,14 +50,11 @@ public class SectionService {
 
     private boolean existAllStation(final Long lineId, final Section section) {
         return sectionDao.existStation(lineId, section.getUpStationId())
-                && sectionDao.existDownStation(lineId, section.getDownStationId());
+                && sectionDao.existStation(lineId, section.getDownStationId());
     }
 
-    private boolean canSavingLastUpStation(final Long lineId, final Long downStationId) {
-        return sectionDao.existUpStation(lineId, downStationId);
-    }
-
-    private boolean canSavingLastDownStation(final Long lineId, final Long upStationId) {
-        return sectionDao.existDownStation(lineId, upStationId);
+    private boolean existOneStation(final Long lineId, final Section section) {
+        return sectionDao.existStation(lineId, section.getUpStationId())
+                || sectionDao.existStation(lineId, section.getDownStationId());
     }
 }
