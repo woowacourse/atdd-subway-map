@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.entity.LineEntity;
 
 @Repository
 public class LineDao {
@@ -18,8 +17,6 @@ public class LineDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
             new Line(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
-    private final RowMapper<LineEntity> lineEntityRowMapper = (resultSet, rowNum) ->
-            new LineEntity(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -72,10 +69,5 @@ public class LineDao {
         if (result == 0) {
             throw new IllegalArgumentException(NON_EXISTENT_ID_EXCEPTION);
         }
-    }
-
-    public LineEntity findById2(Long id) {
-        final String sql = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, lineEntityRowMapper, id);
     }
 }

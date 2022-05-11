@@ -62,9 +62,4 @@ public class StationDao {
         final String sql = "SELECT * FROM station WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
     }
-
-    public Station findByName(String name) {
-        final String sql = "SELECT * FROM station WHERE name = ?";
-        return jdbcTemplate.queryForObject(sql, stationRowMapper, name);
-    }
 }

@@ -23,7 +23,7 @@ public class SectionService {
     }
 
     public void addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
-        final List<Section> sections = sectionDao.findByLineId2(lineId);
+        final List<Section> sections = sectionDao.findByLineId(lineId);
         final Line line = lineDao.findById(lineId);
 
         final Line savedLine = new Line(line.getName(), line.getColor(), sections);
@@ -36,7 +36,7 @@ public class SectionService {
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        final List<Section> sections = sectionDao.findByLineId2(lineId);
+        final List<Section> sections = sectionDao.findByLineId(lineId);
         final Line savedLine = lineDao.findById(lineId);
 
         final Line line = new Line(savedLine.getName(), savedLine.getColor(), sections);
