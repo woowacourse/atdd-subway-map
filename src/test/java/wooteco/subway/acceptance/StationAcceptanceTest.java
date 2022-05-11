@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -37,6 +38,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank()
         );
+    }
+
+    @DisplayName("지하철역을 생성할 때 이름이 공백이면 예외를 발생한다.")
+    @NullAndEmptySource
+    @ParameterizedTest
+    void thrown_nameBlank(String name) {
+        StationRequest stationRequest = new StationRequest(name);
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", stationRequest);
+
+        assertThat(response.jsonPath().getString("message")).isEqualTo("역 이름은 공백일 수 없습니다.");
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 예외를 발생한다.")

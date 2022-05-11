@@ -5,6 +5,9 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -58,6 +61,24 @@ class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(stations).usingRecursiveComparison()
                         .ignoringFields("id")
                         .isEqualTo(List.of(stationRequest1, stationRequest2))
+        );
+    }
+
+    @DisplayName("라인을 등록할 때 이름이 존재하지 않으면 예외를 발생한다.")
+    @MethodSource("thrownArguments")
+    @ParameterizedTest
+    void thrown_blankName(String name, String color, String message) {
+        LineRequest newLineRequest = new LineRequest(name, color, upStationId, downStationId, 10);
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", newLineRequest);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(message);
+    }
+
+    private static Stream<Arguments> thrownArguments() {
+        return Stream.of(
+                Arguments.of("", "bg-purple-600", "노선 이름은 공백일 수 없습니다."),
+                Arguments.of(null, "bg-purple-600", "노선 이름은 공백일 수 없습니다."),
+                Arguments.of("이름", "", "노선 색상은 공백일 수 없습니다."),
+                Arguments.of("이름", null, "노선 색상은 공백일 수 없습니다.")
         );
     }
 

@@ -9,10 +9,12 @@ import javax.validation.constraints.NotNull;
 
 public class LineRequest {
 
+    @NotNull(message = "노선 이름은 공백일 수 없습니다.")
     @NotBlank(message = "노선 이름은 공백일 수 없습니다.")
     private String name;
 
     @NotNull(message = "노선 색상은 공백일 수 없습니다.")
+    @NotBlank(message = "노선 색상은 공백일 수 없습니다.")
     private String color;
 
     private Long upStationId;
