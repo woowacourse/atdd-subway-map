@@ -3,21 +3,34 @@ package wooteco.subway.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.dto.LineRequest;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
 
-    public LineService(LineDao lineDao) {
+    private final SectionDao sectionDao;
+
+    public LineService(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
-    public long save(Line line) {
+    public long save(LineRequest lineRequest) {
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         validateNameForSave(line);
         validateColorForSave(line);
-        return lineDao.save(line);
+        long lineId = lineDao.save(line);
+
+        Section section = new Section(
+                lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        sectionDao.save(section);
+
+        return lineId;
     }
 
     private void validateNameForSave(Line line) {
