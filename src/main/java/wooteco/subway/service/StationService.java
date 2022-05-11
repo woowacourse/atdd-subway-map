@@ -28,8 +28,8 @@ public class StationService {
     public List<StationResponse> showAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-            .map(value -> new StationResponse(value.getId(), value.getName()))
-            .collect(Collectors.toList());
+                .map(value -> new StationResponse(value.getId(), value.getName()))
+                .collect(Collectors.toList());
     }
 
     public void removeById(Long id) {

@@ -1,9 +1,10 @@
 package wooteco.subway.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {
 
@@ -22,9 +23,9 @@ class SectionsTest {
     private List<Section> getSections() {
         Line line = new Line("2호선", "green");
         return List.of(
-            new Section(line, new Station(1L, "강남"), new Station(2L, "삼성"), 12),
-            new Section(line, new Station(2L, "삼성"), new Station(3L, "성수"), 12),
-            new Section(line, new Station(4L, "노원"), new Station(1L, "강남"), 12)
+                new Section(line, new Station(1L, "강남"), new Station(2L, "삼성"), 12),
+                new Section(line, new Station(2L, "삼성"), new Station(3L, "성수"), 12),
+                new Section(line, new Station(4L, "노원"), new Station(1L, "강남"), 12)
         );
     }
 }

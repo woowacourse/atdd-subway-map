@@ -13,11 +13,11 @@ import wooteco.subway.domain.Section;
 public class SectionDao {
 
     private static final RowMapper<SectionEntity> mapper = (rs, rowNum) -> new SectionEntity(
-        rs.getLong("id"),
-        rs.getLong("line_id"),
-        rs.getLong("up_station_id"),
-        rs.getLong("down_station_id"),
-        rs.getInt("distance"));
+            rs.getLong("id"),
+            rs.getLong("line_id"),
+            rs.getLong("up_station_id"),
+            rs.getLong("down_station_id"),
+            rs.getInt("distance"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -25,25 +25,25 @@ public class SectionDao {
     public SectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-            .withTableName("section")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("section")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Section save(Section section) {
         SqlParameterSource params = new MapSqlParameterSource()
-            .addValue("id", section.getId())
-            .addValue("line_id", section.getLine().getId())
-            .addValue("up_station_id", section.getUpStation().getId())
-            .addValue("down_station_id", section.getDownStation().getId())
-            .addValue("distance", section.getDistance());
+                .addValue("id", section.getId())
+                .addValue("line_id", section.getLine().getId())
+                .addValue("up_station_id", section.getUpStation().getId())
+                .addValue("down_station_id", section.getDownStation().getId())
+                .addValue("distance", section.getDistance());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Section(
-            id,
-            section.getLine(),
-            section.getUpStation(),
-            section.getDownStation(),
-            section.getDistance()
+                id,
+                section.getLine(),
+                section.getUpStation(),
+                section.getDownStation(),
+                section.getDistance()
         );
     }
 

@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -23,12 +24,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(201);
@@ -47,12 +48,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(400);
@@ -66,10 +67,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines/{id}", id)
-            .then()
-            .log().all().extract();
+                .when()
+                .get("/lines/{id}", id)
+                .then()
+                .log().all().extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(200);
@@ -83,10 +84,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void notFindLine() {
         // given & when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines/{id}", 1)
-            .then()
-            .log().all().extract();
+                .when()
+                .get("/lines/{id}", 1)
+                .then()
+                .log().all().extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(404);
@@ -101,10 +102,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(200);
@@ -124,12 +125,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("name", "2호선");
         params2.put("color", "green");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params2)
-            .when()
-            .put("/lines/{id}", id)
-            .then()
-            .log().all().extract();
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params2)
+                .when()
+                .put("/lines/{id}", id)
+                .then()
+                .log().all().extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(200);
@@ -147,12 +148,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("color", "green");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params2)
-            .when()
-            .put("/lines/{id}", 2)
-            .then()
-            .log().all().extract();
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params2)
+                .when()
+                .put("/lines/{id}", 2)
+                .then()
+                .log().all().extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(404);
@@ -170,12 +171,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("color", "");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params2)
-            .when()
-            .put("/lines/{id}", id)
-            .then()
-            .log().all().extract();
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params2)
+                .when()
+                .put("/lines/{id}", id)
+                .then()
+                .log().all().extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(400);
@@ -194,12 +195,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when()
-            .put("/lines/{id}", id)
-            .then()
-            .log().all().extract();
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when()
+                .put("/lines/{id}", id)
+                .then()
+                .log().all().extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(400);
@@ -213,10 +214,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .delete("/lines/{id}", id)
-            .then()
-            .log().all().extract();
+                .when()
+                .delete("/lines/{id}", id)
+                .then()
+                .log().all().extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(204);
@@ -225,12 +226,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private long saveLineAndGetId(String name, String color, String upStation, String downStation) {
         Map<String, Object> params = lineParam(name, color, upStation, downStation);
         ExtractableResponse<Response> savedResponse = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
         return savedResponse.body().jsonPath().getLong("id");
     }
 
@@ -249,12 +250,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", name);
 
         ExtractableResponse<Response> savedResponse = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
         return savedResponse.body().jsonPath().getLong("id");
     }
 }

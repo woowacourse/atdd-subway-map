@@ -9,17 +9,16 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.w3c.dom.CDATASection;
 import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
 
     private static final RowMapper<Station> mapper = (rs, rowNum) ->
-        new Station(
-            rs.getLong("id"),
-            rs.getString("name")
-        );
+            new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+            );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -27,8 +26,8 @@ public class StationDao {
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-            .withTableName("station")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("station")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Station save(Station station) {

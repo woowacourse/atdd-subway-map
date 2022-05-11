@@ -25,8 +25,8 @@ public class LineResponse {
 
     private static List<StationResponse> toResponse(List<Station> stations) {
         return stations.stream()
-            .map(station -> new StationResponse(station.getId(), station.getName()))
-            .collect(Collectors.toList());
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
