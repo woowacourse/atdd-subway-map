@@ -29,7 +29,7 @@
 # 3단계 기능 요구사항
 ## 지하철 노선 API 수정
 - [ ] 지하철 노선 등록 수정
-  - [ ] upStationId, downStationId, distance 3가지 정보를 추가로 요청
+  - [x] upStationId, downStationId, distance 3가지 정보를 추가로 요청
   - [ ] 구간(Section) 정보도 동시에 등록
 - [ ] 지하철 노선 목록 시, 등록된 구간 정보를 응답에 추가
 - [ ] 지하철 노선 조회 시, 등록된 구간 정보를 응답에 추가
