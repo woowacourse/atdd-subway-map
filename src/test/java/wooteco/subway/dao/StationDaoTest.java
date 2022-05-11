@@ -15,13 +15,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-class JdbcStationDaoTest {
+class StationDaoTest {
 
     private final StationDao stationDao;
 
     @Autowired
-    public JdbcStationDaoTest(JdbcTemplate jdbcTemplate) {
-        this.stationDao = new JdbcStationDao(jdbcTemplate);
+    public StationDaoTest(JdbcTemplate jdbcTemplate) {
+        this.stationDao = new StationDao(jdbcTemplate);
     }
 
     @DisplayName("지하철역을 저장한다.")

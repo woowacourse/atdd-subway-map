@@ -26,8 +26,8 @@ class SectionDaoTest {
 
     @Autowired
     public SectionDaoTest(JdbcTemplate jdbcTemplate) {
-        this.lineDao = new JdbcLineDao(jdbcTemplate);
-        this.stationDao = new JdbcStationDao(jdbcTemplate);
+        this.lineDao = new LineDao(jdbcTemplate);
+        this.stationDao = new StationDao(jdbcTemplate);
         this.sectionDao = new SectionDao(jdbcTemplate);
     }
 
