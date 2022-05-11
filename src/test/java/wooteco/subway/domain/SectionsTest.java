@@ -248,5 +248,13 @@ public class SectionsTest {
                 () -> assertThat(section1.getDistance()).isEqualTo(17)
         );
     }
+    
+    @Test
+    @DisplayName("구간이 하나면 역을 제거할 수 없다.")
+    void deleteExceptionByFinalSection() {
+        //then
+        assertThatThrownBy(() -> line.deleteSection(upStation))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
 

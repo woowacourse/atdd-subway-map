@@ -86,6 +86,10 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("마지막 구간은 제거할 수 없습니다.");
+        }
+
         if (sections.stream()
                 .anyMatch(it -> it.getUpStation().equals(station)) &&
                 sections.stream()
