@@ -23,6 +23,18 @@
 3. 스프링 빈 활용하기
 - [x] 스프링 빈으로 관리하기
 
+# 3단계 - 지하철 구간 관리
+### 기능 요구 사항
+1. 지하철 노선 추가 API 수정
+   - [ ] 노선 추가 시 3가지 정보를 추가로 입력 받음
+   - [ ] upStationId: 상행 종점
+   - [ ] downStationId: 하행 종점
+   - [ ] distance: 두 종점간의 거리
+2. 두 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
+   - [x] 노선에 구간을 추가
+   - [ ] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
+   - [ ] 구간 제거
+
 ## 📝 License
 
 This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
