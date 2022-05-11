@@ -1,4 +1,4 @@
-package wooteco.subway.controller;
+package wooteco.subway.dao;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -8,30 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.dto.ErrorMessageResponse;
-import wooteco.subway.exception.AccessNoneDataException;
-import wooteco.subway.exception.DataLengthException;
-import wooteco.subway.exception.SectionServiceException;
 
 @ControllerAdvice
-public class ExceptionHandlerController {
-
-    @ExceptionHandler(DataLengthException.class)
-    public ResponseEntity<ErrorMessageResponse> handleDataLengthException(DataLengthException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorMessageResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(AccessNoneDataException.class)
-    public ResponseEntity<ErrorMessageResponse> handleAccessNoneDataException(AccessNoneDataException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorMessageResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(SectionServiceException.class)
-    public ResponseEntity<ErrorMessageResponse> handleSectionServiceException(SectionServiceException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorMessageResponse(e.getMessage()));
-    }
+public class DaoExceptionHandler {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ErrorMessageResponse> handleEmptyResultDataAccessException() {
