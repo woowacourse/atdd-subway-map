@@ -54,4 +54,9 @@ public class JdbcSectionRepository implements SectionRepository {
 	public void remove(Long id) {
 		sectionDao.remove(id);
 	}
+
+	@Override
+	public boolean existByStation(Long stationId) {
+		return sectionDao.existByStationId(stationId);
+	}
 }

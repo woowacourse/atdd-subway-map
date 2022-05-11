@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -30,6 +31,8 @@ class SectionRepositoryTest {
 	private DataSource dataSource;
 	private SectionRepository sectionRepository;
 	private LineRepository lineRepository;
+	private StationDao stationDao;
+
 	private Station upStation;
 	private Station downStation;
 	private Section section;
@@ -37,7 +40,7 @@ class SectionRepositoryTest {
 
 	@BeforeEach
 	void init() {
-		StationDao stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
+		stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
 		sectionRepository = new JdbcSectionRepository(new SectionDao(dataSource, jdbcTemplate), stationDao);
 		lineRepository = new JdbcLineRepository(new LineDao(dataSource, jdbcTemplate), sectionRepository);
 		Long upStationId = stationDao.save(new Station("강남역"));
@@ -106,5 +109,18 @@ class SectionRepositoryTest {
 		lineRepository.remove(lineId);
 		List<Section> sections = sectionRepository.findByLineId(lineId);
 		assertThat(sections).isEmpty();
+	}
+
+	@DisplayName("구간으로 등록된 역이 있는지 찾는다.")
+	@Test
+	void removeFailBySection() {
+		Section section = new Section(upStation, downStation, 10);
+		lineRepository.save(new Line("신분당선", "red", List.of(section)));
+		assertAll(
+			() -> assertThat(
+				sectionRepository.existByStation(upStation.getId())).isTrue(),
+			() -> assertThat(
+				sectionRepository.existByStation(downStation.getId())).isTrue()
+		);
 	}
 }

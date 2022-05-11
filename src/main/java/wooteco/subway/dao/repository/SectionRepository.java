@@ -14,4 +14,6 @@ public interface SectionRepository {
 	void update(Section section);
 
 	void remove(Long id);
+
+	boolean existByStation(Long stationId);
 }

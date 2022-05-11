@@ -5,20 +5,37 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.service.fake.MemoryLineRepository;
-import wooteco.subway.service.fake.MemorySectionRepository;
 
+@SpringBootTest
+@Transactional
 class LineServiceTest {
 
-	private final LineService lineService = new LineService(new MemoryLineRepository(), new MemorySectionRepository());
-	private final Section section = new Section(
-		new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
+	@Autowired
+	private LineService lineService;
+	@Autowired
+	private StationService stationService;
+
+	private Station upStation;
+	private Station downStation;
+
+	private Section section;
+
+	@BeforeEach
+	void init() {
+		upStation = stationService.create("강남역");
+		downStation = stationService.create("역삼역");
+		section = new Section(upStation, downStation, 10);
+	}
 
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test
@@ -76,9 +93,9 @@ class LineServiceTest {
 		Line updatedLine = lineService.update(new Line(line.getId(), "분당선", "bg-blue-600"));
 
 		assertAll(
-			() ->assertThat(updatedLine.getId()).isEqualTo(line.getId()),
-			() ->assertThat(updatedLine.getName()).isEqualTo("분당선"),
-			() ->assertThat(updatedLine.getColor()).isEqualTo("bg-blue-600")
+			() -> assertThat(updatedLine.getId()).isEqualTo(line.getId()),
+			() -> assertThat(updatedLine.getName()).isEqualTo("분당선"),
+			() -> assertThat(updatedLine.getColor()).isEqualTo("bg-blue-600")
 		);
 	}
 
@@ -94,102 +111,82 @@ class LineServiceTest {
 	@Test
 	void addSectionLeft() {
 		Line line = lineService.create("2호선", "bg-red-600", section);
-		Section newSection = new Section(
-			new Station(2L, "역삼역"), new Station(3L, "교대역"), 10);
+		Station newStation = stationService.create("교대역");
+		Section newSection = new Section(downStation, newStation, 10);
 		lineService.addSection(line.getId(), newSection);
 
 		Line updatedLine = lineService.findOne(line.getId());
 
-		assertAll(
-			() -> assertThat(updatedLine.getSections())
-				.containsAll(List.of(section, newSection)),
-			() -> assertThat(updatedLine.findOrderedStations())
-				.map(Station::getName)
-				.containsExactly("강남역", "역삼역", "교대역")
-		);
+		assertThat(updatedLine.findOrderedStations())
+			.map(Station::getName)
+			.containsExactly("강남역", "역삼역", "교대역");
 	}
 
 	@DisplayName("상행종점 이전 구간을 추가한다.")
 	@Test
 	void addSectionRight() {
 		Line line = lineService.create("2호선", "bg-red-600", section);
+		Station newStation = stationService.create("교대역");
 		Section newSection = new Section(
-			new Station(3L, "교대역"), new Station(1L, "강남역"), 10);
+			newStation, upStation, 10);
 		lineService.addSection(line.getId(), newSection);
 
 		Line updatedLine = lineService.findOne(line.getId());
 
-		assertAll(
-			() -> assertThat(updatedLine.getSections())
-				.containsAll(List.of(section, newSection)),
-			() -> assertThat(updatedLine.findOrderedStations())
-				.map(Station::getName)
-				.containsExactly("교대역", "강남역", "역삼역")
-		);
+		assertThat(updatedLine.findOrderedStations())
+			.map(Station::getName)
+			.containsExactly("교대역", "강남역", "역삼역");
 	}
 
 	@DisplayName("상행역이 같은 구간을 추가한다.")
 	@Test
 	void addSectionLeftToRight() {
 		Line line = lineService.create("2호선", "bg-red-600", section);
+		Station newStation = stationService.create("교대역");
 		Section newSection = new Section(
-			new Station(1L, "강남역"), new Station(3L, "교대역"), 5);
+			upStation, newStation, 5);
+
 		lineService.addSection(line.getId(), newSection);
 
 		Line updatedLine = lineService.findOne(line.getId());
-
-		Section updatedSection = new Section(
-			new Station(3L, "교대역"), new Station(2L, "역삼역"), 5);
-		assertThat(updatedLine.getSections())
-			.containsAll(List.of(updatedSection, newSection));
-
-		assertAll(
-			() -> assertThat(updatedLine.getSections())
-				.containsAll(List.of(updatedSection, newSection)),
-			() -> assertThat(updatedLine.findOrderedStations())
-				.map(Station::getName)
-				.containsExactly("강남역", "교대역", "역삼역")
-		);
+		assertThat(updatedLine.findOrderedStations())
+			.map(Station::getName)
+			.containsExactly("강남역", "교대역", "역삼역");
 	}
 
 	@DisplayName("하행역이 같은 구간을 추가한다.")
 	@Test
 	void addSectionRightToLeft() {
 		Line line = lineService.create("2호선", "bg-red-600", section);
-		Section newSection = new Section(
-			new Station(3L, "교대역"), new Station(2L, "역삼역"), 5);
+		Station newStation = stationService.create("교대역");
+		Section newSection = new Section(newStation, downStation, 5);
 		lineService.addSection(line.getId(), newSection);
 
 		Line updatedLine = lineService.findOne(line.getId());
-
-		Section updatedSection = new Section(
-			new Station(1L, "강남역"), new Station(3L, "교대역"), 5);
-
-		assertAll(
-			() -> assertThat(updatedLine.getSections())
-				.containsAll(List.of(updatedSection, newSection)),
-			() -> assertThat(updatedLine.findOrderedStations())
-				.map(Station::getName)
-				.containsExactly("강남역", "교대역", "역삼역")
-		);
+		assertThat(updatedLine.findOrderedStations())
+			.map(Station::getName)
+			.containsExactly("강남역", "교대역", "역삼역");
 	}
 
 	@DisplayName("역으로 구간을 삭제한다.")
 	@Test
 	void deleteSection() {
 		Line line = lineService.create("2호선", "bg-red-600", section);
-		Section newSection = new Section(
-			new Station(2L, "역삼역"), new Station(3L, "교대역"), 10);
+		Station newStation = stationService.create("교대역");
+		Section newSection = new Section(downStation, newStation, 10);
 		lineService.addSection(line.getId(), newSection);
 
-		lineService.deleteSection(line.getId(), 2L);
+		lineService.deleteSection(line.getId(), downStation.getId());
 
-		Section sumSection = new Section(
-			new Station(1L, "강남역"), new Station(3L, "교대역"), 20);
 		Line updatedLine = lineService.findOne(line.getId());
 
-		assertThat(updatedLine.getSections())
-			.containsOnly(sumSection);
+		Section section = updatedLine.getSections().get(0);
+		assertAll(
+			() -> assertThat(section.getStations())
+				.map(Station::getName)
+				.containsExactly("강남역", "교대역"),
+			() -> assertThat(section.getDistance()).isEqualTo(20)
+		);
 	}
 
 	@DisplayName("노선에 구간이 하나밖에 없으면 삭제하지 못한다.")
@@ -197,7 +194,7 @@ class LineServiceTest {
 	void deleteSectionEmpty() {
 		Line line = lineService.create("2호선", "bg-red-600", section);
 
-		assertThatThrownBy(() -> lineService.deleteSection(line.getId(), 2L))
+		assertThatThrownBy(() -> lineService.deleteSection(line.getId(), downStation.getId()))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("구간이 하나일 땐 삭제할 수 없습니다.");
 	}

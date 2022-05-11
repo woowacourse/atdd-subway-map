@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import wooteco.subway.controller.dto.LineRequest;
 import wooteco.subway.controller.dto.StationRequest;
 import wooteco.subway.controller.dto.StationResponse;
 
@@ -126,5 +127,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+	}
+
+	@DisplayName("구간에 등록되어 있는 역을 지우면 400 응답을 받는다.")
+	@Test
+	void deleteStationBadRequestBySection() {
+		// given
+		Long upStationId = RestUtil.getIdFromStation(RestUtil.post(new StationRequest("강남역")));
+		Long downStationId = RestUtil.getIdFromStation(RestUtil.post(new StationRequest("역삼역")));
+		RestUtil.post(new LineRequest("2호선", "red", upStationId, downStationId, 10));
+
+		// when
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.when()
+			.delete("/stations/" + upStationId)
+			.then().log().all()
+			.extract();
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 }

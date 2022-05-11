@@ -83,4 +83,10 @@ public class SectionDao {
 			throw new NoSuchElementException(NO_SUCH_ID_ERROR);
 		}
 	}
+
+	public Boolean existByStationId(Long stationId) {
+		String sql = "select exists (select * from section "
+			+ "where up_station_id = :stationId or down_station_id = :stationId)";
+		return jdbcTemplate.queryForObject(sql, Map.of("stationId", stationId), Boolean.class);
+	}
 }
