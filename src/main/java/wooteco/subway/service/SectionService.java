@@ -35,11 +35,9 @@ public class SectionService {
         updateSection(lineId, result);
     }
 
-    private void updateSection(Long lineId, List<Section> result) {
+    private void updateSection(Long lineId, List<Section> sections) {
         sectionDao.deleteByLineId(lineId);
 
-        for (Section saveSection : result) {
-            sectionDao.save(saveSection);
-        }
+        sectionDao.saveAll(sections);
     }
 }

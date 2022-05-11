@@ -1,5 +1,7 @@
 package wooteco.subway.dao.jdbc;
 
+import static java.util.stream.Collectors.toList;
+
 import java.sql.PreparedStatement;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -45,6 +47,29 @@ public class JdbcSectionDao implements SectionDao {
 
         return new Section(id, section.getLineId(), section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
+
+    @Override
+    public void saveAll(List<Section> sections) {
+        final String sql = "INSERT INTO `section` (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
+        final List<Object[]> parameters = generateParameters(sections);
+        jdbcTemplate.batchUpdate(sql, parameters);
+    }
+
+    private List<Object[]> generateParameters(List<Section> sections) {
+        return sections.stream()
+                .map(section -> generateParameter(section))
+                .collect(toList());
+    }
+
+    private Object[] generateParameter(Section section) {
+        return new Object[]{
+                section.getLineId(),
+                section.getUpStationId(),
+                section.getDownStationId(),
+                section.getDistance()
+        };
+    }
+
 
     @Override
     public int deleteById(Long id) {
