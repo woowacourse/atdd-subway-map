@@ -26,7 +26,6 @@ public class LineDao {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("color"));
-    ;
 
     public LineDao(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);

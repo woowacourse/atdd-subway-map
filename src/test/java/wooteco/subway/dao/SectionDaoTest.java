@@ -50,7 +50,7 @@ public class SectionDaoTest {
         int expectedDistance = 5;
         sectionDao.save(1L, 1L, 2L, expectedDistance);
 
-        int actualDistance = sectionDao.findDistance(1L, 1L, 2L).orElse(0);
+        int actualDistance = sectionDao.findDistanceByUpStationAndDownStation(1L, 1L, 2L).orElse(0);
 
         assertThat(actualDistance).isEqualTo(actualDistance);
     }
@@ -118,7 +118,7 @@ public class SectionDaoTest {
         int expectedDistance = 8;
         sectionDao.updateDistance(sectionDto.getId(), expectedDistance);
 
-        int actualDistance = sectionDao.findDistance(1L, 2L, 3L).orElse(0);
+        int actualDistance = sectionDao.findDistanceByUpStationAndDownStation(1L, 2L, 3L).orElse(0);
         assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 }

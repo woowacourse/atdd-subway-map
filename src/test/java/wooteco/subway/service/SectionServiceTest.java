@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.SectionDto;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.SectionRequest;
 
 @SpringBootTest
@@ -17,10 +19,13 @@ public class SectionServiceTest {
 
     private final SectionService sectionService;
     private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public SectionServiceTest(SectionService sectionService, SectionDao sectionDao) {
+    public SectionServiceTest(SectionService sectionService, SectionDao sectionDao,
+            StationDao stationDao) {
         this.sectionService = sectionService;
         this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     @AfterEach
@@ -72,5 +77,33 @@ public class SectionServiceTest {
         assertThatThrownBy(() -> sectionService.create(1L, sectionRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역 모두 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("갈래길이 생기지 않도록 기존 역을 수정하여 저장한다.")
+    void create_updateOrigin() {
+        stationDao.save("강남역");
+        stationDao.save("선릉역");
+        stationDao.save("잠실역");
+
+        long expectedLineId = 1L;
+        long expectedUpStationId = 1L;
+        long expectedDownStationId = 3L;
+        int expectedDistance = 3;
+
+        sectionDao.save(expectedLineId, expectedUpStationId, 2L, 5);
+        SectionRequest sectionRequest = new SectionRequest(expectedUpStationId, expectedDownStationId, expectedDistance);
+
+        sectionService.create(1L, sectionRequest);
+        SectionDto sectionDto = sectionDao.findById(2L).get(0);
+        long actualLineId = sectionDto.getLineId();
+        long actualUpStationId = sectionDto.getUpStationId();
+        long actualDownStationId = sectionDto.getDownStationId();
+        int actualDistance = sectionDto.getDistance();
+
+        assertThat(actualLineId).isEqualTo(expectedLineId);
+        assertThat(actualUpStationId).isEqualTo(expectedUpStationId);
+        assertThat(actualDownStationId).isEqualTo(expectedDownStationId);
+        assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 }

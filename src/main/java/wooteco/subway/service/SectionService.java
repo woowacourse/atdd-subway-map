@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,21 +25,24 @@ public class SectionService {
         this.stationDao = stationDao;
     }
 
-    public List<StationResponse> create(long id, SectionRequest sectionRequest) {
-        validateDistance(id, sectionRequest);
-        validateStations(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
-        SectionDto sectionDto = sectionDao.save(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+    public List<StationResponse> create(long lineId, SectionRequest sectionRequest) {
+        validateDistance(lineId, sectionRequest);
+        validateStations(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+
+        updateSection(lineId, sectionRequest);
+
+        SectionDto sectionDto = sectionDao.save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
-        Station upStation = getStation(sectionDto);
-        Station downStation = getStation(sectionDto);
+        Station upStation = getUpStation(sectionDto);
+        Station downStation = getDownStation(sectionDto);
 
         return Stream.of(upStation, downStation)
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
 
-    private void validateDistance(long id, SectionRequest sectionRequest) {
-        int distance = sectionDao.findDistance(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId())
+    private void validateDistance(long lineId, SectionRequest sectionRequest) {
+        int distance = sectionDao.findDistanceByUpStationAndDownStation(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId())
                 .orElse(0);
         checkDistance(sectionRequest, distance);
     }
@@ -49,25 +53,53 @@ public class SectionService {
         }
     }
 
-    private void validateStations(long id, long upStationId, long downStationId) {
-        checkBothExist(id, upStationId, downStationId);
-        checkBothDoNotExist(id, upStationId, downStationId);
+    private void validateStations(long lineId, long upStationId, long downStationId) {
+        checkBothExist(lineId, upStationId, downStationId);
+        checkBothDoNotExist(lineId, upStationId, downStationId);
     }
 
-    private void checkBothExist(long id, long upStationId, long downStationId) {
-        if (sectionDao.findByUpStationAndDownStation(id, upStationId, downStationId).isPresent()) {
+    private void checkBothExist(long lineId, long upStationId, long downStationId) {
+        if (sectionDao.findByUpStationAndDownStation(lineId, upStationId, downStationId).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }
 
-    private void checkBothDoNotExist(long id, long upStationId, long downStationId) {
-        if (sectionDao.findByUpStation(id, upStationId).isEmpty()
-                && sectionDao.findByDownStation(id, downStationId).isEmpty()) {
+    private void checkBothDoNotExist(long lineId, long upStationId, long downStationId) {
+        if (sectionDao.findByUpStation(lineId, upStationId).isEmpty()
+                && sectionDao.findByDownStation(lineId, downStationId).isEmpty()) {
             throw new IllegalArgumentException("상행역과 하행역 모두 존재하지 않습니다.");
         }
     }
 
-    private Station getStation(SectionDto sectionDto) {
+    private void updateSection(long lineId, SectionRequest sectionRequest) {
+        updateIfUpStation(lineId, sectionRequest);
+        updateIfDownStation(lineId, sectionRequest);
+    }
+
+    private void updateIfUpStation(long lineId, SectionRequest sectionRequest) {
+        Optional<Long> sectionId = sectionDao.findByUpStation(lineId, sectionRequest.getUpStationId());
+        sectionId.ifPresent(id -> {
+            sectionDao.updateUpStation(id, sectionRequest.getDownStationId());
+            int distance = sectionDao.findDistanceById(id).orElse(0) - sectionRequest.getDistance();
+            sectionDao.updateDistance(id, distance);
+        });
+    }
+
+    private void updateIfDownStation(long lineId, SectionRequest sectionRequest) {
+        Optional<Long> sectionId = sectionDao.findByDownStation(lineId, sectionRequest.getDownStationId());
+        sectionId.ifPresent(id -> {
+            sectionDao.updateDownStation(id, sectionRequest.getUpStationId());
+            int distance = sectionDao.findDistanceById(id).orElse(0);
+            sectionDao.updateDistance(id, distance - sectionRequest.getDistance());
+        });
+    }
+
+    private Station getUpStation(SectionDto sectionDto) {
+        return stationDao.findById(sectionDto.getUpStationId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
+    }
+
+    private Station getDownStation(SectionDto sectionDto) {
         return stationDao.findById(sectionDto.getUpStationId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
     }

@@ -1,10 +1,12 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -17,6 +19,13 @@ public class SectionDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final RowMapper<SectionDto> sectionRowMapper = (resultSet, rowNum) ->
+            new SectionDto(
+                    resultSet.getLong("id"),
+                    resultSet.getLong("line_id"),
+                    resultSet.getLong("up_station_id"),
+                    resultSet.getLong("down_station_id"),
+                    resultSet.getInt("distance"));
 
     public SectionDao(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -32,7 +41,17 @@ public class SectionDao {
         return new SectionDto(id, lineId, upStationId, downStationId, distance);
     }
 
-    public Optional<Integer> findDistance(long lineId, long upStationId, long downStationId) {
+    public Optional<Integer> findDistanceById(long id) {
+        String sql = "SELECT distance FROM section WHERE id = :id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
+        try {
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Integer.class));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Integer> findDistanceByUpStationAndDownStation(long lineId, long upStationId, long downStationId) {
         Optional<Integer> distance = findDistanceByUpStationId(lineId, upStationId);
         if (distance.isPresent()) {
             return distance;
@@ -40,14 +59,14 @@ public class SectionDao {
         return findDistanceByDownStationId(lineId, downStationId);
     }
 
-    public Optional<Integer> findDistanceByUpStationId(long lineId, long upStationId) {
+    private Optional<Integer> findDistanceByUpStationId(long lineId, long upStationId) {
         String sql = "SELECT distance FROM section WHERE line_id = :lineId AND up_station_id = :upStationId";
         SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
                 .addValue("lineId", lineId);
         return getDistance(sql, parameterSource);
     }
 
-    public Optional<Integer> findDistanceByDownStationId(long lineId, long downStationId) {
+    private Optional<Integer> findDistanceByDownStationId(long lineId, long downStationId) {
         String sql = "SELECT distance FROM section WHERE line_id = :lineId AND down_station_id = :downStationId";
         SqlParameterSource parameterSource = new MapSqlParameterSource("downStationId", downStationId)
                 .addValue("lineId", lineId);
@@ -122,5 +141,11 @@ public class SectionDao {
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
         String resetIdSql = "ALTER TABLE section ALTER COLUMN id RESTART WITH 1";
         namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
+    }
+
+    public List<SectionDto> findById(long id) {
+        String sql = "SELECT * FROM section WHERE id = :id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.query(sql, parameterSource, sectionRowMapper);
     }
 }
