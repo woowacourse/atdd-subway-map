@@ -23,6 +23,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean isSameAsUpStation(Long upStationId) {
+        return this.upStationId.equals(upStationId);
+    }
+
+    public boolean isSameAsDownStation(Long downStationId) {
+        return this.downStationId.equals(downStationId);
+    }
+
     public Long getId() {
         return id;
     }

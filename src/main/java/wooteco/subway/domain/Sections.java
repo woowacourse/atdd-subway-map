@@ -16,7 +16,7 @@ public class Sections {
     public List<Long> getStationIds() {
         List<Long> stationIds = new ArrayList<>();
 
-        for (Section section: sections) {
+        for (Section section : sections) {
             stationIds.add(section.getUpStationId());
             stationIds.add(section.getDownStationId());
         }
@@ -46,6 +46,16 @@ public class Sections {
                 .filter(section -> section.getDownStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 입력입니다."));
+    }
+
+    public Section getSectionForCombine(Long upStationId, Long downStationId) {
+        for (Section section : sections) {
+            if ((section.isSameAsUpStation(upStationId)) || (section.isSameAsDownStation(downStationId))) {
+                return section;
+            }
+        }
+
+        return sections.get(0);
     }
 
     public List<Section> getSections() {
