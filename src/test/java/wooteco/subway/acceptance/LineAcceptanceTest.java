@@ -343,7 +343,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> actualLineResponses = actual.jsonPath().getList(".", LineResponse.class);
         List<LineResponse> expectedLineResponses = List.of(
             new LineResponse(1L, "7호선", "khaki",
-                List.of(new StationResponse(1L, "강남"),
+                List.of(
+                    new StationResponse(1L, "강남"),
                     new StationResponse(3L, "선릉"),
                     new StationResponse(4L, "삼성"),
                     new StationResponse(2L, "역삼")
@@ -353,6 +354,145 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertAll(
             () -> assertThat(responseA.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(responseB.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualLineResponses).isEqualTo(expectedLineResponses)
+        );
+    }
+
+    @Test
+    @DisplayName("맨 앞 구간을 삭제한다.(A -> B -> C -> D) => (B -> C -> D) => (C -> D)")
+    void deleteFirstSection() {
+        //given
+        StationRequest stationRequestC = new StationRequest("선릉");
+        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
+        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
+
+        StationRequest stationRequestD = new StationRequest("삼성");
+        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
+        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        SectionRequest sectionRequestA = new SectionRequest(stationIdB, stationIdC, 4);
+        getExtractablePostResponse(sectionRequestA, defaultUri + "/" + lineId + "/sections");
+
+        SectionRequest sectionRequestB = new SectionRequest(stationIdC, stationIdD, 2);
+        getExtractablePostResponse(sectionRequestB, defaultUri + "/" + lineId + "/sections");
+
+        // when
+        ExtractableResponse<Response> actualResponseA = getExtractableDeleteResponse(
+            defaultUri + "/" + lineId + "/sections?stationId=" + stationIdA);
+        ExtractableResponse<Response> actualResponseB = getExtractableDeleteResponse(
+            defaultUri + "/" + lineId + "/sections?stationId=" + stationIdB);
+
+        ExtractableResponse<Response> actual = getExtractableGetResponse(defaultUri);
+        List<LineResponse> actualLineResponses = actual.jsonPath().getList(".", LineResponse.class);
+        List<LineResponse> expectedLineResponses = List.of(
+            new LineResponse(lineId, "7호선", "khaki",
+                List.of(
+                    new StationResponse(3L, "선릉"),
+                    new StationResponse(4L, "삼성")
+                )));
+
+        System.out.println("[lala 힘내]: ");
+        System.out.println(actualLineResponses);
+        System.out.println(expectedLineResponses);
+
+        //then
+        assertAll(
+            () -> assertThat(actualResponseA.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualResponseB.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualLineResponses).isEqualTo(expectedLineResponses)
+        );
+    }
+
+    @Test
+    @DisplayName("맨 뒤 구간을 삭제한다(A -> B -> C -> D) => (A -> B -> C) => (A -> B).")
+    void deleteLastSection() {
+        //given
+        StationRequest stationRequestC = new StationRequest("선릉");
+        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
+        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
+
+        StationRequest stationRequestD = new StationRequest("삼성");
+        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
+        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        SectionRequest sectionRequestA = new SectionRequest(stationIdB, stationIdC, 4);
+        getExtractablePostResponse(sectionRequestA, defaultUri + "/" + lineId + "/sections");
+
+        SectionRequest sectionRequestB = new SectionRequest(stationIdC, stationIdD, 2);
+        getExtractablePostResponse(sectionRequestB, defaultUri + "/" + lineId + "/sections");
+
+        // when
+        ExtractableResponse<Response> actualResponseD = getExtractableDeleteResponse(
+            defaultUri + "/" + lineId + "/sections?stationId=" + stationIdD);
+        ExtractableResponse<Response> actualResponseC = getExtractableDeleteResponse(
+            defaultUri + "/" + lineId + "/sections?stationId=" + stationIdC);
+
+        ExtractableResponse<Response> actual = getExtractableGetResponse(defaultUri);
+        List<LineResponse> actualLineResponses = actual.jsonPath().getList(".", LineResponse.class);
+        List<LineResponse> expectedLineResponses = List.of(
+            new LineResponse(lineId, "7호선", "khaki",
+                List.of(
+                    new StationResponse(1L, "강남"),
+                    new StationResponse(2L, "역삼")
+                )));
+
+        //then
+        assertAll(
+            () -> assertThat(actualResponseD.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualResponseC.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualLineResponses).isEqualTo(expectedLineResponses)
+        );
+    }
+
+    @Test
+    @DisplayName("중간 구간을 삭제한다(A -> B -> C -> D) => (A -> D).")
+    void deleteSectionInMiddle() {
+        //given
+        StationRequest stationRequestC = new StationRequest("선릉");
+        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
+        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
+
+        StationRequest stationRequestD = new StationRequest("삼성");
+        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
+        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
+        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
+        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+
+        SectionRequest sectionRequestA = new SectionRequest(stationIdB, stationIdC, 4);
+        getExtractablePostResponse(sectionRequestA, defaultUri + "/" + lineId + "/sections");
+
+        SectionRequest sectionRequestB = new SectionRequest(stationIdC, stationIdD, 2);
+        getExtractablePostResponse(sectionRequestB, defaultUri + "/" + lineId + "/sections");
+
+        // when
+        ExtractableResponse<Response> actualResponseB = getExtractableDeleteResponse(
+            defaultUri + "/" + lineId + "/sections?stationId=" + stationIdB);
+        ExtractableResponse<Response> actualResponseC = getExtractableDeleteResponse(
+            defaultUri + "/" + lineId + "/sections?stationId=" + stationIdC);
+
+        ExtractableResponse<Response> actual = getExtractableGetResponse(defaultUri);
+        List<LineResponse> actualLineResponses = actual.jsonPath().getList(".", LineResponse.class);
+        List<LineResponse> expectedLineResponses = List.of(
+            new LineResponse(lineId, "7호선", "khaki",
+                List.of(
+                    new StationResponse(1L, "강남"),
+                    new StationResponse(4L, "삼성")
+                )));
+
+        //then
+        assertAll(
+            () -> assertThat(actualResponseB.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualResponseC.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(actualLineResponses).isEqualTo(expectedLineResponses)
         );
     }

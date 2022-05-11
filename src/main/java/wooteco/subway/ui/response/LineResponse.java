@@ -64,11 +64,21 @@ public class LineResponse {
             return false;
         LineResponse that = (LineResponse)o;
         return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-            && Objects.equals(color, that.color);
+            && Objects.equals(color, that.color) && Objects.equals(stations, that.stations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color);
+        return Objects.hash(id, name, color, stations);
+    }
+
+    @Override
+    public String toString() {
+        return "LineResponse{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", color='" + color + '\'' +
+            ", stations=" + stations +
+            '}';
     }
 }

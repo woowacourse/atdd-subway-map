@@ -57,5 +57,4 @@ class AcceptanceTest {
             .then().log().all()
             .extract();
     }
-
 }

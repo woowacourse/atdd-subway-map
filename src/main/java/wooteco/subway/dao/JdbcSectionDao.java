@@ -60,4 +60,10 @@ public class JdbcSectionDao implements SectionDao {
             rs.getInt("distance")
         );
     }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "delete from section where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }
