@@ -55,29 +55,6 @@ public class SectionService {
             .collect(Collectors.toList());
     }
 
-    private Station getStationById(Long stationId) {
-        return new Station(stationId, stationService.findById(stationId).getName());
-    }
-
-    public List<StationEntity> findStationsByLineId(Long lineId) {
-        List<SectionEntity> sections = sectionDao.findByLineId(lineId);
-        Long upDestinationId = findUpDestinationId(sections);
-        Map<Long, Long> stationIds = sections.stream()
-            .collect(Collectors.toMap(SectionEntity::getUpStationId,
-                SectionEntity::getDownStationId, (a, b) -> b));
-
-        List<StationEntity> sectionEntities = new ArrayList<>();
-        sectionEntities.add(stationService.findById(upDestinationId));
-
-        Long key = upDestinationId;
-        for (int i = 0; i < stationIds.size(); i++) {
-            key = stationIds.get(key);
-            sectionEntities.add(stationService.findById(key));
-        }
-
-        return sectionEntities;
-    }
-
     public List<SectionEntity> sortSectionEntities(List<SectionEntity> sectionEntities) {
         if (sectionEntities.size() <= 1) {
             return sectionEntities;
@@ -99,6 +76,32 @@ public class SectionService {
         return sortedSectionEntities;
     }
 
+    private Station getStationById(Long stationId) {
+        return new Station(stationId, stationService.findById(stationId).getName());
+    }
+
+    public List<StationEntity> findStationsByLineId(Long lineId) {
+        List<SectionEntity> sections = sectionDao.findByLineId(lineId);
+        Long upDestinationId = findUpDestinationId(sections);
+        Map<Long, Long> stationIds = sections.stream()
+            .collect(Collectors.toMap(
+                SectionEntity::getUpStationId,
+                SectionEntity::getDownStationId,
+                (a, b) -> b)
+            );
+
+        List<StationEntity> sectionEntities = new ArrayList<>();
+        sectionEntities.add(stationService.findById(upDestinationId));
+
+        Long key = upDestinationId;
+        for (int i = 0; i < stationIds.size(); i++) {
+            key = stationIds.get(key);
+            sectionEntities.add(stationService.findById(key));
+        }
+
+        return sectionEntities;
+    }
+
     public Long findUpDestinationId(List<SectionEntity> sections) {
         List<Long> upStations = sections.stream()
             .map(SectionEntity::getUpStationId)
@@ -113,5 +116,31 @@ public class SectionService {
             throw new IllegalStateException("저장된 구간들 값이 올바르지 않습니다.");
         }
         return upStations.get(0);
+    }
+
+    public void deleteStation(Long lineId, Long stationId) {
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(lineId);
+        List<Section> originalSections = convertSectionEntitiesToSections(sortSectionEntities(sectionEntities));
+        Sections sections = new Sections(originalSections);
+        sections.delete(getStationById(stationId));
+        List<Section> modifiedSections = new ArrayList<>(sections.getValues());
+
+        List<Long> originalSectionIds = originalSections.stream()
+            .map(Section::getId)
+            .collect(Collectors.toList());
+        List<Long> modifiedSectionIds = modifiedSections.stream()
+            .map(Section::getId)
+            .collect(Collectors.toList());
+
+        originalSectionIds.removeAll(modifiedSectionIds);
+        Long removedId = originalSectionIds.get(0);
+        sectionDao.deleteById(removedId);
+
+        modifiedSections.removeAll(originalSections);
+        for (Section section : modifiedSections) {
+            sectionDao.update(
+                new SectionEntity(section.getId(), lineId, section.getUpStation().getId(),
+                    section.getDownStation().getId(), section.getDistance()));
+        }
     }
 }

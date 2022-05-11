@@ -34,4 +34,12 @@ public class FakeSectionDao implements SectionDao {
                 sections.add(sectionEntity);
             });
     }
+
+    @Override
+    public void deleteById(Long id) {
+        sections.stream()
+            .filter(it -> it.getId().equals(id))
+            .findFirst()
+            .ifPresent(sections::remove);
+    }
 }

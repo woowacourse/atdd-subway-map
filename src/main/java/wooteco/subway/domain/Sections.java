@@ -124,7 +124,7 @@ public class Sections {
     private void mergeTwoSections(Section section) {
         int index = values.indexOf(section);
         Section nextSection = findNextSection(section);
-        values.set(index, new Section(section.getUpStation(), nextSection.getDownStation(),
+        values.set(index, new Section(nextSection.getId(), section.getUpStation(), nextSection.getDownStation(),
             section.getDistance() + nextSection.getDistance()));
         values.remove(index + 1);
     }
