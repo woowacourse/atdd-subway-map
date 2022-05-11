@@ -35,7 +35,7 @@ public class LineService {
         final Station upStation = stationDao.findById(upStationId);
         final Station downStation = stationDao.findById(downStationId);
 
-        final Line line = new Line(name, color, upStation, downStation, distance);
+        final Line line = Line.initialCreateWithoutId(name, color, upStation, downStation, distance);
         final Line savedLine = lineDao.save(line);
         sectionDao.save(line.getSections(), savedLine.getId());
         return new LineResponse(savedLine, List.of(new StationResponse(upStation), new StationResponse(downStation)));
@@ -53,7 +53,7 @@ public class LineService {
         final Line savedLine = lineDao.findById(id);
         final List<Section> sections = sectionDao.findByLineId(id);
 
-        final Line line = new Line(savedLine.getId(), savedLine.getName(), savedLine.getColor(), sections);
+        final Line line = Line.createWithId(savedLine.getId(), savedLine.getName(), savedLine.getColor(), sections);
         return new LineResponse(line);
     }
 
@@ -68,7 +68,7 @@ public class LineService {
     public List<LineResponse> showLines() {
         final List<Line> savedLines = lineDao.findAll();
         return savedLines.stream()
-                .map(it -> new Line(it.getId(), it.getName(), it.getColor(), sectionDao.findByLineId(it.getId())))
+                .map(it -> Line.createWithId(it.getId(), it.getName(), it.getColor(), sectionDao.findByLineId(it.getId())))
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
     }

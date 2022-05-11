@@ -8,7 +8,7 @@ public class Sections {
     private List<Section> sections;
 
     public Sections(Station upStation, Station downStation, int distance) {
-        final Section section = new Section(upStation, downStation, distance);
+        final Section section = Section.createWithoutId(upStation, downStation, distance);
         this.sections = new ArrayList<>() {
             {
                 add(section);
@@ -52,7 +52,7 @@ public class Sections {
         validateDistance(section, upLineSection);
         sections.remove(upLineSection);
         sections.add(section);
-        sections.add(new Section(section.getDownStation(), upLineSection.getDownStation(),
+        sections.add(Section.createWithoutId(section.getDownStation(), upLineSection.getDownStation(),
                 upLineSection.getDistance() - section.getDistance()));
     }
 
@@ -60,7 +60,7 @@ public class Sections {
         final Section downLineSection = getDownLineSection(section.getDownStation());
         validateDistance(section, downLineSection);
         sections.remove(downLineSection);
-        sections.add(new Section(downLineSection.getUpStation(), section.getUpStation(), downLineSection.getDistance() - section
+        sections.add(Section.createWithoutId(downLineSection.getUpStation(), section.getUpStation(), downLineSection.getDistance() - section
                 .getDistance()));
         sections.add(section);
     }
@@ -148,7 +148,7 @@ public class Sections {
         final Section upSection = getDownLineSection(station);
         sections.remove(section);
         sections.remove(upSection);
-        final Section editedSection = new Section(upSection.getUpStation(), section.getDownStation(),
+        final Section editedSection = Section.createWithoutId(upSection.getUpStation(), section.getDownStation(),
                 upSection.getDistance() + section
                         .getDistance());
         sections.add(editedSection);

@@ -40,7 +40,7 @@ public class SectionDao {
                 "join station ds on s.down_station_id = ds.id " +
                 "where line_id = ?";
         return jdbcTemplate.query(sql, ((rs, rowNum) -> {
-            return new Section(rs.getLong("sid"), new Station(rs.getLong("usid"), rs.getString("usname")),
+            return Section.createWithId(rs.getLong("sid"), new Station(rs.getLong("usid"), rs.getString("usname")),
                     new Station(rs.getLong("dsid"), rs.getString("dsname")), rs.getInt("sdistance"));
         }), lineId);
     }

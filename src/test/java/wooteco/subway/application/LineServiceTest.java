@@ -16,8 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +32,8 @@ class LineServiceTest {
     private LineDao lineDao;
     @Mock
     private StationDao stationDao;
+    @Mock
+    private SectionDao sectionDao;
 
     @Test
     @DisplayName("중복되지 않은 이름의 노선을 저장")
@@ -37,7 +41,7 @@ class LineServiceTest {
         //given
         final String name = "신분당선";
         final String color = "빨강이";
-        final Line line = new Line(1L, name, color, 강남역, 청계산입구역, 1);
+        final Line line = Line.initialCreateWithId(1L, name, color, 강남역, 청계산입구역, 1);
         given(lineDao.existsByName(name)).willReturn(false);
         given(lineDao.save(any())).willReturn(line);
         doReturn(강남역).when(stationDao).findById(1L);
@@ -65,9 +69,10 @@ class LineServiceTest {
     @Test
     void showLines() {
         //given
-        final List<Line> lines = List.of(new Line("신분당선", "빨강이", 강남역, 청계산입구역, 1),
-                new Line("2호선", "초록이", 강남역, 청계산입구역,2));
+        final List<Line> lines = List.of(Line.initialCreateWithId(1L, "신분당선", "빨강이", 강남역, 청계산입구역, 1),
+                Line.initialCreateWithId(2L, "2호선", "초록이", 강남역, 청계산입구역,2));
         given(lineDao.findAll()).willReturn(lines);
+        given(sectionDao.findByLineId(any())).willReturn(List.of(new Section(1L, 강남역, 청계산입구역, 4)));
         //when
         final List<LineResponse> lineResponses = lineService.showLines();
         //then
@@ -77,8 +82,9 @@ class LineServiceTest {
     @Test
     void showLine() {
         //given
-        final Line line = new Line(1L,"신분당선", "빨강이");
+        final Line line = Line.createWithoutSection(1L,"신분당선", "빨강이");
         given(lineDao.findById(1L)).willReturn(line);
+        given(sectionDao.findByLineId(any())).willReturn(List.of(new Section(1L, 강남역, 청계산입구역, 4)));
         //when
         final LineResponse lineResponse = lineService.showLine(1L);
         //then

@@ -7,17 +7,19 @@ public class Section {
     private final Station downStation;
     private final int distance;
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
     public Section(Long id, Station upStation, Station downStation, int distance) {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public static Section createWithId(Long id, Station upStation, Station downStation, int distance) {
+        return new Section(id, upStation, downStation, distance);
+    }
+
+    public static Section createWithoutId(Station upStation, Station downStation, int distance) {
+        return new Section(null, upStation, downStation, distance);
     }
 
     public boolean isEqualToUpStation(Station station) {

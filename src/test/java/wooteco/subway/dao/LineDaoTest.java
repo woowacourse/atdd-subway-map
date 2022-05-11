@@ -27,7 +27,7 @@ class LineDaoTest {
 
     @Test
     void save() {
-        final Line createdLine = lineDao.save(new Line("8호선", "핑크", 강남역, 청계산입구역, 1));
+        final Line createdLine = lineDao.save(Line.initialCreateWithoutId("8호선", "핑크", 강남역, 청계산입구역, 1));
 
         assertThat(createdLine.getId()).isEqualTo(4L);
     }
@@ -57,7 +57,7 @@ class LineDaoTest {
 
     @Test
     void findById() {
-        Line line = new Line("2호선", "초록이", 강남역, 청계산입구역, 1);
+        Line line = Line.initialCreateWithoutId("2호선", "초록이", 강남역, 청계산입구역, 1);
         final Line createdLine = lineDao.save(line);
 
         final Line foundLine = lineDao.findById(createdLine.getId());

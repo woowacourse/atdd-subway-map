@@ -16,7 +16,7 @@ public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
-            new Line(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
+            Line.createWithoutSection(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -31,7 +31,7 @@ public class LineDao {
         parameters.put("color", line.getColor());
 
         final Number number = simpleJdbcInsert.executeAndReturnKey(parameters);
-        return new Line(number.longValue(), line.getName(), line.getColor());
+        return Line.createWithoutSection(number.longValue(), line.getName(), line.getColor());
     }
 
     public boolean existsByName(String name) {

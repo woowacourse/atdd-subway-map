@@ -17,7 +17,7 @@ public class SectionsTest {
     
     @BeforeEach
     void init(){
-        line = new Line("신분당선", "빨간색", upStation, downStation, 7);
+        line = Line.initialCreateWithoutId("신분당선", "빨간색", upStation, downStation, 7);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class SectionsTest {
         //given
         Station upStation2 = new Station("청계산입구역");
         Station downStation2 = new Station("정자역");
-        Section section = new Section(upStation2, downStation2, 7);
+        Section section = Section.createWithoutId(upStation2, downStation2, 7);
         //when
         line.addSection(section);
         //then
@@ -48,7 +48,7 @@ public class SectionsTest {
         //given
         Station upStation2 = new Station("강남역");
         Station downStation2 = new Station("양재역");
-        Section section = new Section(upStation2, downStation2, 5);
+        Section section = Section.createWithoutId(upStation2, downStation2, 5);
         //when
         line.addSection(section);
         //then
@@ -73,7 +73,7 @@ public class SectionsTest {
         //given
         Station upStation2 = new Station("양재역");
         Station downStation2 = new Station("청계산입구역");
-        Section section = new Section(upStation2, downStation2, 5);
+        Section section = Section.createWithoutId(upStation2, downStation2, 5);
         //when
         line.addSection(section);
         //then
@@ -98,7 +98,7 @@ public class SectionsTest {
     void addSectionUpTerminal() {
         //given
         final Station newUpStation = new Station("신강남역");
-        final Section section = new Section(newUpStation, upStation, 3);
+        final Section section = Section.createWithoutId(newUpStation, upStation, 3);
         //when
         line.addSection(section);
         //then
@@ -123,7 +123,7 @@ public class SectionsTest {
     void addSectionDownTerminal() {
         //given
         final Station newDownStation = new Station("정자역");
-        final Section section = new Section(downStation, newDownStation, 10);
+        final Section section = Section.createWithoutId(downStation, newDownStation, 10);
         //when
         line.addSection(section);
         //then
@@ -149,7 +149,7 @@ public class SectionsTest {
     void distanceExceptionWithUpBranch() {
         //given
         final Station newUpStation = new Station("양재역");
-        final Section section = new Section(newUpStation, downStation, 7);
+        final Section section = Section.createWithoutId(newUpStation, downStation, 7);
 
         //then
         assertThatThrownBy(() -> line.addSection(section))
@@ -161,7 +161,7 @@ public class SectionsTest {
     void distanceExceptionWithDownBranch() {
         //given
         final Station newDownStation = new Station("양재역");
-        final Section section = new Section(upStation, newDownStation, 7);
+        final Section section = Section.createWithoutId(upStation, newDownStation, 7);
 
         //then
         assertThatThrownBy(() -> line.addSection(section))
@@ -172,7 +172,7 @@ public class SectionsTest {
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있으면 예외 발생")
     void alreadyRegisteredException() {
         //given
-        final Section section = new Section(upStation, downStation, 4);
+        final Section section = Section.createWithoutId(upStation, downStation, 4);
         //then
         assertThatThrownBy(() -> line.addSection(section))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -184,7 +184,7 @@ public class SectionsTest {
         //given
         final Station newUpStation = new Station("석촌고분역");
         final Station newDownStation = new Station("석촌역");
-        final Section section = new Section(newUpStation, newDownStation, 5);
+        final Section section = Section.createWithoutId(newUpStation, newDownStation, 5);
         //then
         assertThatThrownBy(() -> line.addSection(section))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -195,7 +195,7 @@ public class SectionsTest {
     void deleteSectionWithUpTerminal() {
         //given
         final Station newDownStation = new Station("정자역");
-        final Section section = new Section(downStation, newDownStation, 10);
+        final Section section = Section.createWithoutId(downStation, newDownStation, 10);
         line.addSection(section);
         //when
         line.deleteSection(upStation);
@@ -213,7 +213,7 @@ public class SectionsTest {
     void deleteSectionWithDownTerminal() {
         //given
         final Station newDownStation = new Station("정자역");
-        final Section section = new Section(downStation, newDownStation, 10);
+        final Section section = Section.createWithoutId(downStation, newDownStation, 10);
         line.addSection(section);
         //when
         line.deleteSection(newDownStation);
@@ -231,7 +231,7 @@ public class SectionsTest {
     void deleteSectionOnMiddle() {
         //given
         final Station newDownStation = new Station("정자역");
-        final Section section = new Section(downStation, newDownStation, 10);
+        final Section section = Section.createWithoutId(downStation, newDownStation, 10);
         line.addSection(section);
         //when
         line.deleteSection(downStation);
