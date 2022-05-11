@@ -7,9 +7,9 @@ import static wooteco.subway.acceptance.AcceptanceTestUtil.getResultStationIds;
 import static wooteco.subway.acceptance.AcceptanceTestUtil.requestDeleteStation;
 import static wooteco.subway.acceptance.AcceptanceTestUtil.requestGetStations;
 import static wooteco.subway.acceptance.AcceptanceTestUtil.requestPostStation;
-import static wooteco.subway.testutils.Fixture.STATION_REQUEST_강남역;
+import static wooteco.subway.testutils.Fixture.STATION_REQUEST_서울대역;
+import static wooteco.subway.testutils.Fixture.STATION_REQUEST_신림역;
 import static wooteco.subway.testutils.Fixture.STATION_REQUEST_역삼역;
-import static wooteco.subway.testutils.Fixture.STATION_REQUEST_잠실역;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -18,7 +18,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import wooteco.subway.dto.request.StationRequest;
 
 public class StationAcceptanceTest extends AcceptanceTest {
 
@@ -26,7 +25,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     void createStation() {
         // given & when
-        ExtractableResponse<Response> response = requestPostStation(STATION_REQUEST_강남역,
+        ExtractableResponse<Response> response = requestPostStation(STATION_REQUEST_역삼역,
             "/stations");
 
         // then
@@ -38,10 +37,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("중복된 이름으로 지하철역을 생성하면 예외를 발생시킨다.")
     void createStationWithDuplicateName() {
         // given
-        requestPostStation(STATION_REQUEST_강남역, "/stations");
+        requestPostStation(STATION_REQUEST_신림역, "/stations");
 
         // when, then
-        final ExtractableResponse<Response> response = requestPostStation(STATION_REQUEST_강남역,
+        final ExtractableResponse<Response> response = requestPostStation(STATION_REQUEST_신림역,
             "/stations");
 
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -51,10 +50,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = requestPostStation(STATION_REQUEST_잠실역,
+        ExtractableResponse<Response> createResponse1 = requestPostStation(STATION_REQUEST_신림역,
             "/stations");
 
-        ExtractableResponse<Response> createResponse2 = requestPostStation(STATION_REQUEST_역삼역,
+        ExtractableResponse<Response> createResponse2 = requestPostStation(STATION_REQUEST_서울대역,
             "/stations");
 
         // when
@@ -73,8 +72,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // given
-        StationRequest request = new StationRequest("강남역");
-        ExtractableResponse<Response> createResponse = requestPostStation(request, "/stations");
+        ExtractableResponse<Response> createResponse = requestPostStation(STATION_REQUEST_신림역, "/stations");
 
         // when
         final ExtractableResponse<Response> response = requestDeleteStation(createResponse);

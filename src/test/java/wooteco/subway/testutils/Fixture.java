@@ -14,6 +14,8 @@ public class Fixture {
     public static final StationRequest STATION_REQUEST_강남역 = new StationRequest("강남역");
     public static final StationRequest STATION_REQUEST_잠실역 = new StationRequest("잠실역");
     public static final StationRequest STATION_REQUEST_역삼역 = new StationRequest("역삼역");
+    public static final StationRequest STATION_REQUEST_신림역 = new StationRequest("신림역");
+    public static final StationRequest STATION_REQUEST_서울대역 = new StationRequest("서울대역");
     public static final Line LINE_1_BLUE = new Line("1호선", "blue");
     public static final Line LINE_2_GREEN = new Line("2호선", "green");
     public static final Section LINE_1_SECTION_A = new Section(1L, 1L, 2L, 1);
