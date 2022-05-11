@@ -12,10 +12,12 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
+@Sql("/stationInitSchema.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private RequestSpecification createBody(StationRequest stationRequest) {

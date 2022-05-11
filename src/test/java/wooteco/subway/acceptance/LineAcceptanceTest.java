@@ -12,13 +12,15 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
+@Sql("/lineInitSchema.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private LineRequest createLineRequest(String name, String red) {
-        return new LineRequest(name, red, null, null, 0);
+    private LineRequest createLineRequest(String name, String color) {
+        return new LineRequest(name, color, 1L, 2L, 5);
     }
 
     private RequestSpecification createBody(LineRequest lineRequest) {
