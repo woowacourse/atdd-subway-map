@@ -14,20 +14,18 @@ public class Sections {
             values.add(section);
             return;
         }
-
-        if (containsSameSection(section) || isNotAddable(section)) {
-            throw new IllegalArgumentException("연결 가능한 구간이 아닙니다.");
-        }
-
-        for (Section each : values) {
-            rearrangeSectionIfForkRoadCase(each, section);
-        }
-
+        checkAddable(section);
+        rearrangeSectionIfNeed(section);
         values.add(section);
     }
 
-    public void removeStation(final Station station) {
+    private void rearrangeSectionIfNeed(final Section section) {
+        for (Section each : values) {
+            rearrangeSectionIfForkRoadCase(each, section);
+        }
+    }
 
+    public void removeStation(final Station station) {
         if (values.size() == 1) {
             throw new IllegalArgumentException("구간이 하나인 경우 역을 제거할 수 없습니다.");
         }
@@ -44,6 +42,12 @@ public class Sections {
 
     public Set<Section> values() {
         return Collections.unmodifiableSet(values);
+    }
+
+    private void checkAddable(final Section section) {
+        if (containsSameSection(section) || isNotAddable(section)) {
+            throw new IllegalArgumentException("연결 가능한 구간이 아닙니다.");
+        }
     }
 
     private void removeInterStation(final Station station) {
