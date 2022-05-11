@@ -4,13 +4,14 @@ import java.util.Objects;
 
 public class Section {
 
-    private long id;
+    private final Long id;
     private Station upStation;
     private Station downStation;
     private int distance;
 
-    public Section(long id, Station upStation, Station downStation, int distance) {
-        validateDistance(distance);
+    public Section(Long id, Station upStation, Station downStation, int distance) {
+        validateMoreThanZero(distance);
+        validateDifferentStation(upStation, downStation);
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -18,10 +19,7 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
-        validateDistance(distance);
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this(null, upStation, downStation, distance);
     }
 
     public boolean contains(final Station station) {
@@ -32,9 +30,15 @@ public class Section {
         return this.contains(other.getUpStation()) && this.contains(other.getDownStation());
     }
 
-    private void validateDistance(final int distance) {
+    private void validateMoreThanZero(final int distance) {
         if (distance < 1) {
             throw new IllegalArgumentException("거리가 1 미만인 구간 정보는 생성할 수 없습니다.");
+        }
+    }
+
+    private void validateDifferentStation(final Station upStation, final Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException("상행역과 하행역은 같은 역일 수 없습니다.");
         }
     }
 
@@ -75,7 +79,7 @@ public class Section {
             return false;
         }
         final Section section = (Section) o;
-        return id == section.id && distance == section.distance && upStation.equals(section.upStation)
+        return Objects.equals(id, section.id) && distance == section.distance && upStation.equals(section.upStation)
                 && downStation.equals(section.downStation);
     }
 
