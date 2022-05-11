@@ -13,12 +13,12 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import wooteco.subway.domain.Station;
+import wooteco.subway.entity.StationEntity;
 
 @Repository
 public class JdbcStationDao implements StationDao {
 
-    public static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) -> new Station(
+    public static final RowMapper<StationEntity> STATION_ROW_MAPPER = (resultSet, rowNum) -> new StationEntity(
         resultSet.getLong("id"),
         resultSet.getString("name")
     );
@@ -33,14 +33,14 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station save(Station station) {
+    public StationEntity save(StationEntity station) {
         SqlParameterSource param = new BeanPropertySqlParameterSource(station);
         final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
-        return new Station(id, station.getName());
+        return new StationEntity(id, station.getName());
     }
 
     @Override
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         final String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
@@ -53,7 +53,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Optional<Station> findByName(String name) {
+    public Optional<StationEntity> findByName(String name) {
         final String sql = "SELECT * FROM station WHERE name = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, name));
@@ -63,7 +63,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Optional<Station> findById(Long id) {
+    public Optional<StationEntity> findById(Long id) {
         final String sql = "SELECT * FROM station WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id));

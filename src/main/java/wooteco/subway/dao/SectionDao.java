@@ -1,46 +1,13 @@
 package wooteco.subway.dao;
 
-import java.util.Map;
-
-import javax.sql.DataSource;
-
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
 import wooteco.subway.domain.Section;
+import wooteco.subway.entity.SectionEntity;
 
-@Repository
-public class SectionDao {
-    /*
-    id              BIGINT AUTO_INCREMENT NOT NULL,
-    line_id         BIGINT                NOT NULL,
-    up_station_id   BIGINT                NOT NULL,
-    down_station_id BIGINT                NOT NULL,
-    distance        INT                   NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (line_id) REFERENCES line (id),
-    FOREIGN KEY (up_station_id) REFERENCES station (id),
-    FOREIGN KEY (down_station_id) REFERENCES station (id)
-     */
+public interface SectionDao {
 
-    private final SimpleJdbcInsert jdbcInsert;
-    private final JdbcTemplate jdbcTemplate;
+    SectionEntity save(SectionEntity section, Long lineId);
 
-    public SectionDao(DataSource dataSource, JdbcTemplate jdbcTemplate) {
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-            .withTableName("section")
-            .usingGeneratedKeyColumns("id");
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public Section save(Section section, Long lineId) {
-        final long sectionId = jdbcInsert.executeAndReturnKey(Map.of(
-            "line_id", lineId,
-            "up_station_id", section.getUpStation().getId(),
-            "down_station_id", section.getDownStation().getId(),
-            "distance", section.getDistance().getValue()
-        )).longValue();
-        return new Section(sectionId, section.getUpStation(), section.getDownStation(), section.getDistance());
-    }
+    List<SectionEntity> readSectionsByLineId(Long lineId);
 }
