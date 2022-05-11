@@ -8,15 +8,15 @@
 - [x] `DAO`에서 사용하는 JdbcTemplate 불변
 - [x] `LineDao` 사용하지 않는 메서드 존재
     - `deleteAll()`
-- [ ] `LineController`
+- [x] `LineController`
     - [x] 중복 관련 에러메세지 상세화 - 어떤 속성이 중복되는지 적절한 메세지 전달 필요
     - [x] `updateLine()` - 유효성 검사 세분화
     - [x] <컨트롤러 - 서비스 - 영속성> 레이어 관련 학습
         - 서비스 레이어가 추가되었을 때 프로젝트 구조 변화
         - 컨트롤러의 역할의 변화
-    - [ ] `@ExceptionHandler` 예외 처리
+    - [x] `@ExceptionHandler` 예외 처리
         - 만약, Exception이 발생한다면?
-        - [ ] `Exception`에 대한 예외 처리 추가
+        - [x] `Exception`에 대한 예외 처리 추가
 - [x] `LineAcceptanceTest`
     - [x] 중복된 코드 Fixture 객체 or 메서드 분리
     - [x] `Stream`과 `람다` 활용
@@ -28,18 +28,22 @@
     - REST API를 테스트하기 위한 라이브러리(실제 웹과 동일한 기능 수행)
 - [x] `LineDaoTest`
     - [x] `assertAll` 검증 함수 학습 및 적용
-      - assertThat과 다르게 패키지 경로가 `junit.jupiter.api~`라는 차이점도 존재
+        - assertThat과 다르게 패키지 경로가 `junit.jupiter.api~`라는 차이점도 존재
     - [x] 하나의 메서드에서 2개의 테스트를 검증
 - [ ] 세가지 종류의 테스트, 사용한 목적과 어떤 기능을 사용했는지 작성
 
 ### 지하철 노선도 미션 1,2단계 - 2차 피드백
-- [ ] `RequestBody`의 사용 목적(용도)
+
+- [x] `RequestBody`의 사용 목적(용도)
+  - JSON 데이터를 Spring에서 Object로 변환하여 사용하기 위함.
 - [x] `LineAcceptaceTest`
-  - [x] when 주석 제거
-  - [x] TODO 제거 
-  - [x] 예외 상태 코드 검증에 메시지 검증 추가하기
+    - [x] when 주석 제거
+    - [x] TODO 제거
+    - [x] 예외 상태 코드 검증에 메시지 검증 추가하기
 - [x] `InjectMock`과 `@Mock`의 차이점
+    - mock : 어노테이션을 통해서 Mock 객체를 반환(즉, StationDao 클래스의 mock 객체를 반환)합니다.
+    - Injectmocks : 어노테이션이 붙은 클래스의 인스턴스를 만들고 @mock을 통해 생성한 Mock 객체를 주입합니다.
 - [ ] `JdbcTemplate` 빈으로 등록한 적이 없으나 빈으로 관리되는 이유
 - [ ] 예외 메시지 - 톤 앤 매너
-- [ ] `ControllerAdvice`
+- [x] `ControllerAdvice`
   
