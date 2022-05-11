@@ -17,6 +17,14 @@ public class Distance {
         }
     }
 
+    public Distance subtract(Distance other) {
+        return new Distance(this.value - other.value);
+    }
+
+    public boolean isLongerThan(Distance other) {
+        return this.value > other.value;
+    }
+
     public int getValue() {
         return value;
     }
