@@ -50,12 +50,21 @@ public class Sections {
         throw new IllegalArgumentException("노선에 상행 종점과 하행 종점이 모두 존재하지 않아 구간을 추가할 수 없습니다.");
     }
 
-    public List<Station> getAllStations() {
-        List<Station> stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        stations.add(getDownTermination());
-        return stations;
+    public Section delete(Station station) {
+        if (station.equals(getUpTermination())) {
+            return sections.removeFirst();
+        }
+        if (station.equals(getDownTermination())) {
+            return sections.removeLast();
+        }
+        return null;
+    }
+
+    private Section findSection(Predicate<Section> sectionPredicate) {
+        return sections.stream()
+                .filter(sectionPredicate)
+                .findAny()
+                .orElse(null);
     }
 
     private Station getUpTermination() {
@@ -68,11 +77,12 @@ public class Sections {
         return lastSection.getDownStation();
     }
 
-    private Section findSection(Predicate<Section> sectionPredicate) {
-        return sections.stream()
-                .filter(sectionPredicate)
-                .findAny()
-                .orElse(null);
+    public List<Station> getAllStations() {
+        List<Station> stations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        stations.add(getDownTermination());
+        return stations;
     }
 
     public LinkedList<Section> getSections() {

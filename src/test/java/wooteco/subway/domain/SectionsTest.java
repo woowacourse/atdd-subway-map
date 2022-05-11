@@ -74,11 +74,35 @@ public class SectionsTest {
         Station station = new Station(3L, "새로운역");
         Section section = new Section(upTermination, station, 3);
         sections.add(section);
-        LinkedList<Section> sectionValues = this.sections.getSections();
+        LinkedList<Section> sectionValues = sections.getSections();
 
         assertAll(
                 () -> assertThat(sectionValues.get(1).getDistance()).isEqualTo(7),
                 () -> assertThat(sectionValues.get(0)).isEqualTo(section)
         );
+    }
+
+    @DisplayName("노선의 상행 종점을 삭제할 경우 다음 역이 종점이 된다.")
+    @Test
+    void delete_upTermination() {
+        Station station = new Station(3L, "새로운역");
+        Section section = new Section(upTermination, station, 3);
+        sections.add(section);
+        sections.delete(upTermination);
+
+        List<Station> allStations = sections.getAllStations();
+        assertThat(allStations.get(0)).isEqualTo(station);
+    }
+
+    @DisplayName("노선의 하행 종점을 삭제할 경우 이전 역이 종점이 된다.")
+    @Test
+    void delete_downTermination() {
+        Station station = new Station(3L, "새로운역");
+        Section section = new Section(station, downTermination, 3);
+        sections.add(section);
+        sections.delete(downTermination);
+
+        List<Station> allStations = sections.getAllStations();
+        assertThat(allStations.get(allStations.size() - 1)).isEqualTo(station);
     }
 }
