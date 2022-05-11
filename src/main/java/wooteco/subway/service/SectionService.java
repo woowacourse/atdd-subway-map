@@ -37,7 +37,7 @@ public class SectionService {
                 sections.findDeletableByStationId(request.getStationId()));
         deleteNearSections(deletableSections);
         deletableSections.mergeSections()
-                .ifPresent(sectionDao::update);
+                .ifPresent(sectionDao::save);
     }
 
     private void deleteNearSections(DeletableSections deletableSections) {
