@@ -1,16 +1,19 @@
 package wooteco.subway.ui.dto;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
 
 public class LineRequest {
 
-    @Size(min = 1, max = 25)
+    @NotBlank(message = "name을 입력해주세요.")
     private String name;
-    @NotBlank
+    @NotBlank(message = "color를 입력해주세요.")
     private String color;
+    @NotNull(message = "upStationId를 입력해주세요.")
     private Long upStationId;
+    @NotNull(message = "downStationId를 입력해주세요.")
     private Long downStationId;
+    @NotNull(message = "distance를 입력해주세요.")
     private int distance;
 
     public LineRequest() {

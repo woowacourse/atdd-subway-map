@@ -4,8 +4,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +32,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@Validated @RequestBody LineRequest lineRequest) {
         LineSaveResponse lineSaveResponse = lineService.save(
             new LineSaveRequest(lineRequest.getName(), lineRequest.getColor(),
                 lineRequest.getUpStationId(), lineRequest.getDownStationId(),

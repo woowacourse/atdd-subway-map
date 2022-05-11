@@ -1,9 +1,10 @@
 package wooteco.subway.ui.dto;
 
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotBlank;
 
 public class StationRequest {
-    @Size(min = 1, max = 25)
+
+    @NotBlank(message = "name을 입력해주세요.")
     private String name;
 
     public StationRequest() {
