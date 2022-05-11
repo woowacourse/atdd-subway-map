@@ -8,21 +8,33 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
-import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.dao.FakeLineDao;
+import javax.sql.DataSource;
+import wooteco.subway.domain.line.LineRepository;
+import wooteco.subway.repository.SubwayRepository;
+import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.repository.dao.jdbc.JdbcLineDao;
+import wooteco.subway.repository.dao.jdbc.JdbcStationDao;
 import wooteco.subway.repository.exception.DuplicateLineColorException;
 import wooteco.subway.repository.exception.DuplicateLineNameException;
 import wooteco.subway.service.dto.line.LineRequestDto;
 import wooteco.subway.service.dto.line.LineResponseDto;
 
+@JdbcTest
 class LineServiceTest {
 
+    @Autowired
+    private DataSource dataSource;
     private LineService lineService;
 
     @BeforeEach
     void setUp() {
-        LineRepository lineRepository = new LineRepository(new FakeLineDao());
+        LineDao lineDao = new JdbcLineDao(dataSource);
+        StationDao stationDao = new JdbcStationDao(dataSource);
+        LineRepository lineRepository = new SubwayRepository(lineDao, stationDao);
         this.lineService = new LineService(lineRepository);
     }
 

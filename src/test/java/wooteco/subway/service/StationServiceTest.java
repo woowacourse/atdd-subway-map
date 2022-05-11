@@ -8,19 +8,31 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
-import wooteco.subway.repository.StationRepository;
-import wooteco.subway.repository.dao.FakeStationDao;
+import javax.sql.DataSource;
+import wooteco.subway.domain.station.StationRepository;
+import wooteco.subway.repository.SubwayRepository;
+import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.repository.dao.jdbc.JdbcLineDao;
+import wooteco.subway.repository.dao.jdbc.JdbcStationDao;
 import wooteco.subway.repository.exception.DuplicateStationNameException;
 import wooteco.subway.service.dto.station.StationResponseDto;
 
+@JdbcTest
 class StationServiceTest {
 
+    @Autowired
+    private DataSource dataSource;
     private StationService stationService;
 
     @BeforeEach
     void setUp() {
-        StationRepository stationRepository = new StationRepository(new FakeStationDao());
+        LineDao lineDao = new JdbcLineDao(dataSource);
+        StationDao stationDao = new JdbcStationDao(dataSource);
+        StationRepository stationRepository = new SubwayRepository(lineDao, stationDao);
         this.stationService = new StationService(stationRepository);
     }
 

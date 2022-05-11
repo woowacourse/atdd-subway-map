@@ -1,7 +1,6 @@
 package wooteco.subway.repository.dao.jdbc;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.dao.EmptyResultDataAccessException;
