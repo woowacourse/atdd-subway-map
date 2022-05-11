@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
@@ -16,12 +15,10 @@ import wooteco.subway.dto.request.SectionRequest;
 @Service
 public class SectionService {
 
-    private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public SectionService(final LineDao lineDao, final SectionDao sectionDao, final StationDao stationDao) {
-        this.lineDao = lineDao;
+    public SectionService(final SectionDao sectionDao, final StationDao stationDao) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
@@ -45,7 +42,6 @@ public class SectionService {
         final Sections sections = new Sections(sectionDao.findSectionStationsByLineId(lineId));
 
         final List<Section> updatedSections = sections.addSection(newSection);
-
         sectionDao.batchUpdate(updatedSections);
     }
 }
