@@ -56,9 +56,6 @@ public class LineService {
             throw new DuplicateLineException("이미 존재하는 노선 색깔입니다.");
         }
     }
-    private LineResponse createLineResponse(Line newLine) {
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
-    }
 
     private LineResponse createLineResponse(Line newLine, List<StationResponse> stations) {
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
@@ -67,8 +64,9 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll().stream()
-            .map(this::createLineResponse)
-            .collect(Collectors.toUnmodifiableList());
+            .map(line -> createLineResponse(line,
+                stationService.findByStationsId(sectionService.findAllStationByLineId(line.getId()))))
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
