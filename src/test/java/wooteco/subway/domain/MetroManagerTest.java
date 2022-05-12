@@ -214,8 +214,8 @@ public class MetroManagerTest {
         metroManager.delete(1L, 2L);
         Adjacency result1 = metroManager.getAdjacency(1L);
         Adjacency result2 = metroManager.getAdjacency(3L);
-        assertAll(() -> assertThat(result1).isEqualTo(new Adjacency(new StationInfo(-1L, 0L), new StationInfo(3L, 10L))),
-                () -> assertThat(result2).isEqualTo(new Adjacency(new StationInfo(1L, 10L), new StationInfo(-1L, 0L))),
+        assertAll(() -> assertThat(result1).isEqualTo(new Adjacency(new StationInfo(-1L, 0L), new StationInfo(3L, 20L))),
+                () -> assertThat(result2).isEqualTo(new Adjacency(new StationInfo(1L, 20L), new StationInfo(-1L, 0L))),
                 () -> assertThat(metroManager.findUpStationEnd()).isEqualTo(1L),
                 () -> assertThat(metroManager.findDownStationEnd()).isEqualTo(3L));
     }

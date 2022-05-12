@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.WooTecoException;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -61,7 +62,7 @@ public class LineService {
 
     private void validateId(Long id) {
         if (!lineDao.isValidId(id)) {
-            throw new EmptyResultDataAccessException(id.intValue());
+            throw new WooTecoException("[ERROR] 유효한 id가 아닙니다.");
         }
     }
 
@@ -80,5 +81,4 @@ public class LineService {
         }
         return result;
     }
-
 }

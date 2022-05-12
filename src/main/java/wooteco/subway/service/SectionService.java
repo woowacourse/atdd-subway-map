@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.nio.channels.SeekableByteChannel;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import wooteco.subway.domain.MetroManager;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.StationInfo;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.SectionResponse;
 
 @Service
 @Transactional
@@ -28,8 +30,13 @@ public class SectionService {
         MetroManager metroManager = new MetroManager(sectionDao.findAll(section.getLineId()));
         validateNonExistSection(section, metroManager);
         if ((metroManager.findUpStationEnd() == section.getDownStationId().longValue()) && (metroManager.findDownStationEnd() == section.getUpStationId().longValue())) {
+            sectionDao.deleteByLineId(lineId);
             metroManager.add_cycle(section);
-            return sectionDao.save(section, section.getLineId());
+            List<Section> sections = metroManager.generateUpdatedSection(lineId);
+            for (Section eachSection : sections) {
+                sectionDao.save(eachSection, lineId);
+            }
+            return section;
         }
         validateExistSection(section, metroManager);
         return addSection(section, metroManager);
@@ -48,16 +55,25 @@ public class SectionService {
     }
 
     private Section addSection(Section section, MetroManager metroManager) {
+        sectionDao.deleteByLineId(section.getLineId());
         if (metroManager.isIn(section.getUpStationId())) {
             StationInfo rightInfo = metroManager.getAdjacency(section.getUpStationId()).getRight();
             validateDistance(section, rightInfo);
             metroManager.add_right(section);
-            return sectionDao.save(section, section.getLineId());
+            List<Section> sections = metroManager.generateUpdatedSection(section.getLineId());
+            for (Section eachSection : sections) {
+                sectionDao.save(eachSection, eachSection.getLineId());
+            }
+            return section;
         }
         StationInfo leftInfo = metroManager.getAdjacency(section.getDownStationId()).getLeft();
         validateDistance(section, leftInfo);
         metroManager.add_left(section);
-        return sectionDao.save(section, section.getLineId());
+        List<Section> sections = metroManager.generateUpdatedSection(section.getLineId());
+        for (Section eachSection : sections) {
+            sectionDao.save(eachSection, eachSection.getLineId());
+        }
+        return section;
     }
 
     private void validateDistance(Section section, StationInfo stationInfo) {
@@ -89,5 +105,10 @@ public class SectionService {
         if (metroManager.isOneExist()) {
             throw new WooTecoException("[ERROR] 하나의 구간만 남았을 때는 삭제할 수 없습니다.");
         }
+    }
+
+    public SectionResponse findAll(Long lineId) {
+        List<Section> sections = sectionDao.findAll(lineId);
+        return new SectionResponse(sections);
     }
 }

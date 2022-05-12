@@ -18,6 +18,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import wooteco.subway.dto.StationResponse;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -58,7 +60,7 @@ class StationControllerTest {
     void createStationWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "선릉역");
+        params.put("name", "강남역");
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -78,7 +80,7 @@ class StationControllerTest {
                 .extract();
 
         // then
-        assertThat(response.jsonPath().getString("message")).isEqualTo("이미 중복된 이름이 존재합니다.");
+        assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 중복된 이름으로 추가할 수 없습니다.");
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -86,7 +88,7 @@ class StationControllerTest {
     void getStations() {
         /// given
         Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "역삼역");
+        params1.put("name", "강남역");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -96,7 +98,7 @@ class StationControllerTest {
                 .extract();
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "잠실역");
+        params2.put("name", "선릉역");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -128,7 +130,7 @@ class StationControllerTest {
     void deleteStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "신촌역");
+        params.put("name", "강남역");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

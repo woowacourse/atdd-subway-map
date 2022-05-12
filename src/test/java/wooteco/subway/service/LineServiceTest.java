@@ -14,10 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.WooTecoException;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -37,6 +40,9 @@ public class LineServiceTest {
 
     @Autowired
     private StationDao stationDao;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @DisplayName("중복되는 노선 이름이 없을 때 성공적으로 저장되는지 테스트")
     @Test
@@ -67,7 +73,7 @@ public class LineServiceTest {
         Station station2 = stationDao.save(new Station("선릉역"));
         LineResponse lineResponse = lineService.save(new LineRequest("신분당선", "green", station1.getId(), station2.getId(), 10L));
         assertThatThrownBy(() -> lineService.save(new LineRequest("신분당선", "green", station1.getId(), station2.getId(), 10L)))
-                .isInstanceOf(DuplicateKeyException.class);
+                .isInstanceOf(WooTecoException.class);
     }
 
     @DisplayName("유효한 id를 가진 노선을 가져오는지 테스트")
@@ -83,21 +89,21 @@ public class LineServiceTest {
     @Test
     void findById_no_eixst_id() {
         assertThatThrownBy(() -> lineService.findById(-1L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(WooTecoException.class);
     }
 
     @DisplayName("존재하지 않는 id의 이름을 바꿀때 예외가 발생하는지 테스트")
     @Test
     void change_name_no_exist_id() {
         assertThatThrownBy(() -> lineService.changeLineName(-1L, "test"))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(WooTecoException.class);
     }
 
     @DisplayName("존재하지 않는 id로 노선을 삭제할 때 예외가 발생하는지 테스트")
     @Test
     void delete_no_exist_id() {
         assertThatThrownBy(() -> lineService.deleteById(-1L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(WooTecoException.class);
     }
 
     @DisplayName("존재하는 id로 노선을 삭제 후 삭제한 노선을 찾을 때 예외가 발생하는지 테스트")
@@ -108,6 +114,6 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.save(new LineRequest("신분당선", "yellow", station1.getId(), station2.getId(), 10L));
         lineService.deleteById(lineResponse.getId());
         assertThatThrownBy(() -> lineService.findById(lineResponse.getId()))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(WooTecoException.class);
     }
 }

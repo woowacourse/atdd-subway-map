@@ -40,32 +40,45 @@ public class MetroManager {
     }
 
     private void update_left(Long baseId, Long addId, Long newDistance) {
-        StationInfo rightInfo = adjacencies.get(baseId).getRight();
-        StationInfo leftInfo = adjacencies.get(baseId).getLeft();
-        adjacencies.put(baseId, new Adjacency(new StationInfo(addId, newDistance), rightInfo.copyInfo()));
-        if (leftInfo.isBlankLink()) {
+        Long rightStationId = adjacencies.get(baseId).getRight().getLinkedStationId();
+        Long rightDist = adjacencies.get(baseId).getRight().getDistance();
+        Long leftStationId = adjacencies.get(baseId).getLeft().getLinkedStationId();
+        Long leftDist = adjacencies.get(baseId).getLeft().getDistance();
+        adjacencies.put(baseId, new Adjacency(new StationInfo(addId, newDistance), new StationInfo(rightStationId, rightDist)));
+        if (leftStationId == NO_EXIST.longValue()) {
             adjacencies.put(addId, new Adjacency(new StationInfo(NO_EXIST, 0L), new StationInfo(baseId, newDistance)));
             return;
         }
-        StationInfo squareLeftInfo = adjacencies.get(leftInfo.getLinkedStationId()).getLeft();
-        Long nextDistance = leftInfo.getDistance() - newDistance;
-        adjacencies.put(addId, new Adjacency(new StationInfo(leftInfo.getLinkedStationId(), nextDistance), new StationInfo(baseId, newDistance)));
-        adjacencies.put(leftInfo.getLinkedStationId(), new Adjacency(squareLeftInfo.copyInfo(), new StationInfo(addId, nextDistance)));
+        Long squareLeftId = adjacencies.get(leftStationId).getLeft().getLinkedStationId();
+        Long squareLeftDist = adjacencies.get(leftStationId).getLeft().getDistance();
+        Long nextDistance = leftDist - newDistance;
+        adjacencies.put(addId, new Adjacency(new StationInfo(leftStationId, nextDistance), new StationInfo(baseId, newDistance)));
+        adjacencies.put(leftStationId, new Adjacency(new StationInfo(squareLeftId, squareLeftDist), new StationInfo(addId, nextDistance)));
+    }
+
+    private void debug(Long id) {
+        System.out.println("현재 id = " + id);
+        System.out.println("왼쪽 id = " + this.adjacencies.get(id).getLeft().getLinkedStationId());
+        System.out.println("오른쪽 id = " + this.adjacencies.get(id).getRight().getLinkedStationId());
+        System.out.println("=============");
     }
 
     private void update_right(Long baseId, Long addId, Long newDistance) {
-        StationInfo rightInfo = adjacencies.get(baseId).getRight();
-        StationInfo leftInfo = adjacencies.get(baseId).getLeft();
-        adjacencies.put(baseId, new Adjacency(leftInfo.copyInfo(), new StationInfo(addId, newDistance)));
-        if (rightInfo.isBlankLink()) {
+        Long rightStationId = adjacencies.get(baseId).getRight().getLinkedStationId();
+        Long rightDist = adjacencies.get(baseId).getRight().getDistance();
+        Long leftStationId = adjacencies.get(baseId).getLeft().getLinkedStationId();
+        Long leftDist = adjacencies.get(baseId).getLeft().getDistance();
+        adjacencies.put(baseId, new Adjacency(new StationInfo(leftStationId, leftDist), new StationInfo(addId, newDistance)));
+        if (rightStationId.longValue() == NO_EXIST.longValue()) {
             adjacencies.put(addId, new Adjacency(new StationInfo(baseId, newDistance), new StationInfo(NO_EXIST, 0L)));
             return;
         }
-        StationInfo squareRightInfo = adjacencies.get(rightInfo.getLinkedStationId()).getRight();
-        Long nextDistance = rightInfo.getDistance() - newDistance;
+        Long squareRightInfo = adjacencies.get(rightStationId).getRight().getLinkedStationId();
+        Long squareRightDist = adjacencies.get(rightStationId).getRight().getDistance();
+        Long nextDistance = rightDist - newDistance;
         adjacencies.put(addId, new Adjacency(new StationInfo(baseId, newDistance), new StationInfo(
-                rightInfo.getLinkedStationId(), nextDistance)));
-        adjacencies.put(rightInfo.getLinkedStationId(), new Adjacency(new StationInfo(addId, nextDistance), squareRightInfo.copyInfo()));
+                rightStationId, nextDistance)));
+        adjacencies.put(rightStationId, new Adjacency(new StationInfo(addId, nextDistance), new StationInfo(squareRightInfo, squareRightDist)));
     }
 
     public void add_right(Section section) {
@@ -163,16 +176,23 @@ public class MetroManager {
 
     public List<Long> getStationsId() {
         Long now = new ArrayList<Long>(this.adjacencies.keySet()).get(0);
+        boolean checkCycle = true;
+        if (!isCycle()) {
+            checkCycle = false;
+            now = findUpStationEnd();
+        }
         List<Long> result = new ArrayList<>();
-        result.add(now);
         Map<Long, Boolean> visited = new HashMap<>();
         for (Long ids : this.adjacencies.keySet()) {
             visited.put(ids, false);
         }
         while (now != NO_EXIST.longValue() && !visited.get(now)) {
-            now = this.adjacencies.get(now).getRight().getLinkedStationId();
             result.add(now);
             visited.put(now, true);
+            now = this.adjacencies.get(now).getRight().getLinkedStationId();
+        }
+        if (checkCycle) {
+            result.add(result.get(0));
         }
         return result;
     }
@@ -180,4 +200,24 @@ public class MetroManager {
     public boolean isOneExist() {
         return this.adjacencies.keySet().size() == 2;
     }
+
+    public List<Section> generateUpdatedSection(Long lineId) {
+        Set<Long> visitedId = new HashSet<>();
+        Long now = findUpStationEnd();
+        List<Section> result = new ArrayList<>();
+        if (isCycle()) {
+            now = new ArrayList<Long>(this.adjacencies.keySet()).get(0);
+        }
+        while (!visitedId.contains(now)) {
+            visitedId.add(now);
+            if (this.adjacencies.get(now).isRightBlank()) {
+                break;
+            }
+            StationInfo right = this.adjacencies.get(now).getRight();
+            result.add(new Section(lineId, now, right.getLinkedStationId(), right.getDistance()));
+            now = right.getLinkedStationId();
+        }
+        return result;
+    }
+
 }

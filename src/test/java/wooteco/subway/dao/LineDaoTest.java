@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import net.bytebuddy.description.NamedElement.WithOptionalName;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.WooTecoException;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
@@ -36,7 +38,7 @@ class LineDaoTest {
     void save_fail() {
         Line line = lineDao.save(new Line("testName", "black"));
         assertThatThrownBy(() -> lineDao.save(new Line("testName", "white")))
-                .isInstanceOf(DuplicateKeyException.class);
+                .isInstanceOf(WooTecoException.class);
     }
 
     @DisplayName("존재하는 노선 id가 있으면 삭제되는지 테스트")
@@ -68,7 +70,7 @@ class LineDaoTest {
     void findById_not_exist() {
         Line line = lineDao.save(new Line("testName", "black"));
         assertThatThrownBy(() -> lineDao.findById(-1L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(WooTecoException.class);
     }
 
     @DisplayName("바뀐 이름이 중복될 때 예외가 발생하는지 테스트")
@@ -77,7 +79,7 @@ class LineDaoTest {
         Line line = lineDao.save(new Line("testName", "black"));
         Line line2 = lineDao.save(new Line("testName2", "black"));
         assertThatThrownBy(() -> lineDao.changeLineName(line.getId(), "testName2"))
-                .isInstanceOf(DuplicateKeyException.class);
+                .isInstanceOf(WooTecoException.class);
     }
 
     @DisplayName("id가 있고 바뀐 이름이 중복되지 않을 때 예외가 발생하지 않는지 테스트")

@@ -2,11 +2,13 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.WooTecoException;
 import wooteco.subway.domain.Station;
 
 @Repository
@@ -25,14 +27,20 @@ public class StationDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into station (name) values (?)";
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, station.getName());
-            return ps;
-        }, keyHolder);
-        long insertedId = keyHolder.getKey().longValue();
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setString(1, station.getName());
+                return ps;
+            }, keyHolder);
+            long insertedId = keyHolder.getKey().longValue();
 
-        return new Station(insertedId, station.getName());
+            return new Station(insertedId, station.getName());
+        }
+        catch (DuplicateKeyException e) {
+            throw new WooTecoException("[ERROR] 중복된 이름으로 추가할 수 없습니다.");
+        }
+
     }
 
     public List<Station> findAll() {
