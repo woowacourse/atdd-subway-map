@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -13,8 +12,6 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.exception.RowDuplicatedException;
-import wooteco.subway.exception.RowNotFoundException;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.StationRepository;

@@ -1,14 +1,12 @@
 package wooteco.subway.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineResponse;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.exception.RowNotFoundException;
 

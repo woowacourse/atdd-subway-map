@@ -16,7 +16,9 @@ public class ExceptionAdviser {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ExceptionResponse> handler(RuntimeException exception) {
+    public ResponseEntity<ExceptionResponse> handle(RuntimeException exception) {
+        // TODO : logback
+        exception.printStackTrace();
         return ResponseEntity.internalServerError().body(ExceptionResponse.of(exception));
     }
 

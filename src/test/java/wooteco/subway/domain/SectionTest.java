@@ -19,7 +19,7 @@ class SectionTest {
 
         // when
         final boolean isDividable = oldSection.isDividable(newSection);
-        
+
         // then
         assertThat(isDividable).isTrue();
     }

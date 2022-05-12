@@ -2,8 +2,8 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.domain.RemoveSections;
 import wooteco.subway.domain.EnrollSections;
+import wooteco.subway.domain.RemoveSections;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionSeries;
 import wooteco.subway.dto.SectionRequest;

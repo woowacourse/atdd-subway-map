@@ -43,7 +43,6 @@ public class LineResponse {
         );
     }
 
-
     public Long getId() {
         return id;
     }
