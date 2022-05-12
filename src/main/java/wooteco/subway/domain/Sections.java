@@ -1,20 +1,15 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.section.NoSuchSectionException;
-import wooteco.subway.exception.station.NoSuchStationException;
 
 public class Sections {
 
     private static final int MIN_SECTION_SIZE = 1;
-    private static final int END_STATION_COUNT = 1;
     private static final int MERGE_REQUIRED_SIZE = 2;
 
     private final List<Section> value;
@@ -52,8 +47,7 @@ public class Sections {
     }
 
     public List<Long> toStationIds() {
-        final List<Long> endStationIds = findEnsStationIds();
-        Long upStationId = findEndUpStation(endStationIds);
+        Long upStationId = findEndUpStation();
 
         final List<Long> stationIds = new ArrayList<>();
         stationIds.add(upStationId);
@@ -65,34 +59,15 @@ public class Sections {
         return stationIds;
     }
 
-    private List<Long> findEnsStationIds() {
-        return toCountByStationId()
-                .entrySet()
-                .stream()
-                .filter(it -> it.getValue().equals(END_STATION_COUNT))
-                .map(Entry::getKey)
-                .collect(Collectors.toList());
-    }
-
-    private Map<Long, Integer> toCountByStationId() {
-        final Map<Long, Integer> countByStationId = new HashMap<>();
-        for (Section section : value) {
-            final Long upStationId = section.getUpStationId();
-            countByStationId.put(upStationId, countByStationId.getOrDefault(upStationId, 0) + 1);
-
-            final Long downStationId = section.getDownStationId();
-            countByStationId.put(downStationId, countByStationId.getOrDefault(downStationId, 0) + 1);
-        }
-        return countByStationId;
-    }
-
-    private Long findEndUpStation(final List<Long> endStationIds) {
-        return value
-                .stream()
+    private Long findEndUpStation() {
+        final List<Long> upStationIds = value.stream()
                 .map(Section::getUpStationId)
-                .filter(endStationIds::contains)
-                .findFirst()
-                .orElseThrow(NoSuchStationException::new);
+                .collect(Collectors.toList());
+        final List<Long> downStationIds = value.stream()
+                .map(Section::getDownStationId)
+                .collect(Collectors.toList());
+        upStationIds.removeAll(downStationIds);
+        return upStationIds.get(0);
     }
 
     private Section findSectionByUpStationId(final Long upStationId) {
