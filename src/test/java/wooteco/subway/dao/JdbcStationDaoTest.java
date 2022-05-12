@@ -59,7 +59,7 @@ class JdbcStationDaoTest {
         stationDao.save(new Station("상수역"));
         stationDao.save(new Station("서울대입구역"));
 
-        assertThat(stationDao.findAll().size()).isEqualTo(3);
+        assertThat(stationDao.findAll()).hasSize(3);
     }
 
     @DisplayName("지하철역을 삭제한다.")
@@ -69,6 +69,6 @@ class JdbcStationDaoTest {
 
         stationDao.deleteById(station.getId());
 
-        assertThat(stationDao.findAll().size()).isEqualTo(0);
+        assertThat(stationDao.findAll()).hasSize(0);
     }
 }
