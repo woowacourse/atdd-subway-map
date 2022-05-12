@@ -11,6 +11,7 @@ import wooteco.subway.domain.LineSeries;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionSeries;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.StationSeries;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.repository.LineRepository;
@@ -49,13 +50,13 @@ public class LineService {
     public List<LineResponse> findAll() {
         return lineRepository.findAllLines()
             .stream()
-            .map(LineResponse::from)
+            .map(line -> this.findOne(line.getId()))
             .collect(Collectors.toList());
     }
 
     public LineResponse findOne(Long id) {
-        final List<Section> sections = sectionRepository.readAllSections(id);
-        return LineResponse.from(lineRepository.findById(id));
+        final StationSeries stationSeries = StationSeries.fromSectionsAsOrdered(sectionRepository.readAllSections(id));
+        return LineResponse.from(lineRepository.findById(id), stationSeries.getStations());
     }
 
     public void update(Long id, LineRequest lineRequest) {
