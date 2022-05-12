@@ -8,7 +8,7 @@ public interface SectionDao {
 
     void save(Sections sections, Long lineId);
 
-    void delete(Section deletedSection);
+    int delete(Section section);
 
-    void deleteByLine(Long lineId);
+    int deleteByLine(Long lineId);
 }

@@ -1,5 +1,8 @@
 package wooteco.subway.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,5 +47,36 @@ public class SectionDaoTest {
         Section section = new Section(downTermination, station, 5);
         line.addSection(section);
         dao.save(line.getSections(), line.getId());
+    }
+
+    @DisplayName("특정 구간을 삭제할 수 있다")
+    @Test
+    void delete() {
+        Section section = new Section(downTermination, station, 5);
+        line.addSection(section);
+        dao.save(line.getSections(), line.getId());
+
+        LineDao lineDao = new JdbcLineDao(dataSource, jdbcTemplate);
+        Line updatedLine = lineDao.findById(line.getId());
+        Section deletedSection = updatedLine.delete(station);
+        assertThat(dao.delete(deletedSection)).isEqualTo(1);
+    }
+
+    @DisplayName("특정 노선의 구간을 모두 삭제할 수 있다")
+    @Test
+    void deleteByLine() {
+        Section section = new Section(downTermination, station, 5);
+        line.addSection(section);
+        dao.save(line.getSections(), line.getId());
+        assertThat(dao.deleteByLine(line.getId())).isEqualTo(2);
+    }
+
+    @DisplayName("삭제할 구간이 없을 경우 예외가 발생한다")
+    @Test
+    void delete_no_data() {
+        Section section = new Section(1L, upTermination, downTermination, 10);
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> dao.delete(section))
+                .withMessageContaining("존재하지 않습니다");
     }
 }
