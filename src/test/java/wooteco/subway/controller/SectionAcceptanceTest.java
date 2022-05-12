@@ -168,7 +168,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("구간이 하나만 남았을 경우 400번 코드가 반환된다.")
+    @DisplayName("노선의 역을 삭제할 때 구간이 하나만 남았을 경우 400번 코드가 반환된다.")
     @Test
     void throwsExceptionWithOneRemainSection() {
         sectionService.delete(savedLine.getId(), savedStation1.getId());
