@@ -33,7 +33,7 @@ public class Sections {
 
     private void processSameSection(Section section, Section existingSection) {
         if (existingSection.isSameSection(section)) {
-            throw new IllegalSectionException("이미 구간이 등록되어 있습니다.");
+            throw new IllegalSectionException("이미 동일한 구간이 등록되어 있습니다.");
         }
     }
 
@@ -58,7 +58,7 @@ public class Sections {
 
     private void checkDistance(Section existingSection, Section newSection) {
         if (existingSection.getDistance() <= newSection.getDistance()) {
-            throw new IllegalSectionException("구간 등록이 불가능합니다.");
+            throw new IllegalSectionException("등록하려는 구간 길이가 기존 구간의 길이보다 더 길 수 없습니다.");
         }
     }
 
@@ -82,7 +82,7 @@ public class Sections {
         sections.stream()
                 .filter(s -> s.containsStation(section))
                 .findAny()
-                .orElseThrow(() -> new IllegalSectionException("구간 등록이 불가능합니다."));
+                .orElseThrow(() -> new IllegalSectionException("등록할 구간의 적어도 하나의 역은 등록되어 있어야 합니다."));
     }
 
     public List<Section> delete(Long stationId) {
