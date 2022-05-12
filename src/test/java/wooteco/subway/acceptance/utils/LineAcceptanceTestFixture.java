@@ -16,15 +16,6 @@ public class LineAcceptanceTestFixture {
     private LineAcceptanceTestFixture() {
     }
 
-    public static ExtractableResponse<Response> 노선_생성_요청(String lineName, String lineColor) {
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("name", lineName);
-        requestBody.put("color", lineColor);
-
-        return 노선_생성_요청(requestBody)
-                .extract();
-    }
-
     public static ValidatableResponse 노선_생성_요청(Map<String, String> requestBody) {
         return RestAssured.given().log().all()
                 .body(requestBody)
@@ -34,12 +25,24 @@ public class LineAcceptanceTestFixture {
                 .then().log().all();
     }
 
+    public static ExtractableResponse<Response> 노선_생성_요청(String lineName, String lineColor) {
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("name", lineName);
+        requestBody.put("color", lineColor);
+        requestBody.put("upStationId", String.valueOf(1L));
+        requestBody.put("downStationId", String.valueOf(2L));
+        requestBody.put("distance", "10");
+
+        return 노선_생성_요청(requestBody)
+                .extract();
+    }
+
+
     public static ExtractableResponse<Response> 노선_목록_조회_요청() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
                 .extract();
-        return response;
     }
 
 

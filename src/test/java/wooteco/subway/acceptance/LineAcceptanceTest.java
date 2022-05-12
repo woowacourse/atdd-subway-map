@@ -1,7 +1,6 @@
 package wooteco.subway.acceptance;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
@@ -15,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.DbLineDao;
 import wooteco.subway.dao.DbStationDao;
-import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.MemorySectionDao;
 import wooteco.subway.domain.Section;
 
 import java.util.HashMap;
@@ -37,11 +36,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private DbLineDao lineDao;
 
     @Autowired
-    private SectionDao sectionDao;
+    private MemorySectionDao sectionDao;
 
     @BeforeEach
     void beforeEach() {
+        stationDao.deleteAll();
         lineDao.deleteAll();
+        sectionDao.deleteAll();
     }
 
     @DisplayName("지하철 노선 이름에 빈 문자열을 사용할 수 없다")
@@ -122,12 +123,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String color = "bg-red-600";
         노선_생성_요청(name, color);
 
-        // when
         ExtractableResponse<Response> response = 노선_생성_요청(name, color);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
     @DisplayName("존재하지 않는 노선 조회시 예외를 반환한다")
     @Test
     void showNotExistLine() {
@@ -142,14 +143,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         // given
-        ValidatableResponse response1 = 노선_및_역들_생성요청_케이스_1번();
-        ValidatableResponse response2 = 노선_및_역들_생성요청_케이스_2번();
+        노선_및_역들_생성요청_케이스_1번();
+        노선_및_역들_생성요청_케이스_2번();
 
         // when
         ExtractableResponse<Response> response = 노선_목록_조회_요청();
 
-        JsonPath jsonPath = response.jsonPath();
-        List<Map<String, Object>> responseBody = jsonPath.get();
+        List<Map<String, Object>> responseBody = response.jsonPath().get();
         List<Map<String, Object>> firstStations = (List<Map<String, Object>>) responseBody.get(0).get("stations");
         List<Map<String, Object>> secondStations = (List<Map<String, Object>>) responseBody.get(1).get("stations");
 
@@ -283,6 +283,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void create_section() {
         노선_및_역들_생성요청_케이스_3번();
 
+        // 구간 등록 요청
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("upStationId", "1");
         requestBody.put("downStationId", "2");
@@ -302,7 +303,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Section secondSection = sectionDao.findById(2L).get();
 
         // 1번역 - (거리 3) - 2번역 - (거리 4) - 3번역
-        assertThat(firstSection).isEqualTo(new Section(1L,2L, 3L, 4, 1L));
+        assertThat(firstSection).isEqualTo(new Section(1L, 2L, 3L, 4, 1L));
         assertThat(secondSection).isEqualTo(new Section(2L, 1L, 2L, 3, 1L));
     }
 
@@ -331,11 +332,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .delete("/lines/1/sections?stationId=2")
                 .then().log().all();
 
-//        response.statusCode(HttpStatus.OK.value());
+        response.statusCode(HttpStatus.OK.value());
         Section deletedSection = sectionDao.findById(1L).get();
 
         // 1번역 - (거리 3) - 2번역 - (거리 4) - 3번역
         // 1번역 - (거리 7) - 3번역
-        assertThat(deletedSection).isEqualTo(new Section(1L,1L, 3L, 7, 1L));
+        assertThat(deletedSection).isEqualTo(new Section(1L, 1L, 3L, 7, 1L));
     }
 }

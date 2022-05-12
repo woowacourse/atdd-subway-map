@@ -48,4 +48,8 @@ public class MemorySectionDao implements SectionDao {
     public void deleteSection(Section upperSection) {
         sections.remove(upperSection);
     }
+
+    public void deleteAll() {
+        sections.clear();
+    }
 }
