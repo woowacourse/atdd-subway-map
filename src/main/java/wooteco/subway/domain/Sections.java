@@ -97,7 +97,7 @@ public class Sections {
     private Section findSectionByUpStationId(final Long upStationId) {
         return value
                 .stream()
-                .filter(it -> it.getUpStationId().equals(upStationId))
+                .filter(it -> it.hasSameUpStationId(upStationId))
                 .findFirst()
                 .orElseThrow(NoSuchSectionException::new);
     }
