@@ -57,7 +57,7 @@ class SectionDaoTest extends DaoTest {
         sectionDao.insert(section);
 
         // when
-        final boolean actual = sectionDao.isStationExist(upStationId);
+        final boolean actual = sectionDao.existStation(upStationId);
 
         // then
         assertThat(actual).isTrue();
@@ -71,7 +71,7 @@ class SectionDaoTest extends DaoTest {
         sectionDao.insert(section);
 
         // when
-        final boolean actual = sectionDao.isStationExist(999L);
+        final boolean actual = sectionDao.existStation(999L);
 
         // then
         assertThat(actual).isFalse();

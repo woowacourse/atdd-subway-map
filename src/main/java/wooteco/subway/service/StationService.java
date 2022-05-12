@@ -39,7 +39,7 @@ public class StationService {
     }
 
     public void delete(final Long id) {
-        if (sectionDao.isStationExist(id)) {
+        if (sectionDao.existStation(id)) {
             throw new IllegalArgumentException("역이 구간에 등록되어 있습니다.");
         }
         stationDao.deleteById(id);

@@ -8,7 +8,7 @@ public interface SectionDao {
 
     Long insert(Section section);
 
-    boolean isStationExist(long stationId);
+    boolean existStation(long stationId);
 
     Sections findAllByLineId(Long lineId);
 

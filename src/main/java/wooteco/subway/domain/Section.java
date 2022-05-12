@@ -20,7 +20,7 @@ public class Section {
         this.lineId = Objects.requireNonNull(lineId);
         this.upStationId = Objects.requireNonNull(upStationId);
         this.downStationId = Objects.requireNonNull(downStationId);
-        this.distance = distance;
+        this.distance = Objects.requireNonNull(distance);
     }
 
     public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId,

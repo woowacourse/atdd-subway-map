@@ -78,7 +78,7 @@ class StationServiceTest extends ServiceTest {
     @DisplayName("id에 해당하는 역을 삭제한다.")
     void Delete() {
         // given
-        given(sectionDao.isStationExist(any(Long.class)))
+        given(sectionDao.existStation(any(Long.class)))
                 .willReturn(false);
         given(stationDao.deleteById(any(Long.class)))
                 .willReturn(1);
@@ -92,7 +92,7 @@ class StationServiceTest extends ServiceTest {
     @DisplayName("id에 해당하는 역이 구간에 등록되어 있으면 삭제할 수 없다.")
     void Delete_RegisteredInSection_ExceptionThrown() {
         // given
-        given(sectionDao.isStationExist(any(Long.class)))
+        given(sectionDao.existStation(any(Long.class)))
                 .willReturn(true);
 
         // then
