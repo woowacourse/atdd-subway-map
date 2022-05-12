@@ -11,6 +11,8 @@ import wooteco.subway.dto.SectionRequest;
 @Service
 public class SectionService {
 
+    private static final String NOT_UPDATE_MESSAGE = "업데이트 되지 않았습니다.";
+
     private final JdbcSectionDao jdbcSectionDao;
 
     public SectionService(JdbcSectionDao jdbcSectionDao) {
@@ -38,7 +40,10 @@ public class SectionService {
     }
 
     private void update(Long lineId, Section section) {
-        jdbcSectionDao.update(lineId, section);
+        boolean isUpdated = jdbcSectionDao.update(lineId, section);
+        if (!isUpdated) {
+            throw new IllegalArgumentException(NOT_UPDATE_MESSAGE);
+        }
     }
 
     public void delete(Long lineId, Long stationId) {

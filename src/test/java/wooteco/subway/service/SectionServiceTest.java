@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionRequest;
 
-@SpringBootTest
 @Transactional
+@SpringBootTest
 public class SectionServiceTest {
 
     @Autowired
@@ -34,13 +34,13 @@ public class SectionServiceTest {
 
     @DisplayName("노선의 Id로 Section을 조회한다.")
     @Test
-    void findSectionsByLineId() {
+    void getSectionsByLineId() {
         sectionService.save(1L, new SectionRequest(1L, 2L, 3));
         sectionService.save(1L, new SectionRequest(3L, 1L, 5));
         sectionService.save(1L, new SectionRequest(2L, 4L, 7));
 
         List<Section> sections = sectionService.getSectionsByLineId(1L);
-        assertThat(sections).containsExactly(new Section(1L, 1L, 2L, 3), new Section(1L, 3L, 1L, 5), new Section(1L, 2L, 4L, 7));
+        assertThat(sections).containsExactly(new Section(1L, 1L, 2L, 3), new Section(1L, 3L, 1L, 5),
+                new Section(1L, 2L, 4L, 7));
     }
 }
-
