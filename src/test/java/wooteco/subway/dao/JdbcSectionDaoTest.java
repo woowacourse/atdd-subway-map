@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.SectionEntity;
 
 @JdbcTest
-public class JdbcSectionDaoTest {
+class JdbcSectionDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -29,10 +29,14 @@ public class JdbcSectionDaoTest {
     @DisplayName("구간을 저장한다.")
     void save() {
         //when
-        Long actual = sectionDao.save(new SectionEntity(1L, 1L, 2L, 5));
+        Long sectionId = sectionDao.save(new SectionEntity(1L, 1L, 2L, 5));
 
         //then
-        assertThat(actual).isEqualTo(1L);
+        List<SectionEntity> actual = sectionDao.findByLineId(1L);
+        List<SectionEntity> expected = List.of(new SectionEntity(sectionId, 1L, 1L, 2L, 5));
+
+        //then
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

@@ -16,17 +16,15 @@ import wooteco.subway.service.dto.SectionDto;
 
 public class SectionServiceTest {
 
-    private SectionDao sectionDao;
-    private SectionService sectionService;
-
     private final Long line2Id = 1L;
-
     private final Long 선릉역Id = 1L;
     private final Long 강남역Id = 2L;
     private final Long 서초역Id = 3L;
     private final Station 선릉역 = new Station(선릉역Id, "선릉");
     private final Station 강남역 = new Station(강남역Id, "강남");
     private final Station 서초역 = new Station(서초역Id, "서초");
+    private SectionDao sectionDao;
+    private SectionService sectionService;
 
     @BeforeEach
     void setUp() {
@@ -44,13 +42,13 @@ public class SectionServiceTest {
     @DisplayName("구간을 추가한다.")
     void createSection() {
         //given
-        sectionService.createSection(new SectionDto(line2Id, 1L, 2L, 10));
+        sectionService.createSection(new SectionDto(line2Id, 선릉역Id, 강남역Id, 10));
 
         //when
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(line2Id);
 
         //then
-        assertThat(sectionEntities).contains(new SectionEntity(1L, line2Id, 1L, 2L, 10));
+        assertThat(sectionEntities).contains(new SectionEntity(1L, line2Id, 선릉역Id, 강남역Id, 10));
     }
 
     @Test
@@ -73,8 +71,8 @@ public class SectionServiceTest {
     @DisplayName("특정 노선에 해당하는 역 목록을 조회한다.")
     void findStationsByLineId() {
         //given
-        sectionService.createSection(new SectionDto(line2Id, 1L, 1L, 2L, 5));
-        sectionService.createSection(new SectionDto(line2Id, 2L, 2L, 3L, 5));
+        sectionService.createSection(new SectionDto(line2Id, 선릉역Id, 강남역Id, 5));
+        sectionService.createSection(new SectionDto(line2Id, 강남역Id, 서초역Id, 5));
 
         //when
         List<Station> actual = sectionService.findStationsByLineId(line2Id);
@@ -88,8 +86,8 @@ public class SectionServiceTest {
     @DisplayName("특정 노선에 있는 역을 삭제한다.")
     void deleteStation() {
         //given
-        sectionService.createSection(new SectionDto(line2Id, 1L, 선릉역Id, 강남역Id, 5));
-        sectionService.createSection(new SectionDto(line2Id, 2L, 강남역Id, 서초역Id, 5));
+        sectionService.createSection(new SectionDto(line2Id, 선릉역Id, 강남역Id, 5));
+        sectionService.createSection(new SectionDto(line2Id, 강남역Id, 서초역Id, 5));
 
         //when
         sectionService.deleteStation(line2Id, 선릉역Id);

@@ -5,45 +5,45 @@ import java.util.List;
 import java.util.Optional;
 
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.LineEntity;
+import wooteco.subway.domain.Line;
 
 class FakeLineDao implements LineDao {
 
-    private final List<LineEntity> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
     private Long seq = 0L;
 
     @Override
-    public LineEntity save(LineEntity line) {
-        LineEntity persistStation = createNewObject(line);
+    public Line save(Line line) {
+        Line persistStation = createNewObject(line);
         lines.add(persistStation);
         return persistStation;
     }
 
-    private LineEntity createNewObject(LineEntity line) {
-        return new LineEntity(++seq, line.getName(), line.getColor());
+    private Line createNewObject(Line line) {
+        return new Line(++seq, line.getName(), line.getColor());
     }
 
     @Override
-    public Optional<LineEntity> findById(Long id) {
+    public Optional<Line> findById(Long id) {
         return lines.stream().filter(line -> line.getId().equals(id)).findFirst();
     }
 
     @Override
-    public Optional<LineEntity> findByName(String name) {
+    public Optional<Line> findByName(String name) {
         return lines.stream()
             .filter(line -> name.equals(line.getName()))
             .findFirst();
     }
 
     @Override
-    public List<LineEntity> findAll() {
+    public List<Line> findAll() {
         return List.copyOf(lines);
     }
 
     @Override
-    public void update(LineEntity otherLine) {
+    public void update(Line otherLine) {
         int idx = 0;
-        for (LineEntity line : lines) {
+        for (Line line : lines) {
             if (line.hasSameId(otherLine)) {
                 lines.set(idx, otherLine);
                 return;

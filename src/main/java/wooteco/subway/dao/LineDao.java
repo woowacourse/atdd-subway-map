@@ -3,19 +3,19 @@ package wooteco.subway.dao;
 import java.util.List;
 import java.util.Optional;
 
-import wooteco.subway.domain.LineEntity;
+import wooteco.subway.domain.Line;
 
 public interface LineDao {
 
-    LineEntity save(LineEntity line);
+    Line save(Line line);
 
-    Optional<LineEntity> findById(Long id);
+    Optional<Line> findById(Long id);
 
-    Optional<LineEntity> findByName(String name);
+    Optional<Line> findByName(String name);
 
-    List<LineEntity> findAll();
+    List<Line> findAll();
 
-    void update(LineEntity line);
+    void update(Line line);
 
     int deleteById(Long id);
 }

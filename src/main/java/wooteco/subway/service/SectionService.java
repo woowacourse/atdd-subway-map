@@ -65,17 +65,7 @@ public class SectionService {
         Map<Long, SectionEntity> sections = sectionEntities.stream()
             .collect(Collectors.toMap(SectionEntity::getUpStationId, sectionEntity -> sectionEntity, (a, b) -> b));
 
-        List<SectionEntity> sortedSectionEntities = new ArrayList<>();
-
-        Long key = upDestinationId;
-        sortedSectionEntities.add(sections.get(key));
-
-        for (int i = 0; i < sections.size() - 1; i++) {
-            key = sections.get(key).getDownStationId();
-            sortedSectionEntities.add(sections.get(key));
-        }
-
-        return sortedSectionEntities;
+        return getSortedValuesBy(upDestinationId, (key) -> sections.get(key).getDownStationId(), sections);
     }
 
     private void updateModifiedSections(Long lineId, List<Section> modifiedSections) {
@@ -92,6 +82,10 @@ public class SectionService {
 
     public List<Station> findStationsByLineId(Long lineId) {
         List<SectionEntity> sections = sectionDao.findByLineId(lineId);
+        return sortStations(sections);
+    }
+
+    private List<Station> sortStations(List<SectionEntity> sections) {
         Long upDestinationId = findUpDestinationId(sections);
         Map<Long, Long> stationIds = sections.stream()
             .collect(Collectors.toMap(
@@ -100,16 +94,24 @@ public class SectionService {
                 (a, b) -> b)
             );
 
-        List<Station> sectionEntities = new ArrayList<>();
-        sectionEntities.add(stationService.findById(upDestinationId));
+        List<Station> result = getSortedValuesBy(upDestinationId, stationIds::get, stationIds).stream()
+            .map(stationService::findById)
+            .collect(Collectors.toList());
 
-        Long key = upDestinationId;
-        for (int i = 0; i < stationIds.size(); i++) {
-            key = stationIds.get(key);
-            sectionEntities.add(stationService.findById(key));
+        result.add(0, stationService.findById(upDestinationId));
+        return result;
+    }
+
+    private <T> List<T> getSortedValuesBy(Long firstKey, Function<Long, Long> newKeyMapper, Map<Long, T> values) {
+        List<T> result = new ArrayList<>();
+        Long key = firstKey;
+
+        while (values.containsKey(key)) {
+            result.add(values.get(key));
+            key = newKeyMapper.apply(key);
         }
 
-        return sectionEntities;
+        return result;
     }
 
     private Long findUpDestinationId(List<SectionEntity> sections) {
@@ -134,16 +136,14 @@ public class SectionService {
         List<Section> originalSections = convertSectionEntitiesToSections(sortSectionEntities(sectionEntities));
         Sections sections = new Sections(originalSections);
         sections.delete(getStationById(stationId));
-        List<Section> modifiedSections = new ArrayList<>(sections.getValues());
 
         List<Long> originalSectionIds = collectValuesBy(Section::getId, originalSections);
-        List<Long> modifiedSectionIds = collectValuesBy(Section::getId, modifiedSections);
+        List<Long> modifiedSectionIds = collectValuesBy(Section::getId, sections.getValues());
 
         originalSectionIds.removeAll(modifiedSectionIds);
         Long removedId = originalSectionIds.get(0);
         sectionDao.deleteById(removedId);
 
-        modifiedSections.removeAll(originalSections);
-        updateModifiedSections(lineId, modifiedSections);
+        updateModifiedSections(lineId, sections.getDifference(originalSections));
     }
 }

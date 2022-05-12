@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import wooteco.subway.domain.LineEntity;
+import wooteco.subway.domain.Line;
 
 @JdbcTest
 class JdbcLineDaoTest {
@@ -29,16 +29,16 @@ class JdbcLineDaoTest {
     @DisplayName("Line 을 저장한다.")
     void save() {
         //given
-        LineEntity line = new LineEntity("7호선", "khaki");
+        Line line = new Line("7호선", "khaki");
 
         //when
-        LineEntity actual = lineDao.save(line);
+        Line actual = lineDao.save(line);
 
         //then
         checkHasSameNameAndColor(actual, line);
     }
 
-    private void checkHasSameNameAndColor(LineEntity actual, LineEntity expected) {
+    private void checkHasSameNameAndColor(Line actual, Line expected) {
         assertThat(actual).usingRecursiveComparison()
             .ignoringFields("id")
             .isEqualTo(expected);
@@ -48,13 +48,13 @@ class JdbcLineDaoTest {
     @DisplayName("전체 Line 목록을 조회한다.")
     void findAll() {
         //given
-        LineEntity line1 = new LineEntity("7호선", "khaki");
-        LineEntity line2 = new LineEntity("2호선", "green");
+        Line line1 = new Line("7호선", "khaki");
+        Line line2 = new Line("2호선", "green");
         lineDao.save(line1);
         lineDao.save(line2);
 
         //when
-        List<LineEntity> actual = lineDao.findAll();
+        List<Line> actual = lineDao.findAll();
 
         //then
         checkHasSameNameAndColor(actual.get(0), line1);
@@ -65,11 +65,11 @@ class JdbcLineDaoTest {
     @DisplayName("단일 Line 을 id 로 조회한다.")
     void findById() {
         //given
-        LineEntity line = new LineEntity("7호선", "khaki");
-        LineEntity savedLine = lineDao.save(line);
+        Line line = new Line("7호선", "khaki");
+        Line savedLine = lineDao.save(line);
 
         //when
-        LineEntity actual = lineDao.findById(savedLine.getId()).get();
+        Line actual = lineDao.findById(savedLine.getId()).get();
 
         //then
         checkHasSameNameAndColor(actual, line);
@@ -81,10 +81,10 @@ class JdbcLineDaoTest {
         //given
         String name = "2호선";
         String color = "khaki";
-        LineEntity savedLine = lineDao.save(new LineEntity(name, color));
+        Line savedLine = lineDao.save(new Line(name, color));
 
         //when
-        LineEntity actual = lineDao.findByName(name).get();
+        Line actual = lineDao.findByName(name).get();
 
         //then
         checkHasSameNameAndColor(actual, savedLine);
@@ -94,15 +94,15 @@ class JdbcLineDaoTest {
     @DisplayName("Line 의 이름과 색깔을 변경한다.")
     void update() {
         //given
-        LineEntity line = new LineEntity("7호선", "blue");
-        LineEntity savedLine = lineDao.save(line);
+        Line line = new Line("7호선", "blue");
+        Line savedLine = lineDao.save(line);
 
         //when
-        LineEntity updatedLine = new LineEntity(savedLine.getId(), "2호선", "khaki");
+        Line updatedLine = new Line(savedLine.getId(), "2호선", "khaki");
         lineDao.update(updatedLine);
 
         //then
-        LineEntity actual = lineDao.findById(savedLine.getId()).get();
+        Line actual = lineDao.findById(savedLine.getId()).get();
         checkHasSameNameAndColor(actual, updatedLine);
     }
 
@@ -110,8 +110,8 @@ class JdbcLineDaoTest {
     @DisplayName("Line 을 삭제한다.")
     void deleteById() {
         //given
-        LineEntity line = new LineEntity("7호선", "khaki");
-        LineEntity savedLine = lineDao.save(line);
+        Line line = new Line("7호선", "khaki");
+        Line savedLine = lineDao.save(line);
 
         //when
         lineDao.deleteById(savedLine.getId());

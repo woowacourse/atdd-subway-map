@@ -13,7 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import wooteco.subway.domain.LineEntity;
+import wooteco.subway.domain.Line;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -25,7 +25,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public LineEntity save(LineEntity line) {
+    public Line save(Line line) {
         String sql = "insert into line (name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -36,15 +36,15 @@ public class JdbcLineDao implements LineDao {
         }, keyHolder);
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new LineEntity(id, line.getName(), line.getColor());
+        return new Line(id, line.getName(), line.getColor());
     }
 
     @Override
-    public Optional<LineEntity> findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "select * from line where id = ?";
 
         try {
-            LineEntity line = jdbcTemplate.queryForObject(sql,
+            Line line = jdbcTemplate.queryForObject(sql,
                 (rs, rowNum) -> createLine(rs), id);
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
@@ -52,8 +52,8 @@ public class JdbcLineDao implements LineDao {
         }
     }
 
-    private LineEntity createLine(ResultSet rs) throws SQLException {
-        return new LineEntity(
+    private Line createLine(ResultSet rs) throws SQLException {
+        return new Line(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("color")
@@ -61,11 +61,11 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<LineEntity> findByName(String name) {
+    public Optional<Line> findByName(String name) {
         String sql = "select * from line where name = ?";
 
         try {
-            LineEntity line = jdbcTemplate.queryForObject(sql,
+            Line line = jdbcTemplate.queryForObject(sql,
                 (rs, rowNum) -> createLine(rs), name);
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
@@ -74,13 +74,13 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public List<LineEntity> findAll() {
+    public List<Line> findAll() {
         String sql = "select * from line";
         return jdbcTemplate.query(sql, (rs, rowNum) -> createLine(rs));
     }
 
     @Override
-    public void update(LineEntity line) {
+    public void update(Line line) {
         String sql = "update line set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
     }
