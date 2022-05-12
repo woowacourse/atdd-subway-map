@@ -95,8 +95,8 @@ public class LineService {
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
         List<Section> removedSections = sections.deleteStation(station);
         if (removedSections.size() == 2) {
-            Section upSection = sections.findContainsDownStation(station);
-            Section downSection = sections.findContainsUpStation(station);
+            Section upSection = sections.findSectionByDownStation(station);
+            Section downSection = sections.findSectionByUpStation(station);
             sectionDao.save(new Section(
                 findLine(lineId),
                 upSection.getUpStation(),

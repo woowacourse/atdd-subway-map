@@ -24,12 +24,12 @@ public class Sections {
         }
 
         if (existUpStation(section.getUpStation())) {
-            Section findSection = findContainsUpStation(section.getUpStation());
+            Section findSection = findSectionByUpStation(section.getUpStation());
             return findSection.splitFromUpStation(section);
         }
 
         if (existDownStation(section.getDownStation())) {
-            Section findSection = findContainsDownStation(section.getDownStation());
+            Section findSection = findSectionByDownStation(section.getDownStation());
             return findSection.splitFromDownStation(section);
         }
 
@@ -38,20 +38,20 @@ public class Sections {
 
     public List<Section> deleteStation(Station station) {
         return values.stream()
-            .filter(value -> value.getUpStation().equals(station) || value.getDownStation().equals(station))
+            .filter(value -> value.isEqualToUpStation(station) || value.isEqualToDownStation(station))
             .collect(Collectors.toList());
     }
 
-    public Section findContainsUpStation(Station station) {
+    public Section findSectionByUpStation(Station station) {
         return values.stream()
-            .filter(value -> value.getUpStation().equals(station))
+            .filter(value -> value.isEqualToUpStation(station))
             .findFirst()
             .orElseThrow();
     }
 
-    public Section findContainsDownStation(Station station) {
+    public Section findSectionByDownStation(Station station) {
         return values.stream()
-            .filter(value -> value.getDownStation().equals(station))
+            .filter(value -> value.isEqualToDownStation(station))
             .findFirst()
             .orElseThrow();
     }
@@ -61,7 +61,7 @@ public class Sections {
         Station firstStation = findFirstStation(sections);
         while (values.size() != sections.size()) {
             for (Section section : sections) {
-                if (section.getUpStation().equals(firstStation)) {
+                if (section.isEqualToUpStation(firstStation)) {
                     values.add(section);
                     firstStation = section.getDownStation();
                 }
@@ -105,13 +105,8 @@ public class Sections {
 
     private List<Section> findSection(Section section) {
         return values.stream()
-            .filter(value -> value.hasStation(section.getUpStation()) || value.hasStation(section.getDownStation()))
+            .filter(value -> value.containsSection(section))
             .collect(Collectors.toList());
-    }
-
-    private boolean hasNotAnyStation(Section section) {
-        return values.stream()
-            .noneMatch(value -> value.hasStation(section.getUpStation()) || value.hasStation(section.getDownStation()));
     }
 
     private boolean containsSection(Section section) {
@@ -119,6 +114,10 @@ public class Sections {
             .anyMatch(value -> value.equals(section));
     }
 
+    private boolean hasNotAnyStation(Section section) {
+        return values.stream()
+            .noneMatch(value -> value.containsSection(section));
+    }
 
     public List<Station> getStations() {
         Set<Station> stations = new LinkedHashSet<>();

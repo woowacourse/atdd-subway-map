@@ -40,6 +40,11 @@ public class Section {
         return List.of(start, end);
     }
 
+    public boolean containsSection(Section section) {
+        return upStation.equals(section.upStation) || upStation.equals(section.downStation)
+            || downStation.equals(section.upStation) || downStation.equals(section.downStation);
+    }
+
     private void validate(int distance) {
         if (distance < MIN_DISTANCE) {
             throw new IllegalArgumentException("거리는 1이상이어야 합니다.");
@@ -96,10 +101,6 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(upStation, downStation);
-    }
-
-    public boolean hasStation(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
     }
 
 }
