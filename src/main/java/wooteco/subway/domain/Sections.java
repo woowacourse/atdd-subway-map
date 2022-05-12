@@ -66,7 +66,7 @@ public class Sections {
 
     private void validateDeletion(List<Section> sectionsToDelete) {
         if (sectionsToDelete.isEmpty()) {
-            throw new EmptyResultDataAccessException(1);
+            throw new EmptyResultDataAccessException(0);
         }
     }
 

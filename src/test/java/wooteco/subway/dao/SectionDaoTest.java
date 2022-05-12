@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,11 +88,12 @@ class SectionDaoTest {
         assertThat(sameUpStation.getUpStationId()).isEqualTo(upStation.getId());
     }
 
-    @DisplayName("같은 상행 또는 하행 종점을 가진 구간을 찾아내지 못할 경우 예외가 발생한다.")
+    @DisplayName("같은 상행 또는 하행 종점을 가진 구간을 찾아내지 못할 경우 빈값을 반환한다.")
     @Test
     void findByNotExistingSection() {
-        assertThatThrownBy(() -> sectionDao.findBy(1L, 9L, 10L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        Optional<Section> section = sectionDao.findBy(1L, 9L, 10L);
+
+        assertThat(section).isEmpty();
     }
 
     @Test

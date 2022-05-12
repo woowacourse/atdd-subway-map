@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
@@ -230,6 +231,6 @@ class SectionServiceTest {
         sectionService.save(lineResponse.getId(), sectionRequest);
 
         assertThatThrownBy(() -> sectionService.delete(lineResponse.getId(), station4.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 }
