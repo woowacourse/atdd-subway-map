@@ -145,13 +145,12 @@ public class Section {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Section{");
-        sb.append("id=").append(id);
-        sb.append(", lineId=").append(lineId);
-        sb.append(", upStationId=").append(upStationId);
-        sb.append(", downStationId=").append(downStationId);
-        sb.append(", distance=").append(distance);
-        sb.append('}');
-        return sb.toString();
+        return "Section{" +
+                "lineId=" + lineId +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                ", id=" + id +
+                '}';
     }
 }

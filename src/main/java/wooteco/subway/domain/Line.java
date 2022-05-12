@@ -58,11 +58,10 @@ public class Line {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Line{");
-        sb.append("id=").append(id);
-        sb.append(", name=").append(name);
-        sb.append(", color='").append(color).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "Line{" +
+                "id=" + id +
+                ", name=" + name +
+                ", color='" + color + '\'' +
+                '}';
     }
 }

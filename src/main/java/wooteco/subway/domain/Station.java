@@ -46,11 +46,10 @@ public class Station {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Station{");
-        sb.append("name=").append(name);
-        sb.append(", id=").append(id);
-        sb.append('}');
-        return sb.toString();
+        return "Station{" +
+                "id=" + id +
+                ", name=" + name +
+                '}';
     }
 }
 

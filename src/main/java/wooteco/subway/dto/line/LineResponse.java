@@ -70,15 +70,4 @@ public class LineResponse {
     public int hashCode() {
         return Objects.hash(id, name, color, stations);
     }
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("LineResponse{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", color='").append(color).append('\'');
-        sb.append(", stations=").append(stations);
-        sb.append('}');
-        return sb.toString();
-    }
 }
