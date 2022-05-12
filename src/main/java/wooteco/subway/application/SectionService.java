@@ -22,6 +22,10 @@ public class SectionService {
     }
 
     public Long createSection(Long lineId, Long upStationId, Long downStationId, Integer distance) {
+//        upStationId
+//                downStationId
+//        distance
+
         List<Section> sections = sectionDao.findByLineId(lineId);
         Section sectionWithSameUpStation = getSectionWithSameUpStation(sections, upStationId);
         Section sectionWithSameDownStation = getSectionWithSameDownStation(sections, downStationId);
@@ -44,6 +48,30 @@ public class SectionService {
         validateUpAndDownStationNotAllExist(sections, sectionWithSameUpStation, sectionWithSameDownStation);
 
         return saveSection(lineId, upStationId, downStationId, distance);
+    }
+
+    public long createSection2(Section section) {
+        List<Section> sections = sectionDao.findByLineId(section.getLineId());
+        Section sectionWithSameUpStation = getSectionWithSameUpStation(sections, section.getUpStationId());
+        Section sectionWithSameDownStation = getSectionWithSameDownStation(sections, section.getDownStationId());
+        Map<TerminalStation, Long> terminalStations = findTerminalStations(section.getLineId());
+
+        if (conditionForTerminalRegistration2(section, terminalStations)) {
+            return sectionDao.save(section);
+        }
+
+        if (conditionForInsertStationInMiddle(section.getDistance(), sectionWithSameUpStation)) {
+            return insertDownStationInMiddle2(section, sectionWithSameUpStation);
+        }
+
+        if (conditionForInsertStationInMiddle(section.getDistance(), sectionWithSameDownStation)) {
+            return insertUpStationInMiddle2(section, sectionWithSameDownStation);
+        }
+
+        validateUpAndDownStationAllExist(sectionWithSameUpStation, sectionWithSameDownStation);
+        validateUpAndDownStationNotAllExist(sections, sectionWithSameUpStation, sectionWithSameDownStation);
+
+        return sectionDao.save(section);
     }
 
     public LinkedList<Long> findSortedStationIds(long lineId) {
@@ -71,6 +99,11 @@ public class SectionService {
     private boolean conditionForTerminalRegistration(Long upStationId, Long downStationId, Map<TerminalStation, Long> terminalStations) {
         return terminalStations.get(TerminalStation.UP).equals(downStationId)
                 || terminalStations.get(TerminalStation.DOWN).equals(upStationId);
+    }
+
+    private boolean conditionForTerminalRegistration2(Section section, Map<TerminalStation, Long> terminalStations) {
+        return terminalStations.get(TerminalStation.UP).equals(section.getDownStationId())
+                || terminalStations.get(TerminalStation.DOWN).equals(section.getUpStationId());
     }
 
     private void validateUpAndDownStationAllExist(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
@@ -105,6 +138,16 @@ public class SectionService {
         return createdSectionId;
     }
 
+    private long insertDownStationInMiddle2(Section section, Section existingSection) {
+        long createdSectionId = sectionDao.save(section);
+
+        existingSection.setUpStationId(section.getDownStationId());
+        existingSection.setDistance(existingSection.getDistance() - section.getDistance());
+        sectionDao.update(existingSection);
+
+        return createdSectionId;
+    }
+
     private Long insertUpStationInMiddle(Long lineId, Long upStationId, Long downStationId, Integer distance, Section existingSection) {
         long createdSectionId = saveSection(lineId, upStationId, downStationId, distance);
 
@@ -114,6 +157,17 @@ public class SectionService {
 
         return createdSectionId;
     }
+
+    private Long insertUpStationInMiddle2(Section section, Section existingSection) {
+        long createdSectionId = sectionDao.save(section);
+
+        existingSection.setDownStationId(section.getUpStationId());
+        existingSection.setDistance(existingSection.getDistance() - section.getDistance());
+        sectionDao.update(existingSection);
+
+        return createdSectionId;
+    }
+
 
     private Section getSectionWithCondition(List<Section> sections, Predicate<Section> condition) {
         return sections.stream()
@@ -132,6 +186,10 @@ public class SectionService {
 
     private long saveSection(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         return sectionDao.save(new Section(upStationId, downStationId, distance, lineId));
+    }
+
+    private long saveSection2(Section section) {
+        return sectionDao.save(section);
     }
 
     private Long getAnyPivot(List<Section> foundSections) {

@@ -64,7 +64,7 @@ class SectionServiceTest {
         void create_first_terminal_station() {
             // given
             long savedSectionId = firstCreateSection(1L, 1L, 2L, 3);
-            long savedSectionId2 = sectionService.createSection(1L, 3L, 1L, 4);
+            long savedSectionId2 = sectionService.createSection2(new Section(3L, 1L, 4, 1L));
 
             // when
             Section foundSection = sectionDao.findById(savedSectionId).get();
@@ -82,7 +82,7 @@ class SectionServiceTest {
         void create_last_terminal_station() {
             // given
             long savedSectionId = firstCreateSection(1L, 1L, 2L, 3);
-            long savedSectionId2 = sectionService.createSection(1L, 2L, 3L, 4);
+            long savedSectionId2 = sectionService.createSection2(new Section(2L, 3L, 4, 1L));
 
             // when
             Section foundSection = sectionDao.findById(savedSectionId).get();
@@ -103,7 +103,7 @@ class SectionServiceTest {
             void prevent_forked_road_same_up_station() {
                 // given
                 long oldSectionId = firstCreateSection(1L, 1L, 2L, 7);
-                long newSectionId = sectionService.createSection(1L, 1L, 3L, 4);
+                long newSectionId = sectionService.createSection2(new Section(1L, 3L, 4, 1L));
 
                 Section oldSection = sectionDao.findById(oldSectionId).get();
                 Section newSection = sectionDao.findById(newSectionId).get();
@@ -122,7 +122,7 @@ class SectionServiceTest {
             void prevent_forked_road_same_down_station() {
                 // given
                 long oldSectionId = firstCreateSection(1L, 1L, 2L, 7);
-                long newSectionId = sectionService.createSection(1L, 3L, 2L, 4);
+                long newSectionId = sectionService.createSection2(new Section(3L, 2L, 4, 1L));
 
                 Section oldSection = sectionDao.findById(oldSectionId).get();
                 Section newSection = sectionDao.findById(newSectionId).get();
@@ -143,7 +143,7 @@ class SectionServiceTest {
             @CsvSource(value = {"1 - 3", "3 - 2"}, delimiterString = " - ")
             void can_not_register_if_new_distance_is_longer(long upStationId, long downStationId) {
                 firstCreateSection(1L, 1L, 2L, 7);
-                assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
+                assertThatThrownBy(() -> sectionService.createSection2(new Section(upStationId, downStationId, 11, 1L)))
                         .isInstanceOf(SectionNotRegisterException.class);
             }
 
@@ -153,7 +153,7 @@ class SectionServiceTest {
                 long upStationId = 1L;
                 long downStationId = 2L;
                 firstCreateSection(1L, upStationId, downStationId, 7);
-                assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
+                assertThatThrownBy(() -> sectionService.createSection2(new Section(upStationId, downStationId, 11, 1L)))
                         .isInstanceOf(SectionNotRegisterException.class);
             }
 
@@ -164,7 +164,7 @@ class SectionServiceTest {
                 long downStationId = 3L;
                 firstCreateSection(1L, upStationId, 2L, 7);
                 sectionService.createSection(1L, 2L, downStationId, 7);
-                assertThatThrownBy(() -> sectionService.createSection(1L, upStationId, downStationId, 11))
+                assertThatThrownBy(() -> sectionService.createSection2(new Section(upStationId, downStationId, 11, 1L)))
                         .isInstanceOf(SectionNotRegisterException.class);
             }
 
@@ -172,7 +172,7 @@ class SectionServiceTest {
             @Test
             void can_not_register_if_up_and_down_all_exist() {
                 firstCreateSection(1L, 1L, 2L, 7);
-                assertThatThrownBy(() -> sectionService.createSection(1L, 5L, 6L, 11))
+                assertThatThrownBy(() -> sectionService.createSection2(new Section(5L, 6L, 11, 1L)))
                         .isInstanceOf(SectionNotRegisterException.class);
             }
         }
