@@ -7,7 +7,7 @@ import wooteco.subway.exception.IllegalSectionException;
 
 public class Sections {
 
-    private List<Section> sections;
+    private final List<Section> sections;
 
     public Sections(List<Section> sections) {
         this.sections = sections;
