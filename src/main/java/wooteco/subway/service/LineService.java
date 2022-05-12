@@ -113,5 +113,6 @@ public class LineService {
     @Transactional
     public void deleteLine(Long id) {
         lineDao.delete(id);
+        sectionDao.deleteByLineId(id);
     }
 }
