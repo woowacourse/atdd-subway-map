@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import java.util.List;
 import javax.sql.DataSource;
@@ -115,8 +114,7 @@ class LineDaoTest {
         // given & when
         final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR, section));
         // then
-        assertThatNoException()
-                .isThrownBy(() -> dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR)));
+        assertThat(dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR))).isEqualTo(1);
     }
 
     @Test
@@ -137,8 +135,7 @@ class LineDaoTest {
         // given & when
         Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR, section));
         // then
-        assertThatNoException()
-                .isThrownBy(() -> dao.delete(saved.getId()));
+        assertThat(dao.delete(saved.getId())).isEqualTo(1);
     }
 
     @Test

@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
@@ -83,7 +82,7 @@ class StationDaoTest {
         // when
         final Long id = saved.getId();
         // then
-        assertThatNoException().isThrownBy(() -> dao.deleteById(id));
+        assertThat(dao.deleteById(id)).isEqualTo(1);
     }
 
     @Test

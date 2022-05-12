@@ -64,10 +64,11 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         final String sql = "DELETE FROM station WHERE id = ?";
         final int deletedCount = jdbcTemplate.update(sql, id);
         validateRemoved(deletedCount);
+        return deletedCount;
     }
 
     private void validateRemoved(int deletedCount) {

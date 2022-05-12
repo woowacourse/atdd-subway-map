@@ -100,10 +100,11 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public void update(Line line) {
+    public int update(Line line) {
         final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         final int updatedCount = jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
         validateUpdated(updatedCount);
+        return updatedCount;
     }
 
     private void validateUpdated(int updatedCount) {
@@ -113,10 +114,11 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public void delete(Long id) {
+    public int delete(Long id) {
         final String sql = "DELETE FROM line WHERE id = ?";
         final int deletedCount = jdbcTemplate.update(sql, id);
         validateDeleted(deletedCount);
+        return deletedCount;
     }
 
     private void validateDeleted(int deletedCount) {
