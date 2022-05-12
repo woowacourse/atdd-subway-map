@@ -14,7 +14,6 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
     }
 
     public Long getId() {

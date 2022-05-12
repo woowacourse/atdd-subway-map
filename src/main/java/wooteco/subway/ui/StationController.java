@@ -27,6 +27,12 @@ public class StationController {
                 .body(new StationResponse(newStation.getId(), newStation.getName()));
     }
 
+    private void checkDuplication(String name) {
+        if (stationDao.counts(name) > 0) {
+            throw new NameDuplicationException();
+        }
+    }
+
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<StationResponse> showStations() {
         final List<Station> stations = stationService.findAll();
