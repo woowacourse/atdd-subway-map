@@ -10,7 +10,8 @@ public class Section {
     private Station downStation;
     private Integer distance;
 
-    public Section() {}
+    public Section() {
+    }
 
     public Section(Long id, Long lineId, Station upStation, Station downStation,
         Integer distance) {

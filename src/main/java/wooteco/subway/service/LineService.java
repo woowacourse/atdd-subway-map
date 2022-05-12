@@ -36,7 +36,8 @@ public class LineService {
         Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
-        Section section = new Section(line.getId(), upStation, downStation, lineRequest.getDistance());
+        Section section = new Section(line.getId(), upStation, downStation,
+            lineRequest.getDistance());
         line.addSection(sectionDao.save(section));
         return toLineBasicResponse(line);
     }

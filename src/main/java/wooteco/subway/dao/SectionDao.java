@@ -31,7 +31,8 @@ public class SectionDao {
         paramSource.addValue("distance", section.getDistance());
 
         jdbcTemplate.update(sql, paramSource, keyHolder);
-        return new Section(keyHolder.getKey().longValue(), section.getLineId(), section.getUpStation(), section.getDownStation(),
+        return new Section(keyHolder.getKey().longValue(), section.getLineId(),
+            section.getUpStation(), section.getDownStation(),
             section.getDistance());
     }
 

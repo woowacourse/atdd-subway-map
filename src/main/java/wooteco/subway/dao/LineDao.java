@@ -48,7 +48,7 @@ public class LineDao {
             + "         LEFT OUTER JOIN station ds ON section.down_station_id = ds.id";
 
         Map<Long, List<Map<String, Object>>> resultLineById = jdbcTemplate.queryForList(sql,
-            new EmptySqlParameterSource()).stream()
+                new EmptySqlParameterSource()).stream()
             .collect(Collectors.groupingBy(item -> (Long) item.get("line_id")));
 
         return resultLineById.values().stream()
@@ -131,7 +131,7 @@ public class LineDao {
 
     public void update(Line line) {
         final String sql = "UPDATE line SET name = :name, color = :color "
-                + "WHERE id = :id";
+            + "WHERE id = :id";
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(line);
 
         jdbcTemplate.update(sql, paramSource);

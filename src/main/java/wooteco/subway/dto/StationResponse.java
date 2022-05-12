@@ -3,6 +3,7 @@ package wooteco.subway.dto;
 import java.util.Objects;
 
 public class StationResponse {
+
     private Long id;
     private String name;
 

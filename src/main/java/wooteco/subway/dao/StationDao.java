@@ -29,7 +29,8 @@ public class StationDao {
     public List<Station> findAll() {
         final String sql = "SELECT * FROM station";
 
-        List<Station> stations = jdbcTemplate.query(sql, new EmptySqlParameterSource(), stationRowMapper);
+        List<Station> stations = jdbcTemplate.query(sql, new EmptySqlParameterSource(),
+            stationRowMapper);
         return Collections.unmodifiableList(stations);
     }
 
