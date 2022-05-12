@@ -16,6 +16,8 @@ import wooteco.subway.dto.SectionRequest;
 @Transactional(readOnly = true)
 public class SectionService {
 
+    private static final int END_SECTION = 1;
+
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -50,7 +52,6 @@ public class SectionService {
             sectionDao.deleteById(section.getId());
             return;
         }
-
         deleteBetweenStation(deleteSections);
     }
 
@@ -62,11 +63,9 @@ public class SectionService {
         sectionDao.deleteById(nextSection.getId());
         Section mergeSection = section.merge(nextSection);
         sectionDao.save(mergeSection);
-
-        System.out.println("mergeSection.getUpStationId() = " + mergeSection.getUpStationId());
     }
 
     private boolean isEndSection(List<Section> deleteSections) {
-        return deleteSections.size() == 1;
+        return deleteSections.size() == END_SECTION;
     }
 }
