@@ -23,13 +23,6 @@ public class StationService {
         return stationDao.save(station);
     }
 
-    private void validateDuplicateName(Station station) {
-        Optional<Station> optionalStation = stationDao.findByName(station.getName());
-        optionalStation.ifPresent(existed -> {
-            throw new DuplicateStationNameException();
-        });
-    }
-
     public List<Station> findAll() {
         return stationDao.findAll();
     }
@@ -41,6 +34,13 @@ public class StationService {
 
     public void deleteById(Long id) {
         stationDao.deleteById(id);
+    }
+
+    private void validateDuplicateName(Station station) {
+        Optional<Station> optionalStation = stationDao.findByName(station.getName());
+        optionalStation.ifPresent(existed -> {
+            throw new DuplicateStationNameException();
+        });
     }
 }
 

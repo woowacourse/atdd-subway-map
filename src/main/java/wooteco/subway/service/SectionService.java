@@ -25,13 +25,6 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
-    private void validateSection(Section section) {
-        List<Section> sections = sectionDao.findByLineId(section.getLineId());
-        if (section.isExistedIn(sections)) {
-            throw new IllegalArgumentException("기존에 존재하는 노선 구간은 등록할 수 없습니다.");
-        }
-    }
-
     public List<Long> getStationIds(Long lineId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
@@ -70,6 +63,13 @@ public class SectionService {
         if (sectionsToDelete.isIntermediateStation()) {
             Section section = sectionsToDelete.mergeSections();
             sectionDao.save(section);
+        }
+    }
+
+    private void validateSection(Section section) {
+        List<Section> sections = sectionDao.findByLineId(section.getLineId());
+        if (section.isExistedIn(sections)) {
+            throw new IllegalArgumentException("기존에 존재하는 노선 구간은 등록할 수 없습니다.");
         }
     }
 }
