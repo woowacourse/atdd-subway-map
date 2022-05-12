@@ -12,7 +12,7 @@ public class Section {
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
-    private final int distance;
+    private final Distance distance;
     private Long id;
 
     public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
@@ -21,7 +21,7 @@ public class Section {
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
@@ -29,7 +29,7 @@ public class Section {
         this.lineId = Objects.requireNonNull(lineId);
         this.upStationId = Objects.requireNonNull(upStationId);
         this.downStationId = Objects.requireNonNull(downStationId);
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     private void validate(final Long upStationId, final Long downStationId, final int distance) {
@@ -50,9 +50,9 @@ public class Section {
     }
 
     public List<Section> assign(final Section newSection) {
-        checkBetweenDistance(newSection.distance);
+        checkBetweenDistance(newSection.distance.getValue());
 
-        final int assignedDistance = this.distance - newSection.distance;
+        final int assignedDistance = this.distance.getValue() - newSection.distance.getValue();
         if (upStationId.equals(newSection.upStationId)) {
             return List.of(
                     newSection,
@@ -66,14 +66,14 @@ public class Section {
     }
 
     private void checkBetweenDistance(final int newSectionDistance) {
-        if (distance <= newSectionDistance) {
+        if (distance.getValue() <= newSectionDistance) {
             throw new IllegalArgumentException("기존 구간의 길이 보다 작지 않습니다.");
         }
     }
 
     public Section merge(final Section section) {
         final Long criteriaId = findDuplicateId(section);
-        final int mergedDistance = distance + section.getDistance();
+        final int mergedDistance = distance.getValue() + section.distance.getValue();
         if (criteriaId.equals(upStationId)) {
             return new Section(
                     lineId,
@@ -121,7 +121,7 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getValue();
     }
 
     @Override
@@ -133,14 +133,14 @@ public class Section {
             return false;
         }
         final Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(lineId,
-                section.lineId) && Objects.equals(upStationId, section.upStationId) && Objects.equals(
-                downStationId, section.downStationId);
+        return Objects.equals(lineId, section.lineId) && Objects.equals(upStationId,
+                section.upStationId) && Objects.equals(downStationId, section.downStationId)
+                && Objects.equals(distance, section.distance) && Objects.equals(id, section.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lineId, upStationId, downStationId, distance);
+        return Objects.hash(lineId, upStationId, downStationId, distance, id);
     }
 
     @Override
