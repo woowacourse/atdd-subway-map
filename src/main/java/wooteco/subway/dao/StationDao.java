@@ -1,14 +1,14 @@
 package wooteco.subway.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.notfound.NotFoundStationException;
@@ -16,27 +16,29 @@ import wooteco.subway.exception.notfound.NotFoundStationException;
 @Repository
 public class StationDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private static final RowMapper<Station> ROW_MAPPER = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name"));
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    private final SimpleJdbcInsert insertActor;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    public StationDao(final DataSource dataSource) {
+        this.insertActor = new SimpleJdbcInsert(dataSource)
+                .withTableName("STATION")
+                .usingGeneratedKeyColumns("id");
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
     public Long save(final Station station) {
-        final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final String sql = "INSERT INTO STATION (name) VALUES (?)";
-        jdbcTemplate.update((Connection con) -> {
-            PreparedStatement pstmt = con.prepareStatement(sql, new String[]{"id"});
-            pstmt.setString(1, station.getName());
-            return pstmt;
-        }, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
+        return insertActor.executeAndReturnKey(parameters).longValue();
     }
 
     public Station findById(final Long id) {
         try {
-            final String sql = "SELECT * FROM STATION WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, rowMapper(), id);
+            final String sql = "SELECT * FROM STATION WHERE id = :id";
+            return namedParameterJdbcTemplate.queryForObject(sql, Map.of("id", id), ROW_MAPPER);
         } catch (final EmptyResultDataAccessException e) {
             throw new NotFoundStationException();
         }
@@ -44,23 +46,16 @@ public class StationDao {
 
     public List<Station> findAll() {
         final String sql = "SELECT * FROM STATION";
-        return jdbcTemplate.query(sql, rowMapper());
+        return namedParameterJdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public void delete(final Long id) {
-        final String sql = "DELETE FROM STATION WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        final String sql = "DELETE FROM STATION WHERE id = :id";
+        namedParameterJdbcTemplate.update(sql, Map.of("id", id));
     }
 
     public boolean existsById(final Long id) {
-        final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
-    }
-
-    private RowMapper<Station> rowMapper() {
-        return (resultSet, rowNum) -> new Station(
-                resultSet.getLong("id"),
-                resultSet.getString("name")
-        );
+        final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE id = :id)";
+        return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, Map.of("id", id), Boolean.class));
     }
 }

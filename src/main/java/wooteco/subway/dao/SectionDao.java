@@ -1,9 +1,9 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -26,16 +26,14 @@ public class SectionDao {
             resultSet.getLong("down_station_id"),
             resultSet.getInt("distance"));
 
-    private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public SectionDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public SectionDao(final DataSource dataSource) {
         this.insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("SECTION")
                 .usingGeneratedKeyColumns("id");
-        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
     public Long save(final Section section) {
@@ -46,13 +44,13 @@ public class SectionDao {
     public void batchSave(final List<Section> sections) {
         final String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) "
                 + "VALUES (:lineId, :upStationId, :downStationId, :distance)";
-        namedParameterJdbcTemplate.batchUpdate(sql, SqlParameterSourceUtils.createBatch(sections));
+        jdbcTemplate.batchUpdate(sql, SqlParameterSourceUtils.createBatch(sections));
     }
 
     public Sections findAllByLineId(final Long id) {
         try {
-            final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
-            return new Sections(jdbcTemplate.query(sql, ROW_MAPPER, id));
+            final String sql = "SELECT * FROM SECTION WHERE line_id = :id";
+            return new Sections(jdbcTemplate.query(sql, Map.of("id", id), ROW_MAPPER));
         } catch (final EmptyResultDataAccessException e) {
             throw new NotFoundException("존재하지 않는 노선(ID: " + id + ")입니다.");
         }
@@ -60,20 +58,20 @@ public class SectionDao {
 
     public Section findById(final Long id) {
         try {
-            final String sql = "SELECT * FROM SECTION WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+            final String sql = "SELECT * FROM SECTION WHERE id = :id";
+            return jdbcTemplate.queryForObject(sql, Map.of("id", id), ROW_MAPPER);
         } catch (final EmptyResultDataAccessException e) {
             throw new NotFoundSectionException();
         }
     }
 
     public void deleteById(final Long id) {
-        final String sql = "DELETE FROM SECTION WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        final String sql = "DELETE FROM SECTION WHERE id = :id";
+        jdbcTemplate.update(sql, Map.of("id", id));
     }
 
     public void batchDelete(final List<Section> sections) {
         final String sql = "DELETE FROM SECTION WHERE id = :id";
-        namedParameterJdbcTemplate.batchUpdate(sql, SqlParameterSourceUtils.createBatch(sections));
+        jdbcTemplate.batchUpdate(sql, SqlParameterSourceUtils.createBatch(sections));
     }
 }
