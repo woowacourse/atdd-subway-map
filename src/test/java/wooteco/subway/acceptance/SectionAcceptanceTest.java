@@ -27,9 +27,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> deleteSections(Long lineId, Long newStationId) {
+    private ExtractableResponse<Response> deleteSections(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
-                .param("stationId", newStationId)
+                .param("stationId", stationId)
                 .when()
                 .delete("/lines/" + lineId + "/sections")
                 .then().log().all()
