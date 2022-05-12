@@ -37,16 +37,16 @@
 # API
 ## 지하철 역
 
-> 지하철 역 등록 - `POST /stations`
+> 등록 - `POST /stations`
 - 이름을 가진 역을 저장한다.
 - 저장된 id와 이름을 응답한다. `Created 201`
-  - [ ] [예외] 이름은 빈값이면 안된다. `Bad Request 400`
-  - [ ] [예외] 이미 존재하는 이름이 있으면 안된다. `Bad Request 400`
-> 지하철 역 목록 - `GET /stations`
+  - [x] [예외] 이름은 빈값이면 안된다. `Bad Request 400`
+  - [x] [예외] 이미 존재하는 이름이 있으면 안된다. `Bad Request 400`
+> 목록 - `GET /stations`
 - 역 목록을 응답한다. `OK 200`
-> 지하철 역 삭제 - `DELETE /stations/{id}`
+> 삭제 - `DELETE /stations/{id}`
 - id에 해당하는 역을 삭제한다. `No Content 204`
-  - [ ] [예외] id에 해당하는 역이 있어야 한다. `Not Found 404`
+  - [x] [예외] id에 해당하는 역이 있어야 한다. `Not Found 404`
 
 ## 지하철 노선
 

@@ -13,10 +13,17 @@ public class Station {
     public Station(Long id, String name) {
         this.id = id;
         this.name = name;
+        validateField(name);
+    }
+
+    private void validateField(String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("역의 이름은 빈 값이면 안됩니다.");
+        }
     }
 
     public Station(String name) {
-        this.name = name;
+        this(0L, name);
     }
 
     public Long getId() {
