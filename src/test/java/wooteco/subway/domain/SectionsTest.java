@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.transaction.annotation.Transactional;
 
 @DisplayName("Sections 는")
 class SectionsTest {
@@ -56,5 +58,36 @@ class SectionsTest {
                 Arguments.of(SectionFactory.from("bc3"), StationFactory.from("c"),
                         List.of(SectionFactory.from("ab3")))
         );
+    }
+
+    @DisplayName("지워진 역을 찾아 반환할 수 있어야 한다.")
+    @Test
+    void getDeletedSections() {
+        final Sections sections = new Sections(new ArrayList<>());
+        final Section ab3 = SectionFactory.from("ab3");
+        final Section bc3 = SectionFactory.from("bc3");
+        sections.addIfPossible(ab3);
+        sections.addIfPossible(bc3);
+        sections.deleteIfPossible(new Station(1L, "b"));
+        final List<Section> deletedSections = sections.getDeletedSections(
+                new ArrayList<>(List.of(ab3, bc3)));
+        final List<Section> expectedResult = List.of(ab3, bc3);
+        assertThat(deletedSections).isEqualTo(expectedResult);
+    }
+
+    @DisplayName("추가된 구간을 찾아 반환할 수 있어야 한다.")
+    @Test
+    void getAddSections() {
+        final Sections sections = new Sections(new ArrayList<>());
+        final Section ab3 = SectionFactory.from("ab3");
+        final Section bc3 = SectionFactory.from("bc3");
+        final Section cd3 = SectionFactory.from("cd3");
+        sections.addIfPossible(ab3);
+        sections.addIfPossible(bc3);
+        sections.addIfPossible(cd3);
+        final List<Section> addSections = sections.getAddSections(
+                new ArrayList<>(List.of(ab3, bc3)));
+        final List<Section> expectedResult = List.of(cd3);
+        assertThat(addSections).isEqualTo(expectedResult);
     }
 }

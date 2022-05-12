@@ -10,10 +10,10 @@ import wooteco.subway.dto.response.StationResponse;
 
 public class Converter {
 
-    public static List<StationResponse> convertFromSections(final Sections sections) {
-        final List<Section> existedSections = sections.getValue();
-        final Station lastUpStation = existedSections.get(0).getUpStation();
-        final List<StationResponse> response = existedSections.stream()
+    public static List<StationResponse> convertFromSections(final List<Section> sections) {
+//        final List<Section> existedSections = sections.getValue();
+        final Station lastUpStation = sections.get(0).getUpStation();
+        final List<StationResponse> response = sections.stream()
                 .map(Section::getDownStation)
                 .map(StationResponse::from)
                 .collect(Collectors.toList());

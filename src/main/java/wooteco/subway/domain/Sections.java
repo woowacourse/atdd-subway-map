@@ -5,6 +5,9 @@ import java.util.List;
 
 public class Sections {
 
+    private static final String CANNOT_ADD_SECTION = "섹션을 추가할 수 없습니다.";
+    private static final String CANNOT_DELETE_SECTION = "역을 삭제할 수 없습니다.";
+
     private List<Section> value;
 
     public Sections(final List<Section> sections) {
@@ -28,6 +31,7 @@ public class Sections {
                 return;
             }
         }
+        throw new IllegalArgumentException(CANNOT_ADD_SECTION + " " + newSection);
     }
 
     private boolean isNewUpSection(final Section newSection) {
@@ -88,9 +92,10 @@ public class Sections {
             final MatchingResult result = section.matchStation(target);
             if (canDeleteStation(result)) {
                 deleteStation(section, target);
-                break;
+                return;
             }
         }
+        throw new IllegalArgumentException(CANNOT_DELETE_SECTION + " " + target);
     }
 
     private MatchingResult sameWithLastDownStation(final Station target) {
@@ -125,6 +130,17 @@ public class Sections {
         return value.size() >= 2;
     }
 
+    public List<Section> getDeletedSections(final List<Section> sections) {
+        final List<Section> previousSections = new ArrayList<>(sections);
+        previousSections.removeAll(value);
+        return previousSections;
+    }
+
+    public List<Section> getAddSections(final List<Section> sections) {
+        final List<Section> currentSections = new ArrayList<>(value);
+        currentSections.removeAll(sections);
+        return currentSections;
+    }
 
     public List<Section> getValue() {
         return value;

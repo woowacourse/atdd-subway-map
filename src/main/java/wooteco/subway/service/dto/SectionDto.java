@@ -1,5 +1,7 @@
 package wooteco.subway.service.dto;
 
+import wooteco.subway.domain.Section;
+
 public class SectionDto {
 
     private Long lineId;
@@ -16,6 +18,11 @@ public class SectionDto {
 
     public SectionDto(final Long upStationId, final Long downStationId, final int distance) {
         this(upStationId, downStationId, distance, 0L);
+    }
+
+    public static SectionDto from(final Section section) {
+        return new SectionDto(section.getUpStation().getId(), section.getDownStation().getId(),
+                section.getDistance());
     }
 
     public Long getUpStationId() {

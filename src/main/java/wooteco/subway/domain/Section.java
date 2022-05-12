@@ -90,12 +90,24 @@ public class Section {
         return MatchingResult.NO_MATCHED;
     }
 
+    public Long getUpStationId() {
+        return upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return downStation.getId();
+    }
+
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override
@@ -114,5 +126,14 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(upStation, downStation);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }

@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Line {
 
@@ -30,6 +31,18 @@ public class Line {
         sections.addIfPossible(newSection);
     }
 
+    public void deleteSection(final Station target) {
+        sections.deleteIfPossible(target);
+    }
+
+    public List<Section> getAddSections(final List<Section> previousSections) {
+        return sections.getAddSections(previousSections);
+    }
+
+    public List<Section> getDeletedSections(final List<Section> previousSections) {
+        return sections.getDeletedSections(previousSections);
+    }
+
     public boolean isSameId(final Long id) {
         return this.id.equals(id);
     }
@@ -46,8 +59,8 @@ public class Line {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
+    public List<Section> getSections() {
+        return sections.getValue();
     }
 
     public Long getUpStationId() {

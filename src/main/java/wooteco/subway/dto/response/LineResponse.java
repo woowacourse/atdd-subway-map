@@ -27,7 +27,7 @@ public class LineResponse {
     }
 
     public static LineResponse from(final Line line) {
-        final Sections sections = line.getSections();
+        final List<Section> sections = line.getSections();
         return new LineResponse(line.getId(), line.getName(), line.getColor(), Converter.convertFromSections(sections));
     }
 

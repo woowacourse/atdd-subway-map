@@ -31,6 +31,11 @@ public class StationRepository {
     }
 
     @Transactional(readOnly = true)
+    public Station findById(final Long id) {
+        return stationDao.findById(id);
+    }
+
+    @Transactional(readOnly = true)
     public List<Station> findAll() {
         return stationDao.findAll();
     }
