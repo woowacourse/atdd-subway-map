@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Distance;
@@ -12,6 +13,13 @@ import wooteco.subway.domain.Sections;
 
 @Repository
 public class SectionDao {
+
+    public static final RowMapper<Section> SECTION_ROW_MAPPER = (rs, rowNum) -> new Section(
+            rs.getLong("id"),
+            rs.getLong("up_station_id"),
+            rs.getLong("down_station_id"),
+            new Distance(rs.getInt("distance"))
+    );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -22,12 +30,7 @@ public class SectionDao {
     public Sections findSectionsByLineId(Long lineId) {
         String sql = "SELECT id, up_station_id, down_station_id, distance FROM SECTION WHERE line_id = ?";
 
-        List<Section> sections = jdbcTemplate.query(sql, (rs, rowNum) -> new Section(
-                rs.getLong("id"),
-                rs.getLong("up_station_id"),
-                rs.getLong("down_station_id"),
-                new Distance(rs.getInt("distance"))
-        ), lineId);
+        List<Section> sections = jdbcTemplate.query(sql, SECTION_ROW_MAPPER, lineId);
 
         return new Sections(sections);
     }
