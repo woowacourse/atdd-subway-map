@@ -42,9 +42,7 @@ public class LineService {
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
-        return lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), createStationResponseOf(line)))
-                .collect(Collectors.toList());
+        return lines.stream().map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), createStationResponseOf(line))).collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
@@ -57,9 +55,8 @@ public class LineService {
         List<Station> stations = stationDao.findByIdIn(sections.getStationIds());
 
         List<Station> sortedStations = sections.sort(stations);
-        return sortedStations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
-                .collect(Collectors.toList());
+
+        return sortedStations.stream().map(station -> new StationResponse(station.getId(), station.getName())).collect(Collectors.toList());
     }
 
     public void edit(Long id, String name, String color) {

@@ -28,7 +28,6 @@ public class Sections {
 
     private Section reviseSection(Section overLappedSection, Section section) {
         Section revisedSection = overLappedSection.revisedBy(section);
-
         sections.remove(section);
         sections.add(revisedSection);
 
@@ -163,7 +162,6 @@ public class Sections {
 
     private Queue<Section> findAndAdd(Queue<Section> sortedSections, List<Section> remainSections, Section currentSection) {
         remainSections.remove(currentSection);
-
         if(remainSections.isEmpty()){
             return sortedSections;
         }
@@ -178,26 +176,33 @@ public class Sections {
     }
 
     private List<Station> sortStations(List<Station> stations, Queue<Section> sortedSections) {
-        List<Long> sortedStationsIds = new ArrayList<>();
+        Queue<Long> sortedStationsIds = new LinkedList<>();
         sortedStationsIds.add(findStartStationId());
         sortedStationsIds = pollAndAdd(sortedStationsIds, sortedSections);
 
-        return sortedStationsIds.stream()
-                .map(stationId -> findStationById(stations, stationId))
-                .collect(Collectors.toList());
+        return createStationsByIds(sortedStationsIds, stations);
     }
 
-    private List<Long> pollAndAdd(List<Long> sortedStationIds, Queue<Section> sortedSections) {
+    private Queue<Long> pollAndAdd(Queue<Long> sortedStationIds, Queue<Section> sortedSections) {
         if(sortedSections.isEmpty()){
             return sortedStationIds;
         }
-
         Section section = sortedSections.poll();
         sortedStationIds.add(section.getDownStationId());
         return pollAndAdd(sortedStationIds, sortedSections);
     }
 
-    private Station findStationById(List<Station> stations, Long stationId) {
+    private List<Station> createStationsByIds(Queue<Long> stationIds, List<Station> stations) {
+        List<Station> newStations = new ArrayList<>();
+        while(!stations.isEmpty()){
+            Station station = findStationById(stations, stationIds.poll());
+            newStations.add(station);
+            stations.remove(station);
+        }
+        return newStations;
+    }
+
+    private Station findStationById(List<Station> stations, Long stationId){
         return stations.stream()
                 .filter(station -> station.getId().equals(stationId))
                 .findFirst()
