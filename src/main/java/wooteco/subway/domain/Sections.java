@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.exception.IllegalSectionCreatedException;
+import wooteco.subway.exception.IllegalSectionDeleteException;
 
 import java.util.List;
 
@@ -35,6 +36,15 @@ public class Sections {
                 .noneMatch(comparedSection::isConnected);
     }
 
+    public Section integrateTwoSections() {
+        if (!hasTwoSection()) {
+            throw new IllegalSectionDeleteException();
+        }
+        final Section firstSection = sections.get(0);
+        final Section secondSection = sections.get(1);
+        return firstSection.integrate(secondSection);
+    }
+
     public boolean isLastStation(final Section newSection) {
         return sections.stream()
                 .anyMatch(section -> isLeftLastStation(newSection, section) ||
@@ -57,5 +67,13 @@ public class Sections {
     public boolean matchDownStationId(final Section section) {
         return sections.stream()
                 .anyMatch(section::equalsDownStation);
+    }
+
+    public boolean hasOneSection() {
+        return sections.size() == 1;
+    }
+
+    public boolean hasTwoSection() {
+        return sections.size() == 2;
     }
 }

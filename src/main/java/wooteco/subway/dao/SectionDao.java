@@ -12,9 +12,11 @@ import java.util.List;
 @Repository
 public class SectionDao {
     private final JdbcTemplate jdbcTemplate;
+    private final SectionMapper sectionMapper;
 
     public SectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.sectionMapper = new SectionMapper();
     }
 
     public void save(final Long lineId, final Section section) {
@@ -24,7 +26,7 @@ public class SectionDao {
 
     public List<Section> findSectionsByLineId(final Long lineId) {
         final String sql = String.format("select * from Section where line_id = %d", lineId);
-        return jdbcTemplate.query(sql, new SectionMapper());
+        return jdbcTemplate.query(sql, sectionMapper);
     }
 
     public void deleteAllByLine(final Long id) {
@@ -39,12 +41,33 @@ public class SectionDao {
 
     public Section findSectionByUpStationId(final Long lineId, final Section section) {
         final String sql = String.format("select * from Section where line_id = %d and up_station_id = %d", lineId, section.getUpStationId());
-        return jdbcTemplate.queryForObject(sql, new SectionMapper());
+        return jdbcTemplate.queryForObject(sql, sectionMapper);
     }
 
     public Section findSectionByDownStationId(final Long lineId, final Section section) {
         final String sql = String.format("select * from Section where line_id = %d and down_station_id = %d", lineId, section.getDownStationId());
-        return jdbcTemplate.queryForObject(sql, new SectionMapper());
+        return jdbcTemplate.queryForObject(sql, sectionMapper);
+    }
+
+    public List<Section> findSectionsByStationId(final Long lineId, final Long stationId) {
+        final String sql = String.format("select * from Section where line_id = %d and (up_station_id = %d or down_station_id = %d)",
+                lineId, stationId, stationId);
+        return jdbcTemplate.query(sql, sectionMapper);
+    }
+
+    public int countsByLine(final Long line_id) {
+        final String sql = "select count(*) from Section where line_id = " + line_id;
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
+
+    public void deleteSectionByStationId(final Long lineId, final Long stationId) {
+        final String sql = "delete from Section where line_id = ? and (up_station_id = ? or down_station_id = ?)";
+        jdbcTemplate.update(sql, lineId, stationId, stationId);
+    }
+
+    public void integrateSectionByStationId(final Long lineId, final Long stationId, final Section integrateTwoSections) {
+        editByUpStationId(lineId, integrateTwoSections);
+        deleteSectionByStationId(lineId, stationId);
     }
 
     private static final class SectionMapper implements RowMapper<Section> {

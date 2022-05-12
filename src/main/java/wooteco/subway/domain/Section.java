@@ -70,6 +70,13 @@ public class Section {
         return upStationId.equals(section.downStationId) || downStationId.equals(section.downStationId);
     }
 
+    public Section integrate(final Section section) {
+        if (downStationId.equals(section.upStationId)) {
+            return new Section(upStationId, section.downStationId, distance + section.distance);
+        }
+        return new Section(section.upStationId, downStationId, distance + section.distance);
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }

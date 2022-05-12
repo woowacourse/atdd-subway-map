@@ -6,6 +6,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.IllegalSectionDeleteException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -79,6 +80,16 @@ public class SectionService {
         return stationIds;
     }
 
-    public void deleteSectionByStationId(Long lineId, Long stationId) {
+    public void deleteSectionByStationId(final Long id, final Long stationId) {
+        final Sections sections = new Sections(sectionDao.findSectionsByStationId(id, stationId));
+        if (sectionDao.countsByLine(id) == 1) {
+            throw new IllegalSectionDeleteException();
+        }
+        if (sections.hasOneSection()) {
+            sectionDao.deleteSectionByStationId(id, stationId);
+        }
+        if (sections.hasTwoSection()) {
+            sectionDao.integrateSectionByStationId(id, stationId, sections.integrateTwoSections());
+        }
     }
 }

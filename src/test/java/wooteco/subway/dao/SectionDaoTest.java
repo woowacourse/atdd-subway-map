@@ -61,4 +61,13 @@ class SectionDaoTest {
 
         assertThat(actual).isEqualTo(0);
     }
+
+    @DisplayName("노선에 해당하는 구간의 개수를 확인한다.")
+    @Test
+    void counts_by_line() {
+        final Section section = new Section(1L, 2L, 10);
+        sectionDao.save(1L, section);
+        final int actual = sectionDao.countsByLine(1L);
+        assertThat(actual).isEqualTo(1);
+    }
 }

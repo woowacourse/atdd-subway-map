@@ -106,7 +106,7 @@ public class SectionsTest {
     @DisplayName("인자로 전달 된 구간의 하행 역이 기존의 구간들의 하행역 중에 일치하면 True 를 반환하는 지 확인한다.")
     @Test
     void matches_down_station_id_true() {
-        final Section section = new Section(1L, 6L, 5);
+        final Section section = new Section(1L, 5L, 5);
         final boolean actual = sections.matchDownStationId(section);
 
         assertThat(actual).isTrue();
