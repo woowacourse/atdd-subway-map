@@ -1,8 +1,11 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
@@ -89,8 +92,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long id = Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
 
         ExtractableResponse<Response> getResponse = httpGetTest("/lines/" + id);
-        long responseId = getResponse.jsonPath().getLong("id");
-        assertThat(id).isEqualTo(responseId);
+        JsonPath lineResponsePath = getResponse.jsonPath();
+        long responseId = lineResponsePath.getLong("id");
+        List<Station> stations = lineResponsePath.getList("stations", Station.class);
+        assertAll(
+                () -> assertThat(id).isEqualTo(responseId),
+                () -> assertThat(stations).extracting("id", "name").containsExactly(
+                        tuple(강남역.getId(), 강남역.getName()),
+                        tuple(역삼역.getId(), 역삼역.getName())
+                )
+        );
     }
 
     @DisplayName("노선을 수정하면 200 OK를 반환한다.")
