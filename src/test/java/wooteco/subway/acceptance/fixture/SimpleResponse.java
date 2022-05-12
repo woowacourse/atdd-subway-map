@@ -39,8 +39,9 @@ public class SimpleResponse {
                 .body().jsonPath();
     }
 
-    public boolean hasStatus(HttpStatus status) {
-        return response.statusCode() == status.value();
+    public void assertStatus(HttpStatus status) {
+        response.then()
+                .statusCode(status.value());
     }
 
     public Long getIdFromLocation() {

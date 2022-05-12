@@ -29,7 +29,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         SimpleResponse response = SimpleRestAssured.post("/stations", params);
         // then
         Assertions.assertAll(
-                () -> assertThat(response.hasStatus(HttpStatus.CREATED)).isTrue(),
+                () -> response.assertStatus(HttpStatus.CREATED),
                 () -> assertThat(response.getHeader("Location")).isNotBlank()
         );
     }
@@ -43,7 +43,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         SimpleResponse response = SimpleRestAssured.post("/stations", params);
         // then
-        assertThat(response.hasStatus(HttpStatus.BAD_REQUEST)).isTrue();
+        response.assertStatus(HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -66,7 +66,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
         Assertions.assertAll(
-                () -> assertThat(response.hasStatus(HttpStatus.OK)).isTrue(),
+                () -> response.assertStatus(HttpStatus.OK),
                 () -> assertThat(resultLineIds).containsAll(expectedLineIds)
         );
     }
@@ -81,7 +81,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         String uri = createResponse.getHeader("Location");
         SimpleResponse response = SimpleRestAssured.delete(uri);
         // then
-        assertThat(response.hasStatus(HttpStatus.NO_CONTENT)).isTrue();
+        response.assertStatus(HttpStatus.NO_CONTENT);
     }
 
     @Test
@@ -93,6 +93,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         final SimpleResponse deleteResponse = SimpleRestAssured.delete("/lines/100");
         // then
-        assertThat(deleteResponse.hasStatus(HttpStatus.BAD_REQUEST)).isTrue();
+        deleteResponse.assertStatus(HttpStatus.BAD_REQUEST);
     }
 }

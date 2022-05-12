@@ -37,7 +37,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final SimpleResponse response = SimpleRestAssured.post("/lines", params);
         // then
         Assertions.assertAll(
-                () -> assertThat(response.hasStatus(HttpStatus.CREATED)).isTrue(),
+                () -> response.assertStatus(HttpStatus.CREATED),
                 () -> assertThat(response.getHeader("Location")).isNotBlank()
         );
     }
@@ -51,7 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final SimpleResponse response = SimpleRestAssured.post("/lines", params);
         // then
         Assertions.assertAll(
-                () -> assertThat(response.hasStatus(HttpStatus.BAD_REQUEST)).isTrue(),
+                () -> response.assertStatus(HttpStatus.BAD_REQUEST),
                 () -> assertThat(response.containsExceptionMessage("필수 입력")).isTrue()
         );
     }
@@ -67,7 +67,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final SimpleResponse response = SimpleRestAssured.post("/lines", params2);
         // then
         Assertions.assertAll(
-                () -> assertThat(response.hasStatus(HttpStatus.BAD_REQUEST)).isTrue(),
+                () -> response.assertStatus(HttpStatus.BAD_REQUEST),
                 () -> assertThat(response.containsExceptionMessage("이미 존재")).isTrue()
         );
     }
@@ -92,7 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         Assertions.assertAll(
-                () -> assertThat(response.hasStatus(HttpStatus.OK)).isTrue(),
+                () -> response.assertStatus(HttpStatus.OK),
                 () -> assertThat(resultLineIds).containsAll(expectedLineIds)
         );
     }
@@ -110,7 +110,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final LineResponse foundLineResponse = foundResponse.toObject(LineResponse.class);
         // then
         Assertions.assertAll(
-                () -> assertThat(foundResponse.hasStatus(HttpStatus.OK)).isTrue(),
+                () -> foundResponse.assertStatus(HttpStatus.OK),
                 () -> assertThat(foundLineResponse.getId()).isEqualTo(createdLineResponse.getId())
         );
     }
@@ -125,7 +125,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final SimpleResponse response = SimpleRestAssured.get("/lines/99");
         // then
         Assertions.assertAll(
-                () -> assertThat(response.hasStatus(HttpStatus.BAD_REQUEST)).isTrue(),
+                () -> response.assertStatus(HttpStatus.BAD_REQUEST),
                 () -> assertThat(response.containsExceptionMessage("존재하지 않습니다")).isTrue()
         );
     }
@@ -141,7 +141,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final String uri = createdResponse.getHeader("Location");
         final SimpleResponse modifiedResponse = SimpleRestAssured.put(uri, modificationParam);
         // then
-        assertThat(modifiedResponse.hasStatus(HttpStatus.OK)).isTrue();
+        modifiedResponse.assertStatus(HttpStatus.OK);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final SimpleResponse response = SimpleRestAssured.put("/lines/99", modificationParam);
         // then
         Assertions.assertAll(
-                () -> assertThat(response.hasStatus(HttpStatus.BAD_REQUEST)).isTrue(),
+                () -> response.assertStatus(HttpStatus.BAD_REQUEST),
                 () -> assertThat(response.containsExceptionMessage("존재하지 않습니다")).isTrue()
         );
     }
@@ -170,7 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final String uri = createdResponse.getHeader("Location");
         final SimpleResponse deleteResponse = SimpleRestAssured.delete(uri);
         // then
-        assertThat(deleteResponse.hasStatus(HttpStatus.NO_CONTENT)).isTrue();
+        deleteResponse.assertStatus(HttpStatus.NO_CONTENT);
     }
 
     @Test
@@ -183,7 +183,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final SimpleResponse response = SimpleRestAssured.delete("/lines/99");
         // then
         Assertions.assertAll(
-                () -> assertThat(response.hasStatus(HttpStatus.BAD_REQUEST)).isTrue(),
+                () -> response.assertStatus(HttpStatus.BAD_REQUEST),
                 () -> assertThat(response.containsExceptionMessage("존재하지 않습니다")).isTrue()
         );
     }

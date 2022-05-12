@@ -1,7 +1,5 @@
 package wooteco.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +36,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         final SimpleResponse response = SimpleRestAssured.post("/lines/1/sections", sectionParams);
         // then
-        assertThat(response.hasStatus(HttpStatus.OK)).isTrue();
+        response.assertStatus(HttpStatus.OK);
     }
 
     @Test
@@ -69,6 +67,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         SimpleRestAssured.delete("/lines/1/sections?stationId=3");
         // then
-        assertThat(response.hasStatus(HttpStatus.OK)).isTrue();
+        response.assertStatus(HttpStatus.OK);
     }
 }
