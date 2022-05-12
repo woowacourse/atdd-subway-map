@@ -10,10 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.NotExistException;
 
 @JdbcTest
 class JdbcStationDaoTest {
+
+    private static final String FAIL_FIND_STATION = "fail";
 
     private final JdbcStationDao jdbcStationDao;
 
@@ -33,7 +34,8 @@ class JdbcStationDaoTest {
 
         // then
         final Station savedStation = jdbcStationDao.findById(savedId)
-                .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
+                .orElseGet(() -> new Station(FAIL_FIND_STATION));
+
         assertThat(station).isEqualTo(savedStation);
     }
 
