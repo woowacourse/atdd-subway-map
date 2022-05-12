@@ -1,9 +1,13 @@
 package wooteco.subway.ui;
 
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.dto.ErrorResponse;
@@ -21,6 +25,20 @@ public class ExceptionAdvice {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.from(e));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationException(final MethodArgumentNotValidException e) {
+        final Map<String, String> body = e.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .collect(Collectors.toMap(
+                        it -> ((FieldError) it).getField(),
+                        it -> it.getDefaultMessage()
+                ));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(body);
     }
 
     @ExceptionHandler(SubwayMapException.class)
