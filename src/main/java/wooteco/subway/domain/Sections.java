@@ -74,7 +74,7 @@ public class Sections {
             Section origin = sections.get(i);
             if (origin.isSameUpStation(section) || origin.isSameDownStation(section)) {
                 sections.remove(i);
-                sections.addAll(origin.divideBy(section));
+                sections.addAll(i, origin.divideBy(section));
                 return;
             }
         }
