@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -56,10 +58,14 @@ public class LineDao {
         return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
     }
 
-    public Line findById(Long id) {
-        String sql = "select * from LINE where id = :id";
-        SqlParameterSource source = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(sql, source, eventRowMapper);
+    public Optional<Line> findById(Long id) {
+        try {
+            String sql = "select * from LINE where id = :id";
+            SqlParameterSource source = new MapSqlParameterSource("id", id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, source, eventRowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<Line> findAll() {

@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -90,13 +90,12 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        try {
-            Line line = lineDao.findById(id);
-            Sections sections = new Sections(sectionDao.findByLineId(id));
-            return LineResponse.from(line, findStations(sections, id));
-        } catch (EmptyResultDataAccessException e) {
+        Optional<Line> line = lineDao.findById(id);
+        if (line.isEmpty()) {
             throw new IllegalArgumentException(NONE_LINE_ERROR_MESSAGE);
         }
+        Sections sections = new Sections(sectionDao.findByLineId(id));
+        return LineResponse.from(line.get(), findStations(sections, id));
     }
 
     @Transactional(readOnly = true)

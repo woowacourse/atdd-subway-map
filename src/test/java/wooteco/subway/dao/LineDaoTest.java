@@ -1,14 +1,13 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.ui.dto.LineCreateRequest;
@@ -54,10 +53,11 @@ class LineDaoTest {
         Line expected = new Line(1L, "신분당선", "red");
 
         // when
-        Line line = lineDao.findById(1L);
+        Optional<Line> line = lineDao.findById(1L);
 
         // then
-        assertThat(line).isEqualTo(expected);
+        assertThat(line.isPresent()).isTrue();
+        assertThat(line.get()).isEqualTo(expected);
     }
 
     @DisplayName("노선 전체 조회")
@@ -83,8 +83,11 @@ class LineDaoTest {
         lineDao.update(id, lineRequest);
 
         // then
-        Line line = lineDao.findById(id);
-        assertThat(line.getColor()).isEqualTo(lineRequest.getColor());
+        Optional<Line> line = lineDao.findById(id);
+
+        assertThat(line.isPresent()).isTrue();
+        assertThat(line.get()).extracting(Line::getName, Line::getColor)
+                .contains(lineRequest.getName(), lineRequest.getColor());
     }
 
     @DisplayName("노선 삭제")
@@ -97,6 +100,6 @@ class LineDaoTest {
         lineDao.deleteById(id);
 
         // then
-        assertThatThrownBy(() -> lineDao.findById(id)).isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(lineDao.findById(id)).isEqualTo(Optional.empty());
     }
 }
