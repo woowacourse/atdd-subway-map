@@ -3,6 +3,8 @@ package wooteco.subway.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -46,6 +48,30 @@ public class SectionDao {
         params.put("line_id", id);
 
         return jdbcTemplate.query(sql, params, getRowMapper());
+    }
+
+    public Optional<Section> findBy(Long lineId, Long upStationId, Long downStationId) {
+        String sql = "SELECT * FROM section WHERE line_id = :line_id AND (up_station_id = :up_station_id OR down_station_id = :down_station_id)";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("line_id", lineId);
+        params.put("up_station_id", upStationId);
+        params.put("down_station_id", downStationId);
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, getRowMapper()));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM section WHERE id = :id";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        jdbcTemplate.update(sql, params);
     }
 
     private RowMapper<Section> getRowMapper() {

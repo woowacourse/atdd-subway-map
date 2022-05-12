@@ -1,11 +1,13 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -49,5 +51,62 @@ class SectionDaoTest {
         sectionDao.save(section);
 
         assertThat(sectionDao.findAllByLineId(line.getId()).size()).isEqualTo(1);
+    }
+
+    @DisplayName("같은 상행 종점을 가진 구간을 찾아낸다.")
+    @Test
+    void findBySameUpStation() {
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+        Line line = lineDao.save(new Line("2호선", "green"));
+
+        Section section = new Section(line.getId(), upStation.getId(), downStation.getId(), 10);
+
+        sectionDao.save(section);
+
+        Section sameUpStation = sectionDao.findBy(section.getLineId(), upStation.getId(), 10L)
+                .orElseThrow();
+
+        assertThat(sameUpStation.getDownStationId()).isEqualTo(downStation.getId());
+    }
+
+    @DisplayName("같은 하행 종점을 가진 구간을 찾아낸다.")
+    @Test
+    void findBySameDownStation() {
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+        Line line = lineDao.save(new Line("2호선", "green"));
+
+        Section section = new Section(line.getId(), upStation.getId(), downStation.getId(), 10);
+
+        sectionDao.save(section);
+
+        Section sameUpStation = sectionDao.findBy(section.getLineId(), 10L, downStation.getId())
+                .orElseThrow();
+
+        assertThat(sameUpStation.getUpStationId()).isEqualTo(upStation.getId());
+    }
+
+    @DisplayName("같은 상행 또는 하행 종점을 가진 구간을 찾아내지 못할 경우 예외가 발생한다.")
+    @Test
+    void findByNotExistingSection() {
+        assertThatThrownBy(() -> sectionDao.findBy(1L, 9L, 10L))
+                .isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @Test
+    @DisplayName("id로 노선을 삭제한다.")
+    void DeleteById() {
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+        Line line = lineDao.save(new Line("2호선", "green"));
+
+        Section section = new Section(line.getId(), upStation.getId(), downStation.getId(), 10);
+
+        Section savedSection = sectionDao.save(section);
+
+        sectionDao.deleteById(savedSection.getId());
+
+        assertThat(sectionDao.findAllByLineId(line.getId()).size()).isZero();
     }
 }

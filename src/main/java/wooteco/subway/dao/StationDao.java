@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -38,7 +39,31 @@ public class StationDao {
         String sql = "SELECT * FROM station";
 
         return jdbcTemplate.query(sql, new MapSqlParameterSource(),
-                (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
+                getRowMapper());
+    }
+
+    public List<Station> findAllByLineId(Long lineId) {
+        final String sql = "SELECT * FROM station WHERE"
+                + " id IN(SELECT st.id FROM section AS se INNER JOIN station AS st"
+                + " ON se.up_station_id = st.id"
+                + " WHERE se.line_id = :lineId) OR"
+                + " id IN(SELECT st.id FROM section AS se INNER JOIN station AS st"
+                + " ON se.down_station_id = st.id"
+                + " WHERE se.line_id = :lineId)";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+
+        return jdbcTemplate.query(sql, params, getRowMapper());
+    }
+
+    public Station findById(Long id) {
+        String sql = "SELECT id, name FROM station WHERE id=:id";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        return jdbcTemplate.queryForObject(sql, params, getRowMapper());
     }
 
     public void deleteById(Long id) {
@@ -48,5 +73,9 @@ public class StationDao {
         params.put("id", id);
 
         jdbcTemplate.update(sql, params);
+    }
+
+    private RowMapper<Station> getRowMapper() {
+        return (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name"));
     }
 }

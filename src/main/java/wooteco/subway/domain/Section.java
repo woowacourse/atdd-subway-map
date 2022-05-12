@@ -1,5 +1,8 @@
 package wooteco.subway.domain;
 
+import java.util.List;
+import wooteco.subway.dto.SectionRequest;
+
 public class Section {
 
     public static final int MIN_DISTANCE = 1;
@@ -27,6 +30,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Long lineId, SectionRequest sectionRequest) {
+        this(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+    }
+
     private void validate(Long upStationId, Long downStationId, int distance) {
         if (upStationId.equals(downStationId)) {
             throw new IllegalArgumentException("상행 종점과 하행 종점은 같을 수 없습니다.");
@@ -34,6 +41,21 @@ public class Section {
         if (distance < MIN_DISTANCE) {
             throw new IllegalArgumentException("역간의 거리는 1 이상이어야 합니다.");
         }
+    }
+
+    public List<Section> split(Section newSection) {
+        int newDistance = validateDistance(newSection.getDistance());
+        if (this.upStationId.equals(newSection.getUpStationId())) {
+            return List.of(newSection, new Section(lineId, newSection.getDownStationId(), downStationId, newDistance));
+        }
+        return List.of(new Section(lineId, upStationId, newSection.getUpStationId(), newDistance), newSection);
+    }
+
+    private int validateDistance(int distance) {
+        if (distance >= this.distance) {
+            throw new IllegalArgumentException("기존 구간의 길이보다 작아야합니다.");
+        }
+        return this.distance - distance;
     }
 
     public Long getId() {

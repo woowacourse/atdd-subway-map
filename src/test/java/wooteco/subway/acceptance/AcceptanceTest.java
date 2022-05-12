@@ -11,6 +11,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,9 +30,9 @@ public class AcceptanceTest {
 
     @AfterEach
     public void reset() {
+        jdbcTemplate.execute("DELETE FROM section");
         jdbcTemplate.execute("DELETE FROM station");
         jdbcTemplate.execute("DELETE FROM line");
-        jdbcTemplate.execute("DELETE FROM section");
     }
 
     protected ExtractableResponse<Response> createStation(StationRequest stationRequest) {
@@ -50,6 +51,16 @@ public class AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> createSection(long lineId, SectionRequest sectionRequest) {
+        return RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract();
     }

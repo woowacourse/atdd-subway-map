@@ -11,7 +11,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
@@ -24,13 +23,11 @@ class LineServiceTest {
 
     private final StationDao stationDao;
     private final LineService lineService;
-    private final SectionDao sectionDao;
 
     @Autowired
-    public LineServiceTest(StationDao stationDao, LineService lineService, SectionDao sectionDao) {
+    public LineServiceTest(StationDao stationDao, LineService lineService) {
         this.stationDao = stationDao;
         this.lineService = lineService;
-        this.sectionDao = sectionDao;
     }
 
     @DisplayName("노선을 저장한다.")
