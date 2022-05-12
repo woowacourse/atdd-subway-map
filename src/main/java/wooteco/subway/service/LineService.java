@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,10 @@ public class LineService {
 
     private void setStations(Line line) {
         Sections sections = sectionDao.findByLineId(line.getId());
-        line.setStations(stationDao.findByIds(sections.getAllIds()));
+        List<Station> stations = sections.getAllSortedIds().stream()
+                .map(stationDao::findById)
+                .collect(Collectors.toList());
+        line.setStations(stations);
     }
 
     @Transactional

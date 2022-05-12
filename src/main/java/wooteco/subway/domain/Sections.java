@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,8 +14,32 @@ public class Sections {
         this.sections = sections;
     }
 
-    public List<Long> getAllIds() {
-        return allStationIds();
+    public List<Long> getAllSortedIds() {
+        Long upId = findTopId();
+        List<Long> stationIds = new ArrayList<>();
+        stationIds.add(upId);
+        while (true) {
+            Optional<Long> downId = findNextId(upId);
+            if (downId.isEmpty()) {
+                break;
+            }
+            stationIds.add(downId.get());
+            upId = downId.get();
+        }
+        return stationIds;
+    }
+
+    private Optional<Long> findNextId(Long id) {
+        return sections.stream()
+                .filter(section -> section.equalsUpStation(id))
+                .map(Section::getDownStationId)
+                .findAny();
+    }
+
+    private Long findTopId() {
+        List<Long> upStationIds = upStationIds();
+        upStationIds.removeAll(downStationIds());
+        return upStationIds.get(0);
     }
 
     public void validateAddable(Section section) {

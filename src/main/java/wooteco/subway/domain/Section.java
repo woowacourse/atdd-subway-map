@@ -31,11 +31,11 @@ public class Section {
     }
 
     public Section createDivideDownSection(Section section) {
-        return new Section(id, lineId, downStationId, section.getDownStationId(), section.getDistance() - distance);
+        return new Section(section.getId(), lineId, downStationId, section.getDownStationId(), section.getDistance() - distance);
     }
 
     public Section createDivideUpSection(Section section) {
-        return new Section(id, lineId, section.getUpStationId(), upStationId, section.getDistance() - distance);
+        return new Section(section.getId(), lineId, section.getUpStationId(), upStationId, section.getDistance() - distance);
     }
 
     public Long getId() {

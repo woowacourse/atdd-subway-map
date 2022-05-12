@@ -60,6 +60,8 @@ public class JdbcStationDao implements StationDao {
     public List<Station> findByIds(List<Long> ids) {
         String sql = "SELECT * FROM STATION WHERE id IN (:ids)";
         MapSqlParameterSource params = new MapSqlParameterSource("ids", ids);
-        return namedParameterJdbcTemplate.query(sql, params, rowMapper);
+        List<Station> query = namedParameterJdbcTemplate.query(sql, params, rowMapper);
+        System.out.println(query);
+        return query;
     }
 }

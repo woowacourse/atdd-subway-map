@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -13,12 +14,13 @@ class SectionsTest {
     @Test
     @DisplayName("기존 구간과 상행역이 일치하는 새로운 구간을 추가하면 거리가 알맞게 조정이 된다.")
     void addDownStation() {
-        Section section1 = new Section(1L, 1L, 3L, 10);
-        Section section2 = new Section(1L, 1L, 2L, 3);
+        Section section1 = new Section(1L,1L, 1L, 3L, 10);
+        Section section2 = new Section(2L,1L, 1L, 2L, 3);
         Sections sections = new Sections(List.of(section1));
         Section addedSection = sections.add(section2);
 
         assertAll(
+                () -> assertThat(addedSection.getId()).isEqualTo(1L),
                 () -> assertThat(addedSection.getUpStationId()).isEqualTo(2L),
                 () -> assertThat(addedSection.getDownStationId()).isEqualTo(3L),
                 () -> assertThat(addedSection.getDistance()).isEqualTo(7)
@@ -137,6 +139,22 @@ class SectionsTest {
                 () -> assertThat(deletedDownSection.getUpStationId()).isEqualTo(2L),
                 () -> assertThat(deletedDownSection.getDownStationId()).isEqualTo(3L),
                 () -> assertThat(deletedDownSection.getDistance()).isEqualTo(5)
+        );
+    }
+
+    @Test
+    @DisplayName("순서대로 역을 반환한다.")
+    void getAllSortedIds() {
+        Section section1 = new Section(1L, 2L, 5L, 10);
+        Section section2 = new Section(1L, 1L, 2L, 5);
+        Section section3 = new Section(1L, 3L, 1L, 5);
+        Sections sections = new Sections(List.of(section1, section2, section3));
+        List<Long> allSortedIds = sections.getAllSortedIds();
+        assertAll(
+                () -> assertThat(allSortedIds.get(0)).isEqualTo(3L),
+                () -> assertThat(allSortedIds.get(1)).isEqualTo(1L),
+                () -> assertThat(allSortedIds.get(2)).isEqualTo(2L),
+                () -> assertThat(allSortedIds.get(3)).isEqualTo(5L)
         );
     }
 }

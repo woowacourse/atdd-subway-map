@@ -47,4 +47,14 @@ class StationDaoTest {
         List<Station> stations = stationDao.findAll();
         assertThat(stations).isEmpty();
     }
+
+    @Test
+    void findByIds() {
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("역삼역"));
+        stationDao.save(new Station("선릉역"));
+
+        List<Station> byIds = stationDao.findByIds(List.of(2L, 1L, 3L));
+        System.out.println(byIds);
+    }
 }
