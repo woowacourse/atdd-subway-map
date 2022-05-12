@@ -1,11 +1,13 @@
 package wooteco.subway.domain.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class DistanceTest {
 
@@ -15,6 +17,15 @@ class DistanceTest {
         Distance thisDistance = new Distance(10);
         Distance otherDistance = new Distance(5);
         assertThat(thisDistance.isCloserThan(otherDistance)).isFalse();
+    }
+
+    @DisplayName("양수가 아닌 수를 저장한다.")
+    @ParameterizedTest
+    @ValueSource(ints = {-5, 0})
+    void validateDistancePositive(int distance) {
+        assertThatThrownBy(() -> new Distance(distance))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("거리는 양수여야 합니다.");
     }
 
     @DisplayName("거리 간의 차이를 계산한다.")
