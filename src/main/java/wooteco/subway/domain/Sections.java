@@ -24,12 +24,9 @@ public class Sections {
 
     public LinkedList<Long> getSortedStationIds() {
         LinkedList<Long> sortedIds = new LinkedList<>();
-
         Section target = sections.get(0);
 
         addUpStream(sortedIds, target.getUpStationId());
-        sortedIds.add(target.getUpStationId());
-        sortedIds.add(target.getDownStationId());
         addDownStream(sortedIds, target.getDownStationId());
 
         return sortedIds;
@@ -94,9 +91,11 @@ public class Sections {
                 ));
 
         while (ids.containsKey(key)) {
-            key = ids.get(key);
             result.addFirst(key);
+            key = ids.get(key);
         }
+
+        result.addFirst(key);
     }
 
     private void addDownStream(LinkedList<Long> result, Long key) {
@@ -107,10 +106,11 @@ public class Sections {
                 ));
 
         while (ids.containsKey(key)) {
-            key = ids.get(key);
             result.addLast(key);
+            key = ids.get(key);
         }
-    }
 
+        result.addLast(key);
+    }
 
 }
