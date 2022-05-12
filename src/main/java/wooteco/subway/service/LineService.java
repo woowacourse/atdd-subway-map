@@ -5,9 +5,13 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
@@ -15,16 +19,25 @@ import wooteco.subway.exception.NotFoundException;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
+    private final StationService stationService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao,
+        StationService stationService) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse save(LineRequest lineRequest) {
         validateDuplicatedName(lineRequest);
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        return toLineBasicResponse(lineDao.save(line));
+        Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Station upStation = stationService.findById(lineRequest.getUpStationId());
+        Station downStation = stationService.findById(lineRequest.getDownStationId());
+        Section section = new Section(line.getId(), upStation, downStation, lineRequest.getDistance());
+        line.addSection(sectionDao.save(section));
+        return toLineBasicResponse(line);
     }
 
     private void validateDuplicatedName(LineRequest lineRequest) {
@@ -34,7 +47,10 @@ public class LineService {
     }
 
     private LineResponse toLineBasicResponse(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        List<StationResponse> stations = line.getStations().stream()
+            .map(station -> new StationResponse(station.getId(), station.getName()))
+            .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
     public List<LineResponse> findAll() {

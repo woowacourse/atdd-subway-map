@@ -1,12 +1,21 @@
 package wooteco.subway.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Line {
 
-    private final Long id;
-    private final String name;
-    private final String color;
+    private Long id;
+    private String name;
+    private String color;
+    private Sections sections = new Sections();
+
+    public Line(Long id, String name, String color, Sections sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
 
     public Line(Long id, String name, String color) {
         this.id = id;
@@ -16,6 +25,10 @@ public class Line {
 
     public Line(String name, String color) {
         this(null, name, color);
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 
     public Long getId() {
@@ -30,6 +43,14 @@ public class Line {
         return color;
     }
 
+    public Sections getSections() {
+        return sections;
+    }
+
+    public List<Station> getStations() {
+        return sections.findStations();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -40,7 +61,7 @@ public class Line {
         }
         Line line = (Line) o;
         return Objects.equals(name, line.name)
-                && Objects.equals(color, line.color);
+            && Objects.equals(color, line.color);
     }
 
     @Override
@@ -51,9 +72,9 @@ public class Line {
     @Override
     public String toString() {
         return "Line{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                '}';
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", color='" + color + '\'' +
+            '}';
     }
 }

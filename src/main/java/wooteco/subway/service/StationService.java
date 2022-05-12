@@ -48,6 +48,11 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
+    public Station findById(Long id) {
+        validateById(id);
+        return stationDao.findById(id);
+    }
+
     private void validateById(Long id) {
         if (!stationDao.existById(id)) {
             throw new IllegalArgumentException("존재하지 않는 id입니다.");
