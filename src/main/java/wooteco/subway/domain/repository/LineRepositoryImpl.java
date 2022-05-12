@@ -94,9 +94,9 @@ public class LineRepositoryImpl implements LineRepository {
 
     @Override
     public boolean existByName(String name) {
-        final String sql = "SELECT COUNT(*) FROM line WHERE name = :name";
+        final String sql = "SELECT * FROM line WHERE name = :name";
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class);
-        return count != 0;
+        List<Line> lines = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
+        return !lines.isEmpty();
     }
 }

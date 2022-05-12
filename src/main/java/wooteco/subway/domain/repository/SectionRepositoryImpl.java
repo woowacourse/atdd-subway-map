@@ -37,6 +37,10 @@ public class SectionRepositoryImpl implements SectionRepository {
         };
     }
 
+    private RowMapper<Long> idRowMapper() {
+        return (resultSet, rowNum) -> resultSet.getLong("id");
+    }
+
     public SectionRepositoryImpl(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
@@ -100,4 +104,12 @@ public class SectionRepositoryImpl implements SectionRepository {
         return !sections.isEmpty();
     }
 
+    @Override
+    public boolean existsByStationId(Long id) {
+        String sql = "SELECT * FROM section WHERE up_station_id = :station_id OR down_station_id = :station_id";
+        SqlParameterSource parameters = new MapSqlParameterSource("station_id", id);
+
+        List<Section> sections = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
+        return !sections.isEmpty();
+    }
 }

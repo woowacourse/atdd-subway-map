@@ -89,4 +89,17 @@ class SectionRepositoryTest {
         assertThat(sections).hasSize(1);
     }
 
+    @DisplayName("역 id를 통해 역이 구간들에 등록이 되어있다면 true를 반환한다.")
+    @Test
+    void existsByStationId() {
+        assertThat(sectionRepository.existsByStationId(1L)).isTrue();
+    }
+
+    @DisplayName("역 id를 통해 역이 구간들에 등록이 되어있지 않다면 false를 반환한다.")
+    @Test
+    void existsByStationIdFailure() {
+        Station station = stationRepository.save(new Station("새로운역"));
+        assertThat(sectionRepository.existsByStationId(station.getId())).isFalse();
+    }
+
 }

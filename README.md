@@ -65,6 +65,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - downStationId: 하행 종점
     - distance: 두 종점간의 거리
 - [x] 노선 추가 시 `Section`도 함께 등록한다.
+- [x] 구간에 등록된 역을 삭제하려고 하면 예외를 발생한다.
 
 ### 구간 관리 API 구현
 

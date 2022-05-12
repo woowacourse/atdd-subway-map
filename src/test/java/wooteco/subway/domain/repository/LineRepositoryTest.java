@@ -81,6 +81,12 @@ public class LineRepositoryTest {
         assertThat(lineRepository.existByName("분당선")).isTrue();
     }
 
+    @DisplayName("동일한 이름의 노선이 존재하지않을 경우 false를 반환한다.")
+    @Test
+    void existByNameFailure() {
+        assertThat(lineRepository.existByName("분당선")).isFalse();
+    }
+
     @DisplayName("노선을 수정한다.")
     @Test
     void update() {

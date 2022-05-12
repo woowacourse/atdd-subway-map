@@ -11,7 +11,9 @@ public interface SectionRepository {
 
     boolean existsByUpStationIdWithLineId(Long upStationId, Long lineId);
 
+    boolean existsByDownStationIdWithLineId(Long downStationId, Long lineId);
+
     void deleteById(Long id);
 
-    boolean existsByDownStationIdWithLineId(Long downStationId, Long lineId);
+    boolean existsByStationId(Long id);
 }

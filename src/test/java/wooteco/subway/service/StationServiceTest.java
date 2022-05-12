@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.repository.SectionRepository;
+import wooteco.subway.domain.repository.SectionRepositoryImpl;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.domain.repository.StationRepositoryImpl;
 import wooteco.subway.service.dto.StationRequest;
@@ -30,7 +32,8 @@ class StationServiceTest {
     @BeforeEach
     void setUp() {
         stationRepository = new StationRepositoryImpl(dataSource);
-        stationService = new StationService(stationRepository);
+        SectionRepository sectionRepository = new SectionRepositoryImpl(dataSource);
+        stationService = new StationService(stationRepository, sectionRepository);
     }
 
     @DisplayName("역 요청을 받아 저장한다.")
