@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.repository.SectionRepository;
 import wooteco.subway.domain.Station;
 
 @Service
@@ -13,9 +14,11 @@ import wooteco.subway.domain.Station;
 public class StationService {
 
 	private final StationDao stationDao;
+	private final SectionRepository sectionRepository;
 
-	public StationService(StationDao stationDao) {
+	public StationService(StationDao stationDao, SectionRepository sectionRepository) {
 		this.stationDao = stationDao;
+		this.sectionRepository = sectionRepository;
 	}
 
 	@Transactional
@@ -31,12 +34,19 @@ public class StationService {
 		}
 	}
 
-	public List<Station> listStations() {
+	public List<Station> findAllStations() {
 		return stationDao.findAll();
 	}
 
 	@Transactional
 	public void remove(Long id) {
+		if (sectionRepository.existByStation(id)) {
+			throw new IllegalArgumentException("구간으로 등록되어 있어 삭제할 수 없습니다.");
+		}
 		stationDao.remove(id);
+	}
+
+	public Station findOne(Long id) {
+		return stationDao.findById(id);
 	}
 }

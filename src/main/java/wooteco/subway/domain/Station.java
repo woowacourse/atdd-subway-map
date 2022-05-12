@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Station {
 
     private static final long TEMPORARY_ID = 0L;
@@ -30,6 +32,29 @@ public class Station {
 
     public String getName() {
         return name.getValue();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Station station = (Station)o;
+        return Objects.equals(getId(), station.getId()) && Objects.equals(getName(), station.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName());
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+            "id=" + id +
+            ", name=" + name +
+            '}';
     }
 }
 
