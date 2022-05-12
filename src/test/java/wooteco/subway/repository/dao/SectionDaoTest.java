@@ -1,4 +1,4 @@
-package wooteco.subway.repository.dao.jdbc;
+package wooteco.subway.repository.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,7 +13,7 @@ import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.dao.entity.section.SectionEntity;
 
 @JdbcTest
-class JdbcSectionDaoTest {
+class SectionDaoTest {
 
     @Autowired
     private DataSource dataSource;
@@ -21,7 +21,7 @@ class JdbcSectionDaoTest {
 
     @BeforeEach
     void setUp() {
-        this.sectionDao = new JdbcSectionDao(dataSource);
+        this.sectionDao = new SectionDao(dataSource);
     }
 
     @DisplayName("지하철구간을 저장한다.")

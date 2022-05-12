@@ -15,7 +15,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.test.context.jdbc.Sql;
 
 import javax.sql.DataSource;
 import wooteco.subway.domain.line.Line;
@@ -26,9 +25,6 @@ import wooteco.subway.domain.station.StationRepository;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.dao.StationDao;
-import wooteco.subway.repository.dao.jdbc.JdbcLineDao;
-import wooteco.subway.repository.dao.jdbc.JdbcSectionDao;
-import wooteco.subway.repository.dao.jdbc.JdbcStationDao;
 import wooteco.subway.repository.exception.line.DuplicateLineColorException;
 import wooteco.subway.repository.exception.line.DuplicateLineNameException;
 import wooteco.subway.repository.exception.station.DuplicateStationNameException;
@@ -38,15 +34,15 @@ class SubwayRepositoryTest {
 
     @Autowired
     private DataSource dataSource;
-    private LineDao lineDao;
-    private SectionDao sectionDao;
-    private StationDao stationDao;
+    private wooteco.subway.repository.dao.LineDao lineDao;
+    private wooteco.subway.repository.dao.SectionDao sectionDao;
+    private wooteco.subway.repository.dao.StationDao stationDao;
 
     @BeforeEach
     void setUp() {
-        this.lineDao = new JdbcLineDao(dataSource);
-        this.sectionDao = new JdbcSectionDao(dataSource);
-        this.stationDao = new JdbcStationDao(dataSource);
+        this.lineDao = new LineDao(dataSource);
+        this.sectionDao = new SectionDao(dataSource);
+        this.stationDao = new StationDao(dataSource);
     }
 
     @Nested

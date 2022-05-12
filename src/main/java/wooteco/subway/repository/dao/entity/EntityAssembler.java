@@ -12,7 +12,7 @@ import wooteco.subway.repository.dao.entity.station.StationEntity;
 
 public class EntityAssembler {
 
-    public EntityAssembler() {
+    private EntityAssembler() {
     }
 
     public static LineEntity lineEntity(Line line) {

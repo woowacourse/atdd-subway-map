@@ -20,9 +20,6 @@ import wooteco.subway.repository.SubwayRepository;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.dao.StationDao;
-import wooteco.subway.repository.dao.jdbc.JdbcLineDao;
-import wooteco.subway.repository.dao.jdbc.JdbcSectionDao;
-import wooteco.subway.repository.dao.jdbc.JdbcStationDao;
 import wooteco.subway.repository.exception.line.DuplicateLineColorException;
 import wooteco.subway.repository.exception.line.DuplicateLineNameException;
 import wooteco.subway.service.dto.line.LineRequest;
@@ -40,9 +37,9 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        LineDao lineDao = new JdbcLineDao(dataSource);
-        SectionDao sectionDao = new JdbcSectionDao(dataSource);
-        StationDao stationDao = new JdbcStationDao(dataSource);
+        wooteco.subway.repository.dao.LineDao lineDao = new LineDao(dataSource);
+        wooteco.subway.repository.dao.SectionDao sectionDao = new SectionDao(dataSource);
+        wooteco.subway.repository.dao.StationDao stationDao = new StationDao(dataSource);
 
         LineRepository lineRepository = new SubwayRepository(lineDao, sectionDao, stationDao);
         this.lineService = new LineService(lineRepository);

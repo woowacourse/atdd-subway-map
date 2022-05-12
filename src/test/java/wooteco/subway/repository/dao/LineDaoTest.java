@@ -1,4 +1,4 @@
-package wooteco.subway.repository.dao.jdbc;
+package wooteco.subway.repository.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -21,7 +21,7 @@ import wooteco.subway.repository.dao.entity.EntityAssembler;
 import wooteco.subway.repository.dao.entity.line.LineEntity;
 
 @JdbcTest
-class JdbcLineDaoTest {
+class LineDaoTest {
 
     private static final List<Section> sections = List.of(
             new Section(new Station(1L, "강남역"), new Station(2L, "선릉역"), 3)
@@ -29,11 +29,11 @@ class JdbcLineDaoTest {
     
     @Autowired
     private DataSource dataSource;
-    private LineDao lineDao;
+    private wooteco.subway.repository.dao.LineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        this.lineDao = new JdbcLineDao(dataSource);
+        this.lineDao = new LineDao(dataSource);
     }
 
     @DisplayName("지하철노선을 저장한다.")
