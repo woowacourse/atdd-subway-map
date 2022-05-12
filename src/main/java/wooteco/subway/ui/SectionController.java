@@ -38,5 +38,4 @@ public class SectionController {
         }
         return ResponseEntity.noContent().build();
     }
-
 }

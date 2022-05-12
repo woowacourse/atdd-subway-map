@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,7 +97,11 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineDao.findById(id).get();
+        Optional<Line> maybeLine = lineDao.findById(id);
+        if (maybeLine.isEmpty()) {
+            throw new IllegalArgumentException("Id에 해당하는 노선이 존재하지 않습니다.");
+        }
+        Line line = maybeLine.get();
         List<Station> stations = findSortedStationByLineId(line.getId());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), toStationResponse(stations));
     }

@@ -58,10 +58,10 @@ public class LineController {
     public ResponseEntity<Void> updateLine(@PathVariable Long id,
         @RequestBody LineRequest lineRequest) {
         Line lineEntity = new Line(lineRequest.getName(), lineRequest.getColor());
+
         if (lineService.updateById(id, lineEntity)) {
             return ResponseEntity.ok().build();
         }
-
         return ResponseEntity.noContent().build();
     }
 }
