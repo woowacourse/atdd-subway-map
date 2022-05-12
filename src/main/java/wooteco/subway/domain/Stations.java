@@ -6,7 +6,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class Stations {
-    private List<Station> stations;
+    private final List<Station> stations;
 
     public Station save(Station station) {
         checkDuplication(station);

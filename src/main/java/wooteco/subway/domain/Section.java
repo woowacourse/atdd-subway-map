@@ -55,4 +55,11 @@ public class Section {
     public boolean hasStation(Long stationId) {
         return List.of(upStationId, downStationId).contains(stationId);
     }
+
+    public boolean hasSameValue(Section section) {
+        return distance == section.distance
+                && Objects.equals(upStationId, section.upStationId)
+                && Objects.equals(downStationId, section.downStationId)
+                && Objects.equals(id, section.id);
+    }
 }

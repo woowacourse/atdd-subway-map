@@ -3,10 +3,7 @@ package wooteco.subway.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -14,24 +11,27 @@ import java.util.stream.Collectors;
 public class Sections {
     private final List<Section> sections;
 
-    public Optional<Section> save(Section section) {
+    public void save(Section section) {
         checkSavable(section);
-        Optional<Section> fixedSection = fixOverLappedSection(section);
         sections.add(section);
-        return fixedSection;
     }
 
     public Optional<Section> fixOverLappedSection(Section section) {
         Optional<Section> overLappedSection = getSectionOverLappedBy(section);
-        Section revisedSection = null;
 
-        if (overLappedSection.isPresent()) {
-            overLappedSection.ifPresent(sections::remove);
-            revisedSection = overLappedSection.get().revisedBy(section);
-            sections.add(revisedSection);
+        if (overLappedSection.isEmpty()) {
+            return Optional.empty();
         }
 
-        return Optional.ofNullable(revisedSection);
+        return Optional.of(reviseSection(overLappedSection.get(), section));
+    }
+
+    private Section reviseSection(Section overLappedSection, Section section) {
+        Section revisedSection = overLappedSection.revisedBy(section);
+        sections.remove(section);
+        sections.add(revisedSection);
+
+        return revisedSection;
     }
 
     private void checkSavable(Section section) {
@@ -81,12 +81,12 @@ public class Sections {
     private Optional<Section> getSectionOverLappedBy(Section newSection) {
         return sections.stream()
                 .filter(section -> section.isOverLappedWith(newSection))
+                .filter(section -> !section.hasSameValue(newSection))
                 .findFirst();
     }
 
-    public Optional<Section> delete(Long lineId, Long stationId) {
+    public void delete(Long lineId, Long stationId) {
         checkDelete(lineId);
-        Optional<Section> connectedSection = fixDisconnectedSection(lineId, stationId);
 
         List<Section> adjacentSections = sections.stream()
                 .filter(section -> lineId.equals(section.getLineId()))
@@ -94,7 +94,6 @@ public class Sections {
                 .collect(Collectors.toList());
 
         adjacentSections.forEach(sections::remove);
-        return connectedSection;
     }
 
     private void checkDelete(Long lineId) {
@@ -110,7 +109,6 @@ public class Sections {
     }
 
     public Optional<Section> fixDisconnectedSection(Long lineId, Long stationId) {
-
         Optional<Section> upSection = sections.stream().
                 filter(section -> lineId.equals(section.getLineId()) && stationId.equals(section.getDownStationId()))
                 .findFirst();
@@ -118,13 +116,13 @@ public class Sections {
                 filter(section -> lineId.equals(section.getLineId()) && stationId.equals(section.getUpStationId()))
                 .findFirst();
 
-        Section connectedSection = null;
-
-        if (upSection.isPresent() && downSection.isPresent()) {
-            connectedSection = createConnectedSection(lineId, upSection.get(), downSection.get());
-            sections.add(connectedSection);
+        if (upSection.isEmpty() || downSection.isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.ofNullable(connectedSection);
+
+        Section connectedSection = createConnectedSection(lineId, upSection.get(), downSection.get());
+        sections.add(connectedSection);
+        return Optional.of(connectedSection);
     }
 
     private Section createConnectedSection(Long lineId, Section upSection, Section downSection) {
@@ -139,5 +137,87 @@ public class Sections {
             stationIds.add(section.getDownStationId());
         }
         return stationIds;
+    }
+
+    public List<Station> sort(List<Station> stations) {
+        Queue<Section> sortedSections = sortSections();
+        return sortStations(stations, sortedSections);
+    }
+
+    private Queue<Section> sortSections() {
+        Queue<Section> sortedSections = new LinkedList<>();
+        Section startSection = findStartSection();
+        sortedSections.add(startSection);
+
+        return findAndAdd(sortedSections, new ArrayList<>(sections), startSection);
+    }
+
+    private Section findStartSection() {
+        Long startStationId = findStartStationId();
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(startStationId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
+    }
+
+    private Queue<Section> findAndAdd(Queue<Section> sortedSections, List<Section> remainSections, Section currentSection) {
+        remainSections.remove(currentSection);
+        if(remainSections.isEmpty()){
+            return sortedSections;
+        }
+
+        Section nextSection = remainSections.stream()
+                .filter(section -> Objects.equals(currentSection.getDownStationId(), section.getUpStationId()))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
+
+        sortedSections.add(nextSection);
+        return findAndAdd(sortedSections, remainSections, nextSection);
+    }
+
+    private List<Station> sortStations(List<Station> stations, Queue<Section> sortedSections) {
+        Queue<Long> sortedStationsIds = new LinkedList<>();
+        sortedStationsIds.add(findStartStationId());
+        sortedStationsIds = pollAndAdd(sortedStationsIds, sortedSections);
+
+        return createStationsByIds(sortedStationsIds, stations);
+    }
+
+    private Queue<Long> pollAndAdd(Queue<Long> sortedStationIds, Queue<Section> sortedSections) {
+        if(sortedSections.isEmpty()){
+            return sortedStationIds;
+        }
+        Section section = sortedSections.poll();
+        sortedStationIds.add(section.getDownStationId());
+        return pollAndAdd(sortedStationIds, sortedSections);
+    }
+
+    private List<Station> createStationsByIds(Queue<Long> stationIds, List<Station> stations) {
+        List<Station> newStations = new ArrayList<>();
+        while(!stations.isEmpty()){
+            Station station = findStationById(stations, stationIds.poll());
+            newStations.add(station);
+            stations.remove(station);
+        }
+        return newStations;
+    }
+
+    private Station findStationById(List<Station> stations, Long stationId){
+        return stations.stream()
+                .filter(station -> station.getId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 역이 존재하지 않습니다."));
+    }
+
+    private Long findStartStationId() {
+        List<Long> upStationIds = new ArrayList<>();
+        List<Long> downStationIds = new ArrayList<>();
+
+        for (Section section : sections) {
+            upStationIds.add(section.getUpStationId());
+            downStationIds.add(section.getDownStationId());
+        }
+        upStationIds.removeAll(downStationIds);
+        return upStationIds.get(0);
     }
 }

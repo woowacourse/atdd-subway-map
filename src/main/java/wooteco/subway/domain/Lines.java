@@ -6,7 +6,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class Lines {
-    private List<Line> lines;
+    private final List<Line> lines;
 
     public Line save(Line line) {
         checkDuplication(line);

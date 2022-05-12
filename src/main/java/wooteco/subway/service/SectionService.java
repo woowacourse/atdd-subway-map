@@ -22,7 +22,8 @@ public class SectionService {
         Section section = sectionRequest.toSection(lineId);
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
-        Optional<Section> revisedSection = sections.save(section);
+        sections.save(section);
+        Optional<Section> revisedSection = sections.fixOverLappedSection(section);
 
         sectionDao.save(section);
         revisedSection.ifPresent(sectionDao::update);
@@ -31,7 +32,8 @@ public class SectionService {
     public void delete(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
-        Optional<Section> connectedSection = sections.delete(lineId, stationId);
+        Optional<Section> connectedSection = sections.fixDisconnectedSection(lineId, stationId);
+        sections.delete(lineId, stationId);
 
         sectionDao.delete(lineId, stationId);
         connectedSection.ifPresent(sectionDao::save);
