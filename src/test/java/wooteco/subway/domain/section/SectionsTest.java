@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static wooteco.subway.testutils.Fixture.SECTION_LINE_1_STATION_1_2_10;
+import static wooteco.subway.testutils.Fixture.SECTION_LINE_1_STATION_1_3_22;
+import static wooteco.subway.testutils.Fixture.SECTION_LINE_1_STATION_2_3_12;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,15 +19,12 @@ import wooteco.subway.exception.SectionNotFoundException;
 
 class SectionsTest {
 
-    private static final Section SECTION_LINE_1_STATION_1_2_10 = new Section(1L, 1L, 2L, 10);
-    private static final Section SECTION_LINE_1_STATION_2_3_12 = new Section(1L, 2L, 3L, 12);
-    private static final Section SECTION_LINE_1_STATION_1_3_22 = new Section(1L, 1L, 1L, 3L, 22);
-
     @DisplayName("특정 노선에 속한 구간정보를 생성한다")
     @Test
     void create_success() {
         //given & when
-        final List<Section> sections = List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12);
+        final List<Section> sections = List.of(
+            SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12);
 
         //then
         assertDoesNotThrow(() -> new Sections(sections));
@@ -42,7 +42,8 @@ class SectionsTest {
     @Test
     void addSection_valid_only_one_station_same() {
         //given & when
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
+        final Sections sections = new Sections(List.of(
+            SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
         final Section targetSection = new Section(1L, 1L, 4L, 8);
 
         //then
@@ -53,7 +54,8 @@ class SectionsTest {
     @Test
     void addSection_invalid_all_same_up_and_down_station() {
         //given & when
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
+        final Sections sections = new Sections(List.of(
+            SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
         final Section targetSection = new Section(1L, 1L, 2L, 12);
 
         //then
@@ -66,7 +68,8 @@ class SectionsTest {
     @Test
     void addSection_invalid_all_not_same_up_and_down_station() {
         //given & when
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
+        final Sections sections = new Sections(List.of(
+            SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
         final Section targetSection = new Section(1L, 2L, 4L, 13);
 
         //then
@@ -79,7 +82,8 @@ class SectionsTest {
     @Test
     void addSection_invalid_distance() {
         //given & when
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
+        final Sections sections = new Sections(List.of(
+            SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
         final Section targetSection = new Section(1L, 1L, 4L, 15);
 
         //then
@@ -173,7 +177,8 @@ class SectionsTest {
     @Test
     void deleteSectionByStationId_valid_delete_up_station() {
         //given
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
+        final Sections sections = new Sections(List.of(
+            SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
 
         //when
         sections.deleteSectionByStationId(1L);
@@ -190,7 +195,8 @@ class SectionsTest {
     @Test
     void deleteSectionByStationId_valid_delete_down_station() {
         //given
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
+        final Sections sections = new Sections(List.of(
+            SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
 
         //when
         sections.deleteSectionByStationId(3L);
@@ -207,7 +213,8 @@ class SectionsTest {
     @Test
     void deleteSectionByStationId_valid_delete_middle_station() {
         //given
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
+        final Sections sections = new Sections(List.of(
+            SECTION_LINE_1_STATION_1_2_10, SECTION_LINE_1_STATION_2_3_12));
 
         //when
         sections.deleteSectionByStationId(2L);

@@ -2,7 +2,6 @@ package wooteco.subway.domain;
 
 public class Station implements Comparable<Station> {
 
-
     private Long id;
     private Name name;
 

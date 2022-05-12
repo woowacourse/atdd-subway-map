@@ -8,10 +8,6 @@ public class SectionResponse {
     public SectionResponse() {
     }
 
-    public SectionResponse(final Section section) {
-//        this.section = section.getId();
-    }
-
     public Section getSection() {
         return section;
     }

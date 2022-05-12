@@ -5,18 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.domain.Station;
 
 class SectionTest {
-
-    private static final Station STATION_잠실역 = new Station(1L, "잠실역");
-    private static final Station STATION_역삼역 = new Station(2L, "역삼역");
-
-    /**
-     * create table if not exists SECTION ( id bigint auto_increment not null, line_id bigint not null, up_station_id
-     * bigint not null, down_station_id bigint not null, distance int, primary key(id) );
-     */
-
+    
     @DisplayName("구간을 생성한다.")
     @Test
     void create_success() {

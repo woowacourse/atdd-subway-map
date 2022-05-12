@@ -7,8 +7,8 @@ import wooteco.subway.dto.request.LineRequest;
 public class Section implements Comparator<Section> {
 
     private static final String ERROR_INVALID_DISTANCE = "[ERROR] 부적절한 거리가 입력되었습니다. 0보다 큰 거리를 입력해주세요.";
-    private static final int INVALID_DISTANCE_STANDARD = 0;
     private static final String ERROR_SAME_STATION = "[ERROR] 상행 종점과 하행 종점이 같을 수 없습니다.";
+    private static final int INVALID_DISTANCE_STANDARD = 0;
 
     private final Long id;
     private final Long lineId;

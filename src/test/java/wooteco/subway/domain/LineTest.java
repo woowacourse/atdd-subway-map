@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class LineTest {
-
+    
     @DisplayName("유효한 이름을 가진 지하철 노선을 생성한다.")
     @Test
     void create_success() {
