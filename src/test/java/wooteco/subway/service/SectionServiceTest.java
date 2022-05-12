@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static wooteco.subway.TestFixtures.동묘앞역;
-import static wooteco.subway.TestFixtures.보문역;
 import static wooteco.subway.TestFixtures.신당역;
 import static wooteco.subway.TestFixtures.창신역;
 
@@ -45,18 +44,16 @@ class SectionServiceTest {
     @Autowired
     private StationRepository stationRepository;
 
-    Line lineSix;
-    Station saved_신당역;
-    Station saved_동묘앞역;
-    Station saved_창신역;
-    Station saved_보문역;
+    private Line lineSix;
+    private Station saved_신당역;
+    private Station saved_동묘앞역;
+    private Station saved_창신역;
 
     @BeforeEach
     void setUp() {
         saved_신당역 = stationRepository.save(신당역);
         saved_동묘앞역 = stationRepository.save(동묘앞역);
         saved_창신역 = stationRepository.save(창신역);
-        saved_보문역 = stationRepository.save(보문역);
         Long lineId = lineRepository.save(new Line("6호선", "bg-red-500"));
         sectionRepository.save(new Section(lineId, saved_신당역, saved_동묘앞역, 10));
         lineSix = new Line(lineId, "6호선", "bg-red-500");
