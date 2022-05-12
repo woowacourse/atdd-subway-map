@@ -38,7 +38,7 @@ public class LineDao implements CommonLineDao {
 
     @Override
     public List<Line> findAll() {
-        final String sql = "select id, name, color from LINE";
+        final String sql = "select id, name, color, up_station_id, from LINE";
         return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> {
             return new Line(resultSet.getLong("id"), resultSet.getString("name"),
                     resultSet.getString("color"), resultSet.getLong("up_station_id"));

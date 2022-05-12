@@ -25,7 +25,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    @Transactional
+//    @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         final LineDto lineDto = new LineDto(lineRequest.getName(), lineRequest.getColor(),
                 lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
@@ -33,14 +33,15 @@ public class LineService {
         return LineResponse.from(line);
     }
 
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public LineResponse findById(final Long id) {
         return LineResponse.from(lineRepository.findById(id));
     }
 
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public List<Line> findAll() {
-        return lineDao.findAll();
+        return lineRepository.findAll();
+//        return lineDao.findAll();
     }
 
     @Transactional

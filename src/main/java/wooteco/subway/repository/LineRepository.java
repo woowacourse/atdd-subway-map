@@ -66,14 +66,9 @@ public class LineRepository {
     public Line findById(final Long id) {
         final List<SectionDto> sectionDtos = sectionDao.findAllByLineId(id);
         final Line line = lineDao.findById(id);
-        final List<SectionDto> sortedSectionDtos = sortSectionDto(sectionDtos, line.getUpStationId());
-        for (SectionDto sectionDto : sortedSectionDtos) {
-            final Station upStation = stationDao.findById(sectionDto.getUpStationId());
-            final Station downStation = stationDao.findById(sectionDto.getDownStationId());
-            line.addSection(new Section(upStation, downStation, sectionDto.getDistance()));
-        }
-        return line;
+        return addSectionsToLine(line, sectionDtos);
     }
+
 
     private List<SectionDto> sortSectionDto(List<SectionDto> sectionDtos, final Long upStationId) {
         final List<SectionDto> sortedSectionDtos = new ArrayList<>();
@@ -99,4 +94,26 @@ public class LineRepository {
                 .filter(sectionDto -> !(sectionDto.getUpStationId().equals(target.getUpStationId())))
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<Line> findAll() {
+        final List<Line> lines = lineDao.findAll();
+        final List<Line> linesWithSections = new ArrayList<>();
+        for (Line line : lines) {
+            final List<SectionDto> sectionDtos = sectionDao.findAllByLineId(line.getId());
+            linesWithSections.add(addSectionsToLine(line, sectionDtos));
+        }
+        return linesWithSections;
+    }
+
+    private Line addSectionsToLine(final Line line, final List<SectionDto> sectionDtos) {
+        final List<SectionDto> sortedSectionDtos = sortSectionDto(sectionDtos, line.getUpStationId());
+        for (SectionDto sectionDto : sortedSectionDtos) {
+            final Station upStation = stationDao.findById(sectionDto.getUpStationId());
+            final Station downStation = stationDao.findById(sectionDto.getDownStationId());
+            line.addSection(new Section(upStation, downStation, sectionDto.getDistance()));
+        }
+        return line;
+    }
+
 }
