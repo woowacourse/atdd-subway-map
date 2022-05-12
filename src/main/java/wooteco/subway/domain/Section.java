@@ -8,10 +8,10 @@ public class Section {
     public static final int MIN_DISTANCE = 1;
 
     private Long id;
-    private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+    private final Long lineId;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         validate(upStationId, downStationId, distance);
