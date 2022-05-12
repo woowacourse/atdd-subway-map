@@ -9,27 +9,24 @@ public class Section {
 
     private static final int MIN_DISTANCE = 1;
 
+    private final Long id;
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
     private final Distance distance;
-    private Long id;
 
     public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
                    final int distance) {
-        this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = new Distance(distance);
-    }
-
-    public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         validate(upStationId, downStationId, distance);
+        this.id = id;
         this.lineId = Objects.requireNonNull(lineId);
         this.upStationId = Objects.requireNonNull(upStationId);
         this.downStationId = Objects.requireNonNull(downStationId);
         this.distance = new Distance(distance);
+    }
+
+    public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+        this(null, lineId, upStationId, downStationId, distance);
     }
 
     private void validate(final Long upStationId, final Long downStationId, final int distance) {
