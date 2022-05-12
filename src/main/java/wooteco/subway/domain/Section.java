@@ -46,8 +46,16 @@ public class Section {
         return upStationId.equals(section.upStationId);
     }
 
+    public boolean isEqualOfUpStation(Long stationId) {
+        return upStationId.equals(stationId);
+    }
+
     public boolean isEqualOfDownStation(Section section) {
         return downStationId.equals(section.downStationId);
+    }
+
+    public boolean isEqualOfDownStation(Long stationId) {
+        return downStationId.equals(stationId);
     }
 
     public Section getCutDistanceSection(Section section) {
@@ -59,6 +67,10 @@ public class Section {
             return new Section(section.downStationId, downStationId, lineId, cutDistance);
         }
         return new Section(upStationId, section.upStationId, lineId, cutDistance);
+    }
+
+    public boolean containsStation(long stationId) {
+        return upStationId.equals(stationId) || downStationId.equals(stationId);
     }
 
     public Long getId() {

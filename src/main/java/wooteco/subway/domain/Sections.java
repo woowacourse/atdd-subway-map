@@ -69,4 +69,43 @@ public class Sections {
     public List<Section> value() {
         return new ArrayList<>(sections);
     }
+
+    public Sections deleteByStation(Station station) {
+        List<Section> sections = getSectionsFindBy(station);
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("노선에 포함되어 있지 않은 역입니다.");
+        }
+        if (sections.size() == 1) {
+            this.sections.remove(sections.get(0));
+        }
+        if (sections.size() == 2) {
+            Section downSection = getSectionsEqualOfDownStation(station);
+            Section upSection = getSectionsEqualOfUpStation(station);
+            this.sections.add(new Section(upSection.getUpStationId(), downSection.getDownStationId(),
+                    downSection.getLineId(), downSection.getDistance() + upSection.getDistance()));
+            this.sections.remove(downSection);
+            this.sections.remove(upSection);
+        }
+        return new Sections(sections);
+    }
+
+    private List<Section> getSectionsFindBy(Station station) {
+        return this.sections.stream()
+                .filter(s -> s.containsStation(station.getId()))
+                .collect(Collectors.toList());
+    }
+
+    private Section getSectionsEqualOfUpStation(Station station) {
+        return sections.stream()
+                .filter(s -> s.isEqualOfDownStation(station.getId()))
+                .findAny()
+                .get();
+    }
+
+    private Section getSectionsEqualOfDownStation(Station station) {
+        return sections.stream()
+                .filter(s -> s.isEqualOfUpStation(station.getId()))
+                .findAny()
+                .get();
+    }
 }

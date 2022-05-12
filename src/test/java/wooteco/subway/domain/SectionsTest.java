@@ -1,9 +1,8 @@
 package wooteco.subway.domain;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,7 @@ public class SectionsTest {
                 new Section(1L, 2L, 1L, 1),
                 new Section(2L, 3L, 1L, 1)
         ));
-        Assertions.assertThat(sections.getStationsId()).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(sections.getStationsId()).containsExactly(1L, 2L, 3L, 4L);
     }
 
     @DisplayName("구간을 등록한다.")
@@ -37,7 +36,7 @@ public class SectionsTest {
         Sections actual = sections.update(new Section(1L, 5L, 1L, 5))
                 .update(new Section(6L, 4L, 1L, 5));
 
-        Assertions.assertThat(actual.getStationsId()).contains(1L, 2L, 3L, 4L, 5L, 6L);
+        assertThat(actual.getStationsId()).contains(1L, 2L, 3L, 4L, 5L, 6L);
     }
 
     @Nested
@@ -75,5 +74,17 @@ public class SectionsTest {
             assertThatThrownBy(() -> sections.update(section))
                     .isInstanceOf(IllegalArgumentException.class);
         }
+    }
+
+    @DisplayName("구간 중 특정 지하철역을 삭제한다.")
+    @Test
+    void deleteByStation() {
+        Sections sections = new Sections(List.of(
+                new Section(1L, 2L, 1L, 10),
+                new Section(2L, 3L, 1L, 10),
+                new Section(3L, 4L, 1L, 10)
+        ));
+        assertThat(sections.deleteByStation(new Station(2L, "제거될 역"))
+                .value()).hasSize(2);
     }
 }
