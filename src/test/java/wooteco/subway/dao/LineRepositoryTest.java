@@ -61,10 +61,6 @@ public class LineRepositoryTest extends RepositoryTest {
     @Test
     void findById() {
         Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
-        Station saved_신당역 = stationRepository.save(신당역);
-        Station saved_동묘앞역 = stationRepository.save(동묘앞역);
-        Section section = new Section(id, saved_신당역, saved_동묘앞역, 5);
-        sectionRepository.save(section);
         Line line = lineRepository.findById(id);
         assertThat(line.isSameName("분당선"));
     }
