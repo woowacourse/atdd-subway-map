@@ -28,11 +28,9 @@ class LineServiceTest {
     @Autowired
     private DataSource dataSource;
     private LineService lineService;
-    private SectionDao sectionDao;
 
     private StationResponse savedStation1;
     private StationResponse savedStation2;
-    private StationResponse savedStation3;
 
     @BeforeEach
     void setUp() {
@@ -41,7 +39,6 @@ class LineServiceTest {
                 new StationDao(jdbcTemplate, dataSource), new SectionDao(jdbcTemplate, dataSource));
         savedStation1 = stationService.create(new StationRequest("선릉역"));
         savedStation2 = stationService.create(new StationRequest("선정릉역"));
-        savedStation3 = stationService.create(new StationRequest("한티역"));
     }
 
     @DisplayName("새로운 노선 셍성 정보를 이용해 노선을 생성한다.")
