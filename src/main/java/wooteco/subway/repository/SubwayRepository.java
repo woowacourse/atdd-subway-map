@@ -19,12 +19,12 @@ import wooteco.subway.repository.dao.entity.EntityAssembler;
 import wooteco.subway.repository.dao.entity.line.LineEntity;
 import wooteco.subway.repository.dao.entity.section.SectionEntity;
 import wooteco.subway.repository.dao.entity.station.StationEntity;
-import wooteco.subway.repository.exception.line.DuplicateLineColorException;
-import wooteco.subway.repository.exception.line.DuplicateLineNameException;
-import wooteco.subway.repository.exception.line.NoSuchLineException;
-import wooteco.subway.repository.exception.section.NoSuchSectionException;
-import wooteco.subway.repository.exception.station.DuplicateStationNameException;
-import wooteco.subway.repository.exception.station.NoSuchStationException;
+import wooteco.subway.repository.exception.DuplicateLineColorException;
+import wooteco.subway.repository.exception.DuplicateLineNameException;
+import wooteco.subway.repository.exception.DuplicateStationNameException;
+import wooteco.subway.repository.exception.NoSuchLineException;
+import wooteco.subway.repository.exception.NoSuchSectionException;
+import wooteco.subway.repository.exception.NoSuchStationException;
 
 @Repository
 public class SubwayRepository implements LineRepository, SectionRepository, StationRepository {

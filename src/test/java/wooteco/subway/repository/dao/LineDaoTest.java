@@ -16,7 +16,6 @@ import javax.sql.DataSource;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.dao.entity.EntityAssembler;
 import wooteco.subway.repository.dao.entity.line.LineEntity;
 

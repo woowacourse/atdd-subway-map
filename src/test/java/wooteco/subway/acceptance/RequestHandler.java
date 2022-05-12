@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.http.entity.ContentType;
 import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.repository.exception.line.DuplicateLineColorException;
-import wooteco.subway.repository.exception.line.DuplicateLineNameException;
+import wooteco.subway.repository.exception.DuplicateLineColorException;
+import wooteco.subway.repository.exception.DuplicateLineNameException;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
 import wooteco.subway.service.dto.line.LineRequest;

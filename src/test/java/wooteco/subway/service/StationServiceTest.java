@@ -17,7 +17,7 @@ import wooteco.subway.repository.SubwayRepository;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.dao.StationDao;
-import wooteco.subway.repository.exception.station.DuplicateStationNameException;
+import wooteco.subway.repository.exception.DuplicateStationNameException;
 import wooteco.subway.service.dto.station.StationResponse;
 
 @JdbcTest

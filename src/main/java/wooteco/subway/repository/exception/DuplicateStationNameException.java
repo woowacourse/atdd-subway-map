@@ -1,4 +1,4 @@
-package wooteco.subway.repository.exception.station;
+package wooteco.subway.repository.exception;
 
 public class DuplicateStationNameException extends IllegalArgumentException {
 

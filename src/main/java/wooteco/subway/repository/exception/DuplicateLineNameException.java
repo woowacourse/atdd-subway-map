@@ -1,4 +1,4 @@
-package wooteco.subway.repository.exception.line;
+package wooteco.subway.repository.exception;
 
 public class DuplicateLineNameException extends IllegalArgumentException {
 

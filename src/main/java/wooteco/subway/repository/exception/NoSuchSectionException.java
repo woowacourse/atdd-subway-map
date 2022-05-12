@@ -1,4 +1,4 @@
-package wooteco.subway.repository.exception.section;
+package wooteco.subway.repository.exception;
 
 import java.util.NoSuchElementException;
 

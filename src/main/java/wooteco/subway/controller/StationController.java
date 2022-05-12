@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.repository.exception.station.DuplicateStationNameException;
+import wooteco.subway.repository.exception.DuplicateStationNameException;
 import wooteco.subway.service.StationService;
 import wooteco.subway.service.dto.station.StationRequest;
 import wooteco.subway.service.dto.station.StationResponse;

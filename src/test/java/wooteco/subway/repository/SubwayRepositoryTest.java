@@ -25,9 +25,9 @@ import wooteco.subway.domain.station.StationRepository;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.dao.StationDao;
-import wooteco.subway.repository.exception.line.DuplicateLineColorException;
-import wooteco.subway.repository.exception.line.DuplicateLineNameException;
-import wooteco.subway.repository.exception.station.DuplicateStationNameException;
+import wooteco.subway.repository.exception.DuplicateLineColorException;
+import wooteco.subway.repository.exception.DuplicateLineNameException;
+import wooteco.subway.repository.exception.DuplicateStationNameException;
 
 @JdbcTest
 class SubwayRepositoryTest {
