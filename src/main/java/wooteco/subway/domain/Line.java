@@ -31,6 +31,11 @@ public class Line {
         sections.addSection(section);
     }
 
+    public void addSection(Station upStation, Station downStation, Integer distance) {
+        Section section = new Section(upStation, downStation, distance);
+        sections.addSection(section);
+    }
+
     public Long getId() {
         return id;
     }

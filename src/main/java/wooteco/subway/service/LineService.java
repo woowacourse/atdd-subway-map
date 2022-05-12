@@ -11,6 +11,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.NotFoundException;
 
@@ -85,5 +86,30 @@ public class LineService {
     public void delete(Long id) {
         validateById(id);
         lineDao.deleteById(id);
+    }
+
+    @Transactional
+    public void addStationToLine(Long lineId, SectionRequest request) {
+        Line line = findLineById(lineId);
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        line.addSection(upStation, downStation, request.getDistance());
+
+        updateSection(line);
+    }
+
+    private Line findLineById(Long id) {
+        if (!lineDao.existById(id)) {
+            throw new NotFoundException("해당되는 노선은 존재하지 않습니다.");
+        }
+        return lineDao.findById(id);
+    }
+
+    private void updateSection(Line line) {
+        if (!sectionDao.existByLineId(line.getId())) {
+            throw new IllegalArgumentException("존재하지 않는 노선 id입니다.");
+        }
+        sectionDao.deleteByLineId(line.getId());
+        sectionDao.saveSections(line);
     }
 }

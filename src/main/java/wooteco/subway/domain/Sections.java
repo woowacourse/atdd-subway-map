@@ -107,4 +107,8 @@ public class Sections {
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("상행 종점이 존재하지 않습니다."));
     }
+
+    public List<Section> getSections() {
+        return sections;
+    }
 }

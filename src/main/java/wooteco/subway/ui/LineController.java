@@ -3,6 +3,7 @@ package wooteco.subway.ui;
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -55,5 +57,12 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<Void> addStationToLine(@PathVariable Long lineId,
+        @RequestBody @Valid SectionRequest sectionRequest) {
+        lineService.addStationToLine(lineId, sectionRequest);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

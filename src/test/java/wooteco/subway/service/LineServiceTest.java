@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +25,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.NotFoundException;
 
@@ -116,6 +118,101 @@ class LineServiceTest {
         void 존재하지_않는_역의_id가_입력된_경우_예외발생() {
             assertThatThrownBy(() -> lineService.findById(9999L))
                 .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+
+    @DisplayName("update 메서드는 데이터를 수정한다.")
+    @Nested
+    class UpdateClass {
+
+        @Test
+        void 유효한_입력값인_경우_성공() {
+            LineRequest lineRequest = new LineRequest("5호선", "보라색", 1L, 2L, 5);
+
+            lineService.update(1L, lineRequest);
+
+            LineResponse actual = lineService.findById(1L);
+            assertAll(() -> {
+                assertThat(actual.getName()).isEqualTo("5호선");
+                assertThat(actual.getColor()).isEqualTo("보라색");
+            });
+        }
+
+        @Test
+        void 중복되는_이름으로_수정하려는_경우_예외발생() {
+            LineRequest lineRequest = new LineRequest("2호선", "보라색", 1L, 2L, 5);
+
+            assertThatThrownBy(() -> lineService.update(1L, lineRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 존재하지_않는_노선을_수정하려는_경우_예외발생() {
+            LineRequest lineRequest = new LineRequest("1호선", "보라색", 1L, 2L, 10);
+
+            assertThatThrownBy(() -> lineService.update(9999L, lineRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @DisplayName("delete 메서드는 데이터를 삭제한다")
+    @Nested
+    class DeleteTest {
+
+        @Test
+        void 존재하는_노선의_id가_입력된_경우_성공() {
+            assertThatCode(() -> lineService.delete(1L)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void 존재하지_않는_노선의_id가_입력된_경우_예외발생() {
+            assertThatThrownBy(() -> lineService.delete(9999L))
+                .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @DisplayName("addStationToLine 메서드는 노선에 구간을 추가한다.")
+    @Nested
+    class AddStationToLineTest {
+
+        @Test
+        void 유효한_구간을_입력한_경우_성공() {
+            SectionRequest request = new SectionRequest(2L, 8L, 3);
+
+            assertThatCode(() -> lineService.addStationToLine(1L, request)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void 상행역과_하행역이_둘다_등록되어_있는_경우_예외발생() {
+            SectionRequest request = new SectionRequest(1L, 3L, 3);
+
+            assertThatThrownBy(() -> lineService.addStationToLine(1L, request))
+                .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 상행역과_하행역이_둘다_포함되어_있지_않은_경우_예외발생() {
+            SectionRequest request = new SectionRequest(7L, 8L, 3);
+
+            assertThatThrownBy(() -> lineService.addStationToLine(1L, request))
+                .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 기존_역_사이_길이보다_크면_예외발생() {
+            SectionRequest request = new SectionRequest(1L, 8L, 12);
+
+            assertThatThrownBy(() -> lineService.addStationToLine(1L, request))
+                .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 기존_역_사이_길이와_같으면_예외발생() {
+            SectionRequest request = new SectionRequest(1L, 8L, 10);
+
+            assertThatThrownBy(() -> lineService.addStationToLine(1L, request))
+                .isInstanceOf(IllegalArgumentException.class);
         }
     }
 }
