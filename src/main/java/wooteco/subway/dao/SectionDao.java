@@ -1,13 +1,12 @@
 package wooteco.subway.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.Objects;
+import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -25,23 +24,18 @@ public class SectionDao {
             resultSet.getInt("distance"));
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insertActor;
 
-    public SectionDao(final JdbcTemplate jdbcTemplate) {
+    public SectionDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.insertActor = new SimpleJdbcInsert(dataSource)
+                .withTableName("SECTION")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Long save(final Section section) {
-        final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update((Connection con) -> {
-            PreparedStatement pstmt = con.prepareStatement(sql, new String[]{"id"});
-            pstmt.setLong(1, section.getLineId());
-            pstmt.setLong(2, section.getUpStationId());
-            pstmt.setLong(3, section.getDownStationId());
-            pstmt.setInt(4, section.getDistance());
-            return pstmt;
-        }, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(section);
+        return insertActor.executeAndReturnKey(parameters).longValue();
     }
 
     public Sections findAllByLineId(final Long id) {

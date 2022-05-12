@@ -7,6 +7,7 @@ import static wooteco.subway.Fixtures.LINE_2;
 import static wooteco.subway.Fixtures.RED;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,11 +23,15 @@ public class LineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private DataSource dataSource;
+
     private LineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new LineDao(jdbcTemplate, dataSource);
     }
 
     @Test

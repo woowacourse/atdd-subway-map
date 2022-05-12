@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.Fixtures.GANGNAM;
@@ -9,7 +8,7 @@ import static wooteco.subway.Fixtures.LINE_2;
 import static wooteco.subway.Fixtures.RED;
 import static wooteco.subway.Fixtures.SINSA;
 
-import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +26,9 @@ public class SectionDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DataSource dataSource;
+
     private StationDao stationDao;
     private LineDao lineDao;
     private SectionDao sectionDao;
@@ -34,8 +36,8 @@ public class SectionDaoTest {
     @BeforeEach
     void setUp() {
         stationDao = new StationDao(jdbcTemplate);
-        lineDao = new LineDao(jdbcTemplate);
-        sectionDao = new SectionDao(jdbcTemplate);
+        lineDao = new LineDao(jdbcTemplate, dataSource);
+        sectionDao = new SectionDao(jdbcTemplate, dataSource);
     }
 
     @Test

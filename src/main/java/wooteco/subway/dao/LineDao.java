@@ -1,14 +1,13 @@
 package wooteco.subway.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
+import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.notfound.NotFoundLineException;
@@ -17,21 +16,18 @@ import wooteco.subway.exception.notfound.NotFoundLineException;
 public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insertActor;
 
-    public LineDao(final JdbcTemplate jdbcTemplate) {
+    public LineDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.insertActor = new SimpleJdbcInsert(dataSource)
+                .withTableName("LINE")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Long save(final Line line) {
-        final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
-        jdbcTemplate.update((Connection con) -> {
-            PreparedStatement pstmt = con.prepareStatement(sql, new String[]{"id"});
-            pstmt.setString(1, line.getName());
-            pstmt.setString(2, line.getColor());
-            return pstmt;
-        }, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        return insertActor.executeAndReturnKey(parameters).longValue();
     }
 
     public List<Line> findAll() {

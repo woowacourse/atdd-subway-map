@@ -72,5 +72,4 @@ public class LineController {
         lineService.deleteSection(id, stationId);
         return ResponseEntity.ok().build();
     }
-
 }
