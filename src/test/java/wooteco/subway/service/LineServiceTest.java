@@ -122,8 +122,6 @@ class LineServiceTest {
         lineDao.save(new LineDto("2호선", "bg-green-400"));
         Line savedLine = lineService.save(new LineRequest("4호선", "bg-purple-600", up.getId(), down.getId(), 3));
 
-        Line newLine = new Line("2호선", "bg-brown-600");
-
         assertThatThrownBy(() -> lineService.update(savedLine.getId(), new LineEditRequest("2호선", "bg-brown-600")))
                 .isInstanceOf(DuplicateKeyException.class)
                 .hasMessageContaining("이미 존재하는 노선");
