@@ -1,9 +1,11 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.LongerSectionDistanceException;
@@ -30,6 +32,9 @@ public class Sections {
     }
 
     private Section findUpSection(List<Section> sections) {
+        if (sections.size() == 1) {
+            return sections.get(0);
+        }
         return sections.stream()
                 .filter(section -> section.isUpSection(sections))
                 .findAny()
@@ -146,14 +151,12 @@ public class Sections {
     }
 
     public List<Long> getAllStationIds() {
-        List<Long> allStationIds = new ArrayList<>();
+        Set<Long> ids = new LinkedHashSet<>();
         for (Section section : values) {
-            allStationIds.add(section.getUpStationId());
-            allStationIds.add(section.getDownStationId());
+            ids.add(section.getUpStationId());
+            ids.add(section.getDownStationId());
         }
-        return allStationIds.stream()
-                .distinct()
-                .collect(Collectors.toUnmodifiableList());
+        return new ArrayList<>(ids);
     }
 
     @Override

@@ -48,11 +48,14 @@ public class StationDaoImpl implements StationDao {
 
     @Override
     public List<Station> findByIds(List<Long> ids) {
-        String sql = "select * from station where id in (";
-        sql += ids.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(", ")) + ")";
+        String sql = "select * from station where id in (" + stringify(ids) + ")";
         return jdbcTemplate.query(sql, actorRowMapper);
+    }
+
+    private String stringify(List<Long> ids) {
+        return ids.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
     }
 
     @Override

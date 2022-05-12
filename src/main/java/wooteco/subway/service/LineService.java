@@ -11,6 +11,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -92,8 +93,9 @@ public class LineService {
         validateId(id);
         Line line = lineDao.findById(id);
         Sections sections = new Sections(sectionDao.findByLineId(id));
-        List<StationResponse> stations = stationDao
-                .findByIds(sections.getAllStationIds())
+        List<Long> stationIds = sections.getAllStationIds();
+        Stations unSortedStations = new Stations(stationDao.findByIds(stationIds));
+        List<StationResponse> stations = unSortedStations.sortByOrder(stationIds)
                 .stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());

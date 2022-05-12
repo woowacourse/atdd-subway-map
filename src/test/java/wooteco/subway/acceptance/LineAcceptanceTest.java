@@ -164,7 +164,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         requestToCreateStation("사당역");
         requestToCreateStation("선릉역");
         requestToCreateLine("신분당선", "red", "1", "2", "10");
-        requestToConnectNewSection(1L, "2", "3", "4");
+        requestToConnectNewSection(1L, "3", "1", "4");
 
         //when
         final ExtractableResponse<Response> response = requestToFindLineById(1L);
@@ -180,12 +180,12 @@ class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(lineResponse.getId()).isEqualTo(1L),
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
-                () -> assertThat(firstStation.getId()).isEqualTo(1L),
-                () -> assertThat(firstStation.getName()).isEqualTo("강남역"),
-                () -> assertThat(secondStation.getId()).isEqualTo(2L),
-                () -> assertThat(secondStation.getName()).isEqualTo("사당역"),
-                () -> assertThat(thirdStation.getId()).isEqualTo(3L),
-                () -> assertThat(thirdStation.getName()).isEqualTo("선릉역")
+                () -> assertThat(firstStation.getId()).isEqualTo(3L),
+                () -> assertThat(firstStation.getName()).isEqualTo("선릉역"),
+                () -> assertThat(secondStation.getId()).isEqualTo(1L),
+                () -> assertThat(secondStation.getName()).isEqualTo("강남역"),
+                () -> assertThat(thirdStation.getId()).isEqualTo(2L),
+                () -> assertThat(thirdStation.getName()).isEqualTo("사당역")
         );
     }
 

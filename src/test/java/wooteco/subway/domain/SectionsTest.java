@@ -168,8 +168,10 @@ class SectionsTest {
     @DisplayName("모든 역들의 id를 순서대로 반환한다.")
     @Test
     void getAllStationIds() {
+        Section third = new Section(2L, lineId, 5L, 2L, 8);
+        Sections sections = new Sections(Arrays.asList(second, first, third));
         List<Long> allStationIds = sections.getAllStationIds();
 
-        assertThat(allStationIds).isEqualTo(Arrays.asList(2L, 3L, 4L));
+        assertThat(allStationIds).isEqualTo(Arrays.asList(5L, 2L, 3L, 4L));
     }
 }
