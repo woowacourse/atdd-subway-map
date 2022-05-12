@@ -2,8 +2,8 @@ package wooteco.subway.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static wooteco.subway.controller.AcceptanceFixture.post;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -62,7 +61,7 @@ public class SectionControllerTest extends AcceptanceTest {
             params.put("downStationId", 동천역.getId());
             params.put("distance", 10);
 
-            ExtractableResponse<Response> response = AcceptanceFixture.post(params,
+            ExtractableResponse<Response> response = post(params,
                     "/lines/" + lineResponse.getId() + "/sections");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -76,7 +75,7 @@ public class SectionControllerTest extends AcceptanceTest {
             params.put("downStationId", 1001L);
             params.put("distance", 10);
 
-            ExtractableResponse<Response> response = AcceptanceFixture.post(params,
+            ExtractableResponse<Response> response = post(params,
                     "/lines/" + 1002L + "/sections");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -90,7 +89,7 @@ public class SectionControllerTest extends AcceptanceTest {
             params.put("downStationId", 판교역.getId());
             params.put("distance", 10);
 
-            ExtractableResponse<Response> response = AcceptanceFixture.post(params,
+            ExtractableResponse<Response> response = post(params,
                     "/lines/" + lineResponse.getId() + "/sections");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -104,7 +103,7 @@ public class SectionControllerTest extends AcceptanceTest {
             params.put("downStationId", 정자역.getId());
             params.put("distance", 30);
 
-            ExtractableResponse<Response> response = AcceptanceFixture.post(params,
+            ExtractableResponse<Response> response = post(params,
                     "/lines/" + lineResponse.getId() + "/sections");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -112,34 +111,65 @@ public class SectionControllerTest extends AcceptanceTest {
     }
 
 
+    @Nested
+    @DisplayName("제거 `DELETE /lines/{id}/sections?stationId=?`")
+    class delete {
 
-    @DisplayName("구간을 삭제한다.")
-    @Test
-    void delete() {
-        Station 동천역 = stationDao.save(new Station("동천역"));
-        Station 정자역 = stationDao.save(new Station("정자역"));
-        Station 판교역 = stationDao.save(new Station("판교역"));
-        Station 미금역 = stationDao.save(new Station("미금역"));
-        LineResponse lineResponse = lineService.save(new LineRequest("신분당선", "red", 판교역.getId(),
-                동천역.getId(), 20));
-        sectionService.save(new SectionRequest(판교역.getId(), 정자역.getId(), 5), lineResponse.getId());
-        sectionService.save(new SectionRequest(정자역.getId(), 미금역.getId(), 5), lineResponse.getId());
+        private Station 동천역;
+        private Station 정자역;
+        private Station 판교역;
+        private Station 미금역;
+        private LineResponse lineResponse;
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("stationId", 정자역.getId());
+        @BeforeEach
+        void setUp() {
+            동천역 = stationDao.save(new Station("동천역"));
+            정자역 = stationDao.save(new Station("정자역"));
+            판교역 = stationDao.save(new Station("판교역"));
+            미금역 = stationDao.save(new Station("미금역"));
+            lineResponse = lineService.save(new LineRequest("신분당선", "red", 판교역.getId(),
+                    동천역.getId(), 20));
+            sectionService.save(new SectionRequest(판교역.getId(), 정자역.getId(), 5), lineResponse.getId());
+            sectionService.save(new SectionRequest(정자역.getId(), 미금역.getId(), 5), lineResponse.getId());
+        }
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .params(params)
-                .delete("/lines/" + lineResponse.getId() + "/sections")
-                .then().log().all()
-                .extract();
-        List<StationResponse> allStationResponseByLineId = lineService.findAllStationResponseByLineId(
-                lineResponse.getId());
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(allStationResponseByLineId).hasSize(3)
-        );
+        @DisplayName("성공")
+        @Test
+        void delete() {
+            Map<String, Object> params = new HashMap<>();
+            params.put("stationId", 정자역.getId());
+            ExtractableResponse<Response> response = AcceptanceFixture.delete(params,
+                    "/lines/" + lineResponse.getId() + "/sections");
+
+            List<StationResponse> allStationResponseByLineId = lineService.findAllStationResponseByLineId(
+                    lineResponse.getId());
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(allStationResponseByLineId).hasSize(3)
+            );
+        }
+
+        @DisplayName("노선, 역이 존재하지 않은 id이면 404을 응답한다.")
+        @Test
+        void notFoundLineAndStation() {
+            Map<String, Object> params = new HashMap<>();
+            params.put("stationId", 1000L);
+            ExtractableResponse<Response> response = AcceptanceFixture.delete(params,
+                    "/lines/" + 1001L + "/sections");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
+
+        @DisplayName("노선에 역이 포함되지 않으면 400을 응답한다.")
+        @Test
+        void notContainsSection() {
+            Station 선릉역 = stationDao.save(new Station("선릉역"));
+            Map<String, Object> params = new HashMap<>();
+            params.put("stationId", 선릉역.getId());
+            ExtractableResponse<Response> response = AcceptanceFixture.delete(params,
+                    "/lines/" + lineResponse.getId() + "/sections");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
     }
 }

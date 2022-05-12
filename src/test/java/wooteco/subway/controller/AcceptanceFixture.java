@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Map;
 import org.springframework.http.MediaType;
 
 public class AcceptanceFixture {
@@ -40,6 +41,16 @@ public class AcceptanceFixture {
     public static ExtractableResponse<Response> delete(String path) {
         return RestAssured.given().log().all()
                 .when()
+                .delete(path)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> delete(Map<String, Object> params, String path) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .params(params)
                 .delete(path)
                 .then().log().all()
                 .extract();
