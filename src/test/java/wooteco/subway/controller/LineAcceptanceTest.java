@@ -5,193 +5,242 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@SuppressWarnings("NonAsciiCharacters")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    @Autowired
-    private LineDao lineDao;
-    @Autowired
-    private StationDao stationDao;
+    private Long 선릉역_id;
+    private Long 선정릉역_id;
 
-    private Station savedStation1;
-    private Station savedStation2;
-
-    private final String basicPath = "lines";
+    private final String basicPath = "/lines";
 
     @BeforeEach
     void setUpStations() {
-        savedStation1 = stationDao.insert(new Station("선릉역"));
-        savedStation2 = stationDao.insert(new Station("선정릉역"));
+        선릉역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("선릉역"), "/stations")
+                .jsonPath().getObject(".", StationResponse.class).getId();
+        선정릉역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("선정릉역"), "/stations")
+                .jsonPath().getObject(".", StationResponse.class).getId();
     }
 
     @DisplayName("지하철 노선을 등록한다.")
     @Test
     void createLine() {
-        LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(),10);
+        // given
+        LineRequest request = new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10);
 
-        ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, basicPath);
+        // when
+        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        // then
+        Long responseLineId = response.jsonPath().getObject(".", LineResponse.class).getId();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isEqualTo("/lines/" + responseLineId)
+        );
     }
 
     @DisplayName("비어있는 이름으로 역을 생성하면 400번 코드를 반환한다.")
     @Test
     void createLineWithInvalidNameDateSize() {
-        LineRequest request = new LineRequest("", "red", savedStation1.getId(), savedStation2.getId(), 10);
+        // given
+        LineRequest request = new LineRequest("", "yellow", 선릉역_id, 선정릉역_id, 10);
 
+        // when
         ExtractableResponse<Response> response =
                 RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("비어있는 색으로 역을 생성하면 400번 코드를 반환한다.")
     @Test
     void createLineWithInvalidColorDateSize() {
-        LineRequest request = new LineRequest("신분당선", "", savedStation1.getId(), savedStation2.getId(), 10);
+        // given
+        LineRequest request = new LineRequest("분당선", "", 선릉역_id, 선정릉역_id, 10);
 
+        // when
         ExtractableResponse<Response> response =
                 RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 400번 코드를 반환한다.")
     @Test
     void throwsExceptionWhenCreateDuplicatedName() {
-        lineDao.insert(new Line("신분당선", "red"));
-        LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(), 10);
+        // given
+        LineRequest request = new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10);
+        RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
+        // when
         ExtractableResponse<Response> response =
                 RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("상행, 역이 같은 가진 지하철 노선을 등록할 때 400번 코드를 반환한다.")
     @Test
     void throwsExceptionWhenCreateLineWithSameUpDownStation() {
-        lineDao.insert(new Line("신분당선", "red"));
-        LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 10);
+        // given
+        LineRequest request = new LineRequest("분당선", "yellow", 선릉역_id, 선릉역_id, 10);
 
+        // when
         ExtractableResponse<Response> response =
                 RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("존재하지 않는 역으로 지하철 노선을 등록할 때 400번 코드를 반환한다.")
     @Test
     void throwsExceptionWhenCreateLineWithNonExistStation() {
-        lineDao.insert(new Line("신분당선", "red"));
-        LineRequest request = new LineRequest("신분당선", "red", 100L, savedStation1.getId(), 10);
+        // given
+        LineRequest request = new LineRequest("분당선", "yellow", 선릉역_id, 100L, 10);
 
+        // when
         ExtractableResponse<Response> response =
                 RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("0이하의 거리를 가진 구간으로 지하철 노선을 등록할 때 400번 코드를 반환한다.")
     @Test
     void throwsExceptionWhenCreateLineWithInvalidDistance() {
-        lineDao.insert(new Line("신분당선", "red"));
-        LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 0);
+        // given
+        LineRequest request = new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 0);
 
+        // when
         ExtractableResponse<Response> response =
                 RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        Line savedLine1 = lineDao.insert(new Line("신분당선", "red"));
-        Line savedLine2 = lineDao.insert(new Line("1호선", "blue"));
+        // given
+        LineResponse createResponse1 = RestAssuredConvenienceMethod.postRequest(
+                new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), basicPath)
+                .jsonPath().getObject(".", LineResponse.class);
+        LineResponse createResponse2 = RestAssuredConvenienceMethod.postRequest(
+                new LineRequest("신분당선", "yellow", 선릉역_id, 선정릉역_id, 10), basicPath)
+                .jsonPath().getObject(".", LineResponse.class);
 
+         // when
         ExtractableResponse<Response> response = RestAssuredConvenienceMethod.getRequest(basicPath);
+
+        // then
         List<LineResponse> actual = response.jsonPath().getList(".", LineResponse.class);
-
         assertAll(
-                () -> assertThat(actual.get(0).getId()).isEqualTo(savedLine1.getId()),
-                () -> assertThat(actual.get(0).getName()).isEqualTo(savedLine1.getName()),
-                () -> assertThat(actual.get(0).getColor()).isEqualTo(savedLine1.getColor()),
+                () -> assertThat(actual.get(0).getId()).isEqualTo(createResponse1.getId()),
+                () -> assertThat(actual.get(0).getName()).isEqualTo(createResponse1.getName()),
+                () -> assertThat(actual.get(0).getColor()).isEqualTo(createResponse1.getColor()),
 
-                () -> assertThat(actual.get(1).getId()).isEqualTo(savedLine2.getId()),
-                () -> assertThat(actual.get(1).getName()).isEqualTo(savedLine2.getName()),
-                () -> assertThat(actual.get(1).getColor()).isEqualTo(savedLine2.getColor())
+                () -> assertThat(actual.get(1).getId()).isEqualTo(createResponse2.getId()),
+                () -> assertThat(actual.get(1).getName()).isEqualTo(createResponse2.getName()),
+                () -> assertThat(actual.get(1).getColor()).isEqualTo(createResponse2.getColor())
         );
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        Line line = lineDao.insert(new Line("신분당선", "red"));
+        // given
+        LineResponse createResponse = RestAssuredConvenienceMethod.postRequest(
+                        new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), basicPath)
+                .jsonPath().getObject(".", LineResponse.class);
 
+        // when
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.getRequest("/lines/" + line.getId());
-        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+                RestAssuredConvenienceMethod.getRequest("/lines/" + createResponse.getId());
 
+        // then
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor())
+                () -> assertThat(lineResponse.getName()).isEqualTo(createResponse.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(createResponse.getColor())
         );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        Line line = lineDao.insert(new Line("신분당선", "red"));
+        // given
+        LineResponse createResponse = RestAssuredConvenienceMethod.postRequest(
+                        new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), basicPath)
+                .jsonPath().getObject(".", LineResponse.class);
         Line requestBody = new Line("다른분당선", "blue");
 
+        // when
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.putRequest(requestBody, MediaType.APPLICATION_JSON_VALUE, "/lines/" + line.getId());
+                RestAssuredConvenienceMethod.putRequest(requestBody, MediaType.APPLICATION_JSON_VALUE, "/lines/" + createResponse.getId());
 
-        Line updatedLine = lineDao.findById(line.getId());
+
+        // then
+        LineResponse findResponse =
+                RestAssuredConvenienceMethod.getRequest("/lines/" + createResponse.getId())
+                        .jsonPath().getObject(".", LineResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(updatedLine.getName()).isEqualTo("다른분당선"),
-                () -> assertThat(updatedLine.getColor()).isEqualTo("blue")
+                () -> assertThat(findResponse.getName()).isEqualTo("다른분당선"),
+                () -> assertThat(findResponse.getColor()).isEqualTo("blue")
         );
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        Line savedLine = lineDao.insert(new Line("신분당선", "red"));
+        // given
+        LineResponse createResponse = RestAssuredConvenienceMethod.postRequest(
+                        new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), basicPath)
+                .jsonPath().getObject(".", LineResponse.class);
 
-        RestAssuredConvenienceMethod.deleteRequest("/lines/" + savedLine.getId());
-        List<Line> lines = lineDao.findAll();
+        // when
+        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.deleteRequest("/lines/" + createResponse.getId());
 
-        assertThat(lines.contains(savedLine)).isFalse();
+        // then
+        List<LineResponse> lineResponses = RestAssuredConvenienceMethod.getRequest(basicPath)
+                .jsonPath().getList(".", LineResponse.class);
+        List<Long> lineIds = lineResponses.stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(lineIds).doesNotContain(createResponse.getId())
+        );
     }
 
     @DisplayName("존재하지 않는 데이터를 삭제하려고 한다면 400번 코드를 반환한다.")
     @Test
     void deleteLineWithNotExistData() {
-        Line savedLine = lineDao.insert(new Line("신분당선", "red"));
-
+        // when
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.deleteRequest("/lines/" + (savedLine.getId() + 1));
+                RestAssuredConvenienceMethod.deleteRequest("/lines/" + 100L);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
