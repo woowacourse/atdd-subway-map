@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -10,6 +9,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -51,48 +51,12 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-        List<Section> sections = sectionDao.findAllByLineId(id);
-        List<Station> stations = getStationIds(sections).stream()
+        Sections sections = sectionDao.findAllByLineId(id);
+        List<Station> stations = sections.getStationIds().stream()
                 .map(stationDao::findById)
                 .collect(Collectors.toList());
 
         return LineResponse.of(line, stations);
-    }
-
-    private List<Long> getStationIds(List<Section> sections) {
-        List<Long> stationIds = new ArrayList<>();
-
-        Long upStationId = getUpStationId(sections);
-        stationIds.add(upStationId);
-
-        while (stationIds.size() != sections.size() + 1) {
-            Long downStationId = getDownStationId(sections, upStationId);
-            stationIds.add(downStationId);
-            upStationId = downStationId;
-        }
-
-        return stationIds;
-    }
-
-    private Long getUpStationId(List<Section> sections) {
-        List<Long> upStationIds = sections.stream()
-                .map(Section::getUpStationId)
-                .collect(Collectors.toList());
-
-        List<Long> downStationIds = sections.stream()
-                .map(Section::getDownStationId)
-                .collect(Collectors.toList());
-
-        upStationIds.removeAll(downStationIds);
-        return upStationIds.get(0);
-    }
-
-    private Long getDownStationId(List<Section> sections, Long upStationId) {
-        return sections.stream()
-                .filter(section -> section.getUpStationId().equals(upStationId))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new)
-                .getDownStationId();
     }
 
     @Transactional

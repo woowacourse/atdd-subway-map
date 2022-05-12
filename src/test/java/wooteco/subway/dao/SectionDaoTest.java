@@ -96,7 +96,7 @@ class SectionDaoTest {
 
     @Test
     @DisplayName("id로 노선을 삭제한다.")
-    void DeleteById() {
+    void deleteById() {
         Station upStation = stationDao.save(new Station("강남역"));
         Station downStation = stationDao.save(new Station("선릉역"));
         Line line = lineDao.save(new Line("2호선", "green"));

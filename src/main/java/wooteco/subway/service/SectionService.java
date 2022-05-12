@@ -9,6 +9,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.SectionRequest;
 
@@ -61,5 +62,26 @@ public class SectionService {
 
     private void extend(Section newSection) {
         sectionDao.save(newSection);
+    }
+
+    public void delete(Long lineId, Long stationId) {
+        Sections sections = sectionDao.findAllByLineId(lineId);
+        Sections sectionsToDelete = sections.getSectionsToDelete(stationId);
+        List<Long> sectionIds = sectionsToDelete.getSectionIds();
+        deleteSections(sectionIds);
+        mergeSectionsIfNecessary(sectionsToDelete);
+    }
+
+    private void deleteSections(List<Long> sectionIds) {
+        for (Long id : sectionIds) {
+            sectionDao.deleteById(id);
+        }
+    }
+
+    private void mergeSectionsIfNecessary(Sections sectionsToDelete) {
+        if (sectionsToDelete.size() == 2) {
+            Section mergedSection = sectionsToDelete.merge();
+            sectionDao.save(mergedSection);
+        }
     }
 }

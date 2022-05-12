@@ -140,4 +140,96 @@ class SectionServiceTest {
         assertThatThrownBy(() -> sectionService.save(lineResponse.getId(), sectionRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("상행 종점을 제거한다.")
+    @Test
+    void deleteUpStation() {
+        Station station1 = stationDao.save(new Station("강남역"));
+        Station station2 = stationDao.save(new Station("선릉역"));
+        Station station3 = stationDao.save(new Station("잠실역"));
+        LineResponse lineResponse = lineService.save(new LineRequest(
+                "2호선",
+                "green",
+                station1.getId(),
+                station2.getId(),
+                10));
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 10);
+        sectionService.save(lineResponse.getId(), sectionRequest);
+
+        sectionService.delete(lineResponse.getId(), station1.getId());
+
+        assertThat(sectionDao.findAllByLineId(lineResponse.getId()).size()).isEqualTo(1);
+    }
+
+    @DisplayName("하행 종점을 제거한다.")
+    @Test
+    void deleteDownStation() {
+        Station station1 = stationDao.save(new Station("강남역"));
+        Station station2 = stationDao.save(new Station("선릉역"));
+        Station station3 = stationDao.save(new Station("잠실역"));
+        LineResponse lineResponse = lineService.save(new LineRequest(
+                "2호선",
+                "green",
+                station1.getId(),
+                station2.getId(),
+                10));
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 10);
+        sectionService.save(lineResponse.getId(), sectionRequest);
+
+        sectionService.delete(lineResponse.getId(), station3.getId());
+
+        assertThat(sectionDao.findAllByLineId(lineResponse.getId()).size()).isEqualTo(1);
+    }
+
+    @DisplayName("중간역을 제거한다.")
+    @Test
+    void deleteMiddleStation() {
+        Station station1 = stationDao.save(new Station("강남역"));
+        Station station2 = stationDao.save(new Station("선릉역"));
+        Station station3 = stationDao.save(new Station("잠실역"));
+        LineResponse lineResponse = lineService.save(new LineRequest(
+                "2호선",
+                "green",
+                station1.getId(),
+                station2.getId(),
+                10));
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 10);
+        sectionService.save(lineResponse.getId(), sectionRequest);
+
+        sectionService.delete(lineResponse.getId(), station2.getId());
+
+        assertThat(sectionDao.findAllByLineId(lineResponse.getId()).size()).isEqualTo(1);
+    }
+
+    @DisplayName("구간이 하나뿐인 노선에서 구간을 제거할 경우 예외가 발생한다.")
+    @Test
+    void deleteOnlySection() {
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("선릉역"));
+        LineRequest lineRequest = new LineRequest("2호선", "green", upStation.getId(), downStation.getId(), 10);
+        LineResponse lineResponse = lineService.save(lineRequest);
+
+        assertThatThrownBy(() -> sectionService.delete(lineResponse.getId(), downStation.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선에 존재하지 않는 역을 제거할 경우 예외가 발생한다.")
+    @Test
+    void deleteNotExistingStation() {
+        Station station1 = stationDao.save(new Station("강남역"));
+        Station station2 = stationDao.save(new Station("선릉역"));
+        Station station3 = stationDao.save(new Station("잠실역"));
+        Station station4 = stationDao.save(new Station("성수역"));
+        LineResponse lineResponse = lineService.save(new LineRequest(
+                "2호선",
+                "green",
+                station1.getId(),
+                station2.getId(),
+                10));
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 10);
+        sectionService.save(lineResponse.getId(), sectionRequest);
+
+        assertThatThrownBy(() -> sectionService.delete(lineResponse.getId(), station4.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

@@ -58,6 +58,18 @@ public class Section {
         return this.distance - distance;
     }
 
+    public boolean contains(Long stationId) {
+        return upStationId.equals(stationId) || downStationId.equals(stationId);
+    }
+
+    public Section merge(Section section) {
+        int totalDistance = this.distance + section.getDistance();
+        if (this.downStationId.equals(section.getUpStationId())) {
+            return new Section(lineId, this.upStationId, section.getDownStationId(), totalDistance);
+        }
+        return new Section(lineId, section.getUpStationId(), this.downStationId, totalDistance);
+    }
+
     public Long getId() {
         return id;
     }

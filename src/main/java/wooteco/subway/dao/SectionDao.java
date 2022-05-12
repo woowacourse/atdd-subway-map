@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 @Repository
 public class SectionDao {
@@ -41,13 +41,13 @@ public class SectionDao {
                 section.getDistance());
     }
 
-    public List<Section> findAllByLineId(Long id) {
+    public Sections findAllByLineId(Long id) {
         String sql = "SELECT * FROM section WHERE line_id = :line_id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("line_id", id);
 
-        return jdbcTemplate.query(sql, params, getRowMapper());
+        return new Sections(jdbcTemplate.query(sql, params, getRowMapper()));
     }
 
     public Optional<Section> findBy(Long lineId, Long upStationId, Long downStationId) {

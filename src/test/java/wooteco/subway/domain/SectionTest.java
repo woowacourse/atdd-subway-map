@@ -28,7 +28,7 @@ class SectionTest {
     @Test
     void split() {
         Section section = new Section(1L, 1L, 1L, 2L, 10);
-        List<Section> sections = section.split(new Section(1L, 1L, 1L, 3L, 5));
+        List<Section> sections = section.split(new Section(2L, 1L, 1L, 3L, 5));
 
         assertAll(
                 () -> assertThat(sections.size()).isEqualTo(2),
@@ -45,7 +45,16 @@ class SectionTest {
     @Test
     void split_InvalidDistance_ThrowsException() {
         Section section = new Section(1L, 1L, 1L, 2L, 10);
-        assertThatThrownBy(() -> section.split(new Section(1L, 1L, 1L, 3L, 15)))
+        assertThatThrownBy(() -> section.split(new Section(2L, 1L, 1L, 3L, 15)))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("두 구간을 합친다.")
+    @Test
+    void merge() {
+        Section section = new Section(1L, 1L, 1L, 2L, 10);
+        Section mergedSection = section.merge(new Section(2L, 1L, 2L, 3L, 10));
+
+        assertThat(mergedSection.getDistance()).isEqualTo(20);
     }
 }
