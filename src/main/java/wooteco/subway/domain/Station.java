@@ -1,29 +1,19 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import wooteco.subway.domain.vo.StationName;
 
 public class Station {
     private Long id;
-    private String name;
+    private StationName name;
 
     public Station(String name) {
         this(null, name);
     }
 
     public Station(Long id, String name) {
-        validateArgument(name);
-
         this.id = id;
-        this.name = name;
-    }
-
-    private void validateArgument(String name) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("지하철역 이름이 공백일 수 없습니다.");
-        }
-        if (name.length() > 255) {
-            throw new IllegalArgumentException("지하철역 이름은 255자 보다 크거나 같을 수 없습니다.");
-        }
+        this.name = StationName.of(name);
     }
 
     public Long getId() {
@@ -31,7 +21,7 @@ public class Station {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     @Override
@@ -51,4 +41,3 @@ public class Station {
         return Objects.hash(name);
     }
 }
-
