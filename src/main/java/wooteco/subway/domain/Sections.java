@@ -49,13 +49,13 @@ public class Sections {
     private void processFork(Section existingSection, Section newSection) {
         checkDistance(existingSection, newSection);
 
-        sameUpstationInFork(existingSection, newSection);
+        sameUpStationInFork(existingSection, newSection);
         sameDownStationInFork(existingSection, newSection);
 
         sections.remove(existingSection);
     }
 
-    private void sameUpstationInFork(Section existingSection, Section newSection) {
+    private void sameUpStationInFork(Section existingSection, Section newSection) {
         if (existingSection.getUpStationId().equals(newSection.getUpStationId())) {
             final Section section = new Section(existingSection.getId(), existingSection.getLineId(), newSection.getDownStationId(),
                     existingSection.getDownStationId(), existingSection.getDistance() - newSection.getDistance());
@@ -81,7 +81,7 @@ public class Sections {
 
     private void isPossibleRegistration(Section section) {
         sections.stream()
-                .filter(s -> s.isContainStation(section))
+                .filter(s -> s.containsStation(section))
                 .findAny()
                 .orElseThrow(() -> new IllegalSectionException("구간 등록이 불가능합니다."));
     }

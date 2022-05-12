@@ -41,7 +41,7 @@ public class Section {
         }
     }
 
-    public boolean isContainStation(Section section) {
+    public boolean containsStation(Section section) {
         return upStationId.equals(section.getDownStationId()) || downStationId.equals(section.getUpStationId());
     }
 
