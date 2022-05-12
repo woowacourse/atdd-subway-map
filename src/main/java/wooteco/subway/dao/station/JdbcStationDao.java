@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -24,7 +24,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station save(final Station station) {
+    public long save(final Station station) {
         final String sql = "insert into STATION (name) values (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -34,14 +34,19 @@ public class JdbcStationDao implements StationDao {
             return ps;
         }, keyHolder);
 
-        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Station(id, station.getName());
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     @Override
     public List<Station> findAll() {
         final String sql = "select * from STATION";
         return jdbcTemplate.query(sql, stationRowMapper);
+    }
+
+    @Override
+    public Station findById(final Long id) {
+        final String sql = "select * from STATION where id = ?";
+        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
     }
 
     @Override

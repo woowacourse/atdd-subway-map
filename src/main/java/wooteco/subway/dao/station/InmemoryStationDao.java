@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -29,10 +29,10 @@ public class InmemoryStationDao implements StationDao {
     }
 
     @Override
-    public Station save(Station station) {
+    public long save(Station station) {
         Station persistStation = createNewObject(station);
         stations.put(persistStation.getId(), persistStation);
-        return persistStation;
+        return persistStation.getId();
     }
 
     private Station createNewObject(Station station) {
@@ -45,6 +45,11 @@ public class InmemoryStationDao implements StationDao {
     @Override
     public List<Station> findAll() {
         return new ArrayList<>(stations.values());
+    }
+
+    @Override
+    public Station findById(final Long id) {
+        return stations.get(id);
     }
 
     @Override

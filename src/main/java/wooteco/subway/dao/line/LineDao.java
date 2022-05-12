@@ -1,11 +1,11 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.line;
 
 import java.util.List;
 import wooteco.subway.domain.Line;
 
 public interface LineDao {
 
-    Line save(Line line);
+    long save(Line line);
 
     Line findById(Long id);
 

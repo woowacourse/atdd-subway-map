@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -20,7 +20,7 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<SubwayErrorResponse> handleValidException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<SubwayErrorResponse> handleMethodValidException(MethodArgumentNotValidException exception) {
         return ResponseEntity.badRequest().body(SubwayErrorResponse.from(exception));
     }
 
@@ -40,12 +40,12 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<Void> handleDataAcessException() {
+    public ResponseEntity<Void> handleDataAccessException() {
         return ResponseEntity.internalServerError().build();
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Void> handleException(RuntimeException exception) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> handleException() {
         return ResponseEntity.internalServerError().build();
     }
 }

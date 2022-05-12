@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.line;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -29,10 +29,10 @@ public class InmemoryLineDao implements LineDao {
     }
 
     @Override
-    public Line save(final Line line) {
+    public long save(final Line line) {
         Line persistLine = createNewObject(line);
         lines.put(persistLine.getId(), persistLine);
-        return persistLine;
+        return persistLine.getId();
     }
 
     private Line createNewObject(Line line) {
