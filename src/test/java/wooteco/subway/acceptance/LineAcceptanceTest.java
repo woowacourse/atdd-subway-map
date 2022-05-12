@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.DbLineDao;
 import wooteco.subway.dao.DbStationDao;
 import wooteco.subway.dao.MemorySectionDao;
@@ -28,6 +29,7 @@ import static wooteco.subway.acceptance.utils.LineAcceptanceTestFixture.*;
 import static wooteco.subway.acceptance.utils.StationAcceptanceTestFixture.역_생성_요청;
 
 @DisplayName("지하철 노선 E2E")
+@Sql("/init.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired

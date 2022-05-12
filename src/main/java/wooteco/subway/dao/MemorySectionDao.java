@@ -50,6 +50,7 @@ public class MemorySectionDao implements SectionDao {
     }
 
     public void deleteAll() {
+        sequence = new AtomicLong();
         sections.clear();
     }
 }
