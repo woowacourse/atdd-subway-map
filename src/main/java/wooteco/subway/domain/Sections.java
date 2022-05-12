@@ -29,6 +29,13 @@ public class Sections {
         return new Sections(newSections);
     }
 
+    private static Station findUpStation(Map<Station, Station> stations) {
+        return stations.keySet().stream()
+            .filter(station -> !stations.containsValue(station))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("해당 구간을 찾을 수 없습니다."));
+    }
+
     private static List<Section> getSortedSections(List<Section> sections, Map<Station, Station> stations,
         Station upStation) {
         List<Section> newSections = new LinkedList<>();
@@ -44,14 +51,7 @@ public class Sections {
         return sections.stream()
             .filter(section -> section.hasUpStation(station))
             .findFirst()
-            .get();
-    }
-
-    private static Station findUpStation(Map<Station, Station> stations) {
-        return stations.keySet().stream()
-            .filter(station -> !stations.containsValue(station))
-            .findFirst()
-            .get();
+            .orElseThrow(() -> new IllegalArgumentException("해당 구간을 찾을 수 없습니다."));
     }
 
     public Optional<Section> insert(Section section) {
@@ -108,13 +108,13 @@ public class Sections {
         throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
     }
 
-    private boolean canInsertDownStation(Section section, Section sectionInLine) {
-        return sectionInLine.hasDownStation(section.getDownStation())
+    private boolean canInsertUpStation(Section section, Section sectionInLine) {
+        return sectionInLine.hasUpStation(section.getUpStation())
             && sectionInLine.isLongerThan(section.getDistance());
     }
 
-    private boolean canInsertUpStation(Section section, Section sectionInLine) {
-        return sectionInLine.hasUpStation(section.getUpStation())
+    private boolean canInsertDownStation(Section section, Section sectionInLine) {
+        return sectionInLine.hasDownStation(section.getDownStation())
             && sectionInLine.isLongerThan(section.getDistance());
     }
 
@@ -139,6 +139,26 @@ public class Sections {
         throw new IllegalArgumentException("해당 역이 구간에 존재하지 않습니다.");
     }
 
+    private void validateMinSize(LinkedList<Section> flexibleSections) {
+        if (flexibleSections.size() == MIN_SIZE) {
+            throw new IllegalArgumentException("한개 남은 구간은 제거할 수 없습니다.");
+        }
+    }
+
+    private boolean isTopStation(Station station, LinkedList<Section> flexibleSections) {
+        return flexibleSections.get(0).hasUpStation(station);
+    }
+
+    private UpdatedSection removeSideStation(LinkedList<Section> flexibleSections, int index) {
+        Section section = flexibleSections.remove(index);
+        sections = flexibleSections;
+        return UpdatedSection.of(section.getId());
+    }
+
+    private boolean isBottomStation(Station station, LinkedList<Section> flexibleSections, int lastIndex) {
+        return flexibleSections.get(lastIndex).hasDownStation(station);
+    }
+
     private Optional<UpdatedSection> deleteMiddleSection(Station station,
         LinkedList<Section> flexibleSections, int lastIndex) {
         for (int i = 0; i < lastIndex; i++) {
@@ -150,14 +170,6 @@ public class Sections {
         return Optional.empty();
     }
 
-    private boolean isBottomStation(Station station, LinkedList<Section> flexibleSections, int lastIndex) {
-        return flexibleSections.get(lastIndex).hasDownStation(station);
-    }
-
-    private boolean isTopStation(Station station, LinkedList<Section> flexibleSections) {
-        return flexibleSections.get(0).hasUpStation(station);
-    }
-
     private UpdatedSection removeMiddleStation(LinkedList<Section> flexibleSections, int index, Section leftSection) {
         Section rightSection = sections.get(index + 1);
         leftSection.updateDownStation(rightSection.getDownStation(),
@@ -165,18 +177,6 @@ public class Sections {
         flexibleSections.remove(rightSection);
         sections = flexibleSections;
         return UpdatedSection.from(rightSection.getId(), leftSection);
-    }
-
-    private UpdatedSection removeSideStation(LinkedList<Section> flexibleSections, int index) {
-        Section section = flexibleSections.remove(index);
-        sections = flexibleSections;
-        return UpdatedSection.of(section.getId());
-    }
-
-    private void validateMinSize(LinkedList<Section> flexibleSections) {
-        if (flexibleSections.size() == MIN_SIZE) {
-            throw new IllegalArgumentException("한개 남은 구간은 제거할 수 없습니다.");
-        }
     }
 
     public List<Section> getSections() {
