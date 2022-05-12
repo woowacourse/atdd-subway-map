@@ -24,7 +24,11 @@ public class LineService {
     }
 
     public LineResponse findLineInfos(Long id) {
-        return lineDao.findById(id);
+        var sections = sectionDao.findByLineId(id);
+        var stations = stationDao.find(sections.getUpStationId(), sections.getDownStationId());
+        var line = lineDao.findById(id);
+
+        return new LineResponse(line, stations);
     }
 
     public List<LineResponse> findAll() {
