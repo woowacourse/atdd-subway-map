@@ -53,4 +53,15 @@ public class SectionSeries {
             }
         );
     }
+
+    public Section findDeleteSections(Long stationId) {
+        return null;
+        // if (sections.size() <= 2) {
+        //     throw new RuntimeException("two small to delete");
+        // }
+        //
+        // return sections.stream()
+        //     .filter(section -> section.hasStationById(stationId))
+        //     .collect(Collectors.toList());
+    }
 }
