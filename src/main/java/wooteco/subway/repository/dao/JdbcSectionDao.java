@@ -17,7 +17,7 @@ import wooteco.subway.repository.entity.SectionEntity;
 @Repository
 public class JdbcSectionDao implements SectionDao {
 
-    private static final RowMapper<SectionEntity> rowMapper = (resultSet, rowNum) -> new SectionEntity(
+    private static final RowMapper<SectionEntity> ROW_MAPPER = (resultSet, rowNum) -> new SectionEntity(
             resultSet.getLong("id"),
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),
@@ -50,7 +50,7 @@ public class JdbcSectionDao implements SectionDao {
         final Map<String, Long> params = new HashMap<>();
         params.put("lineId", lineId);
         final SqlParameterSource source = new MapSqlParameterSource(params);
-        return jdbcTemplate.query(sql, source, rowMapper);
+        return jdbcTemplate.query(sql, source, ROW_MAPPER);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class JdbcSectionDao implements SectionDao {
         final Map<String, Long> params = new HashMap<>();
         params.put("stationId", stationId);
         final SqlParameterSource source = new MapSqlParameterSource(params);
-        return jdbcTemplate.query(sql, source, rowMapper);
+        return jdbcTemplate.query(sql, source, ROW_MAPPER);
     }
 
     @Override

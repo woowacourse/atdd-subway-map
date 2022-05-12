@@ -19,7 +19,7 @@ import wooteco.subway.repository.entity.StationEntity;
 @Repository
 public class JdbcStationDao implements StationDao {
 
-    private static final RowMapper<StationEntity> rowMapper = (resultSet, rowNum) -> new StationEntity(
+    private static final RowMapper<StationEntity> ROW_MAPPER = (resultSet, rowNum) -> new StationEntity(
             resultSet.getLong("id"),
             resultSet.getString("name")
     );
@@ -43,7 +43,7 @@ public class JdbcStationDao implements StationDao {
     @Override
     public List<StationEntity> findAll() {
         final String sql = "select id, name from STATION";
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class JdbcStationDao implements StationDao {
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
         try {
-            return jdbcTemplate.queryForObject(sql, source, rowMapper);
+            return jdbcTemplate.queryForObject(sql, source, ROW_MAPPER);
         } catch (EmptyResultDataAccessException exception) {
             throw new NoSuchElementException("[ERROR] 역을 찾을 수 없습니다.");
         }

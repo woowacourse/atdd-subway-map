@@ -19,7 +19,7 @@ import wooteco.subway.repository.entity.LineEntity;
 @Repository
 public class JdbcLineDao implements LineDao {
 
-    private static final RowMapper<LineEntity> rowMapper = (resultSet, rowNum) -> new LineEntity(
+    private static final RowMapper<LineEntity> ROW_MAPPER = (resultSet, rowNum) -> new LineEntity(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
@@ -44,7 +44,7 @@ public class JdbcLineDao implements LineDao {
     @Override
     public List<LineEntity> findAll() {
         final String sql = "select id, name, color from LINE";
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class JdbcLineDao implements LineDao {
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
         try {
-            return jdbcTemplate.queryForObject(sql, source, rowMapper);
+            return jdbcTemplate.queryForObject(sql, source, ROW_MAPPER);
         } catch (EmptyResultDataAccessException exception) {
             throw new NoSuchElementException("[ERROR] 노선을 찾을 수 없습니다.");
         }
