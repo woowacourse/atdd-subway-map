@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
@@ -15,6 +16,7 @@ import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.NotExistException;
 
 @Service
+@Transactional
 public class StationService {
 
     private static final int DELETE_FAIL = 0;
@@ -35,6 +37,7 @@ public class StationService {
         return new StationResponse(savedId, station.getName());
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         return stationDao.findAll()
                 .stream()

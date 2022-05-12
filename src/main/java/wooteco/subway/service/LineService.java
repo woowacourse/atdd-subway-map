@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -18,6 +19,7 @@ import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.NotExistException;
 
 @Service
+@Transactional
 public class LineService {
 
     private static final int DELETE_FAIL = 0;
@@ -43,6 +45,7 @@ public class LineService {
         return new LineResponse(savedLine, makeStationResponseList(request));
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         final Line line = lineDao.findById(id)
                 .orElseThrow(() -> new NotExistException("찾으려는 노선이 존재하지 않습니다."));
@@ -52,6 +55,7 @@ public class LineService {
         return new LineResponse(line, sortedStations(sections));
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
