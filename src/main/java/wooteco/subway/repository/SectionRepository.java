@@ -50,7 +50,7 @@ public class SectionRepository {
     }
 
     public Section create(Long lineId, Section createSection) {
-        final SectionEntity savedEntity = sectionDao.save(SectionEntity.from(createSection), lineId);
+        final SectionEntity savedEntity = sectionDao.save(SectionEntity.from(createSection, lineId));
         return new Section(savedEntity.getId(),
             readStation(savedEntity.getUpStationId()),
             readStation(savedEntity.getDownStationId()),

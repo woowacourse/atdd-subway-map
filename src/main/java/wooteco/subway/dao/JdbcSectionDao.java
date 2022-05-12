@@ -36,14 +36,18 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public SectionEntity save(SectionEntity section, Long lineId) {
+    public SectionEntity save(SectionEntity section) {
         final long sectionId = jdbcInsert.executeAndReturnKey(Map.of(
-            "line_id", lineId,
+            "line_id", section.getLineId(),
             "up_station_id", section.getUpStationId(),
             "down_station_id", section.getDownStationId(),
             "distance", section.getDistance()
         )).longValue();
-        return new SectionEntity(sectionId, lineId, section.getUpStationId(), section.getDownStationId(),
+        return new SectionEntity(
+            sectionId,
+            section.getLineId(),
+            section.getUpStationId(),
+            section.getDownStationId(),
             section.getDistance());
     }
 

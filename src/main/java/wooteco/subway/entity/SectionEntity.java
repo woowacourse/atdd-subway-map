@@ -18,14 +18,20 @@ public class SectionEntity {
         this.distance = distance;
     }
 
-    public SectionEntity(Long upStationId, Long downStationId, int distance) {
-        this(null, null, upStationId, downStationId, distance);
+    public SectionEntity(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(null, lineId, upStationId, downStationId, distance);
+    }
+
+    public static SectionEntity from(Section section, Long lineId) {
+        return new SectionEntity(
+            lineId,
+            section.getUpStation().getId(),
+            section.getDownStation().getId(),
+            section.getDistance().getValue());
     }
 
     public static SectionEntity from(Section section) {
-        return new SectionEntity(section.getUpStation().getId(),
-            section.getDownStation().getId(),
-            section.getDistance().getValue());
+        return from(section, null);
     }
 
     public Long getId() {
