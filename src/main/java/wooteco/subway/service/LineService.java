@@ -89,7 +89,7 @@ public class LineService {
         }
 
         for (Section updateTarget : insertTargets) {
-            sectionRepository.create(line.getId(),
+            sectionRepository.save(line.getId(),
                     new SectionRequest(updateTarget.getUp().getId(), updateTarget.getDown().getId(),
                             updateTarget.getDistance()));
         }

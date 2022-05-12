@@ -22,7 +22,7 @@ public class SectionRepository {
         this.stationDao = new JdbcStationDao(jdbcTemplate);
     }
 
-    public Section create(Long lineId, SectionRequest request) {
+    public Section save(Long lineId, SectionRequest request) {
         Station up = stationDao.findById(request.getUpStationId());
         Station down = stationDao.findById(request.getDownStationId());
         Section section = new Section(up, down, request.getDistance());
