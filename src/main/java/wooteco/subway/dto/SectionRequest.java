@@ -1,14 +1,17 @@
 package wooteco.subway.dto;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 public class SectionRequest {
 
-    @NotBlank(message = "구간 시작은 빈 값일 수 없습니다.")
+    @Positive(message = "시점의 id는 1보다 작을 수 없습니다.")
+    @NotNull(message = "시점의 id는 null일 수 없습니다.")
     private final Long upStationId;
-    @NotBlank(message = "구간 끝은 빈 값일 수 없습니다.")
+    @Positive(message = "종점의 id는 1보다 작을 수 없습니다.")
+    @NotNull(message = "종점의 id는 null일 수 없습니다.")
     private final Long downStationId;
-    @NotBlank(message = "구간 거리는 빈 값일 수 없습니다.")
+    @Positive(message = "구간 거리는 1보다 작을 수 없습니다.")
     private final int distance;
 
     private SectionRequest() {

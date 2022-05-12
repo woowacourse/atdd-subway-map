@@ -9,6 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dto.LineCreateRequest;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -67,6 +68,25 @@ public class AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> requestPostSection(Long lineId, SectionRequest sectionRequest) {
+        return RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> requestDeleteSection(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }
