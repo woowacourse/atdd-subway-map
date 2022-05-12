@@ -8,9 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.LineWithStationResponse;
+import wooteco.subway.dto.LineResponse;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +66,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineWithStationResponse.class).stream()
-                .map(LineWithStationResponse::getId)
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -171,7 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        List<Long> resultLineIds = linesResponse.jsonPath().getList(".", LineWithStationResponse.class).stream()
+        List<Long> resultLineIds = linesResponse.jsonPath().getList(".", LineResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
 
