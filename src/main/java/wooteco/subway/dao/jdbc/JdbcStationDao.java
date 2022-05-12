@@ -16,16 +16,16 @@ import wooteco.subway.domain.Station;
 @Repository
 public class JdbcStationDao implements StationDao {
 
+    private static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    private static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) -> new Station(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
-    );
 
     @Override
     public Long save(Station station) {

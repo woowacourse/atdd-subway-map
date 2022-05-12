@@ -15,12 +15,6 @@ import wooteco.subway.domain.Section;
 @Repository
 public class JdbcSectionDao implements SectionDao {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public JdbcSectionDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private static final RowMapper<Section> SECTION_ROW_MAPPER = (resultSet, rowNum) -> new Section(
             resultSet.getLong("id"),
             resultSet.getLong("line_id"),
@@ -28,6 +22,12 @@ public class JdbcSectionDao implements SectionDao {
             resultSet.getLong("down_station_id"),
             resultSet.getInt("distance")
     );
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcSectionDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Section save(Section section) {
@@ -56,10 +56,32 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
+    public List<Section> findByLineId(Long id) {
+        String sql = "SELECT * FROM `section` WHERE line_id = ?";
+
+        return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, id);
+    }
+
+    @Override
     public List<Section> findAll() {
         final String sql = "SELECT * FROM `section`";
 
         return jdbcTemplate.query(sql, SECTION_ROW_MAPPER);
+    }
+
+
+    @Override
+    public int deleteById(Long id) {
+        String sql = "DELETE FROM `section` WHERE id = ?";
+
+        return jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public int deleteByLineId(Long lineId) {
+        String sql = "DELETE FROM `section` WHERE line_id = ?";
+
+        return jdbcTemplate.update(sql, lineId);
     }
 
     private List<Object[]> generateParameters(List<Section> sections) {
@@ -75,27 +97,5 @@ public class JdbcSectionDao implements SectionDao {
                 section.getDownStationId(),
                 section.getDistance()
         };
-    }
-
-
-    @Override
-    public int deleteById(Long id) {
-        String sql = "DELETE FROM `section` WHERE id = ?";
-
-        return jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public List<Section> findByLineId(Long id) {
-        String sql = "SELECT * FROM `section` WHERE line_id = ?";
-
-        return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, id);
-    }
-
-    @Override
-    public int deleteByLineId(Long lineId) {
-        String sql = "DELETE FROM `section` WHERE line_id = ?";
-
-        return jdbcTemplate.update(sql, lineId);
     }
 }

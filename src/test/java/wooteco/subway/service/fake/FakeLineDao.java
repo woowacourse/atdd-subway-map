@@ -12,7 +12,6 @@ import wooteco.subway.domain.Line;
 public class FakeLineDao implements LineDao {
 
     private static final int DELETE_SUCCESS = 1;
-    private static final int EXPECTED_SIZE = 1;
 
     private static Long seq = 0L;
     private final List<Line> lines = new ArrayList<>();

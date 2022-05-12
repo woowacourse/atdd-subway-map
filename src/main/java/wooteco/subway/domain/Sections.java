@@ -101,6 +101,20 @@ public class Sections {
         }
     }
 
+    private Section getPreviousSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStationId().equals(stationId))
+                .findAny()
+                .orElse(null);
+    }
+
+    private Section getLaterSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(stationId))
+                .findAny()
+                .orElse(null);
+    }
+
     private void findAndRemoveFirstSection(Long stationId, Section section) {
         if (section == null) {
             final Section findSection = getFirstSection(stationId);
@@ -133,20 +147,6 @@ public class Sections {
         if (previousSection != null && laterSection != null) {
             deleteSection(previousSection, laterSection);
         }
-    }
-
-    private Section getPreviousSection(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.getDownStationId().equals(stationId))
-                .findAny()
-                .orElse(null);
-    }
-
-    private Section getLaterSection(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.getUpStationId().equals(stationId))
-                .findAny()
-                .orElse(null);
     }
 
     private void deleteSection(Section previousSection, Section laterSection) {

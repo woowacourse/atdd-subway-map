@@ -12,10 +12,9 @@ import wooteco.subway.domain.Station;
 public class FakeStationDao implements StationDao {
 
     private static final int DELETE_SUCCESS = 1;
-    private static final int EXPECTED_SIZE = 1;
 
     private static Long seq = 0L;
-    private List<Station> stations = new ArrayList<>();
+    private final List<Station> stations = new ArrayList<>();
 
     @Override
     public Long save(Station station) {

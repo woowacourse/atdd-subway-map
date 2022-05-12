@@ -7,13 +7,13 @@ public interface SectionDao {
 
     Section save(Section section);
 
-    int deleteById(Long id);
+    void saveAll(List<Section> sections);
 
     List<Section> findByLineId(Long id);
 
-    int deleteByLineId(Long lineId);
-
-    void saveAll(List<Section> sections);
-
     List<Section> findAll();
+
+    int deleteById(Long id);
+
+    int deleteByLineId(Long lineId);
 }

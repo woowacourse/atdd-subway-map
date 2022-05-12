@@ -26,6 +26,23 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
+    public void saveAll(List<Section> sections) {
+        this.sections.addAll(sections);
+    }
+
+    @Override
+    public List<Section> findByLineId(Long id) {
+        return sections.stream()
+                .filter(section -> section.getLineId().equals(id))
+                .collect(toList());
+    }
+
+    @Override
+    public List<Section> findAll() {
+        return sections;
+    }
+
+    @Override
     public int deleteById(Long id) {
         final Section section = sections.stream()
                 .filter(s -> s.getId().equals(id))
@@ -37,26 +54,9 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findByLineId(Long id) {
-        return sections.stream()
-                .filter(section -> section.getLineId().equals(id))
-                .collect(toList());
-    }
-
-    @Override
     public int deleteByLineId(Long lineId) {
         sections.removeIf(section -> section.getLineId().equals(lineId));
         return DELETE_SUCCESS;
-    }
-
-    @Override
-    public void saveAll(List<Section> sections) {
-        this.sections.addAll(sections);
-    }
-
-    @Override
-    public List<Section> findAll() {
-        return sections;
     }
 
     private static Section createNewObject(Section section) {

@@ -15,17 +15,17 @@ import wooteco.subway.domain.Line;
 @Repository
 public class JdbcLineDao implements LineDao {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private static final RowMapper<Line> LINE_ROW_MAPPER = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
     );
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Line save(Line line) {
