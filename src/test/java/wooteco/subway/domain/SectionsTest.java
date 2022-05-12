@@ -87,4 +87,13 @@ public class SectionsTest {
         assertThat(sections.deleteByStation(new Station(2L, "제거될 역"))
                 .value()).hasSize(2);
     }
+
+    @DisplayName("구간이 하나인 노선은 구간을 제거할 수 없다.")
+    @Test
+    void exceptionWhenLineHasOneSection() {
+        Sections sections = new Sections(List.of(new Section(1L, 2L, 1L, 10)));
+        assertThatThrownBy(() -> sections.deleteByStation(new Station(2L, "제거될 역")))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
+    }
 }
