@@ -59,4 +59,13 @@ public class SectionRequest {
     public int getDistance() {
         return distance;
     }
+
+    @Override
+    public String toString() {
+        return "SectionRequest{" +
+                "upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
+    }
 }
