@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -75,7 +76,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         jdbcTemplate.update(insertSql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
-
     }
 
     @DisplayName("지하철 노선 생성")
@@ -239,10 +239,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         List<StationResponse> stations = findStations(savedId2);
 
-        StationResponse expected1 = new StationResponse(1L, "강남역");
-        StationResponse expected2 = new StationResponse(2L, "왕십리역");
-
-        assertThat(stations).contains(expected1, expected2);
+        assertThat(stations).extracting("id", "name")
+                .containsExactly(
+                        tuple(1L, "강남역"),
+                        tuple(2L, "왕십리역")
+                );
     }
 
     @DisplayName("구간 삭제")

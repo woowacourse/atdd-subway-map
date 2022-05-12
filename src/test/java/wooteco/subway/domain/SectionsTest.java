@@ -37,11 +37,11 @@ class SectionsTest {
         Optional<Section> section = sections.add(newSection);
 
         // then
-        if (section.isPresent()) {
-            assertThat(section.get()).isEqualTo(expected);
+        if (expected == null) {
+            assertThat(section).isEqualTo(Optional.empty());
             return;
         }
-        assertThat(section).isEqualTo(Optional.empty());
+        assertThat(section).isEqualTo(Optional.of(expected));
     }
 
     private static Stream<Arguments> parameterProvider() {
