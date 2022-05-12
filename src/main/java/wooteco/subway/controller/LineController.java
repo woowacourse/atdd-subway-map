@@ -3,7 +3,6 @@ package wooteco.subway.controller;
 import java.net.URI;
 import java.util.List;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,7 +43,7 @@ public class LineController {
         return ResponseEntity.created(redirectUri).body(lineResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findAll();
         return ResponseEntity.ok(lineResponses);
@@ -57,7 +56,8 @@ public class LineController {
     }
 
     @PutMapping(value = "/{lineId}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody LineUpdateRequest lineUpdateRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long lineId,
+                                           @RequestBody LineUpdateRequest lineUpdateRequest) {
         lineService.update(lineId, lineUpdateRequest);
         return ResponseEntity.ok().build();
     }
