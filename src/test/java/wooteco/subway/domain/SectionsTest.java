@@ -100,8 +100,8 @@ class SectionsTest {
         sections.add(newSection);
 
         assertAll(() -> {
-            assertThat(existingSection.getUpStation().getName()).isEqualTo(newSection.getUpStation().getName());
-            assertThat(existingSection.getDownStation().getName()).isEqualTo("선릉역");
+            assertThat(existingSection.getUpStation().getName()).isEqualTo(existingSection.getUpStation().getName());
+            assertThat(existingSection.getDownStation().getName()).isEqualTo(newSection.getUpStation().getName());
             assertThat(existingSection.getDistance()).isEqualTo(expectedDistance);
         });
     }

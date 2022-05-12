@@ -6,14 +6,19 @@ public class Section {
 
     private static final int MIN_DISTANCE = 1;
 
-    private Long id;
-    private long lineId;
+    private final Long id;
+    private final long lineId;
+
     private Station upStation;
     private Station downStation;
     private int distance;
 
     public Section(final long lineId, final Station upStation, final Station downStation, final int distance) {
         this(null, lineId, upStation, downStation, distance);
+    }
+
+    public Section(final Long id, final Section section) {
+        this(id, section.getLineId(), section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
     public Section(final Long id, final long lineId, final Station upStation, final Station downStation,
