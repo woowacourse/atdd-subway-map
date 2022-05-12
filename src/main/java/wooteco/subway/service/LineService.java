@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,6 +11,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -85,20 +85,15 @@ public class LineService {
     }
 
     private Set<Long> findLineIds(Line line) {
-        List<Section> sections = sectionDao.findByLineId(line.getId());
-        Set<Long> lineIds = sections.stream()
-                .map(Section::getStationId)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toUnmodifiableSet());
-        return lineIds;
+        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
+        return sections.getStationIds();
     }
 
     private List<StationResponse> createStationResponse(Set<Long> lineIds) {
-        List<StationResponse> stationResponses = lineIds.stream()
+        return lineIds.stream()
                 .map(stationDao::findById)
                 .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
-        return stationResponses;
     }
 
     @Transactional(readOnly = true)

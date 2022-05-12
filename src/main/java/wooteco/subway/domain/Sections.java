@@ -30,7 +30,7 @@ public class Sections {
         validateExistStations(section);
         List<Section> newSections = new ArrayList<>(value);
         for (Section eachSection : value) {
-            addWithTerminal(section, newSections, eachSection);
+            extendStation(section, newSections, eachSection);
             addWithUpStation(section, newSections, eachSection);
             addWithDownStation(section, newSections, eachSection);
         }
@@ -48,18 +48,18 @@ public class Sections {
         }
     }
 
-    private void addWithTerminal(Section section, List<Section> newSections, Section eachSection) {
-        if (isAddingWithUpTerminal(section, eachSection) || isAddingWithDownTerminal(section, eachSection)) {
+    private void extendStation(Section section, List<Section> newSections, Section eachSection) {
+        if (isExtendToUp(section, eachSection) || isExtendToDown(section, eachSection)) {
             newSections.add(section);
         }
     }
 
-    private boolean isAddingWithUpTerminal(Section section, Section eachSection) {
-        return eachSection.isUpTerminal(section) && !getDownStationIds().contains(section.getDownStationId());
+    private boolean isExtendToUp(Section section, Section eachSection) {
+        return eachSection.canExtendToUp(section) && !getDownStationIds().contains(section.getDownStationId());
     }
 
-    private boolean isAddingWithDownTerminal(Section section, Section eachSection) {
-        return eachSection.isDownTerminal(section) && !getUpStationIds().contains(section.getUpStationId());
+    private boolean isExtendToDown(Section section, Section eachSection) {
+        return eachSection.canExtendToDown(section) && !getUpStationIds().contains(section.getUpStationId());
     }
 
     private void addWithUpStation(Section section, List<Section> newSections, Section eachSection) {
@@ -148,19 +148,17 @@ public class Sections {
     }
 
     private Section getSectionWithUpStation(Long stationId) {
-        Section sectionWithUpStation = value.stream()
+        return value.stream()
                 .filter(section -> section.hasUpStation(stationId))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_SECTION_EXCEPTION_MESSAGE));
-        return sectionWithUpStation;
     }
 
     private Section getSectionWithDownStation(Long stationId) {
-        Section sectionWithDownStation = value.stream()
+        return value.stream()
                 .filter(section -> section.hasDownStation(stationId))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_SECTION_EXCEPTION_MESSAGE));
-        return sectionWithDownStation;
     }
 
     private Set<Long> getUpStationIds() {

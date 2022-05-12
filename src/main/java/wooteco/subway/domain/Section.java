@@ -32,11 +32,11 @@ public class Section{
         this.distance = distance;
     }
 
-    public Boolean isUpTerminal(Section section) {
+    public Boolean canExtendToUp(Section section) {
         return section.downStationId.equals(this.upStationId);
     }
 
-    public Boolean isDownTerminal(Section section) {
+    public Boolean canExtendToDown(Section section) {
         return section.upStationId.equals(this.downStationId);
     }
 
@@ -98,12 +98,4 @@ public class Section{
                 ", distance=" + distance +
                 '}';
     }
-
-//    @Override
-//    public int compareTo(Section section) {
-//        if (downStationId == section.upStationId || upStationId == section.downStationId) {
-//            return 1;
-//        }
-//        return -1;
-//    }
 }
