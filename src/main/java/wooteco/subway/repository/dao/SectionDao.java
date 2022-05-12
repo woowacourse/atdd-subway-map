@@ -11,6 +11,8 @@ public interface SectionDao {
 
     List<SectionEntity> findAllByLineId(Long lineId);
 
+    List<Long> findAllIdByLineId(Long lineId);
+
     Boolean existsById(Long id);
 
     Boolean existsByStationId(Long stationId);

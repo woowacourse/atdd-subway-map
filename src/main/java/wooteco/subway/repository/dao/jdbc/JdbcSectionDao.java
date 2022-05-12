@@ -52,6 +52,14 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
+    public List<Long> findAllIdByLineId(Long lineId) {
+        String query = "SELECT id from Section where line_id=(:lineId)";
+        SqlParameterSource parameters = new MapSqlParameterSource("lineId", lineId);
+        return jdbcTemplate.query(query, parameters,
+                (resultSet, rowNum) -> resultSet.getLong("id"));
+    }
+
+    @Override
     public Boolean existsById(Long id) {
         String query = "SELECT EXISTS(SELECT id FROM Section WHERE id=(:id)) as existable";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);

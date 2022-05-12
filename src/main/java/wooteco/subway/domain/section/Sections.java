@@ -24,7 +24,7 @@ public class Sections {
     }
 
     private List<Section> orderSections(List<Section> sections) {
-        Station upStation = figureOutUpStation(sections);
+        Station upStation = findUpStation(sections);
         List<Section> orderedSections = new LinkedList<>();
         while (orderedSections.size() < sections.size()) {
             Section section = findSectionByUpStation(upStation, sections);
@@ -34,7 +34,7 @@ public class Sections {
         return orderedSections;
     }
 
-    private static Station figureOutUpStation(List<Section> sections) {
+    private static Station findUpStation(List<Section> sections) {
         Section upSection = sections.get(0);
         while (true) {
             Section tmpSection = upSection;
@@ -112,6 +112,48 @@ public class Sections {
         }
 
         throw new IllegalArgumentException("상행역과 하행역이 존재하지 않는 구간입니다.");
+    }
+
+    public void remove(Station station) {
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("노선에 포함되어 있는 역이 아닙니다.");
+        }
+
+        if (sections.size() == 1) {
+            throw new IllegalStateException("노선의 구간이 하나이므로 구간을 삭제할 수 없습니다.");
+        }
+
+        Station upStation = sections.get(0).getUpStation();
+        Station downStation = sections.get(sections.size() - 1).getDownStation();
+
+        if (upStation.equals(station)) {
+            sections.remove(0);
+            return;
+        }
+
+        if (downStation.equals(station)) {
+            sections.remove(sections.size() - 1);
+            return;
+        }
+
+        Section upSection = sections.stream()
+                .filter(section -> section.equalsDownStation(station))
+                .findAny()
+                .orElseThrow();
+        Section downSection = sections.stream()
+                .filter(section -> section.equalsUpStation(station))
+                .findAny()
+                .orElseThrow();
+
+        Section section = new Section(
+                upSection.getUpStation(),
+                downSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance()
+        );
+        int index = sections.indexOf(upSection);
+        sections.remove(upSection);
+        sections.remove(downSection);
+        sections.add(index, section);
     }
 
     public List<Section> getSections() {

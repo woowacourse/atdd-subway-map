@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineRepository;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.SectionRepository;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.StationRepository;
 import wooteco.subway.repository.dao.LineDao;
@@ -25,7 +27,7 @@ import wooteco.subway.repository.exception.station.DuplicateStationNameException
 import wooteco.subway.repository.exception.station.NoSuchStationException;
 
 @Repository
-public class SubwayRepository implements LineRepository, StationRepository {
+public class SubwayRepository implements LineRepository, SectionRepository, StationRepository {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -99,7 +101,8 @@ public class SubwayRepository implements LineRepository, StationRepository {
                 .orElseThrow(() -> new NoSuchLineException(lineId));
     }
 
-    private List<Section> findSectionsByLineId(Long lineId) {
+    @Override
+    public List<Section> findSectionsByLineId(Long lineId) {
         return sectionDao.findAllByLineId(lineId)
                 .stream()
                 .map(sectionEntity -> EntityAssembler.section(
@@ -121,6 +124,24 @@ public class SubwayRepository implements LineRepository, StationRepository {
         validateLineExist(line.getId());
         lineDao.update(EntityAssembler.lineEntity(line));
         return findLineById(line.getId());
+    }
+
+    @Override
+    public void updateSections(Long lineId, Sections sections) {
+        List<Long> actualSectionIds = sectionDao.findAllIdByLineId(lineId);
+        List<Long> expectedSectionIds = sections.getSectionIds();
+
+        List<Long> sectionIdsForRemove = actualSectionIds.stream()
+                .filter(sectionId -> !expectedSectionIds.contains(sectionId))
+                .collect(Collectors.toUnmodifiableList());
+
+        List<Section> sectionsForAppend = sections.getSections()
+                .stream()
+                .filter(section -> section.getId() == 0)
+                .collect(Collectors.toUnmodifiableList());
+
+        sectionIdsForRemove.forEach(sectionDao::remove);
+        sectionsForAppend.forEach(section -> sectionDao.save(EntityAssembler.sectionEntity(lineId, section)));
     }
 
     @Override

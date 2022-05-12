@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.repository.dao.entity.line.LineEntity;
 import wooteco.subway.repository.dao.entity.section.SectionEntity;
