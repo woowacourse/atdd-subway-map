@@ -2,7 +2,6 @@ package wooteco.subway.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,16 +27,13 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = stationService.save(stationRequest.toStation());
+        Station station = stationService.save(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(StationResponse.from(station));
     }
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> stationResponses = stationService.findAll()
-                .stream()
-                .map(StationResponse::from)
-                .collect(Collectors.toList());
+        List<StationResponse> stationResponses = stationService.findAll();
 
         return ResponseEntity.ok().body(stationResponses);
     }

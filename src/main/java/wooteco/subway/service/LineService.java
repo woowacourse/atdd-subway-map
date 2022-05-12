@@ -53,8 +53,8 @@ public class LineService {
                 stationService.findByStationsId(sectionService.findAllStationByLineId(line.getId())));
     }
 
-    public void update(final Line line) {
-        lineDao.update(line);
+    public void update(final long lineId, final LineRequest lineRequest) {
+        lineDao.update(lineRequest.toLineWithId(lineId));
     }
 
     public void delete(final Long lineId) {
