@@ -52,7 +52,7 @@ public class Sections {
         return stations;
     }
 
-    public Section calculateCombinedSection(Station middleStation) {
+    public Section findCombinedLink(Station middleStation) {
         List<Section> combinedSections = findLinks(middleStation);
         List<Station> combined = new Sections(combinedSections).calculateStations();
         int distance = combinedSections.stream().map(Section::getDistance).reduce(Integer::sum).orElseThrow();
@@ -65,26 +65,26 @@ public class Sections {
         return sections.stream().filter(section -> section.contains(station)).collect(Collectors.toList());
     }
 
-    public Optional<Section> findSide(Station station) {
+    public Optional<Long> findSide(Station station) {
         if (isFirst(station)) {
-            return Optional.of(findByUpStation(station));
+            return Optional.of(findByUpStation(station).getId());
         }
         if (isLast(station)) {
-            return Optional.of(findByDownStation(station));
+            return Optional.of(findByDownStation(station).getId());
         }
         return Optional.empty();
     }
 
-    public Optional<Section> findMiddleBase(Section section) {
+    public Optional<Section> findUpdateResult(Section section) {
         if (isMiddleUpAttach(section)) {
             Section upBase = findByUpStation(section.getUpStation());
             validateDistance(upBase, section);
-            return Optional.of(upBase);
+            return Optional.of(upBase.toRemain(section));
         }
         if (isMiddleDownAttach(section)) {
             Section downBase = findByDownStation(section.getDownStation());
             validateDistance(downBase, section);
-            return Optional.of(downBase);
+            return Optional.of(downBase.toRemain(section));
         }
         return Optional.empty();
     }

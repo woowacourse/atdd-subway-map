@@ -40,11 +40,11 @@ public class Section {
         return new Section(id, lineId, downStation, upStation, distance);
     }
 
-    public Section calculateRemainSection(Section section) {
+    public Section toRemain(Section section) {
         if (section.upStation.equals(upStation)) {
-            return new Section(lineId, section.downStation, downStation, distance - section.distance);
+            return new Section(id, lineId, section.downStation, downStation, distance - section.distance);
         }
-        return new Section(lineId, upStation, section.upStation, distance - section.distance);
+        return new Section(id, lineId, upStation, section.upStation, distance - section.distance);
     }
 
     public Long getId() {

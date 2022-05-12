@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.service.SectionsService;
 
 @Repository
 public class SectionDao {
@@ -60,6 +61,12 @@ public class SectionDao {
         return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, id);
     }
 
+    public void update(Section changesSection) {
+        final String sql = "UPDATE SECTION SET upStationId = ?, downStationId = ?, distance = ? WHERE id = ?";
+        jdbcTemplate.update(sql, changesSection.getUpStationId(), changesSection.getDownStationId(),
+                changesSection.getDistance(), changesSection.getId());
+    }
+
     public void delete(Long id) {
         final String sql = "DELETE FROM section WHERE id = ?";
         jdbcTemplate.update(sql, id);
@@ -79,5 +86,10 @@ public class SectionDao {
     public boolean hasSection(Long id) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM section WHERE id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
+
+    public void updateAll(List<Section> sections, Section section) {
+        deleteAllBySections(sections);
+        save(section);
     }
 }

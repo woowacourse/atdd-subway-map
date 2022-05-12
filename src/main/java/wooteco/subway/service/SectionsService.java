@@ -20,8 +20,7 @@ public class SectionsService {
     private final LineDao lineDao;
     private final CheckService checkService;
 
-    public SectionsService(SectionDao sectionDao, StationDao stationDao, LineDao lineDao,
-                           CheckService checkService) {
+    public SectionsService(SectionDao sectionDao, StationDao stationDao, LineDao lineDao, CheckService checkService) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
         this.lineDao = lineDao;
@@ -32,11 +31,8 @@ public class SectionsService {
     public Section save(Section section) {
         checkService.checkLineExist(section.getLineId());
         checkService.checkStationsExist(section);
-        Sections sections = Sections.forSave(sectionDao.findAllByLineId(section.getLineId()), section);
-        sections.findMiddleBase(section).ifPresent(base -> {
-            sectionDao.save(base.calculateRemainSection(section));
-            sectionDao.delete(base.getId());
-        });
+        Sections.forSave(sectionDao.findAllByLineId(section.getLineId()), section).findUpdateResult(section)
+                .ifPresent(sectionDao::update);
         return sectionDao.findById(sectionDao.save(section));
     }
 
@@ -56,11 +52,8 @@ public class SectionsService {
         checkService.checkStationExist(stationId);
         Sections sections = Sections.forDelete(sectionDao.findAllByLineId(lineId));
         Station station = stationDao.findById(stationId);
-        sections.findSide(station).ifPresentOrElse(section -> sectionDao.delete(section.getId()),
-                () -> {
-                    sectionDao.deleteAllBySections(sections.findLinks(station));
-                    sectionDao.save(sections.calculateCombinedSection(station));
-                });
+        sections.findSide(station).ifPresentOrElse(sectionDao::delete,
+                () -> sectionDao.updateAll(sections.findLinks(station), sections.findCombinedLink(station)));
     }
 
     @Transactional
@@ -78,10 +71,8 @@ public class SectionsService {
     }
 
     private void validateStationNotLinked(Long stationId) {
-        lineDao.findAll().stream()
-                .map(this::getSections)
-                .filter(sections -> !sections.findLinks(stationDao.findById(stationId)).isEmpty())
-                .findAny()
+        lineDao.findAll().stream().map(this::getSections)
+                .filter(sections -> !sections.findLinks(stationDao.findById(stationId)).isEmpty()).findAny()
                 .ifPresent(section -> {
                     throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
                 });

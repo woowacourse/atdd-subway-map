@@ -49,7 +49,7 @@ class SectionsTest {
         Section section2 = new Section(3L, 1L, STATION_2, STATION_3, 10);
         Section section3 = new Section(2L, 1L, STATION_3, STATION_4, 6);
         Sections sections = new Sections(List.of(section2, section, section3));
-        assertThat(sections.calculateCombinedSection(STATION_2))
+        assertThat(sections.findCombinedLink(STATION_2))
                 .isEqualTo(new Section(1L, STATION, STATION_3, 15));
     }
 
@@ -72,19 +72,19 @@ class SectionsTest {
         Section section3 = new Section(3L, 1L, STATION_3, STATION_4, 6);
         Sections sections = new Sections(List.of(section2, section, section3));
         assertThat(sections.findSide(STATION).orElseThrow())
-                .isEqualTo(section);
+                .isEqualTo(section.getId());
         assertThat(sections.findSide(STATION_2))
                 .isEmpty();
     }
 
-    @DisplayName("노선에서 해당 구간을 추가할 때 삽입될 기반 구간을 찾는다.")
+    @DisplayName("노선에서 해당 구간을 추가할 때 변경되는 구간 정보를 찾는다.")
     @Test
-    void findMiddleBase() {
+    void findMiddleResult() {
         Section section = new Section(1L, STATION, STATION_2, 5);
         Section section2 = new Section(1L, STATION_2, STATION_3, 10);
         Section section3 = new Section(1L, STATION_2, STATION_4, 6);
         Sections sections = new Sections(List.of(section, section2));
-        assertThat(sections.findMiddleBase(section3).orElseThrow())
-                .isEqualTo(section2);
+        assertThat(sections.findUpdateResult(section3).orElseThrow())
+                .isEqualTo(section2.toRemain(section3));
     }
 }

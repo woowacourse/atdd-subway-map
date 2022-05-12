@@ -1,7 +1,6 @@
 package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static wooteco.subway.Fixtures.SECTION;
 import static wooteco.subway.Fixtures.SECTION_2;
 import static wooteco.subway.Fixtures.SECTION_3;
@@ -25,7 +24,7 @@ class SectionTest {
     @DisplayName("기존 구간에서 새 구간을 연결하고 남은 구간을 계산한다.")
     @Test
     void calculateRemainSection() {
-        assertThat(SECTION_2.calculateRemainSection(SECTION_3))
+        assertThat(SECTION_2.toRemain(SECTION_3))
                 .usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(new Section(1L, STATION_4,STATION_3,2));
