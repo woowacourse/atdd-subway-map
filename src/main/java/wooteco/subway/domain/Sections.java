@@ -57,39 +57,45 @@ public class Sections {
     }
 
     private List<Section> sort(List<Section> sections) {
-        List<Section> values = new ArrayList<>();
-        Station firstStation = findFirstStation(sections);
-        while (values.size() != sections.size()) {
-            for (Section section : sections) {
-                if (section.isEqualToUpStation(firstStation)) {
-                    values.add(section);
-                    firstStation = section.getDownStation();
-                }
-            }
-        }
-
-        return values;
+        List<Station> upStations = getAllUpStations(sections);
+        List<Station> downStations = getAllDownStations(sections);
+        return fillSection(sections, findFirstStation(upStations, downStations));
     }
 
-    private Station findFirstStation(List<Section> sections) {
-        List<Station> upStations = createUpStations(sections);
-        List<Station> downStations = createDownStations(sections);
+    private List<Section> fillSection(List<Section> sections, Station next) {
+        List<Section> result = new ArrayList<>();
+        while (result.size() != sections.size()) {
+            next = findNextStation(sections, next, result);
+        }
+        return result;
+    }
 
+    private Station findNextStation(List<Section> sections, Station next, List<Section> result) {
+        for (Section section : sections) {
+            if (section.isEqualToUpStation(next)) {
+                next = section.getDownStation();
+                result.add(section);
+            }
+        }
+        return next;
+    }
+
+    private Station findFirstStation(List<Station> upStations, List<Station> downStations) {
         return upStations.stream()
             .filter(upStation -> !downStations.contains(upStation))
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() ->  new IllegalArgumentException("첫번째 역이 존재하지 않습니다."));
     }
 
-    private List<Station> createDownStations(List<Section> sections) {
+    private List<Station> getAllUpStations(List<Section> sections) {
         return sections.stream()
-            .map(Section::getDownStation)
+            .map(Section::getUpStation)
             .collect(Collectors.toList());
     }
 
-    private List<Station> createUpStations(List<Section> sections) {
+    private List<Station> getAllDownStations(List<Section> sections) {
         return sections.stream()
-            .map(Section::getUpStation)
+            .map(Section::getDownStation)
             .collect(Collectors.toList());
     }
 
