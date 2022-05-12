@@ -49,6 +49,5 @@ public class SectionDao {
         } catch (EmptyResultDataAccessException e) {
             throw new NoSuchElementException("[ERROR] 노선의 아이디값과 일치하는 구간이 없습니다.");
         }
-
     }
 }

@@ -57,7 +57,7 @@ public class StationDao {
         }
     }
 
-    public List<StationResponse> find(Long upStationId, Long downStationId) {
+    public List<StationResponse> findByUpStationsIdAndDownStationId(Long upStationId, Long downStationId) {
         var sql = "SELECT * FROM station WHERE id = ? OR id = ?";
         return jdbcTemplate.query(sql, stationRowMapper, upStationId, downStationId);
     }

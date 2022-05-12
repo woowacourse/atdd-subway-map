@@ -25,7 +25,10 @@ public class LineService {
 
     public LineResponse findLineInfos(Long id) {
         var sections = sectionDao.findByLineId(id);
-        var stations = stationDao.find(sections.getUpStationId(), sections.getDownStationId());
+        var stations = stationDao.findByUpStationsIdAndDownStationId(
+                sections.getUpStationId(),
+                sections.getDownStationId()
+        );
         var line = lineDao.findById(id);
 
         return new LineResponse(line, stations);
@@ -44,7 +47,7 @@ public class LineService {
 
         sectionDao.save(line.getId(), new SectionRequest(upStationId, downStationId, lineRequest.getDistance()));
 
-        var stations = stationDao.find(upStationId, downStationId);
+        var stations = stationDao.findByUpStationsIdAndDownStationId(upStationId, downStationId);
 
         return new LineResponse(line, stations);
     }

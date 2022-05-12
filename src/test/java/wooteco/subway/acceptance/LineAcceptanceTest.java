@@ -31,7 +31,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> insertLine(String name, String color, List<String> stationNames) {
         var response1 = requestCreate("/stations", Map.of("name", stationNames.get(0)));
-
         var response2 = requestCreate("/stations", Map.of("name", stationNames.get(1)));
 
         Map<String, String> params = new HashMap<>();

@@ -1,7 +1,6 @@
 package wooteco.subway.domain;
 
 public class Section {
-
     private final Long id;
     private final Long downStationId;
     private final Long upStationId;

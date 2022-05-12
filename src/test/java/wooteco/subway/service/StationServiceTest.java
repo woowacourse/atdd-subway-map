@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dto.station.StationResponse;
 
 @JdbcTest
 class StationServiceTest {
@@ -50,7 +51,7 @@ class StationServiceTest {
         stationService.deleteStation(id);
         var ids = stationService.findAll()
                 .stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
         Assertions.assertThat(ids).doesNotContain(id);
