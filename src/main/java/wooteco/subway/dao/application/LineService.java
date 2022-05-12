@@ -36,9 +36,9 @@ public class LineService {
         Line createdLine = lineDao.save(new Line(request.getName(), request.getColor()));
 
         Station upStation = stationDao.findById(request.getUpStationId())
-                .orElseThrow(NoSuchStationException::new);
+                .orElseThrow(() -> new NoSuchStationException(request.getUpStationId()));
         Station downStation = stationDao.findById(request.getDownStationId())
-                .orElseThrow(NoSuchStationException::new);
+                .orElseThrow(() -> new NoSuchStationException(request.getDownStationId()));
 
         Section createdSection = sectionDao.save(createdLine.getId(),
                 new Section(upStation, downStation, request.getDistance()));
@@ -93,7 +93,7 @@ public class LineService {
         Line line = loadLine(lineId);
 
         Station station = stationDao.findById(stationId)
-                .orElseThrow(NoSuchStationException::new);
+                .orElseThrow(() -> new NoSuchStationException(stationId));
         line.removeStation(station);
 
         sectionDao.batchUpdate(line.getSections());

@@ -52,7 +52,7 @@ public class StationMemoryDao {
         boolean hasSameId = stations.stream()
                 .anyMatch(station -> station.getId() == id);
         if (!hasSameId) {
-            throw new NoSuchStationException();
+            throw new NoSuchStationException(id);
         }
     }
 }
