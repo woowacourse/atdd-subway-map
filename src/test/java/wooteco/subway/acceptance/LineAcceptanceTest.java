@@ -92,7 +92,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("노선 id값을 통해서 노선을 조회한다.")
     void getLine() {
         // given
         final ExtractableResponse<Response> upStationResponse = makeStationResponse("지하철역");

@@ -15,7 +15,7 @@ import wooteco.subway.dto.StationResponse;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("환승역(교점)에 대한 구간 테스트")
+    @DisplayName("환승역(교점), 두 노선이 같은 역을 공유하는 경우에도 구간을 등록할 수 있어야 한다.")
     @Test
     public void crossSectionTest() {
         // given
