@@ -2,9 +2,9 @@ package wooteco.subway.domain;
 
 public class Section {
     private final Long id;
-    private Station upStation;
-    private Station downStation;
-    private int distance;
+    private final Station upStation;
+    private final Station downStation;
+    private final int distance;
 
     public Section(Long id, Station upStation, Station downStation, int distance) {
         this.id = id;
@@ -17,24 +17,22 @@ public class Section {
         this(null, upStation, downStation, distance);
     }
 
-    void splitRightBy(Section section) {
-        splitBy(section, true);
+    Section splitRightBy(Section section) {
+        return splitBy(section, true);
     }
 
-    void splitLeftBy(Section section) {
-        splitBy(section, false);
+    Section splitLeftBy(Section section) {
+        return splitBy(section, false);
     }
 
-    void splitBy(Section section, boolean direction) {
+    Section splitBy(Section section, boolean direction) {
         checkStations(section);
         checkDistance(section);
+        int splitDistance = distance - section.distance;
         if (direction) {
-            upStation = section.downStation;
+            return new Section(id, section.downStation, downStation, splitDistance);
         }
-        if (!direction) {
-            downStation = section.upStation;
-        }
-        distance -= section.distance;
+        return new Section(id, upStation, section.upStation, splitDistance);
     }
 
     private void checkStations(Section section) {
@@ -49,9 +47,9 @@ public class Section {
         }
     }
 
-    public void mergeWith(Section section) {
-        downStation = section.downStation;
-        distance += section.distance;
+    public Section mergeWith(Section section) {
+        int mergedDistance = this.distance + section.distance;
+        return new Section(id, upStation, section.downStation, mergedDistance);
     }
 
     boolean hasSameUpStationWith(Section section) {

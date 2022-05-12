@@ -36,15 +36,19 @@ public class Sections {
         Predicate<Section> hasSameUpStation = (section) -> section.hasSameUpStationWith(newSection);
         Section originalSection = findSection(hasSameUpStation);
         if (originalSection != null) {
-            originalSection.splitRightBy(newSection);
+            Section splitSection = originalSection.splitRightBy(newSection);
             sections.add(sections.indexOf(originalSection), newSection);
+            sections.add(sections.indexOf(originalSection), splitSection);
+            sections.remove(originalSection);
             return;
         }
         Predicate<Section> hasSameDownStation = (section) -> section.hasSameDownStationWith(newSection);
         originalSection = findSection(hasSameDownStation);
         if (originalSection != null) {
-            originalSection.splitLeftBy(newSection);
-            sections.add(sections.indexOf(originalSection) + 1, newSection);
+            Section splitSection = originalSection.splitLeftBy(newSection);
+            sections.add(sections.indexOf(originalSection), splitSection);
+            sections.add(sections.indexOf(originalSection), newSection);
+            sections.remove(originalSection);
             return;
         }
         throw new IllegalArgumentException("노선에 상행 종점과 하행 종점이 모두 존재하지 않아 구간을 추가할 수 없습니다.");
@@ -67,7 +71,9 @@ public class Sections {
             throw new IllegalArgumentException("해당 역은 노선에 존재하지 않습니다.");
         }
         int mergingIndex = sections.indexOf(originalSection) + 1;
-        originalSection.mergeWith(sections.get(mergingIndex));
+        Section mergedSection = originalSection.mergeWith(sections.get(mergingIndex));
+        sections.add(mergingIndex, mergedSection);
+        sections.remove(originalSection);
         return sections.remove(mergingIndex);
     }
 
