@@ -21,9 +21,9 @@ import wooteco.subway.dto.StationRequest;
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("노선을 생성한다.")
+    @DisplayName("두 역을 생성한 뒤 노선을 생성한다.")
     @Test
-    void 노선_생성() {
+    void 역_생성_후_노선_생성() {
         // given
         Long upStationId = postStationThenReturnId("강남역");
         Long downStationId = postStationThenReturnId("선릉역");
@@ -41,7 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 예외 발생")
+    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 404코드를 반환한다.")
     @Test
     void 존재하는_노선_이름_생성_예외() {
         // given
@@ -62,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("복수의 역을 등록하고 두 노선을 생성 후, 전체 노선을 조회한다.")
     @Test
     void 전체_노선_조회() {
         // given
@@ -93,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("단일 노선을 조회한다.")
+    @DisplayName("두 역과 둘을 잇는 노선을 생성 후 조회한다.")
     @Test
     void 단일_노선_조회() {
         //given
@@ -113,7 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("노선을 수정한다.")
+    @DisplayName("두 역과 둘을 잇는 노선을 생성 후, 이름과 색상을 수정한다.")
     @Test
     void 노선_수정() {
         // given
@@ -138,7 +138,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("노선을 삭제한다.")
+    @DisplayName("두 역과 둘을 잇는 노선을 생성 후 삭제한다.")
     @Test
     void 노선_삭제() {
         // given
@@ -159,7 +159,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("구간을 추가한다")
+    @DisplayName("세 역을 등록하고 둘만 잇는 노선을 생성한 후, 사이에 나머지 한 역을 포함한 구간을 추가한다.")
     @Test
     void 구간_추가() {
         // given
@@ -184,7 +184,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("추가할 수 없는 구간을 추가 시 예외가 발생한다")
+    @DisplayName("둘만 잇는 노선을 생성하고, 길이 상 추가 불가능한 구간을 추가할 시 404코드를 반환한다.")
     @Test
     void 구간_추가_예외() {
         // given
@@ -209,7 +209,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("구간을 삭제한다")
+    @DisplayName("세 역과 셋을 잇는 구간을 생성 후, 중간 역을 삭제해 구간을 삭제한다.")
     @Test
     void 구간_삭제() {
         // given
@@ -240,7 +240,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("삭제할 수 없는 구간을 삭제할 시 예외 발생")
+    @DisplayName("두 역과 둘을 잇는 노선을 생성 후, 한 쪽 역을 삭제 시도하면 404코드를 반환한다.")
     @Test
     void 구간_삭제_예외() {
         // given
