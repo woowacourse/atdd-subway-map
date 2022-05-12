@@ -13,6 +13,10 @@ public class SectionSeries {
         this.sections = sections;
     }
 
+    public EnrollSections findEnrollSections(Section newSection) {
+        return new EnrollSections(newSection, findUpdateSection(newSection));
+    }
+
     public Optional<Section> findUpdateSection(Section newSection) {
         if (isTerminal(newSection)) {
             return Optional.empty();
@@ -54,14 +58,7 @@ public class SectionSeries {
         );
     }
 
-    public Section findDeleteSections(Long stationId) {
+    public RemoveSections findDeleteSections(Long stationId) {
         return null;
-        // if (sections.size() <= 2) {
-        //     throw new RuntimeException("two small to delete");
-        // }
-        //
-        // return sections.stream()
-        //     .filter(section -> section.hasStationById(stationId))
-        //     .collect(Collectors.toList());
     }
 }
