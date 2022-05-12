@@ -64,16 +64,18 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public Section findByUpStationId(Long upStationId) {
+    public Section findByLineIdAndUpStationId(Long lineId, Long upStationId) {
         return sections.stream()
+                .filter(section -> section.getLine().getId() == lineId)
                 .filter(section -> section.getUpStation().getId() == upStationId)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
     }
 
     @Override
-    public Section findByDownStationId(Long downStationId) {
+    public Section findByLineIdAndDownStationId(Long lineId, Long downStationId) {
         return sections.stream()
+                .filter(section -> section.getLine().getId() == lineId)
                 .filter(section -> section.getDownStation().getId() == downStationId)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));

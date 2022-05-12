@@ -203,6 +203,48 @@ public class LineServiceTest {
                         .isInstanceOf(IllegalArgumentException.class));
     }
 
+    @Test
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 경우 에러를 발생한다.")
+    void deleteLastSection() {
+        // given
+        final Station station1 = stationDao.save(new Station("상행종점"));
+        final Station station2 = stationDao.save(new Station("하행종점"));
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+
+        // when and then
+        assertAll(() -> assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId(), station1.getId()))
+                        .isInstanceOf(IllegalArgumentException.class),
+                () -> assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId(), station2.getId()))
+                        .isInstanceOf(IllegalArgumentException.class));
+    }
+
+    @Test
+    @DisplayName("중간역이 제거될 경우 구간을 재배치한다.")
+    void deleteMiddleSection() {
+        // given
+        final Station station1 = stationDao.save(new Station("상행종점"));
+        final Station station2 = stationDao.save(new Station("중간종점"));
+        final Station station3 = stationDao.save(new Station("하행종점"));
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+        final Long lineId = lineResponse.getId();
+        final SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 10);
+        lineService.saveSection(lineResponse.getId(), sectionRequest);
+
+        // when
+        lineService.deleteSection(lineId, station2.getId());
+
+        // then
+        Map<Long, Long> sections = getSections(lineDao.findById(lineId));
+        Long upStationId = getUpStationId(sections);
+        Long downStationId = getDownStationId(sections);
+
+        assertThat(upStationId).isEqualTo(station1.getId());
+        assertThat(downStationId).isEqualTo(station3.getId());
+        assertThat(sectionDao.findByLineIdAndUpStationId(lineId, upStationId).getDistance()).isEqualTo(20);
+    }
+
     private Map<Long, Long> getSections(Line line) {
         List<Section> sections = sectionDao.findByLineId(line.getId());
         Map<Long, Long> map = new HashMap<>();

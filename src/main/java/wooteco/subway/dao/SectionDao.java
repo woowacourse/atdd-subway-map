@@ -15,7 +15,7 @@ public interface SectionDao {
 
     void update(Section section);
 
-    Section findByUpStationId(Long upStationId);
+    Section findByLineIdAndUpStationId(Long lineId, Long upStationId);
 
-    Section findByDownStationId(Long downStationId);
+    Section findByLineIdAndDownStationId(Long lineId, Long downStationId);
 }

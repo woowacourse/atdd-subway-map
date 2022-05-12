@@ -104,10 +104,10 @@ public class JdbcSectionDao implements SectionDao{
     }
 
     @Override
-    public Section findByUpStationId(Long upStationId) {
+    public Section findByLineIdAndUpStationId(Long lineId, Long upStationId) {
         try {
-            final String sql = "SELECT * FROM SECTION WHERE up_station_id = ?";
-            SectionEntity sectionEntity = jdbcTemplate.queryForObject(sql, stationRowMapper, upStationId);
+            final String sql = "SELECT * FROM SECTION WHERE line_id = ? AND up_station_id = ?";
+            SectionEntity sectionEntity = jdbcTemplate.queryForObject(sql, stationRowMapper, lineId, upStationId);
             return new Section(sectionEntity.getId(),
                     lineDao.findById(sectionEntity.getLineId()),
                     stationDao.findById(sectionEntity.getUpStationId()),
@@ -119,10 +119,10 @@ public class JdbcSectionDao implements SectionDao{
     }
 
     @Override
-    public Section findByDownStationId(Long downStationId) {
+    public Section findByLineIdAndDownStationId(Long lineId, Long downStationId) {
         try {
-            final String sql = "SELECT * FROM SECTION WHERE down_station_id = ?";
-            SectionEntity sectionEntity = jdbcTemplate.queryForObject(sql, stationRowMapper, downStationId);
+            final String sql = "SELECT * FROM SECTION WHERE line_id = ? AND down_station_id = ?";
+            SectionEntity sectionEntity = jdbcTemplate.queryForObject(sql, stationRowMapper, lineId, downStationId);
             return new Section(sectionEntity.getId(),
                     lineDao.findById(sectionEntity.getLineId()),
                     stationDao.findById(sectionEntity.getUpStationId()),

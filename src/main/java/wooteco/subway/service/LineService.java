@@ -81,8 +81,10 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    public void saveSection(Long id, SectionRequest sectionRequest) {
-        final Line line = lineDao.findById(id);
+    public void saveSection(Long lineId, SectionRequest sectionRequest) {
+        checkExistLine(lineId);
+
+        final Line line = lineDao.findById(lineId);
         Map<Long, Long> sections = getSections(line);
         final Long lastUpStationId = getUpStationId(sections);
         final Long lastDownStationId = getDownStationId(sections);
@@ -114,7 +116,7 @@ public class LineService {
         //갈래길 추가
         //1.상행이 같을 경우
         if (sections.keySet().contains(upStationId)) {
-            Section existSection = sectionDao.findByUpStationId(upStationId);
+            Section existSection = sectionDao.findByLineIdAndUpStationId(lineId, upStationId);
             int existDistance = existSection.getDistance();
             Section updateSection = new Section(existSection.getId(), line, stationDao.findById(downStationId),
                     existSection.getDownStation(), existDistance - distance);
@@ -125,13 +127,52 @@ public class LineService {
 
         //2.하행이 같을 경우
         if (sections.values().contains(downStationId)) {
-            Section existSection = sectionDao.findByDownStationId(downStationId);
+            Section existSection = sectionDao.findByLineIdAndDownStationId(lineId, downStationId);
             int existDistance = existSection.getDistance();
             Section updateSection = new Section(existSection.getId(), line, existSection.getUpStation(),
                     stationDao.findById(upStationId), existDistance - distance);
             sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
             sectionDao.update(updateSection);
             return;
+        }
+    }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        checkExistLine(lineId);
+
+        final Line line = lineDao.findById(lineId);
+        Map<Long, Long> sections = getSections(line);
+        checkOnlyOneSection(sections);
+
+        final Long lastUpStationId = getUpStationId(sections);
+        final Long lastDownStationId = getDownStationId(sections);
+
+        checkNotContainStation(sections, stationId);
+
+        //종점이 제거될 경우
+        //1.상행종점
+        if (lastUpStationId == stationId) {
+            Section existSection = sectionDao.findByLineIdAndUpStationId(lineId, lastUpStationId);
+            sectionDao.deleteById(existSection.getId());
+            return;
+        }
+
+        //2.하행종점
+        if (lastDownStationId == stationId) {
+            Section existSection = sectionDao.findByLineIdAndDownStationId(lineId, lastDownStationId);
+            sectionDao.deleteById(existSection.getId());
+            return;
+        }
+
+        //중간역 제거
+        if (sections.keySet().contains(stationId) && sections.values().contains(stationId)) {
+            Section upSection = sectionDao.findByLineIdAndDownStationId(lineId, stationId);
+            Section downSection = sectionDao.findByLineIdAndUpStationId(lineId, stationId);
+            int upSectionDistance = upSection.getDistance();
+            int downSectionDistance = downSection.getDistance();
+            sectionDao.deleteById(downSection.getId());
+            sectionDao.update(new Section(upSection.getId(), line, upSection.getUpStation(),
+                    downSection.getDownStation(), upSectionDistance + downSectionDistance));
         }
     }
 
@@ -203,6 +244,21 @@ public class LineService {
                 .allMatch(value -> value != upStationId && value != downStationId);
         if (isAllDifferentWithUpStationId && isAllDifferentWithDownStationId) {
             throw new IllegalArgumentException("상행역과 하행역이 모두 노선에 등록되어 있지 않다면 추가할 수 없습니다.");
+        }
+    }
+
+    private void checkNotContainStation(Map<Long, Long> sections, Long stationId) {
+        final boolean isAllDifferentWithStationId = sections.keySet()
+                .stream()
+                .allMatch(key -> key != stationId && sections.get(key) != stationId);
+        if (isAllDifferentWithStationId) {
+            throw new IllegalArgumentException("역이 노선에 등록되어 있지 않다면 삭제할 수 없습니다.");
+        }
+    }
+
+    private void checkOnlyOneSection(Map<Long, Long> sections) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
         }
     }
 }
