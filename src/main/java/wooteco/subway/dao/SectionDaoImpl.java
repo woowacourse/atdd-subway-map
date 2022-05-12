@@ -16,6 +16,7 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     private static final RowMapper<Section> actorRowMapper = (resultSet, rowNum) -> new Section(
+            resultSet.getLong("id"),
             resultSet.getLong("lineId"),
             resultSet.getLong("upStationId"),
             resultSet.getLong("downStationId"),
