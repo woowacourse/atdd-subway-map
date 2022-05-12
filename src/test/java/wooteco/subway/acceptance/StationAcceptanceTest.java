@@ -44,6 +44,17 @@ class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getString("message")).isNotBlank();
     }
 
+    @DisplayName("지하철역 이름을 빈 값으로 지하철역을 생성한다.")
+    @Test
+    void createStationWithNameBlank() {
+        // given && when
+        ExtractableResponse<Response> response = createStationAndReturnResponse("");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+    }
+
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
@@ -73,14 +84,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        StationRequest request = new StationRequest("강남역");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = createStationAndReturnResponse("station1");
 
         // when
         String uri = createResponse.header("Location");

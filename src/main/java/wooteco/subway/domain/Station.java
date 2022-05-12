@@ -7,12 +7,13 @@ public class Station {
     private String name;
 
     public Station(Long id, String name) {
+        validateName(name);
         this.id = id;
         this.name = name;
     }
 
     public Station(String name) {
-        this.name = name;
+        this(null, name);
     }
 
     public Long getId() {
@@ -25,6 +26,12 @@ public class Station {
 
     public boolean isSameName(Station station) {
         return this.name.equals(station.name);
+    }
+
+    private void validateName(final String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("이름은 빈 값일 수 없습니다.");
+        }
     }
 
     @Override
