@@ -32,6 +32,7 @@ public class StationDaoTest {
     @DisplayName("정상적으로 지하철역이 저장된 경우를 테스트한다.")
     void saveTest() {
         Station station = stationDao.save(new Station("선릉역"));
+
         assertThat(station.getName()).isEqualTo("선릉역");
     }
 
@@ -39,6 +40,7 @@ public class StationDaoTest {
     @DisplayName("중복된 지하철역을 저장하는 경우 예외를 발생시킨다.")
     void saveDuplicateTest() {
         stationDao.save(new Station("선릉역"));
+
         assertThatThrownBy(() -> stationDao.save(new Station("선릉역")))
                 .isInstanceOf(IllegalStateException.class);
     }
@@ -49,6 +51,7 @@ public class StationDaoTest {
         stationDao.save(new Station("선릉역"));
         stationDao.save(new Station("역삼역"));
         stationDao.save(new Station("강남역"));
+
         assertThat(stationDao.findAll()).hasSize(3);
     }
 
@@ -67,6 +70,7 @@ public class StationDaoTest {
         stationDao.save(new Station("역삼역"));
         final Station station = stationDao.save(new Station("강남역"));
         stationDao.deleteById(station.getId());
+
         assertThat(stationDao.findAll()).hasSize(2);
     }
 }
