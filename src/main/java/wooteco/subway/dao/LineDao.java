@@ -31,8 +31,9 @@ public class LineDao implements CommonLineDao {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", lineDto.getName());
         params.put("color", lineDto.getColor());
+        params.put("up_station_id", lineDto.getUpStationId());
         final Long id = simpleInsert.executeAndReturnKey(params).longValue();
-        return new Line(id, lineDto.getName(), lineDto.getColor());
+        return new Line(id, lineDto.getName(), lineDto.getColor(), lineDto.getUpStationId());
     }
 
     @Override
@@ -40,17 +41,17 @@ public class LineDao implements CommonLineDao {
         final String sql = "select id, name, color from LINE";
         return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> {
             return new Line(resultSet.getLong("id"), resultSet.getString("name"),
-                    resultSet.getString("color"));
+                    resultSet.getString("color"), resultSet.getLong("up_station_id"));
         });
     }
 
     @Override
     public Line findById(final Long id) {
-        final String sql = "select id, name, color from LINE where id = :id";
+        final String sql = "select id, name, color, up_station_id from LINE where id = :id";
         final SqlParameterSource parameter = new MapSqlParameterSource(Map.of("id", id));
         return namedParameterJdbcTemplate.queryForObject(sql, parameter, (resultSet, rowNum) -> {
             return new Line(resultSet.getLong("id"), resultSet.getString("name"),
-                    resultSet.getString("color"));
+                    resultSet.getString("color"), resultSet.getLong("up_station_id"));
         });
     }
 

@@ -86,8 +86,7 @@ class LineServiceTest {
     @DisplayName("아이디로 지하철 노선을 조회할 수 있다")
     void findById() {
         final LineResponse line = lineService.save(LINE_FIXTURE);
-        final Line found = lineService.findById(line.getId());
-
+        final LineResponse found = lineService.findById(line.getId());
         assertThat(line.getId()).isEqualTo(found.getId());
     }
 
@@ -128,7 +127,7 @@ class LineServiceTest {
             final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777", 1L, 2L, 3);
 
             lineService.update(id, lineRequest);
-            final Line updated = lineService.findById(id);
+            final LineResponse updated = lineService.findById(id);
 
             assertAll(
                     () -> assertThat(updated.getId()).isEqualTo(id),

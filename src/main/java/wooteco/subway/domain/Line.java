@@ -8,20 +8,22 @@ public class Line {
     private final String name;
     private final String color;
     private final Sections sections;
+    private final Long upStationId;
 
-    public Line(final Long id, final String name, final String color, final Sections sections) {
+    public Line(final Long id, final String name, final String color, final Sections sections, final Long upStationId) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.sections = sections;
+        this.upStationId = upStationId;
     }
 
-    public Line(final Long id, final String name, final String color) {
-        this(id, name, color, new Sections(new ArrayList<>()));
+    public Line(final Long id, final String name, final String color, final Long upStationId) {
+        this(id, name, color, new Sections(new ArrayList<>()), upStationId);
     }
 
     public Line(final String name, final String color) {
-        this(null, name, color);
+        this(null, name, color, new Sections(new ArrayList<>()), 0L);
     }
 
     public void addSection(final Section newSection) {
@@ -46,6 +48,10 @@ public class Line {
 
     public Sections getSections() {
         return sections;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
     }
 
     @Override

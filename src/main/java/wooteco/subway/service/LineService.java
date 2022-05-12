@@ -27,17 +27,15 @@ public class LineService {
 
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
-//        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final LineDto lineDto = new LineDto(lineRequest.getName(), lineRequest.getColor(),
                 lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         final Line line = lineRepository.save(lineDto);
         return LineResponse.from(line);
-//        return lineRepository.save(lineDto);
     }
 
     @Transactional(readOnly = true)
-    public Line findById(final Long id) {
-        return lineDao.findById(id);
+    public LineResponse findById(final Long id) {
+        return LineResponse.from(lineRepository.findById(id));
     }
 
     @Transactional(readOnly = true)

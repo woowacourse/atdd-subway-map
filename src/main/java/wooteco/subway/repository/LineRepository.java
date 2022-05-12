@@ -1,5 +1,8 @@
 package wooteco.subway.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
@@ -9,6 +12,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.SectionDto;
 
@@ -56,5 +60,43 @@ public class LineRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalStateException("잘못된 역 아이디입니다. id=" + stationId);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Line findById(final Long id) {
+        final List<SectionDto> sectionDtos = sectionDao.findAllByLineId(id);
+        final Line line = lineDao.findById(id);
+        final List<SectionDto> sortedSectionDtos = sortSectionDto(sectionDtos, line.getUpStationId());
+        for (SectionDto sectionDto : sortedSectionDtos) {
+            final Station upStation = stationDao.findById(sectionDto.getUpStationId());
+            final Station downStation = stationDao.findById(sectionDto.getDownStationId());
+            line.addSection(new Section(upStation, downStation, sectionDto.getDistance()));
+        }
+        return line;
+    }
+
+    private List<SectionDto> sortSectionDto(List<SectionDto> sectionDtos, final Long upStationId) {
+        final List<SectionDto> sortedSectionDtos = new ArrayList<>();
+        Long sectionId = upStationId;
+        while (!sectionDtos.isEmpty()) {
+            final SectionDto sectionDto = findSectionDtoById(sectionDtos, sectionId);
+            sortedSectionDtos.add(sectionDto);
+            sectionId = sectionDto.getDownStationId();
+            sectionDtos = remove(sectionDtos, sectionDto);
+        }
+        return sortedSectionDtos;
+    }
+
+    private SectionDto findSectionDtoById(final List<SectionDto> sectionDtos, final Long id) {
+        return sectionDtos.stream()
+                .filter(sectionDto -> sectionDto.getUpStationId().equals(id))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private List<SectionDto> remove(final List<SectionDto> sectionDtos, final SectionDto target) {
+        return sectionDtos.stream()
+                .filter(sectionDto -> !(sectionDto.getUpStationId().equals(target.getUpStationId())))
+                .collect(Collectors.toList());
     }
 }
