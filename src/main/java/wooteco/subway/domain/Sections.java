@@ -24,15 +24,7 @@ public class Sections {
             sections.add(inputSection);
             return Optional.empty();
         }
-        if (!isEdgeSection(inputSection)) {
-            Section connectedSection = findAddPoint(inputSection);
-            Direction direction = Direction.findDirection(connectedSection, inputSection);
-            syncSection(connectedSection, inputSection, direction);
-            sections.add(inputSection);
-            return Optional.of(connectedSection);
-        }
-        List<Section> sectionOptions = findConnectableSection(inputSection);
-        Section connectedSection = findAddPoint(sectionOptions, inputSection);
+        Section connectedSection = selectAddPoint(inputSection);
         Direction direction = Direction.findDirection(connectedSection, inputSection);
         syncSection(connectedSection, inputSection, direction);
         sections.add(inputSection);
@@ -55,23 +47,12 @@ public class Sections {
         return sectionStations.containsAll(inputSectionStations);
     }
 
-    private void syncSection(Section section, Section inputSection, Direction direction) {
-        if (direction == Direction.BETWEEN_UP) {
-            validateDistance(section, inputSection);
-            section.update(inputSection.getDownStationId(), section.getDownStationId(),
-                    section.getDistance() - inputSection.getDistance());
+    private Section selectAddPoint(Section inputSection) {
+        if (!isEdgeSection(inputSection)) {
+            return findAddPoint(inputSection);
         }
-        if (direction == Direction.BETWEEN_DOWN) {
-            validateDistance(section, inputSection);
-            section.update(section.getUpStationId(), inputSection.getUpStationId(),
-                    section.getDistance() - inputSection.getDistance());
-        }
-    }
-
-    private void validateDistance(Section section, Section inputSection) {
-        if (section.getDistance() <= inputSection.getDistance()) {
-            throw new IllegalArgumentException(EXCEED_DISTANCE);
-        }
+        List<Section> connectableSection = findConnectableSection(inputSection);
+        return findAddPoint(connectableSection, inputSection);
     }
 
     private Section findAddPoint(Section inputSection) {
@@ -89,6 +70,25 @@ public class Sections {
                 })
                 .findAny()
                 .orElseThrow();
+    }
+
+    private void syncSection(Section section, Section inputSection, Direction direction) {
+        if (direction == Direction.BETWEEN_UP) {
+            validateDistance(section, inputSection);
+            section.update(inputSection.getDownStationId(), section.getDownStationId(),
+                    section.getDistance() - inputSection.getDistance());
+        }
+        if (direction == Direction.BETWEEN_DOWN) {
+            validateDistance(section, inputSection);
+            section.update(section.getUpStationId(), inputSection.getUpStationId(),
+                    section.getDistance() - inputSection.getDistance());
+        }
+    }
+
+    private void validateDistance(Section section, Section inputSection) {
+        if (section.getDistance() <= inputSection.getDistance()) {
+            throw new IllegalArgumentException(EXCEED_DISTANCE);
+        }
     }
 
     private boolean isEdgeSection(Section inputSection) {
@@ -122,22 +122,23 @@ public class Sections {
         return Optional.of(deleteCenterSection(overlapSections, stationId));
     }
 
-
     private Section deleteCenterSection(List<Section> overlapSections, Long stationId) {
         Section section = overlapSections.get(0);
-
-        if (section.getUpStationId() == stationId) {
-            Section newSection = new Section(section.getLineId(), overlapSections.get(1).getUpStationId(), section.getDownStationId(),
-                    section.getDistance() + overlapSections.get(1).getDistance());
-            sections.add(newSection);
-            sections.removeAll(overlapSections);
-            return newSection;
-        }
-        Section newSection = new Section(section.getLineId(), section.getUpStationId(), overlapSections.get(1).getDownStationId(),
-                section.getDistance() + overlapSections.get(1).getDistance());
-        sections.add(newSection);
         sections.removeAll(overlapSections);
+        Section newSection = generateNewSection(overlapSections, section, stationId);
+        sections.add(newSection);
         return newSection;
+    }
+
+    private Section generateNewSection(List<Section> overlapSections, Section section, Long stationId) {
+        if (section.getUpStationId() == stationId) {
+            return new Section(section.getLineId(), overlapSections.get(1).getUpStationId(),
+                    section.getDownStationId(),
+                    section.getDistance() + overlapSections.get(1).getDistance());
+        }
+        return new Section(section.getLineId(), section.getUpStationId(),
+                overlapSections.get(1).getDownStationId(),
+                section.getDistance() + overlapSections.get(1).getDistance());
     }
 
     public List<Section> getSections() {
