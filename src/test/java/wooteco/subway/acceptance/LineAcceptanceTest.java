@@ -7,9 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -20,33 +18,32 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 상행 종점을 등록한다.
-     * 하행 종점을 등록한다.
+     * 상행 종점을 생성한다.
+     * 하행 종점을 생성한다.
      *
      * when
-     * 노선을 등록한다.
+     * 노선을 생성한다.
      *
      * then
-     * 등록된 노선 정보를 응답한다.
+     * 생성된 노선 정보를 응답한다.
      * */
-    @DisplayName("지하철 노선을 등록한다.")
+    @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void registerLine() {
+    void createLine() {
         // given
-        long id1 = registerStationAndReturnId("station1");
-        long id2 = registerStationAndReturnId("station2");
+        long id1 = createStationAndReturnId("station1");
+        long id2 = createStationAndReturnId("station2");
 
         // when
         String lineName = "line1";
         String lineColor = "color1";
-        ExtractableResponse<Response> response = registerLineAndReturnResponse(lineName, lineColor, id1, id2, 10);
+        ExtractableResponse<Response> response = createLineAndReturnResponse(lineName, lineColor, id1, id2, 10);
 
         // then
         assertAll(
@@ -66,26 +63,26 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 하행 종점만 등록되어 있다.
+     * 하행 종점만 생성되어 있다.
      *
      * when
-     * 노선을 등록한다.
+     * 노선을 생성한다.
      *
      * then
      * 예외를 응답한다.
      * */
-    @DisplayName("하행 종점역만 등록된 상태에서 노선을 등록한다.")
+    @DisplayName("하행 종점역만 생성된 상태에서 노선을 생성한다.")
     @Test
-    void registerLineWithNonExistLine() {
+    void createLineWithNonExistLine() {
         // given
-        long idWillBeDeleted = registerStationAndReturnId("station1");
+        long idWillBeDeleted = createStationAndReturnId("station1");
         RestAssured.when()
                 .delete("/stations/" + idWillBeDeleted);
 
-        long downStationId = registerStationAndReturnId("station2");
+        long downStationId = createStationAndReturnId("station2");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse("line1", "color1", idWillBeDeleted,
+        ExtractableResponse<Response> response = createLineAndReturnResponse("line1", "color1", idWillBeDeleted,
                 downStationId, 10);
 
         assertAll(
@@ -96,23 +93,23 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 상행역과 하행역이 등록되어 있다.
+     * 상행역과 하행역이 생성되어 있다.
      *
      * when
-     * 역 사이 거리를 0으로 노선을 등록한다.
+     * 역 사이 거리를 0으로 노선을 생성한다.
      *
      * then
      * 예외를 응답한다.
      * */
-    @DisplayName("역 사이 거리를 1 미만으로 노선을 등록한다.")
+    @DisplayName("역 사이 거리를 1 미만으로 노선을 생성한다.")
     @Test
-    void registerLineWithDistanceZero() {
+    void createLineWithDistanceZero() {
         // given
-        long upStationId = registerStationAndReturnId("station1");
-        long downStationId = registerStationAndReturnId("station2");
+        long upStationId = createStationAndReturnId("station1");
+        long downStationId = createStationAndReturnId("station2");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse("line1", "color1", upStationId,
+        ExtractableResponse<Response> response = createLineAndReturnResponse("line1", "color1", upStationId,
                 downStationId,
                 0);
 
@@ -125,28 +122,28 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 노선이 등록되어 있다.
+     * 노선이 생성되어 있다.
      *
      * when
-     * 기존에 등록된 노선과 같은 이름으로 노선을 등록한다.
+     * 기존에 생성된 노선과 같은 이름으로 노선을 생성한다.
      *
      * then
      * 예외를 응답한다.
      * */
-    @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 등록한다.")
+    @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void registerLineWithDuplicateName() {
+    void createLineWithDuplicateName() {
         // given
         String lineName = "line1";
-        long id1 = registerStationAndReturnId("station1");
-        long id2 = registerStationAndReturnId("station2");
-        registerLineAndReturnResponse(lineName, "color1", id1, id2, 10);
+        long id1 = createStationAndReturnId("station1");
+        long id2 = createStationAndReturnId("station2");
+        createLineAndReturnResponse(lineName, "color1", id1, id2, 10);
 
-        long upStationId = registerStationAndReturnId("station3");
-        long downStationId = registerStationAndReturnId("station4");
+        long upStationId = createStationAndReturnId("station3");
+        long downStationId = createStationAndReturnId("station4");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse(lineName, "color2", upStationId,
+        ExtractableResponse<Response> response = createLineAndReturnResponse(lineName, "color2", upStationId,
                 downStationId, 10);
 
         // then
@@ -158,21 +155,21 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 노선이 등록되어 있다.
+     * 노선이 생성되어 있다.
      *
      * when
-     * 기존에 등록된 노선과 같은 색깔로 노선을 등록한다.
+     * 기존에 생성된 노선과 같은 색깔로 노선을 생성한다.
      *
      * then
      * 예외를 응답한다.
      * */
-    @DisplayName("기존에 존재하는 노선 색깔로 지하철 노선을 등록한다.")
+    @DisplayName("기존에 존재하는 노선 색깔로 지하철 노선을 생성한다.")
     @Test
     void createLineWithDuplicateColor() {
         // given
         String lineColor = "color1";
-        long id1 = registerStationAndReturnId("station1");
-        long id2 = registerStationAndReturnId("station2");
+        long id1 = createStationAndReturnId("station1");
+        long id2 = createStationAndReturnId("station2");
 
         LineRequest lineRequest1 = new LineRequest("line1", lineColor, id1, id2, 10);
         RestAssured.given()
@@ -184,7 +181,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse("line2", lineColor, id1, id2, 10);
+        ExtractableResponse<Response> response = createLineAndReturnResponse("line2", lineColor, id1, id2, 10);
 
         // then
         assertAll(
@@ -193,15 +190,15 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("노선 이름을 빈 값으로 등록한다")
+    @DisplayName("노선 이름을 빈 값으로 생성한다")
     @Test
-    void registerLineWithNameBlank() {
+    void createLineWithNameBlank() {
         // given
-        long id1 = registerStationAndReturnId("station1");
-        long id2 = registerStationAndReturnId("station2");
+        long id1 = createStationAndReturnId("station1");
+        long id2 = createStationAndReturnId("station2");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse("", "color1", id1, id2, 10);
+        ExtractableResponse<Response> response = createLineAndReturnResponse("", "color1", id1, id2, 10);
 
         // then
         assertAll(
@@ -210,15 +207,15 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("노선 이름을 빈 값으로 등록한다")
+    @DisplayName("노선 이름을 빈 값으로 생성한다")
     @Test
-    void registerLineWithColorBlank() {
+    void createLineWithColorBlank() {
         // given
-        long id1 = registerStationAndReturnId("station1");
-        long id2 = registerStationAndReturnId("station2");
+        long id1 = createStationAndReturnId("station1");
+        long id2 = createStationAndReturnId("station2");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse("line1", "", id1, id2, 10);
+        ExtractableResponse<Response> response = createLineAndReturnResponse("line1", "", id1, id2, 10);
 
         // then
         assertAll(
@@ -227,14 +224,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("같은 역으로 노선을 등록한다.")
+    @DisplayName("같은 역으로 노선을 생성한다.")
     @Test
-    void registerLineWithSameStation() {
+    void createLineWithSameStation() {
         // given
-        long id1 = registerStationAndReturnId("station1");
+        long id1 = createStationAndReturnId("station1");
 
         // when
-        ExtractableResponse<Response> response = registerLineAndReturnResponse("line1", "color1", id1, id1, 10);
+        ExtractableResponse<Response> response = createLineAndReturnResponse("line1", "color1", id1, id1, 10);
 
         // then
         assertAll(
@@ -245,7 +242,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 지하철 노선이 등록되어 있다.
+     * 지하철 노선이 생성되어 있다.
      *
      * when
      * 지하철 노선 목록을 조회한다.
@@ -257,13 +254,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        long id1 = registerStationAndReturnId("지하철역1");
-        long id2 = registerStationAndReturnId("지하철역2");
-        long id3 = registerStationAndReturnId("지하철역3");
-        long id4 = registerStationAndReturnId("지하철역4");
+        long id1 = createStationAndReturnId("지하철역1");
+        long id2 = createStationAndReturnId("지하철역2");
+        long id3 = createStationAndReturnId("지하철역3");
+        long id4 = createStationAndReturnId("지하철역4");
 
-        ExtractableResponse<Response> createResponse1 = registerLineAndReturnResponse("노선1", "색깔1", id1, id2, 10);
-        ExtractableResponse<Response> createResponse2 = registerLineAndReturnResponse("노선2", "색깔2", id3, id4, 10);
+        ExtractableResponse<Response> createResponse1 = createLineAndReturnResponse("노선1", "색깔1", id1, id2, 10);
+        ExtractableResponse<Response> createResponse2 = createLineAndReturnResponse("노선2", "색깔2", id3, id4, 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -295,7 +292,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 지하철 노선이 등록되어 있다.
+     * 지하철 노선이 생성되어 있다.
      *
      * when
      * 지하철 노선을 조회한다.
@@ -307,9 +304,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        long upStationId = registerStationAndReturnId("서울역");
-        long downStationId = registerStationAndReturnId("시청");
-        ExtractableResponse<Response> createResponse = registerLineAndReturnResponse(
+        long upStationId = createStationAndReturnId("서울역");
+        long downStationId = createStationAndReturnId("시청");
+        ExtractableResponse<Response> createResponse = createLineAndReturnResponse(
                 "1호선", "파란색", upStationId, downStationId, 10);
         long createdLineId = createResponse.body().jsonPath().getLong("id");
 
@@ -336,7 +333,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 지하철 노선이 등록되어 있다.
+     * 지하철 노선이 생성되어 있다.
      * 해당 노선을 삭제한다.
      *
      * when
@@ -349,9 +346,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getNonExistLine() {
         // given
-        long id1 = registerStationAndReturnId("지하철역1");
-        long id2 = registerStationAndReturnId("지하철역2");
-        String uri = registerLineAndReturnResponse("노선", "색깔", id1, id2, 10)
+        long id1 = createStationAndReturnId("지하철역1");
+        long id2 = createStationAndReturnId("지하철역2");
+        String uri = createLineAndReturnResponse("노선", "색깔", id1, id2, 10)
                 .header("Location");
 
         RestAssured.when().delete(uri);
@@ -370,7 +367,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 지하철 노선이 등록되어 있다.
+     * 지하철 노선이 생성되어 있다.
      *
      * when
      * 해당 노선 정보를 수정한다.
@@ -382,9 +379,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        long id1 = registerStationAndReturnId("지하철역1");
-        long id2 = registerStationAndReturnId("지하철역2");
-        String createdLinePath = registerLineAndReturnResponse("노선", "색깔", id1, id2, 10)
+        long id1 = createStationAndReturnId("지하철역1");
+        long id2 = createStationAndReturnId("지하철역2");
+        String createdLinePath = createLineAndReturnResponse("노선", "색깔", id1, id2, 10)
                 .header("Location");
 
         // when
@@ -403,7 +400,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 지하철 두 개가 등록되어 있다.
+     * 지하철 두 개가 생성되어 있다.
      *
      * when
      * 노선 하나의 이름을 이미 존재하는 노선 이름으로 수정한다.
@@ -415,13 +412,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicateName() {
         // given
-        long id1 = registerStationAndReturnId("지하철역1");
-        long id2 = registerStationAndReturnId("지하철역2");
-        long id3 = registerStationAndReturnId("지하철역3");
-        long id4 = registerStationAndReturnId("지하철역4");
+        long id1 = createStationAndReturnId("지하철역1");
+        long id2 = createStationAndReturnId("지하철역2");
+        long id3 = createStationAndReturnId("지하철역3");
+        long id4 = createStationAndReturnId("지하철역4");
 
-        registerLineAndReturnResponse("노선1", "색깔1", id1, id2, 10);
-        String createdLinePath = registerLineAndReturnResponse("노선2", "색깔2", id3, id4, 10).header("Location");
+        createLineAndReturnResponse("노선1", "색깔1", id1, id2, 10);
+        String createdLinePath = createLineAndReturnResponse("노선2", "색깔2", id3, id4, 10).header("Location");
 
         // when
         LineUpdateRequest updateRequest = new LineUpdateRequest("노선1", "색깔1");
@@ -440,7 +437,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * 노선 두 개가 등록되어 있다.
+     * 노선 두 개가 생성되어 있다.
      *
      * when
      * 하나의 노선을 기존에 존재하는 노선의 색깔로 수정한다.
@@ -452,12 +449,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicateColor() {
         // given
-        long id1 = registerStationAndReturnId("서울역");
-        long id2 = registerStationAndReturnId("신설동");
-        long id3 = registerStationAndReturnId("시청");
+        long id1 = createStationAndReturnId("서울역");
+        long id2 = createStationAndReturnId("신설동");
+        long id3 = createStationAndReturnId("시청");
 
-        registerLineAndReturnResponse("1호선", "파란색", id1, id2, 10);
-        String createdLinePath = registerLineAndReturnResponse("2호선", "초록색", id2, id3, 10).header("Location");
+        createLineAndReturnResponse("1호선", "파란색", id1, id2, 10);
+        String createdLinePath = createLineAndReturnResponse("2호선", "초록색", id2, id3, 10).header("Location");
 
         // when
         LineUpdateRequest duplicateColorUpdate = new LineUpdateRequest("2호선", "파란색");
@@ -498,9 +495,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteById() {
         // given
-        long id1 = registerStationAndReturnId("서울역");
-        long id2 = registerStationAndReturnId("신설동");
-        String createdLinePath = registerLineAndReturnResponse("1호선", "파란색", id1, id2, 10).header("Location");
+        long id1 = createStationAndReturnId("서울역");
+        long id2 = createStationAndReturnId("신설동");
+        String createdLinePath = createLineAndReturnResponse("1호선", "파란색", id1, id2, 10).header("Location");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -516,10 +513,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * given
-     * station1, station2를 상행종점, 하행종점으로 하는 line1이 등록되어 있다.
+     * station1, station2를 상행종점, 하행종점으로 하는 line1이 생성되어 있다.
      *
      * when
-     * station2를 상행, station3을 하행으로 하는 거리 5짜리 구간을 등록한다.
+     * station2를 상행, station3을 하행으로 하는 거리 5짜리 구간을 생성한다.
      *
      * then
      * 성공 응답을 반환한다.
@@ -528,11 +525,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         // given
-        long id1 = registerStationAndReturnId("station1");
-        long id2 = registerStationAndReturnId("station2");
-        String createdLinePath = registerLineAndReturnResponse("line", "color", id1, id2, 10).header("Location");
+        long id1 = createStationAndReturnId("station1");
+        long id2 = createStationAndReturnId("station2");
+        String createdLinePath = createLineAndReturnResponse("line", "color", id1, id2, 10).header("Location");
 
-        long id3 = registerStationAndReturnId("station3");
+        long id3 = createStationAndReturnId("station3");
         SectionRequest sectionRequest = new SectionRequest(id2, id3, 5);
 
         // when
@@ -552,11 +549,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSection() {
         // given
-        long id1 = registerStationAndReturnId("station1");
-        long id2 = registerStationAndReturnId("station2");
-        String createdLinePath = registerLineAndReturnResponse("line", "color", id1, id2, 10).header("Location");
+        long id1 = createStationAndReturnId("station1");
+        long id2 = createStationAndReturnId("station2");
+        String createdLinePath = createLineAndReturnResponse("line", "color", id1, id2, 10).header("Location");
 
-        long id3 = registerStationAndReturnId("station3");
+        long id3 = createStationAndReturnId("station3");
         SectionRequest sectionRequest = new SectionRequest(id2, id3, 5);
 
         RestAssured.given()
@@ -576,29 +573,5 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private long registerStationAndReturnId(final String name) {
-        StationRequest upStationRequest = new StationRequest(name);
-        Response upStationResponse = RestAssured.given()
-                .body(upStationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations");
-        return upStationResponse.getBody().jsonPath().getLong("id");
-    }
-
-    private ExtractableResponse<Response> registerLineAndReturnResponse(
-            final String name, final String color, final long upStationId, final long downStationId, final int distance
-    ) {
-        LineRequest lineRequestV2 = new LineRequest(name, color, upStationId, downStationId, distance);
-        return RestAssured
-                .given()
-                .body(lineRequestV2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .extract();
     }
 }
