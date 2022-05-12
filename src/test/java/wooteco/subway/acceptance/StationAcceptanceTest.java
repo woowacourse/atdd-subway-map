@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
@@ -34,7 +35,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         params.put("name", "강남역");
 
         // when
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPostStation(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -47,10 +48,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        requestPost(params);
+        requestPostStation(params);
 
         // when
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPostStation(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -60,23 +61,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = requestPost(params1);
+        StationRequest stationRequest = new StationRequest("강남역");
+        ExtractableResponse<Response> createResponse1 = requestPostStation(stationRequest);
+        stationRequest = new StationRequest("역삼역");
+        ExtractableResponse<Response> createResponse2 = requestPostStation(stationRequest);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = requestPost(params2);
-
-        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/stations")
                 .then().log().all()
                 .extract();
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
@@ -90,12 +85,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = requestPost(params);
+        StationRequest stationRequest = new StationRequest("강남역");
+        ExtractableResponse<Response> createResponse = requestPostStation(stationRequest);
 
-        // when
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -103,7 +95,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -111,16 +102,25 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void notAllowNullOrBlankName(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        StationRequest stationRequest = new StationRequest(null);
 
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPostStation(stationRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).contains("빈 값일 수 없습니다.");
     }
 
-    private ExtractableResponse<Response> requestPost(Map<String, String> params) {
+    public ExtractableResponse<Response> requestPostStation(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> requestPostStation(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
