@@ -95,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ValidatableResponse response = 노선_생성_요청(requestBody);
-        LinkedHashMap<String, Object> responseBody = (LinkedHashMap) response.extract().jsonPath().get();
+        LinkedHashMap<String, Object> responseBody = response.extract().jsonPath().get();
         List<Map<String, String>> stationsResponse = (List<Map<String, String>>) responseBody.get("stations");
 
         // then
@@ -128,26 +128,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
-    @DisplayName("노선 등록 및 목록 조회")
-    @Test
-    void showLineById() {
-        // given
-        String name = "신분당선";
-        String color = "bg-red-600";
-        ExtractableResponse<Response> createResponse = 노선_생성_요청(name, color);
-        Long createdId = createResponse.jsonPath().getLong("id");
-
-        // when
-        ExtractableResponse<Response> response = 노선_조회_요청(createdId);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getLong("id")).isNotNull();
-        assertThat(response.jsonPath().getString("name")).isEqualTo(name);
-        assertThat(response.jsonPath().getString("color")).isEqualTo(color);
-    }
-
     @DisplayName("존재하지 않는 노선 조회시 예외를 반환한다")
     @Test
     void showNotExistLine() {
@@ -162,8 +142,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         // given
-        ValidatableResponse validatableResponse1 = 노선_및_역들_생성요청_케이스_1번();
-        ValidatableResponse validatableResponse2 = 노선_및_역들_생성요청_케이스_2번();
+        ValidatableResponse response1 = 노선_및_역들_생성요청_케이스_1번();
+        ValidatableResponse response2 = 노선_및_역들_생성요청_케이스_2번();
 
         // when
         ExtractableResponse<Response> response = 노선_목록_조회_요청();

@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.MemoryLineDao;
+import wooteco.subway.dao.MemorySectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.constant.BlankArgumentException;
@@ -25,6 +26,7 @@ public class LineServiceTest {
     @BeforeEach
     void setUp() {
         lineDao = new MemoryLineDao();
+        sectionDao = new MemorySectionDao();
         lineService = new LineService(lineDao, sectionDao);
     }
 
