@@ -31,13 +31,13 @@ public class Section {
 
     private void checkNegativeDistance(int distance) {
         if (distance <= 0) {
-            throw new IllegalSectionException("두 종점간의 거리는 0보다 작거나 같을 수 없습니다.");
+            throw new IllegalSectionException("구간 사이의 거리는 0보다 작거나 같을 수 없습니다.");
         }
     }
 
     private void checkSameStation(Long upStationId, Long downStationId) {
         if (upStationId.equals(downStationId)) {
-            throw new IllegalSectionException("두 종점이 같을 수 없습니다.");
+            throw new IllegalSectionException("구간의 두 역이 같을 수 없습니다.");
         }
     }
 
