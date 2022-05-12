@@ -58,8 +58,4 @@ public class FakeLineDao implements LineDao {
     public void delete(Long id) {
         lines.remove(id);
     }
-
-    public void clear() {
-        lines.clear();
-    }
 }

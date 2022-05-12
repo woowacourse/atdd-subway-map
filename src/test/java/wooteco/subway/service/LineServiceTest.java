@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeLineDao;
@@ -28,15 +27,16 @@ public class LineServiceTest {
     private LineService lineService = new LineService(lineDao, stationDao, sectionDao);
 
     @BeforeEach
-    void setUp() {
-        ((FakeLineDao) lineDao).clear();
+    void beforeEach() {
+        stationDao.insert(new Station("강남역"));
+        stationDao.insert(new Station("역삼역"));
+        stationDao.insert(new Station("정자역"));
+        stationDao.insert(new Station("선릉역"));
     }
 
     @Test
     @DisplayName("지하철 노선을 저장할 수 있다.")
     void insertLine() {
-        stationDao.insert(new Station("강남역"));
-        stationDao.insert(new Station("역삼역"));
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         LineResponse lineResponse = lineService.insertLine(lineRequest);
 
@@ -46,10 +46,9 @@ public class LineServiceTest {
 
     @Test
     @DisplayName("이름이 중복된 지하철 노선은 저장할 수 없다.")
-    @Disabled
     void insertLineDuplicateColor() {
-        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600");
-        LineRequest lineRequest2 = new LineRequest("신분당선", "bg-red-500");
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest lineRequest2 = new LineRequest("신분당선", "bg-red-500", 3L, 4L, 5);
         lineService.insertLine(lineRequest1);
 
         assertThatThrownBy(() -> lineService.insertLine(lineRequest2))
@@ -59,10 +58,9 @@ public class LineServiceTest {
 
     @Test
     @DisplayName("이름이 중복된 지하철 노선은 저장할 수 없다.")
-    @Disabled
     void insertLineDuplicateName() {
-        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600");
-        LineRequest lineRequest2 = new LineRequest("분당선", "bg-red-600");
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest lineRequest2 = new LineRequest("분당선", "bg-red-600", 3L, 4L, 5);
         lineService.insertLine(lineRequest1);
 
         assertThatThrownBy(() -> lineService.insertLine(lineRequest2))
@@ -72,10 +70,9 @@ public class LineServiceTest {
 
     @Test
     @DisplayName("지하철 노선들을 조회할 수 있다.")
-    @Disabled
     void findLines() {
-        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600");
-        LineRequest lineRequest2 = new LineRequest("분당선", "bg-red-500");
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest lineRequest2 = new LineRequest("분당선", "bg-red-500", 3L, 4L, 5);
         lineService.insertLine(lineRequest1);
         lineService.insertLine(lineRequest2);
 
@@ -89,9 +86,8 @@ public class LineServiceTest {
 
     @Test
     @DisplayName("지하철 노선을 조회할 수 있다.")
-    @Disabled
     void findLine() {
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         LineResponse lineResponse = lineService.insertLine(lineRequest);
 
         LineResponse lineResponse1 = lineService.findLine(lineResponse.getId());
@@ -101,9 +97,8 @@ public class LineServiceTest {
 
     @Test
     @DisplayName("지하철 노선을 업데이트할 수 있다.")
-    @Disabled
     void updateLine() {
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         LineResponse lineResponse = lineService.insertLine(lineRequest);
 
         lineService.updateLine(lineResponse.getId(), new LineRequest("분당선", "bg-green-500"));
@@ -114,9 +109,8 @@ public class LineServiceTest {
 
     @Test
     @DisplayName("지하철 노선을 지울 수 있다.")
-    @Disabled
     void deleteLine() {
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         LineResponse lineResponse = lineService.insertLine(lineRequest);
 
         lineService.deleteLine(lineResponse.getId());

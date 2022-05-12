@@ -47,8 +47,4 @@ public class FakeStationDao implements StationDao {
     public void delete(Long id) {
         stations.remove(id);
     }
-
-    public void clear() {
-        stations.clear();
-    }
 }

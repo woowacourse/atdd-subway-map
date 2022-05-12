@@ -1,9 +1,11 @@
 package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
@@ -36,11 +38,21 @@ public class FakeSectionDao implements SectionDao {
 
     @Override
     public List<Section> save(Long lineId, List<Section> sections) {
-        return null;
+        List<Section> newSections = new ArrayList<>();
+        for (Section section : sections) {
+            newSections.add(insert(section));
+        }
+        return newSections;
     }
 
     @Override
     public void deleteByLineId(Long lineId) {
-        return ;
+        List<Long> deletingIds = sections.entrySet().stream()
+                .filter(entry -> entry.getValue().getLineId() == lineId)
+                .map(Entry::getKey)
+                .collect(Collectors.toList());
+        for (Long deletingId : deletingIds) {
+            sections.remove(deletingId);
+        }
     }
 }

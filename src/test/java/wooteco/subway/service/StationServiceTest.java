@@ -19,11 +19,6 @@ public class StationServiceTest {
     private StationDao stationDao = new FakeStationDao();
     private StationService stationService = new StationService(stationDao);
 
-    @BeforeEach
-    void setUp() {
-        ((FakeStationDao) stationDao).clear();
-    }
-
     @Test
     @DisplayName("지하철 역을 저장할 수 있다.")
     void insert() {
