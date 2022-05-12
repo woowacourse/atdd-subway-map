@@ -93,9 +93,7 @@ public class Sections {
         final Section laterSection = getLaterSection(stationId);
 
         findAndRemoveFirstSection(stationId, previousSection);
-
         findAndRemoveLastSection(stationId, laterSection);
-
         removeMiddleSection(previousSection, laterSection);
 
         return sections;
