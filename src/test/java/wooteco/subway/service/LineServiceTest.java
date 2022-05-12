@@ -42,7 +42,9 @@ class LineServiceTest {
     @DisplayName("새로운 호선을 생성한다")
     @Test
     void create() {
-        lineService.create(LINE_REQUEST_신분당선_STATION_1_2);
+        final Line line = lineService.create(LINE_REQUEST_신분당선_STATION_1_2);
+
+        assertThat(line.getId()).isNotNull();
     }
 
     @DisplayName("호선을 중복 생성하면 예외가 발생한다.")
@@ -124,6 +126,10 @@ class LineServiceTest {
         final Line line = lineService.create(LINE_REQUEST_신분당선_STATION_1_2);
 
         lineService.delete(line.getId());
+
+        assertThatThrownBy(() -> lineService.findById(line.getId()))
+            .isInstanceOf(LineNotFoundException.class)
+            .hasMessage("[ERROR] 해당 노선이 없습니다.");
     }
 
     @DisplayName("특정 노선을 삭제시, 없는 노선을 삭제 요청하면 예외를 발생시킨다.")
