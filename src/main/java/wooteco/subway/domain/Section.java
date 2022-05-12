@@ -60,12 +60,20 @@ public class Section {
     }
 
     public boolean containsStation(Long stationId) {
-        return this.upStationId == stationId || this.downStationId == stationId;
+        return isSameUpStation(stationId) || isSameDownStation(stationId);
     }
 
     public Section merge(Section nextSection) {
         return new Section(lineId, upStationId, nextSection.downStationId,
                 distance + nextSection.distance);
+    }
+
+    public boolean isSameUpStation(Long stationId) {
+        return this.upStationId == stationId;
+    }
+
+    public boolean isSameDownStation(Long stationId) {
+        return this.downStationId == stationId;
     }
 
     public Long getId() {

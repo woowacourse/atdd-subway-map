@@ -137,8 +137,8 @@ public class Sections {
 
     private boolean isEnd(Section section, Long stationId) {
         int index = value.indexOf(section);
-        return index == 0 && section.getUpStationId() == stationId
-                || index == value.size() - 1 && section.getDownStationId() == stationId;
+        return index == 0 && section.isSameUpStation(stationId)
+                || index == value.size() - 1 && section.isSameDownStation(stationId);
     }
 
     private Section findDeleteSection(Long stationId) {
