@@ -46,6 +46,7 @@ public class SectionService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Sections getSections(final Long lineId) {
         List<Section> sections = sectionDao.getSectionByLineId(lineId);
         return new Sections(sections);
