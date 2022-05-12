@@ -1,36 +1,48 @@
 package wooteco.subway.domain;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Line {
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations;
+    private Sections sections;
 
-    public Line() {
+    private Line() {
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections(Collections.emptyList());
     }
 
     public Line(Long id, String name, String color) {
+        this(name, color);
         this.id = id;
-        this.name = name;
-        this.color = color;
     }
 
-    public Line(Long id, String name, String color, List<Station> stations) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.stations = stations;
+    public Line(Long id, String name, String color, Section section) {
+        this(id, name, color);
+        this.sections = new Sections(List.of(section));
     }
 
-    public boolean isSameName(Line line) {
-        return name.equals(line.getName());
+    public Line(Long id, String name, String color, List<Section> sections) {
+        this(id, name, color);
+        this.sections = new Sections(sections);
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Section> findAll() {
+        return sections.getSections();
+    }
+
+    public void deleteSections(Station station) {
+        sections.delete(station);
     }
 
     public Long getId() {
@@ -53,7 +65,7 @@ public class Line {
         this.color = color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public Sections getSections() {
+        return sections;
     }
 }

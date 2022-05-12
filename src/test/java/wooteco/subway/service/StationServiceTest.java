@@ -4,10 +4,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.service.fakeDao.StationDaoImpl;
 
 import java.util.List;
 
@@ -45,6 +45,6 @@ public class StationServiceTest {
 
         Assertions.assertThatThrownBy(() -> stationService.deleteStation(invalidStationId))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당하는 역이 존재하지 않습니다.");
+                .hasMessage(invalidStationId + "번에 해당하는 역이 존재하지 않습니다.");
     }
 }

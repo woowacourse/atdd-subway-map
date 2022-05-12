@@ -46,9 +46,7 @@ public class StationService {
     }
 
     private void checkExistStationById(Long id) {
-        final Station station = stationDao.findById(id);
-        if (station == null) {
-            throw new IllegalArgumentException("해당하는 역이 존재하지 않습니다.");
-        }
+        stationDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(id + "번에 해당하는 역이 존재하지 않습니다."));
     }
 }

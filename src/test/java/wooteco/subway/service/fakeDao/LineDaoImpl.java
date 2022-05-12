@@ -1,7 +1,9 @@
-package wooteco.subway.dao;
+package wooteco.subway.service.fakeDao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -9,16 +11,17 @@ import java.util.List;
 import java.util.Optional;
 
 public class LineDaoImpl implements LineDao {
-    private static final LineDaoImpl stationDao = new LineDaoImpl();
+    private static final LineDaoImpl lineDao = new LineDaoImpl();
     private static final List<Line> lines = new ArrayList<>();
     private static Long seq = 0L;
 
     public static LineDaoImpl getInstance() {
-        return stationDao;
+        return lineDao;
     }
 
     @Override
-    public Long save(Line line) {
+    public Long save(LineRequest lineRequest) {
+        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line persistLine = createNewObject(line);
         if (hasLine(persistLine.getName())) {
             throw new IllegalArgumentException("같은 이름의 노선이 존재합니다.");
