@@ -7,6 +7,8 @@ import wooteco.subway.exception.IllegalSectionException;
 
 public class Sections {
 
+    private static final int MINIMUM_SECTION_COUNT = 1;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -84,7 +86,7 @@ public class Sections {
     }
 
     public List<Section> delete(Long stationId) {
-        validateDeletion();
+        validateThatHasMinimumSection();
 
         final Section previousSection = getPreviousSection(stationId);
         final Section laterSection = getLaterSection(stationId);
@@ -96,9 +98,9 @@ public class Sections {
         return sections;
     }
 
-    private void validateDeletion() {
-        if (sections.size() <= 1) {
-            throw new IllegalSectionException("구간을 제거할 수 없습니다.");
+    private void validateThatHasMinimumSection() {
+        if (sections.size() <= MINIMUM_SECTION_COUNT) {
+            throw new IllegalSectionException("노선이 구간을 하나는 가져야하므로 구간을 제거할 수 없습니다.");
         }
     }
 
