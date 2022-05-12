@@ -20,6 +20,7 @@ public class JdbcSectionDao implements SectionDao{
     private final StationDao stationDao;
 
     private RowMapper<SectionEntity> stationRowMapper = (resultSet, rowNum) -> new SectionEntity(
+            resultSet.getLong("id"),
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),
             resultSet.getLong("down_station_id"),

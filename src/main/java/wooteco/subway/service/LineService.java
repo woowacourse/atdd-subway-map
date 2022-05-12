@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class LineService {
         final Section section = new Section(savedLine, upStation, downStation, lineRequest.getDistance());
         sectionDao.save(section);
 
-        return LineResponse.of(savedLine, upStation, downStation);
+        return LineResponse.of(savedLine, Arrays.asList(upStation, downStation));
     }
 
     @Transactional(readOnly = true)
@@ -55,9 +56,7 @@ public class LineService {
         List<LineResponse> responses = new ArrayList<>();
         for (Line line : lines) {
             Map<Long, Long> sections = getSections(line);
-            responses.add(LineResponse.of(line,
-                    stationDao.findById(getUpStationId(sections)),
-                    stationDao.findById(getDownStationId(sections))));
+            responses.add(LineResponse.of(line, getStations(sections)));
         }
 
         return responses;
@@ -69,9 +68,7 @@ public class LineService {
         final Line line = lineDao.findById(id);
         Map<Long, Long> sections = getSections(line);
 
-        return LineResponse.of(line,
-                stationDao.findById(getUpStationId(sections)),
-                stationDao.findById(getDownStationId(sections)));
+        return LineResponse.of(line, getStations(sections));
     }
 
     public void updateLine(Long id, String name, String color) {
@@ -94,7 +91,13 @@ public class LineService {
         final Long downStationId = sectionRequest.getDownStationId();
         final int distance = sectionRequest.getDistance();
 
+        //상행역과 하행역이 모두 노선에 등록되어 있지 않다면 추가할 수 없음
         checkNotContainSection(sections, upStationId, downStationId);
+
+        //상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+        if (sections.keySet().contains(upStationId) && sections.values().contains(downStationId)) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+        }
 
         //상행종점등록
         if (downStationId == lastUpStationId) {
@@ -106,11 +109,6 @@ public class LineService {
         if (upStationId == lastDownStationId) {
             sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
             return;
-        }
-
-        //상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-        if (!sections.keySet().contains(upStationId) && !sections.values().contains(downStationId)) {
-            throw new IllegalArgumentException();
         }
 
         //갈래길 추가
@@ -167,6 +165,17 @@ public class LineService {
         return map;
     }
 
+    private List<Station> getStations(Map<Long, Long> sections) {
+        final List<Station> stations = new ArrayList<>();
+        Station currentStation = stationDao.findById(getUpStationId(sections));
+        while (currentStation != null) {
+            stations.add(currentStation);
+            Long nextStationId = sections.get(currentStation.getId());
+            currentStation = stationDao.findById(nextStationId);
+        }
+        return stations;
+    }
+
     private Long getUpStationId(Map<Long, Long> sections) {
         List<Long> keys = new ArrayList<>(sections.keySet());
         List<Long> values = new ArrayList<>(sections.values());
@@ -186,11 +195,14 @@ public class LineService {
     }
 
     private void checkNotContainSection(Map<Long, Long> sections, Long upStationId, Long downStationId) {
-        final boolean result = sections.keySet()
+        final boolean isAllDifferentWithUpStationId = sections.keySet()
                 .stream()
-                .anyMatch(key -> key == upStationId && sections.get(key) == downStationId);
-        if (result) {
-            throw new IllegalArgumentException();
+                .allMatch(key -> key != upStationId && key != downStationId);
+        final boolean isAllDifferentWithDownStationId = sections.values()
+                .stream()
+                .allMatch(value -> value != upStationId && value != downStationId);
+        if (isAllDifferentWithUpStationId && isAllDifferentWithDownStationId) {
+            throw new IllegalArgumentException("상행역과 하행역이 모두 노선에 등록되어 있지 않다면 추가할 수 없습니다.");
         }
     }
 }
