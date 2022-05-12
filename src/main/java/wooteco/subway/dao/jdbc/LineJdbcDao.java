@@ -73,7 +73,7 @@ public class LineJdbcDao implements LineDao {
         final String sql = "UPDATE LINE SET name = (?), color = (?) WHERE id = (?)";
         try {
             int affectedRow = jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
-            checkUpdated(affectedRow);
+            checkUpdated(affectedRow, line.getId());
         } catch (DuplicateKeyException exception) {
             throw new DuplicateLineException();
         }
@@ -96,9 +96,9 @@ public class LineJdbcDao implements LineDao {
         }, keyHolder);
     }
 
-    private void checkUpdated(final int affectedRow) {
+    private void checkUpdated(final int affectedRow, final Long id) {
         if (affectedRow == 0) {
-            throw new NoSuchLineException();
+            throw new NoSuchLineException(id);
         }
     }
 }

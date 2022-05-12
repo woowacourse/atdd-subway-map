@@ -33,7 +33,7 @@ public class LineMemoryDao {
         return lines.stream()
                 .filter(line -> line.getId() == id)
                 .findFirst()
-                .orElseThrow(NoSuchLineException::new);
+                .orElseThrow(() -> new NoSuchLineException(id));
     }
 
     public static void deleteAll() {
@@ -50,7 +50,7 @@ public class LineMemoryDao {
         boolean hasSameId = lines.stream()
                 .anyMatch(line -> line.getId() == id);
         if (!hasSameId) {
-            throw new NoSuchLineException();
+            throw new NoSuchLineException(id);
         }
     }
 

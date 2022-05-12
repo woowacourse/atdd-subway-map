@@ -49,7 +49,7 @@ public class LineService {
 
     public LineResponse findLine(final long id) {
         Line findLine = lineDao.findById(id)
-                .orElseThrow(NoSuchLineException::new);
+                .orElseThrow(() -> new NoSuchLineException(id));
         List<Section> sections = sectionDao.findByLineId(findLine.getId());
         findLine.addAllSections(sections);
         return LineResponse.from(findLine);
@@ -79,9 +79,9 @@ public class LineService {
         Line line = loadLine(lineId);
 
         Station upStation = stationDao.findById(sectionRequest.getUpStationId())
-                .orElseThrow(NoSuchLineException::new);
+                .orElseThrow(() -> new NoSuchStationException(sectionRequest.getUpStationId()));
         Station downStation = stationDao.findById(sectionRequest.getDownStationId())
-                .orElseThrow(NoSuchLineException::new);
+                .orElseThrow(() -> new NoSuchStationException(sectionRequest.getDownStationId()));
         Section section = sectionDao.save(lineId, new Section(upStation, downStation, sectionRequest.getDistance()));
 
         line.addSection(section);
@@ -101,7 +101,7 @@ public class LineService {
 
     private Line loadLine(final Long lineId) {
         Line line = lineDao.findById(lineId)
-                .orElseThrow(NoSuchLineException::new);
+                .orElseThrow(() -> new NoSuchLineException(lineId));
         List<Section> sections = sectionDao.findByLineId(lineId);
         for (Section each : sections) {
             line.addSection(each);

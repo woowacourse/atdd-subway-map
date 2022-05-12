@@ -167,7 +167,7 @@ Line
 - [x] eqauls&hashCode 를 id로 변경
 - [ ] LineService 책임분리 - section을 저장하는 책임
 - [ ] LineService 예외처리
-- [ ] 예외 메시지 정교하게 다듬기(NOT FOUND -> 노선을 찾을 수 없습니다 -> id 1인 노선을 찾을 수 없습니다.)
+- [x] 예외 메시지 정교하게 다듬기(NOT FOUND -> 노선을 찾을 수 없습니다 -> id 1인 노선을 찾을 수 없습니다.)
 - [x] register, create 네이밍 하나로 통일
 - [ ] 테스트코드 리팩터링
 - [ ] Sections 예외 커스터마이징
