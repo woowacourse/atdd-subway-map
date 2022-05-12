@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
@@ -39,6 +40,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         StationRequest stationRequest = new StationRequest("강남역");
+        requestPostStation(stationRequest);
 
         ExtractableResponse<Response> response = requestPostStation(stationRequest);
 
@@ -86,11 +88,28 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("해당 역 포함하는 구간이 있을 경우, 역 제거 요청 시 예외를 반환한다.")
+    @Test
+    void notAllowDeleteStation() {
+        Long gangnamId = requestPostStationAndReturnId(new StationRequest("강남역"));
+        Long yeoksamId = requestPostStationAndReturnId(new StationRequest("역삼역"));
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnamId, yeoksamId, 1);
+        requestPostLine(lineCreateRequest);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/" + gangnamId)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 역 이름으로 null 또는 공백이 올 수 없다.")
     @ParameterizedTest
     @NullAndEmptySource
-    void notAllowNullOrBlankName() {
-        StationRequest stationRequest = new StationRequest(null);
+    void notAllowNullOrBlankName(String name) {
+        StationRequest stationRequest = new StationRequest(name);
 
         ExtractableResponse<Response> response = requestPostStation(stationRequest);
 

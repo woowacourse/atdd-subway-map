@@ -64,6 +64,12 @@ public class StationDao {
         return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
     }
 
+    public boolean existsContainingSection(Long id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM SECTION WHERE up_station_id = :id OR down_station_id = :id)";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
     private SqlParameterSource decideParametersForExists(Station station) {
         if (station.getId() == null) {
             return new BeanPropertySqlParameterSource(new Station(0L, station.getName()));

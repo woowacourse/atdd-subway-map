@@ -10,6 +10,7 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateStationException;
+import wooteco.subway.exception.InvalidStationDeleteRequestException;
 
 @Service
 public class StationService {
@@ -41,7 +42,7 @@ public class StationService {
                 .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
     }
-    
+
     public Station findById(Long id) {
         validateExist(id);
         return stationDao.findById(id);
@@ -49,12 +50,19 @@ public class StationService {
 
     public void delete(Long id) {
         validateExist(id);
+        validateDeletable(id);
         stationDao.deleteById(id);
     }
 
     private void validateExist(Long id) {
         if (!stationDao.existsId(id)) {
             throw new DataNotFoundException("존재하지 않는 역입니다.");
+        }
+    }
+
+    private void validateDeletable(Long id) {
+        if (stationDao.existsContainingSection(id)) {
+            throw new InvalidStationDeleteRequestException("해당 역을 포함하고 있는 구간이 있어 삭제할 수 없습니다.");
         }
     }
 
