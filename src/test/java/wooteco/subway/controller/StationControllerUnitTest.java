@@ -26,7 +26,7 @@ import wooteco.subway.service.StationService;
 import wooteco.subway.ui.StationController;
 
 @WebMvcTest(StationController.class)
-class StationControllerTest {
+class StationControllerUnitTest {
 
     @Autowired
     private MockMvc mockMvc;
