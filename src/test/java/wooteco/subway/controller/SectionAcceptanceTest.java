@@ -25,18 +25,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setUpStations() {
-        선릉역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("선릉역"), "/stations")
-                .jsonPath().getObject(".", StationResponse.class).getId();
-        선정릉역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("선정릉역"), "/stations")
-                .jsonPath().getObject(".", StationResponse.class).getId();
-        한티역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("한티역"), "/stations")
-                .jsonPath().getObject(".", StationResponse.class).getId();
-        모란역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("모란역"), "/stations")
-                .jsonPath().getObject(".", StationResponse.class).getId();
+        선릉역_id = RestAssuredConvenienceMethod.postStationAndGetId(new StationRequest("선릉역"), "/stations");
+        선정릉역_id = RestAssuredConvenienceMethod.postStationAndGetId(new StationRequest("선정릉역"), "/stations");
+        한티역_id = RestAssuredConvenienceMethod.postStationAndGetId(new StationRequest("한티역"), "/stations");
+        모란역_id = RestAssuredConvenienceMethod.postStationAndGetId(new StationRequest("모란역"), "/stations");
 
-        분당선_id = RestAssuredConvenienceMethod.postRequest(
-                new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), "/lines")
-                .jsonPath().getObject(".", LineResponse.class).getId();
+        분당선_id = RestAssuredConvenienceMethod.postLineAndGetId(
+                new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), "/lines");
 
         createPath = "/lines/" + 분당선_id + "/sections";
         deletePath = "/lines/" + 분당선_id + "/sections?stationId=";
@@ -158,7 +153,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSectionAtLastUpStation() {
         // given
-        RestAssuredConvenienceMethod.postRequest(new SectionRequest(선정릉역_id, 한티역_id, 10), "/lines/" + 분당선_id + "/sections");
+        RestAssuredConvenienceMethod.postRequest(
+                new SectionRequest(선정릉역_id, 한티역_id, 10), "/lines/" + 분당선_id + "/sections");
 
         // when
         ExtractableResponse<Response> response =
@@ -172,7 +168,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSectionAtLastDownStation() {
         // given
-        RestAssuredConvenienceMethod.postRequest(new SectionRequest(선정릉역_id, 한티역_id, 10), "/lines/" + 분당선_id + "/sections");
+        RestAssuredConvenienceMethod.postRequest(
+                new SectionRequest(선정릉역_id, 한티역_id, 10), "/lines/" + 분당선_id + "/sections");
 
         // when
         ExtractableResponse<Response> response =
@@ -186,7 +183,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSectionAtMiddleStation() {
         // given
-        RestAssuredConvenienceMethod.postRequest(new SectionRequest(선정릉역_id, 한티역_id, 10), "/lines/" + 분당선_id + "/sections");
+        RestAssuredConvenienceMethod.postRequest(
+                new SectionRequest(선정릉역_id, 한티역_id, 10), "/lines/" + 분당선_id + "/sections");
 
         // when
         ExtractableResponse<Response> response =

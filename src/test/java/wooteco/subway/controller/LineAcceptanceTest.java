@@ -6,12 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,10 +27,8 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setUpStations() {
-        선릉역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("선릉역"), "/stations")
-                .jsonPath().getObject(".", StationResponse.class).getId();
-        선정릉역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("선정릉역"), "/stations")
-                .jsonPath().getObject(".", StationResponse.class).getId();
+        선릉역_id = RestAssuredConvenienceMethod.postLineAndGetId(new StationRequest("선릉역"), "/stations");
+        선정릉역_id = RestAssuredConvenienceMethod.postLineAndGetId(new StationRequest("선정릉역"), "/stations");
     }
 
     @DisplayName("지하철 노선을 등록한다.")
@@ -189,19 +185,18 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineResponse createResponse = RestAssuredConvenienceMethod.postRequest(
-                        new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), basicPath)
-                .jsonPath().getObject(".", LineResponse.class);
+        Long createdLineId = RestAssuredConvenienceMethod.postLineAndGetId(
+                        new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), basicPath);
         Line requestBody = new Line("다른분당선", "blue");
 
         // when
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.putRequest(requestBody, MediaType.APPLICATION_JSON_VALUE, "/lines/" + createResponse.getId());
+                RestAssuredConvenienceMethod.putRequest(requestBody, "/lines/" + createdLineId);
 
 
         // then
         LineResponse findResponse =
-                RestAssuredConvenienceMethod.getRequest("/lines/" + createResponse.getId())
+                RestAssuredConvenienceMethod.getRequest("/lines/" + createdLineId)
                         .jsonPath().getObject(".", LineResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -214,12 +209,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineResponse createResponse = RestAssuredConvenienceMethod.postRequest(
-                        new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), basicPath)
-                .jsonPath().getObject(".", LineResponse.class);
+        Long createdLineId = RestAssuredConvenienceMethod.postLineAndGetId(
+                        new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), basicPath);
 
         // when
-        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.deleteRequest("/lines/" + createResponse.getId());
+        ExtractableResponse<Response> response = RestAssuredConvenienceMethod.deleteRequest("/lines/" + createdLineId);
 
         // then
         List<LineResponse> lineResponses = RestAssuredConvenienceMethod.getRequest(basicPath)
@@ -229,7 +223,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> assertThat(lineIds).doesNotContain(createResponse.getId())
+                () -> assertThat(lineIds).doesNotContain(createdLineId)
         );
     }
 

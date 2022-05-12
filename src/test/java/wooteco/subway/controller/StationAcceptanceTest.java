@@ -70,10 +70,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        Long 선릉역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("선릉역"), basicPath)
-                .jsonPath().getObject(".", StationResponse.class).getId();
-        Long 선정릉역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("선정릉역"), basicPath)
-                .jsonPath().getObject(".", StationResponse.class).getId();
+        Long 선릉역_id = RestAssuredConvenienceMethod.postLineAndGetId(new StationRequest("선릉역"), basicPath);
+        Long 선정릉역_id = RestAssuredConvenienceMethod.postLineAndGetId(new StationRequest("선정릉역"), basicPath);
 
         // when
         ExtractableResponse<Response> response = RestAssuredConvenienceMethod.getRequest(basicPath);
@@ -89,8 +87,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long 선릉역_id = RestAssuredConvenienceMethod.postRequest(new StationRequest("선릉역"), basicPath)
-                .jsonPath().getObject(".", StationResponse.class).getId();
+        Long 선릉역_id = RestAssuredConvenienceMethod.postStationAndGetId(new StationRequest("선릉역"), basicPath);
 
         // when
         ExtractableResponse<Response> response =
