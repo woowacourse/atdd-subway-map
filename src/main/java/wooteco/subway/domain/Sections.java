@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -9,6 +10,7 @@ public class Sections {
     private static final String SAME_SECTION_EXCEPTION = "동일한 Section은 추가할 수 없습니다.";
     private static final String NOT_EXIST_STATION_IN_LINE = "상행역, 하행역 둘 다 포함되지 않으면 추가할 수 없습니다.";
     private static final String EXCEED_DISTANCE = "새로 들어오는 구간의 거리가 추가될 구간보다 작아야 합니다.";
+    private static final String NON_REMOVABLE_EXCEPTION = "노선에 역이 2개 존재하는 경우는 삭제할 수 없습니다.";
 
     private final List<Section> sections;
 
@@ -16,34 +18,41 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public Section addSection(Section inputSection) {
+    public Optional<Section> addSection(Section inputSection) {
         validateSameSection(inputSection);
         if (sections.isEmpty()) {
             sections.add(inputSection);
-            return null;
+            return Optional.empty();
         }
         if (!isEdgeSection(inputSection)) {
-            Section section = findAddPoint(inputSection);
-            Direction direction = Direction.findDirection(section, inputSection);
-            syncSection(section, inputSection, direction);
+            Section connectedSection = findAddPoint(inputSection);
+            Direction direction = Direction.findDirection(connectedSection, inputSection);
+            syncSection(connectedSection, inputSection, direction);
             sections.add(inputSection);
-            return section;
+            return Optional.of(connectedSection);
         }
         List<Section> sectionOptions = findConnectableSection(inputSection);
-        Section section = findAddPoint(sectionOptions, inputSection);
-        Direction direction = Direction.findDirection(section, inputSection);
-        syncSection(section, inputSection, direction);
+        Section connectedSection = findAddPoint(sectionOptions, inputSection);
+        Direction direction = Direction.findDirection(connectedSection, inputSection);
+        syncSection(connectedSection, inputSection, direction);
         sections.add(inputSection);
-        return section;
+        return Optional.of(connectedSection);
     }
 
     private void validateSameSection(Section inputSection) {
         boolean isSameSection = sections.stream()
-                .anyMatch(section -> section.equals(inputSection));
+                .anyMatch(section -> isSameAllStations(section, inputSection));
 
         if (isSameSection) {
             throw new IllegalArgumentException(SAME_SECTION_EXCEPTION);
         }
+    }
+
+    private boolean isSameAllStations(Section section, Section inputSection) {
+        List<Long> sectionStations = List.of(section.getUpStationId(), section.getDownStationId());
+        List<Long> inputSectionStations = List.of(inputSection.getUpStationId(), inputSection.getDownStationId());
+
+        return sectionStations.containsAll(inputSectionStations);
     }
 
     private void syncSection(Section section, Section inputSection, Direction direction) {
@@ -96,37 +105,38 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public Section deleteSection(Long stationId) {
-        List<Section> sections = this.sections.stream()
+    public Optional<Section> deleteSection(Long stationId) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException(NON_REMOVABLE_EXCEPTION);
+        }
+        List<Section> overlapSections = sections.stream()
                 .filter(section -> (stationId == section.getUpStationId()) || stationId ==
                         section.getDownStationId())
                 .collect(Collectors.toList());
-        if (sections.isEmpty()) {
-            throw new IllegalArgumentException("없어");
+
+        if (overlapSections.size() == 1) {
+            sections.removeAll(overlapSections);
+            return Optional.empty();
         }
-        if (sections.size() == 1) {
-            deleteEdgeSection(sections);
-            return null;
-        }
-        return deleteCenterSection(sections, stationId);
+
+        return Optional.of(deleteCenterSection(overlapSections, stationId));
     }
 
-    private void deleteEdgeSection(List<Section> sections) {
-        this.sections.removeAll(sections);
-    }
 
-    private Section deleteCenterSection(List<Section> sections, Long stationId) {
-        Section section = sections.get(0);
+    private Section deleteCenterSection(List<Section> overlapSections, Long stationId) {
+        Section section = overlapSections.get(0);
+
         if (section.getUpStationId() == stationId) {
-            Section newSection = new Section(section.getLineId(), sections.get(1).getUpStationId(), section.getDownStationId(),
-                    section.getDistance() + sections.get(1).getDistance());
-            this.sections.add(newSection);
+            Section newSection = new Section(section.getLineId(), overlapSections.get(1).getUpStationId(), section.getDownStationId(),
+                    section.getDistance() + overlapSections.get(1).getDistance());
+            sections.add(newSection);
+            sections.removeAll(overlapSections);
             return newSection;
         }
-        Section newSection = new Section(section.getLineId(), section.getUpStationId(), sections.get(1).getDownStationId(),
-                section.getDistance() + sections.get(1).getDistance());
-        this.sections.add(newSection);
-        this.sections.removeAll(sections);
+        Section newSection = new Section(section.getLineId(), section.getUpStationId(), overlapSections.get(1).getDownStationId(),
+                section.getDistance() + overlapSections.get(1).getDistance());
+        sections.add(newSection);
+        sections.removeAll(overlapSections);
         return newSection;
     }
 

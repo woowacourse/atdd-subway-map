@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class SectionsTest {
 
@@ -20,7 +23,8 @@ public class SectionsTest {
     }
 
     @DisplayName("Section의 상행선과 하행선이 둘다 일치할 때 예외가 발생한다.")
-    @Test
+    @ParameterizedTest
+    @CsvSource(value = {"1L, 2L", "2L, 1L", "2L, 3L", "3L, 2L", "3L, 5L", "5L, 3L"})
     void validateSameSection() {
         assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 2L, 5)))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -46,49 +50,49 @@ public class SectionsTest {
     @DisplayName("가장 하행선에서 오른쪽에 구간을 추가하는 경우")
     @Test
     void addSectionRight() {
-        Section addPoint = sections.addSection(new Section(4L, 1L, 5L, 7L, 5));
+        Optional<Section> addPoint = sections.addSection(new Section(4L, 1L, 5L, 7L, 5));
 
-        assertThat(addPoint).isEqualTo(new Section(1L, 3L, 5L, 7));
+        assertThat(addPoint.get()).isEqualTo(new Section(1L, 3L, 5L, 7));
     }
 
     @DisplayName("가장 하행선에서 왼쪽에 구간을 추가하는 경우")
     @Test
     void addSectionBetweenRight() {
-        Section addPoint = sections.addSection(new Section(4L, 1L, 4L, 5L, 5));
+        Optional<Section> addPoint = sections.addSection(new Section(4L, 1L, 4L, 5L, 5));
 
-        assertThat(addPoint).isEqualTo(new Section(1L, 3L, 4L, 7));
+        assertThat(addPoint.get()).isEqualTo(new Section(1L, 3L, 4L, 7));
     }
 
     @DisplayName("가장 상행선에서 왼쪽에 구간을 추가하는 경우")
     @Test
     void addSectionLight() {
-        Section addPoint = sections.addSection(new Section(4L, 1L, 7L, 1L, 3));
+        Optional<Section> addPoint = sections.addSection(new Section(4L, 1L, 7L, 1L, 3));
 
-        assertThat(addPoint).isEqualTo(new Section(1L, 1L, 2L, 7));
+        assertThat(addPoint.get()).isEqualTo(new Section(1L, 1L, 2L, 7));
     }
 
     @DisplayName("가장 상행선에서 오른쪽에 구간을 추가하는 경우")
     @Test
     void addSectionLightRight() {
-        Section addPoint = sections.addSection(new Section(4L, 1L, 1L, 7L, 4));
+        Optional<Section> addPoint = sections.addSection(new Section(4L, 1L, 1L, 7L, 4));
 
-        assertThat(addPoint).isEqualTo(new Section(1L, 7L, 2L, 3));
+        assertThat(addPoint.get()).isEqualTo(new Section(1L, 7L, 2L, 3));
     }
 
     @DisplayName("상행선 하행선이 아닌 지점에서 오른쪽에 구간을 추가하는 경우")
     @Test
     void addCenterRight() {
-        Section addPoint = sections.addSection(new Section(4L, 1L, 2L, 7L, 3));
+        Optional<Section> addPoint = sections.addSection(new Section(4L, 1L, 2L, 7L, 3));
 
-        assertThat(addPoint).isEqualTo(new Section(1L, 7L, 3L, 3));
+        assertThat(addPoint.get()).isEqualTo(new Section(1L, 7L, 3L, 3));
     }
 
     @DisplayName("상행선 하행선이 아닌 지점에서 왼쪽에 구간을 추가하는 경우")
     @Test
     void addCenterLeft() {
-        Section addPoint = sections.addSection(new Section(4L, 1L, 7L, 2L, 4));
+        Optional<Section> addPoint = sections.addSection(new Section(4L, 1L, 7L, 2L, 4));
 
-        assertThat(addPoint).isEqualTo(new Section(1L, 1L, 7L, 3));
+        assertThat(addPoint.get()).isEqualTo(new Section(1L, 1L, 7L, 3));
     }
 
     @DisplayName("상행선을 삭제하는 경우")
@@ -110,5 +114,16 @@ public class SectionsTest {
     void deleteCenterStation() {
         sections.deleteSection(2L);
         assertThat(sections.getSections()).containsExactly(new Section(1L, 3L, 5L, 7), new Section(1L, 1L, 3L, 13));
+    }
+
+    @DisplayName("노선에 역이 2개 존재하는데 지우려는 경우 예외가 발생한다.")
+    @Test
+    void deleteException() {
+        sections.deleteSection(2L);
+        sections.deleteSection(3L);
+
+        assertThatThrownBy(() -> sections.deleteSection(5L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선에 역이 2개 존재하는 경우는 삭제할 수 없습니다.");
     }
 }

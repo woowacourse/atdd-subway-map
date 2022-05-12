@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.domain.Section;
@@ -23,12 +24,11 @@ public class SectionService {
         Section inputSection = new Section(lineId, upStationId, downStationId, distance);
 
         Sections sections = new Sections(getSectionsByLineId(lineId));
-        Section connectedPoint = sections.addSection(inputSection);
+        Optional<Section> connectedPoint = sections.addSection(inputSection);
 
         Long id = jdbcSectionDao.save(inputSection);
-
-        if (connectedPoint != null) {
-            update(lineId, connectedPoint);
+        if (connectedPoint.isPresent()) {
+            update(lineId, connectedPoint.get());
         }
         return new Section(id, lineId, upStationId, downStationId, distance);
     }
@@ -43,12 +43,9 @@ public class SectionService {
 
     public void delete(Long lineId, Long stationId) {
         Sections sections = new Sections(getSectionsByLineId(lineId));
-        if (sections.getSections().size() == 1) {
-            throw new IllegalArgumentException();
-        }
-        Section section = sections.deleteSection(stationId);
-        if (section != null) {
-            jdbcSectionDao.save(section);
+        Optional<Section> section = sections.deleteSection(stationId);
+        if (section.isPresent()) {
+            jdbcSectionDao.save(section.get());
         }
         jdbcSectionDao.delete(stationId, lineId);
     }
