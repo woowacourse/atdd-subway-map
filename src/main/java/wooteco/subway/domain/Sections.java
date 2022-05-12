@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -134,7 +133,10 @@ public class Sections {
             sections.removeLast();
             return;
         }
+        findAndRemove(station);
+    }
 
+    private void findAndRemove(Station station) {
         for (int i = 0; i < sections.size(); i++) {
             Section section = sections.get(i);
             if (section.getDown().equals(station)) {
