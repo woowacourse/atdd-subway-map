@@ -86,7 +86,7 @@ public class LineService {
 
         line.addSection(section);
 
-        sectionDao.batchUpdate(line.getSections());
+        sectionDao.batchUpdate(line.getId(), line.getSections());
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {
@@ -94,9 +94,10 @@ public class LineService {
 
         Station station = stationDao.findById(stationId)
                 .orElseThrow(() -> new NoSuchStationException(stationId));
-        line.removeStation(station);
 
-        sectionDao.batchUpdate(line.getSections());
+        Long removedSectionId = line.removeStation(station);
+        sectionDao.deleteById(removedSectionId, lineId);
+        sectionDao.batchUpdate(lineId, line.getSections());
     }
 
     private Line loadLine(final Long lineId) {

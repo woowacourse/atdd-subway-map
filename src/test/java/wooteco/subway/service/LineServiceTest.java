@@ -123,4 +123,10 @@ class LineServiceTest {
         // then
         assertThat(line1.getSections().size()).isEqualTo(2);
     }
+
+    @DisplayName("구간을 제거한다")
+    @Test
+    void removeSection() {
+
+    }
 }

@@ -25,7 +25,7 @@ public class Sections {
         }
     }
 
-    public void removeStation(final Station station) {
+    public Long removeStation(final Station station) {
         if (values.size() == 1) {
             throw new IllegalArgumentException("구간이 하나인 경우 역을 제거할 수 없습니다.");
         }
@@ -33,11 +33,9 @@ public class Sections {
             throw new IllegalArgumentException("해당 역이 존재하지 않습니다.");
         }
         if (isLastStation(station)) {
-            removeLastSection(station);
-            return;
+            return removeLastSection(station);
         }
-        removeInterStation(station);
-
+        return removeInterStation(station);
     }
 
     public Set<Section> values() {
@@ -50,16 +48,16 @@ public class Sections {
         }
     }
 
-    private void removeInterStation(final Station station) {
+    private Long removeInterStation(final Station station) {
         Section targetToUpdate = null;
         Section targetToRemove = null;
         Station downStationCandidate = null;
 
-        List<Section> sectionsThatContainsStation = values.stream()
+        List<Section> targetSections = values.stream()
                 .filter(it -> it.contains(station))
                 .collect(Collectors.toList());
 
-        for (Section section : sectionsThatContainsStation) {
+        for (Section section : targetSections) {
             if (section.getDownStation().equals(station)) {
                 targetToUpdate = section;
             }
@@ -71,19 +69,20 @@ public class Sections {
         targetToUpdate.changeDownStation(downStationCandidate);
         targetToUpdate.changeDistance(targetToUpdate.getDistance() + targetToRemove.getDistance());
         values.remove(targetToRemove);
-
+        return targetToRemove.getId();
     }
 
     private boolean isLastStation(final Station station) {
         return lastStations().contains(station);
     }
 
-    private void removeLastSection(final Station station) {
+    private Long removeLastSection(final Station station) {
         Section lastSection = values.stream()
                 .filter(it -> it.getUpStation().equals(station) || it.getDownStation().equals(station))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
         values.remove(lastSection);
+        return lastSection.getId();
     }
 
     private void rearrangeSectionIfForkRoadCase(final Section existed, final Section added) {
