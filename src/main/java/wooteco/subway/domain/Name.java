@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import wooteco.subway.exception.IllegalInputException;
 
 public class Name {
 
@@ -15,10 +16,10 @@ public class Name {
 
     private void validate(final String value) {
         if (value.isBlank()) {
-            throw new IllegalArgumentException("이름이 공백이 되어서는 안됩니다.");
+            throw new IllegalInputException("이름이 공백이 되어서는 안됩니다.");
         }
         if (value.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("이름이 " + MAX_NAME_LENGTH + "자를 넘어서는 안됩니다.");
+            throw new IllegalInputException("이름이 " + MAX_NAME_LENGTH + "자를 넘어서는 안됩니다.");
         }
     }
 

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.section.NoSuchSectionException;
 import wooteco.subway.exception.station.NoSuchStationException;
 
@@ -36,7 +37,7 @@ public class Sections {
 
     private void validateMinSize() {
         if (value.size() == MIN_SECTION_SIZE) {
-            throw new IllegalArgumentException("구간을 삭제할 수 없습니다.");
+            throw new IllegalInputException("구간을 삭제할 수 없습니다.");
         }
     }
 

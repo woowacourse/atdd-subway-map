@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.section.NoSuchSectionException;
 
 class SectionsTest {
@@ -113,7 +114,7 @@ class SectionsTest {
 
         // then
         assertThatThrownBy(() -> sections.findDeletableSections(stationIdToDelete))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("구간을 삭제할 수 없습니다.");
     }
 

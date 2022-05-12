@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import wooteco.subway.exception.IllegalInputException;
 
 public class Distance {
 
@@ -15,13 +16,13 @@ public class Distance {
 
     private void validate(final int value) {
         if (value < MIN_DISTANCE) {
-            throw new IllegalArgumentException("두 종점간의 거리가 유효하지 않습니다.");
+            throw new IllegalInputException("두 종점간의 거리가 유효하지 않습니다.");
         }
     }
 
     public void checkCanAssign(final Distance distance) {
         if (value <= distance.value) {
-            throw new IllegalArgumentException("기존 구간의 길이 보다 작지 않습니다.");
+            throw new IllegalInputException("기존 구간의 길이 보다 작지 않습니다.");
         }
     }
 

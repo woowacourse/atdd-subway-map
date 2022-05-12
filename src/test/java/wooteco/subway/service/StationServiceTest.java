@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.StationRequest;
 import wooteco.subway.dto.station.StationResponse;
+import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.station.DuplicateStationException;
 
 class StationServiceTest extends ServiceTest {
@@ -97,7 +98,7 @@ class StationServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> stationService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("역이 구간에 등록되어 있습니다.");
     }
 }

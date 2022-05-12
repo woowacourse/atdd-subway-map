@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import wooteco.subway.exception.IllegalInputException;
 
 class NameTest {
 
@@ -14,7 +15,7 @@ class NameTest {
     @ValueSource(strings = {"", " ", "    "})
     void NewName_BlankName_ExceptionThrown(final String value) {
         assertThatThrownBy(() -> new Name(value))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("이름이 공백이 되어서는 안됩니다.");
     }
 
@@ -26,7 +27,7 @@ class NameTest {
 
         // then
         assertThatThrownBy(() -> new Name(name))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("이름이 15자를 넘어서는 안됩니다.");
     }
 }

@@ -19,6 +19,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.section.SectionCreationRequest;
 import wooteco.subway.dto.section.SectionDeletionRequest;
+import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.line.NoSuchLineException;
 import wooteco.subway.exception.section.NoSuchSectionException;
 
@@ -66,7 +67,7 @@ class SectionServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> sectionService.save(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("상행역과 하행역 중 하나의 역만 노선에 포함되어 있어야 합니다.");
     }
 
@@ -90,7 +91,7 @@ class SectionServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> sectionService.save(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("상행역과 하행역 중 하나의 역만 노선에 포함되어 있어야 합니다.");
     }
 
@@ -119,7 +120,7 @@ class SectionServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> sectionService.save(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("기존 구간의 길이 보다 작지 않습니다.");
     }
 
@@ -268,7 +269,7 @@ class SectionServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> sectionService.delete(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("구간을 삭제할 수 없습니다.");
     }
 

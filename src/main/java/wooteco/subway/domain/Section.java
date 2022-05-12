@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import wooteco.subway.exception.IllegalInputException;
 
 public class Section {
 
@@ -38,7 +39,7 @@ public class Section {
 
     private void validate(final Long upStationId, final Long downStationId) {
         if (upStationId.equals(downStationId)) {
-            throw new IllegalArgumentException("두 종점이 동일합니다.");
+            throw new IllegalInputException("두 종점이 동일합니다.");
         }
     }
 

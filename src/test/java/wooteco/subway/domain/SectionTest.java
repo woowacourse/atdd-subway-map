@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import wooteco.subway.exception.IllegalInputException;
 
 class SectionTest {
 
@@ -29,7 +30,7 @@ class SectionTest {
     @DisplayName("상행과 종점이 같으면 예외를 던진다.")
     void NewSection_SameStation_ExceptionThrown() {
         assertThatThrownBy(() -> new Section(line.getId(), seolleung.getId(), seolleung.getId(), 10))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("두 종점이 동일합니다.");
     }
 
@@ -39,7 +40,7 @@ class SectionTest {
     void NewSection_InvalidDistance_ExceptionThrown(final int distance) {
         // then
         assertThatThrownBy(() -> new Section(line.getId(), seolleung.getId(), samseong.getId(), distance))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("두 종점간의 거리가 유효하지 않습니다.");
     }
 
@@ -103,7 +104,7 @@ class SectionTest {
 
         // then
         assertThatThrownBy(() -> existingSection.assign(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalInputException.class)
                 .hasMessage("기존 구간의 길이 보다 작지 않습니다.");
     }
 
