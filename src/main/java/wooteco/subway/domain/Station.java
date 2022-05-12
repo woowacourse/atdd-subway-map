@@ -8,13 +8,10 @@ public class Station {
     public Station(final Long id, final String name) {
         this.id = id;
         this.name = name;
-        validateNullOrEmpty(id, name);
+        validateNullOrEmpty(name);
     }
 
-    private void validateNullOrEmpty(final Long id, final String name) {
-        if (id == null) {
-            throw new NullPointerException();
-        }
+    private void validateNullOrEmpty(final String name) {
         if (name.isEmpty()) {
             throw new IllegalArgumentException();
         }

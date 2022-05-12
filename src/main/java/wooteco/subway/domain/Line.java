@@ -10,16 +10,13 @@ public class Line {
     }
 
     public Line(final Long id, final String name, final String color) {
-        validateNullOrEmpty(id, name, color);
+        validateNullOrEmpty(name, color);
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    private void validateNullOrEmpty(final Long id, final String name, final String color) {
-        if (id == null) {
-            throw new NullPointerException();
-        }
+    private void validateNullOrEmpty(final String name, final String color) {
         if (name.isEmpty() || color.isEmpty()) {
             throw new IllegalArgumentException();
         }

@@ -8,8 +8,6 @@ class StationTest {
 
     @Test
     void checkNullOrEmpty() {
-        assertThatThrownBy(() -> new Station(null, "leo"))
-                .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> new Station(1L, null))
                 .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> new Station(1L, ""))

@@ -7,8 +7,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 public class LineTest {
     @Test
     void checkNullOrEmpty() {
-        assertThatThrownBy(() -> new Line(null, "leo", "red"))
-                .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> new Line(1L, null, "red"))
                 .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> new Line(1L, "", "red"))
