@@ -22,7 +22,7 @@ public class SectionService {
     }
 
     public void create(Long lineId, SectionRequest sectionRequest) {
-        final SectionSeries sectionSeries = sectionRepository.readAllSections(lineId);
+        final SectionSeries sectionSeries = new SectionSeries(sectionRepository.readAllSections(lineId));
         final Section newSection = sectionRepository.readSection(sectionRequest.getUpStationId(),
             sectionRequest.getDownStationId(),
             sectionRequest.getDistance());
@@ -31,7 +31,7 @@ public class SectionService {
     }
 
     public void delete(Long lineId, Long stationId) {
-        final SectionSeries sectionSeries = sectionRepository.readAllSections(lineId);
+        final SectionSeries sectionSeries = new SectionSeries(sectionRepository.readAllSections(lineId));
         RemoveSections removeSections = sectionSeries.findDeleteSections(stationId);
         sectionRepository.delete(removeSections.getDeleteSection(), removeSections.getUpdateSection());
     }

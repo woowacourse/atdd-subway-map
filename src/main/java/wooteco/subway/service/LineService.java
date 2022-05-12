@@ -9,6 +9,7 @@ import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.LineSeries;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionSeries;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -53,6 +54,7 @@ public class LineService {
     }
 
     public LineResponse findOne(Long id) {
+        final List<Section> sections = sectionRepository.readAllSections(id);
         return LineResponse.from(lineRepository.findById(id));
     }
 

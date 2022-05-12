@@ -27,12 +27,11 @@ public class SectionRepository {
         this.sectionDao = sectionDao;
     }
 
-    public SectionSeries readAllSections(Long lineId) {
+    public List<Section> readAllSections(Long lineId) {
         final List<SectionEntity> entities = sectionDao.readSectionsByLineId(lineId);
-        final List<Section> sections = entities.stream()
+        return entities.stream()
             .map(entity -> readSection(entity.getUpStationId(), entity.getDownStationId(), entity.getDistance()))
             .collect(Collectors.toList());
-        return new SectionSeries(sections);
     }
 
     public Section readSection(Long upStationId, Long downStationId, int distance) {
