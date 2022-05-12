@@ -1,9 +1,8 @@
 package wooteco.subway.domain.entity;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import wooteco.subway.domain.Section;
 
@@ -66,11 +65,57 @@ public class SectionEntity {
     }
 
     public static List<Long> extractStationIds(List<SectionEntity> sectionEntities) {
-        Set<Long> stationIds = new HashSet<>();
+        sectionEntities = sortUpToDown(sectionEntities);
+        List<Long> stationIds = new ArrayList<>();
         for (SectionEntity sectionEntity : sectionEntities) {
             stationIds.add(sectionEntity.getUpStationId());
-            stationIds.add(sectionEntity.getDownStationId());
         }
+        stationIds.add(sectionEntities.get(sectionEntities.size() - 1).getDownStationId());
         return new ArrayList<>(stationIds);
+    }
+
+    private static List<SectionEntity> sortUpToDown(List<SectionEntity> sectionEntities) {
+        List<SectionEntity> orderedSectionEntities = new ArrayList<>();
+        orderedSectionEntities.add(sectionEntities.get(0));
+
+        extendToUp(orderedSectionEntities, sectionEntities);
+        extendToDown(orderedSectionEntities, sectionEntities);
+
+        return orderedSectionEntities;
+    }
+
+    private static void extendToUp(List<SectionEntity> orderedSectionEntities, List<SectionEntity> sectionEntities) {
+        SectionEntity upTerminalSectionEntity = orderedSectionEntities.get(0);
+        System.out.println(upTerminalSectionEntity.getUpStationId());
+
+        Optional<SectionEntity> newUpTerminalSection = sectionEntities.stream()
+                .filter(it -> it.isAbleToLinkOnDown(upTerminalSectionEntity))
+                .findAny();
+
+        if (newUpTerminalSection.isPresent()) {
+            orderedSectionEntities.add(0, newUpTerminalSection.get());
+            extendToUp(orderedSectionEntities, sectionEntities);
+        }
+    }
+
+    private static void extendToDown(List<SectionEntity> orderedSectionEntities, List<SectionEntity> sectionEntities) {
+        SectionEntity downTerminalSection = orderedSectionEntities.get(orderedSectionEntities.size() - 1);
+
+        Optional<SectionEntity> newDownTerminalSection = sectionEntities.stream()
+                .filter(it -> it.isAbleToLinkOnUp(downTerminalSection))
+                .findAny();
+
+        if (newDownTerminalSection.isPresent()) {
+            orderedSectionEntities.add(newDownTerminalSection.get());
+            extendToDown(orderedSectionEntities, sectionEntities);
+        }
+    }
+
+    private boolean isAbleToLinkOnDown(SectionEntity upTerminalSectionEntity) {
+        return downStationId.equals(upTerminalSectionEntity.upStationId);
+    }
+
+    private boolean isAbleToLinkOnUp(SectionEntity downTerminalSectionEntity) {
+        return upStationId.equals(downTerminalSectionEntity.downStationId);
     }
 }
