@@ -29,6 +29,11 @@ public class SectionDao {
             , resultSet.getInt("distance")
     );
 
+    public List<Section> findAll() {
+        String sql = "select * from SECTION";
+        return jdbcTemplate.query(sql, eventRowMapper);
+    }
+
     public List<Section> findByLineId(Long id) {
         String sql = "select * from SECTION where line_id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);

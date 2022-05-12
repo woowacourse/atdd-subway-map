@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.LineResponse;
@@ -90,7 +92,8 @@ public class LineService {
     public LineResponse findById(Long id) {
         try {
             Line line = lineDao.findById(id);
-            return LineResponse.from(line, findStations(id));
+            Sections sections = new Sections(sectionDao.findByLineId(id));
+            return LineResponse.from(line, findStations(sections, id));
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException(NONE_LINE_ERROR_MESSAGE);
         }
@@ -98,14 +101,27 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
+        Map<Long, List<Section>> sectionsMap = initSectionMap(sectionDao.findAll());
+
         return lineDao.findAll()
                 .stream()
-                .map(line -> LineResponse.from(line, findStations(line.getId())))
+                .map(line -> LineResponse.from(line,
+                        findStations(new Sections(sectionsMap.get(line.getId())), line.getId())))
                 .collect(Collectors.toList());
     }
 
-    private List<StationResponse> findStations(Long id) {
-        Sections sections = new Sections(sectionDao.findByLineId(id));
+    private Map<Long, List<Section>> initSectionMap(List<Section> sections) {
+        Map<Long, List<Section>> map = new HashMap<>();
+        for (Section section : sections) {
+            Long lineId = section.getLineId();
+            List<Section> lineSections = map.getOrDefault(lineId, new LinkedList<>());
+            lineSections.add(section);
+            map.put(lineId, lineSections);
+        }
+        return map;
+    }
+
+    private List<StationResponse> findStations(Sections sections, Long id) {
         List<Long> ids = sections.getSortedStationIds();
         Map<Long, String> nameInfo = initNameMap(id);
 

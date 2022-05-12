@@ -17,7 +17,7 @@ public class Sections {
     }
 
     public List<Long> getSortedStationIds() {
-        if (value.size() == 0) {
+        if (value == null || value.size() == 0) {
             return new LinkedList<>();
         }
 
