@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateDataException;
-import wooteco.subway.exception.InvalidSectionCreateRequestException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({DuplicateDataException.class, InvalidSectionCreateRequestException.class})
+    @ExceptionHandler({DuplicateDataException.class, IllegalArgumentException.class})
     public ResponseEntity<String> handleDuplicateKey(Exception e) {
         return ResponseEntity.badRequest()
                 .body(e.getMessage());
