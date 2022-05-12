@@ -1,7 +1,9 @@
 package wooteco.subway.dto;
 
+import java.util.List;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 public class LineRequest {
     private String name;
@@ -21,11 +23,11 @@ public class LineRequest {
         this.distance = distance;
     }
 
-    public Line toLine(final Long id) {
-        return new Line(id, name, color);
+    public Line toLine(final Long id, final List<Station> stations) {
+        return new Line(id, name, color, stations);
     }
 
-    public Line toLine() {
+    public Line toSimpleLine() {
         return new Line(name, color);
     }
 

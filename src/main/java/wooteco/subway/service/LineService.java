@@ -27,7 +27,7 @@ public class LineService {
     public LineResponse save(LineRequest lineRequest) {
         validateLineRequest(lineRequest);
 
-        Line line = lineRequest.toLine();
+        Line line = lineRequest.toSimpleLine();
         Long savedLineId = lineDao.save(line);
         sectionDao.save(lineRequest.toSection(savedLineId));
         return findById(savedLineId);
@@ -67,7 +67,7 @@ public class LineService {
     public void update(Long id, LineRequest lineRequest) {
         validateExistence(id);
         validateNameDuplication(lineRequest.getName());
-        Line line = lineRequest.toLine(id);
+        Line line = lineRequest.toLine(id, lineDao.findLineStationsById(id));
         lineDao.update(line);
     }
 

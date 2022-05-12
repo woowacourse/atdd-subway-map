@@ -2,13 +2,17 @@ package wooteco.subway.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class LineDao {
@@ -18,11 +22,34 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Line> actorRowMapper = (resultSet, rowNum) -> new Line(
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
-            resultSet.getString("color")
-    );
+            resultSet.getString("color"),
+            findLineStationsById(resultSet.getLong("id")));
+
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name"));
+
+    public List<Station> findLineStationsById(Long id) {
+        Set<Station> stations = new HashSet<>();
+        stations.addAll(findUpStationsById(id));
+        stations.addAll(findDownStationsById(id));
+        return new ArrayList<>(stations);
+    }
+
+    private List<Station> findUpStationsById(Long id) {
+        final String sql = "SELECT STATION.id AS id, STATION.name AS name "
+                + "FROM SECTION JOIN STATION ON SECTION.up_station_id = STATION.id WHERE line_id = ?";
+        return jdbcTemplate.query(sql, stationRowMapper, id);
+    }
+
+    private List<Station> findDownStationsById(Long id) {
+        final String sql = "SELECT STATION.id AS id, STATION.name AS name "
+                + "FROM SECTION JOIN STATION ON SECTION.down_station_id = STATION.id WHERE line_id = ?";
+        return jdbcTemplate.query(sql, stationRowMapper, id);
+    }
 
     public Long save(Line line) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -46,12 +73,12 @@ public class LineDao {
 
     public List<Line> findAll() {
         String sql = "SELECT id, name, color FROM LINE";
-        return jdbcTemplate.query(sql, actorRowMapper);
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     public Line findById(Long id) {
         String sql = "SELECT id, name, color FROM LINE WHERE id =?";
-        return jdbcTemplate.queryForObject(sql, actorRowMapper, id);
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
     public boolean existById(Long id) {

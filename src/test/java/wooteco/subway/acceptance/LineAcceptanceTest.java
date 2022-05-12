@@ -14,23 +14,55 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-    LineRequest lineRequest1 = new LineRequest("1호선", "blue", 1L, 2L, 10);
-    LineRequest lineRequest2 = new LineRequest("2호선", "green", 1L, 2L, 10);
+    private final StationRequest gangnamStationRequest = new StationRequest("강남역");
+    private final StationRequest seolleungStationRequest = new StationRequest("선릉역");
+    private final LineRequest lineRequest1 = new LineRequest("1호선", "blue", 1L, 2L, 10);
+    private final LineRequest lineRequest2 = new LineRequest("2호선", "green", 1L, 2L, 10);
+
+    private ExtractableResponse<Response> requestLineCreation(LineRequest request) {
+        saveStations();
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+    private void saveStations() {
+        saveStation(gangnamStationRequest);
+        saveStation(seolleungStationRequest);
+    }
+
+    private void saveStation(StationRequest request) {
+        RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
+        saveStations();
 
         // when
         ExtractableResponse<Response> response = requestLineCreation(lineRequest1);
 
         // then
         LineResponse actualResponse = response.jsonPath().getObject(".", LineResponse.class);
-        LineResponse expectedResponse = LineResponse.of(lineRequest1.toLine(extractIdFromHeader(response)));
+        LineResponse expectedResponse = LineResponse.of(lineRequest1.toLine(extractIdFromHeader(response),
+                List.of(gangnamStationRequest.toStation(), seolleungStationRequest.toStation())));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(actualResponse).isEqualTo(expectedResponse);
@@ -47,17 +79,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> requestLineCreation(LineRequest request) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
     }
 
     @DisplayName("지하철 노선을 모두 조회한다.")
@@ -150,12 +171,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicateName() {
         /// given
-        ExtractableResponse<Response> createResponse1 = requestLineCreation(lineRequest1);
+        ExtractableResponse<Response> createResponse = requestLineCreation(lineRequest1);
 
         requestLineCreation(lineRequest2);
 
         // when
-        ExtractableResponse<Response> response = requestLineUpdate(extractLocationFromHeader(createResponse1),
+        ExtractableResponse<Response> response = requestLineUpdate(extractLocationFromHeader(createResponse),
                 lineRequest2);
 
         // then
