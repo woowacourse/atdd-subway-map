@@ -17,7 +17,7 @@ class StationEntityTest {
         String stationName = name.repeat(repeatCount);
 
         //when
-        StationEntity station = new StationEntity(stationName);
+        Station station = new Station(stationName);
 
         //then
         assertThat(station.getName()).isEqualTo(stationName);
@@ -31,7 +31,7 @@ class StationEntityTest {
         String stationName = name.repeat(repeatCount);
 
         //when, then
-        assertThatThrownBy(() -> new StationEntity(stationName))
+        assertThatThrownBy(() -> new Station(stationName))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("이름은 1~30 자 이내여야 합니다.");
     }
@@ -39,7 +39,7 @@ class StationEntityTest {
     @Test
     @DisplayName("이름을 null 값으로 Station 을 생성할 경우 예외를 던진다.")
     void createStationWithNull() {
-        assertThatThrownBy(() -> new StationEntity(null))
+        assertThatThrownBy(() -> new Station(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("이름은 Null 일 수 없습니다.");
     }

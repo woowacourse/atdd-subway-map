@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import wooteco.subway.domain.LineEntity;
-import wooteco.subway.domain.StationEntity;
+import wooteco.subway.domain.Station;
 
 public class LineResponse {
 
@@ -34,7 +34,7 @@ public class LineResponse {
         this(line.getId(), line.getName(), line.getColor());
     }
 
-    public LineResponse(LineEntity line, List<StationEntity> stationEntities) {
+    public LineResponse(LineEntity line, List<Station> stationEntities) {
         this(line.getId(), line.getName(), line.getColor(), stationEntities.stream()
             .map(StationResponse::from)
             .collect(Collectors.toList()));

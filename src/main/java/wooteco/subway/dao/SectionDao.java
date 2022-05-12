@@ -6,7 +6,7 @@ import wooteco.subway.domain.SectionEntity;
 
 public interface SectionDao {
 
-    Long save(Long lineId, Long upStationId, Long downStationId, int distance);
+    Long save(SectionEntity sectionEntity);
 
     List<SectionEntity> findByLineId(Long lineId);
 

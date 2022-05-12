@@ -29,7 +29,7 @@ public class JdbcSectionDaoTest {
     @DisplayName("Section 을 저장한다.")
     void save() {
         //when
-        Long actual = sectionDao.save(1L, 1L, 2L, 5);
+        Long actual = sectionDao.save(new SectionEntity(1L, 1L, 2L, 5));
 
         //then
         assertThat(actual).isEqualTo(1L);
@@ -39,8 +39,8 @@ public class JdbcSectionDaoTest {
     @DisplayName("Line id 로 Section 을 조회한다.")
     void findByLineId() {
         //given
-        Long sectionIdA = sectionDao.save(1L, 1L, 2L, 5);
-        Long sectionIdB = sectionDao.save(1L, 2L, 3L, 5);
+        Long sectionIdA = sectionDao.save(new SectionEntity(1L, 1L, 2L, 5));
+        Long sectionIdB = sectionDao.save(new SectionEntity(1L, 2L, 3L, 5));
 
         //when
         List<SectionEntity> actual = sectionDao.findByLineId(1L);

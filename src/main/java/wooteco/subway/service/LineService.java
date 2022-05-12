@@ -24,17 +24,13 @@ public class LineService {
         this.sectionService = sectionService;
     }
 
-    public LineEntity createLine(LineEntity line) {
-        Optional<LineEntity> foundLine = lineDao.findByName(line.getName());
+    public LineEntity createLine(LineEntity lineEntity, SectionDto sectionDto) {
+        Optional<LineEntity> foundLine = lineDao.findByName(lineEntity.getName());
         if (foundLine.isPresent()) {
             throw new DataDuplicationException("이미 등록된 노선입니다.");
         }
-        return lineDao.save(line);
-    }
-
-    public LineEntity createLine(LineEntity lineEntity, Long upStationId, Long downStationId, int distance) {
-        LineEntity line = createLine(lineEntity);
-        sectionService.createSection(new SectionDto(line.getId(), upStationId, downStationId, distance));
+        LineEntity line = lineDao.save(lineEntity);
+        sectionService.createSection(sectionDto.withLineId(line.getId()));
         return line;
     }
 

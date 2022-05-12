@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -132,5 +133,11 @@ public class Sections {
 
     private Section findNextSection(Section section) {
         return values.get(values.indexOf(section) + 1);
+    }
+
+    public List<Section> getDifference(List<Section> sections) {
+        List<Section> result = new ArrayList<>(values);
+        result.removeAll(sections);
+        return result;
     }
 }

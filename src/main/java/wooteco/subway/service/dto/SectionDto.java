@@ -1,5 +1,8 @@
 package wooteco.subway.service.dto;
 
+import wooteco.subway.domain.SectionEntity;
+import wooteco.subway.ui.request.SectionRequest;
+
 public class SectionDto {
 
     private final Long lineId;
@@ -20,6 +23,15 @@ public class SectionDto {
         this(lineId, null, upStationId, downDestinationId, distance);
     }
 
+    public static SectionDto from(Long lineId, SectionRequest sectionRequest) {
+        return new SectionDto(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+            sectionRequest.getDistance());
+    }
+
+    public SectionDto withLineId(Long lineId) {
+        return new SectionDto(lineId, sectionId, upStationId, downStationId, distance);
+    }
+
     public Long getLineId() {
         return lineId;
     }
@@ -34,5 +46,9 @@ public class SectionDto {
 
     public int getDistance() {
         return distance;
+    }
+
+    public SectionEntity toEntity() {
+        return new SectionEntity(lineId, upStationId, downStationId, distance);
     }
 }

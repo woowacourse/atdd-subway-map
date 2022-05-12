@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.LineEntity;
 import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.service.dto.SectionDto;
 
 class LineServiceTest {
 
@@ -30,7 +31,8 @@ class LineServiceTest {
         LineEntity line = new LineEntity("7호선", "khaki");
 
         //when
-        LineEntity createdLine = lineService.createLine(line);
+        LineEntity createdLine = lineService.createLine(line,
+            new SectionDto(line.getId(), 1L, 2L, 5));
 
         //then
         assertThat(isSameName(createdLine, line)).isTrue();
@@ -45,10 +47,10 @@ class LineServiceTest {
     void createDuplicateName() {
         //given
         LineEntity line = new LineEntity("7호선", "khaki");
-        lineService.createLine(line);
+        lineService.createLine(line, new SectionDto(line.getId(), 1L, 2L, 5));
 
         //then
-        assertThatThrownBy(() -> lineService.createLine(line))
+        assertThatThrownBy(() -> lineService.createLine(line, new SectionDto(line.getId(), 1L, 2L, 5)))
             .isInstanceOf(DataDuplicationException.class)
             .hasMessageContaining("이미 등록된 노선입니다.");
     }
@@ -59,8 +61,8 @@ class LineServiceTest {
         //given
         LineEntity line1 = new LineEntity("2호선", "green");
         LineEntity line2 = new LineEntity("7호선", "khaki");
-        lineService.createLine(line1);
-        lineService.createLine(line2);
+        lineService.createLine(line1, new SectionDto(line1.getId(), 1L, 2L, 5));
+        lineService.createLine(line2, new SectionDto(line2.getId(), 1L, 2L, 5));
 
         //when
         List<LineEntity> actual = lineService.findAll();
@@ -77,7 +79,7 @@ class LineServiceTest {
     void findById() {
         //given
         LineEntity line = new LineEntity("7호선", "khaki");
-        LineEntity createdLine = lineService.createLine(line);
+        LineEntity createdLine = lineService.createLine(line, new SectionDto(line.getId(), 1L, 2L, 5));
 
         //when
         LineEntity actual = lineService.findById(createdLine.getId());
@@ -91,7 +93,7 @@ class LineServiceTest {
     void findByIdNotExists() {
         //given
         LineEntity line = new LineEntity("4호선", "sky-blue");
-        Long id = lineService.createLine(line).getId();
+        Long id = lineService.createLine(line, new SectionDto(line.getId(), 1L, 2L, 5)).getId();
 
         //then
         assertThatThrownBy(() -> lineService.findById(id + 1))
@@ -104,7 +106,7 @@ class LineServiceTest {
     void update() {
         //given
         LineEntity line = new LineEntity("4호선", "sky-blue");
-        LineEntity createdLine = lineService.createLine(line);
+        LineEntity createdLine = lineService.createLine(line, new SectionDto(line.getId(), 1L, 2L, 5));
 
         //when
         LineEntity expected = new LineEntity(createdLine.getId(), "4호선", "khaki");
@@ -120,9 +122,9 @@ class LineServiceTest {
     void updateWithDuplicatedName() {
         //given
         LineEntity line2 = new LineEntity("2호선", "sky-blue");
-        lineService.createLine(line2);
+        lineService.createLine(line2, new SectionDto(line2.getId(), 1L, 2L, 5));
         LineEntity line4 = new LineEntity("4호선", "sky-blue");
-        LineEntity createdLine = lineService.createLine(line4);
+        LineEntity createdLine = lineService.createLine(line4, new SectionDto(line4.getId(), 1L, 2L, 5));
         LineEntity duplicatedLine = new LineEntity(createdLine.getId(), "2호선", "sky-blue");
 
         //then
@@ -136,7 +138,7 @@ class LineServiceTest {
     void delete() {
         //given
         LineEntity line = new LineEntity("4호선", "sky-blue");
-        Long id = lineService.createLine(line).getId();
+        Long id = lineService.createLine(line, new SectionDto(line.getId(), 1L, 2L, 5)).getId();
 
         //when
         lineService.deleteById(id);

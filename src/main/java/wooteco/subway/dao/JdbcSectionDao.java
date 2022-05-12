@@ -23,15 +23,15 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Long save(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Long save(SectionEntity sectionEntity) {
         String sql = "insert into section (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
-            ps.setLong(1, lineId);
-            ps.setLong(2, upStationId);
-            ps.setLong(3, downStationId);
-            ps.setInt(4, distance);
+            ps.setLong(1, sectionEntity.getLineId());
+            ps.setLong(2, sectionEntity.getUpStationId());
+            ps.setLong(3, sectionEntity.getDownStationId());
+            ps.setInt(4, sectionEntity.getDistance());
             return ps;
         }, keyHolder);
 

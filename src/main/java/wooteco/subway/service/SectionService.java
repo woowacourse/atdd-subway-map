@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -12,7 +13,6 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionEntity;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.domain.StationEntity;
 import wooteco.subway.service.dto.SectionDto;
 
 @Service
@@ -27,24 +27,24 @@ public class SectionService {
     }
 
     public void createSection(SectionDto sectionDto) {
-        sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(), sectionDto.getDownStationId(),
-            sectionDto.getDistance());
+        sectionDao.save(sectionDto.toEntity());
     }
 
-    public void saveSection(Long lineId, Long upDestinationId, Long downDestinationId, int distance) {
-        List<SectionEntity> sectionEntities = sectionDao.findByLineId(lineId);
+    public void addSectionInLine(SectionDto sectionDto) {
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(sectionDto.getLineId());
         List<Section> convertedSections = convertSectionEntitiesToSections(sortSectionEntities(sectionEntities));
         Sections sections = new Sections(convertedSections);
-        Section newSection = new Section(getStationById(upDestinationId), getStationById(downDestinationId), distance);
+        Section newSection = new Section(getStationById(sectionDto.getUpStationId()),
+            getStationById(sectionDto.getDownStationId()),
+            sectionDto.getDistance());
+
         sections.add(newSection);
-        List<Section> sectionValues = new ArrayList<>(sections.getValues());
-        sectionValues.removeAll(convertedSections);
-        sectionValues.remove(newSection);
-        for (Section section : sectionValues) {
-            sectionDao.update(new SectionEntity(section.getId(), lineId, section.getUpStation().getId(),
-                section.getDownStation().getId(), section.getDistance()));
-        }
-        sectionDao.save(lineId, upDestinationId, downDestinationId, distance);
+        List<Section> sectionsToUpdate = sections.getDifference(convertedSections);
+        sectionsToUpdate.remove(newSection);
+
+        updateModifiedSections(sectionDto.getLineId(), sectionsToUpdate);
+
+        sectionDao.save(sectionDto.toEntity());
     }
 
     private List<Section> convertSectionEntitiesToSections(List<SectionEntity> sectionEntities) {
@@ -57,7 +57,7 @@ public class SectionService {
             .collect(Collectors.toList());
     }
 
-    public List<SectionEntity> sortSectionEntities(List<SectionEntity> sectionEntities) {
+    private List<SectionEntity> sortSectionEntities(List<SectionEntity> sectionEntities) {
         if (sectionEntities.size() <= 1) {
             return sectionEntities;
         }
@@ -78,11 +78,19 @@ public class SectionService {
         return sortedSectionEntities;
     }
 
+    private void updateModifiedSections(Long lineId, List<Section> modifiedSections) {
+        for (Section section : modifiedSections) {
+            sectionDao.update(
+                new SectionEntity(section.getId(), lineId, section.getUpStation().getId(),
+                    section.getDownStation().getId(), section.getDistance()));
+        }
+    }
+
     private Station getStationById(Long stationId) {
         return new Station(stationId, stationService.findById(stationId).getName());
     }
 
-    public List<StationEntity> findStationsByLineId(Long lineId) {
+    public List<Station> findStationsByLineId(Long lineId) {
         List<SectionEntity> sections = sectionDao.findByLineId(lineId);
         Long upDestinationId = findUpDestinationId(sections);
         Map<Long, Long> stationIds = sections.stream()
@@ -92,7 +100,7 @@ public class SectionService {
                 (a, b) -> b)
             );
 
-        List<StationEntity> sectionEntities = new ArrayList<>();
+        List<Station> sectionEntities = new ArrayList<>();
         sectionEntities.add(stationService.findById(upDestinationId));
 
         Long key = upDestinationId;
@@ -104,20 +112,21 @@ public class SectionService {
         return sectionEntities;
     }
 
-    public Long findUpDestinationId(List<SectionEntity> sections) {
-        List<Long> upStations = sections.stream()
-            .map(SectionEntity::getUpStationId)
-            .collect(Collectors.toList());
-
-        List<Long> downStations = sections.stream()
-            .map(SectionEntity::getDownStationId)
-            .collect(Collectors.toList());
+    private Long findUpDestinationId(List<SectionEntity> sections) {
+        List<Long> upStations = collectValuesBy(SectionEntity::getUpStationId, sections);
+        List<Long> downStations = collectValuesBy(SectionEntity::getDownStationId, sections);
 
         upStations.removeAll(downStations);
         if (upStations.size() != 1) {
             throw new IllegalStateException("저장된 구간들 값이 올바르지 않습니다.");
         }
         return upStations.get(0);
+    }
+
+    private <T, E> List<T> collectValuesBy(Function<E, T> mapper, List<E> collection) {
+        return collection.stream()
+            .map(mapper)
+            .collect(Collectors.toList());
     }
 
     public void deleteStation(Long lineId, Long stationId) {
@@ -127,22 +136,14 @@ public class SectionService {
         sections.delete(getStationById(stationId));
         List<Section> modifiedSections = new ArrayList<>(sections.getValues());
 
-        List<Long> originalSectionIds = originalSections.stream()
-            .map(Section::getId)
-            .collect(Collectors.toList());
-        List<Long> modifiedSectionIds = modifiedSections.stream()
-            .map(Section::getId)
-            .collect(Collectors.toList());
+        List<Long> originalSectionIds = collectValuesBy(Section::getId, originalSections);
+        List<Long> modifiedSectionIds = collectValuesBy(Section::getId, modifiedSections);
 
         originalSectionIds.removeAll(modifiedSectionIds);
         Long removedId = originalSectionIds.get(0);
         sectionDao.deleteById(removedId);
 
         modifiedSections.removeAll(originalSections);
-        for (Section section : modifiedSections) {
-            sectionDao.update(
-                new SectionEntity(section.getId(), lineId, section.getUpStation().getId(),
-                    section.getDownStation().getId(), section.getDistance()));
-        }
+        updateModifiedSections(lineId, modifiedSections);
     }
 }

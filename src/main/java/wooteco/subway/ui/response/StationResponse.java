@@ -2,7 +2,7 @@ package wooteco.subway.ui.response;
 
 import java.util.Objects;
 
-import wooteco.subway.domain.StationEntity;
+import wooteco.subway.domain.Station;
 
 public class StationResponse {
 
@@ -17,11 +17,11 @@ public class StationResponse {
         this.name = name;
     }
 
-    public StationResponse(StationEntity station) {
+    public StationResponse(Station station) {
         this(station.getId(), station.getName());
     }
 
-    public static StationResponse from(StationEntity stationEntity) {
+    public static StationResponse from(Station stationEntity) {
         return new StationResponse(stationEntity.getId(), stationEntity.getName());
     }
 
