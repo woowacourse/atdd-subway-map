@@ -34,8 +34,6 @@ public class SectionRequest {
 
     private void validDistance(int distance) {
         if (distance < MIN_DISTANCE) {
-            System.out.println(distance);
-            System.out.println(MIN_DISTANCE);
             throw new IllegalArgumentException(INVALID_DISTANCE_ERROR_MESSAGE);
         }
     }
