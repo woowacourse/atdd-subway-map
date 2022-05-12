@@ -26,7 +26,8 @@ public class StationService {
     }
 
     public List<StationResponse> findAll() {
-        return DtoAssembler.stationResponses(stationRepository.findStations());
+        List<Station> stations = stationRepository.findStations();
+        return DtoAssembler.stationResponses(stations);
     }
 
     @Transactional

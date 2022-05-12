@@ -25,7 +25,7 @@ public class LineService {
     @Transactional
     public LineResponse create(LineRequest lineRequest) {
         Section section = createSection(lineRequest);
-        Line line = lineRepository.saveLine(new Line(List.of(section), lineRequest.getName(), lineRequest.getColor()));
+        Line line = lineRepository.saveLine(DtoAssembler.line(section, lineRequest));
         return DtoAssembler.lineResponse(line);
     }
 
@@ -37,11 +37,13 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        return DtoAssembler.lineResponses(lineRepository.findLines());
+        List<Line> lines = lineRepository.findLines();
+        return DtoAssembler.lineResponses(lines);
     }
 
     public LineResponse findOne(Long id) {
-        return DtoAssembler.lineResponse(lineRepository.findLineById(id));
+        Line line = lineRepository.findLineById(id);
+        return DtoAssembler.lineResponse(line);
     }
 
     @Transactional
