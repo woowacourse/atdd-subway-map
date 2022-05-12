@@ -145,6 +145,17 @@ public class Sections {
         return values.get(lastIndex).getDownStationId();
     }
 
+    public List<Long> getAllStationIds() {
+        List<Long> allStationIds = new ArrayList<>();
+        for (Section section : values) {
+            allStationIds.add(section.getUpStationId());
+            allStationIds.add(section.getDownStationId());
+        }
+        return allStationIds.stream()
+                .distinct()
+                .collect(Collectors.toUnmodifiableList());
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

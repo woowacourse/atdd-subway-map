@@ -156,7 +156,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("구간이 추가되면 상행선 혹은 하행선이 변경이 될 수 있다.")
+    @DisplayName("구간을 추가할 수 있다.")
     @Test
     void connectNewSection() {
         //given
@@ -170,8 +170,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = requestToFindLineById(1L);
         LineResponse lineResponse = response.jsonPath()
                 .getObject(".", LineResponse.class);
-        StationResponse upStation = lineResponse.getStations().get(0);
-        StationResponse downStation = lineResponse.getStations().get(1);
+        StationResponse firstStation = lineResponse.getStations().get(0);
+        StationResponse secondStation = lineResponse.getStations().get(1);
+        StationResponse thirdStation = lineResponse.getStations().get(2);
 
         //then
         assertAll(
@@ -179,10 +180,12 @@ class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(lineResponse.getId()).isEqualTo(1L),
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
-                () -> assertThat(upStation.getId()).isEqualTo(1L),
-                () -> assertThat(upStation.getName()).isEqualTo("강남역"),
-                () -> assertThat(downStation.getId()).isEqualTo(3L),
-                () -> assertThat(downStation.getName()).isEqualTo("선릉역")
+                () -> assertThat(firstStation.getId()).isEqualTo(1L),
+                () -> assertThat(firstStation.getName()).isEqualTo("강남역"),
+                () -> assertThat(secondStation.getId()).isEqualTo(2L),
+                () -> assertThat(secondStation.getName()).isEqualTo("사당역"),
+                () -> assertThat(thirdStation.getId()).isEqualTo(3L),
+                () -> assertThat(thirdStation.getName()).isEqualTo("선릉역")
         );
     }
 
@@ -217,7 +220,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("존재하지 않는 노선입니다.");
     }
-
 
     private void requestToCreateStation(String stationName) {
         RestAssured.given().log().all()

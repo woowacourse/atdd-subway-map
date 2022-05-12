@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -162,5 +163,13 @@ class SectionsTest {
         Section combinedSection = new Section(1L, 2L, 4L, 16);
 
         assertThat(deleted).isEqualTo(new Sections(Collections.singletonList(combinedSection)));
+    }
+
+    @DisplayName("모든 역들의 id를 순서대로 반환한다.")
+    @Test
+    void getAllStationIds() {
+        List<Long> allStationIds = sections.getAllStationIds();
+
+        assertThat(allStationIds).isEqualTo(Arrays.asList(2L, 3L, 4L));
     }
 }
