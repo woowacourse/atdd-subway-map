@@ -13,7 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.station.Station;
 
 class SectionsTest {
@@ -100,5 +99,43 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.append(new Section(3L, nonRegisteredStation1, nonRegisteredStation2, 1)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("상행역과 하행역이 존재하지 않는 구간입니다.");
+    }
+
+    @DisplayName("상행종점역을 제거한다.")
+    @Test
+    void removeUpStation() {
+        sections.remove(STATION1);
+        assertThat(sections.getStations()).doesNotContain(STATION1);
+    }
+
+    @DisplayName("하행종점역을 제거한다.")
+    @Test
+    void removeDownStation() {
+        sections.remove(STATION3);
+        assertThat(sections.getStations()).doesNotContain(STATION3);
+    }
+
+    @DisplayName("중간역을 제거한다.")
+    @Test
+    void removeMiddleStation() {
+        sections.remove(STATION2);
+        assertThat(sections.getStations()).doesNotContain(STATION2);
+    }
+
+    @DisplayName("노선에 존재하지 않는 역을 제거한다.")
+    @Test
+    void removeStationNotBelongToLine() {
+        assertThatThrownBy(() -> sections.remove(new Station(5L, "제주역")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("노선에 포함되어 있는 역이 아닙니다.");
+    }
+
+    @DisplayName("구간이 하나뿐인 노선의 역을 제거한다.")
+    @Test
+    void removeStationFromLineWithOnlyOneSection() {
+        Sections sections = new Sections(List.of(new Section(STATION1, STATION2, 3)));
+        assertThatThrownBy(() -> sections.remove(STATION1))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("노선의 구간이 하나이므로 구간을 삭제할 수 없습니다.");
     }
 }
