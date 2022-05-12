@@ -57,7 +57,7 @@ public class LineDaoImpl implements LineDao {
         Map<Line, List<LineSection>> groupByLine = lineSections.stream()
             .collect(Collectors.groupingBy(LineSection::getLine));
         List<Line> lines = groupByLine.keySet().stream()
-            .map(line -> new Line(line.getId(), line.getName(), line.getColor(), toSections(groupByLine.get(line))))
+            .map(line -> Line.from(line, toSections(groupByLine.get(line))))
             .collect(Collectors.toList());
 
         return lines;
@@ -120,8 +120,7 @@ public class LineDaoImpl implements LineDao {
             List<Section> sections = lineSections.stream()
                 .map(LineSection::getSection)
                 .collect(Collectors.toList());
-            return Optional.of(
-                new Line(findLine.getId(), findLine.getName(), findLine.getColor(), sections));
+            return Optional.of(Line.from(findLine, sections));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }

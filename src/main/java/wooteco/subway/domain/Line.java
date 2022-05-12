@@ -19,14 +19,13 @@ public class Line {
         this.id = id;
     }
 
-    public Line(Long id, String name, String color, Section section) {
-        this(id, name, color);
-        this.sections = Sections.of(section);
-    }
-
-    public Line(Long id, String name, String color, List<Section> sections) {
+    private Line(Long id, String name, String color, List<Section> sections) {
         this(id, name, color);
         this.sections = Sections.of(sections);
+    }
+
+    public static Line from(Line line, List<Section> sections) {
+        return new Line(line.getId(), line.getName(), line.getColor(), sections);
     }
 
     public void update(String name, String color) {
