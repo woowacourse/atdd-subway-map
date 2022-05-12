@@ -25,7 +25,7 @@ public class ExceptionAdvice {
 //    }
 
     @ExceptionHandler(IllegalSectionCreatedException.class)
-    public ResponseEntity<Void> illegalSectionCreated() {
+    public ResponseEntity<Void> impossibleSection() {
         return ResponseEntity.badRequest().build();
     }
 }

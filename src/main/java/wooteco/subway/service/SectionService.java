@@ -29,16 +29,35 @@ public class SectionService {
     public void create(final Long id, final Long upStationId, final Long downStationId, final int distance) {
         final Sections sections = new Sections(sectionDao.findSectionsByLineId(id));
         final Section section = new Section(upStationId, downStationId, distance);
-        if (sections.isLastStation(section)) {
-            sectionDao.save(id, section);
-        }
-        if (sections.matchUpStationId(section)) {
-            final Section targetSection = sectionDao.findSectionByUpStationId(id, section);
-            insertSectionInTargetSection(id, section, targetSection.divideRight(section));
-        }
+        sections.validatePossibleSection(section);
+        insertSections(id, sections, section);
+    }
+
+    private void insertSections(Long id, Sections sections, Section section) {
+        whenLastStation(id, sections, section);
+        whenMatchUpStation(id, sections, section);
+        whenMatchDownStation(id, sections, section);
+    }
+
+    private void whenMatchDownStation(Long id, Sections sections, Section section) {
         if (sections.matchDownStationId(section)) {
             final Section targetSection = sectionDao.findSectionByDownStationId(id, section);
+            targetSection.validateDistanceLargerThan(section);
             insertSectionInTargetSection(id, targetSection.divideLeft(section), section);
+        }
+    }
+
+    private void whenMatchUpStation(Long id, Sections sections, Section section) {
+        if (sections.matchUpStationId(section)) {
+            final Section targetSection = sectionDao.findSectionByUpStationId(id, section);
+            targetSection.validateDistanceLargerThan(section);
+            insertSectionInTargetSection(id, section, targetSection.divideRight(section));
+        }
+    }
+
+    private void whenLastStation(Long id, Sections sections, Section section) {
+        if (sections.isLastStation(section)) {
+            sectionDao.save(id, section);
         }
     }
 
