@@ -10,6 +10,7 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResult;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SectionService {
@@ -32,7 +33,7 @@ public class SectionService {
     }
 
     @Transactional
-    public void add(Line line, SectionRequest sectionRequest) {
+    public void add2(Line line, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         Section section = Section.of(line, sectionRequest);
         if (section.canAddAsLastStation(sections)) {
@@ -48,6 +49,24 @@ public class SectionService {
             return;
         }
         throw new IllegalArgumentException("추가할 수 없는 노선입니다.");
+    }
+
+    public void add(Line line, SectionRequest sectionRequest) {
+        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
+        Section sectionToInsert = Section.of(line, sectionRequest);
+        //validate 먼저 해줘야하나? -> 갈래길도, 종점도 아닌거에 대한 validate 먼저 해주고
+        sections.validateInsertable(sectionToInsert);
+
+        Optional<Section> deletableSection = sections.getSectionToDelete(sectionToInsert);
+
+        // 변경한 섹션을 저장
+        sectionDao.save(sectionToInsert);
+
+        // 수정할 섹션을 수정
+        deletableSection.ifPresent(sectionToDelete -> {
+            Section sectionToUpdate = sections.getSectionToUpdate(sectionToDelete, sectionToInsert);
+            sectionDao.update(sectionToUpdate);
+        });
     }
 
     @Transactional

@@ -3,7 +3,6 @@ package wooteco.subway.domain;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResult;
-import wooteco.subway.exception.section.IllegalMergeSectionException;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,10 +52,15 @@ public class Section {
         if (existedSection.upStationId.equals(insertedSection.upStationId)) {
             return new Section(generatedDistance, existedSection.getLineId(), insertedSection.downStationId, existedSection.downStationId);
         }
-        if (existedSection.downStationId.equals(insertedSection.downStationId)) {
-            return new Section(generatedDistance, existedSection.getLineId(), existedSection.upStationId, insertedSection.upStationId);
+        return new Section(generatedDistance, existedSection.getLineId(), existedSection.upStationId, insertedSection.upStationId);
+    }
+
+    public Section createSection(Section sectionToInsert) {
+        int generatedDistance = distance - sectionToInsert.getDistance();
+        if (isUpStationIdEquals(sectionToInsert)) {
+            return new Section(id, generatedDistance, lineId, sectionToInsert.downStationId, downStationId);
         }
-        throw new IllegalMergeSectionException();
+        return new Section(id, generatedDistance, lineId, upStationId, sectionToInsert.upStationId);
     }
 
     public boolean canAddAsLastStation(Sections sections) {
@@ -66,12 +70,12 @@ public class Section {
     }
 
     public SectionResult canAddAsBetweenStation(Sections sections) {
-        Optional<Section> upStationSection = sections.getExistedUpStationSection(upStationId);
+        Optional<Section> upStationSection = sections.getExistingUpStationSection(this);
         if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {
             return SectionResult.of(upStationSection.get(), this);
         }
 
-        Optional<Section> downStationSection = sections.getExistedDownStationSection(downStationId);
+        Optional<Section> downStationSection = sections.getExistingDownStationSection(this);
         if (downStationSection.isPresent() && downStationSection.get().getDistance() > distance) {
             return SectionResult.of(downStationSection.get(), this);
         }
@@ -106,11 +110,17 @@ public class Section {
         return count == LINEARLY_SAME_COUNT;
     }
 
-    private boolean isUpStationIdEquals(Section section) {
+    public boolean isUpStationIdEquals(Section section) {
         return section.upStationId.equals(this.upStationId);
     }
 
-    private boolean isDownStationIdEquals(Section section) {
+    public boolean isUnableToAdd(Section section) {
+
+
+        return isUpStationIdEquals(section) || isDownStationIdEquals(section);
+    }
+
+    public boolean isDownStationIdEquals(Section section) {
         return section.downStationId.equals(this.downStationId);
     }
 

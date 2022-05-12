@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.section.IllegalMergeSectionException;
+import wooteco.subway.exception.section.NoSuchSectionException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,6 +11,7 @@ public class Sections {
     private static final int MERGE_SECTION_SIZE = 2;
     private static final int LAST_STATION_SIZE = 1;
     private static final int ONE_SECTION = 1;
+    public static final int NO_STATION_MATCH = 0;
 
     private final List<Section> sections;
 
@@ -35,15 +38,15 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Section> getExistedUpStationSection(Long upStationId) {
+    public Optional<Section> getExistingUpStationSection(Section upStationSection) {
         return sections.stream()
-                .filter(section -> section.getUpStationId().equals(upStationId))
+                .filter(section -> section.isUpStationIdEquals(upStationSection))
                 .findFirst();
     }
 
-    public Optional<Section> getExistedDownStationSection(Long downStationId) {
+    public Optional<Section> getExistingDownStationSection(Section downStationSection) {
         return sections.stream()
-                .filter(section -> isEqualDownStationId(downStationId, section))
+                .filter(section -> section.isDownStationIdEquals(downStationSection))
                 .findFirst();
     }
 
@@ -103,5 +106,55 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public Optional<Section> getSectionToDelete(Section section) {
+        // 종점에 추가하는 경우 -> 아무것도 반환하지 않음
+        if (canAddAsLastStation(section)) {
+            return Optional.empty();
+        }
+        // 갈래길로 추가하는 경우 -> 수정할 갈래길을 반환하기
+        return Optional.of(getModifiableSectionAfterInsert(section));
+    }
+
+    private Section getModifiableSectionAfterInsert(Section insertableSection) {
+        Optional<Section> upStationSection = getExistingUpStationSection(insertableSection);
+        Optional<Section> downStationSection = getExistingDownStationSection(insertableSection);
+
+        Section existingSection = upStationSection.orElseGet(() -> downStationSection.orElseThrow(NoSuchSectionException::new));
+
+        validateDistance(existingSection, insertableSection);
+
+        return existingSection;
+    }
+
+    //이건 Section의 책임일듯
+    private void validateDistance(Section existingSection, Section insertableSection) {
+        if (insertableSection.getDistance() > existingSection.getDistance()) {
+            throw new SubwayException("구간의 길이가 불가능합니다.");
+        }
+    }
+
+    private boolean canAddAsLastStation(Section section) {
+        List<Long> lastStationIds = getLastStationIds();
+
+        return lastStationIds.contains(section.getUpStationId())
+                || lastStationIds.contains(section.getDownStationId());
+    }
+
+    public void validateInsertable(Section section) {
+        if (isUnableToAdd(section)) {
+            throw new SubwayException("추가할 수 없는 구간입니다.");
+        }
+    }
+
+    public Section getSectionToUpdate(Section sectionToDelete, Section sectionToInsert) {
+        return sectionToDelete.createSection(sectionToInsert);
+    }
+
+    private boolean isUnableToAdd(Section checkableSection) {
+        List<Long> distinctStationIds = getDistinctStationIds();
+
+        return distinctStationIds.contains(checkableSection.getUpStationId()) == distinctStationIds.contains(checkableSection.getDownStationId());
     }
 }

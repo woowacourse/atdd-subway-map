@@ -38,9 +38,10 @@ class SectionsTest {
         Section section2 = new Section(10, 2L, 3L, 2L);
         Section section3 = new Section(10, 2L, 2L, 4L);
 
+        Section upStationSection = new Section(10, 2L, 1L, 2L);
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        Optional<Section> upStationIds = sections.getExistedUpStationSection(1L);
+        Optional<Section> upStationIds = sections.getExistingUpStationSection(upStationSection);
 
         assertThat(upStationIds).isPresent();
     }
@@ -52,9 +53,11 @@ class SectionsTest {
         Section section2 = new Section(10, 2L, 3L, 2L);
         Section section3 = new Section(10, 2L, 2L, 4L);
 
+        Section upStationSection = new Section(10, 2L, 4L, 5L);
+
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        Optional<Section> upStationIds = sections.getExistedUpStationSection(4L);
+        Optional<Section> upStationIds = sections.getExistingUpStationSection(upStationSection);
 
         assertThat(upStationIds).isEmpty();
     }
@@ -66,11 +69,13 @@ class SectionsTest {
         Section section2 = new Section(10, 2L, 3L, 2L);
         Section section3 = new Section(10, 2L, 2L, 4L);
 
+        Section downStationSection = new Section(10, 2L, 3L, 4L);
+
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        Optional<Section> downStationSection = sections.getExistedDownStationSection(2L);
+        Optional<Section> downStationSectionOptional = sections.getExistingDownStationSection(downStationSection);
 
-        assertThat(downStationSection).isPresent();
+        assertThat(downStationSectionOptional).isPresent();
     }
 
     @DisplayName("노선 전체에서 하행 역 아이디가 존재하는 구간이 없으면 Empty Optional 을 반환한다.")
@@ -79,10 +84,11 @@ class SectionsTest {
         Section section1 = new Section(10, 2L, 1L, 3L);
         Section section2 = new Section(10, 2L, 3L, 2L);
         Section section3 = new Section(10, 2L, 2L, 4L);
+        Section givenDownStationSection = new Section(10, 2L, 3L, 5L);
 
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        Optional<Section> downStationSection = sections.getExistedDownStationSection(1L);
+        Optional<Section> downStationSection = sections.getExistingDownStationSection(givenDownStationSection);
 
         assertThat(downStationSection).isEmpty();
     }

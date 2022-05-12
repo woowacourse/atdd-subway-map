@@ -3,6 +3,8 @@ package wooteco.subway.ui;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.line.DuplicateLineNameException;
 import wooteco.subway.exception.NoSuchContentException;
 
@@ -20,8 +22,13 @@ public class SubwayControllerAdvice {
                 .body(e.getMessage());
     }
 
-    @ExceptionHandler(DuplicateLineNameException.class)
-    public ResponseEntity<String> handDuplicateLineNameException(DuplicateLineNameException e) {
+    @ExceptionHandler(DuplicateNameException.class)
+    public ResponseEntity<String> handleDuplicateLineNameException(DuplicateNameException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(SubwayException.class)
+    public ResponseEntity<String> handleSubwayException(SubwayException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

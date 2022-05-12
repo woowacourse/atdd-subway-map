@@ -71,4 +71,12 @@ public class SectionDao {
             throw new NoSuchSectionException();
         }
     }
+
+    public void update(Section section) {
+        String sql = "UPDATE section " +
+                "SET up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance " +
+                "WHERE id = :id";
+
+        jdbcTemplate.update(sql, new BeanPropertySqlParameterSource(section));
+    }
 }

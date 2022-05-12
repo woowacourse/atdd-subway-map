@@ -151,6 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
                     //then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                    assertThat(response.response().getBody().asString()).isEqualTo("구간의 길이가 불가능합니다.");
                 }),
 
                 dynamicTest("[2호선 구간 생성] 기존 구간 길이보다 긴 길이의 구간을 추가할 수 없다.(하행 방향)", () -> {
@@ -159,6 +160,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
                     //then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                    assertThat(response.response().getBody().asString()).isEqualTo("구간의 길이가 불가능합니다.");
                 }),
 
                 dynamicTest("[2호선 구간 생성] 기존 구간과 겹치는 구간은 추가할 수 없다.", () -> {
