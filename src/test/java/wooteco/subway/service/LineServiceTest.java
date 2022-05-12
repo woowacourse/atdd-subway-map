@@ -102,4 +102,20 @@ class LineServiceTest {
 
         assertThat(actual).isEqualTo(expected);
     }
+
+    @DisplayName("findById 메서드는 단건의 데이터를 조회한다.")
+    @Nested
+    class FindByTest {
+
+        @Test
+        void 존재하는_노선의_id가_입력된_경우_성공() {
+            assertThat(lineService.findById(1L)).isEqualTo(LINE_RESPONSE1);
+        }
+
+        @Test
+        void 존재하지_않는_역의_id가_입력된_경우_예외발생() {
+            assertThatThrownBy(() -> lineService.findById(9999L))
+                .isInstanceOf(NotFoundException.class);
+        }
+    }
 }

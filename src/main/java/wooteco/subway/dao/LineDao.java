@@ -99,11 +99,25 @@ public class LineDao {
     }
 
     public Line findById(Long id) {
-        final String sql = "SELECT * FROM line WHERE id = :id";
-        MapSqlParameterSource paramSource = new MapSqlParameterSource();
-        paramSource.addValue("id", id);
+        final String sql = "SELECT line.ID          AS line_id,\n"
+            + "       line.name        AS line_name,\n"
+            + "       line.color       AS line_color,\n"
+            + "       section.ID       AS section_id,\n"
+            + "       section.DISTANCE AS section_distance,\n"
+            + "       us.ID           AS up_station_id,\n"
+            + "       us.NAME         AS up_station_name,\n"
+            + "       ds.ID           AS down_station_id,\n"
+            + "       ds.NAME         AS down_station_name\n"
+            + "FROM line line\n"
+            + "         LEFT OUTER JOIN section section ON line.ID = section.LINE_ID\n"
+            + "         LEFT OUTER JOIN station us ON section.UP_STATION_ID = us.ID\n"
+            + "         LEFT OUTER JOIN station ds ON section.DOWN_STATION_ID = ds.ID\n"
+            + "WHERE line.ID = :line_id";
 
-        return jdbcTemplate.queryForObject(sql, paramSource, lineRowMapper);
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("line_id", id);
+
+        return covertLine(jdbcTemplate.queryForList(sql, paramSource));
     }
 
     public Line save(Line line) {
