@@ -22,13 +22,13 @@ public class LineService {
     static final String NAME_DUPLICATE_EXCEPTION_MESSAGE = "이름이 중복된 노선은 만들 수 없습니다.";
     static final String COLOR_DUPLICATE_EXCEPTION_MESSAGE = "색깔이 중복된 노선은 만들 수 없습니다.";
 
-    private final LineDao lineDao;
     private final StationDao stationDao;
+    private final LineDao lineDao;
     private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
-        this.lineDao = lineDao;
+    public LineService(StationDao stationDao, LineDao lineDao, SectionDao sectionDao) {
         this.stationDao = stationDao;
+        this.lineDao = lineDao;
         this.sectionDao = sectionDao;
     }
 
@@ -44,12 +44,10 @@ public class LineService {
         sectionDao.insert(new Section(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
                 lineRequest.getDistance()));
 
-        StationResponse upStationResponse = new StationResponse(lineRequest.getUpStationId(), upStation.getName());
-        StationResponse downStationResponse = new StationResponse(lineRequest.getDownStationId(),
-                downStation.getName());
+        StationResponse upStationResponse = new StationResponse(upStation);
+        StationResponse downStationResponse = new StationResponse(downStation);
 
-        return new LineResponse(newLine.getId(), lineRequest.getName(), lineRequest.getColor(),
-                List.of(upStationResponse, downStationResponse));
+        return LineResponse.of(newLine, List.of(upStationResponse, downStationResponse));
     }
 
     private void validateRequest(Line line) {
@@ -76,8 +74,7 @@ public class LineService {
         for (Line line : lines) {
             List<Long> lineIds = findLineIds(line);
             List<StationResponse> stationResponses = createStationResponse(lineIds);
-            LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(),
-                    stationResponses);
+            LineResponse lineResponse = LineResponse.of(line, stationResponses);
             lineResponses.add(lineResponse);
         }
         return lineResponses;
@@ -88,7 +85,7 @@ public class LineService {
         Line line = lineDao.findById(id);
         List<Long> lineIds = findLineIds(line);
         List<StationResponse> stationResponse = createStationResponse(lineIds);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponse);
+        return LineResponse.of(line, stationResponse);
     }
 
     private List<Long> findLineIds(Line line) {
@@ -105,7 +102,7 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        validateRequest(new Line(lineRequest.getName(), lineRequest.getColor()));
+        validateRequest(lineRequest.toEntity());
         lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 

@@ -21,7 +21,7 @@ public class SectionServiceTest {
     private LineDao lineDao = new FakeLineDao();
     private SectionDao sectionDao = new FakeSectionDao();
 
-    private LineService lineService = new LineService(lineDao, stationDao, sectionDao);
+    private LineService lineService = new LineService(stationDao, lineDao, sectionDao);
     private SectionService sectionService = new SectionService(sectionDao);
 
     @BeforeEach

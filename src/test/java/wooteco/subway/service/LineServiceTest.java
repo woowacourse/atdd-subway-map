@@ -21,10 +21,11 @@ import wooteco.subway.dto.LineResponse;
 
 public class LineServiceTest {
 
-    private LineDao lineDao = new FakeLineDao();
     private StationDao stationDao = new FakeStationDao();
+    private LineDao lineDao = new FakeLineDao();
     private SectionDao sectionDao = new FakeSectionDao();
-    private LineService lineService = new LineService(lineDao, stationDao, sectionDao);
+
+    private LineService lineService = new LineService(stationDao, lineDao, sectionDao);
 
     @BeforeEach
     void beforeEach() {

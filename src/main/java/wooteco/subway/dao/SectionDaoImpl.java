@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -49,7 +50,7 @@ public class SectionDaoImpl implements SectionDao {
     @Override
     public List<Section> findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id = ?";
-        return jdbcTemplate.query(sql, rowMapper, lineId);
+        return Collections.unmodifiableList(jdbcTemplate.query(sql, rowMapper, lineId));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class SectionDaoImpl implements SectionDao {
         for (Section section : sections) {
             newSections.add(insert(section));
         }
-        return newSections;
+        return Collections.unmodifiableList(newSections);
     }
 
     @Override
