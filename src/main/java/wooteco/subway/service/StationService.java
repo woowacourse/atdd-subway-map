@@ -1,8 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -18,9 +16,7 @@ public class StationService {
     }
 
     public StationResponse createStation(String name) {
-        var newStation = stationDao.save(new Station(name));
-
-        return new StationResponse(newStation.getId(), newStation.getName());
+        return stationDao.save(new Station(name));
     }
 
     public void deleteStation(Long id) {
@@ -28,8 +24,6 @@ public class StationService {
     }
 
     public List<StationResponse> findAll() {
-        return stationDao.findAll().stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
+        return stationDao.findAll();
     }
 }

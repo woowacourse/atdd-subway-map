@@ -8,13 +8,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
+import org.springframework.stereotype.Component;
+import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.dto.line.LineResponse;
 
-@Repository
+@Component
 public class LineDao {
 
-    private static final RowMapper<Line> LINE_ROW_MAPPER = (rs, rowNum) -> new Line(
+    private final RowMapper<LineResponse> lineRowMapper = (rs, rowNum) -> new LineResponse(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("color")
@@ -26,14 +27,14 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line save(Line line) {
+    public LineResponse save(LineRequest line) {
         var sql = "INSERT INTO line (name, color) VALUES(?, ?)";
         var keyHolder = new GeneratedKeyHolder();
         save(line, sql, keyHolder);
-        return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
+        return new LineResponse(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
-    private void save(Line line, String sql, KeyHolder keyHolder) {
+    private void save(LineRequest line, String sql, KeyHolder keyHolder) {
         try {
             jdbcTemplate.update(connection -> {
                 var statement = connection.prepareStatement(sql, new String[]{"id"});
@@ -46,43 +47,43 @@ public class LineDao {
         }
     }
 
-    public Line findById(Long id) {
+    public LineResponse findById(Long id) {
         var sql = "SELECT * FROM line WHERE id=?";
 
         try {
-            return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
+            return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             throw new NoSuchElementException("[ERROR] 해당 노선이 존재하지 않습니다.");
         }
     }
 
-    public List<Line> findAll() {
+    public List<LineResponse> findAll() {
         var sql = "SELECT * FROM line";
-        return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     public void update(Long id, String name, String color) {
         var sql = "UPDATE line SET name=?, color=? WHERE id=?";
-        var updatedRow = 0;
+        var updatedRowCount = 0;
         try {
-            updatedRow = jdbcTemplate.update(sql, name, color, id);
+            updatedRowCount = jdbcTemplate.update(sql, name, color, id);
         } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 노선 정보 입니다.");
         }
 
-        checkUpdatedRow(updatedRow);
+        checkUpdatedRow(updatedRowCount);
     }
 
-    private void checkUpdatedRow(int updatedRow) {
-        if (updatedRow == 0) {
+    private void checkUpdatedRow(int updatedRowCount) {
+        if (updatedRowCount == 0) {
             throw new NoSuchElementException("[ERROR] 해당 노선이 존재하지 않습니다.");
         }
     }
 
     public void deleteById(Long id) {
         var sql = "DELETE FROM line WHERE id=?";
-        var deletedRow = jdbcTemplate.update(sql, id);
+        var deletedRowCount = jdbcTemplate.update(sql, id);
 
-        checkUpdatedRow(deletedRow);
+        checkUpdatedRow(deletedRowCount);
     }
 }

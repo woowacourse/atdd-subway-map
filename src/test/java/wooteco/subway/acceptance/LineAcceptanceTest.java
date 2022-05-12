@@ -26,13 +26,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        responseCreateLine = insertLine("테스트호선", "테스트색");
+        responseCreateLine = insertLine("테스트호선", "테스트색", List.of("테스트1역", "테스트2역"));
     }
 
-    private ExtractableResponse<Response> insertLine(String name, String color) {
+    private ExtractableResponse<Response> insertLine(String name, String color, List<String> stationNames) {
+        var response1 = requestCreate("/stations", Map.of("name", stationNames.get(0)));
+
+        var response2 = requestCreate("/stations", Map.of("name", stationNames.get(1)));
+
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", getId(response1));
+        params.put("downStationId", getId(response2));
+        params.put("distance", "0");
+
         return requestCreate("/lines", params);
     }
 
@@ -48,7 +56,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름으로 생성시 예외가 발생한다.")
     @Test
     void createLineWithDuplicateName() {
-        var response = insertLine("테스트호선", "테스트색");
+        var response = insertLine("테스트호선", "테스트색", List.of("테스트3역", "테스트4역"));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -69,7 +77,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        var responseCreateLine2 = insertLine("테스트2호선", "테스트2색");
+        var responseCreateLine2 = insertLine("테스트2호선", "테스트2색", List.of("테스트3역", "테스트4역"));
 
         // when
         var response = RestAssured.given().log().all()
@@ -128,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         /// given
         var firstInsertId = getId(responseCreateLine);
 
-        insertLine("테스트2호선", "테스트2색");
+        insertLine("테스트2호선", "테스트2색", List.of("테스트3역", "테스트4역"));
 
         // when
         var response = requestUpdateLine(firstInsertId, "테스트2호선", "테스트색");

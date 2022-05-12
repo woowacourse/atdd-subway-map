@@ -1,10 +1,8 @@
 package wooteco.subway.dto.line;
 
-import wooteco.subway.domain.Line;
-import wooteco.subway.dto.station.StationResponse;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import wooteco.subway.dto.station.StationResponse;
 
 public class LineResponse {
     private Long id;
@@ -15,15 +13,17 @@ public class LineResponse {
     private LineResponse() {
     }
 
-    public LineResponse(Line line, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
+    public LineResponse(LineResponse line, List<StationResponse> stations) {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
         this.stations = stations;
-    }
-
-    public LineResponse(Line line) {
-        this(line, new ArrayList<>());
     }
 
     public Long getId() {
@@ -40,5 +40,23 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LineResponse that = (LineResponse) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
+                && Objects.equals(color, that.color) && Objects.equals(stations, that.stations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, stations);
     }
 }

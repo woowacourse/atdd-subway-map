@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.dao.DuplicateKeyException;
@@ -8,13 +7,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.station.StationResponse;
 
-@Repository
+@Component
 public class StationDao {
 
-    private static final RowMapper<Station> STATION_ROW_MAPPER = (rs, rowNum) -> new Station(
+    private final RowMapper<StationResponse> stationRowMapper = (rs, rowNum) -> new StationResponse(
             rs.getLong("id"),
             rs.getString("name")
     );
@@ -24,11 +24,11 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station save(Station station) {
+    public StationResponse save(Station station) {
         var sql = "INSERT INTO station (name) VALUES(?)";
         var keyHolder = new GeneratedKeyHolder();
         save(station, sql, keyHolder);
-        return new Station(keyHolder.getKey().longValue(), station.getName());
+        return new StationResponse(keyHolder.getKey().longValue(), station.getName());
     }
 
     private void save(Station station, String sql, KeyHolder keyHolder) {
@@ -43,17 +43,22 @@ public class StationDao {
         }
     }
 
-    public List<Station> findAll() {
+    public List<StationResponse> findAll() {
         String sql = "SELECT * FROM station";
-        return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
+        return jdbcTemplate.query(sql, stationRowMapper);
     }
 
     public void deleteById(Long id) {
         var sql = "DELETE FROM station WHERE id=?";
-        var deletedRow = jdbcTemplate.update(sql, id);
+        var deletedRowCount = jdbcTemplate.update(sql, id);
 
-        if (deletedRow == 0) {
+        if (deletedRowCount == 0) {
             throw new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다.");
         }
+    }
+
+    public List<StationResponse> find(Long upStationId, Long downStationId) {
+        var sql = "SELECT * FROM station WHERE id = ? OR id = ?";
+        return jdbcTemplate.query(sql, stationRowMapper, upStationId, downStationId);
     }
 }

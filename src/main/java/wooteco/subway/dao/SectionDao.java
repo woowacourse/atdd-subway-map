@@ -9,6 +9,11 @@ import wooteco.subway.dto.section.SectionRequest;
 public class SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
+//    private final RowMapper<SectionResponse> sectionRowMapper = (rs, rowNum) -> {
+//        var upStationId = rs.getLong("up_station_id");
+//        var downStationId = rs.getLong("down_station_id");
+//        return new SectionResponse(upStationId, downStationId);
+//    };
 
     public SectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -16,7 +21,8 @@ public class SectionDao {
 
     public void save(long lineId, SectionRequest sectionRequest) {
         var sql = "INSERT INTO section (up_station_id, down_station_id, distance, line_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
+        jdbcTemplate.update(
+                sql,
                 sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(),
                 sectionRequest.getDistance(),
