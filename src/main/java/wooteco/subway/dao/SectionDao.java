@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 
 @Repository
-public class JdbcSectionDao {
+public class SectionDao {
 
     private static final RowMapper<SectionEntity> mapper = (rs, rowNum) -> new SectionEntity(
             rs.getLong("id"),
@@ -22,7 +22,7 @@ public class JdbcSectionDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public JdbcSectionDao(JdbcTemplate jdbcTemplate) {
+    public SectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("section")

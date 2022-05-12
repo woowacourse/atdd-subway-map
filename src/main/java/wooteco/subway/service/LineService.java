@@ -3,7 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.JdbcSectionDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionEntity;
 import wooteco.subway.dao.StationDao;
@@ -31,9 +31,9 @@ public class LineService {
 
     private final LineDao lineDao;
     private final StationDao stationDao;
-    private final JdbcSectionDao sectionDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao, StationDao stationDao, JdbcSectionDao sectionDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
         this.stationDao = stationDao;
         this.sectionDao = sectionDao;

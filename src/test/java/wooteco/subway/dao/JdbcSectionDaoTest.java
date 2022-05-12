@@ -13,11 +13,11 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-@Import(JdbcSectionDao.class)
+@Import(SectionDao.class)
 public class JdbcSectionDaoTest {
 
     @Autowired
-    private JdbcSectionDao jdbcSectionDao;
+    private SectionDao jdbcSectionDao;
 
     @DisplayName("구간을 생성한다")
     @Test
