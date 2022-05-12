@@ -182,7 +182,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
