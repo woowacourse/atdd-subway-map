@@ -41,6 +41,13 @@ public class SectionDao {
         return new SectionDto(id, lineId, upStationId, downStationId, distance);
     }
 
+    public void update(List<SectionDto> sections) {
+        for (SectionDto section : sections) {
+            SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(section);
+            simpleJdbcInsert.execute(parameterSource);
+        }
+    }
+
     public List<SectionDto> findById(long id) {
         String sql = "SELECT * FROM section WHERE id = :id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
@@ -80,6 +87,12 @@ public class SectionDao {
         String sql = "UPDATE section SET distance = :distance WHERE id = :id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("distance", distance)
                 .addValue("id", id);
+        namedParameterJdbcTemplate.update(sql, parameterSource);
+    }
+
+    public void deleteByLineId(long lineId) {
+        String sql = " DELETE FROM section WHERE line_id = :lineId";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("lineId", lineId);
         namedParameterJdbcTemplate.update(sql, parameterSource);
     }
 

@@ -30,12 +30,15 @@ public class SectionServiceTest {
 
     @AfterEach
     void reset() {
+        stationDao.deleteAll();
         sectionDao.deleteAll();
     }
 
     @Test
     @DisplayName("기존의 구간의 길이와 같은 구간을 추가하면 예외를 반환한다")
     void create_inValidDistance_same() {
+        stationDao.save("강남역");
+        stationDao.save("선릉역");
         sectionDao.save(1L, 1L, 2L, 5);
 
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 5);
@@ -48,6 +51,8 @@ public class SectionServiceTest {
     @Test
     @DisplayName("기존의 구간의 길이보다 큰 구간을 추가하면 예외를 반환한다")
     void create_inValidDistance_longer() {
+        stationDao.save("강남역");
+        stationDao.save("선릉역");
         sectionDao.save(1L, 1L, 2L, 5);
 
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 8);
@@ -60,6 +65,8 @@ public class SectionServiceTest {
     @Test
     @DisplayName("이미 존재하는 구간을 추가하면 예외를 반환한다.")
     void create_inValidStations_bothExist() {
+        stationDao.save("강남역");
+        stationDao.save("선릉역");
         sectionDao.save(1L, 1L, 2L, 5);
 
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 3);
@@ -72,7 +79,12 @@ public class SectionServiceTest {
     @Test
     @DisplayName("상행역과 하행역이 모두 존재하지 않는 구간을 추가하면 예외를 반환한다.")
     void create_inValidStations_bothDoNotExist() {
-        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 3);
+        stationDao.save("강남역");
+        stationDao.save("역삼역");
+        stationDao.save("선릉역");
+        stationDao.save("잠실역");
+        sectionDao.save(1L, 1L, 2L, 5);
+        SectionRequest sectionRequest = new SectionRequest(3L, 4L, 3);
 
         assertThatThrownBy(() -> sectionService.create(1L, sectionRequest))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -91,8 +103,8 @@ public class SectionServiceTest {
         long expectedDownStationId = 3L;
         int expectedDistance = 3;
 
-        sectionDao.save(expectedLineId, expectedUpStationId, 2L, 5);
-        SectionRequest sectionRequest = new SectionRequest(expectedUpStationId, expectedDownStationId, expectedDistance);
+        sectionDao.save(1L, 1L, 2L, 5);
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 3);
 
         sectionService.create(1L, sectionRequest);
         SectionDto sectionDto = sectionDao.findById(2L).get(0);
