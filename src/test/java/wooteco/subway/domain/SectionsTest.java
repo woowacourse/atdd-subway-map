@@ -16,9 +16,9 @@ class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        section1 = new Section(1L, 1L, 2L, 10);
-        section2 = new Section(1L, 2L, 3L, 10);
-        section3 = new Section(1L, 5L, 1L, 10);
+        section1 = new Section(1L, 1L, 1L, 2L, 10);
+        section2 = new Section(2L, 1L, 2L, 3L, 10);
+        section3 = new Section(3L, 1L, 5L, 1L, 10);
         sections = new Sections(List.of(section1, section2, section3));
     }
 
@@ -88,5 +88,42 @@ class SectionsTest {
         assertThat(sections.getValue())
                 .extracting("upStationId", "distance")
                 .containsExactly(tuple(5L, 10), tuple(1L, 10), tuple(2L, 5), tuple(4L, 5));
+    }
+
+    @Test
+    @DisplayName("상행 종점에 있는 역을 지우면 다음으로 오던 역이 종점이 된다.")
+    void deleteTopStation() {
+        sections.delete(5L);
+        assertThat(sections.getValue()).hasSize(2)
+                .extracting("upStationId", "distance")
+                .containsExactly(tuple(1L, 10), tuple(2L, 10));
+    }
+
+    @Test
+    @DisplayName("하행 종점에 있는 역을 지우면 그 전 역이 종점이 된다.")
+    void deleteBottomStation() {
+        sections.delete(3L);
+        assertThat(sections.getValue()).hasSize(2)
+                .extracting("downStationId", "distance")
+                .containsExactly(tuple(1L, 10), tuple(2L, 10));
+    }
+
+    @Test
+    @DisplayName("구간 중간에 있는 역을 삭제하면 재배치 된다.")
+    void deleteBetweenStation() {
+        sections.delete(2L);
+        assertThat(sections.getValue()).hasSize(2)
+                .extracting("upStationId", "downStationId", "distance")
+                .containsExactly(tuple(5L, 1L, 10), tuple(1L, 3L, 20));
+    }
+
+    @Test
+    @DisplayName("구간이 한 개 일때 삭제 요청이오면 예외가 발생한다.")
+    void validateDeletion() {
+        sections.delete(1L);
+        sections.delete(2L);
+        assertThatThrownBy(() -> sections.delete(3L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("구간이 하나밖에 존재하지 않아 삭제가 불가능합니다.");
     }
 }

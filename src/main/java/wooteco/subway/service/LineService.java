@@ -22,8 +22,8 @@ public class LineService {
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public LineService(LineDao jdbcLineDao, SectionDao sectionDao, StationDao stationDao) {
-        this.lineDao = jdbcLineDao;
+    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+        this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }

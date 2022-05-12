@@ -31,7 +31,7 @@ public class SubwayControllerAdvice {
         return new ResponseEntity<>("해당 데이터를 조회 할 수 없습니다.", HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<String> handleBadRequest(Exception e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }

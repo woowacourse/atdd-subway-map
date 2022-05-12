@@ -59,6 +59,15 @@ public class Section {
         this.distance = this.distance - newSection.distance;
     }
 
+    public boolean containsStation(Long stationId) {
+        return this.upStationId == stationId || this.downStationId == stationId;
+    }
+
+    public Section merge(Section nextSection) {
+        return new Section(lineId, upStationId, nextSection.downStationId,
+                distance + nextSection.distance);
+    }
+
     public Long getId() {
         return id;
     }

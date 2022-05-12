@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Sections {
 
+    private static final int DELETION_THRESHOLD = 1;
+
     private final List<Section> value;
 
     public Sections(List<Section> value) {
@@ -35,13 +37,6 @@ public class Sections {
                 .allMatch(it -> !it.matchDownStationWithUpStationOf(section));
     }
 
-    private Section findNext(Section section, List<Section> value) {
-        return value.stream()
-                .filter(it -> it.matchUpStationWithDownStationOf(section))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("해당역의 하행역이 존재하지 않습니다."));
-    }
-
     public void add(Section newSection) {
         checkStationExist(newSection);
         checkDuplicateSection(newSection);
@@ -68,7 +63,7 @@ public class Sections {
         Section target = value.stream()
                 .filter(it -> it.matchUpStationWithUpStationOf(newSection))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException());
+                .orElseThrow(() -> new IllegalStateException("등록하고자 하는 구간의 정보가 잘못되었습니다."));
         int targetIndex = value.indexOf(target);
         validateDistance(target, newSection);
         target.updateUpStationId(newSection);
@@ -88,7 +83,7 @@ public class Sections {
         Section target = value.stream()
                 .filter(it -> it.matchDownStationWithDownStationOf(newSection))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException());
+                .orElseThrow(() -> new IllegalStateException("등록하고자 하는 구간의 정보가 잘못되었습니다."));
         int targetIndex = value.indexOf(target);
         validateDistance(target, newSection);
         target.updateDownStationId(newSection);
@@ -111,6 +106,50 @@ public class Sections {
     private void checkDuplicateSection(Section newSection) {
         if (isContainingUpStationOf(newSection) && isContainingDownStationOf(newSection)) {
             throw new IllegalArgumentException("해당 경로가 이미 존재합니다.");
+        }
+    }
+
+    public List<Section> delete(Long stationId) {
+        validateDeletion();
+        Section section = findDeleteSection(stationId);
+
+        if (isEnd(section, stationId)) {
+            value.remove(section);
+            return List.of(section);
+        }
+
+        Section nextSection = findNext(section, value);
+        int index = value.indexOf(section);
+        value.add(index, section.merge(nextSection));
+
+        value.remove(section);
+        value.remove(nextSection);
+        return List.of(section, nextSection);
+    }
+
+    private Section findNext(Section section, List<Section> value) {
+        return value.stream()
+                .filter(it -> it.matchUpStationWithDownStationOf(section))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("해당역의 하행역이 존재하지 않습니다."));
+    }
+
+    private boolean isEnd(Section section, Long stationId) {
+        int index = value.indexOf(section);
+        return index == 0 && section.getUpStationId() == stationId
+                || index == value.size() - 1 && section.getDownStationId() == stationId;
+    }
+
+    private Section findDeleteSection(Long stationId) {
+        return value.stream()
+                .filter(it -> it.containsStation(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
+    }
+
+    private void validateDeletion() {
+        if (value.size() <= DELETION_THRESHOLD) {
+            throw new IllegalStateException("구간이 하나밖에 존재하지 않아 삭제가 불가능합니다.");
         }
     }
 

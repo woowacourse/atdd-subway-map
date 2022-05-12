@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.StationRequest;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
@@ -119,7 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 "신분당선", "red", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse = extractPostResponse(lineRequest, "/lines");
 
-        // when, then
+        // when
         LineRequest updateLineRequest = new LineRequest(
                 "분당선", "green", 1L, 2L, 5);
 
@@ -127,6 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> updateResponse = extractPutResponse(updateLineRequest, uri);
         ExtractableResponse<Response> getResponse = extractGetResponse(uri);
 
+        //then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(getResponse.jsonPath().getObject(".", LineResponse.class))
                 .extracting("name", "color")
@@ -136,6 +138,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간을 등록한다.")
     @Test
     void addSection() {
+        //given
+        extractPostResponse(new StationRequest("강남역"), "/stations");
+        extractPostResponse(new StationRequest("선릉역"), "/stations");
+        extractPostResponse(new StationRequest("역삼역"), "/stations");
         LineRequest lineRequest = new LineRequest(
                 "신분당선", "red", 1L, 2L, 5);
         extractPostResponse(lineRequest, "/lines");
@@ -145,6 +151,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = extractPostResponse(sectionRequest,
                 "/lines/1/sections");
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+        //given
+        extractPostResponse(new StationRequest("강남역"), "/stations");
+        extractPostResponse(new StationRequest("선릉역"), "/stations");
+        extractPostResponse(new StationRequest("역삼역"), "/stations");
+        LineRequest lineRequest = new LineRequest(
+                "신분당선", "red", 1L, 2L, 5);
+        extractPostResponse(lineRequest, "/lines");
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        extractPostResponse(sectionRequest, "/lines/1/sections");
+
+        //when
+        ExtractableResponse<Response> response = extractDeleteResponse(
+                "/lines/1/sections?stationId=2");
+
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

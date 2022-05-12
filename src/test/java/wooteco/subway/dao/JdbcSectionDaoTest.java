@@ -57,4 +57,14 @@ class JdbcSectionDaoTest {
                 .extracting("upStationId", "distance")
                 .containsExactly(tuple(4L, 3));
     }
+
+    @Test
+    @DisplayName("구간을 제거한다.")
+    void deleteById() {
+        Section section = jdbcSectionDao.save(new Section(1L, 1L, 2L, 5));
+        jdbcSectionDao.deleteById(section.getId());
+
+        List<Section> sections = jdbcSectionDao.findByLineId(1L);
+        assertThat(sections).isEmpty();
+    }
 }
