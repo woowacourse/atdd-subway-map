@@ -35,21 +35,21 @@ class LineServiceTest {
     @Autowired
     private SectionDao sectionDao;
 
-    private Station gangNam;
-    private Station yeokSam;
-    private Station seonNeung;
+    private Station gangnam;
+    private Station yeoksam;
+    private Station seolleung;
 
     @BeforeEach
     void setUpStation() {
-        gangNam = stationDao.save(new Station("강남역"));
-        yeokSam = stationDao.save(new Station("역삼역"));
-        seonNeung = stationDao.save(new Station("선릉역"));
+        gangnam = stationDao.save(new Station("강남역"));
+        yeoksam = stationDao.save(new Station("역삼역"));
+        seolleung = stationDao.save(new Station("선릉역"));
     }
 
     @DisplayName("지하철 노선과 포함된 구간을 저장한다.")
     @Test
     void createLineAndSection() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
 
         LineResponse actual = lineService.create(lineCreateRequest);
         List<StationResponse> actualStations = actual.getStations();
@@ -58,16 +58,16 @@ class LineServiceTest {
         assertThat(actual.getName()).isEqualTo(lineCreateRequest.getName());
         assertThat(actualStations).extracting(StationResponse::getId, StationResponse::getName)
                 .containsOnly(
-                        tuple(gangNam.getId(), gangNam.getName()),
-                        tuple(yeokSam.getId(), yeokSam.getName())
+                        tuple(gangnam.getId(), gangnam.getName()),
+                        tuple(yeoksam.getId(), yeoksam.getName())
                 );
     }
 
     @DisplayName("이미 저장된 노선과 중복된 이름의 노선을 저장하려 하면 예외가 발생한다.")
     @Test
     void createDuplicateName() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
-        LineCreateRequest duplicateRequest = new LineCreateRequest("2호선", "빨간색", gangNam.getId(), yeokSam.getId(), 1);
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
+        LineCreateRequest duplicateRequest = new LineCreateRequest("2호선", "빨간색", gangnam.getId(), yeoksam.getId(), 1);
 
         lineService.create(lineCreateRequest);
 
@@ -79,8 +79,8 @@ class LineServiceTest {
     @DisplayName("이미 저장된 노선과 중복된 색상의 노선을 저장하려 하면 예외가 발생한다.")
     @Test
     void createDuplicateColor() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
-        LineCreateRequest duplicateRequest = new LineCreateRequest("성수지선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
+        LineCreateRequest duplicateRequest = new LineCreateRequest("성수지선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
 
         lineService.create(lineCreateRequest);
 
@@ -92,8 +92,8 @@ class LineServiceTest {
     @DisplayName("저장된 노선을 모두 조회한다.")
     @Test
     void findAll() {
-        LineCreateRequest request1 = new LineCreateRequest("1호선", "군청색", gangNam.getId(), yeokSam.getId(), 1);
-        LineCreateRequest request2 = new LineCreateRequest("2호선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
+        LineCreateRequest request1 = new LineCreateRequest("1호선", "군청색", gangnam.getId(), yeoksam.getId(), 1);
+        LineCreateRequest request2 = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
         lineService.create(request1);
         lineService.create(request2);
 
@@ -110,7 +110,7 @@ class LineServiceTest {
     @DisplayName("지정한 id에 해당하는 노선을 조회한다.")
     @Test
     void findById() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
         Long id = lineService.create(lineCreateRequest).getId();
 
         LineResponse actual = lineService.find(id);
@@ -131,7 +131,7 @@ class LineServiceTest {
     @DisplayName("지정한 id에 해당하는 노선 정보를 수정한다.")
     @Test
     void update() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
         Long id = lineService.create(lineCreateRequest).getId();
 
         LineUpdateRequest updateRequest = new LineUpdateRequest("1호선", "군청색");
@@ -156,9 +156,9 @@ class LineServiceTest {
     @DisplayName("이미 존재하는 노선의 이름으로 수정하려고 하면 예외가 발생한다.")
     @Test
     void updateToDuplicateName() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
         Long id = lineService.create(lineCreateRequest).getId();
-        lineCreateRequest = new LineCreateRequest("8호선", "분홍색", gangNam.getId(), yeokSam.getId(), 1);
+        lineCreateRequest = new LineCreateRequest("8호선", "분홍색", gangnam.getId(), yeoksam.getId(), 1);
         lineService.create(lineCreateRequest);
 
         LineUpdateRequest updateRequest = new LineUpdateRequest("8호선", "초록색");
@@ -171,9 +171,9 @@ class LineServiceTest {
     @DisplayName("이미 존재하는 노선의 색상으로 수정하려고 하면 예외가 발생한다.")
     @Test
     void updateToDuplicateColor() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
         Long id = lineService.create(lineCreateRequest).getId();
-        lineCreateRequest = new LineCreateRequest("8호선", "분홍색", gangNam.getId(), yeokSam.getId(), 1);
+        lineCreateRequest = new LineCreateRequest("8호선", "분홍색", gangnam.getId(), yeoksam.getId(), 1);
         lineService.create(lineCreateRequest);
 
         LineUpdateRequest updateRequest = new LineUpdateRequest("2호선", "분홍색");
@@ -186,7 +186,7 @@ class LineServiceTest {
     @DisplayName("지정한 id에 해당하는 노선을 삭제한다.")
     @Test
     void delete() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangNam.getId(), yeokSam.getId(), 1);
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
         Long id = lineService.create(lineCreateRequest).getId();
 
         lineService.delete(id);
@@ -206,11 +206,11 @@ class LineServiceTest {
     @DisplayName("특정 노선에 새 구간을 추가한다.")
     @Test
     void addSection() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "green", gangNam.getId(), seonNeung.getId(),
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "green", gangnam.getId(), seolleung.getId(),
                 2);
         LineResponse lineResponse = lineService.create(lineCreateRequest);
         Line line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
-        SectionRequest sectionRequest = new SectionRequest(gangNam.getId(), yeokSam.getId(), 1);
+        SectionRequest sectionRequest = new SectionRequest(gangnam.getId(), yeoksam.getId(), 1);
         lineService.createSectionBySectionRequest(line.getId(), sectionRequest);
 
         List<Section> sections = sectionDao.findAllByLine(line);
@@ -218,29 +218,29 @@ class LineServiceTest {
         assertThat(sections).hasSize(2)
                 .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
                 .contains(
-                        tuple(gangNam, yeokSam, 1),
-                        tuple(yeokSam, seonNeung, 1)
+                        tuple(gangnam, yeoksam, 1),
+                        tuple(yeoksam, seolleung, 1)
                 );
     }
 
     @DisplayName("특정 노선에서 요청으로 받은 역을 포함하는 구간을 제거한다.")
     @Test
     void deleteSection() {
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "green", gangNam.getId(), yeokSam.getId(),
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "green", gangnam.getId(), yeoksam.getId(),
                 1);
         LineResponse lineResponse = lineService.create(lineCreateRequest);
         Line line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
-        SectionRequest newSectionRequest = new SectionRequest(yeokSam.getId(), seonNeung.getId(), 1);
+        SectionRequest newSectionRequest = new SectionRequest(yeoksam.getId(), seolleung.getId(), 1);
         lineService.createSectionBySectionRequest(line.getId(), newSectionRequest);
 
-        lineService.deleteSection(line.getId(), yeokSam.getId());
+        lineService.deleteSection(line.getId(), yeoksam.getId());
 
         List<Section> sections = sectionDao.findAllByLine(line);
 
         assertThat(sections).hasSize(1)
                 .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
                 .containsOnly(
-                        tuple(gangNam, seonNeung, 2)
+                        tuple(gangnam, seolleung, 2)
                 );
     }
 

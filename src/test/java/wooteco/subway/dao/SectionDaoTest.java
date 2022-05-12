@@ -33,7 +33,7 @@ public class SectionDaoTest {
     @DisplayName("노선과 구간 정보를 받아서 저장한다.")
     @Test
     void save() {
-        Line line = lineDao.save(new Line("2호선", "green"));
+        Line line = lineDao.save(new Line("2호선", "초록색"));
         Station upStation = stationDao.save(new Station("강남역"));
         Station downStation = stationDao.save(new Station("역삼역"));
 
@@ -49,7 +49,7 @@ public class SectionDaoTest {
     @DisplayName("노선을 받아서 구간을 조회한다.")
     @Test
     void findByLineId() {
-        Line line = lineDao.save(new Line("2호선", "green"));
+        Line line = lineDao.save(new Line("2호선", "초록색"));
         Station upStation = stationDao.save(new Station("강남역"));
         Station downStation = stationDao.save(new Station("역삼역"));
         Section section = new Section(upStation, downStation, 1);
@@ -65,7 +65,7 @@ public class SectionDaoTest {
     @DisplayName("노선 구간 중 해당하는 역을 포함하는 구간을 모두 제거한다.")
     @Test
     void delete() {
-        Line line = lineDao.save(new Line("2호선", "green"));
+        Line line = lineDao.save(new Line("2호선", "초록색"));
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("역삼역"));
         Station station3 = stationDao.save(new Station("선릉역"));
@@ -87,7 +87,7 @@ public class SectionDaoTest {
     @DisplayName("노선에 이미 등록되어 있는 구간인지 확인한다.")
     @Test
     void checkExist() {
-        Line line = lineDao.save(new Line("2호선", "green"));
+        Line line = lineDao.save(new Line("2호선", "초록색"));
         Station upStation = stationDao.save(new Station("강남역"));
         Station downStation = stationDao.save(new Station("역삼역"));
         Section section = new Section(upStation, downStation, 1);
