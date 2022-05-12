@@ -14,7 +14,6 @@ class LineTest {
     void line_name_blank() {
         assertThatThrownBy(() -> new Line("", standardColor))
                 .isInstanceOf(IllegalArgumentException.class);
-
     }
 
     @Test
@@ -24,7 +23,6 @@ class LineTest {
 
         assertThatThrownBy(() -> new Line(oversizeName, standardColor))
                 .isInstanceOf(IllegalArgumentException.class);
-
     }
 
     @Test
@@ -32,7 +30,6 @@ class LineTest {
     void line_color_blank() {
         assertThatThrownBy(() -> new Line(standardName, ""))
                 .isInstanceOf(IllegalArgumentException.class);
-
     }
 
     @Test
@@ -42,6 +39,5 @@ class LineTest {
 
         assertThatThrownBy(() -> new Line(standardName, oversizeColor))
                 .isInstanceOf(IllegalArgumentException.class);
-
     }
 }
