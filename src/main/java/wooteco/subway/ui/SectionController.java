@@ -44,6 +44,6 @@ public class SectionController {
                                               @RequestParam final Long stationId) {
         final SectionDeletionRequest request = new SectionDeletionRequest(lineId, stationId);
         sectionService.delete(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
