@@ -36,7 +36,7 @@ public class Sections {
         return findSection(section);
     }
 
-    public List<Section> deleteStation(Station station) {
+    public List<Section> findDeleteSections(Station station) {
         return values.stream()
             .filter(value -> value.isEqualToUpStation(station) || value.isEqualToDownStation(station))
             .collect(Collectors.toList());
