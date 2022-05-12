@@ -12,10 +12,10 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.request.CreateLineRequest;
-import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.request.CreateSectionRequest;
+import wooteco.subway.dto.request.UpdateLineRequest;
+import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.exception.duplicate.DuplicateLineException;
 import wooteco.subway.exception.notfound.NotFoundLineException;
 import wooteco.subway.exception.notfound.NotFoundStationException;
@@ -95,16 +95,12 @@ public class LineService {
 
     private void deleteOldSections(final Sections originSections, final Sections newSections) {
         final List<Section> differentSections = originSections.findDifferentSections(newSections);
-        for (Section section : differentSections) {
-            sectionDao.deleteById(section.getId());
-        }
+        sectionDao.batchDelete(differentSections);
     }
 
     private void saveNewSections(final Sections originSections, final Sections newSections) {
         final List<Section> differentSections = newSections.findDifferentSections(originSections);
-        for (Section section : differentSections) {
-            sectionDao.save(section);
-        }
+        sectionDao.batchSave(differentSections);
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {

@@ -8,6 +8,7 @@ import static wooteco.subway.Fixtures.LINE_2;
 import static wooteco.subway.Fixtures.RED;
 import static wooteco.subway.Fixtures.SINSA;
 
+import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,6 +58,25 @@ public class SectionDaoTest {
             assertThat(savedSection.getDownStationId()).isEqualTo(section.getDownStationId());
             assertThat(savedSection.getDistance()).isEqualTo(section.getDistance());
         });
+    }
+
+    @Test
+    @DisplayName("여러개의 지하철 구간을 저장한다.")
+    void batchSave() {
+        // given
+        final Long stationId1 = stationDao.save(new Station(HYEHWA));
+        final Long stationId2 = stationDao.save(new Station(SINSA));
+        final Long stationId3 = stationDao.save(new Station(GANGNAM));
+        final Long lineId = lineDao.save(new Line(LINE_2, RED));
+        final List<Section> sections = List.of(new Section(lineId, stationId1, stationId2, 10),
+                new Section(lineId, stationId2, stationId3, 10));
+
+        // when
+        sectionDao.batchSave(sections);
+        final Sections savedSections = sectionDao.findAllByLineId(lineId);
+
+        // then
+        assertThat(savedSections.getSections()).hasSize(2);
     }
 
     @Test
@@ -113,5 +133,24 @@ public class SectionDaoTest {
 
         // then
         assertThat(sectionDao.findAllByLineId(lineId).getSections()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("여러개의 지하철 구간을 삭제한다.")
+    void batchDelete() {
+        // given
+        final Long stationId1 = stationDao.save(new Station(HYEHWA));
+        final Long stationId2 = stationDao.save(new Station(SINSA));
+        final Long stationId3 = stationDao.save(new Station(GANGNAM));
+        final Long lineId = lineDao.save(new Line(LINE_2, RED));
+        final List<Section> sections = List.of(new Section(lineId, stationId1, stationId2, 10),
+                new Section(lineId, stationId2, stationId3, 10));
+
+        // when
+        sectionDao.batchDelete(sections);
+        final Sections savedSections = sectionDao.findAllByLineId(lineId);
+
+        // then
+        assertThat(savedSections.getSections()).hasSize(0);
     }
 }
