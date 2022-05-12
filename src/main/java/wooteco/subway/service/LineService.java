@@ -57,7 +57,6 @@ public class LineService {
         List<Station> stations = stationDao.findByIdIn(sections.getStationIds());
 
         List<Station> sortedStations = sections.sort(stations);
-
         return sortedStations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());

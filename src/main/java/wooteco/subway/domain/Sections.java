@@ -141,24 +141,60 @@ public class Sections {
     }
 
     public List<Station> sort(List<Station> stations) {
-        Station startStation = findStationById(stations, getStartStationId());
+        Queue<Section> sortedSections = sortSections();
+        return sortStations(stations, sortedSections);
+    }
 
-        List<Station> sortedStations = new ArrayList<>();
-        sortedStations.add(startStation);
-        Station currentStation = startStation;
+    private Queue<Section> sortSections() {
+        Queue<Section> sortedSections = new LinkedList<>();
+        Section startSection = findStartSection();
+        sortedSections.add(startSection);
 
-        while (sortedStations.size() < stations.size()) {
-            Long currentStationId = currentStation.getId();
-            Long nextStationId = sections.stream()
-                    .filter(section -> section.getUpStationId().equals(currentStationId))
-                    .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."))
-                    .getDownStationId();
-            currentStation = findStationById(stations, nextStationId);
-            sortedStations.add(currentStation);
+        return findAndAdd(sortedSections, new ArrayList<>(sections), startSection);
+    }
+
+    private Section findStartSection() {
+        Long startStationId = findStartStationId();
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(startStationId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
+    }
+
+    private Queue<Section> findAndAdd(Queue<Section> sortedSections, List<Section> remainSections, Section currentSection) {
+        remainSections.remove(currentSection);
+
+        if(remainSections.isEmpty()){
+            return sortedSections;
         }
 
-        return sortedStations;
+        Section nextSection = remainSections.stream()
+                .filter(section -> Objects.equals(currentSection.getDownStationId(), section.getUpStationId()))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 구간이 존재하지 않습니다."));
+
+        sortedSections.add(nextSection);
+        return findAndAdd(sortedSections, remainSections, nextSection);
+    }
+
+    private List<Station> sortStations(List<Station> stations, Queue<Section> sortedSections) {
+        List<Long> sortedStationsIds = new ArrayList<>();
+        sortedStationsIds.add(findStartStationId());
+        sortedStationsIds = pollAndAdd(sortedStationsIds, sortedSections);
+
+        return sortedStationsIds.stream()
+                .map(stationId -> findStationById(stations, stationId))
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> pollAndAdd(List<Long> sortedStationIds, Queue<Section> sortedSections) {
+        if(sortedSections.isEmpty()){
+            return sortedStationIds;
+        }
+
+        Section section = sortedSections.poll();
+        sortedStationIds.add(section.getDownStationId());
+        return pollAndAdd(sortedStationIds, sortedSections);
     }
 
     private Station findStationById(List<Station> stations, Long stationId) {
@@ -168,7 +204,7 @@ public class Sections {
                 .orElseThrow(() -> new NoSuchElementException("해당하는 역이 존재하지 않습니다."));
     }
 
-    private Long getStartStationId() {
+    private Long findStartStationId() {
         List<Long> upStationIds = new ArrayList<>();
         List<Long> downStationIds = new ArrayList<>();
 
