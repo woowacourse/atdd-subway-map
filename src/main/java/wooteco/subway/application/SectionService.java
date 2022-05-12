@@ -21,36 +21,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public Long createSection(Long lineId, Long upStationId, Long downStationId, Integer distance) {
-//        upStationId
-//                downStationId
-//        distance
-
-        List<Section> sections = sectionDao.findByLineId(lineId);
-        Section sectionWithSameUpStation = getSectionWithSameUpStation(sections, upStationId);
-        Section sectionWithSameDownStation = getSectionWithSameDownStation(sections, downStationId);
-
-        Map<TerminalStation, Long> terminalStations = findTerminalStations(lineId);
-
-        if (conditionForTerminalRegistration(upStationId, downStationId, terminalStations)) {
-            return saveSection(lineId, upStationId, downStationId, distance);
-        }
-
-        if (conditionForInsertStationInMiddle(distance, sectionWithSameUpStation)) {
-            return insertDownStationInMiddle(lineId, upStationId, downStationId, distance, sectionWithSameUpStation);
-        }
-
-        if (conditionForInsertStationInMiddle(distance, sectionWithSameDownStation)) {
-            return insertUpStationInMiddle(lineId, upStationId, downStationId, distance, sectionWithSameDownStation);
-        }
-
-        validateUpAndDownStationAllExist(sectionWithSameUpStation, sectionWithSameDownStation);
-        validateUpAndDownStationNotAllExist(sections, sectionWithSameUpStation, sectionWithSameDownStation);
-
-        return saveSection(lineId, upStationId, downStationId, distance);
-    }
-
-    public long createSection2(Section section) {
+    public long createSection(Section section) {
         List<Section> sections = sectionDao.findByLineId(section.getLineId());
         Section sectionWithSameUpStation = getSectionWithSameUpStation(sections, section.getUpStationId());
         Section sectionWithSameDownStation = getSectionWithSameDownStation(sections, section.getDownStationId());
@@ -61,11 +32,11 @@ public class SectionService {
         }
 
         if (conditionForInsertStationInMiddle(section.getDistance(), sectionWithSameUpStation)) {
-            return insertDownStationInMiddle2(section, sectionWithSameUpStation);
+            return insertDownStationInMiddle(section, sectionWithSameUpStation);
         }
 
         if (conditionForInsertStationInMiddle(section.getDistance(), sectionWithSameDownStation)) {
-            return insertUpStationInMiddle2(section, sectionWithSameDownStation);
+            return insertUpStationInMiddle(section, sectionWithSameDownStation);
         }
 
         validateUpAndDownStationAllExist(sectionWithSameUpStation, sectionWithSameDownStation);
@@ -94,6 +65,26 @@ public class SectionService {
     public Map<TerminalStation, Long> findTerminalStations(long lineId) {
         LinkedList<Long> sortedStations = findSortedStationIds(lineId);
         return Map.of(TerminalStation.UP, sortedStations.getFirst(), TerminalStation.DOWN, sortedStations.getLast());
+    }
+
+    public void deleteSection(long lineId, long stationId) {
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        Section upperSection = sections.stream()
+                .filter(it -> it.getDownStationId().equals(stationId))
+                .findAny()
+                .get();
+
+        Section lowerSection = sections.stream()
+                .filter(it -> it.getUpStationId().equals(stationId))
+                .findAny()
+                .get();
+
+        Long upStationId = upperSection.getUpStationId();
+        lowerSection.setUpStationId(upStationId);
+        lowerSection.setDistance(upperSection.getDistance() + lowerSection.getDistance());
+
+        sectionDao.update(lowerSection);
+        sectionDao.deleteSection(upperSection);
     }
 
     private boolean conditionForTerminalRegistration(Long upStationId, Long downStationId, Map<TerminalStation, Long> terminalStations) {
@@ -128,17 +119,7 @@ public class SectionService {
         return true;
     }
 
-    private long insertDownStationInMiddle(Long lineId, Long upStationId, Long downStationId, Integer distance, Section existingSection) {
-        long createdSectionId = saveSection(lineId, upStationId, downStationId, distance);
-
-        existingSection.setUpStationId(downStationId);
-        existingSection.setDistance(existingSection.getDistance() - distance);
-        sectionDao.update(existingSection);
-
-        return createdSectionId;
-    }
-
-    private long insertDownStationInMiddle2(Section section, Section existingSection) {
+    private long insertDownStationInMiddle(Section section, Section existingSection) {
         long createdSectionId = sectionDao.save(section);
 
         existingSection.setUpStationId(section.getDownStationId());
@@ -148,17 +129,7 @@ public class SectionService {
         return createdSectionId;
     }
 
-    private Long insertUpStationInMiddle(Long lineId, Long upStationId, Long downStationId, Integer distance, Section existingSection) {
-        long createdSectionId = saveSection(lineId, upStationId, downStationId, distance);
-
-        existingSection.setDownStationId(upStationId);
-        existingSection.setDistance(existingSection.getDistance() - distance);
-        sectionDao.update(existingSection);
-
-        return createdSectionId;
-    }
-
-    private Long insertUpStationInMiddle2(Section section, Section existingSection) {
+    private Long insertUpStationInMiddle(Section section, Section existingSection) {
         long createdSectionId = sectionDao.save(section);
 
         existingSection.setDownStationId(section.getUpStationId());

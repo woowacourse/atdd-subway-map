@@ -14,9 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.DbLineDao;
+import wooteco.subway.dao.DbStationDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.domain.Section;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -27,7 +32,12 @@ import static wooteco.subway.acceptance.utils.StationAcceptanceTestFixture.역_�
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
+    private DbStationDao stationDao;
+    @Autowired
     private DbLineDao lineDao;
+
+    @Autowired
+    private SectionDao sectionDao;
 
     @BeforeEach
     void beforeEach() {
@@ -147,27 +157,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
-
-    @DisplayName("노선 목록 조회 old")
-    @Test
-    void showLines_old() {
-        // given
-        ExtractableResponse<Response> createResponse1 = 노선_생성_요청("신분당선", "bg-red-600");
-        ExtractableResponse<Response> createResponse2 = 노선_생성_요청("1호선", "bg-blue-600");
-
-        // when
-        ExtractableResponse<Response> response = 노선_목록_조회_요청();
-
-        // then
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> it.jsonPath().getObject("id", Long.class))
-                .collect(Collectors.toList());
-        List<Long> actualLineIds = response.jsonPath().getList("id", Long.class);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(expectedLineIds).containsExactlyInAnyOrderElementsOf(actualLineIds);
-    }
-
 
     @DisplayName("노선 목록 조회")
     @Test
@@ -307,5 +296,66 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         response.statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("구간을 등록할 수 있다")
+    @Test
+    void create_section() {
+        노선_및_역들_생성요청_케이스_3번();
+
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("upStationId", "1");
+        requestBody.put("downStationId", "2");
+        requestBody.put("distance", "3");
+
+        ValidatableResponse response = RestAssured.given().log().all()
+                .body(requestBody)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all();
+
+        // then
+        response.statusCode(HttpStatus.OK.value());
+
+        Section firstSection = sectionDao.findById(1L).get();
+        Section secondSection = sectionDao.findById(2L).get();
+
+        // 1번역 - (거리 3) - 2번역 - (거리 4) - 3번역
+        assertThat(firstSection).isEqualTo(new Section(1L,2L, 3L, 4, 1L));
+        assertThat(secondSection).isEqualTo(new Section(2L, 1L, 2L, 3, 1L));
+    }
+
+    @DisplayName("구간을 삭제할 수 있다")
+    @Test
+    void delete_section() {
+        // 최조 등록
+        노선_및_역들_생성요청_케이스_3번();
+
+        // 구간 등록
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("upStationId", "1");
+        requestBody.put("downStationId", "2");
+        requestBody.put("distance", "3");
+        RestAssured.given().log().all()
+                .body(requestBody)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all();
+
+        // 구간 삭제 요청
+        ValidatableResponse response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=2")
+                .then().log().all();
+
+//        response.statusCode(HttpStatus.OK.value());
+        Section deletedSection = sectionDao.findById(1L).get();
+
+        // 1번역 - (거리 3) - 2번역 - (거리 4) - 3번역
+        // 1번역 - (거리 7) - 3번역
+        assertThat(deletedSection).isEqualTo(new Section(1L,1L, 3L, 7, 1L));
     }
 }

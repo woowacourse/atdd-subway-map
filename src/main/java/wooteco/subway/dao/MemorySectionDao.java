@@ -43,4 +43,9 @@ public class MemorySectionDao implements SectionDao {
         sections.add(section);
         return section.getId();
     }
+
+    @Override
+    public void deleteSection(Section upperSection) {
+        sections.remove(upperSection);
+    }
 }

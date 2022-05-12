@@ -14,4 +14,6 @@ public interface SectionDao {
     List<Section> findByLineId(Long lineId);
 
     long update(Section sectionWithSameUpStation);
+
+    void deleteSection(Section upperSection);
 }

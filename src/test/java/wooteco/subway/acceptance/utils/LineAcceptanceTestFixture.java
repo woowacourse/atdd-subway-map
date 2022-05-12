@@ -100,4 +100,24 @@ public class LineAcceptanceTestFixture {
 
         return 노선_생성_요청(requestBody);
     }
+
+    public static ValidatableResponse 노선_및_역들_생성요청_케이스_3번() {
+        ExtractableResponse<Response> createStationResponse1 = 역_생성_요청("노량진역");
+        long stationId1 = createStationResponse1.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> createStationResponse2 = 역_생성_요청("용산역");
+        long stationId2 = createStationResponse2.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> createStationResponse3 = 역_생성_요청("영등포역");
+        long stationId3 = createStationResponse3.jsonPath().getLong("id");
+
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("name", "1호선");
+        requestBody.put("color", "blue");
+        requestBody.put("upStationId", String.valueOf(stationId1));
+        requestBody.put("downStationId", String.valueOf(stationId3));
+        requestBody.put("distance", "7");
+
+        return 노선_생성_요청(requestBody);
+    }
 }
