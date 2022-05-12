@@ -7,3 +7,5 @@ spring:
   h2:
     console:
       enabled: true     # h2 console 설정
+server:
+  port: 8080

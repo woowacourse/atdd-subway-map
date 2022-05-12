@@ -9,8 +9,10 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
 import java.sql.PreparedStatement;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class DbStationDao implements StationDao {
@@ -44,6 +46,15 @@ public class DbStationDao implements StationDao {
     @Override
     public List<Station> findAll() {
         return jdbcTemplate.query("SELECT id, name FROM STATION", ROW_MAPPER);
+    }
+
+    @Override
+    public List<Station> findByIdIn(LinkedList<Long> sortedStationIds) {
+        String sortedStationsIdsString = sortedStationIds.stream()
+                .map(it -> String.valueOf(it))
+                .collect(Collectors.joining(", "));
+        String selectInClauseQuery = String.format("SELECT id, name FROM STATION WHERE id IN (%s)", sortedStationsIdsString);
+        return jdbcTemplate.query(selectInClauseQuery, ROW_MAPPER);
     }
 
     @Override

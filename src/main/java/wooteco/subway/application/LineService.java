@@ -39,9 +39,10 @@ public class LineService {
         long savedLineId = lineDao.save(line);
         section.setLineId(savedLineId);
         sectionDao.save(section);
-        return new Line(savedLineId, line.getName(), line.getName());
+        return new Line(savedLineId, line.getName(), line.getColor());
     }
 
+    @Transactional(readOnly = true)
     public List<Line> findAll() {
         return lineDao.findAll();
     }

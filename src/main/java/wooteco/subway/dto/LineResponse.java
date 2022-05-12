@@ -1,18 +1,18 @@
 package wooteco.subway.dto;
 
+import lombok.Getter;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 
+import java.util.List;
+
+@Getter
 public class LineResponse {
 
     private Long id;
     private String name;
     private String color;
-
-    public LineResponse(Line line) {
-        this.id = line.getId();
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
+    private List<Station> stations;
 
     public LineResponse(Long id, String name, String color) {
         this.id = id;
@@ -20,15 +20,10 @@ public class LineResponse {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
+    public LineResponse(Line line, List<Station> stations) {
+        this.id = line.getId();
+        this.name = line.getName();
+        this.color = line.getColor();
+        this.stations = stations;
     }
 }

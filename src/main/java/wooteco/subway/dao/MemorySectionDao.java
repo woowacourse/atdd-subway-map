@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+@Repository
 public class MemorySectionDao implements SectionDao {
 
     private List<Section> sections = new ArrayList<>();

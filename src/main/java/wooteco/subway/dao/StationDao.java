@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import wooteco.subway.domain.Station;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +12,8 @@ public interface StationDao {
     List<Station> findAll();
 
     Optional<Station> findById(Long id);
+
+    List<Station> findByIdIn(LinkedList<Long> sortedStations);
 
     boolean existById(Long id);
 

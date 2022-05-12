@@ -1,14 +1,18 @@
 package wooteco.subway.application;
 
+import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.constant.TerminalStation;
 import wooteco.subway.exception.constant.SectionNotRegisterException;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@Service
 public class SectionService {
 
     private SectionDao sectionDao;
@@ -24,8 +28,7 @@ public class SectionService {
 
         Map<TerminalStation, Long> terminalStations = findTerminalStations(lineId);
 
-        if (terminalStations.get(TerminalStation.UP).equals(downStationId)
-                || terminalStations.get(TerminalStation.DOWN).equals(upStationId)) {
+        if (conditionForTerminalRegistration(upStationId, downStationId, terminalStations)) {
             return saveSection(lineId, upStationId, downStationId, distance);
         }
 
@@ -41,6 +44,33 @@ public class SectionService {
         validateUpAndDownStationNotAllExist(sections, sectionWithSameUpStation, sectionWithSameDownStation);
 
         return saveSection(lineId, upStationId, downStationId, distance);
+    }
+
+    public LinkedList<Long> findSortedStationIds(long lineId) {
+        List<Section> foundSections = sectionDao.findByLineId(lineId);
+        Map<Long, Long> toDownSectionMap = convertListToDownSectionMap(foundSections);
+        Map<Long, Long> toUpSectionMap = convertListToUpSectionMap(foundSections);
+
+        LinkedList<Long> result = new LinkedList<>();
+        Long pivot = getAnyPivot(foundSections);
+        Long iterator = pivot;
+        result.add(pivot);
+
+        insertDownSections(toDownSectionMap, result, iterator);
+
+        iterator = pivot;
+        insertUpSections(toUpSectionMap, result, iterator);
+        return result;
+    }
+
+    public Map<TerminalStation, Long> findTerminalStations(long lineId) {
+        LinkedList<Long> sortedStations = findSortedStationIds(lineId);
+        return Map.of(TerminalStation.UP, sortedStations.getFirst(), TerminalStation.DOWN, sortedStations.getLast());
+    }
+
+    private boolean conditionForTerminalRegistration(Long upStationId, Long downStationId, Map<TerminalStation, Long> terminalStations) {
+        return terminalStations.get(TerminalStation.UP).equals(downStationId)
+                || terminalStations.get(TerminalStation.DOWN).equals(upStationId);
     }
 
     private void validateUpAndDownStationAllExist(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
@@ -102,28 +132,6 @@ public class SectionService {
 
     private long saveSection(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         return sectionDao.save(new Section(upStationId, downStationId, distance, lineId));
-    }
-
-    public LinkedList<Long> findSortedStations(long lineId) {
-        List<Section> foundSections = sectionDao.findByLineId(lineId);
-        Map<Long, Long> toDownSectionMap = convertListToDownSectionMap(foundSections);
-        Map<Long, Long> toUpSectionMap = convertListToUpSectionMap(foundSections);
-
-        LinkedList<Long> result = new LinkedList<>();
-        Long pivot = getAnyPivot(foundSections);
-        Long iterator = pivot;
-        result.add(pivot);
-
-        insertDownSections(toDownSectionMap, result, iterator);
-
-        iterator = pivot;
-        insertUpSections(toUpSectionMap, result, iterator);
-        return result;
-    }
-
-    public Map<TerminalStation, Long> findTerminalStations(long lineId) {
-        LinkedList<Long> sortedStations = findSortedStations(lineId);
-        return Map.of(TerminalStation.UP, sortedStations.getFirst(), TerminalStation.DOWN, sortedStations.getLast());
     }
 
     private Long getAnyPivot(List<Section> foundSections) {

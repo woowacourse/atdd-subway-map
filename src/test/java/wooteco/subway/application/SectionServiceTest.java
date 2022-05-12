@@ -38,7 +38,7 @@ class SectionServiceTest {
         sectionDao.save(new Section(3L, 2L, 30, 10L));
         sectionDao.save(new Section(5L, 7L, 50, 10L));
 
-        LinkedList<Long> sortedStations = sectionService.findSortedStations(10L);
+        LinkedList<Long> sortedStations = sectionService.findSortedStationIds(10L);
         assertThat(sortedStations).containsExactly(3L, 2L, 5L, 7L);
     }
 

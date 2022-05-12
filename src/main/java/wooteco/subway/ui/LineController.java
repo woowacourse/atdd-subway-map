@@ -1,30 +1,40 @@
 package wooteco.subway.ui;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.application.LineService;
+import wooteco.subway.application.SectionService;
+import wooteco.subway.application.StationService;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 import java.net.URI;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
+
 @RequestMapping("/lines")
+@RestController
+@AllArgsConstructor
 public class LineController {
 
     private final LineService lineService;
 
-    public LineController(LineService lineService) {
-        this.lineService = lineService;
-    }
+    private final SectionService sectionService;
+
+    private final StationService stationService;
 
     @PostMapping
     public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest lineRequest) {
         Line savedLine = lineService.saveAndGet(lineRequest.toLine(), lineRequest.toSection());
-        LineResponse lineResponse = new LineResponse(savedLine);
+        LinkedList<Long> sortedStationIds = sectionService.findSortedStationIds(savedLine.getId());
+        List<Station> stations = stationService.findByIdIn(sortedStationIds);
+
+        LineResponse lineResponse = new LineResponse(savedLine, stations);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
