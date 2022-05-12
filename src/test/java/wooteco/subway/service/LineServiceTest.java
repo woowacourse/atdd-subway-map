@@ -92,4 +92,14 @@ class LineServiceTest {
         }
     }
 
+    @Test
+    void findAll_메서드는_모든_데이터를_조회한다() {
+        List<LineResponse> actual = lineService.findAll();
+
+        List<LineResponse> expected = List.of(
+            LINE_RESPONSE1, LINE_RESPONSE2
+        );
+
+        assertThat(actual).isEqualTo(expected);
+    }
 }

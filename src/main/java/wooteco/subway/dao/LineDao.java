@@ -2,7 +2,8 @@ package wooteco.subway.dao;
 
 import java.util.Collections;
 import java.util.List;
-import org.springframework.dao.DataAccessException;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -13,6 +14,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class LineDao {
@@ -29,10 +33,69 @@ public class LineDao {
     }
 
     public List<Line> findAll() {
-        final String sql = "SELECT * FROM line";
+        final String sql = "SELECT line.id    AS line_id,\n"
+            + "       line.name  AS line_name,\n"
+            + "       line.color AS line_color,\n"
+            + "       section.id       AS section_id,\n"
+            + "       section.distance AS section_distance,\n"
+            + "       us.id     AS up_station_id,\n"
+            + "       us.name   AS up_station_name,\n"
+            + "       ds.id     AS down_station_id,\n"
+            + "       ds.name   AS down_station_name\n"
+            + "FROM line line\n"
+            + "         LEFT OUTER JOIN section section ON line.id = section.line_id\n"
+            + "         LEFT OUTER JOIN station us ON section.up_station_id = us.id\n"
+            + "         LEFT OUTER JOIN station ds ON section.down_station_id = ds.id";
 
-        List<Line> lines = jdbcTemplate.query(sql, new EmptySqlParameterSource(), lineRowMapper);
-        return Collections.unmodifiableList(lines);
+        Map<Long, List<Map<String, Object>>> resultLineById = jdbcTemplate.queryForList(sql,
+            new EmptySqlParameterSource()).stream()
+            .collect(Collectors.groupingBy(item -> (Long) item.get("line_id")));
+
+        return resultLineById.values().stream()
+            .map(this::covertLine)
+            .collect(Collectors.toList());
+    }
+
+    private Line covertLine(List<Map<String, Object>> result) {
+        if (result.isEmpty()) {
+            throw new IllegalArgumentException("해당 노선 id로 저장된 구간이 존재하지 않습니다.");
+        }
+
+        List<Section> sections = findSections(result);
+
+        return new Line(
+            (Long) result.get(0).get("line_id"),
+            (String) result.get(0).get("line_name"),
+            (String) result.get(0).get("line_color"),
+            new Sections(sections));
+    }
+
+    private List<Section> findSections(List<Map<String, Object>> result) {
+        if (result.isEmpty() || result.get(0).get("section_id") == null) {
+            return Collections.emptyList();
+        }
+        return result.stream()
+            .collect(Collectors.groupingBy(it -> it.get("section_id")))
+            .entrySet()
+            .stream()
+            .map(this::covertSection)
+            .collect(Collectors.toList());
+    }
+
+    private Section covertSection(Map.Entry<Object, List<Map<String, Object>>> listEntry) {
+        Map<String, Object> map = listEntry.getValue().get(0);
+
+        Long id = (Long) listEntry.getKey();
+        Long lineId = (Long) map.get("line_id");
+        Station upStation = new Station(
+            (Long) map.get("up_station_id"),
+            (String) map.get("up_station_name"));
+        Station downStation = new Station(
+            (Long) map.get("down_station_id"),
+            (String) map.get("down_station_name"));
+        int distance = (int) map.get("section_distance");
+
+        return new Section(id, lineId, upStation, downStation, distance);
     }
 
     public Line findById(Long id) {
