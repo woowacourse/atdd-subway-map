@@ -91,7 +91,7 @@ public class SectionsTest {
         sections.delete(upTermination);
 
         List<Station> allStations = sections.getAllStations();
-        assertThat(allStations.get(0)).isEqualTo(station);
+        assertThat(allStations).containsExactly(station, downTermination);
     }
 
     @DisplayName("노선의 하행 종점을 삭제할 경우 이전 역이 종점이 된다.")
@@ -103,7 +103,7 @@ public class SectionsTest {
         sections.delete(downTermination);
 
         List<Station> allStations = sections.getAllStations();
-        assertThat(allStations.get(allStations.size() - 1)).isEqualTo(station);
+        assertThat(allStations).containsExactly(upTermination, station);
     }
 
     @DisplayName("노선의 중간역을 삭제할 경우 구간이 합쳐진다.")
@@ -120,7 +120,7 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(resultSections).hasSize(1),
                 () -> assertThat(resultSections.get(0).getDistance()).isEqualTo(10),
-                () -> assertThat(allStations).containsOnly(upTermination, downTermination)
+                () -> assertThat(allStations).containsExactly(upTermination, downTermination)
         );
     }
 
