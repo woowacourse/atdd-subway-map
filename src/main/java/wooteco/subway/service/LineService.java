@@ -105,6 +105,15 @@ public class LineService {
         return lineDao.findById(id);
     }
 
+    @Transactional
+    public void removeStationToLine(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = stationService.findById(stationId);
+        line.removeSection(station);
+
+        updateSection(line);
+    }
+
     private void updateSection(Line line) {
         if (!sectionDao.existByLineId(line.getId())) {
             throw new IllegalArgumentException("존재하지 않는 노선 id입니다.");

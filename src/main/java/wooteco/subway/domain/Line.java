@@ -36,6 +36,10 @@ public class Line {
         sections.addSection(section);
     }
 
+    public void removeSection(Station station) {
+        sections.removeStation(station);
+    }
+
     public Long getId() {
         return id;
     }

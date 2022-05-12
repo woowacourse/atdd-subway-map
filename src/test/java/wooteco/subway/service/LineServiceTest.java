@@ -215,4 +215,21 @@ class LineServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
         }
     }
+
+    @DisplayName("removeStationToLine 메서드는 노선에 구간을 삭제한다.")
+    @Nested
+    class RemoveStationToLine {
+
+        @Test
+        void 존재하지_않는_노선_id로_조회하는_경우_예외발생() {
+            assertThatThrownBy(() -> lineService.removeStationToLine(5L, 3L))
+                .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 유효한_값을_입력한_경우_삭제_성공() {
+            assertThatCode(() -> lineService.removeStationToLine(1L, 2L))
+                .doesNotThrowAnyException();
+        }
+    }
 }

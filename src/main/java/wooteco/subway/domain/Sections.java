@@ -108,6 +108,33 @@ public class Sections {
             .orElseThrow(() -> new IllegalStateException("상행 종점이 존재하지 않습니다."));
     }
 
+    public void removeStation(Station station) {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("구간이 하나만 있을 경우 삭제할 수 없습니다.");
+        }
+
+        Optional<Section> upSection = sections.stream()
+            .filter(it -> it.getUpStation().equals(station))
+            .findFirst();
+        Optional<Section> downSection = sections.stream()
+            .filter(it -> it.getDownStation().equals(station))
+            .findFirst();
+
+        newConnection(upSection, downSection);
+
+        upSection.ifPresent(it -> sections.remove(it));
+        downSection.ifPresent(it -> sections.remove(it));
+    }
+
+    private void newConnection(Optional<Section> upSection, Optional<Section> downSection) {
+        if (upSection.isPresent() && downSection.isPresent()) {
+            Station newUpStation = downSection.get().getUpStation();
+            Station newDownStation = upSection.get().getDownStation();
+            int newDistance = upSection.get().getDistance() + downSection.get().getDistance();
+            sections.add(new Section(newUpStation, newDownStation, newDistance));
+        }
+    }
+
     public List<Section> getSections() {
         return sections;
     }
