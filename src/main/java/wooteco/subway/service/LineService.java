@@ -72,21 +72,22 @@ public class LineService {
 
     public void createSection(Long lineId, SectionRequest request) {
         Line line = findLine(lineId);
-        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
         Station upStation = stationDao.findById(request.getUpStationId()).orElseThrow();
         Station downStation = stationDao.findById(request.getDownStationId()).orElseThrow();
         int distance = request.getDistance();
-        Section newSection = new Section(line, upStation, downStation, distance);
 
-        List<Section> makeSections = sections.add(newSection);
-        if (makeSections.size() == 1) {
+        Section newSection = new Section(line, upStation, downStation, distance);
+        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+
+        List<Section> updateSections = sections.findUpdateSections(newSection);
+        if (updateSections.size() == 1) {
             sectionDao.save(new Section(line, upStation, downStation, distance));
             return;
         }
 
-        if (makeSections.size() == 2) {
-            sectionDao.update(makeSections.get(BEFORE_SECTION));
-            sectionDao.save(makeSections.get(AFTER_SECTION));
+        if (updateSections.size() == 2) {
+            sectionDao.update(updateSections.get(BEFORE_SECTION));
+            sectionDao.save(updateSections.get(AFTER_SECTION));
         }
     }
 

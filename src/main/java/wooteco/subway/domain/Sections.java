@@ -14,7 +14,7 @@ public class Sections {
         values = sort(new ArrayList<>(sections));
     }
 
-    public List<Section> add(Section section) {
+    public List<Section> findUpdateSections(Section section) {
         if (containsSection(section)) {
             throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
         }
