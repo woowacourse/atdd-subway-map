@@ -55,4 +55,9 @@ public class JdbcSectionDao {
         return jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(),
                 lineId, section.getId()) == 1;
     }
+
+    public void delete(long stationId, long lineId) {
+        String sql = "delete from section where line_id = ? and up_station_id = ? or down_station_id =?";
+        jdbcTemplate.update(sql, lineId, stationId, stationId);
+    }
 }

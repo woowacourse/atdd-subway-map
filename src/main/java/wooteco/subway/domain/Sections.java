@@ -96,6 +96,40 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public Section deleteSection(Long stationId) {
+        List<Section> sections = this.sections.stream()
+                .filter(section -> (stationId == section.getUpStationId()) || stationId ==
+                        section.getDownStationId())
+                .collect(Collectors.toList());
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("없어");
+        }
+        if (sections.size() == 1) {
+            deleteEdgeSection(sections);
+            return null;
+        }
+        return deleteCenterSection(sections, stationId);
+    }
+
+    private void deleteEdgeSection(List<Section> sections) {
+        this.sections.removeAll(sections);
+    }
+
+    private Section deleteCenterSection(List<Section> sections, Long stationId) {
+        Section section = sections.get(0);
+        if (section.getUpStationId() == stationId) {
+            Section newSection = new Section(section.getLineId(), sections.get(1).getUpStationId(), section.getDownStationId(),
+                    section.getDistance() + sections.get(1).getDistance());
+            this.sections.add(newSection);
+            return newSection;
+        }
+        Section newSection = new Section(section.getLineId(), section.getUpStationId(), sections.get(1).getDownStationId(),
+                section.getDistance() + sections.get(1).getDistance());
+        this.sections.add(newSection);
+        this.sections.removeAll(sections);
+        return newSection;
+    }
+
     public List<Section> getSections() {
         return List.copyOf(sections);
     }

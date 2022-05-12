@@ -40,4 +40,16 @@ public class SectionService {
     private void update(Long lineId, Section section) {
         jdbcSectionDao.update(lineId, section);
     }
+
+    public void delete(Long lineId, Long stationId) {
+        Sections sections = new Sections(getSectionsByLineId(lineId));
+        if (sections.getSections().size() == 1) {
+            throw new IllegalArgumentException();
+        }
+        Section section = sections.deleteSection(stationId);
+        if (section != null) {
+            jdbcSectionDao.save(section);
+        }
+        jdbcSectionDao.delete(stationId, lineId);
+    }
 }

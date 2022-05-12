@@ -54,7 +54,7 @@ public class SectionsTest {
     @DisplayName("가장 하행선에서 왼쪽에 구간을 추가하는 경우")
     @Test
     void addSectionBetweenRight() {
-        Section addPoint = sections.addSection(new Section(4L,1L, 4L, 5L, 5));
+        Section addPoint = sections.addSection(new Section(4L, 1L, 4L, 5L, 5));
 
         assertThat(addPoint).isEqualTo(new Section(1L, 3L, 4L, 7));
     }
@@ -89,5 +89,26 @@ public class SectionsTest {
         Section addPoint = sections.addSection(new Section(4L, 1L, 7L, 2L, 4));
 
         assertThat(addPoint).isEqualTo(new Section(1L, 1L, 7L, 3));
+    }
+
+    @DisplayName("상행선을 삭제하는 경우")
+    @Test
+    void deleteUpStation() {
+        sections.deleteSection(1L);
+        assertThat(sections.getSections()).containsExactly(new Section(2L, 2L, 3L, 6), new Section(3L, 3L, 5L, 7));
+    }
+
+    @DisplayName("하행선을 삭제하는 경우")
+    @Test
+    void deleteDownStation() {
+        sections.deleteSection(5L);
+        assertThat(sections.getSections()).containsExactly(new Section(1L, 1L, 2L, 7), new Section(2L, 2L, 3L, 6));
+    }
+
+    @DisplayName("최상행역, 최하행역이 아닌 가운데 지점 하행선-상행선을 지우는 경우")
+    @Test
+    void deleteCenterStation() {
+        sections.deleteSection(2L);
+        assertThat(sections.getSections()).containsExactly(new Section(1L, 3L, 5L, 7), new Section(1L, 1L, 3L, 13));
     }
 }
