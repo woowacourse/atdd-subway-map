@@ -48,18 +48,18 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public List<Section> findByLineId(Long lineId) {
-        String sql = "SELECT * FROM SECTION WHERE line_id = ?";
-        return Collections.unmodifiableList(jdbcTemplate.query(sql, rowMapper, lineId));
-    }
-
-    @Override
     public List<Section> save(List<Section> sections) {
         List<Section> newSections = new ArrayList<>();
         for (Section section : sections) {
             newSections.add(insert(section));
         }
         return Collections.unmodifiableList(newSections);
+    }
+
+    @Override
+    public List<Section> findByLineId(Long lineId) {
+        String sql = "SELECT * FROM SECTION WHERE line_id = ?";
+        return Collections.unmodifiableList(jdbcTemplate.query(sql, rowMapper, lineId));
     }
 
     @Override

@@ -30,19 +30,19 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findByLineId(Long lineId) {
-        return sections.values().stream()
-                .filter(section -> section.getLineId() == lineId)
-                .collect(Collectors.toUnmodifiableList());
-    }
-
-    @Override
     public List<Section> save(List<Section> sections) {
         List<Section> newSections = new ArrayList<>();
         for (Section section : sections) {
             newSections.add(insert(section));
         }
         return newSections;
+    }
+
+    @Override
+    public List<Section> findByLineId(Long lineId) {
+        return sections.values().stream()
+                .filter(section -> section.getLineId() == lineId)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Override

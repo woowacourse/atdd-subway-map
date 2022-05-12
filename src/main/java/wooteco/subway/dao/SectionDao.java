@@ -7,9 +7,9 @@ public interface SectionDao {
 
     Section insert(Section section);
 
-    List<Section> findByLineId(Long lineId);
-
     List<Section> save(List<Section> sections);
+
+    List<Section> findByLineId(Long lineId);
 
     void deleteByLineId(Long lineId);
 }

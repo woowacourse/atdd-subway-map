@@ -48,7 +48,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("지하철역을 조회한다.")
-    void getStations() throws JsonProcessingException {
+    void getStations() {
         /// given
         StationRequest stationRequest1 = new StationRequest("강남역");
         StationRequest stationRequest2 = new StationRequest("역삼역");
@@ -69,7 +69,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultStationIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultStationIds).containsAll(expectedStationIds);
     }

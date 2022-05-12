@@ -110,12 +110,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         /// given
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse = postLines(lineRequest);
-        long expectId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        long lineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + expectId)
+                .get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
 

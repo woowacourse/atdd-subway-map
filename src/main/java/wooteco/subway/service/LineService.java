@@ -41,8 +41,8 @@ public class LineService {
         Station upStation = stationDao.findById(lineRequest.getUpStationId());
         Station downStation = stationDao.findById(lineRequest.getDownStationId());
 
-        sectionDao.insert(new Section(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
-                lineRequest.getDistance()));
+        Section section = lineRequest.toSection(newLine.getId());
+        sectionDao.insert(section);
 
         StationResponse upStationResponse = new StationResponse(upStation);
         StationResponse downStationResponse = new StationResponse(downStation);

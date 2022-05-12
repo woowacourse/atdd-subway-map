@@ -3,7 +3,7 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Section{
+public class Section {
 
     private Long id;
     private Long lineId;

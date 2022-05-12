@@ -32,15 +32,6 @@ public class SectionDaoTest {
     }
 
     @Test
-    @DisplayName("지하철 구간을 노선 식별자별로 조회할 수 있다.")
-    void findByLineId() {
-        sectionDao.insert(new Section(1L, 1L, 2L, 10));
-        List<Section> sections = sectionDao.findByLineId(1L);
-
-        assertThat(sections.get(0).getDistance()).isEqualTo(10);
-    }
-
-    @Test
     @DisplayName("지하철 구간들을 저장할 수 있다.")
     void save() {
         Section section1 = new Section(1L, 1L, 2L, 10);
@@ -49,6 +40,15 @@ public class SectionDaoTest {
 
         List<Section> result = sectionDao.save(sections);
         assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("지하철 구간을 노선 식별자별로 조회할 수 있다.")
+    void findByLineId() {
+        sectionDao.insert(new Section(1L, 1L, 2L, 10));
+        List<Section> sections = sectionDao.findByLineId(1L);
+
+        assertThat(sections.get(0).getDistance()).isEqualTo(10);
     }
 
     @Test
