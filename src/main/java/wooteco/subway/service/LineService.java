@@ -75,7 +75,12 @@ public class LineService {
 
     public LineResponse getLine(Long id) {
         Line line = jdbcLineDao.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        List<Section> sections = sectionService.getSectionsByLineId(line.getId());
+
+        List<StationResponse> stationResponses = findStationInSections(sections).stream()
+                .map(stationService::getStation)
+                .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
     public boolean updateLine(Long id, LineRequest lineRequest) {
