@@ -35,8 +35,8 @@ public class LineService {
     public LineResponse create(LineCreateRequest lineCreateRequest) {
         Line persistLine = createLine(lineCreateRequest);
 
-        Section persistSection = createSectionByLineRequest(lineCreateRequest, persistLine);
-        List<Station> stations = List.of(persistSection.getUpStation(), persistSection.getDownStation());
+        Section section = createSectionByLineRequest(lineCreateRequest, persistLine);
+        List<Station> stations = List.of(section.getUpStation(), section.getDownStation());
 
         return new LineResponse(persistLine, stations);
     }
@@ -115,8 +115,10 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse find(Long id) {
         validateExist(id);
-        Line line = lineDao.findById(id);
-        return new LineResponse(line);
+        Line persistLine = lineDao.findById(id);
+        Sections sections = new Sections(sectionDao.findAllByLine(persistLine));
+        Line line = new Line(persistLine.getId(), persistLine.getName(), persistLine.getColor());
+        return new LineResponse(line, sections.getSortedStations());
     }
 
     @Transactional

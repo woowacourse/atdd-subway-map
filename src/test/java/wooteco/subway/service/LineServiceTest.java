@@ -114,7 +114,7 @@ class LineServiceTest {
         Long id = lineService.create(lineCreateRequest).getId();
 
         LineResponse actual = lineService.find(id);
-        LineResponse expected = new LineResponse(id, "2호선", "초록색");
+        LineResponse expected = new LineResponse(new Line(id, "2호선", "초록색"), List.of(gangnam, yeoksam));
 
         assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(expected);
@@ -136,7 +136,7 @@ class LineServiceTest {
 
         LineUpdateRequest updateRequest = new LineUpdateRequest("1호선", "군청색");
         lineService.update(id, updateRequest);
-        LineResponse expected = new LineResponse(id, "1호선", "군청색");
+        LineResponse expected = new LineResponse(new Line(id, "1호선", "군청색"), List.of(gangnam, yeoksam));
         LineResponse actual = lineService.find(id);
 
         assertThat(actual).usingRecursiveComparison()
