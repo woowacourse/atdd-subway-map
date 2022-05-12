@@ -107,10 +107,22 @@ class LineServiceTest {
                 .map(lineResponse -> new Line(lineResponse.getName(), lineResponse.getColor()))
                 .collect(Collectors.toList());
 
-        List<Line> expected = List.of(line1, line2);
+        List<String> actualNames = actual.stream()
+                .map(Line::getName)
+                .collect(Collectors.toList());
+
+        List<String> actualColors = actual.stream()
+                .map(Line::getColor)
+                .collect(Collectors.toList());
+
+        List<String> expectedNames = List.of("1호선", "2호선");
+        List<String> expectedColors = List.of("bg-blue-600", "bg-green-600");
 
         // then
-        assertThat(actual).containsAll(expected);
+        assertAll(
+                () -> assertThat(actualNames).containsAll(expectedNames),
+                () -> assertThat(actualColors).containsAll(expectedColors)
+        );
     }
 
     @DisplayName("노선 ID로 개별 노선을 찾아 반환한다.")
