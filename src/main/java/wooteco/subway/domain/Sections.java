@@ -139,6 +139,9 @@ public class Sections {
     public List<Section> getAddSections(final List<Section> sections) {
         final List<Section> currentSections = new ArrayList<>(value);
         currentSections.removeAll(sections);
+        if (currentSections.isEmpty()) {
+            return value;
+        }
         return currentSections;
     }
 
