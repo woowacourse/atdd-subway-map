@@ -18,8 +18,8 @@ public class Sections {
     }
 
     public boolean isMiddleSection(Section section) {
-        Long upStationId = findUpStationId();
-        Long downStationId = findDownStationId();
+        Long upStationId = findUpTerminalStationId();
+        Long downStationId = findDownTerminalStationId();
         return isMiddlePoint(section, upStationId, downStationId);
     }
 
@@ -58,7 +58,7 @@ public class Sections {
         return sectionId;
     }
 
-    private Long findDownStationId() {
+    private Long findDownTerminalStationId() {
         Map<Long, Long> sectionId = getSectionId();
         return sectionId.values().stream()
             .filter(i -> !(sectionId.containsKey(i)))
@@ -66,7 +66,7 @@ public class Sections {
             .orElseThrow(() -> new IllegalArgumentException("하행점을 찾을 수 없습니다."));
     }
 
-    private Long findUpStationId() {
+    private Long findUpTerminalStationId() {
         Map<Long, Long> sectionId = getSectionId();
         return sectionId.keySet().stream()
             .filter(i -> !(sectionId.containsValue(i)))
@@ -75,7 +75,7 @@ public class Sections {
     }
 
     public List<Long> sortedStationId() {
-        Long upStationId = findUpStationId();
+        Long upStationId = findUpTerminalStationId();
         List<Long> sectionIds = new ArrayList<>(List.of(upStationId));
         Map<Long, Long> sectionId = getSectionId();
 
