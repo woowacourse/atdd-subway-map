@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -35,7 +36,10 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        return lineDao.findAll();
+        return lineDao.findAll().stream()
+                .map(LineResponse::getId)
+                .map(this::findLineInfos)
+                .collect(Collectors.toList());
     }
 
     @Transactional

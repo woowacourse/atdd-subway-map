@@ -84,14 +84,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get("/lines")
                 .then().log().all()
                 .extract();
+        var ids = getIds(response);
+        var stationNames = response.jsonPath().getList("stations.name", String.class);
 
         // then
-        var ids = getIds(response);
-
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(ids).contains(getId(responseCreateLine)),
-                () -> assertThat(ids).contains(getId(responseCreateLine2))
+                () -> assertThat(ids).contains(getId(responseCreateLine2)),
+                () -> assertThat(stationNames).containsExactly("[테스트1역, 테스트2역]", "[테스트3역, 테스트4역]")
         );
     }
 

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.line.LineRequest;
-import wooteco.subway.dto.line.LineResponse;
 
 @JdbcTest
 class LineServiceTest {
@@ -41,7 +39,7 @@ class LineServiceTest {
     void saveLine() {
         //given
         var upStationId = insertStation("테스트1역");
-        var downStationId = insertStation("테스트12역");
+        var downStationId = insertStation("테스트2역");
 
         //when
         var lineResponse = lineService.createLine(
@@ -112,21 +110,17 @@ class LineServiceTest {
     @DisplayName("노선 목록 조회")
     void findAllLine() {
         //given
-        var lineRequest1 = new LineRequest("1호선", "blue");
-        var lineRequest2 = new LineRequest("2호선", "green");
-        var lineResponse1 = lineService.createLine(lineRequest1);
-        var lineResponse2 = lineService.createLine(lineRequest2);
+        var upStationId = insertStation("테스트1역");
+        var downStationId = insertStation("테스트2역");
+        var lineRequest = new LineRequest("1호선", "blue", upStationId, downStationId, 1);
+        var createResponse = lineService.createLine(lineRequest);
 
         //when
-        var ids = lineService.findAll().stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        var lines = lineService.findAll();
+        var findResponse = lines.get(0);
 
         //then
-        assertAll(
-                () -> assertThat(ids.contains(lineResponse1.getId())).isTrue(),
-                () -> assertThat(ids.contains(lineResponse2.getId())).isTrue()
-        );
+        assertThat(findResponse).isEqualTo(createResponse);
     }
 
     @Test
