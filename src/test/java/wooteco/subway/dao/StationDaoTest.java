@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -56,6 +57,19 @@ class StationDaoTest {
         // then
         assertThatExceptionOfType(DuplicateKeyException.class)
             .isThrownBy(() -> dao.save(new StationEntity("청구역")));
+    }
+
+    @Test
+    @DisplayName("ID값으로 역을 불러온다.")
+    public void findById() {
+        // given
+        final StationEntity savedEntity = dao.save(new StationEntity(STATION_NAME));
+
+        // when
+        final Optional<StationEntity> foundEntity = dao.findById(savedEntity.getId());
+
+        // then
+        assertThat(foundEntity).isPresent();
     }
 
     @Test

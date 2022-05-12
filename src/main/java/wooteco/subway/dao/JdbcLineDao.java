@@ -58,16 +58,6 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<LineEntity> findByName(String name) {
-        final String sql = "SELECT * FROM line WHERE name = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, name));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public boolean update(LineEntity entity) {
         final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         final int updatedCount = jdbcTemplate.update(sql, entity.getName(), entity.getColor(), entity.getId());

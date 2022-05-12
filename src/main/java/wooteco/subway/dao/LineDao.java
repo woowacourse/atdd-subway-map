@@ -12,8 +12,6 @@ public interface LineDao {
 
     Optional<LineEntity> findById(Long id);
 
-    Optional<LineEntity> findByName(String name);
-
     boolean update(LineEntity entity);
 
     boolean delete(Long id);

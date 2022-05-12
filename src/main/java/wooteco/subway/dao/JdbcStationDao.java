@@ -53,16 +53,6 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Optional<StationEntity> findByName(String name) {
-        final String sql = "SELECT * FROM station WHERE name = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, name));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public Optional<StationEntity> findById(Long id) {
         final String sql = "SELECT * FROM station WHERE id = ?";
         try {
