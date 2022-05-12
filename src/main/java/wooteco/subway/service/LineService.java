@@ -10,8 +10,9 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateLineException;
@@ -31,17 +32,17 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse create(LineRequest lineRequest) {
-        Line persistLine = createLine(lineRequest);
+    public LineResponse create(LineCreateRequest lineCreateRequest) {
+        Line persistLine = createLine(lineCreateRequest);
 
-        Section persistSection = createSectionByLineRequest(lineRequest, persistLine);
+        Section persistSection = createSectionByLineRequest(lineCreateRequest, persistLine);
         List<Station> stations = List.of(persistSection.getUpStation(), persistSection.getDownStation());
 
         return new LineResponse(persistLine, stations);
     }
 
-    private Line createLine(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+    private Line createLine(LineCreateRequest lineCreateRequest) {
+        Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
         validateUnique(line);
         return lineDao.save(line);
     }
@@ -55,11 +56,11 @@ public class LineService {
         }
     }
 
-    private Section createSectionByLineRequest(LineRequest lineRequest, Line line) {
+    private Section createSectionByLineRequest(LineCreateRequest lineCreateRequest, Line line) {
         Section section = new Section(
-                stationService.findById(lineRequest.getUpStationId()),
-                stationService.findById(lineRequest.getDownStationId()),
-                lineRequest.getDistance()
+                stationService.findById(lineCreateRequest.getUpStationId()),
+                stationService.findById(lineCreateRequest.getDownStationId()),
+                lineCreateRequest.getDistance()
         );
         return sectionDao.save(line, section);
     }
@@ -119,9 +120,9 @@ public class LineService {
     }
 
     @Transactional
-    public void update(Long id, LineRequest lineRequest) {
+    public void update(Long id, LineUpdateRequest lineUpdateRequest) {
         validateExist(id);
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        Line line = new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
         validateUnique(line);
         lineDao.updateById(id, line);
     }
