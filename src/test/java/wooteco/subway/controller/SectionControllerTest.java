@@ -9,11 +9,14 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
@@ -32,30 +35,83 @@ public class SectionControllerTest extends AcceptanceTest {
     @Autowired
     SectionService sectionService;
 
-    //    String name, String color, Long upStationId, Long downStationId, int distance
-    @DisplayName("구간을 등록한다.")
-    @Test
-    void createSection() {
-        Station 동천역 = stationDao.save(new Station("동천역"));
-        Station 정자역 = stationDao.save(new Station("정자역"));
-        Station 판교역 = stationDao.save(new Station("판교역"));
-        LineResponse lineResponse = lineService.save(new LineRequest("신분당선", "red", 판교역.getId(),
-                동천역.getId(), 20));
-        Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", 정자역.getId());
-        params.put("downStationId", 동천역.getId());
-        params.put("distance", 10);
+    @DisplayName("등록 `POST /lines/{id}/sections`")
+    @Nested
+    @Sql("/init.sql")
+    class post {
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/" + lineResponse.getId() + "/sections")
-                .then().log().all()
-                .extract();
+        private Station 동천역;
+        private Station 정자역;
+        private Station 판교역;
+        private LineResponse lineResponse;
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        @BeforeEach
+        void setUp() {
+            동천역 = stationDao.save(new Station("동천역"));
+            정자역 = stationDao.save(new Station("정자역"));
+            판교역 = stationDao.save(new Station("판교역"));
+            lineResponse = lineService.save(new LineRequest("신분당선", "red", 판교역.getId(),
+                    동천역.getId(), 20));
+        }
+
+        @DisplayName("성공")
+        @Test
+        void success() {
+            Map<String, Object> params = new HashMap<>();
+            params.put("upStationId", 정자역.getId());
+            params.put("downStationId", 동천역.getId());
+            params.put("distance", 10);
+
+            ExtractableResponse<Response> response = AcceptanceFixture.post(params,
+                    "/lines/" + lineResponse.getId() + "/sections");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        }
+
+        @DisplayName("노선, 상행선, 하행선을 찾지 못하면 404를 응답한다.")
+        @Test
+        void notFoundLineOrUpStationOrDownStation() {
+            Map<String, Object> params = new HashMap<>();
+            params.put("upStationId", 1000L);
+            params.put("downStationId", 1001L);
+            params.put("distance", 10);
+
+            ExtractableResponse<Response> response = AcceptanceFixture.post(params,
+                    "/lines/" + 1002L + "/sections");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
+
+        @DisplayName("상행선, 하행선이 둘 중에 하나만 노선에 있지 않으면 400을 응답한다.")
+        @Test
+        void existOneStationInLine() {
+            Map<String, Object> params = new HashMap<>();
+            params.put("upStationId", 동천역.getId());
+            params.put("downStationId", 판교역.getId());
+            params.put("distance", 10);
+
+            ExtractableResponse<Response> response = AcceptanceFixture.post(params,
+                    "/lines/" + lineResponse.getId() + "/sections");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @DisplayName("기존 구간의 거리보다 크면 400을 응답한다.")
+        @Test
+        void longerThanDistanceOfOverlappingSection() {
+            Map<String, Object> params = new HashMap<>();
+            params.put("upStationId", 판교역.getId());
+            params.put("downStationId", 정자역.getId());
+            params.put("distance", 30);
+
+            ExtractableResponse<Response> response = AcceptanceFixture.post(params,
+                    "/lines/" + lineResponse.getId() + "/sections");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
     }
+
+
 
     @DisplayName("구간을 삭제한다.")
     @Test

@@ -54,7 +54,8 @@ public class SectionsTest {
         void notContainsUpStationAndDownStation() {
             Section section = new Section(5L, 6L, 3L, 1);
             assertThatThrownBy(() -> sections.update(section))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("상행선과 하행선이 노선에 없습니다.");
         }
 
         @DisplayName("상행성과 하행선 둘 다 기존 지하철역에 포함한다.")
@@ -62,17 +63,17 @@ public class SectionsTest {
         void containsUpStationAndDownStation() {
             Section section = new Section(1L, 2L, 3L, 1);
             assertThatThrownBy(() -> sections.update(section))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("상행선과 하행선 둘 다 노선에 이미 존재합니다.");
         }
 
-        // 상행선이 상행선이랑 같을 때, 상행선이 하행선이랑 같을 때
-        // 하행선이 하행선이랑 같을 때, 하행선이 상행선이랑 같을 때
         @DisplayName("상행선끼리 같거나 하행선끼리 같을 때 기존 구간의 거리보다 추가할 거리가 크다.")
         @Test
         void containsSamePositionStationAndLongerDistance() {
             Section section = new Section(1L, 7L, 3L, 11);
             assertThatThrownBy(() -> sections.update(section))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("이미 존재하는 구간의 거리보다 거리가 길거나 같습니다.");
         }
     }
 

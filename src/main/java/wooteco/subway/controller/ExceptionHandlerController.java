@@ -39,4 +39,11 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorMessageResponse> badRequestException(IllegalStateException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessageResponse(e.getMessage()));
+    }
 }
