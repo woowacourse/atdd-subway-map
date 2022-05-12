@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
 import java.sql.ResultSet;
