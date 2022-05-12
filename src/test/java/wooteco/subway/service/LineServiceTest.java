@@ -2,8 +2,10 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.testutils.Fixture.LINE_REQUEST_2호선_STATION_1_3;
 import static wooteco.subway.testutils.Fixture.LINE_REQUEST_분당선_STATION_1_3;
 import static wooteco.subway.testutils.Fixture.LINE_REQUEST_신분당선_STATION_1_2;
+import static wooteco.subway.testutils.Fixture.LINE_REQUEST_중앙선_STATION_1_3;
 
 import java.util.List;
 import javax.sql.DataSource;
@@ -72,11 +74,11 @@ class LineServiceTest {
     @DisplayName("특정 노선을 조회할 수 있다.")
     @Test
     void findById() {
-        lineService.create(LINE_REQUEST_신분당선_STATION_1_2);
+        final Line expected = lineService.create(LINE_REQUEST_중앙선_STATION_1_3);
 
-        final Line line = lineService.findById(1L);
+        final Line actual = lineService.findById(expected.getId());
 
-        Assertions.assertThat(line.getId()).isEqualTo(1L);
+        Assertions.assertThat(actual.getId()).isEqualTo(expected.getId());
     }
 
     @DisplayName("특정 노선을 조회시, 없는 노선을 조회 요청하면 예외를 발생시킨다.")
@@ -111,11 +113,11 @@ class LineServiceTest {
     @DisplayName("특정 노선을 수정시, 이미 존재하는 이름으로 수정 요청하면 예외를 발생시킨다.")
     @Test
     void update_fail_duplicate_id() {
-        lineService.create(LINE_REQUEST_신분당선_STATION_1_2);
-        lineService.create(LINE_REQUEST_분당선_STATION_1_3);
-        final LineRequest lineRequest = new LineRequest("분당선", "WHITE");
+        final Line create1 = lineService.create(LINE_REQUEST_중앙선_STATION_1_3);
+        final Line create2 = lineService.create(LINE_REQUEST_2호선_STATION_1_3);
+        final LineRequest lineRequest = new LineRequest(create2.getName(), create2.getColor());
 
-        assertThatThrownBy(() -> lineService.update(1L, lineRequest))
+        assertThatThrownBy(() -> lineService.update(create1.getId(), lineRequest))
             .isInstanceOf(LineDuplicateException.class)
             .hasMessage("[ERROR] 이미 존재하는 노선입니다.");
     }

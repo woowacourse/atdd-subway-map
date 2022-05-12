@@ -66,6 +66,6 @@ class StationServiceTest {
 
         stationService.delete(station.getId());
 
-        Assertions.assertThat(stationService.show()).hasSize(0);
+        Assertions.assertThat(stationService.show()).isEmpty();
     }
 }
