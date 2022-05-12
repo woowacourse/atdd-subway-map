@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
@@ -13,16 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.DbLineDao;
-import wooteco.subway.domain.Station;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.acceptance.utils.LineAcceptanceTestFixture.*;
 import static wooteco.subway.acceptance.utils.StationAcceptanceTestFixture.역_생성_요청;
 
@@ -69,7 +66,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         response.statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선 정상 등록")
+    @DisplayName("노선 정상 등록")
     @Test
     void createLine() {
         // given
@@ -77,26 +74,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long stationId1 = createStationResponse1.jsonPath().getLong("id");
 
         ExtractableResponse<Response> createStationResponse2 = 역_생성_요청("새로운지하철역");
-        Long stationId2 = createStationResponse2.jsonPath().getLong("id");
+        long stationId2 = createStationResponse2.jsonPath().getLong("id");
 
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("name", "신분당선");
-        requestBody.put("color", "bg-red-600");
+        requestBody.put("color", "yellow");
         requestBody.put("upStationId", String.valueOf(stationId1));
         requestBody.put("downStationId", String.valueOf(stationId2));
         requestBody.put("distance", "10");
 
         // when
         ValidatableResponse response = 노선_생성_요청(requestBody);
+        LinkedHashMap<String, Object> responseBody = (LinkedHashMap) response.extract().jsonPath().get();
+        List<Map<String, String>> stationsResponse = (List<Map<String, String>>) responseBody.get("stations");
 
         // then
-        response
-                .statusCode(HttpStatus.CREATED.value())
-                .header("Location", not(emptyOrNullString()))
-                .body("id", notNullValue())
-                .body("name", equalTo("신분당선"))
-                .body("color", equalTo("bg-red-600"))
-                .body("stations", equalTo(List.of(new Station(stationId1, "지하철역"), new Station(stationId2, "새로운지하철역"))));
+        assertAll(
+                () -> assertThat(responseBody.get("id")).isNotNull(),
+                () -> assertThat(responseBody.get("name")).isEqualTo("신분당선"),
+                () -> assertThat(responseBody.get("color")).isEqualTo("yellow"),
+                () -> assertAll(
+                        () -> assertThat(Integer.valueOf(String.valueOf(stationsResponse.get(0).get("id"))))
+                                .isEqualTo(Integer.valueOf(String.valueOf(stationId1))),
+                        () -> assertThat(stationsResponse.get(0).get("name")).isEqualTo("지하철역"),
+                        () -> assertThat(Integer.valueOf(String.valueOf(stationsResponse.get(1).get("id"))))
+                                .isEqualTo(Integer.valueOf(String.valueOf(stationId2))),
+                        () -> assertThat(stationsResponse.get(1).get("name")).isEqualTo("새로운지하철역")
+                )
+        );
     }
 
     @DisplayName("지하철 노선 중복 등록을 허용하지 않는다")
@@ -114,7 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선 조회")
+    @DisplayName("노선 등록 및 목록 조회")
     @Test
     void showLineById() {
         // given
@@ -124,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long createdId = createResponse.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = 노선_목록_조회_요청(createdId);
+        ExtractableResponse<Response> response = 노선_조회_요청(createdId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -133,28 +138,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getString("color")).isEqualTo(color);
     }
 
-    @DisplayName("존재하지 않는 지하철 노선 조회시 예외를 반환한다")
+    @DisplayName("존재하지 않는 노선 조회시 예외를 반환한다")
     @Test
     void showNotExistLine() {
         // when
-        ExtractableResponse<Response> response = 노선_목록_조회_요청(50L);
+        ExtractableResponse<Response> response = 노선_조회_요청(50L);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    @DisplayName("지하철 노선 목록 조회")
+    @DisplayName("노선 목록 조회 old")
     @Test
-    void showLines() {
+    void showLines_old() {
         // given
         ExtractableResponse<Response> createResponse1 = 노선_생성_요청("신분당선", "bg-red-600");
         ExtractableResponse<Response> createResponse2 = 노선_생성_요청("1호선", "bg-blue-600");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 노선_목록_조회_요청();
 
         // then
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
@@ -164,6 +166,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(expectedLineIds).containsExactlyInAnyOrderElementsOf(actualLineIds);
+    }
+
+
+    @DisplayName("노선 목록 조회")
+    @Test
+    void showLines() {
+        // given
+        ValidatableResponse validatableResponse1 = 노선_및_역들_생성요청_케이스_1번();
+        ValidatableResponse validatableResponse2 = 노선_및_역들_생성요청_케이스_2번();
+
+        // when
+        ExtractableResponse<Response> response = 노선_목록_조회_요청();
+
+        JsonPath jsonPath = response.jsonPath();
+        List<Map<String, Object>> responseBody = jsonPath.get();
+        List<Map<String, Object>> firstStations = (List<Map<String, Object>>) responseBody.get(0).get("stations");
+        List<Map<String, Object>> secondStations = (List<Map<String, Object>>) responseBody.get(1).get("stations");
+
+        // then
+        assertAll(
+                () -> assertThat(responseBody.get(0).get("id")).isNotNull(),
+                () -> assertThat(responseBody.get(0).get("name")).isEqualTo("1호선"),
+                () -> assertThat(responseBody.get(0).get("color")).isEqualTo("blue"),
+                () -> assertAll(
+                        () -> assertThat(firstStations.get(0).get("name")).isEqualTo("노량진역"),
+                        () -> assertThat(firstStations.get(1).get("name")).isEqualTo("영등포역")
+                ),
+                () -> assertThat(responseBody.get(1).get("id")).isNotNull(),
+                () -> assertThat(responseBody.get(1).get("name")).isEqualTo("신분당선"),
+                () -> assertThat(responseBody.get(1).get("color")).isEqualTo("yellow"),
+                () -> assertAll(
+                        () -> assertThat(secondStations.get(0).get("name")).isEqualTo("강남구청역"),
+                        () -> assertThat(secondStations.get(1).get("name")).isEqualTo("선릉역")
+                )
+        );
     }
 
     @DisplayName("이름이 공백인 지하철 노선을 수정할 수 없다")

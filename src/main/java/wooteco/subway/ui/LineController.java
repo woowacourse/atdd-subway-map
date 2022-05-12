@@ -12,9 +12,9 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RequestMapping("/lines")
@@ -40,7 +40,16 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = toLineResponses(lineService.findAll());
+        List<Line> lines = lineService.findAll();
+        List<LineResponse> lineResponses = new ArrayList<>();
+
+        for (Line line : lines) {
+            LinkedList<Long> sortedStationIds = sectionService.findSortedStationIds(line.getId());
+            List<Station> stations = stationService.findByIdIn(sortedStationIds);
+            LineResponse lineResponse = new LineResponse(line, stations);
+            lineResponses.add(lineResponse);
+        }
+
         return ResponseEntity.ok(lineResponses);
     }
 
@@ -63,11 +72,5 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private List<LineResponse> toLineResponses(List<Line> lines) {
-        return lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
-                .collect(Collectors.toList());
     }
 }
