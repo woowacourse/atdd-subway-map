@@ -1,4 +1,4 @@
-package wooteco.subway.controller;
+package wooteco.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
