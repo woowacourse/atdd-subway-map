@@ -10,13 +10,13 @@ public class Station {
     private Station() {
     }
 
-    public Station(final String name) {
-        this.name = new Name(name);
-    }
-
     public Station(final Long id, final String name) {
         this.id = id;
         this.name = new Name(name);
+    }
+
+    public Station(final String name) {
+        this(null, name);
     }
 
     public Long getId() {
