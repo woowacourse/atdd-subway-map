@@ -23,10 +23,13 @@ public class Sections {
     }
 
     private void checkNoStations(Section section) {
-        if (!allStationIds().contains(section.getUpStationId()) && !allStationIds().contains(
-                section.getDownStationId())) {
+        if (!containsStation(section.getUpStationId()) && !containsStation(section.getDownStationId())) {
             throw new IllegalArgumentException("적어도 한 개의 역이 노선 구간 내에 존재해야 합니다.");
         }
+    }
+
+    private boolean containsStation(Long stationId) {
+        return allStationIds().contains(stationId);
     }
 
     private void checkExist(Section section) {
@@ -60,6 +63,7 @@ public class Sections {
     }
 
     public Section add(Section section) {
+        validateAddable(section);
         if (matchUpStation(section)) {
             return sections.stream()
                     .filter(section::equalsUpStation)
@@ -112,6 +116,7 @@ public class Sections {
     }
 
     public List<Section> delete(Long stationId) {
+        validateDeletable(stationId);
         if (matchFirstUpStation(stationId)) {
             return sections.stream()
                     .filter(it -> it.equalsUpStation(stationId))

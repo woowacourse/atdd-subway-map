@@ -22,7 +22,6 @@ public class SectionService {
         Section savedSection = sectionDao.save(new Section(section.getLineId(),
                 section.getUpStationId(), section.getDownStationId(), section.getDistance()));
 
-        sections.validateAddable(section);
         Section updateSection = sections.add(savedSection);
         sectionDao.updateSection(updateSection);
     }
@@ -30,14 +29,16 @@ public class SectionService {
     @Transactional
     public void delete(Long lineId, Long stationId) {
         Sections sections = sectionDao.findByLineId(lineId);
-        sections.validateDeletable(stationId);
-
         List<Section> updateSections = sections.delete(stationId);
         sectionDao.deleteSections(updateSections);
 
-        if (updateSections.size() == MERGE_REQUIRED) {
+        if (isDeletedInMiddle(updateSections)) {
             Section mergedSection = updateSections.get(0).merge(updateSections.get(1));
             sectionDao.save(mergedSection);
         }
+    }
+
+    private boolean isDeletedInMiddle(List<Section> updateSections) {
+        return updateSections.size() == MERGE_REQUIRED;
     }
 }
