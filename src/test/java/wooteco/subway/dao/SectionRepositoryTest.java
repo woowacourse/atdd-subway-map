@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.TestFixtures.동묘앞역;
 import static wooteco.subway.TestFixtures.신당역;
@@ -71,15 +72,5 @@ class SectionRepositoryTest extends RepositoryTest {
                 new Section(id2, 1L, saved_신당역, saved_창신역, 5)));
 
         assertThat(sectionRepository.findByLineId(1L)).isEmpty();
-    }
-
-    @DisplayName("노선을 삭제한다.")
-    @Test
-    void deleteById() {
-        Station saved_신당역 = stationRepository.save(신당역);
-        Station saved_동묘앞역 = stationRepository.save(동묘앞역);
-        Section section = new Section(1L, saved_신당역, saved_동묘앞역, 5);
-        Long id = sectionRepository.save(section);
-        sectionRepository.deleteSections(List.of(section));
     }
 }

@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.TestFixtures.동묘앞역;
 import static wooteco.subway.TestFixtures.보문역;
@@ -103,7 +104,12 @@ public class LineServiceTest {
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo("분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600"),
-                () -> assertThat(lineResponse.getStations()).hasSize(2)
+                () -> assertThat(lineResponse.getStations()).hasSize(2),
+                () -> assertThat(lineResponse.getStations()).extracting("id", "name")
+                        .containsExactly(
+                                tuple(saved_신당역.getId(), saved_신당역.getName()),
+                                tuple(saved_동묘앞역.getId(), saved_동묘앞역.getName())
+                        )
         );
     }
 
