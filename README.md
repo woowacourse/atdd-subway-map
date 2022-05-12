@@ -36,38 +36,53 @@
 
 # API
 ## 지하철 역
-- [x] 지하철 역 등록 `POST /stations`
-- [x] 지하철 역 목록 `GET /stations`
-- [x] 지하철 역 삭제 `DELETE /stations/{id}`
+
+> 지하철 역 등록 - `POST /stations`
+- 이름을 가진 역을 저장한다.
+- 저장된 id와 이름을 응답한다. `Created 201`
+  - [ ] [예외] 이름은 빈값이면 안된다. `Bad Request 400`
+  - [ ] [예외] 이미 존재하는 이름이 있으면 안된다. `Bad Request 400`
+> 지하철 역 목록 - `GET /stations`
+- 역 목록을 응답한다. `OK 200`
+> 지하철 역 삭제 - `DELETE /stations/{id}`
+- id에 해당하는 역을 삭제한다. `No Content 204`
+  - [ ] [예외] id에 해당하는 역이 있어야 한다. `Not Found 404`
 
 ## 지하철 노선
-아래 3가지 컬럼을 추가한다.
 
-- upStationId
-- downStationId
-- distance
-
-> 등록 - POST /lines
-  - 노선과 동시에 상행선, 하행선에 관한 구간도 등록한다.
-  - [x]  [예외] 이름, 색깔은 빈값이면 안된다. (Bad Request 400) - `Line`
-  - [x]  [예외] 이름, 색깔은 중복이 있으면 안된다. (Bad Request 400) - `LineDao`
-  - [x]  [예외] 지하철이 있는 id 값이어야 한다. (Not Found 404) - `StationDao`
-  - [x]  [예외] upStationId와 downStationId는 같아선 안된다. (Bad Request 400) - `Section`
-  - [x]  [예외] 거리는 1 이상이어야 한다. (Bad Request 400) - `Section`
-> 목록 - GET /lines
-
-> 조회 - GET /lines/{id}
-  - [x]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
-> 수정 - PUT /lines/{id}
-  - [x]  [예외] 이미 있는 이름, 색깔이면 안된다. (Bad Request 400)
-  - [x]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
-> 삭제 - DELETE /lines/{id}
-  - 해당 id 값을 가지는 line을 삭제하고 노선에 있는 모든 구간들을 삭제한다.
-  - [x]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
+> 등록 - `POST /lines`
+- 노선과 동시에 상행선, 하행선에 관한 구간도 등록한다. `Created 201`
+  - [x] [예외] 이름, 색깔은 빈값이면 안된다. `Bad Request 400`
+  - [x] [예외] 이름, 색깔은 중복이 있으면 안된다. `Bad Request 400`
+  - [x] [예외] 지하철이 있는 id 값이어야 한다. `Not Found 404`
+  - [x] [예외] 상행역과 하행역은 같아선 안된다. `Bad Request 400`
+  - [x] [예외] 거리는 1 이상이어야 한다. `Bad Request 400`
+> 목록 - `GET /lines`
+- 모든 노선 목록을 역과 함께 응답한다. `OK 200`
+> 조회 - `GET /lines/{id}`
+- id에 해당하는 노선을 역과 함께 응답한다. `OK 200`
+  - [x]  [예외] 노선이 있는 id 값이어야 한다. `Not Found 404`
+> 수정 - `PUT /lines/{id}`
+- id에 해당하는 노선의 이름과 색깔을 수정한다. `OK 200`
+- [x]  [예외] 노선이 있는 id 값이어야 한다. `Not Found 404`
+- [x]  [예외] 이미 있는 이름, 색깔이면 안된다. `Bad Request 400`
+> 삭제 - `DELETE /lines/{id}`
+  - 해당 id 값을 가지는 line을 삭제하고 노선에 있는 모든 구간들을 삭제한다. `No Content 204`
+  - [x]  [예외] 노선이 있는 id 값이어야 한다. `Not Found 404`
 
 ## 구간
-- [x] 구간 등록 `POST /lineEntities/1/sections`
-- [ ] 구간 제거 `DELETE /lineEntities/1/sections?stationId=2`
+> 등록 `POST /lines/{id}/sections`
+- 상행선, 하행선, 거리를 가지는 구간을 등록한다. `OK 200`
+  - [ ] [예외] 노선, 상행선, 하행선이 존재하는 id여야 한다. `Bad Request 404`
+  - [ ] [예외] 상행선, 하행선이 둘 중에 하나만 노선에 있어야 한다. `Bad Request 400`
+  - 하행선이 노선의 상행 종점이면 상행 종점 구간으로 등록한다.
+  - 상행선이 노선의 하행 종점이면 하행 종점 구간으로 등록한다.
+  - [ ] [예외] 노선의 중간 구간에 등록하면 기존 구간의 거리보다 작아야 한다. `Bad Request 400`
+> 구간 제거 `DELETE /lines/{id}/sections?stationId=?`
+- 구간을 삭제한다. `OK 200`
+  - [ ] [예외] 노선, 역은 존재하는 id여야 한다. `Bad Request 400`
+  - [ ] [예외] 노선에 역은 포함되어야 한다. `Bad Request 400`
+  - [ ] 역에 포함된 구간을 삭제하고 비어진 구간을 연결한다.
 
 ## 🚀 Getting Started
 ### Usage
