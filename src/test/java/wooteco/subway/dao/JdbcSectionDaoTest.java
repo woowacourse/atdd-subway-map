@@ -26,7 +26,7 @@ public class JdbcSectionDaoTest {
     }
 
     @Test
-    @DisplayName("Section 을 저장한다.")
+    @DisplayName("구간을 저장한다.")
     void save() {
         //when
         Long actual = sectionDao.save(new SectionEntity(1L, 1L, 2L, 5));
@@ -36,7 +36,7 @@ public class JdbcSectionDaoTest {
     }
 
     @Test
-    @DisplayName("Line id 로 Section 을 조회한다.")
+    @DisplayName("노선 id 로 구간을 조회한다.")
     void findByLineId() {
         //given
         Long sectionIdA = sectionDao.save(new SectionEntity(1L, 1L, 2L, 5));
@@ -49,5 +49,35 @@ public class JdbcSectionDaoTest {
 
         //then
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("구간 정보를 수정한다.")
+    void update() {
+        //given
+        Long sectionId = sectionDao.save(new SectionEntity(1L, 1L, 2L, 5));
+
+        //when
+        sectionDao.update(new SectionEntity(sectionId, 1L, 3L, 2L, 4));
+
+        //then
+        List<SectionEntity> actual = sectionDao.findByLineId(1L);
+        SectionEntity expected = new SectionEntity(sectionId, 1L, 3L, 2L, 4);
+        assertThat(actual).contains(expected);
+    }
+
+    @Test
+    @DisplayName("id 에 해당하는 구간을 삭제한다.")
+    void deleteById() {
+        //given
+        Long sectionId = sectionDao.save(new SectionEntity(1L, 1L, 2L, 5));
+
+        //when
+        sectionDao.deleteById(sectionId);
+
+        //then
+        List<SectionEntity> actual = sectionDao.findByLineId(1L);
+        SectionEntity expected = new SectionEntity(sectionId, 1L, 1L, 2L, 5);
+        assertThat(actual).doesNotContain(expected);
     }
 }
