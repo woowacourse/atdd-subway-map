@@ -58,15 +58,18 @@ public class Sections {
     }
 
     public void add(Section section) {
-        Relation relation = calculateRelation(section);
-        validateSectionAddable(relation);
-
-        if (relation.equals(Relation.EXTEND)) {
+        if (section.isAlreadyIn(getStations())) {
+            throw new IllegalArgumentException("이미 포함 된 구간입니다.");
+        }
+        if (canExtendBy(section)) {
             extendSections(section);
             return;
         }
-
-        addSectionInside(section);
+        if (canAnyDivideBy(section)) {
+            addSectionInside(section);
+            return;
+        }
+        throw new IllegalArgumentException("겹치는 역이 없이 추가할 수 없습니다.");
     }
 
     private void addSectionInside(Section section) {
@@ -91,12 +94,6 @@ public class Sections {
         }
     }
 
-    private void validateSectionAddable(Relation relation) {
-        if (relation.equals(Relation.NONE) || relation.equals(Relation.INCLUDE)) {
-            throw new IllegalArgumentException("해당 노선은 추가할 수 없습니다.");
-        }
-    }
-
     public List<Section> findDifferentSections(Sections other) {
         LinkedList<Section> result = new LinkedList<>(this.sections);
         result.removeAll(other.sections);
@@ -112,19 +109,6 @@ public class Sections {
                 .map(Section::getUp).collect(Collectors.toList());
         stations.add(sections.getLast().getDown());
         return stations;
-    }
-
-    public Relation calculateRelation(Section target) {
-        if (target.isAlreadyIn(getStations())) {
-            return Relation.INCLUDE;
-        }
-        if (canExtendBy(target)) {
-            return Relation.EXTEND;
-        }
-        if (canAnyDivideBy(target)) {
-            return Relation.DIVIDE;
-        }
-        return Relation.NONE;
     }
 
     private boolean canExtendBy(Section target) {
