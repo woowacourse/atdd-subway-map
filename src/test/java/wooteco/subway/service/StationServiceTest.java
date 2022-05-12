@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DataNotFoundException;
@@ -45,7 +46,7 @@ class StationServiceTest {
 
     @DisplayName("저장된 역을 모두 조회한다.")
     @Test
-    void showAll() {
+    void findAll() {
         StationRequest request1 = new StationRequest("강남역");
         StationRequest request2 = new StationRequest("역삼역");
         stationService.create(request1);
@@ -55,6 +56,26 @@ class StationServiceTest {
 
         assertThat(stationResponses).hasSize(2);
     }
+
+    @DisplayName("지정한 id에 해당하는 역을 조회한다.")
+    @Test
+    void findById() {
+        StationRequest request = new StationRequest("강남역");
+        Long id = stationService.create(request).getId();
+
+        Station station = stationService.findById(id);
+
+        assertThat(station).isEqualTo(new Station(id, "강남역"));
+    }
+
+    @DisplayName("조회하려는 역이 없으면 예외가 발생한다.")
+    @Test
+    void findNotExist() {
+        assertThatThrownBy(() -> stationService.findById(Long.MAX_VALUE))
+                .isInstanceOf(DataNotFoundException.class)
+                .hasMessage("존재하지 않는 역입니다.");
+    }
+
 
     @DisplayName("지정한 id에 해당하는 역을 삭제한다.")
     @Test
