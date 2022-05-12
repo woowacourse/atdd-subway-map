@@ -12,23 +12,19 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LineController.class)
 class LineControllerTest {
@@ -92,19 +88,89 @@ class LineControllerTest {
     }
 
     @Test
-    void findAllLine() {
+    @DisplayName("모든 노선을 반환한다.")
+    void findAllLine() throws Exception {
+        List<StationResponse> stations1 = List.of(
+                new StationResponse(1L, "강남역"),
+                new StationResponse(2L, "선릉역")
+        );
+        LineRequest lineRequest1 = new LineRequest("2호선", "green", 1L, 2L, 10);
+        LineResponse lineResponse1 = new LineResponse(1L, lineRequest1.getName(), lineRequest1.getColor(), stations1);
+
+        List<StationResponse> stations2 = List.of(
+                new StationResponse(1L, "강남역"),
+                new StationResponse(2L, "선릉역")
+        );
+        LineRequest lineRequest2 = new LineRequest("2호선", "green", 1L, 2L, 10);
+        LineResponse lineResponse2 = new LineResponse(1L, lineRequest2.getName(), lineRequest2.getColor(), stations2);
+        given(lineService.findAll()).willReturn(List.of(lineResponse1, lineResponse2));
+
+        MockHttpServletResponse response = mockMvc.perform(
+                get("/lines"))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
-    void findLineById() {
+    @DisplayName("id값이 일치하는 노선을 반환한다.")
+    void findLineById() throws Exception {
+        List<StationResponse> stations = List.of(
+                new StationResponse(1L, "강남역"),
+                new StationResponse(2L, "선릉역")
+        );
+        LineResponse lineResponse = new LineResponse(1L, "2호선", "green", stations);
+        given(lineService.findById(any(Long.class)))
+                .willReturn(lineResponse);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                get("/lines/1"))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
-    void updateLine() {
+    @DisplayName("노선의 정보를 변경한다.")
+    void updateLine() throws Exception {
+        List<StationResponse> stations = List.of(
+                new StationResponse(1L, "강남역"),
+                new StationResponse(2L, "선릉역")
+        );
+        LineResponse lineResponse = new LineResponse(1L, "2호선", "green", stations);
+        given(lineService.findById(any(Long.class)))
+                .willReturn(lineResponse);
+        LineRequest newLineRequest = new LineRequest("3호선", "yellow");
+
+        MockHttpServletResponse response = mockMvc.perform(
+                put("/lines/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newLineRequest)))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
-    void delete() {
+    @DisplayName("노선을 삭제한다.")
+    void deleteLine() throws Exception {
+        List<StationResponse> stations = List.of(
+                new StationResponse(1L, "강남역"),
+                new StationResponse(2L, "선릉역")
+        );
+        LineResponse lineResponse = new LineResponse(1L, "2호선", "green", stations);
+        given(lineService.findById(any(Long.class)))
+                .willReturn(lineResponse);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                delete("/lines/1"))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ClassAssert checkException(MvcResult exception) {
