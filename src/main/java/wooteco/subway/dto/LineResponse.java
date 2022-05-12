@@ -15,14 +15,6 @@ public class LineResponse {
         this(null, null, null, null);
     }
 
-    public LineResponse(Line line) {
-        this(line.getId(), line.getName(), line.getColor(), null);
-    }
-
-    public LineResponse(Long id, String name, String color) {
-        this(id, name, color, null);
-    }
-
     public LineResponse(Line line, List<Station> stations) {
         this(line.getId(), line.getName(), line.getColor(), stations.stream()
                 .map(StationResponse::new)

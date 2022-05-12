@@ -105,6 +105,13 @@ class LineServiceTest {
                         tuple(request1.getName(), request1.getColor()),
                         tuple(request2.getName(), request2.getColor())
                 );
+        lineResponses.forEach(lineResponse -> assertThat(lineResponse.getStations())
+                .extracting(StationResponse::getId, StationResponse::getName)
+                .containsOnly(
+                        tuple(gangnam.getId(), gangnam.getName()),
+                        tuple(yeoksam.getId(), yeoksam.getName())
+                )
+        );
     }
 
     @DisplayName("지정한 id에 해당하는 노선을 조회한다.")

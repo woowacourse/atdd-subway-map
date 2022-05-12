@@ -108,8 +108,14 @@ public class LineService {
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(LineResponse::new)
+                .map(this::createLineResponse)
                 .collect(Collectors.toList());
+    }
+
+    private LineResponse createLineResponse(Line line) {
+        Sections sections = new Sections(sectionDao.findAllByLine(line));
+        List<Station> sortedStations = sections.getSortedStations();
+        return new LineResponse(line, sortedStations);
     }
 
     @Transactional(readOnly = true)
