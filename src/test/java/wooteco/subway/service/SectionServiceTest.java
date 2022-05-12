@@ -176,7 +176,7 @@ class SectionServiceTest {
                 () -> assertThat(sections).hasSize(1),
                 () -> assertThat(sections.get(0).getUpStation().getId()).isEqualTo(UP_STATION_ID),
                 () -> assertThat(sections.get(0).getDownStation().getId()).isEqualTo(DOWN_STATION_ID),
-                () ->  assertThat(sections.get(0).getDistance()).isEqualTo(10)
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(10)
         );
     }
 
@@ -211,7 +211,7 @@ class SectionServiceTest {
     void deleteFailure() {
         sectionService.delete(LINE_ID, DOWN_STATION_ID);
         assertThatThrownBy(
-                () ->  sectionService.delete(LINE_ID, MIDDLE_STATION_ID)
+                () -> sectionService.delete(LINE_ID, MIDDLE_STATION_ID)
         ).isExactlyInstanceOf(NotDeleteException.class);
     }
 }

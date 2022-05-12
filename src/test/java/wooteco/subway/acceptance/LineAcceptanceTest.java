@@ -229,7 +229,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest2 = new SectionRequest(upStation.getId(), downStation.getId(), 10);
         createSection(sectionRequest1, lineId);
         createSection(sectionRequest2, lineId);
-        
+
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

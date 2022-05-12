@@ -37,10 +37,6 @@ public class SectionRepositoryImpl implements SectionRepository {
         };
     }
 
-    private RowMapper<Long> idRowMapper() {
-        return (resultSet, rowNum) -> resultSet.getLong("id");
-    }
-
     public SectionRepositoryImpl(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)

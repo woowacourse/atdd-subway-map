@@ -51,7 +51,7 @@ public class StationService {
     }
 
     private void validateEnrollSection(Long id) {
-        if(sectionRepository.existsByStationId(id)){
+        if (sectionRepository.existsByStationId(id)) {
             throw new NotDeleteException("[ERROR] 구간에 등록되어 있는 역은 제거할 수 없습니다.");
         }
     }
