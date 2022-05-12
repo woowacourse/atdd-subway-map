@@ -25,6 +25,10 @@ public class Distance {
         return Math.abs(this.distance - other.distance);
     }
 
+    public int calculateSumBetween(Distance other) {
+        return this.distance + other.distance;
+    }
+
     public int getDistance() {
         return distance;
     }

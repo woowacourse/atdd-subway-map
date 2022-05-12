@@ -46,6 +46,10 @@ public class Section {
         return distance.calculateDifferenceBetween(section.distance);
     }
 
+    public int calculateSumOfDistance(Section section) {
+        return distance.calculateSumBetween(section.distance);
+    }
+
     public Long getId() {
         return id;
     }

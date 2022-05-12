@@ -148,8 +148,8 @@ public class Sections {
         Section section = new Section(
                 upSection.getUpStation(),
                 downSection.getDownStation(),
-                upSection.getDistance() + downSection.getDistance()
-        );
+                upSection.calculateSumOfDistance(downSection));
+
         int index = sections.indexOf(upSection);
         sections.remove(upSection);
         sections.remove(downSection);
