@@ -32,10 +32,13 @@ public class JdbcLineDaoTest {
     @Test
     @DisplayName("노선을 저장한다.")
     void save() {
+        //given
         final Line actual = lineDao.save(LINE_2_GREEN);
 
+        //when
         String actualName = actual.getName();
 
+        //then
         assertThat(actualName).isEqualTo(LINE_2_GREEN.getName());
 
         lineDao.deleteById(actual.getId());
@@ -44,8 +47,10 @@ public class JdbcLineDaoTest {
     @Test
     @DisplayName("중복된 노선을 저장할 경우 예외를 발생시킨다.")
     void save_duplicate() {
+        //given
         final Line saved = lineDao.save(LINE_2_GREEN);
 
+        //when & then
         assertThatThrownBy(() -> lineDao.save(LINE_2_GREEN))
             .isInstanceOf(DuplicateKeyException.class);
 
@@ -55,11 +60,14 @@ public class JdbcLineDaoTest {
     @Test
     @DisplayName("모든 노선을 조회한다")
     void findAll() {
+        //given
         final Line line1 = lineDao.save(LINE_2_GREEN);
         final Line line2 = lineDao.save(LINE_1_BLUE);
 
+        //when
         List<Line> lines = lineDao.findAll();
 
+        //then
         assertThat(lines).hasSize(2);
 
         lineDao.deleteById(line1.getId());
@@ -69,24 +77,30 @@ public class JdbcLineDaoTest {
     @Test
     @DisplayName("입력된 id의 노선을 삭제한다")
     void deleteById() {
+        //given
         final Line created = lineDao.save(LINE_2_GREEN);
 
+        //when
         lineDao.deleteById(created.getId());
 
+        //then
         assertThat(lineDao.findAll()).isEmpty();
     }
 
     @Test
     @DisplayName("입력된 id의 노선을 수정한다.")
     void update() {
+        //given
         final Line created = lineDao.save(LINE_2_GREEN);
         final LineRequest lineRequest = new LineRequest("1호선", "green", 1L, 2L, 10);
         final Line updated = lineRequest.toEntity(created.getId());
 
+        //when
         lineDao.update(updated);
-
         final Line updateLine = lineDao.findById(created.getId())
             .orElseThrow();
+        
+        //then
         assertThat(updateLine.getName()).isEqualTo(updateLine.getName());
 
         lineDao.deleteById(updateLine.getId());
