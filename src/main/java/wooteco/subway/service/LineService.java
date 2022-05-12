@@ -10,6 +10,7 @@ import wooteco.subway.dto.line.LineCreateRequest;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.dto.section.SectionRequest;
+import wooteco.subway.exception.BusinessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,7 +64,7 @@ public class LineService {
     public void update(Long id, LineRequest request) {
         String name = request.getName();
         if (lineDao.isExistNameWithoutItself(id, name)) {
-            throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
+            throw new BusinessException(DUPLICATE_LINE_NAME);
         }
 
         lineDao.update(id, name, request.getColor());
@@ -71,7 +72,7 @@ public class LineService {
 
     private void validateName(String name) {
         if (lineDao.isExistName(name)) {
-            throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
+            throw new BusinessException(DUPLICATE_LINE_NAME);
         }
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.BusinessException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -42,7 +43,7 @@ public class StationDao {
             final String sql = "SELECT * FROM STATION WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new EmptyResultDataAccessException(STATION_NOT_FOUND, 1);
+            throw new BusinessException(STATION_NOT_FOUND);
         }
     }
 
@@ -63,7 +64,7 @@ public class StationDao {
         final String sql = "DELETE FROM STATION WHERE id=?";
         int count = jdbcTemplate.update(sql, id);
         if (count == 0) {
-            throw new EmptyResultDataAccessException(STATION_NOT_FOUND, 1);
+            throw new BusinessException(STATION_NOT_FOUND);
         }
     }
 

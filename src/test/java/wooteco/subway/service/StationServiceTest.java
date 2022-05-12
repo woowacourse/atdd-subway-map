@@ -9,6 +9,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.StationRequest;
 import wooteco.subway.dto.station.StationResponse;
+import wooteco.subway.exception.BusinessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ class StationServiceTest {
         given(stationDao.isExistName("name")).willReturn(true);
 
         assertThatThrownBy(() -> stationService.save(stationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessage("지하철 이름이 중복될 수 없습니다.");
     }
 
@@ -82,7 +83,7 @@ class StationServiceTest {
         given(sectionDao.isStationExist(1L)).willReturn(true);
 
         assertThatThrownBy(() -> stationService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("구간에 존재하는 역은 삭제할 수 없습니다.");
     }
 }

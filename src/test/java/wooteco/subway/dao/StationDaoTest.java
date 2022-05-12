@@ -5,9 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.BusinessException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -56,7 +56,7 @@ public class StationDaoTest {
     @DisplayName("존재하지 않는 지하철 역 조회")
     void findByWrongId() {
         assertThatThrownBy(() -> dao.findById(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 지하철역입니다.");
     }
 
@@ -110,7 +110,7 @@ public class StationDaoTest {
     @DisplayName("지하철역이 존재하지 않는 경우 삭제 불가능")
     void deleteEmpty() {
         assertThatThrownBy(() -> dao.delete(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 지하철역입니다.");
     }
 

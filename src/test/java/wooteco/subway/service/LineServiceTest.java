@@ -12,6 +12,7 @@ import wooteco.subway.dto.line.LineCreateRequest;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.dto.station.StationResponse;
+import wooteco.subway.exception.BusinessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ class LineServiceTest {
         given(lineDao.save("name", "red")).willReturn(new Line(1L, "name", "red"));
 
         assertThatThrownBy(() -> lineService.save(lineCreateRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessage("지하철 노선 이름이 중복될 수 없습니다.");
     }
 
@@ -145,7 +146,7 @@ class LineServiceTest {
         given(lineDao.isExistNameWithoutItself(1L, "name")).willReturn(true);
 
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessage("지하철 노선 이름이 중복될 수 없습니다.");
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.BusinessException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -48,7 +49,7 @@ public class LineDao {
             final String sql = "SELECT * FROM LINE WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new EmptyResultDataAccessException(LINE_NOT_FOUND, 1);
+            throw new BusinessException(LINE_NOT_FOUND);
         }
     }
 
@@ -56,7 +57,7 @@ public class LineDao {
         final String sql = "DELETE FROM LINE WHERE id = ?";
         int count = jdbcTemplate.update(sql, id);
         if (count == 0) {
-            throw new EmptyResultDataAccessException(LINE_NOT_FOUND, 1);
+            throw new BusinessException(LINE_NOT_FOUND);
         }
     }
 
@@ -64,7 +65,7 @@ public class LineDao {
         final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         int count = jdbcTemplate.update(sql, name, color, id);
         if (count == 0) {
-            throw new EmptyResultDataAccessException(LINE_NOT_FOUND, 1);
+            throw new BusinessException(LINE_NOT_FOUND);
         }
     }
 

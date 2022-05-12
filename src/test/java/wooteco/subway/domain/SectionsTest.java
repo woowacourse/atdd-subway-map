@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import wooteco.subway.exception.BusinessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -92,7 +93,7 @@ class SectionsTest {
         Section target = new Section(1L, 1L, 2L, 3L, 5);
 
         assertThatThrownBy(() -> sections.validateTarget(target))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("이미 등록되어있는 구간입니다.");
     }
 
@@ -107,7 +108,7 @@ class SectionsTest {
         Section target = new Section(1L, 1L, 7L, 8L, 5);
 
         assertThatThrownBy(() -> sections.validateTarget(target))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("추가할 수 있는 구간이 없습니다.");
     }
 
@@ -122,7 +123,7 @@ class SectionsTest {
         Section target = new Section(1L, 1L, 2L, 5L, 5);
 
         assertThatThrownBy(() -> sections.findSource(target))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("해당 구간의 거리가 추가하려는 구간보다 더 짧습니다.");
     }
 
@@ -134,7 +135,7 @@ class SectionsTest {
         ));
 
         assertThatThrownBy(() -> sections.validateDelete())
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("하나의 노선에는 최소 하나의 구간이 필요합니다.");
     }
 
@@ -147,7 +148,7 @@ class SectionsTest {
         ));
 
         assertThatThrownBy(() -> sections.findSectionByStationId(5L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("해당 노선에 존재하는 역이 아닙니다.");
     }
 

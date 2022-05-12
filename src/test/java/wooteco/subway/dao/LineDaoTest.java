@@ -5,8 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.BusinessException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -73,7 +73,7 @@ public class LineDaoTest {
     @DisplayName("지하철 노선이 존재하지 않는 경우 조회 불가능")
     void findByIdEmpty() {
         assertThatThrownBy(() -> dao.findById(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
@@ -90,7 +90,7 @@ public class LineDaoTest {
     @DisplayName("지하철 노선이 존재하지 않는 경우 삭제 불가능")
     void deleteEmpty() {
         assertThatThrownBy(() -> dao.delete(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
@@ -110,7 +110,7 @@ public class LineDaoTest {
     @DisplayName("지하철 노선이 존재하지 않는 경우 수정 불가능")
     void updateEmpty() {
         assertThatThrownBy(() -> dao.update(1L, "선릉역", "green"))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
