@@ -18,14 +18,14 @@ public class SectionSeries {
     }
 
     public Optional<Section> findUpdateSection(Section newSection) {
-        if (isTerminal(newSection)) {
+        if (isAppending(newSection)) {
             return Optional.empty();
         }
         final Section intermediateSection = findIntermediateSection(newSection);
-        return Optional.of(intermediateSection.reconnect(newSection));
+        return Optional.of(intermediateSection.divide(newSection));
     }
 
-    private boolean isTerminal(Section newSection) {
+    private boolean isAppending(Section newSection) {
         final Map<Station, Station> sectionMap = sections.stream()
             .collect(Collectors.toMap(
                 Section::getUpStation,
@@ -53,12 +53,32 @@ public class SectionSeries {
                 if (list.size() == 1) {
                     return list.get(0);
                 }
-                throw new RuntimeException("not connecetd");
+                throw new RuntimeException("not connecetd"); // TODO : fix to custom exception
             }
         );
     }
 
-    public RemoveSections findDeleteSections(Long stationId) {
-        return null;
+    public RemoveSections findRemoveSections(Long stationId) {
+        final List<Section> relatedSections = sections.stream()
+            .filter(section -> section.isAnyIdMatch(stationId))
+            .collect(Collectors.toList());
+        if (relatedSections.size() == 2) {
+            return deleteIntermediate(relatedSections.get(0), relatedSections.get(1));
+        }
+        if (relatedSections.size() == 1) {
+            return deleteTerminal(relatedSections.get(0));
+        }
+        throw new RuntimeException("delete error");
+        // 상행 종점이면 업섹션을 삭제 // 하행 종점이면 다운섹션을 삭제하고, 수정 X
+        // 중간이면 상행 하행 상관이 없이, 다운섹션 삭제하고, 업섹션 수정
     }
+
+    private RemoveSections deleteTerminal(Section section) {
+        return new RemoveSections(section, Optional.empty());
+    }
+
+    private RemoveSections deleteIntermediate(Section firstSection, Section secondSection) {
+        return new RemoveSections(secondSection, Optional.of(firstSection.merge(secondSection)));
+    }
+
 }

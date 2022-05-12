@@ -60,7 +60,7 @@ class SectionTest {
         final Section newSection = SectionFixture.SECTION_AC;
 
         // when
-        final Section reconnect = oldSection.reconnect(newSection);
+        final Section reconnect = oldSection.divide(newSection);
 
         // then
         assertThat(reconnect.getUpStation()).isEqualTo(STATION_C);
@@ -72,7 +72,7 @@ class SectionTest {
         final Section oldSection = SectionFixture.SECTION_BC;
         final Section newSection = SectionFixture.SECTION_AC;
 
-        final Section reconnect = oldSection.reconnect(newSection);
+        final Section reconnect = oldSection.divide(newSection);
 
         assertThat(reconnect.getDownStation()).isEqualTo(STATION_A);
 

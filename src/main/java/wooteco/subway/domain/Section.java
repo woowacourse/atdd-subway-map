@@ -26,7 +26,7 @@ public class Section {
         return this.upStation.equals(other.upStation) ^ this.downStation.equals(other.downStation);
     }
 
-    public Section reconnect(Section other) {
+    public Section divide(Section other) {
         if (isUpStationConnected(other)) {
             return new Section(id, other.downStation, downStation, distance.subtract(other.distance));
         }
@@ -35,6 +35,14 @@ public class Section {
 
     private boolean isUpStationConnected(Section other) {
         return this.upStation.equals(other.upStation);
+    }
+
+    public boolean isAnyIdMatch(Long stationId) {
+        return upStation.getId().equals(stationId) || downStation.getId().equals(stationId);
+    }
+
+    public Section merge(Section other) {
+        return new Section(id, upStation, other.downStation, distance.plus(other.distance));
     }
 
     public Long getId() {

@@ -34,7 +34,7 @@ public class SectionService {
 
     public void delete(Long lineId, Long stationId) {
         final SectionSeries sectionSeries = new SectionSeries(sectionRepository.readAllSections(lineId));
-        RemoveSections removeSections = sectionSeries.findDeleteSections(stationId);
+        RemoveSections removeSections = sectionSeries.findRemoveSections(stationId);
         sectionRepository.delete(removeSections.getDeleteSection(), removeSections.getUpdateSection());
     }
 }

@@ -30,7 +30,7 @@ public class StationSeries {
             .stream()
             .filter(upStation -> !sectionMap.containsValue(upStation))
             .findAny()
-            .orElseThrow(() -> new CustomException("상행 종점을 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException("상행 종점을 찾을 수 없습니다.")); // fix to refined
     }
 
     private static List<Station> getOrderedStations(Map<Station, Station> sectionMap, Station cursor) {

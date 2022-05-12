@@ -19,7 +19,7 @@ public class LineResponse {
         this.color = color;
         this.stations = stations;
     }
-    
+
     public LineResponse() {
         this(null, null, null, null);
     }
