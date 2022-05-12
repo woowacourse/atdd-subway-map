@@ -1,5 +1,6 @@
 package wooteco.subway.repository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,11 +80,32 @@ public class SubwayRepository implements LineRepository, SectionRepository, Stat
         validateStationsExist(sections);
     }
 
+    private void validateLineExist(Long lineId) {
+        if (!lineDao.existsById(lineId)) {
+            throw new NoSuchLineException(lineId);
+        }
+    }
+
     private void validateStationsExist(List<Section> sections) {
-        sections.forEach(section -> {
-            validateStationExist(section.getUpStation().getId());
-            validateStationExist(section.getDownStation().getId());
-        });
+        sections.forEach(this::validateStationsExist);
+    }
+
+    private void validateStationsExist(Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        validateStationsExist(upStation, downStation);
+    }
+
+    private void validateStationsExist(Station... stations) {
+        Arrays.stream(stations)
+                .map(Station::getId)
+                .forEach(this::validateStationExist);
+    }
+
+    private void validateStationExist(Long stationId) {
+        if (!stationDao.existsById(stationId)) {
+            throw new NoSuchStationException(stationId);
+        }
     }
 
     @Override
@@ -160,6 +182,12 @@ public class SubwayRepository implements LineRepository, SectionRepository, Stat
         sectionDao.remove(sectionId);
     }
 
+    private void validateSectionExist(Long sectionId) {
+        if (!sectionDao.existsById(sectionId)) {
+            throw new NoSuchSectionException(sectionId);
+        }
+    }
+
     @Override
     public Station saveStation(Station station) {
         Long stationId = saveStation(EntityAssembler.stationEntity(station));
@@ -200,24 +228,6 @@ public class SubwayRepository implements LineRepository, SectionRepository, Stat
         if (sectionDao.existsByStationId(station.getId())) {
             throw new IllegalStateException(
                     String.format("지하철역을 구간으로 지니고 있는 지하철노선이 존재합니다. [지하철역 : %s]", station.getName()));
-        }
-    }
-
-    private void validateLineExist(Long lineId) {
-        if (!lineDao.existsById(lineId)) {
-            throw new NoSuchLineException(lineId);
-        }
-    }
-
-    private void validateSectionExist(Long sectionId) {
-        if (!sectionDao.existsById(sectionId)) {
-            throw new NoSuchSectionException(sectionId);
-        }
-    }
-
-    private void validateStationExist(Long stationId) {
-        if (!stationDao.existsById(stationId)) {
-            throw new NoSuchStationException(stationId);
         }
     }
 }
