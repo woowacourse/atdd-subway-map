@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.*;
@@ -60,7 +59,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(savedStation4.getId(), savedStation1.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+                RestAssuredConvenienceMethod.postRequest(request, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -71,7 +70,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(savedStation3.getId(), savedStation4.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+                RestAssuredConvenienceMethod.postRequest(request, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -82,7 +81,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(savedStation1.getId(), savedStation4.getId(), 7);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+                RestAssuredConvenienceMethod.postRequest(request, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -93,7 +92,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(100L, savedStation2.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+                RestAssuredConvenienceMethod.postRequest(request, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -104,7 +103,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(savedStation4.getId(), savedStation5.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+                RestAssuredConvenienceMethod.postRequest(request, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -115,7 +114,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(savedStation3.getId(), savedStation2.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+                RestAssuredConvenienceMethod.postRequest(request, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -126,7 +125,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(savedStation3.getId(), savedStation2.getId(), 0);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+                RestAssuredConvenienceMethod.postRequest(request, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -137,7 +136,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(savedStation1.getId(), savedStation2.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, createPath);
+                RestAssuredConvenienceMethod.postRequest(request, createPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
@@ -39,7 +38,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest request = new StationRequest("강남역");
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -51,7 +50,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest request = new StationRequest("");
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -62,7 +61,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest request = new StationRequest("선릉역");
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

@@ -44,7 +44,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(),10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -56,7 +56,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineRequest request = new LineRequest("", "red", savedStation1.getId(), savedStation2.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -67,7 +67,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineRequest request = new LineRequest("신분당선", "", savedStation1.getId(), savedStation2.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -79,7 +79,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -91,7 +91,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -103,7 +103,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineRequest request = new LineRequest("신분당선", "red", 100L, savedStation1.getId(), 10);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -115,7 +115,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 0);
 
         ExtractableResponse<Response> response =
-                RestAssuredConvenienceMethod.postRequest(request, MediaType.APPLICATION_JSON_VALUE, basicPath);
+                RestAssuredConvenienceMethod.postRequest(request, basicPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

@@ -3,13 +3,14 @@ package wooteco.subway.controller;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.springframework.http.MediaType;
 
 public class RestAssuredConvenienceMethod {
 
-    public static ExtractableResponse<Response> postRequest(Object body, String mediaType, String path) {
+    public static ExtractableResponse<Response> postRequest(Object body, String path) {
         return RestAssured.given().log().all()
                 .body(body)
-                .contentType(mediaType)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(path)
                 .then().log().all()
