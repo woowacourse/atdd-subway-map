@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.domain.Sections.DUPLICATE_STATION_ERROR_MESSAGE;
+import static wooteco.subway.domain.Sections.IMPOSSIBLE_ADDING_EXCEPTION_MESSAGE;
 import static wooteco.subway.domain.Sections.IMPOSSIBLE_DELETE_EXCEPTION_MESSAGE;
 import static wooteco.subway.domain.Sections.NONE_DUPLICATE_STATION_ERROR_MESSAGE;
 
@@ -90,7 +91,7 @@ public class SectionsTest {
 
         assertThatThrownBy(() -> sections.add(new Section(1L, 2L, 4L, 10)))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("에러");
+                .hasMessage(IMPOSSIBLE_ADDING_EXCEPTION_MESSAGE);
     }
 
     @Test

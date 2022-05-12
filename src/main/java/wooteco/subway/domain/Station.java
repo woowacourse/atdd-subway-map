@@ -21,5 +21,13 @@ public class Station {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
 
