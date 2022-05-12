@@ -60,7 +60,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final LineResponse actualResponse = findLineById(lineId);
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
@@ -95,7 +95,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final LineResponse actualResponse = findLineById(lineId);
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
@@ -189,7 +189,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final LineResponse actualResponse = findLineById(lineId);
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
@@ -216,7 +216,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final LineResponse actualResponse = findLineById(lineId);
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
