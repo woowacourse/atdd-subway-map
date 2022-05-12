@@ -1,6 +1,10 @@
 package wooteco.subway.domain;
 
-import java.util.*;
+import wooteco.subway.exception.BusinessException;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -35,11 +39,11 @@ public class Sections {
         LinkedList<Long> sortedStations = getSortedStationIds();
 
         if (sortedStations.contains(target.getUpStationId()) && sortedStations.contains(target.getDownStationId())) {
-            throw new IllegalArgumentException(ALREADY_ADDED);
+            throw new BusinessException(ALREADY_ADDED);
         }
 
         if (!sortedStations.contains(target.getUpStationId()) && !sortedStations.contains(target.getDownStationId())) {
-            throw new IllegalArgumentException(NO_SECTION);
+            throw new BusinessException(NO_SECTION);
         }
     }
 
@@ -58,7 +62,7 @@ public class Sections {
                 .get();
 
         if (source.isShorterDistance(target)) {
-            throw new IllegalArgumentException(TOO_LONG_DISTANCE);
+            throw new BusinessException(TOO_LONG_DISTANCE);
         }
 
         return source;
@@ -66,7 +70,7 @@ public class Sections {
 
     public void validateDelete() {
         if (sections.size() == MIN_COUNT_OF_SECTION) {
-            throw new IllegalArgumentException(CAN_NOT_DELETE);
+            throw new BusinessException(CAN_NOT_DELETE);
         }
     }
 
@@ -76,7 +80,7 @@ public class Sections {
                 .collect(Collectors.toList());
 
         if (result.size() == 0) {
-            throw new IllegalArgumentException(NOT_EXIST_STATION);
+            throw new BusinessException(NOT_EXIST_STATION);
         }
 
         return result;

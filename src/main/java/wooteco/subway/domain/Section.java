@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.dto.section.SectionRequest;
+import wooteco.subway.exception.BusinessException;
 
 public class Section {
 
@@ -90,13 +91,13 @@ public class Section {
 
     private static void validateSameId(Long upStationId, Long downStationId) {
         if (upStationId == downStationId) {
-            throw new IllegalArgumentException(SAME_UP_DOWN);
+            throw new BusinessException(SAME_UP_DOWN);
         }
     }
 
     private static void validateDistance(int distance) {
         if (distance < 1) {
-            throw new IllegalArgumentException(WRONG_DISTANCE);
+            throw new BusinessException(WRONG_DISTANCE);
         }
     }
 

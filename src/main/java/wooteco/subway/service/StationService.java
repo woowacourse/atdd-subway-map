@@ -7,6 +7,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.StationRequest;
 import wooteco.subway.dto.station.StationResponse;
+import wooteco.subway.exception.BusinessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class StationService {
         String name = request.getName();
 
         if (stationDao.isExistName(name)) {
-            throw new IllegalArgumentException(DUPLICATE_STATION_NAME);
+            throw new BusinessException(DUPLICATE_STATION_NAME);
         }
 
         return new StationResponse(stationDao.save(name));
@@ -45,7 +46,7 @@ public class StationService {
 
     public void delete(Long id) {
         if (sectionDao.isStationExist(id)) {
-            throw new IllegalArgumentException(CAN_NOT_DELETE);
+            throw new BusinessException(CAN_NOT_DELETE);
         }
         stationDao.delete(id);
     }
