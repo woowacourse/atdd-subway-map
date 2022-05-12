@@ -24,6 +24,7 @@ public class SectionEntity {
 
     public static SectionEntity from(Section section, Long lineId) {
         return new SectionEntity(
+            section.getId(),
             lineId,
             section.getUpStation().getId(),
             section.getDownStation().getId(),

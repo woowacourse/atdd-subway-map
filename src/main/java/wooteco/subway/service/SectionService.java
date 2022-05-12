@@ -23,7 +23,9 @@ public class SectionService {
 
     public void create(Long lineId, SectionRequest sectionRequest) {
         final SectionSeries sectionSeries = new SectionSeries(sectionRepository.readAllSections(lineId));
-        final Section newSection = sectionRepository.readSection(sectionRequest.getUpStationId(),
+        final Section newSection = sectionRepository.toSection(
+            null,
+            sectionRequest.getUpStationId(),
             sectionRequest.getDownStationId(),
             sectionRequest.getDistance());
         final EnrollSections enrollSections = sectionSeries.findEnrollSections(newSection);

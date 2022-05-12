@@ -10,7 +10,6 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionSeries;
 import wooteco.subway.domain.Station;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.entity.StationEntity;
@@ -30,14 +29,14 @@ public class SectionRepository {
     public List<Section> readAllSections(Long lineId) {
         final List<SectionEntity> entities = sectionDao.readSectionsByLineId(lineId);
         return entities.stream()
-            .map(entity -> readSection(entity.getUpStationId(), entity.getDownStationId(), entity.getDistance()))
+            .map(entity -> toSection(entity.getId(), entity.getUpStationId(), entity.getDownStationId(), entity.getDistance()))
             .collect(Collectors.toList());
     }
 
-    public Section readSection(Long upStationId, Long downStationId, int distance) {
+    public Section toSection(Long id, Long upStationId, Long downStationId, int distance) {
         final Station upStation = readStation(upStationId);
         final Station downStation = readStation(downStationId);
-        return new Section(upStation, downStation, new Distance(distance));
+        return new Section(id, upStation, downStation, new Distance(distance));
     }
 
     private Station readStation(Long stationId) {
