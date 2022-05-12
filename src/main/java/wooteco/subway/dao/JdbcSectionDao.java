@@ -48,6 +48,12 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
+    public void deleteById(Long id) {
+        final String sql = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public List<SectionEntity> readSectionsByLineId(Long lineId) {
         final String sql = "SELECT * FROM section WHERE line_id = ?";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new SectionEntity(
@@ -57,6 +63,12 @@ public class JdbcSectionDao implements SectionDao {
             resultSet.getLong("down_station_id"),
             resultSet.getInt("distance")
         ), lineId);
+    }
+
+    @Override
+    public void update(SectionEntity entity) {
+        final String sql = "UPDATE section SET up_station_id = ?, down_station_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, entity.getUpStationId(), entity.getDownStationId(), entity.getId());
     }
 
 }

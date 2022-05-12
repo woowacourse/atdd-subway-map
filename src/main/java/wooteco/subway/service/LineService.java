@@ -43,7 +43,7 @@ public class LineService {
         final Distance distance = new Distance(lineRequest.getDistance());
 
         final Section savedSection = sectionRepository.create(
-            new Section(upStation, downStation, distance), savedLine.getId()
+            savedLine.getId(), new Section(upStation, downStation, distance)
         );
         return LineResponse.of(savedLine, savedSection);
     }

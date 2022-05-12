@@ -2,7 +2,8 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.domain.Distance;
+import wooteco.subway.domain.RemoveSections;
+import wooteco.subway.domain.EnrollSections;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionSeries;
 import wooteco.subway.dto.SectionRequest;
@@ -21,23 +22,17 @@ public class SectionService {
     }
 
     public void create(Long lineId, SectionRequest sectionRequest) {
-        SectionSeries sectionSeries = sectionRepository.readAllSections(lineId);
-        Section newSection = createSection(sectionRequest);
-        sectionRepository.create(newSection, lineId);
-        sectionSeries.findUpdateSection(newSection).ifPresent(sectionRepository::update);
-    }
-
-    public Section createSection(SectionRequest sectionRequest) {
-        return new Section(
-            stationRepository.findById(sectionRequest.getUpStationId()),
-            stationRepository.findById(sectionRequest.getDownStationId()),
-            new Distance(sectionRequest.getDistance())
-        );
+        final SectionSeries sectionSeries = sectionRepository.readAllSections(lineId);
+        final Section newSection = sectionRepository.readSection(sectionRequest.getUpStationId(),
+            sectionRequest.getDownStationId(),
+            sectionRequest.getDistance());
+        final EnrollSections enrollSections = sectionSeries.findEnrollSections(newSection);
+        sectionRepository.create(lineId, enrollSections.getCreateSection(), enrollSections.getUpdateSection());
     }
 
     public void delete(Long lineId, Long stationId) {
         final SectionSeries sectionSeries = sectionRepository.readAllSections(lineId);
-        // final List<Section> deleteSections = sectionSeries.findDeleteSections(stationId);
-
+        RemoveSections removeSections = sectionSeries.findDeleteSections(stationId);
+        sectionRepository.delete(removeSections.getDeleteSection(), removeSections.getUpdateSection());
     }
 }

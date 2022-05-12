@@ -1,6 +1,7 @@
 package wooteco.subway.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
@@ -48,15 +49,26 @@ public class SectionRepository {
         return new Station(entity.getId(), entity.getName());
     }
 
-    public Section create(Section section, Long lineId) {
-        final SectionEntity savedEntity = sectionDao.save(SectionEntity.from(section), lineId);
+    public Section create(Long lineId, Section createSection) {
+        final SectionEntity savedEntity = sectionDao.save(SectionEntity.from(createSection), lineId);
         return new Section(savedEntity.getId(),
             readStation(savedEntity.getUpStationId()),
             readStation(savedEntity.getDownStationId()),
-            new Distance(savedEntity.getDistance()));
+            new Distance(savedEntity.getDistance())
+        );
     }
 
-    public void update(Section updateSection) {
+    public Section create(Long lineId, Section createSection, Optional<Section> updateSection) {
+        updateIfPresent(updateSection);
+        return create(lineId, createSection);
+    }
 
+    private void updateIfPresent(Optional<Section> updateSection) {
+        updateSection.ifPresent(section -> sectionDao.update(SectionEntity.from(section)));
+    }
+
+    public void delete(Section deleteSection, Optional<Section> updateSection) {
+        updateIfPresent(updateSection);
+        sectionDao.deleteById(deleteSection.getId());
     }
 }
