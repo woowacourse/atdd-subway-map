@@ -32,11 +32,11 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public boolean isUpStation(Station station) {
+    public boolean hasUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
-    public boolean isDownStation(Station station) {
+    public boolean hasDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
