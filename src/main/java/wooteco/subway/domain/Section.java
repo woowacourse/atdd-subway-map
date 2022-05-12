@@ -64,6 +64,14 @@ public class Section{
         return upStationId == stationId || downStationId == stationId;
     }
 
+    public boolean isAbleToLinkOnUpStation(Section other) {
+        return upStationId.equals(other.downStationId);
+    }
+
+    public boolean isAbleToLinkOnDownStation(Section other) {
+        return downStationId.equals(other.upStationId);
+    }
+
     public Long getId() {
         return id;
     }

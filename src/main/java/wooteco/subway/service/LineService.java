@@ -2,7 +2,6 @@ package wooteco.subway.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,7 +74,7 @@ public class LineService {
         List<LineResponse> lineResponses = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
         for (Line line : lines) {
-            Set<Long> lineIds = findLineIds(line);
+            List<Long> lineIds = findLineIds(line);
             List<StationResponse> stationResponses = createStationResponse(lineIds);
             LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(),
                     stationResponses);
@@ -84,24 +83,24 @@ public class LineService {
         return lineResponses;
     }
 
-    private Set<Long> findLineIds(Line line) {
-        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
-        return sections.getStationIds();
+    @Transactional(readOnly = true)
+    public LineResponse findLine(Long id) {
+        Line line = lineDao.findById(id);
+        List<Long> lineIds = findLineIds(line);
+        List<StationResponse> stationResponse = createStationResponse(lineIds);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponse);
     }
 
-    private List<StationResponse> createStationResponse(Set<Long> lineIds) {
+    private List<Long> findLineIds(Line line) {
+        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
+        return sections.getSortedStationIds();
+    }
+
+    private List<StationResponse> createStationResponse(List<Long> lineIds) {
         return lineIds.stream()
                 .map(stationDao::findById)
                 .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
-    }
-
-    @Transactional(readOnly = true)
-    public LineResponse findLine(Long id) {
-        Line line = lineDao.findById(id);
-        Set<Long> lineIds = findLineIds(line);
-        List<StationResponse> stationResponse = createStationResponse(lineIds);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponse);
     }
 
     @Transactional

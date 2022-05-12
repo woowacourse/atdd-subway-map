@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,43 @@ public class Sections {
     private final List<Section> value;
 
     public Sections(List<Section> value) {
-        this.value = value;
+        this.value = sort(value);
+    }
+
+    private List<Section> sort(List<Section> value) {
+        List<Section> orderedSections = new ArrayList<>();
+        orderedSections.add(value.get(0));
+
+        extendToUp(orderedSections, value);
+        extendToDown(orderedSections, value);
+
+        return orderedSections;
+    }
+
+    private void extendToUp(List<Section> orderedSections, List<Section> value) {
+        Section upTerminalSection = orderedSections.get(orderedSections.size() - 1);
+
+        Optional<Section> newUpTerminalSection = value.stream()
+                .filter(upTerminalSection::isAbleToLinkOnDownStation)
+                .findAny();
+
+        if (newUpTerminalSection.isPresent()) {
+            orderedSections.add(newUpTerminalSection.get());
+            extendToUp(orderedSections, value);
+        }
+    }
+
+    private void extendToDown(List<Section> orderedSections, List<Section> value) {
+        Section downTerminalSection = orderedSections.get(0);
+
+        Optional<Section> newDownTerminalSection = value.stream()
+                .filter(downTerminalSection::isAbleToLinkOnUpStation)
+                .findAny();
+
+        if (newDownTerminalSection.isPresent()) {
+            orderedSections.add(0, newDownTerminalSection.get());
+            extendToDown(orderedSections, value);
+        }
     }
 
     public Sections add(Section section) {
@@ -171,6 +208,14 @@ public class Sections {
         return value.stream()
                 .map(Section::getDownStationId)
                 .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public List<Long> getSortedStationIds() {
+        return value.stream()
+                .map(Section::getStationId)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public Set<Long> getStationIds() {
