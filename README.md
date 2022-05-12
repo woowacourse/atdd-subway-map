@@ -1,15 +1,3 @@
-<p align="center">
-    <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
-</p>
-<p align="center">
-  <a href="https://techcourse.woowahan.com/c/Dr6fhku7" alt="woowacourse subway">
-    <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fedu.nextstep.camp%2Fc%2FR89PYi5H">
-  </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/woowacourse/atdd-subway-map">
-</p>
-
-<br>
-
 # 지하철 노선도 미션
 
 스프링 과정 실습을 위한 지하철 노선도 애플리케이션
@@ -49,30 +37,113 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 ### 지하철 역 관리 API 기능 완성하기
 
 - [x] StationDao를 활용하여 지하철 역 정보를 관리
-- [x] 지하철 역 등록
-    - [x] [예외] 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
 - [x] 지하철역 db 생성 및 데이터 연결
 - [x] static 객체를 스프링 빈으로 변경
+- [x] 지하철 역 등록
+    - [x] [예외] 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
+- [x] 지하철 역 삭제
+    - [x] [예외] 해당 지하철 역이 구간안에 존재할 시 에러를 응답
+- [x] 지하철 역 목록
 
 ### 지하철 노선 관리 API 구현하기
 
 - [x] 지하철 노선 등록
     - [x] [예외] 지하철역과 마찬가지로 같은 이름의 노선은 생성 불가
+    - [x] 노선 추가 시 이름, 노선 색상 외에도 3가지 정보를 추가로 입력 받음
+        - [x] 구간(Section) 정보도 함께 등록
+            - [x] upStationId: 상행 종점
+            - [x] downStationId: 하행 종점
+            - [x] distance: 두 종점간의 거리
 - [x] 지하철 노선 목록
 - [x] 지하철 노선 조회
-- [x] 지하철 노선 수정
+- [x] 지하철 노선 (이름, 컬러) 수정
 - [x] 지하철 노선 삭제
+    - [x] 해당 노선괴 연결된 모든 구간들 삭제
 - [x] 지하철 노선 db 생성 및 데이터 연결
-- [x] static 객체를 스프링 빈으로 변경
+
+### 구간 관리 API 구현
+
+- [x] 노선에 구간을 추가
+    - [x] [예외] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+    - [x] [예외] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+    - [x] [예외] 상행역과 하행역이 동일할 수 없음
+    - [x] 지하철 역의 상행종점이 구간의 하행종점과 같을 때
+        - 상행 종점 등록
+    - [x] 지하철 역의 하행종점이 구간의 상행종점과 같을 때
+        - 하행 종점 등록
+    - [x] 지하철 역의 하행/상행 종점이 구간의 하행/ 상행종점과 같을 때
+        - 역 사이에 새로운 역을 등록 (갈래길 방지)
+        - [x] [예외] 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+- [x] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
+- [x] 구간 제거
+    - [x] [예외] 구간이 하나인 노선에서 마지막 구간을 제거할 수 없음
+    - [x] 상행/하행 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+    - [x] 중간역이 제거될 경우 재배치를 함
+        - [x] 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
+        - [x] 거리는 두 구간의 거리의 합으로 정함
 
 ### End to End 테스트 작성하기
 
 - [x] 노선 기능에 대한 E2E 테스트를 작성
 
 ## TODO
-- [x] 컨트롤러 테스트코드 간소화
 
-### 1단계 피드백
+- [x] 컨트롤러 테스트코드 간소화
+- [x] vo 동등성 기준 변경
+- [x] Line 테이블에 상/하행/거리 정보가 제외되도록 변경
+- [x] station이 포함된 Section 클래스 생성
+- [x] 지하철역 삭제 후처리
+    - [x] section 외래키로 잇기, 연결된 section 먼저 삭제
+- [x] Sections에 서비스 로직 이동 및 테스트코드 이동
+- [x] SectionWithStation을 Section 도메인과 통합
+- [x] optional 추가
+- [x] 새로 만든 도메인 객체들의 테스트코드 추가
+- [ ] equals 대신 isSame... 등의 메소드들 생성해 비교하기
+
+[//]: # (- [ ] 테스트코드 속도 개선)
+
+[//]: # ()
+[//]: # (    - [ ] Drop table 대신 truncate 어쩌구 사용...)
+
+[//]: # (- [x] domain 는 vo ㄴㄴ)
+
+[//]: # ()
+[//]: # (    - [x] equals 대신 usingRecursiveComparison 사용?)
+
+[//]: # ()
+[//]: # (    - [x] [참고자료]&#40;https://prolog.techcourse.co.kr/studylogs/2352&#41;)
+
+[//]: # (- [ ] 예외처리 꼼꼼하게~ 수정^^ CustomException 써보거나 기존 쓸만한 Exception 적용)
+
+[//]: # ()
+[//]: # (    - [ ] IllegalStateException, NoSuchElementException 등)
+
+[//]: # ()
+[//]: # (    - [ ] sql 관련 Exception 검색 후 적용)
+
+[//]: # ()
+[//]: # (    - [ ] 예외메세지에 해당 역/노선 등 정보 제공)
+
+[//]: # ()
+[//]: # (    - [ ] 예외 클래스 만들어 예외메세지 템플릿으로 메세지 변경)
+
+### 3단계 피드백
+
+- [x] 한번에 delete 할 수 있는 메소드를 Dao에 생성
+- [x] sectionDao에서 바로 station이 포함된 Section을 반환하도록 변경
+- [x] checkStationExist 코드에서 hasStation 쿼리 한번으로 바뀌도록 새 StationDao 메소드 생성
+- [x] 존재하지 않는 id로 검색시 어떻게 될까요? -> 들어오는 서비스의 모든 파라미터 검증
+    - [x] database 에러를 서비스 레이어에서 IllegalArgument로 변환해 던져주기
+- [x] update시 line만 넘겨주면 다시 조회를 하지 않아도 될거같은데 어떻게 생각하시나요? -> update 실행 시 리턴값 void로 변경
+- [x] 메서드 라인수가 긴거같아요. 검증과 생성을 명시적으로 더 나눠보면 어떨까요?
+- [x] stream 문 개선
+- [x] executeMiddleSection의 기능을 save, execute로 분리
+- [x] 어떤 부분은 검증을 먼저 해주고있는데요, 하나로 통일하면 어떨까요?
+    - [x] 검증을 나눈 이유는 dao를 통한 검증 방식과 domain 내 검증 방식으로 나뉘기 때문.
+    - [x] 검증코드 대다수를 도메인 내부로 이동함.
+- [x] MockMVC와 기존 RestAssured 비교해 공부, 더 좋은 방식으로 결정 -> RestAssured 현행 유지
+
+### 1/2단계 피드백
 
 - [x] DAO 안에서 값 존재여부 검증
 - [x] 업데이트나 삭제에도 검증 추가
@@ -82,4 +153,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 사이즈가 0이어도 괜찮겠지만 해당 라인이름으로 검색시 조회가 되지않도록 하는게 더 나을 듯
 - [x] findAll()이 when이고 결과를 then에서 검증
 - [x] 에러 메세지도 같이 던져주기
-- [ ] SpringBootTest 사용 및 JdbcTest와 차이 공부
+- [x] SpringBootTest 사용 및 JdbcTest와 차이 공부

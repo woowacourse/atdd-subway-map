@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 
@@ -43,6 +44,12 @@ public class StationDao {
     public boolean hasStation(Long id) {
         final String sql = "SELECT EXISTS (SELECT * FROM station WHERE id = ?);";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
+
+    public boolean hasValidStations(Section section) {
+        final String sql = "SELECT EXISTS (SELECT * FROM station WHERE id = ?) AND EXISTS (SELECT * FROM station WHERE id = ?);";
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, section.getUpStationId(), section.getDownStationId()));
     }
 
     public Station findById(Long id) {

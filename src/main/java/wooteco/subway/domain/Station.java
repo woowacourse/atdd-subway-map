@@ -15,7 +15,11 @@ public class Station {
     }
 
     public Station(String name) {
-        this.name = name;
+        this(0L, name);
+    }
+
+    public Station(Long id) {
+        this(id, null);
     }
 
     public Long getId() {
@@ -35,12 +39,20 @@ public class Station {
             return false;
         }
         Station station = (Station) o;
-        return name.equals(station.name);
+        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
 

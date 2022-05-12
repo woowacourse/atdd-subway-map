@@ -2,30 +2,25 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    private final Map<String, String> station = getStation("강남역");
+    private final StationRequest station = new StationRequest("강남역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        ExtractableResponse<Response> response = getResponse(setRequest(station).post("/stations"));
+        ExtractableResponse<Response> response = getResponse(setRequest().body(station).post("/stations"));
 
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.CREATED.value());
@@ -37,10 +32,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        setRequest(station).post("/stations");
+        setRequest().body(station).post("/stations");
 
         // when
-        ExtractableResponse<Response> response = getResponse(setRequest(station).post("/stations"));
+        ExtractableResponse<Response> response = getResponse(setRequest().body(station).post("/stations"));
 
         // then
         assertThat(response.statusCode())
@@ -53,19 +48,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> station2 = getStation("역삼역");
-        String uri1 = getResponse(setRequest(station).post("/stations"))
-                .header("Location");
-
-        String uri2 = getResponse(setRequest(station2).post("/stations"))
-                .header("Location");
+        StationRequest station2 = new StationRequest("역삼역");
+        String uri1 = getResponse(setRequest().body(station).post("/stations")).header("Location");
+        String uri2 = getResponse(setRequest().body(station2).post("/stations")).header("Location");
 
         List<Long> expectedLineIds = Stream.of(uri1, uri2)
                 .map(it -> Long.parseLong(it.split("/")[2]))
                 .collect(Collectors.toList());
 
         // when
-        ExtractableResponse<Response> response = getResponse(setRequest(station2).get("/stations"));
+        ExtractableResponse<Response> response = getResponse(setRequest().get("/stations"));
 
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class)
                 .stream()
@@ -83,8 +75,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        String uri = getResponse(setRequest(station).post("/stations"))
-                .header("Location");
+        String uri = getResponse(setRequest().body(station).post("/stations")).header("Location");
 
         // when
         ExtractableResponse<Response> response = getResponse(setRequest().delete(uri));
@@ -101,27 +92,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString())
-                .isEqualTo("해당 아이디의 역이 없습니다.");
-    }
-
-    private Map<String, String> getStation(String name) {
-        Map<String, String> stationMap = new HashMap<>();
-        stationMap.put("name", name);
-        return stationMap;
-    }
-
-    private RequestSpecification setRequest(Map<String, String> body) {
-        return RestAssured.given().log().all()
-                .body(body)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when();
-    }
-
-    private RequestSpecification setRequest() {
-        return RestAssured.given().log().all().when();
-    }
-
-    private ExtractableResponse<Response> getResponse(Response response) {
-        return response.then().log().all().extract();
+                .isEqualTo("해당 아이디의 역을 찾을 수 없습니다.");
     }
 }

@@ -15,9 +15,7 @@ public class Line {
     }
 
     public Line(String name, String color) {
-        this.id = null;
-        this.name = name;
-        this.color = color;
+        this(0L, name, color);
     }
 
     public Long getId() {
@@ -41,11 +39,11 @@ public class Line {
             return false;
         }
         Line line = (Line) o;
-        return name.equals(line.name) && color.equals(line.color);
+        return Objects.equals(id, line.id) && name.equals(line.name) && color.equals(line.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return Objects.hash(id, name, color);
     }
 }

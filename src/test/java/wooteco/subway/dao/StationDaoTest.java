@@ -1,22 +1,29 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.Fixtures.STATION;
+import static wooteco.subway.Fixtures.STATION_2;
+import static wooteco.subway.Fixtures.STATION_4;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
+@Transactional
 class StationDaoTest {
+    private final Station station = new Station("강남역");
+    private final Station station1 = new Station("선릉역");
     private StationDao stationDao;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private final Station station = new Station("강남역");
 
     @BeforeEach
     void setUp() {
@@ -28,6 +35,8 @@ class StationDaoTest {
     void saveAndFind() {
         Long id = stationDao.save(station);
         assertThat(stationDao.findById(id))
+                .usingRecursiveComparison()
+                .ignoringFields("id")
                 .isEqualTo(station);
     }
 
@@ -52,17 +61,30 @@ class StationDaoTest {
                 .isFalse();
     }
 
+    @DisplayName("해당 구간 속 지하철역이 있는지 확인한다.")
+    @Test
+    void hasValidStations() {
+        Station upStation = stationDao.findById(stationDao.save(STATION));
+        Station downStation = stationDao.findById(stationDao.save(STATION_2));
+
+        assertThat(stationDao.hasValidStations(new Section(1L, upStation, downStation, 10)))
+                .isTrue();
+        assertThat(stationDao.hasValidStations(new Section(1L, STATION_4, downStation, 10)))
+                .isFalse();
+    }
+
     @DisplayName("지하철역을 조회한다.")
     @Test
     void findAll() {
         //given
-        Station station1 = new Station("선릉역");
-        stationDao.save(station);
-        stationDao.save(station1);
+        Long id = stationDao.save(station);
+        Long id2 = stationDao.save(station1);
 
         //when then
         assertThat(stationDao.findAll())
-                .containsOnly(station, station1);
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(List.of(station, station1));
     }
 
     @DisplayName("지하철역을 삭제한다.")
