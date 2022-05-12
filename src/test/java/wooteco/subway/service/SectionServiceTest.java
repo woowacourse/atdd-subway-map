@@ -93,13 +93,56 @@ class SectionServiceTest {
     }
 
     @Test
-    @DisplayName("구간 등록 테스트")
+    @DisplayName("등록하려는 구간의 상행 기존 구간의 상행과 겹치는 경우 구간 등록 테스트")
     void saveTest() {
         // given
         sectionService.firstSave(1L, new SectionRequest(1L, 3L, 6));
 
         // when
         sectionService.save(1L, new SectionRequest(1L, 2L, 3));
+
+        // then
+        assertThat(sectionService.findAllStationByLineId(1L))
+                .containsExactly(1L, 2L, 3L);
+    }
+
+    @Test
+    @DisplayName("등록하려는 구간의 하행이 기존 구간의 하행과 겹치는 경우 구간 등록 테스트")
+    void saveTest2() {
+        // given
+        sectionService.firstSave(1L, new SectionRequest(1L, 3L, 6));
+
+        // when
+        sectionService.save(1L, new SectionRequest(2L, 3L, 3));
+
+        // then
+        assertThat(sectionService.findAllStationByLineId(1L))
+                .containsExactly(1L, 2L, 3L);
+    }
+
+    @Test
+    @DisplayName("등록하려는 구간의 하행이 기존 구간의 상행과 겹치는 경우 구간 등록 테스트")
+    void saveTest3() {
+        // given
+        sectionService.firstSave(1L, new SectionRequest(2L, 3L, 6));
+
+        // when
+        sectionService.save(1L, new SectionRequest(1L, 2L, 3));
+
+        // then
+        assertThat(sectionService.findAllStationByLineId(1L))
+                .containsExactly(1L, 2L, 3L);
+
+    }
+
+    @Test
+    @DisplayName("등록하려는 구간의 상행이 기존 구간의 하행과 겹치는 경우 구간 등록 테스트")
+    void saveTest4() {
+        // given
+        sectionService.firstSave(1L, new SectionRequest(1L, 2L, 6));
+
+        // when
+        sectionService.save(1L, new SectionRequest(2L, 3L, 3));
 
         // then
         assertThat(sectionService.findAllStationByLineId(1L))

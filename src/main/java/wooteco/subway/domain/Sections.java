@@ -89,29 +89,44 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("없음"));
     }
 
-    public Section findOverlapSection(long upStationId, long downStationId, int distance) {
+    public List<Section> findSeperatedSection(long upStationId, long downStationId, int distance) {
         if (existByUpStationId(upStationId)) {
             Section section = findById(findIdByUpStationId(upStationId));
-            return new Section(
-                    section.getId(), section.getLineId(), downStationId, section.getDownStationId(),
-                    section.getDistance() - distance, section.getLineOrder());
+            return getNewSectionAndSeperatedSection(upStationId, downStationId, distance, section);
         }
+
         if (existByDownStationId(downStationId)) {
             Section section = findById(findIdByDownStationId(downStationId));
-            return new Section(
-                    section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
-                    section.getDistance() - distance, section.getLineOrder());
+            return getSeperatedSectionAndNewSection(upStationId, downStationId, distance, section);
         }
         if (existByUpStationId(downStationId)) {
             Section section = findById(findIdByUpStationId(downStationId));
-            return new Section(
-                    null, section.getLineId(), upStationId, downStationId,
-                    distance, section.getLineOrder() + 1);
+            return getNewSectionAndSeperatedSection(upStationId, downStationId, distance, section);
         }
         Section section = findById(findIdByDownStationId(upStationId));
-        return new Section(
-                null, section.getLineId(), upStationId, downStationId,
-                distance, section.getLineOrder());
+        return getSeperatedSectionAndNewSection(upStationId, downStationId, distance, section);
+    }
+
+    private List<Section> getNewSectionAndSeperatedSection(long upStationId, long downStationId, int distance,
+                                                           Section section) {
+        return List.of(new Section(
+                        section.getId(), section.getLineId(), upStationId, downStationId,
+                        section.getDistance() - distance, section.getLineOrder()),
+                new Section(
+                        section.getId(), section.getLineId(), downStationId, section.getDownStationId(),
+                        section.getDistance() - distance, section.getLineOrder() + 1)
+        );
+    }
+
+    private List<Section> getSeperatedSectionAndNewSection(long upStationId, long downStationId, int distance,
+                                                           Section section) {
+        return List.of(new Section(
+                        section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
+                        section.getDistance() - distance, section.getLineOrder()),
+                new Section(
+                        section.getId(), section.getLineId(), upStationId, downStationId,
+                        section.getDistance() - distance, section.getLineOrder() + 1)
+        );
     }
 
     private Section findById(long sectionId) {

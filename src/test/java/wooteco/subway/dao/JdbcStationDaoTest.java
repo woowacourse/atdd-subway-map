@@ -38,7 +38,7 @@ class JdbcStationDaoTest {
         stationDao.save(new Station("오리"));
         stationDao.save(new Station("배카라"));
 
-        assertThat(stationDao.findAll()).hasSize(2);
+        assertThat(stationDao.findAll()).hasSize(6);
     }
 
     @Test

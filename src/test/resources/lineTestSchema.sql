@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS "SECTION"
 ) references LINE
 (
     id
-),
+) on delete cascade,
     foreign key
 (
     up_station_id
