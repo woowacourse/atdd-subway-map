@@ -1,8 +1,13 @@
 package wooteco.subway.dto.section;
 
+import javax.validation.constraints.NotNull;
+
 public class SectionDeletionRequest {
 
+    @NotNull
     private Long lineId;
+
+    @NotNull
     private Long stationId;
 
     private SectionDeletionRequest() {
