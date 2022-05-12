@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.SectionEntity;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
@@ -31,7 +31,7 @@ class LineServiceTest {
     @Autowired
     private StationDao stationDao;
     @Autowired
-    private SectionDao sectionDao;
+    private JdbcSectionDao sectionDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
