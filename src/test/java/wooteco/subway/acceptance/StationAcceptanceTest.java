@@ -69,6 +69,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         );
     }
 
+
     private List<String> getIds(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)

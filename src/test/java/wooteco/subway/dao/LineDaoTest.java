@@ -16,7 +16,6 @@ import wooteco.subway.dto.line.LineResponse;
 class LineDaoTest {
 
     private LineDao lineDao;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private LineResponse line;

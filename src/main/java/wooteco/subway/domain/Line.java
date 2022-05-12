@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Line {
+  
     private Long id;
     private String name;
     private String color;
