@@ -17,7 +17,6 @@ public class Sections {
     private static final String SECTION_MUST_SHORTER_MESSAGE = "기존의 구간보다 긴 구간은 넣을 수 없습니다.";
     private static final int MIN_SIZE = 1;
 
-
     private final List<Section> values;
 
     public Sections(final List<Section> values) {

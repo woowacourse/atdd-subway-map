@@ -10,10 +10,10 @@ public class Line {
     private final Sections sections;
 
     public Line(Long id, String name, String color, Sections sections) {
-        this.id = id;
         if (Objects.isNull(name) || Objects.isNull(color)) {
             throw new IllegalArgumentException("[ERROR] 잘못된 입력값입니다.");
         }
+        this.id = id;
         this.name = name;
         this.color = color;
         this.sections = sections;
