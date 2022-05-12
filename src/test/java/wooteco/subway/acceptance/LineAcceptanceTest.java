@@ -22,10 +22,6 @@ import wooteco.subway.dto.StationResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private final StationRequest gangnamRequest = new StationRequest("강남역");
-    private final StationRequest yeoksamRequest = new StationRequest("역삼역");
-    private final StationRequest seolleungRequest = new StationRequest("선릉역");
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -234,45 +230,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    public ExtractableResponse<Response> requestPostLine(LineCreateRequest request) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    public ExtractableResponse<Response> requestGetLines() {
-        return RestAssured
-                .given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    public ExtractableResponse<Response> requestGetLine(Long id) {
-        return RestAssured
-                .given().log().all()
-                .when()
-                .get("/lines/" + id)
-                .then().log().all()
-                .extract();
-    }
-
-    public Long requestPostStationAndReturnId(StationRequest stationRequest) {
-        ExtractableResponse<Response> response = RestAssured.given()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .extract();
-        return response.body().jsonPath().getLong("id");
     }
 
 }
