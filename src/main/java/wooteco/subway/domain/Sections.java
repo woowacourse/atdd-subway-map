@@ -25,14 +25,11 @@ public class Sections {
         return sections;
     }
 
-    private void checkContainsSameSection(Section section) {
-        for (Section existingSection : sections) {
-            processSameSection(section, existingSection);
-        }
-    }
+    private void checkContainsSameSection(Section newSection) {
+        final boolean isContains = sections.stream()
+                .anyMatch(section -> section.isSameSection(newSection));
 
-    private void processSameSection(Section section, Section existingSection) {
-        if (existingSection.isSameSection(section)) {
+        if (isContains) {
             throw new IllegalSectionException("이미 동일한 구간이 등록되어 있습니다.");
         }
     }
