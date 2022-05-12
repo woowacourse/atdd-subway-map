@@ -31,7 +31,7 @@ public class SectionDaoImplTest {
         // given
         Line line = new Line("1호선", "bg-red-600");
         Long savedLineId = lineDao.save(line);
-        Section section = Section.from(new Station(1L, "강남역"), new Station(2L, "선릉역"), 10);
+        Section section = new Section(new Station(1L, "강남역"), new Station(2L, "선릉역"), 10);
 
         // when
         Long savedSectionId = sectionDao.save(section, savedLineId);

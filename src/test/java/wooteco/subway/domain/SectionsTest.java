@@ -19,10 +19,10 @@ class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        sections.add(Section.from(new Station("6"), new Station("8"), 5));
-        sections.add(Section.from(new Station("2"), new Station("4"), 5));
-        sections.add(Section.from(new Station("8"), new Station("10"), 5));
-        sections.add(Section.from(new Station("4"), new Station("6"), 5));
+        sections.add(new Section(new Station("6"), new Station("8"), 5));
+        sections.add(new Section(new Station("2"), new Station("4"), 5));
+        sections.add(new Section(new Station("8"), new Station("10"), 5));
+        sections.add(new Section(new Station("4"), new Station("6"), 5));
     }
 
     @AfterEach
@@ -38,44 +38,44 @@ class SectionsTest {
         assertThat(newSections)
             .hasSize(4)
             .containsExactly(
-                Section.from(new Station("2"), new Station("4"), 5),
-                Section.from(new Station("4"), new Station("6"), 5),
-                Section.from(new Station("6"), new Station("8"), 5),
-                Section.from(new Station("8"), new Station("10"), 5));
+                new Section(new Station("2"), new Station("4"), 5),
+                new Section(new Station("4"), new Station("6"), 5),
+                new Section(new Station("6"), new Station("8"), 5),
+                new Section(new Station("8"), new Station("10"), 5));
     }
 
     @Test
     @DisplayName("sections의 맨 앞에 삽입되어야 한다.")
     void insertFirst() {
         Sections sections1 = Sections.of(sections);
-        Section section = Section.from(new Station("1"), new Station("2"), 100);
+        Section section = new Section(new Station("1"), new Station("2"), 100);
         sections1.insert(section);
         List<Section> newSections = sections1.getSections();
         assertThat(newSections)
             .hasSize(5)
             .containsExactly(
-                Section.from(new Station("1"), new Station("2"), 100),
-                Section.from(new Station("2"), new Station("4"), 5),
-                Section.from(new Station("4"), new Station("6"), 5),
-                Section.from(new Station("6"), new Station("8"), 5),
-                Section.from(new Station("8"), new Station("10"), 5));
+                new Section(new Station("1"), new Station("2"), 100),
+                new Section(new Station("2"), new Station("4"), 5),
+                new Section(new Station("4"), new Station("6"), 5),
+                new Section(new Station("6"), new Station("8"), 5),
+                new Section(new Station("8"), new Station("10"), 5));
     }
 
     @Test
     @DisplayName("4 -> 6 사이에 삽입되어 (4 -> 5) 구간과 (5 -> 6) 구간이 생겨야 한다. ")
     void insert1() {
         Sections sections1 = Sections.of(sections);
-        Section section = Section.from(new Station("4"), new Station("5"), 3);
+        Section section = new Section(new Station("4"), new Station("5"), 3);
         sections1.insert(section);
         List<Section> newSections = sections1.getSections();
         assertThat(newSections)
             .hasSize(5)
             .containsExactly(
-                Section.from(new Station("2"), new Station("4"), 5),
-                Section.from(new Station("4"), new Station("5"), 3),
-                Section.from(new Station("5"), new Station("6"), 2),
-                Section.from(new Station("6"), new Station("8"), 5),
-                Section.from(new Station("8"), new Station("10"), 5)
+                new Section(new Station("2"), new Station("4"), 5),
+                new Section(new Station("4"), new Station("5"), 3),
+                new Section(new Station("5"), new Station("6"), 2),
+                new Section(new Station("6"), new Station("8"), 5),
+                new Section(new Station("8"), new Station("10"), 5)
             );
     }
 
@@ -83,17 +83,17 @@ class SectionsTest {
     @DisplayName("4 -> 6 사이에 삽입되어 (4 -> 5) 구간과 (5 -> 6) 구간이 생겨야 한다. ")
     void insert2() {
         Sections sections1 = Sections.of(sections);
-        Section section = Section.from(new Station("5"), new Station("6"), 3);
+        Section section = new Section(new Station("5"), new Station("6"), 3);
         sections1.insert(section);
         List<Section> newSections = sections1.getSections();
         assertThat(newSections)
             .hasSize(5)
             .containsExactly(
-                Section.from(new Station("2"), new Station("4"), 5),
-                Section.from(new Station("4"), new Station("5"), 2),
-                Section.from(new Station("5"), new Station("6"), 3),
-                Section.from(new Station("6"), new Station("8"), 5),
-                Section.from(new Station("8"), new Station("10"), 5)
+                new Section(new Station("2"), new Station("4"), 5),
+                new Section(new Station("4"), new Station("5"), 2),
+                new Section(new Station("5"), new Station("6"), 3),
+                new Section(new Station("6"), new Station("8"), 5),
+                new Section(new Station("8"), new Station("10"), 5)
             );
     }
 
@@ -101,17 +101,17 @@ class SectionsTest {
     @DisplayName("맨 마지막에 삽입되어야 한다.")
     void insertLast() {
         Sections sections1 = Sections.of(sections);
-        Section section = Section.from(new Station("10"), new Station("xx"), 100);
+        Section section = new Section(new Station("10"), new Station("xx"), 100);
         sections1.insert(section);
         List<Section> newSections = sections1.getSections();
         assertThat(newSections)
             .hasSize(5)
             .containsExactly(
-                Section.from(new Station("2"), new Station("4"), 5),
-                Section.from(new Station("4"), new Station("6"), 5),
-                Section.from(new Station("6"), new Station("8"), 5),
-                Section.from(new Station("8"), new Station("10"), 5),
-                Section.from(new Station("10"), new Station("xx"), 100));
+                new Section(new Station("2"), new Station("4"), 5),
+                new Section(new Station("4"), new Station("6"), 5),
+                new Section(new Station("6"), new Station("8"), 5),
+                new Section(new Station("8"), new Station("10"), 5),
+                new Section(new Station("10"), new Station("xx"), 100));
     }
 
     @ParameterizedTest(name = "{index}: {1}")
@@ -126,9 +126,9 @@ class SectionsTest {
 
     private static Stream<Arguments> invalidParameters() {
         return Stream.of(
-            Arguments.of(Section.from(new Station("11"), new Station("12"), 100), "아무 역과도 연결되지 않을 때"),
-            Arguments.of(Section.from(new Station("2"), new Station("3"), 100), "역과는 연결되었지만 길이가 길때"),
-            Arguments.of(Section.from(new Station("2"), new Station("4"), 3), "상행선과 하행선이 이미 있는 구간일 때")
+            Arguments.of(new Section(new Station("11"), new Station("12"), 100), "아무 역과도 연결되지 않을 때"),
+            Arguments.of(new Section(new Station("2"), new Station("3"), 100), "역과는 연결되었지만 길이가 길때"),
+            Arguments.of(new Section(new Station("2"), new Station("4"), 3), "상행선과 하행선이 이미 있는 구간일 때")
         );
     }
 
@@ -142,9 +142,9 @@ class SectionsTest {
         assertThat(newSections)
             .hasSize(3)
             .containsExactly(
-                Section.from(new Station("4"), new Station("6"), 5),
-                Section.from(new Station("6"), new Station("8"), 5),
-                Section.from(new Station("8"), new Station("10"), 5));
+                new Section(new Station("4"), new Station("6"), 5),
+                new Section(new Station("6"), new Station("8"), 5),
+                new Section(new Station("8"), new Station("10"), 5));
     }
 
     @Test
@@ -157,9 +157,9 @@ class SectionsTest {
         assertThat(newSections)
             .hasSize(3)
             .containsExactly(
-                Section.from(new Station("2"), new Station("4"), 5),
-                Section.from(new Station("4"), new Station("6"), 5),
-                Section.from(new Station("6"), new Station("8"), 5)
+                new Section(new Station("2"), new Station("4"), 5),
+                new Section(new Station("4"), new Station("6"), 5),
+                new Section(new Station("6"), new Station("8"), 5)
             );
     }
 
@@ -173,9 +173,9 @@ class SectionsTest {
         assertThat(newSections)
             .hasSize(3)
             .containsExactly(
-                Section.from(new Station("2"), new Station("6"), 10),
-                Section.from(new Station("6"), new Station("8"), 5),
-                Section.from(new Station("8"), new Station("10"), 5)
+                new Section(new Station("2"), new Station("6"), 10),
+                new Section(new Station("6"), new Station("8"), 5),
+                new Section(new Station("8"), new Station("10"), 5)
             );
     }
 }

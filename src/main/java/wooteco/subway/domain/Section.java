@@ -9,27 +9,19 @@ public class Section {
     public Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    private Section(Long id, Station upStation, Station downStation, int distance) {
+    public Section(Long id, Station upStation, Station downStation, int distance) {
         this(upStation, downStation, distance);
         this.id = id;
     }
 
     public static Section from(Long id, Section section) {
         return new Section(id, section.getUpStation(), section.getDownStation(), section.getDistance());
-    }
-
-    public static Section from(Long id, Station upStation, Station downStation, int distance) {
-        return new Section(id, upStation, downStation, distance);
-    }
-
-    public static Section from(Station upStation, Station downStation, int distance) {
-        return new Section(upStation, downStation, distance);
     }
 
     public boolean hasUpStation(Station station) {

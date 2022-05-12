@@ -40,7 +40,7 @@ public class LineService {
         Station downStation = stationDao.findById(lineRequest.getDownStationId())
             .orElseThrow(throwEmptyStationException());
 
-        sectionDao.save(Section.from(upStation, downStation, lineRequest.getDistance()), savedLineId);
+        sectionDao.save(new Section(upStation, downStation, lineRequest.getDistance()), savedLineId);
         return LineResponse.from(savedLineId, line);
     }
 
@@ -76,7 +76,7 @@ public class LineService {
         Station downStation = stationDao.findById(sectionRequest.getDownStationId())
             .orElseThrow(throwEmptyStationException());
 
-        Section section = Section.from(upStation, downStation, sectionRequest.getDistance());
+        Section section = new Section(upStation, downStation, sectionRequest.getDistance());
         Optional<Section> updatedSection = line.insertSection(section);
         updatedSection.ifPresent(sectionDao::update);
         sectionDao.save(section, line.getId());

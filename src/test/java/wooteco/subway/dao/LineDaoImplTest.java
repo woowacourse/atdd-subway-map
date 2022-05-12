@@ -89,7 +89,7 @@ class LineDaoImplTest {
 
         // when
         Long savedId = lineDao.save(line);
-        sectionDao.save(Section.from(station1, station2, 10), savedId);
+        sectionDao.save(new Section(station1, station2, 10), savedId);
         Line findLine = lineDao.findById(savedId).get();
 
         // then
@@ -111,9 +111,9 @@ class LineDaoImplTest {
 
         // when
         Long savedId1 = lineDao.save(line1);
-        sectionDao.save(Section.from(station1, station2, 10), savedId1);
+        sectionDao.save(new Section(station1, station2, 10), savedId1);
         Long savedId2 = lineDao.save(line2);
-        sectionDao.save(Section.from(station3, station4, 10), savedId2);
+        sectionDao.save(new Section(station3, station4, 10), savedId2);
 
         // then
         List<String> names = lineDao.findAll()
@@ -155,7 +155,7 @@ class LineDaoImplTest {
         // when
         Line newLine = new Line("2호선", "bg-green-600");
         lineDao.updateById(savedId, newLine);
-        sectionDao.save(Section.from(station1, station2, 10), savedId);
+        sectionDao.save(new Section(station1, station2, 10), savedId);
         Line line = lineDao.findById(savedId).get();
 
         // then

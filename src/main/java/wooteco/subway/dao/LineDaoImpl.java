@@ -89,7 +89,7 @@ public class LineDaoImpl implements LineDao {
         final String downStationName = resultSet.getString("down_station_name");
         final int distance = resultSet.getInt("distance");
 
-        return Section.from(sectionId, new Station(upStationId, upStationName),
+        return new Section(sectionId, new Station(upStationId, upStationName),
             new Station(downStationId, downStationName), distance);
     }
 
