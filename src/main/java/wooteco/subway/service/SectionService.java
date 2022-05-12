@@ -15,6 +15,11 @@ import wooteco.subway.ui.dto.SectionRequest;
 @Transactional
 public class SectionService {
 
+    private static final String UP_SUBWAY = "상행역";
+    private static final String DOWN_SUBWAY = "하행역";
+    private static final String NO_EXISTS_SUBWAY_ERROR = "%s에 존재하지 않는 역을 등록할 수 없습니다. -> %d";
+    private static final String NO_EXISTS_LINE_ERROR = "존재하지 않는 노선에 등록할 수 없습니다. -> %d";
+
     private final StationDao stationDao;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -39,27 +44,25 @@ public class SectionService {
     private void validRequest(Long lineId, SectionRequest sectionRequest) {
         if (!stationDao.existsById(sectionRequest.getUpStationId())) {
             throw new IllegalArgumentException(
-                    String.format("상행역에 존재하지 않는 역을 등록할 수 없습니다. -> %d", sectionRequest.getUpStationId()));
+                    String.format(NO_EXISTS_SUBWAY_ERROR, UP_SUBWAY, sectionRequest.getUpStationId()));
         }
         if (!stationDao.existsById(sectionRequest.getDownStationId())) {
             throw new IllegalArgumentException(
-                    String.format("하행역에 존재하지 않는 역을 등록할 수 없습니다. -> %d", sectionRequest.getDownStationId()));
+                    String.format(NO_EXISTS_SUBWAY_ERROR, DOWN_SUBWAY, sectionRequest.getDownStationId()));
         }
         if (!lineDao.existsById(lineId)) {
             throw new IllegalArgumentException(
-                    String.format("존재하지 않는 노선에 등록할 수 없습니다. -> %d", lineId));
+                    String.format(NO_EXISTS_LINE_ERROR, lineId));
         }
     }
 
     public void deleteById(Long lineId, Long stationId) {
-        List<Section> sectionList = sectionDao.findByStationId(lineId, stationId);
-        if (sectionList == null || sectionList.size() == 0) {
-            return;
-        }
+        List<Section> sections = sectionDao.findByLineIdAndStationId(lineId, stationId);
+        delete(new Sections(sections), stationId);
+    }
 
-        Sections sections = new Sections(sectionList);
+    public void delete(Sections sections, Long stationId) {
         Optional<Section> updatedSection = sections.findUpdateWhenRemove(stationId);
-
         updatedSection.ifPresent(sectionDao::update);
 
         Section section = sections.findByDownStationId(stationId);

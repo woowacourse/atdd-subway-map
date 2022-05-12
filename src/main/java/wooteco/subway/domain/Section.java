@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Section {
 
-    private static final String INVALID_DISTANCE_ERROR_MESSAGE = "유효하지 않은 거리입니다.";
-    private static final String DUPLICATED_SECTIONS_ERROR_MESSAGE = "상행과 하행은 같은 역으로 등록할 수 없습니다.";
     private static final int MIN_DISTANCE = 1;
+    private static final String INVALID_DISTANCE_ERROR_MESSAGE = String.format("거리는 %d 이상이어야 합니다.", MIN_DISTANCE);
+    private static final String DUPLICATED_SECTIONS_ERROR_MESSAGE = "상행과 하행은 같은 역으로 등록할 수 없습니다.";
 
     private Long id;
     private Long lineId;
@@ -46,7 +46,7 @@ public class Section {
 
     public void reduceDistance(Section other) {
         if (other.distance >= distance) {
-            throw new IllegalArgumentException("distance 는 0 이하가 될 수 없습니다.");
+            throw new IllegalArgumentException(INVALID_DISTANCE_ERROR_MESSAGE);
         }
         reduceDistance(other.distance);
     }

@@ -10,6 +10,11 @@ import java.util.Set;
 
 public class Sections {
 
+    private static final String NO_DOWN_STATION_ID_ERROR = "해당 stationId를 하행역으로 둔 구간은 존재하지 않습니다.";
+    private static final String NO_SECTION_LIST_ERROR = "section 목록이 존재하지 않습니다.";
+    private static final String DUPLICATED_SECTION_LIST_ERROR = "해당 구간은 이미 등록되어 있습니다.";
+    private static final String CREATE_CROSSROADS_LIST_ERROR = "갈림길을 생성할 수 없습니다.";
+
     private final List<Section> value;
 
     public Sections(List<Section> value) {
@@ -22,25 +27,21 @@ public class Sections {
         }
 
         List<Long> ids = new LinkedList<>();
-
-        Map<Long, Long> sectionMap = initByUpStationKey();
-        Long nowId = value.get(0).getDownStationId();
-        while (nowId != null) {
-            ids.add(nowId);
-            nowId = sectionMap.get(nowId);
-        }
-
-        sectionMap = initByDownStationKey();
-        nowId = value.get(0).getUpStationId();
-        while (nowId != null) {
-            ids.add(0, nowId);
-            nowId = sectionMap.get(nowId);
-        }
+        addUpStationIds(ids, value.get(0).getDownStationId());
+        addDownStationIds(ids, value.get(0).getUpStationId());
 
         return ids;
     }
 
-    private Map<Long, Long> initByUpStationKey() {
+    private void addUpStationIds(List<Long> ids, Long nowId) {
+        Map<Long, Long> sectionMap = initMapByUpStationKey();
+        while (nowId != null) {
+            ids.add(nowId);
+            nowId = sectionMap.get(nowId);
+        }
+    }
+
+    private Map<Long, Long> initMapByUpStationKey() {
         Map<Long, Long> map = new HashMap<>();
         for (Section section : value) {
             map.put(section.getUpStationId(), section.getDownStationId());
@@ -48,7 +49,15 @@ public class Sections {
         return map;
     }
 
-    private Map<Long, Long> initByDownStationKey() {
+    private void addDownStationIds(List<Long> ids, Long nowId) {
+        Map<Long, Long> sectionMap = initMapByDownStationKey();
+        while (nowId != null) {
+            ids.add(0, nowId);
+            nowId = sectionMap.get(nowId);
+        }
+    }
+
+    private Map<Long, Long> initMapByDownStationKey() {
         Map<Long, Long> map = new HashMap<>();
         for (Section section : value) {
             map.put(section.getDownStationId(), section.getUpStationId());
@@ -67,7 +76,7 @@ public class Sections {
 
         for (Section section : value) {
             if (newSection.isSameDownStationId(section)) {
-                throw new IllegalArgumentException("갈림길을 생성할 수 없습니다.");
+                throw new IllegalArgumentException(CREATE_CROSSROADS_LIST_ERROR);
             }
 
             if (newSection.isSameUpStationId(section)) {
@@ -80,9 +89,11 @@ public class Sections {
     }
 
     private void validNewSection(Section section) {
-        Set<Long> ids = findStationIds();
-        if (ids.contains(section.getDownStationId()) && ids.contains(section.getUpStationId())) {
-            throw new IllegalArgumentException("해당 구간은 이미 등록되어 있습니다.");
+        Set<Long> allSectionIds = findStationIds();
+        List<Long> sectionStationIds = List.of(section.getDownStationId(), section.getUpStationId());
+
+        if (allSectionIds.containsAll(sectionStationIds)) {
+            throw new IllegalArgumentException(DUPLICATED_SECTION_LIST_ERROR);
         }
     }
 
@@ -119,12 +130,12 @@ public class Sections {
         return value.stream()
                 .filter(section -> section.isSameDownStationId(stationId))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("해당 stationId를 하행역으로 둔 구간은 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NO_DOWN_STATION_ID_ERROR));
     }
 
     private void validSize() {
-        if (value.size() == 0) {
-            throw new IllegalArgumentException("section 목록이 존재하지 않습니다.");
+        if (value == null || value.size() == 0) {
+            throw new IllegalArgumentException(NO_SECTION_LIST_ERROR);
         }
     }
 

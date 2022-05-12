@@ -40,7 +40,13 @@ public class SectionDao {
         return jdbcTemplate.query(sql, source, eventRowMapper);
     }
 
-    public List<Section> findByStationId(Long lineId, Long stationId) {
+    public List<Section> findByStationId(Long id) {
+        String sql = "select * from SECTION where up_station_id = :id or down_station_id = :id";
+        SqlParameterSource source = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.query(sql, source, eventRowMapper);
+    }
+
+    public List<Section> findByLineIdAndStationId(Long lineId, Long stationId) {
         String sql = "select * from SECTION where line_id = :lineId and (up_station_id = :stationId or down_station_id = :stationId)";
         MapSqlParameterSource source = new MapSqlParameterSource();
         source.addValue("lineId", lineId);

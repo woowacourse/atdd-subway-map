@@ -1,12 +1,17 @@
 package wooteco.subway.service;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.StationRequest;
@@ -19,12 +24,12 @@ public class StationService {
 
     private final SectionService sectionService;
     private final StationDao stationDao;
-    private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public StationService(SectionService sectionService, StationDao stationDao, LineDao lineDao) {
+    public StationService(SectionService sectionService, StationDao stationDao, SectionDao sectionDao) {
         this.sectionService = sectionService;
         this.stationDao = stationDao;
-        this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     public StationResponse save(StationRequest stationRequest) {
@@ -54,13 +59,22 @@ public class StationService {
     }
 
     private void deleteStationInSections(Long id) {
-        List<Long> lineIds = lineDao.findAll()
-                .stream()
-                .map(Line::getId)
-                .collect(Collectors.toList());
+        List<Section> sections = sectionDao.findByStationId(id);
+        Map<Long, List<Section>> sectionsMap = initSectionsMap(sections);
 
-        for(Long lineId : lineIds) {
-            sectionService.deleteById(lineId, id);
+        for (Entry<Long, List<Section>> sectionsInfo : sectionsMap.entrySet()) {
+            Sections lineIdSections = new Sections(sectionsInfo.getValue());
+            sectionService.delete(lineIdSections, sectionsInfo.getKey());
         }
+    }
+
+    private Map<Long, List<Section>> initSectionsMap(List<Section> sections) {
+        Map<Long, List<Section>> map = new HashMap<>();
+        for (Section section : sections) {
+            Long lineId = section.getLineId();
+            List<Section> sectionList = map.getOrDefault(lineId, new LinkedList<>());
+            map.put(lineId, sectionList);
+        }
+        return map;
     }
 }
