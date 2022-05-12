@@ -43,18 +43,6 @@ public class LineService {
         return new LineResponse(savedLine, makeStationResponseList(request));
     }
 
-    private List<StationResponse> makeStationResponseList(LineRequest request) {
-        final Station upStation = stationDao.findById(request.getUpStationId())
-                .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
-        final Station downStation = stationDao.findById(request.getDownStationId())
-                .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
-
-        final StationResponse upStationResponse = new StationResponse(upStation);
-        final StationResponse downStationResponse = new StationResponse(downStation);
-
-        return List.of(upStationResponse, downStationResponse);
-    }
-
     public LineResponse findById(Long id) {
         final Line line = lineDao.findById(id)
                 .orElseThrow(() -> new NotExistException("찾으려는 노선이 존재하지 않습니다."));
@@ -71,31 +59,6 @@ public class LineService {
                 .collect(toUnmodifiableList());
     }
 
-    private Sections getSections(Line line) {
-        final List<Section> sections = sectionDao.findByLineId(line.getId());
-
-        return new Sections(sections);
-    }
-
-    private List<StationResponse> sortedStations(Sections sections) {
-        final List<Section> sortedSections = sections.getSortedSection();
-
-        List<StationResponse> stations = new ArrayList<>();
-
-        for (final Section section : sortedSections) {
-            final Station findStation = stationDao.findById(section.getUpStationId())
-                    .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
-            stations.add(new StationResponse(findStation));
-        }
-
-        final Section lastSection = sortedSections.get(sortedSections.size() - 1);
-        final Station lastStation = stationDao.findById(lastSection.getDownStationId())
-                .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
-        stations.add(new StationResponse(lastStation));
-
-        return stations;
-    }
-
     public Long updateByLine(Long id, LineRequest request) {
         final Line updateLine = new Line(id, request.getName(), request.getColor());
         return lineDao.updateByLine(updateLine);
@@ -108,5 +71,43 @@ public class LineService {
             throw new NotExistException("존재하지 않는 노선입니다.");
         }
         sectionDao.deleteByLineId(id);
+    }
+
+    private List<StationResponse> makeStationResponseList(LineRequest request) {
+        final Station upStation = getStationById(request.getUpStationId());
+        final Station downStation = getStationById(request.getDownStationId());
+
+        final StationResponse upStationResponse = new StationResponse(upStation);
+        final StationResponse downStationResponse = new StationResponse(downStation);
+
+        return List.of(upStationResponse, downStationResponse);
+    }
+
+    private Station getStationById(Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new NotExistException("찾으려는 역이 존재하지 않습니다."));
+    }
+
+    private Sections getSections(Line line) {
+        final List<Section> sections = sectionDao.findByLineId(line.getId());
+
+        return new Sections(sections);
+    }
+
+    private List<StationResponse> sortedStations(Sections sections) {
+        final List<Section> sortedSections = sections.getSortedSection();
+
+        List<StationResponse> stations = new ArrayList<>();
+
+        for (final Section section : sortedSections) {
+            final Station findStation = getStationById(section.getUpStationId());
+            stations.add(new StationResponse(findStation));
+        }
+
+        final Section lastSection = sortedSections.get(sortedSections.size() - 1);
+        final Station lastStation = getStationById(lastSection.getDownStationId());
+        stations.add(new StationResponse(lastStation));
+
+        return stations;
     }
 }
