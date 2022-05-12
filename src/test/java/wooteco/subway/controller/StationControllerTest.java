@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@Sql("/truncate.sql")
 public class StationControllerTest extends AcceptanceTest {
 
     @Autowired

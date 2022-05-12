@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.List;
 import java.util.Objects;
-import wooteco.subway.exception.BadRequestLineException;
 
 public class Section {
 
@@ -20,6 +20,10 @@ public class Section {
         validateField();
     }
 
+    public Section(Long upStationId, Long downStationId, Long lineId, int distance) {
+        this(0L, upStationId, downStationId, lineId, distance);
+    }
+
     private void validateField() {
         if (upStationId.equals(downStationId)) {
             throw new IllegalArgumentException("구간에서 상행선과 하행선은 같은 역으로 할 수 없습니다.");
@@ -30,8 +34,31 @@ public class Section {
         }
     }
 
-    public Section(Long upStationId, Long downStationId, Long lineId, int distance) {
-        this(0L, upStationId, downStationId, lineId, distance);
+    public boolean beIncludedInUpStation(List<Long> stationsId) {
+        return stationsId.contains(upStationId);
+    }
+
+    public boolean beIncludedInDownStation(List<Long> stationsId) {
+        return stationsId.contains(downStationId);
+    }
+
+    public boolean isEqualOfUpStation(Section section) {
+        return upStationId.equals(section.upStationId);
+    }
+
+    public boolean isEqualOfDownStation(Section section) {
+        return downStationId.equals(section.downStationId);
+    }
+
+    public Section getCutDistanceSection(Section section) {
+        int cutDistance = this.distance - section.distance;
+        if(cutDistance <= 0) {
+            throw new IllegalArgumentException("이미 존재하는 구간의 거리보다 거리가 길거나 같습니다.");
+        }
+        if (upStationId.equals(section.upStationId)) {
+            return new Section(section.downStationId, downStationId, lineId, cutDistance);
+        }
+        return new Section(upStationId, section.upStationId, lineId, cutDistance);
     }
 
     public Long getId() {

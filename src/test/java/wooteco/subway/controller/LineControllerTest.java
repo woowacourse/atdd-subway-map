@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
-@Sql("/truncate.sql")
 class LineControllerTest extends AcceptanceTest {
 
     @Autowired
@@ -109,9 +108,7 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(httpStatusCode)
-        );
+        assertThat(response.statusCode()).isEqualTo(httpStatusCode);
     }
 
     @DisplayName("지하철 노선을 수정한다.")

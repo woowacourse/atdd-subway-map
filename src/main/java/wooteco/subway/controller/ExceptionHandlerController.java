@@ -14,24 +14,28 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<ErrorMessageResponse> duplicateStationNameException(DuplicateKeyException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorMessageResponse> notFountException(NotFoundException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
 
     @ExceptionHandler(BadRequestLineException.class)
     public ResponseEntity<ErrorMessageResponse> badRequestLineException(BadRequestLineException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorMessageResponse> badRequestException(IllegalArgumentException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }

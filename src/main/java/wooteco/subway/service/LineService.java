@@ -56,7 +56,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    private List<StationResponse> findAllStationResponseByLineId(Long lineId) {
+    public List<StationResponse> findAllStationResponseByLineId(Long lineId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         return sections.getStationsId().stream()
                 .map(this::getStationOrException)
