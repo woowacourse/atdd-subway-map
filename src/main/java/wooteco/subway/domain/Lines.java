@@ -4,6 +4,8 @@ import java.util.List;
 
 public class Lines {
 
+    public static final String DUPLICATED_NAME_EXCEPTION = "노선의 이름은 중복될 수 없습니다.";
+    public static final String DUPLICATED_COLOR_EXCEPTION = "노선의 색은 중복될 수 없습니다.";
     private List<Line> lines;
 
     public Lines(List<Line> lines) {
@@ -19,7 +21,7 @@ public class Lines {
         boolean duplicated = lines.stream()
                 .anyMatch(it -> it.isSameName(line));
         if (duplicated) {
-            throw new IllegalArgumentException("노선의 이름은 중복될 수 없습니다.");
+            throw new IllegalArgumentException(DUPLICATED_NAME_EXCEPTION);
         }
     }
 
@@ -27,7 +29,7 @@ public class Lines {
         boolean duplicated = lines.stream()
                 .anyMatch(it -> it.isSameColor(line));
         if (duplicated) {
-            throw new IllegalArgumentException("노선의 색은 중복될 수 없습니다.");
+            throw new IllegalArgumentException(DUPLICATED_COLOR_EXCEPTION);
         }
     }
 }

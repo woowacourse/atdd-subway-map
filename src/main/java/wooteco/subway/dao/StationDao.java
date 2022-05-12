@@ -13,14 +13,14 @@ import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
+    private static final RowMapper<Station> STATION_MAPPER = (resultSet, rowNum) -> Station.of(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
 
-    private final RowMapper<Station> stationMapper = (resultSet, rowNum) -> Station.of(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
-    );
 
     public StationDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -37,7 +37,7 @@ public class StationDao {
 
     public List<Station> findAll() {
         String sql = "SELECT * FROM STATION";
-        return jdbcTemplate.query(sql, stationMapper);
+        return jdbcTemplate.query(sql, STATION_MAPPER);
     }
     
     public void deleteById(Long id) {
@@ -49,6 +49,6 @@ public class StationDao {
     public Station findById(Long id) {
         String sql = "SELECT * FROM STATION WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(sql, parameters, stationMapper);
+        return jdbcTemplate.queryForObject(sql, parameters, STATION_MAPPER);
     }
 }

@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 
 public class Sections implements Iterable<Section> {
 
+    public static final String TOO_LARGE_DISTANCE_EXCEPTION = "추가하려는 section의 역 간 거리는 존재하는 section의 역 간 거리보다 작아야 합니다.";
+    public static final String UNVALID_STATION_FOR_SECTION_ADD_EXCEPTION = "추가하려는 section의 역 중 하나는 기존 section에 포함되어 있어야 합니다.";
+    public static final int DOWN_TERMINAL_STATION_INDEX = 0;
+    public static final String UNABLE_TO_DELETE_SECTION_EXCEPTION = "해당 역을 삭제할 수 없습니다. 노선에 역은 최소 2개는 존재해야 합니다.";
     private List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -61,7 +65,7 @@ public class Sections implements Iterable<Section> {
                 .findAny();
 
         if (newDownTerminalSection.isPresent()) {
-            orderedSections.add(0, newDownTerminalSection.get());
+            orderedSections.add(DOWN_TERMINAL_STATION_INDEX, newDownTerminalSection.get());
             extendToDown(orderedSections, sections);
         }
     }
@@ -87,7 +91,7 @@ public class Sections implements Iterable<Section> {
     }
 
     private Section downTerminalStation() {
-        return sections.get(0);
+        return sections.get(DOWN_TERMINAL_STATION_INDEX);
     }
 
     private Section upTerminalStation() {
@@ -106,7 +110,7 @@ public class Sections implements Iterable<Section> {
         return sections.stream()
                 .filter(it -> it.ableToDivide(newSection))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("추가하려는 section의 역 간 거리는 존재하는 section의 역 간 거리보다 작아야 합니다."));
+                .orElseThrow(() -> new IllegalArgumentException(TOO_LARGE_DISTANCE_EXCEPTION));
     }
 
     private void validateStationsInSection(Section section) {
@@ -114,7 +118,7 @@ public class Sections implements Iterable<Section> {
         boolean upStationExist = isStationExist(section.getUpStation());
 
         if (downStationExist == upStationExist) {
-            throw new IllegalArgumentException("추가하려는 section의 역 중 하나는 기존 section에 포함되어 있어야 합니다.");
+            throw new IllegalArgumentException(UNVALID_STATION_FOR_SECTION_ADD_EXCEPTION);
         }
     }
 
@@ -156,7 +160,7 @@ public class Sections implements Iterable<Section> {
 
     private void validateAbleToDelete() {
         if (sections.size() == 1) {
-            throw new IllegalArgumentException("해당 역을 삭제할 수 없습니다. 노선에 역은 최소 2개는 존재해야 합니다.");
+            throw new IllegalArgumentException(UNABLE_TO_DELETE_SECTION_EXCEPTION);
         }
     }
 }

@@ -6,6 +6,9 @@ import java.util.List;
 public class Section {
 
     public static final int MINIMUM_DISTANCE = 1;
+    public static final String UNVALID_DISTANCE_EXCEPTION = "종점 사이 거리는 양의 정수여야 합니다.";
+    public static final String UNVALID_STATION_EXCEPTION = "상행 종점과 하행 종점은 같을 수 없습니다.";
+    public static final String UNABLE_TO_MERGE_EXCEPTION = "합칠 수 없는 section입니다.";
     private Long id;
     private Line line;
     private Station upStation;
@@ -40,13 +43,13 @@ public class Section {
 
     private static void checkDistanceValueIsValid(Integer distance) {
         if (distance < MINIMUM_DISTANCE) {
-            throw new IllegalArgumentException("종점 사이 거리는 양의 정수여야 합니다.");
+            throw new IllegalArgumentException(UNVALID_DISTANCE_EXCEPTION);
         }
     }
 
     private static void checkUpStationAndDownStationIsDifferent(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
-            throw new IllegalArgumentException("상행 종점과 하행 종점은 같을 수 없습니다.");
+            throw new IllegalArgumentException(UNVALID_STATION_EXCEPTION);
         }
     }
 
@@ -116,7 +119,7 @@ public class Section {
 
     private void checkAbleToMerge(Section other) {
         if (!(isAbleToLinkOnUpStation(other) || isAbleToLinkOnDownStation(other))) {
-            throw new IllegalArgumentException("합칠 수 없는 section입니다.");
+            throw new IllegalArgumentException(UNABLE_TO_MERGE_EXCEPTION);
         }
     }
 
