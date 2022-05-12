@@ -17,7 +17,7 @@ import wooteco.subway.service.StationService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SectionControllerTest extends AcceptanceTest {
+class SectionAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private StationService stationService;

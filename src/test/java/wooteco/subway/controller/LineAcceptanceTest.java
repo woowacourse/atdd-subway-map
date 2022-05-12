@@ -20,7 +20,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class LineControllerTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private LineDao lineDao;

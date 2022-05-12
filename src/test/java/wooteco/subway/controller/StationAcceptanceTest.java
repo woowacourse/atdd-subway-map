@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StationControllerTest extends AcceptanceTest {
+public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private StationDao stationDao;
