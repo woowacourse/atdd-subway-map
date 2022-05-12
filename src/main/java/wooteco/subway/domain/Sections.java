@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -183,5 +184,14 @@ public class Sections {
 
     public List<Section> getValue() {
         return List.copyOf(value);
+    }
+
+    public List<Long> getSortedStationId() {
+        List<Long> stationIds = value.stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toList());
+        Long lastStationId = value.get(value.size() - 1).getDownStationId();
+        stationIds.add(lastStationId);
+        return stationIds;
     }
 }

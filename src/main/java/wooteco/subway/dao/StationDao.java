@@ -55,12 +55,4 @@ public class StationDao {
         String sql = "select exists (select * from STATION where name = (?))";
         return jdbcTemplate.queryForObject(sql, Boolean.class, station.getName());
     }
-
-    public List<Station> findByLineId(Long lineId) {
-        String sql = "select distinct S.id, S.name from STATION as S "
-                + "join SECTION as SEC on S.id = SEC.up_station_id OR S.id = SEC.down_station_id "
-                + "join LINE as L on L.id = SEC.line_id "
-                + "where L.id = ?";
-        return jdbcTemplate.query(sql, stationRowMapper, lineId);
-    }
 }
