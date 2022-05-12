@@ -18,12 +18,11 @@ public class SectionService {
 
     @Transactional
     public void insertSection(Long lineId, SectionRequest sectionRequest) {
-        Section section = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
-                sectionRequest.getDistance());
+        Section section = sectionRequest.toEntity(lineId);
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         Sections newSections = sections.add(section);
         sectionDao.deleteByLineId(lineId);
-        sectionDao.save(lineId, newSections.getValue());
+        sectionDao.save(newSections.getValue());
     }
 
     @Transactional
@@ -31,6 +30,6 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         Sections newSections = sections.delete(lineId, stationId);
         sectionDao.deleteByLineId(lineId);
-        sectionDao.save(lineId, newSections.getValue());
+        sectionDao.save(newSections.getValue());
     }
 }

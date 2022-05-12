@@ -90,7 +90,7 @@ public class LineService {
 
     private List<Long> findLineIds(Line line) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
-        return sections.getSortedStationIds();
+        return sections.getStationIds();
     }
 
     private List<StationResponse> createStationResponse(List<Long> lineIds) {

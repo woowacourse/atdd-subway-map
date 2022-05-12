@@ -17,8 +17,8 @@ public class SectionRequest {
         this.distance = distance;
     }
 
-    public Section toEntity() {
-        return new Section(upStationId, downStationId, distance);
+    public Section toEntity(Long lineId) {
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 
     public Long getUpStationId() {

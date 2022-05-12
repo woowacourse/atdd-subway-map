@@ -17,6 +17,7 @@ public class Sections {
     static final String IMPOSSIBLE_ADDING_EXCEPTION_MESSAGE = "구간을 추가할 수 없습니다.";
     private static final String CANNOT_FIND_SECTION_EXCEPTION_MESSAGE = "해당 구간을 찾을 수 없습니다.";
 
+    private static final int FIRST_SECTION_INDEX = 0;
     private static final int TERMINAL_STATION_NUMBER = 1;
     private static final int MIDDLE_STATION_NUMBER = 2;
     private static final int MINIMUM_STATION_SIZE_TO_DELETE = 2;
@@ -28,20 +29,21 @@ public class Sections {
     }
 
     private List<Section> sort(List<Section> value) {
-        List<Section> orderedSections = new ArrayList<>();
-        orderedSections.add(value.get(0));
+        List<Section> sortedSections = new ArrayList<>();
+        sortedSections.add(value.get(FIRST_SECTION_INDEX));
 
-        extendToUp(orderedSections, value);
-        extendToDown(orderedSections, value);
+        extendToUp(sortedSections, value);
+        extendToDown(sortedSections, value);
 
-        return orderedSections;
+        return sortedSections;
     }
 
     private void extendToUp(List<Section> orderedSections, List<Section> value) {
-        Section upTerminalSection = orderedSections.get(orderedSections.size() - 1);
+        int lastSectionIndex = orderedSections.size() - 1;
+        Section upTerminalSection = orderedSections.get(lastSectionIndex);
 
         Optional<Section> newUpTerminalSection = value.stream()
-                .filter(upTerminalSection::isAbleToLinkOnDownStation)
+                .filter(upTerminalSection::canLinkWithDownStation)
                 .findAny();
 
         if (newUpTerminalSection.isPresent()) {
@@ -51,14 +53,14 @@ public class Sections {
     }
 
     private void extendToDown(List<Section> orderedSections, List<Section> value) {
-        Section downTerminalSection = orderedSections.get(0);
+        Section downTerminalSection = orderedSections.get(FIRST_SECTION_INDEX);
 
         Optional<Section> newDownTerminalSection = value.stream()
-                .filter(downTerminalSection::isAbleToLinkOnUpStation)
+                .filter(downTerminalSection::canLinkWithUpStation)
                 .findAny();
 
         if (newDownTerminalSection.isPresent()) {
-            orderedSections.add(0, newDownTerminalSection.get());
+            orderedSections.add(FIRST_SECTION_INDEX, newDownTerminalSection.get());
             extendToDown(orderedSections, value);
         }
     }
@@ -67,16 +69,16 @@ public class Sections {
         validateExistStations(section);
         List<Section> newSections = new ArrayList<>(value);
         for (Section eachSection : value) {
-            extendStation(section, newSections, eachSection);
-            addWithUpStation(section, newSections, eachSection);
-            addWithDownStation(section, newSections, eachSection);
+            extendTerminalStation(newSections, section, eachSection);
+            extendMiddleStationWithUpStation(newSections, section, eachSection);
+            extendMiddleStationWithDownStation(newSections, section, eachSection);
         }
-        validateAdding(newSections);
+        validateExtension(newSections);
         return new Sections(newSections);
     }
 
     private void validateExistStations(Section section) {
-        Set<Long> stationIds = getStationIds();
+        List<Long> stationIds = getStationIds();
         if (stationIds.contains(section.getUpStationId()) && stationIds.contains(section.getDownStationId())) {
             throw new IllegalArgumentException(DUPLICATE_STATION_ERROR_MESSAGE);
         }
@@ -85,22 +87,28 @@ public class Sections {
         }
     }
 
-    private void extendStation(Section section, List<Section> newSections, Section eachSection) {
-        if (isExtendToUp(section, eachSection) || isExtendToDown(section, eachSection)) {
+    private void extendTerminalStation(List<Section> newSections, Section section, Section eachSection) {
+        if (isExtensionToUp(section, eachSection) || isExtensionToDown(section, eachSection)) {
             newSections.add(section);
         }
     }
 
-    private boolean isExtendToUp(Section section, Section eachSection) {
-        return eachSection.canExtendToUp(section) && !getDownStationIds().contains(section.getDownStationId());
+    private boolean isExtensionToUp(Section section, Section eachSection) {
+        Set<Long> downStationIds = value.stream()
+                .map(Section::getDownStationId)
+                .collect(Collectors.toUnmodifiableSet());
+        return eachSection.canLinkWithUpStation(section) && !downStationIds.contains(section.getDownStationId());
     }
 
-    private boolean isExtendToDown(Section section, Section eachSection) {
-        return eachSection.canExtendToDown(section) && !getUpStationIds().contains(section.getUpStationId());
+    private boolean isExtensionToDown(Section section, Section eachSection) {
+        Set<Long> upStationIds = value.stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toUnmodifiableSet());
+        return eachSection.canLinkWithDownStation(section) && !upStationIds.contains(section.getUpStationId());
     }
 
-    private void addWithUpStation(Section section, List<Section> newSections, Section eachSection) {
-        if (isAddingWithUpStation(section, eachSection)) {
+    private void extendMiddleStationWithUpStation(List<Section> newSections, Section section, Section eachSection) {
+        if (isExtensionWithUpStation(section, eachSection)) {
             newSections.add(section);
             Long newUpStationId = section.getDownStationId();
             Long newDownStationId = eachSection.getDownStationId();
@@ -111,12 +119,12 @@ public class Sections {
         }
     }
 
-    private boolean isAddingWithUpStation(Section section, Section eachSection) {
+    private boolean isExtensionWithUpStation(Section section, Section eachSection) {
         return eachSection.isSameUpStation(section) && eachSection.isLessThanDistance(section);
     }
 
-    private void addWithDownStation(Section section, List<Section> newSections, Section eachSection) {
-        if (isAddingWithDownStation(section, eachSection)) {
+    private void extendMiddleStationWithDownStation(List<Section> newSections, Section section, Section eachSection) {
+        if (isExtensionWithDownStation(section, eachSection)) {
             newSections.add(section);
             Long newUpStationId = eachSection.getUpStationId();
             Long newDownStationId = section.getUpStationId();
@@ -127,11 +135,11 @@ public class Sections {
         }
     }
 
-    private boolean isAddingWithDownStation(Section section, Section eachSection) {
+    private boolean isExtensionWithDownStation(Section section, Section eachSection) {
         return eachSection.isSameDownStation(section) && eachSection.isLessThanDistance(section);
     }
 
-    private void validateAdding(List<Section> newSections) {
+    private void validateExtension(List<Section> newSections) {
         if (Arrays.equals(value.toArray(), newSections.toArray())) {
             throw new IllegalArgumentException(IMPOSSIBLE_ADDING_EXCEPTION_MESSAGE);
         }
@@ -140,42 +148,43 @@ public class Sections {
     public Sections delete(Long lineId, Long stationId) {
         validatePossibleToDelete(stationId);
         List<Section> newSections = new ArrayList<>(value);
-        long duplicateStationCounts = getDuplicateStationCounts(stationId);
-        deleteTerminalStation(stationId, newSections, duplicateStationCounts);
-        deleteMiddleStation(lineId, stationId, newSections, duplicateStationCounts);
+        deleteTerminalStation(newSections, stationId);
+        deleteMiddleStation(newSections, lineId, stationId);
         return new Sections(newSections);
     }
 
     private void validatePossibleToDelete(Long stationId) {
-        Set<Long> stationIds = getStationIds();
+        List<Long> stationIds = getStationIds();
         if (!stationIds.contains(stationId) || stationIds.size() == MINIMUM_STATION_SIZE_TO_DELETE) {
             throw new IllegalArgumentException(IMPOSSIBLE_DELETE_EXCEPTION_MESSAGE);
         }
     }
 
+    private void deleteTerminalStation(List<Section> newSections, Long stationId) {
+        if (getDuplicateStationCounts(stationId) == TERMINAL_STATION_NUMBER) {
+            newSections.removeIf(section -> section.hasStation(stationId));
+        }
+    }
+
+    private void deleteMiddleStation(List<Section> newSections, Long lineId, Long stationId) {
+        if (getDuplicateStationCounts(stationId) == MIDDLE_STATION_NUMBER) {
+            Section linkSection = linkSection(lineId, stationId);
+            newSections.removeIf(section -> section.hasStation(stationId));
+            newSections.add(linkSection);
+        }
+    }
+
     private long getDuplicateStationCounts(Long stationId) {
-        return getStationIdsToList().stream()
+        return value.stream()
+                .map(Section::getStationId)
+                .flatMap(Collection::stream)
                 .filter(it -> it == stationId)
                 .count();
     }
 
-    private void deleteTerminalStation(Long stationId, List<Section> newSections, long duplicateStationCounts) {
-        if (duplicateStationCounts == TERMINAL_STATION_NUMBER) {
-            newSections.removeIf(section -> section.hasStation(stationId));
-        }
-    }
-
-    private void deleteMiddleStation(Long lineId, Long stationId, List<Section> newSections, long duplicateStationCounts) {
-        if (duplicateStationCounts == MIDDLE_STATION_NUMBER) {
-            Section newSection = makeNewSection(lineId, stationId);
-            newSections.removeIf(section -> section.hasStation(stationId));
-            newSections.add(newSection);
-        }
-    }
-
-    private Section makeNewSection(Long lineId, Long stationId) {
-        Section sectionWithUpStation = getSectionWithUpStation(stationId);
-        Section sectionWithDownStation = getSectionWithDownStation(stationId);
+    private Section linkSection(Long lineId, Long stationId) {
+        Section sectionWithUpStation = getSectionHasSameUpStation(stationId);
+        Section sectionWithDownStation = getSectionHasSameDownStation(stationId);
 
         Long newUpStationId = sectionWithDownStation.getUpStationId();
         Long newDownStationId = sectionWithUpStation.getDownStationId();
@@ -184,52 +193,26 @@ public class Sections {
         return new Section(lineId, newUpStationId, newDownStationId, newDistance);
     }
 
-    private Section getSectionWithUpStation(Long stationId) {
+    private Section getSectionHasSameUpStation(Long stationId) {
         return value.stream()
                 .filter(section -> section.hasUpStation(stationId))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_SECTION_EXCEPTION_MESSAGE));
     }
 
-    private Section getSectionWithDownStation(Long stationId) {
+    private Section getSectionHasSameDownStation(Long stationId) {
         return value.stream()
                 .filter(section -> section.hasDownStation(stationId))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_SECTION_EXCEPTION_MESSAGE));
     }
 
-    private Set<Long> getUpStationIds() {
-        return value.stream()
-                .map(Section::getUpStationId)
-                .collect(Collectors.toUnmodifiableSet());
-    }
-
-    private Set<Long> getDownStationIds() {
-        return value.stream()
-                .map(Section::getDownStationId)
-                .collect(Collectors.toUnmodifiableSet());
-    }
-
-    public List<Long> getSortedStationIds() {
+    public List<Long> getStationIds() {
         return value.stream()
                 .map(Section::getStationId)
                 .flatMap(Collection::stream)
                 .distinct()
                 .collect(Collectors.toList());
-    }
-
-    public Set<Long> getStationIds() {
-        return value.stream()
-                .map(Section::getStationId)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toUnmodifiableSet());
-    }
-
-    public List<Long> getStationIdsToList() {
-        return value.stream()
-                .map(Section::getStationId)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<Section> getValue() {

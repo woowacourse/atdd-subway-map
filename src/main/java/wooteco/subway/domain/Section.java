@@ -32,24 +32,24 @@ public class Section{
         this.distance = distance;
     }
 
-    public Boolean canExtendToUp(Section section) {
-        return section.downStationId.equals(this.upStationId);
+    public boolean canLinkWithUpStation(Section other) {
+        return upStationId.equals(other.downStationId);
     }
 
-    public Boolean canExtendToDown(Section section) {
-        return section.upStationId.equals(this.downStationId);
+    public boolean canLinkWithDownStation(Section other) {
+        return downStationId.equals(other.upStationId);
     }
 
-    public Boolean isSameUpStation(Section section) {
-        return section.upStationId.equals(this.upStationId);
+    public Boolean isSameUpStation(Section other) {
+        return other.upStationId.equals(this.upStationId);
     }
 
-    public Boolean isSameDownStation(Section section) {
-        return section.downStationId.equals(this.downStationId);
+    public Boolean isSameDownStation(Section other) {
+        return other.downStationId.equals(this.downStationId);
     }
 
-    public Boolean isLessThanDistance(Section section) {
-        return section.distance < this.distance;
+    public Boolean isLessThanDistance(Section other) {
+        return other.distance < this.distance;
     }
 
     public Boolean hasUpStation(Long stationId) {
@@ -62,14 +62,6 @@ public class Section{
 
     public Boolean hasStation(Long stationId) {
         return upStationId == stationId || downStationId == stationId;
-    }
-
-    public boolean isAbleToLinkOnUpStation(Section other) {
-        return upStationId.equals(other.downStationId);
-    }
-
-    public boolean isAbleToLinkOnDownStation(Section other) {
-        return downStationId.equals(other.upStationId);
     }
 
     public Long getId() {

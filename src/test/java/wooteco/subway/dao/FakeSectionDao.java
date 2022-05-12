@@ -37,7 +37,7 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> save(Long lineId, List<Section> sections) {
+    public List<Section> save(List<Section> sections) {
         List<Section> newSections = new ArrayList<>();
         for (Section section : sections) {
             newSections.add(insert(section));

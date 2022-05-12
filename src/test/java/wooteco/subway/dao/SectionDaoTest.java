@@ -47,7 +47,7 @@ public class SectionDaoTest {
         Section section2 = new Section(1L, 2L, 3L, 10);
         List<Section> sections = List.of(section1, section2);
 
-        List<Section> result = sectionDao.save(1L, sections);
+        List<Section> result = sectionDao.save(sections);
         assertThat(result.size()).isEqualTo(2);
     }
 
