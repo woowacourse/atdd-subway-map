@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static wooteco.subway.service.ServiceTestFixture.선릉역_요청;
+import static wooteco.subway.service.ServiceTestFixture.일호선_생성;
 import static wooteco.subway.service.ServiceTestFixture.잠실역_요청;
 
 import java.util.List;
@@ -22,6 +23,9 @@ class StationServiceTest {
 
     @Autowired
     private StationService stationService;
+
+    @Autowired
+    private LineService lineService;
 
     @Test
     @DisplayName("지하철 역 이름이 중복되지 않는다면 등록할 수 있다.")
@@ -81,5 +85,18 @@ class StationServiceTest {
         assertThatThrownBy(() -> stationService.delete(2L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 지하철역입니다.");
+    }
+
+    @Test
+    @DisplayName("노선에 등록된 지하철 역은 삭제할 수 없다.")
+    void deleteExistsInSection() {
+        //given
+        Long id1 = stationService.insert(선릉역_요청).getId();
+        Long id2 = stationService.insert(잠실역_요청).getId();
+        lineService.insert(일호선_생성(id1, id2));
+
+        assertThatThrownBy(() -> stationService.delete(id1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 지하철역은 노선에 등록되어 있어 삭제할 수 없습니다.");
     }
 }
