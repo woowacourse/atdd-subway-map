@@ -9,7 +9,7 @@ class StationTest {
 
     private static final String EXCESS_MAX_LENGTH_STRING = "-".repeat(256);
 
-    @DisplayName("지하철역의 이름이 공백인지를 검사한다.")
+    @DisplayName("지하철역의 이름은 공백일 수 없다.")
     @Test
     public void blankNameTest() {
         // given & when & then
@@ -17,7 +17,7 @@ class StationTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("지하철역은 255보다 크거나 같을 수 없다.")
+    @DisplayName("지하철역의 이름은 255보다 클 수 없다.")
     @Test
     public void stationNameLengthTest() {
         // given & when & then
