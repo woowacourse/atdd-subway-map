@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.Collections;
 import java.util.Objects;
 
 public class Line {
@@ -20,11 +21,11 @@ public class Line {
     }
 
     public Line(Long id, String name, String color) {
-        this(id, name, color, null);
+        this(id, name, color, new Sections(Collections.emptyList()));
     }
 
     public Line(String name, String color) {
-        this(null, name, color, null);
+        this(null, name, color, new Sections(Collections.emptyList()));
     }
 
     public boolean isSameName(String name) {
