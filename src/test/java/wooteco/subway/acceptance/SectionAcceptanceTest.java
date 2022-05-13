@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
 
 import java.util.ArrayList;
@@ -22,6 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
+    
+    private static final long 강남역_ID = 1L;
+    private static final long 역삼역_ID = 2L;
+    private static final long 선릉역_ID = 3L;
 
     @BeforeEach
     void setUpData() {
@@ -29,13 +32,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createStation("역삼역");
         createStation("선릉역");
         createStation("잠실역");
-        createLine("2호선", "bg-red-600", 1L, 2L, 10);
+        createLine("2호선", "bg-red-600",  강남역_ID, 역삼역_ID, 10);
     }
 
     @Test
     @DisplayName("하행에 정상적으로 구간을 연결하는 경우를 테스트한다")
     void createSectionTest() {
-        ExtractableResponse<Response> response = createSection(2L, 3L, 5);
+        ExtractableResponse<Response> response = createSection(역삼역_ID, 선릉역_ID, 5);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -43,7 +46,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("이미 등록된 상행과 하행을 연결하는 경우를 테스트한다.")
     void createSectionDuplicateTest() {
-        ExtractableResponse<Response> response = createSection(1L, 2L, 5);
+        ExtractableResponse<Response> response = createSection(강남역_ID, 역삼역_ID, 5);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -51,7 +54,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("존재하지 않는 상행과 하행을 연결하는 경우를 테스트한다.")
     void createSectionNoExistTest() {
-        ExtractableResponse<Response> response = createSection(1L, 2L, 5);
+        ExtractableResponse<Response> response = createSection(강남역_ID, 역삼역_ID, 5);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -59,20 +62,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("갈래길로 인해 하나의 길로 통합되는 경우를 테스트한다.")
     void createSectionForkTest() {
-        ExtractableResponse<Response> response = createSection(1L, 3L, 5);
+        ExtractableResponse<Response> response = createSection(강남역_ID, 선릉역_ID, 5);
 
         Section section = getSections().get(1);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(section.getUpStationId()).isEqualTo(3L),
-                () -> assertThat(section.getDownStationId()).isEqualTo(2L)
+                () -> assertThat(section.getUpStationId()).isEqualTo(선릉역_ID),
+                () -> assertThat(section.getDownStationId()).isEqualTo(역삼역_ID)
         );
     }
 
     @Test
     @DisplayName("단 2개의 역만 있는 경우는 구간 제거가 불가능하다")
     void deleteSectionOnlyTwoStationTest() {
-        ExtractableResponse<Response> response = deleteSection(1L);
+        ExtractableResponse<Response> response = deleteSection(강남역_ID);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -80,8 +83,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("상행과 하행에 모두 걸쳐있는 역의 경우 제거 시 양옆의 구간을 통합시킨다")
     void deleteSectionOverlapTest() {
-        createSection(2L, 3L, 1);
-        ExtractableResponse<Response> response = deleteSection(2L);
+        createSection(역삼역_ID, 선릉역_ID, 1);
+        ExtractableResponse<Response> response = deleteSection(역삼역_ID);
         Section section = getSections().get(0);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -93,8 +96,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("상행 종점이나 하행 종점인 경우 그냥 제거된다.")
     void deleteSectionFirstOrEndTest() {
-        createSection(2L, 3L, 1);
-        ExtractableResponse<Response> response = deleteSection(1L);
+        createSection(역삼역_ID, 선릉역_ID, 1);
+        ExtractableResponse<Response> response = deleteSection(강남역_ID);
         Section section = getSections().get(0);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -129,7 +132,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         List<Section> sections = new ArrayList<>();
 
         for (int i = 1; i < stations.size(); i++) {
-            sections.add(new Section(1L, stations.get(i - 1).getId(), stations.get(i).getId(), 5));
+            sections.add(new Section(강남역_ID, stations.get(i - 1).getId(), stations.get(i).getId(), 5));
         }
 
         return sections;

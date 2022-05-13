@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private static final long 강남역_ID = 1L;
+    private static final long 역삼역_ID = 2L;
+    
     @BeforeEach
     void setUpData() {
         createStation("강남역");
@@ -32,7 +35,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("정상적으로 노선이 등록되는 경우를 테스트한다.")
     @Test
     void createLineTest() {
-        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", 1L, 2L, 5);
+        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", 강남역_ID, 역삼역_ID, 5);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -41,8 +44,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
-        createLine("2호선", "bg-red-600", 1L, 2L, 5);
-        ExtractableResponse<Response> response = createLine("2호선", "bg-red-600", 1L, 2L, 5);
+        createLine("2호선", "bg-red-600", 강남역_ID, 역삼역_ID, 5);
+        ExtractableResponse<Response> response = createLine("2호선", "bg-red-600", 강남역_ID, 역삼역_ID, 5);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -51,9 +54,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         ExtractableResponse<Response> createResponse1 = createLine("신분당선", "bg-red-600",
-                1L, 2L, 5);
+                강남역_ID, 역삼역_ID, 5);
         ExtractableResponse<Response> createResponse2 = createLine("다른분당선", "bg-blue-600",
-                1L, 2L, 5);
+                강남역_ID, 역삼역_ID, 5);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -77,7 +80,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600",
-                1L, 2L, 5);
+                강남역_ID, 역삼역_ID, 5);
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -112,7 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void updateLine() {
         ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600",
-                1L, 2L, 5);
+                강남역_ID, 역삼역_ID, 5);
 
         String uri = createResponse.header("Location");
 
@@ -152,7 +155,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 삭제한다.")
     @Test
     void deleteLine() {
-        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 1L, 2L, 5);
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 강남역_ID, 역삼역_ID, 5);
 
         String uri = createResponse.header("Location");
         Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
