@@ -8,49 +8,32 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
-    private final List<Section> values;
+    private final List<Section> sections;
 
     public Sections(List<Section> sections) {
-        values = sort(new ArrayList<>(sections));
+        this.sections = sort(new ArrayList<>(sections));
     }
 
     public List<Section> findUpdateSections(Section section) {
-        if (containsSection(section)) {
-            throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
-        }
-
-        if (hasNotAnyStation(section)) {
-            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
-        }
-
-        if (existUpStation(section.getUpStation())) {
-            Section findSection = findSectionByUpStation(section.getUpStation());
-            return findSection.splitFromUpStation(section);
-        }
-
-        if (existDownStation(section.getDownStation())) {
-            Section findSection = findSectionByDownStation(section.getDownStation());
-            return findSection.splitFromDownStation(section);
-        }
-
-        return List.of(section);
+        validateIsExist(section);
+        return findAddedSection(section).split(section);
     }
 
     public List<Section> findDeleteSections(Station station) {
-        return values.stream()
-            .filter(value -> value.isEqualToUpStation(station) || value.isEqualToDownStation(station))
+        return sections.stream()
+            .filter(value -> value.isEqualToUpOrDownStation(station))
             .collect(Collectors.toList());
     }
 
     public Section findSectionByUpStation(Station station) {
-        return values.stream()
+        return sections.stream()
             .filter(value -> value.isEqualToUpStation(station))
             .findFirst()
             .orElseThrow();
     }
 
     public Section findSectionByDownStation(Station station) {
-        return values.stream()
+        return sections.stream()
             .filter(value -> value.isEqualToDownStation(station))
             .findFirst()
             .orElseThrow();
@@ -68,6 +51,26 @@ public class Sections {
             next = findNextStation(sections, next, result);
         }
         return result;
+    }
+
+    private void validateIsExist(Section section) {
+        if (containsSection(section)) {
+            throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
+        }
+    }
+
+    private Section findAddedSection(Section section) {
+        return sections.stream()
+            .filter(it -> it.isEqualToUpStation(section.getUpStation()) || it.isEqualToDownStation(section.getDownStation()))
+            .findFirst()
+            .orElseGet(() -> isAddableFirstOrEndSection(section));
+    }
+
+    private Section isAddableFirstOrEndSection(Section section) {
+        return sections.stream()
+            .filter(it -> it.isEqualToUpStation(section.getDownStation()) || it.isEqualToDownStation(section.getUpStation()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("생성할 수 없는 구간입니다."));
     }
 
     private Station findNextStation(List<Section> sections, Station next, List<Section> result) {
@@ -99,36 +102,21 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    private boolean existUpStation(Station station) {
-        return values.stream()
-            .anyMatch(value -> value.isEqualToUpStation(station));
-    }
-
-    private boolean existDownStation(Station station) {
-        return values.stream()
-            .anyMatch(value -> value.isEqualToDownStation(station));
-    }
-
     private boolean containsSection(Section section) {
-        return values.stream()
+        return sections.stream()
             .anyMatch(value -> value.equals(section));
-    }
-
-    private boolean hasNotAnyStation(Section section) {
-        return values.stream()
-            .noneMatch(value -> value.containsSection(section));
     }
 
     public List<Station> getStations() {
         Set<Station> stations = new LinkedHashSet<>();
-        for (Section value : values) {
+        for (Section value : sections) {
             stations.add(value.getUpStation());
             stations.add(value.getDownStation());
         }
         return List.copyOf(stations);
     }
 
-    public List<Section> getValues() {
-        return List.copyOf(values);
+    public List<Section> getSections() {
+        return List.copyOf(sections);
     }
 }

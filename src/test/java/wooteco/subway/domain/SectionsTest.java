@@ -12,7 +12,6 @@ import static wooteco.subway.domain.fixtures.TestFixtures.합정;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.domain.fixtures.TestFixtures;
 
 class SectionsTest {
 
@@ -21,7 +20,7 @@ class SectionsTest {
     void create() {
         Sections sections = new Sections(getSections(new Line("2호선", "green")));
 
-        List<Section> values = sections.getValues();
+        List<Section> values = sections.getSections();
 
         assertThat(values.get(0).getUpStation().getName()).isEqualTo("강남");
         assertThat(values.get(1).getUpStation().getName()).isEqualTo("잠실");
@@ -37,7 +36,7 @@ class SectionsTest {
         Section 추가할_구간 = new Section(line, 강남, 삼성, 5);
         List<Section> 추가된_구간 = 기존_구간.findUpdateSections(추가할_구간);
 
-        List<Section> sections = new Sections(추가된_구간).getValues();
+        List<Section> sections = new Sections(추가된_구간).getSections();
         assertThat(sections.get(0).getUpStation().getName()).isEqualTo("강남");
         assertThat(sections.get(0).getDistance()).isEqualTo(5);
         assertThat(sections.get(1).getUpStation().getName()).isEqualTo("삼성");
@@ -53,7 +52,7 @@ class SectionsTest {
         Section 추가할_구간 = new Section(line, 삼성, 잠실, 5);
         List<Section> 추가된_구간 = 기존_구간.findUpdateSections(추가할_구간);
 
-        List<Section> sections = new Sections(추가된_구간).getValues();
+        List<Section> sections = new Sections(추가된_구간).getSections();
         assertThat(sections.get(0).getUpStation().getName()).isEqualTo("강남");
         assertThat(sections.get(0).getDistance()).isEqualTo(7);
         assertThat(sections.get(1).getUpStation().getName()).isEqualTo("삼성");
@@ -69,7 +68,7 @@ class SectionsTest {
         Section 추가할_구간 = new Section(line, 합정, 강남, 5);
         List<Section> 추가된_구간 = 기존_구간.findUpdateSections(추가할_구간);
 
-        List<Section> sections = new Sections(추가된_구간).getValues();
+        List<Section> sections = new Sections(추가된_구간).getSections();
         assertThat(sections.get(0).getUpStation().getName()).isEqualTo("합정");
         assertThat(sections.get(0).getDistance()).isEqualTo(5);
     }
@@ -83,7 +82,7 @@ class SectionsTest {
         Section 추가할_구간 = new Section(line, 왕십리, 합정, 5);
         List<Section> 추가된_구간 = 기존_구간.findUpdateSections(추가할_구간);
 
-        List<Section> sections = new Sections(추가된_구간).getValues();
+        List<Section> sections = new Sections(추가된_구간).getSections();
         assertThat(sections.get(0).getUpStation().getName()).isEqualTo("왕십리");
         assertThat(sections.get(0).getDistance()).isEqualTo(5);
     }

@@ -8,10 +8,10 @@ public class Section {
     private static final int MIN_DISTANCE = 1;
 
     private Long id;
-    private Line line;
-    private Station upStation;
-    private Station downStation;
-    private int distance;
+    private final Line line;
+    private final Station upStation;
+    private final Station downStation;
+    private final int distance;
 
     public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
         validate(distance);
@@ -26,23 +26,31 @@ public class Section {
         this(null, line, upStation, downStation, distance);
     }
 
-    public List<Section> splitFromUpStation(Section other) {
+    public List<Section> split(Section other) {
         validateShortDistance(other.distance);
-        Section start = new Section(id, line, upStation, other.downStation, other.distance);
-        Section end = new Section(line, other.downStation, downStation, distance - other.distance);
-        return List.of(start, end);
+        if (upStation.equals(other.upStation)) {
+            Section start = new Section(id, line, upStation, other.downStation, other.distance);
+            Section end = new Section(line, other.downStation, downStation, distance - other.distance);
+            return List.of(start, end);
+        }
+        if (downStation.equals(other.downStation)) {
+            Section start = new Section(id, line, upStation, other.upStation, distance - other.distance);
+            Section end = new Section(line, other.upStation, downStation, other.distance);
+            return List.of(start, end);
+        }
+        return List.of(other);
     }
 
-    public List<Section> splitFromDownStation(Section other) {
-        validateShortDistance(other.distance);
-        Section start = new Section(id, line, upStation, other.upStation, distance - other.distance);
-        Section end = new Section(line, other.upStation, downStation, other.distance);
-        return List.of(start, end);
+    public boolean isEqualToUpOrDownStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 
-    public boolean containsSection(Section section) {
-        return upStation.equals(section.upStation) || upStation.equals(section.downStation)
-            || downStation.equals(section.upStation) || downStation.equals(section.downStation);
+    public boolean isEqualToUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isEqualToDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     private void validate(int distance) {
@@ -77,14 +85,6 @@ public class Section {
         return distance;
     }
 
-    public boolean isEqualToUpStation(Station station) {
-        return upStation.equals(station);
-    }
-
-    public boolean isEqualToDownStation(Station station) {
-        return downStation.equals(station);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -106,7 +106,8 @@ public class Section {
     @Override
     public String toString() {
         return "Section{" +
-            "line=" + line +
+            "id=" + id +
+            ", line=" + line +
             ", upStation=" + upStation +
             ", downStation=" + downStation +
             ", distance=" + distance +
