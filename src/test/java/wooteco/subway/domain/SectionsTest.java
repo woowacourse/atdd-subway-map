@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.MinumumSectionDistanceException;
+import wooteco.subway.exception.MinimumSectionDistanceException;
 import wooteco.subway.exception.NoElementSectionsException;
 import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.exception.ResisterSectionException;
@@ -130,7 +130,7 @@ class SectionsTest {
 
         sections.addSection(station2, station4, 10);
         assertThatThrownBy(() -> sections.addSection(station3, station4, 10))
-                .isInstanceOf(MinumumSectionDistanceException.class)
+                .isInstanceOf(MinimumSectionDistanceException.class)
                 .hasMessage("[ERROR] 구간 사이의 길이는 최소 1 이상이어야 합니다.");
     }
 

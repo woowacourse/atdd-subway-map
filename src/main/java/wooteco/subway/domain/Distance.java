@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
-import wooteco.subway.exception.MinumumSectionDistanceException;
+import wooteco.subway.exception.MinimumSectionDistanceException;
 
 public class Distance {
 
@@ -16,7 +16,7 @@ public class Distance {
 
     private void validateDistance(final int value) {
         if (value < MIN_VALUE) {
-            throw new MinumumSectionDistanceException();
+            throw new MinimumSectionDistanceException();
         }
     }
 
