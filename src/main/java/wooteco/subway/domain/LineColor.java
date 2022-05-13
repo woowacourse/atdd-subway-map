@@ -16,7 +16,7 @@ public class LineColor {
 
     private void validateColor(final String color) {
         if (color.length() > MAX_COLOR_SIZE) {
-            throw new LineColorLengthException("[ERROR] 노선 색은 20자 이하여야 합니다.");
+            throw new LineColorLengthException();
         }
     }
 

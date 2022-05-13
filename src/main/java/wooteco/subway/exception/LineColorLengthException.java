@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class LineColorLengthException extends SubwayException {
 
-    public LineColorLengthException(final String message) {
-        super(HttpStatus.BAD_REQUEST, message);
+    public LineColorLengthException() {
+        super(HttpStatus.BAD_REQUEST, "[ERROR] 노선 색은 20자 이하여야 합니다.");
     }
 }
