@@ -38,7 +38,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isUpSection(sections))
                 .findAny()
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("구간이 존재하지 않습니다."));
     }
 
     public Sections connect(Section newSection) {
