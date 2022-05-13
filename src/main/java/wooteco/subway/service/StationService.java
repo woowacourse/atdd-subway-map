@@ -9,6 +9,7 @@ import wooteco.subway.service.dto.StationRequest;
 import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NotDeleteException;
+import wooteco.subway.utils.exception.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,9 +46,11 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteStation(final Long id) {
+    public void deleteById(final Long id) {
         validateEnrollSection(id);
-        stationRepository.deleteById(id);
+        Station station = stationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 역을 찾을수 없습니다."));
+        stationRepository.delete(station);
     }
 
     private void validateEnrollSection(Long id) {

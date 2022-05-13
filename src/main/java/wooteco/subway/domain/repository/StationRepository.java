@@ -11,7 +11,7 @@ public interface StationRepository {
 
     List<Station> findAll();
 
-    void deleteById(Long id);
+    void delete(Station station);
 
     Optional<Station> findByName(String name);
 

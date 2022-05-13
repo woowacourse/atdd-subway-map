@@ -132,10 +132,14 @@ class SectionServiceTest {
         sectionService.add(LINE_ID, sectionRequest);
         List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
         //then
-        for (Section section : sections) {
-            System.out.println("상행 > " + section.getUpStation().getName() + " , 하행 > " + section.getDownStation().getName());
-        }
-        assertThat(sections).hasSize(3);
+
+        assertThat(sections).hasSize(3)
+                .extracting(Section::getUpStation, Section::getDownStation)
+                .contains(
+                        tuple(upStation, station),
+                        tuple(station, middleStation),
+                        tuple(middleStation, downStation)
+                );
     }
 
     @DisplayName("역 중간에 넣을 구간중 상행역이 일치할때 구간을 추가한다.")
@@ -148,7 +152,13 @@ class SectionServiceTest {
         sectionService.add(LINE_ID, sectionRequest);
         List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
         //then
-        assertThat(sections).hasSize(3);
+        assertThat(sections).hasSize(3)
+                .extracting(Section::getUpStation, Section::getDownStation)
+                .contains(
+                        tuple(upStation, middleStation),
+                        tuple(station, downStation),
+                        tuple(middleStation, station)
+                );
     }
 
     @DisplayName("구간 사이에 구간이 추가될때 길이가 기존 구간보다 같거나 길면 예외가 발생한다.")

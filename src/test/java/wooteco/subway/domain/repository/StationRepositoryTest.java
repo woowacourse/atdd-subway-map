@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.domain.Station;
+import wooteco.subway.utils.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -59,7 +60,9 @@ class StationRepositoryTest {
     @DisplayName("역을 삭제한다")
     @Test
     void deleteById() {
-        stationRepository.deleteById(MIDDLE_STATION_ID);
+        Station station = stationRepository.findById(MIDDLE_STATION_ID)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 역을 찾을 수 없습니다."));
+        stationRepository.delete(station);
 
         assertThat(stationRepository.findAll()).hasSize(2);
     }

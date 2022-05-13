@@ -50,10 +50,10 @@ public class StationRepositoryImpl implements StationRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void delete(final Station station) {
         String sql = "DELETE FROM station WHERE id = :id";
         try {
-            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
+            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", station.getId()));
         } catch (DataAccessException e) {
             throw new RuntimeException("역 삭제에 실패했습니다.");
         }
