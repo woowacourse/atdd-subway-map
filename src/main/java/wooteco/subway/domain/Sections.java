@@ -66,7 +66,7 @@ public class Sections {
     private void validateSectionConnect(final Section section) {
         boolean isConnected = values.stream()
                 .anyMatch(value -> value.haveStation(section));
-        if (isConnected) {
+        if (!isConnected) {
             throw new SectionCreateException(SECTION_NOT_CONNECT_MESSAGE);
         }
     }

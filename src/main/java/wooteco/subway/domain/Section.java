@@ -6,6 +6,7 @@ import wooteco.subway.utils.exception.SectionCreateException;
 public class Section {
 
     private static final int DISTANCE_STANDARD = 0;
+    private static final String NULL_PREVENT_MESSAGE = "[ERROR] 필수 입력 사항을 입력해주세요. cause : ";
     private static final String DISTANCE_FAIL_MESSAGE = "거리는 0km 초과이어야 합니다.";
 
     private final Long id;
@@ -22,9 +23,9 @@ public class Section {
         validateDistance(distance);
         validateSameSection(upStation, downStation);
         this.id = id;
-        this.lineId = lineId;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.lineId = Objects.requireNonNull(lineId, NULL_PREVENT_MESSAGE + "lineId");
+        this.upStation = Objects.requireNonNull(upStation, NULL_PREVENT_MESSAGE + "upStation");
+        this.downStation = Objects.requireNonNull(downStation, NULL_PREVENT_MESSAGE + "downStation");
         this.distance = distance;
     }
 
@@ -80,7 +81,7 @@ public class Section {
                 && isSameDownStation(section.getDownStation()));
     }
 
-    public Section merge(Section section) {
+    public Section merge(final Section section) {
         int sumDistance = distance + section.distance;
         if (isSameDownStation(section.upStation)) {
             return new Section(lineId, upStation, section.downStation, sumDistance);

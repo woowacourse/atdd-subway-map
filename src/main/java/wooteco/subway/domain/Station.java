@@ -3,15 +3,15 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Station {
-    private final Long id;
-    private final String name;
+    private Long id;
+    private String name;
+
+    private Station() {
+    }
 
     public Station(Long id, String name) {
-        if (Objects.isNull(name)) {
-            throw new IllegalArgumentException("[ERROR] 잘못된 입력값입니다.");
-        }
         this.id = id;
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "[ERROR] 잘못된 입력값입니다. cause = name");
     }
 
     public Station(String name) {

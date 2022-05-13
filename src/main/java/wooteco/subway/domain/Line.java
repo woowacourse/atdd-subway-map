@@ -5,19 +5,18 @@ import java.util.Objects;
 
 public class Line {
 
+    private static final String NULL_PREVENT_MESSAGE = "[ERROR] 필수 입력 사항을 입력해주세요. cause : ";
+
     private final Long id;
     private final String name;
     private final String color;
     private final Sections sections;
 
     public Line(Long id, String name, String color, Sections sections) {
-        if (Objects.isNull(name) || Objects.isNull(color)) {
-            throw new IllegalArgumentException("[ERROR] 잘못된 입력값입니다.");
-        }
         this.id = id;
-        this.name = name;
-        this.color = color;
-        this.sections = sections;
+        this.name = Objects.requireNonNull(name, NULL_PREVENT_MESSAGE + "name");
+        this.color = Objects.requireNonNull(color, NULL_PREVENT_MESSAGE + "color");
+        this.sections = Objects.requireNonNull(sections, NULL_PREVENT_MESSAGE + "sections");
     }
 
     public Line(Long id, String name, String color) {
