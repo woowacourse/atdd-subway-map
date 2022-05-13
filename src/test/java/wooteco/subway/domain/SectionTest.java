@@ -3,6 +3,9 @@ package wooteco.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static wooteco.subway.domain.domainTestFixture.section1to2;
+import static wooteco.subway.domain.domainTestFixture.section1to3;
+import static wooteco.subway.domain.domainTestFixture.section2to3;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,13 +50,26 @@ class SectionTest {
     @DisplayName("나누려는 Section의 distance가 기존 값보다 크거나 같은 경우 에러를 발생시킨다.")
     @Test
     void splitSectionErrorByLongerDistance() {
-        //given
-        Section section1 = Section.of(1L, 2L, 10);
-        Section section2 = Section.of(1L, 2L, 10);
-
-        //then
-        assertThatThrownBy(() -> section1.splitSection(section2))
+        assertThatThrownBy(() -> section1to2.splitSection(section1to3))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("기존 역 사이보다 긴 길이를 등록할 수 없습니다.");
+    }
+
+    @DisplayName("입력된 Section과 upStationId값이 같으면 true를 반환한다.")
+    @Test
+    void isSameUpStationId() {
+        assertThat(section1to2.isSameUpStationId(section1to3)).isTrue();
+    }
+
+    @DisplayName("입력된 Section과 downStationId값이 같으면 true를 반환한다.")
+    @Test
+    void isSameDownStationIdBySection() {
+        assertThat(section2to3.isSameDownStationId(section1to3)).isTrue();
+    }
+
+    @DisplayName("입력된 Section과 downStationId값이 같으면 true를 반환한다.")
+    @Test
+    void isSameDownStationIdById() {
+        assertThat(section1to2.isSameDownStationId(2L)).isTrue();
     }
 }

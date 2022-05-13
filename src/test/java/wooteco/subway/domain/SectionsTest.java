@@ -3,29 +3,18 @@ package wooteco.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static wooteco.subway.domain.domainTestFixture.section1to2;
+import static wooteco.subway.domain.domainTestFixture.section1to3;
+import static wooteco.subway.domain.domainTestFixture.section2to3;
+import static wooteco.subway.domain.domainTestFixture.section2to6;
+import static wooteco.subway.domain.domainTestFixture.section5to4;
 
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class SectionsTest {
-    private static Section section1to2;
-    private static Section section2to3;
-    private static Section section1to3;
-    private static Section section5to4;
-    private static Section section2to6;
-
-
-    @BeforeAll
-    static void setUp() {
-        section1to2 = Section.of(1L, 2L, 10);
-        section2to3 = Section.of(2L, 3L, 10);
-        section1to3 = Section.of(1L, 3L, 20);
-        section2to6 = Section.of(2L, 6L, 10);
-        section5to4 = Section.of(5L, 4L, 10);
-    }
 
     @Test
     @DisplayName("상행과 하행이 이미 등록된 경우 에러를 발생시킨다")
@@ -53,7 +42,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("해당하는 Section과 겹치는 Section이 없는 경우 null을 return 시킨다.")
-    void getTargetSectionBySectionNull() {
+    void getTargetSectionToInsertNull() {
         //given
         Sections sections = new Sections(List.of(section1to2, section2to3));
 
@@ -66,7 +55,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("해당하는 Section과 겹치는 Section이 있는 경우 해당 Section을 return한다.")
-    void getTargetSectionBySection() {
+    void getTargetSectionToInsert() {
         //given
         Sections sections = new Sections(List.of(section1to2, section2to3));
 
