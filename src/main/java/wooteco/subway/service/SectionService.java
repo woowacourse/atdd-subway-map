@@ -28,13 +28,12 @@ public class SectionService {
             .orElseThrow(NoSuchElementException::new);
         final Station downStation = stationDao.findById(sectionRequest.getDownStationId())
             .orElseThrow(NoSuchElementException::new);
-        final Sections previousSections = new Sections(sectionDao.findByLineId(lineId));
-
+        final Sections updatedSections = new Sections(sectionDao.findByLineId(lineId));
         final Section newSection = new Section(lineId, upStation, downStation, sectionRequest.getDistance());
-        final Sections updatedSections = new Sections(previousSections.addSection(newSection));
 
-        updatedSections.findUpdateSections(previousSections)
-            .forEach(sectionDao::save);
+        sectionDao.deleteByLineId(lineId);
+        updatedSections.addSection(newSection)
+                .forEach(sectionDao::save);
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {

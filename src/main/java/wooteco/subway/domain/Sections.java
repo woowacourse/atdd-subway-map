@@ -31,24 +31,24 @@ public class Sections {
         List<Station> upStations = sections.stream()
             .map(Section::getUpStation)
             .collect(Collectors.toList());
-        List<Station> downStations = sections.stream()
-            .map(Section::getDownStation)
+        List<Long> downStations = sections.stream()
+            .map(section -> section.getDownStation().getId())
             .collect(Collectors.toList());
 
         return upStations.stream()
-            .filter(station -> !downStations.contains(station))
+            .filter(station -> !downStations.contains(station.getId()))
             .findFirst()
             .orElseThrow();
     }
 
     private boolean hasNext(final Station station) {
         return sections.stream()
-            .anyMatch(section -> section.getUpStation().equals(station));
+            .anyMatch(section -> section.getUpStation().getId().equals(station.getId()));
     }
 
     private Station findNextStation(final Station station) {
         return sections.stream()
-            .filter(section -> section.getUpStation().equals(station))
+            .filter(section -> section.getUpStation().getId().equals(station.getId()))
             .map(Section::getDownStation)
             .findFirst()
             .orElseThrow();
@@ -72,7 +72,7 @@ public class Sections {
             .map(s -> s.getDownStation().getId())
             .collect(Collectors.toSet()));
         if ((stationIds.contains(section.getUpStation().getId()) && stationIds.contains(section.getDownStation().getId())) ||
-        !stationIds.contains(section.getUpStation().getId()) && !stationIds.contains(section.getDownStation().getId())) {
+            (!stationIds.contains(section.getUpStation().getId()) && !stationIds.contains(section.getDownStation().getId()))) {
             throw new IllegalStateException("노선 구간 내에 하나의 역만 존재해야 합니다.");
         }
     }
@@ -114,7 +114,7 @@ public class Sections {
         validateDistance(newDistance);
 
         sections.add(new Section(
-            findSection.getId(),
+            findSection.getLineId(),
             section.getDownStation(),
             findSection.getDownStation(),
             newDistance
@@ -129,7 +129,7 @@ public class Sections {
         validateDistance(newDistance);
 
         sections.add(new Section(
-            findSection.getId(),
+            findSection.getLineId(),
             section.getUpStation(),
             findSection.getUpStation(),
             newDistance
@@ -158,10 +158,12 @@ public class Sections {
 
     private boolean isUpdateSection(final Section section) {
         return sections.stream()
-            .noneMatch(s -> s.getDownStation().getId().equals(section.getDownStation().getId()) &&
+            .noneMatch(
+                s -> s.getDownStation().getId().equals(section.getDownStation().getId()) &&
                 s.getUpStation().getId().equals(section.getUpStation().getId()) &&
                 s.getDistance() == section.getDistance() &&
-                Objects.equals(s.getLineId(), section.getLineId()));
+                Objects.equals(s.getLineId(), section.getLineId())
+            );
     }
 
     public List<Section> remove(final Long lineId, final Long stationId) {
