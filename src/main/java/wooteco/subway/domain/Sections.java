@@ -72,39 +72,37 @@ public class Sections {
     }
 
     private void cutInSection(final Section section) {
-        Optional<Section> foundExistSectionPoint = values.stream()
+        values.stream()
                 .filter(value -> value.isSameUpStation(section.getUpStation())
                         || value.isSameDownStation(section.getDownStation()))
-                .findAny();
-        if (foundExistSectionPoint.isPresent()) {
-            Section foundSection = foundExistSectionPoint.get();
-            validateCutInDistance(section, foundSection);
-            updateCutInSection(section, foundSection);
-        }
+                .findAny()
+                .ifPresent(foundSection -> updateCutInSection(section, foundSection));
     }
 
-    private void validateCutInDistance(final Section section, final Section foundSection) {
+    private void updateCutInSection(final Section section, final Section foundSection) {
+        validateCutInDistance(section, foundSection);
+        if (foundSection.isSameUpStation(section.getUpStation())) {
+            updateStationAndDistance(foundSection, section.getDownStation(), foundSection.getDownStation(), section.getDistance());
+            return;
+        }
+        updateStationAndDistance(foundSection, foundSection.getUpStation(), section.getUpStation(), section.getDistance());
+    }
+
+    private void validateCutInDistance(Section section, Section foundSection) {
         if (!foundSection.isLongerThan(section.getDistance())) {
             throw new SectionCreateException(SECTION_MUST_SHORTER_MESSAGE);
         }
     }
 
-    private void updateCutInSection(final Section section, final Section foundSection) {
-        if (foundSection.isSameUpStation(section.getUpStation())) {
-            doUpdate(foundSection, section.getDownStation(), foundSection.getDownStation(), section.getDistance());
-            return;
-        }
-        doUpdate(foundSection, foundSection.getUpStation(), section.getUpStation(), section.getDistance());
-    }
-
-    private void doUpdate(final Section section,
-                          final Station upStation,
-                          final Station downStation,
-                          final int distance) {
+    private void updateStationAndDistance(final Section section,
+                                          final Station upStation,
+                                          final Station downStation,
+                                          final int distance) {
         section.updateStations(upStation, downStation);
         section.subtractDistance(distance);
     }
 
+    // TODO 이중 포문 제거
     public Optional<Section> pickUpdate(List<Section> sections) {
         for (Section section : sections) {
             Optional<Section> updateSection = values.stream()

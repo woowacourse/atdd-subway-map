@@ -87,6 +87,7 @@ public class LineService {
         return stationResponses;
     }
 
+    // ㅅTODO id name
     public void update(final Long id, final LineRequest lineRequest) {
         Line currentLine = lineRepository.findById(id);
         if (!currentLine.isSameName(lineRequest.getName())) {
