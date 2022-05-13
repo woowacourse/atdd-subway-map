@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -22,6 +23,7 @@ public class SectionService {
     @Autowired
     private LineDao lineDao;
 
+    @Transactional
     public void save(SectionRequest sectionRequest, Long lineId) {
         Line line = findByLineId(lineId);
         Station upStation = findByStationId(sectionRequest.getUpStationId());
@@ -38,6 +40,7 @@ public class SectionService {
         return lineDao.findById(lineId).orElseThrow(() -> new NotFoundException("노선을 찾을 수 없습니다."));
     }
 
+    @Transactional
     public void delete(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         Sections updateSections = sections.deleteByStation(findByStationId(stationId));

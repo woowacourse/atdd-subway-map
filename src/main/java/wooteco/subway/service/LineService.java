@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -29,6 +30,7 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public LineResponse save(LineRequest lineRequest) {
         try {
             Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
@@ -74,6 +76,7 @@ public class LineService {
         return new LineResponse(line, findAllStationResponseByLineId(line.getId()));
     }
 
+    @Transactional
     public void update(Long lineId, String name, String color) {
         getLineOrThrowException(lineId);
         try {
@@ -83,6 +86,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void delete(Long lineId) {
         getLineOrThrowException(lineId);
         lineDao.delete(lineId);
