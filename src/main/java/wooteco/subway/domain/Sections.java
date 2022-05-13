@@ -10,7 +10,7 @@ public class Sections {
     private static final String ALREADY_CONTAINS_UP_AND_DOWN_STATIONS = "상행역과 하행역이 이미 모두 노선에 등록되어 있습니다.";
     private static final String NOT_CONTAINS_UP_AND_DOWN_STATIONS = "상행역과 하행역이 모두 노선에 등록되어 있지 않습니다.";
     private static final String CAN_NOT_DELETE_MORE = "해당 노선은 더 삭제할 수 없습니다.";
-    private static final String COMBINE_ONLY_VALUE_LENGTH_IS_TWO = "두개의 노선이 존재할 때에만 병합할 수 있습니다";
+    private static final String INCORRECT_TARGET_SECTIONS_SIZE = "대상 Sections의 크기가 올바르지 않습니다.";
 
     private static final long DEFAULT = -1L;
 
@@ -42,7 +42,7 @@ public class Sections {
         }
     }
 
-    public Optional<Section> getTargetSectionBySection(Section inputSection) {
+    public Optional<Section> getTargetSectionToInsert(Section inputSection) {
         return value.stream()
                 .filter(section -> section.isSameUpStationId(inputSection) || section.isSameDownStationId(inputSection))
                 .findAny();
@@ -53,15 +53,15 @@ public class Sections {
         LinkedList<Long> result = new LinkedList<>();
         result.add(id);
 
-        checkUpperStations(result, id);
-        checkLowerStations(result, id);
+        addUpStations(result, id);
+        addDownStations(result, id);
 
         return result.stream()
                 .distinct()
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private void checkLowerStations(LinkedList<Long> result, Long id) {
+    private void addUpStations(LinkedList<Long> result, Long id) {
         Map<Long, Long> stationIds = value.stream()
                 .collect(Collectors.toMap(Section::getDownStationId, Section::getUpStationId));
 
@@ -71,7 +71,7 @@ public class Sections {
         }
     }
 
-    private void checkUpperStations(LinkedList<Long> result, Long id) {
+    private void addDownStations(LinkedList<Long> result, Long id) {
         Map<Long, Long> stationIds = value.stream()
                 .collect(Collectors.toMap(Section::getUpStationId, Section::getDownStationId));
 
@@ -81,7 +81,13 @@ public class Sections {
         }
     }
 
-    public Section getTargetSectionByStationId(long stationId) {
+    public void checkCanDelete() {
+        if (value.size() == 1) {
+            throw new IllegalArgumentException(CAN_NOT_DELETE_MORE);
+        }
+    }
+
+    public Section getMergedTargetSectionToDelete(long stationId) {
         List<Section> sections = value.stream()
                 .filter(section -> section.getUpStationId() == stationId || section.getDownStationId() == stationId)
                 .collect(Collectors.toUnmodifiableList());
@@ -91,15 +97,9 @@ public class Sections {
         return targetSections.mergeSections();
     }
 
-    public void checkCanDelete() {
-        if (value.size() == 1) {
-            throw new IllegalArgumentException(CAN_NOT_DELETE_MORE);
-        }
-    }
-
     private void checkSectionsSize() {
         if (value.size() != 2) {
-            throw new IllegalArgumentException(COMBINE_ONLY_VALUE_LENGTH_IS_TWO);
+            throw new IllegalArgumentException(INCORRECT_TARGET_SECTIONS_SIZE);
         }
     }
 

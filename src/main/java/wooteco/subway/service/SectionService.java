@@ -37,7 +37,7 @@ public class SectionService {
                 sectionRequest.getDistance());
 
         sections.checkSection(inputSection);
-        sections.getTargetSectionBySection(inputSection)
+        sections.getTargetSectionToInsert(inputSection)
                 .ifPresent(targetSection -> processTargetSection(lineId, inputSection, targetSection));
 
         Section section = Section.of(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
@@ -61,7 +61,7 @@ public class SectionService {
         int sectionDeletedNum = sectionDao.deleteByLineIdAndStationId(lineId, stationId);
 
         if (sectionDeletedNum == TWO) {
-            Section section = sections.getTargetSectionByStationId(stationId);
+            Section section = sections.getMergedTargetSectionToDelete(stationId);
             sectionDao.insert(section, lineId);
         }
     }
