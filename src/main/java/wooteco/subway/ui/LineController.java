@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
@@ -40,10 +39,8 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineService.save(lineRequest.toEntity());
-        List<Station> stations = sectionService.findAllStationIdByLineId(line.getId()).stream()
-            .map(stationService::findById)
-            .collect(Collectors.toList());
-        LineResponse lineResponse = LineResponse.of(line, stations);
+        List<Long> ids = sectionService.findAllStationIdByLineId(line.getId());
+        LineResponse lineResponse = LineResponse.of(line, stationService.findByIds(ids));
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
@@ -59,10 +56,8 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        List<Station> stations = sectionService.findAllStationIdByLineId(line.getId()).stream()
-            .map(stationService::findById)
-            .collect(Collectors.toList());
-        LineResponse lineResponse = LineResponse.of(line, stations);
+        List<Long> ids = sectionService.findAllStationIdByLineId(line.getId());
+        LineResponse lineResponse = LineResponse.of(line, stationService.findByIds(ids));
         return ResponseEntity.ok().body(lineResponse);
     }
 

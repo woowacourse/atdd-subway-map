@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,12 @@ public class StationService {
 
     public List<Station> findAll() {
         return stationDao.findAll();
+    }
+
+    public List<Station> findByIds(List<Long> ids) {
+        return ids.stream()
+            .map(this::findById)
+            .collect(Collectors.toList());
     }
 
     public void delete(Long id) {
