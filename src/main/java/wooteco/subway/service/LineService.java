@@ -24,6 +24,7 @@ public class LineService {
 
     private static final String LINE_NOT_FOUND = "존재하지 않는 노선입니다.";
     private static final String DUPLICATE_LINE_NAME = "지하철 노선 이름이 중복될 수 없습니다.";
+    private static final String STATION_NOT_EXIST = "존재하지 않는 지하철역이 포함되어 있습니다.";
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -78,10 +79,22 @@ public class LineService {
         Map<Long, Station> stations = stationDao.findAll().stream()
                 .collect(Collectors.toMap(Station::getId, Function.identity()));
 
+        checkStationCount(stationIds, stations);
+
         return stationIds.stream()
                 .map(stations::get)
                 .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    private void checkStationCount(List<Long> stationIds, Map<Long, Station> stations) {
+        long stationCount = stationIds.stream()
+                .filter(stations::containsKey)
+                .count();
+
+        if(stationCount != stationIds.size()){
+            throw new IllegalArgumentException(STATION_NOT_EXIST);
+        }
     }
 
     @Transactional
