@@ -27,7 +27,7 @@ public class SectionsTest {
 
     @DisplayName("지하철 구간들(sections) 중에서 요청 상행, 하행역과 연관될 구간(section)을 정한다.")
     @Test
-    void getSectionForCombine1() {
+    void getSectionForCombine_들어온_구간들이_두_개인_경우_둘_중에_합칠_구간을_찾아낸다() {
         List<Section> sections = List.of(
                 new Section(1L, 1L, 2L, 5),
                 new Section(1L, 2L, 3L, 5)
@@ -43,7 +43,7 @@ public class SectionsTest {
 
     @DisplayName("지하철 구간들(sections) 중에서 요청 상행, 하행역과 연관될 구간(section)을 정한다.")
     @Test
-    void getSectionForCombine2() {
+    void getSectionForCombine_들어온_구간이_하나인_경우() {
         List<Section> sections = List.of(
                 new Section(1L, 1L, 2L, 5)
         );
