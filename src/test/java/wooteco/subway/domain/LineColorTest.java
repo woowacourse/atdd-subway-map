@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.LineColorLengthException;
 
-class LineTest {
+class LineColorTest {
 
     @Test
     @DisplayName("20자가 넘는 노선 색으로 라인을 생성하면 예외가 발생한다.")
