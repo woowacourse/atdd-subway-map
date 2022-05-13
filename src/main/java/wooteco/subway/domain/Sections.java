@@ -60,6 +60,9 @@ public class Sections {
     }
 
     private Long findEndUpStation() {
+        if (value.size() < MIN_SECTION_SIZE) {
+            throw new NoSuchSectionException();
+        }
         final List<Long> upStationIds = value.stream()
                 .map(Section::getUpStationId)
                 .collect(Collectors.toList());

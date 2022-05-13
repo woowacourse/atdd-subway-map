@@ -23,7 +23,7 @@ import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.dto.station.StationResponse;
 import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.exception.line.NoSuchLineException;
-import wooteco.subway.exception.station.NoSuchStationException;
+import wooteco.subway.exception.section.NoSuchSectionException;
 
 class LineServiceTest extends ServiceTest {
 
@@ -195,7 +195,7 @@ class LineServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> lineService.findById(line.getId()))
-                .isInstanceOf(NoSuchStationException.class);
+                .isInstanceOf(NoSuchSectionException.class);
     }
 
     @Test
