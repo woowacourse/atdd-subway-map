@@ -11,6 +11,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -22,7 +23,7 @@ public class LineService {
     private static final String LINE_NOT_FOUND = "존재하지 않는 노선입니다.";
     private static final String DUPLICATE_LINE_NAME = "지하철 노선 이름이 중복될 수 없습니다.";
 
-    private static final String STATION_NOT_FOUND = "존재하지 않는 지하철역입니다.";
+    private static final String STATION_NOT_EXIST_IN_LINE = "해당 노선에 존재하는 노선이 없습니다.";
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -73,11 +74,14 @@ public class LineService {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         List<Long> stationIds = sections.convertToStationIds();
 
-        return stationIds.stream()
-                .map(stationDao::findById)
-                .map(station -> new StationResponse(
-                        station.orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND))))
-                .collect(Collectors.toList());
+        List<Station> stations = stationDao.findByIds(stationIds);
+        if(stations.isEmpty()){
+            throw new IllegalStateException(STATION_NOT_EXIST_IN_LINE);
+        }
+
+        return stations.stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Transactional

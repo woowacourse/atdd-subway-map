@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +50,12 @@ public class StationDao {
         }
     }
 
+    public List<Station> findByIds(List<Long> stationIds) {
+        String inSql = String.join(",", Collections.nCopies(stationIds.size(), "?"));
+
+        return jdbcTemplate.query(String.format("SELECT * FROM STATION WHERE id IN (%s)", inSql), stationIds.toArray(), stationRowMapper);
+    }
+
     public int delete(Long id) {
         final String sql = "DELETE FROM STATION WHERE id = ?";
         return jdbcTemplate.update(sql, id);
@@ -58,5 +65,4 @@ public class StationDao {
         final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE name = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
-
 }
