@@ -36,15 +36,17 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.jsonPath().getLong("id")).isEqualTo(1L);
-        assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
-        assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600");
-        assertThat(response.jsonPath().getList("stations"))
+        assertThat(lineResponse.getId()).isNotNull();
+        assertThat(lineResponse.getName()).isEqualTo("신분당선");
+        assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
+        assertThat(lineResponse.getStations())
                 .extracting("id", "name")
-                .containsExactly(tuple(1, "신도림역"), tuple(2, "왕십리역"));
+                .containsExactly(tuple(1L, "신도림역"), tuple(2L, "왕십리역"));
     }
 
     @Test
