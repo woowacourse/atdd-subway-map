@@ -96,7 +96,7 @@ class SectionsTest {
     @Test
     void addBetweenBasedOnUpStation() {
         Section newSection = new Section(3L, 1L, 2L, 5L, 2);
-        Section changedSectionByNewSection = new Section(3L, 1L, 5L, 3L, 6);
+        Section changedSectionByNewSection = new Section(1L, 1L, 5L, 3L, 6);
         Sections expected = new Sections(Arrays.asList(changedSectionByNewSection, second, newSection));
 
         Sections updated = sections.connect(newSection);
@@ -107,8 +107,8 @@ class SectionsTest {
     @DisplayName("동일한 하행선을 기준으로 구간 사이에 새로운 구간을 추가할 수 있다.")
     @Test
     void addBetweenBasedOnDownStation() {
-        Section newSection = new Section(3L, 1L, 5L, 4L, 2);
-        Section changedSectionByNewSection = new Section(3L, 1L, 3L, 5L, 6);
+        Section newSection = new Section(3L, lineId, 5L, 4L, 2);
+        Section changedSectionByNewSection = new Section(2L, lineId, 3L, 5L, 6);
         Sections expected = new Sections(Arrays.asList(first, changedSectionByNewSection, newSection));
 
         final Sections updated = sections.connect(newSection);
@@ -160,7 +160,7 @@ class SectionsTest {
     @Test
     void deleteBetween() {
         Sections deleted = sections.delete(3L);
-        Section combinedSection = new Section(1L, 2L, 4L, 16);
+        Section combinedSection = new Section(1L, 1L, 2L, 4L, 16);
 
         assertThat(deleted).isEqualTo(new Sections(Collections.singletonList(combinedSection)));
     }

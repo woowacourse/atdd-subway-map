@@ -84,10 +84,10 @@ class SectionTest {
 
     private static Stream<Arguments> provideAddedSectionAndExpected() {
         return Stream.of(
-                Arguments.of(new Section(2L, 1L, 2L, 4L, 3),
-                        new Section(2L, 1L, 4L, 3L, 2)),
-                Arguments.of(new Section(2L, 1L, 4L, 3L, 3),
-                        new Section(2L, 1L, 2L, 4L, 2)));
+                Arguments.of(new Section(1L, 1L, 2L, 4L, 3),
+                        new Section(1L, 1L, 4L, 3L, 2)),
+                Arguments.of(new Section(1L, 1L, 4L, 3L, 3),
+                        new Section(1L, 1L, 2L, 4L, 2)));
     }
 
     @DisplayName("자신을 포함한 구간들을 받아 구간들 중에 자신이 상행선인지 반환한다.")

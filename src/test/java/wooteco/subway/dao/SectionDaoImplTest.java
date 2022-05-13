@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,9 +36,12 @@ class SectionDaoImplTest {
         sectionDao.save(firstSection);
         sectionDao.save(secondSection);
 
-        final List<Section> sections = sectionDao.findByLineId(lineId);
+        Section savedFirstSection = new Section(1L, lineId, 1L, 2L, 10);
+        Section savedSecondSection = new Section(2L, lineId, 2L, 3L, 8);
 
-        assertThat(sections).contains(firstSection, secondSection);
+        List<Section> sections = sectionDao.findByLineId(lineId);
+
+        assertThat(sections).isEqualTo(Arrays.asList(savedFirstSection, savedSecondSection));
     }
 
     @DisplayName("id에 해당하는 구간의 상행선, 하행선, 거리를 수정한다.")

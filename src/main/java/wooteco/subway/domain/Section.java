@@ -107,14 +107,14 @@ public class Section {
             return false;
         }
         final Section section = (Section) o;
-        return Objects.equals(lindId, section.lindId) && Objects
-                .equals(upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId)
-                && Objects.equals(distance, section.distance);
+        return Objects.equals(id, section.id) && Objects.equals(lindId, section.lindId)
+                && Objects.equals(upStationId, section.upStationId) && Objects
+                .equals(downStationId, section.downStationId) && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lindId, upStationId, downStationId, distance);
+        return Objects.hash(id, lindId, upStationId, downStationId, distance);
     }
 
     @Override

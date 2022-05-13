@@ -18,13 +18,14 @@ class SectionServiceTest {
     private final SectionDao sectionDao = new FakeSectionDao();
     private final SectionService sectionService = new SectionService(sectionDao);
 
-    private Section first;
-    private Section second;
+    private final Section first = new Section(1L, 2L, 3L, 8);
+    private final Section second = new Section(1L, 3L, 4L, 8);
+
+    private final Section savedFirstSection = new Section(1L, 1L, 2L, 3L, 8);
+    private final Section savedSecondSection = new Section(2L, 1L, 3L, 4L, 8);
 
     @BeforeEach
     void setUp() {
-        first = new Section(1L, 2L, 3L, 8);
-        second = new Section(1L, 3L, 4L, 8);
         sectionDao.save(first);
         sectionDao.save(second);
     }
@@ -39,7 +40,7 @@ class SectionServiceTest {
         Section newSection = new Section(3L, 1L, upStationId, downStationId, distance);
 
         List<Section> sections = sectionDao.findByLineId(1L);
-        assertThat(sections).contains(first, second, newSection);
+        assertThat(sections).contains(savedFirstSection, savedSecondSection, newSection);
     }
 
     @DisplayName("새로운 구간을 같은 상행선을 가진 구간의 사이에 등록할 수 있다.")
@@ -54,7 +55,7 @@ class SectionServiceTest {
         Section changedSection = new Section(1L, 1L, 5L, 3L, 6);
 
         List<Section> sections = sectionDao.findByLineId(1L);
-        assertThat(sections).contains(changedSection, second, newSection);
+        assertThat(sections).contains(changedSection, savedSecondSection, newSection);
     }
 
     @DisplayName("새로운 구간을 같은 하행선을 가진 구간의 사이에 등록할 수 있다.")
@@ -66,10 +67,10 @@ class SectionServiceTest {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
         sectionService.connectNewSection(1L, sectionRequest);
         Section newSection = new Section(3L, 1L, upStationId, downStationId, distance);
-        Section changedSection = new Section(1L, 1L, 3L, 5L, 6);
+        Section changedSection = new Section(2L, 1L, 3L, 5L, 6);
 
         List<Section> sections = sectionDao.findByLineId(1L);
-        assertThat(sections).contains(first, changedSection, newSection);
+        assertThat(sections).contains(savedFirstSection, changedSection, newSection);
     }
 
     @DisplayName("상행역을 삭제할 수 있다.")
@@ -79,7 +80,7 @@ class SectionServiceTest {
 
         List<Section> sections = sectionDao.findByLineId(1L);
 
-        assertThat(sections).contains(second)
+        assertThat(sections).contains(savedSecondSection)
                 .hasSize(1);
     }
 
@@ -90,7 +91,7 @@ class SectionServiceTest {
 
         List<Section> sections = sectionDao.findByLineId(1L);
 
-        assertThat(sections).contains(first)
+        assertThat(sections).contains(savedFirstSection)
                 .hasSize(1);
     }
 
@@ -101,7 +102,7 @@ class SectionServiceTest {
 
         List<Section> sections = sectionDao.findByLineId(1L);
 
-        assertThat(sections).contains(new Section(1L, 2L, 4L, 16))
+        assertThat(sections).contains(new Section(3L, 1L, 2L, 4L, 16))
                 .hasSize(1);
     }
 }
