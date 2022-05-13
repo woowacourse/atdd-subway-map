@@ -38,7 +38,7 @@ public class LineRepository {
     }
 
     public void update(Line line) {
-        final boolean isUpdated = lineDao.update(LineEntity.from(line));
+        final boolean isUpdated = lineDao.update(LineEntity.fromWithId(line));
         if (!isUpdated) {
             throw new RowNotFoundException("수정하고자 하는 노선이 존재하지 않습니다.");
         }

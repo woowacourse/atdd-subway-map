@@ -63,12 +63,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성할 수 없다.")
     public void createLine_throwsExceptionWithDuplicatedName() {
         // given
-        Map<String, String> params1 =
-            Map.of("name", "신분당선", "color", "bg-red-600");
-        SimpleRestAssured.post("/lines", params1);
+        setLineAsSaved("장한평역", "군자역", "5호선");
         // when
         Map<String, String> params2 =
-            Map.of("name", "신분당선", "color", "bg-red-800");
+            Map.of("name", "5호선", "color", "bg-red-800");
         final ExtractableResponse<Response> response = SimpleRestAssured.post("/lines", params2);
         // then
         Assertions.assertAll(
@@ -142,7 +140,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("ID값으로 노선을 수정한다.")
     public void modifyLine() {
         // given
-        final ExtractableResponse<Response> createdResponse = setLineAsSaved("선정릉역", "선릉역", "수인분당선");
+        final ExtractableResponse<Response> createdResponse =
+            setLineAsSaved("선정릉역", "선릉역", "수인분당선");
 
         // when
         final Map<String, String> modificationParam =

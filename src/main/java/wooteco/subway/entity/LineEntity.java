@@ -22,6 +22,10 @@ public class LineEntity {
         return new LineEntity(line.getName(), line.getColor());
     }
 
+    public static LineEntity fromWithId(Line line) {
+        return new LineEntity(line.getId(), line.getName(), line.getColor());
+    }
+
     public Long getId() {
         return id;
     }
