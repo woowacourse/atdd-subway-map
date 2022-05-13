@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,12 +47,6 @@ public class StationDao {
         } catch(IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    public List<Station> findByIds(List<Long> stationIds) {
-        String inSql = String.join(",", Collections.nCopies(stationIds.size(), "?"));
-
-        return jdbcTemplate.query(String.format("SELECT * FROM STATION WHERE id IN (%s)", inSql), stationIds.toArray(), stationRowMapper);
     }
 
     public int delete(Long id) {
