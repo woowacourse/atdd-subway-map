@@ -15,8 +15,8 @@ public class ControllerAdvice {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> IllegalArgumentExceptionHandler(IllegalArgumentException e) {
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ErrorResponse> nullPointerExceptionHandler(NullPointerException e) {
         e.printStackTrace();
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
