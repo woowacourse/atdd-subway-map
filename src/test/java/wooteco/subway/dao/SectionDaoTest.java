@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 @Sql({"/schema.sql", "/test-data.sql"})
@@ -20,6 +21,20 @@ public class SectionDaoTest {
     @Autowired
     public SectionDaoTest(JdbcTemplate jdbcTemplate) {
         sectionDao = new SectionDao(jdbcTemplate);
+    }
+
+    @Test
+    void save() {
+        //given
+        final List<Section> sections = sectionDao.findByLineId(1L);
+        final Section section = Section.createWithoutId(new Station(2L, "잠실역"), new Station(3L,"석촌역"), 3);
+        sections.add(section);
+        //when
+        sectionDao.deleteByLineId(1L);
+        sectionDao.save(sections, 1L);
+        //then
+        final List<Section> foundSections = sectionDao.findByLineId(1L);
+        assertThat(foundSections.size()).isEqualTo(2);
     }
 
     @Test

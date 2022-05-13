@@ -1,10 +1,10 @@
 package wooteco.subway.dao;
 
-import java.util.HashMap;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -19,18 +19,27 @@ public class SectionDao {
     }
 
     public void save(List<Section> sections, Long lineId) {
-        final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("sections").usingGeneratedKeyColumns("id");
+        batchInsert(sections, lineId);
+    }
 
-        for (Section section : sections) {
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("line_id", lineId);
-            parameters.put("up_station_id", section.getUpStation().getId());
-            parameters.put("down_station_id", section.getDownStation().getId());
-            parameters.put("distance", section.getDistance());
+    private int[] batchInsert(List<Section> sections, Long lineId) {
+        return this.jdbcTemplate.batchUpdate(
+                "insert into sections (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)",
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, lineId);
+                        ps.setLong(2, sections.get(i).getUpStation().getId());
+                        ps.setLong(3, sections.get(i).getDownStation().getId());
+                        ps.setInt(4, sections.get(i).getDistance());
+                    }
 
-            simpleJdbcInsert.execute(parameters);
-        }
+                    @Override
+                    public int getBatchSize() {
+                        return sections.size();
+                    }
+                }
+        );
     }
 
     public List<Section> findByLineId(Long lineId) {
