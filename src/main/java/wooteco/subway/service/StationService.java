@@ -10,6 +10,7 @@ import wooteco.subway.dto.StationResponse;
 import wooteco.subway.repository.StationRepository;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
+@Transactional
 @Service
 public class StationService {
 
@@ -19,7 +20,6 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
     public StationResponse save(final StationRequest stationRequest) {
         validateDuplicateName(stationRepository.findByName(stationRequest.getName()).isPresent());
 
@@ -33,6 +33,7 @@ public class StationService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> showStations() {
         return stationRepository.findAll().stream()
                 .map(StationResponse::new)

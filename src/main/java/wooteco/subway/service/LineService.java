@@ -3,13 +3,9 @@ package wooteco.subway.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.SectionRepository;
-import wooteco.subway.repository.StationRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -17,8 +13,12 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.SectionRepository;
+import wooteco.subway.repository.StationRepository;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
+@Transactional
 @Service
 public class LineService {
 
@@ -33,7 +33,6 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
     public LineResponse create(final LineRequest lineRequest) {
         validateDuplicateName(lineRepository.findByName(lineRequest.getName()).isPresent());
         Long id = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
@@ -56,14 +55,18 @@ public class LineService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(),
+                .map(line -> new LineResponse(line.getId(),
+                        line.getName(),
+                        line.getColor(),
                         sortSections(line.getSections())))
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse showLine(final Long id) {
         Line line = lineRepository.findById(id);
         return new LineResponse(line.getId(),
@@ -84,7 +87,6 @@ public class LineService {
         return stationResponses;
     }
 
-    @Transactional
     public void update(final Long id, final LineRequest lineRequest) {
         Line currentLine = lineRepository.findById(id);
         if (!currentLine.isSameName(lineRequest.getName())) {

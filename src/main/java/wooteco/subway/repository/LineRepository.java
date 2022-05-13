@@ -63,11 +63,10 @@ public class LineRepository {
         List<LineSection> lineSections = namedParameterJdbcTemplate.query(sql, joinRowMapper());
         Map<Line, List<LineSection>> groupByLine = lineSections.stream()
                 .collect(Collectors.groupingBy(LineSection::getLine));
-        List<Line> lines = groupByLine.keySet()
+        return groupByLine.keySet()
                 .stream()
                 .map(key -> new Line(key.getId(), key.getName(), key.getColor(), toSections(groupByLine.get(key))))
                 .collect(Collectors.toList());
-        return lines;
     }
 
     public Line findById(final Long id) {
