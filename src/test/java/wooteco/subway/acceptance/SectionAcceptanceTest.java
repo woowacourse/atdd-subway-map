@@ -26,8 +26,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void setStations() {
         insert(getStationRequest("name1"), "/stations");
         insert(getStationRequest("name2"), "/stations");
-        insert(getStationRequest("name3"), "/stations");
-        insert(getStationRequest("name4"), "/stations");
 
         insert(getLineRequest(line1Post), "/lines");
     }
@@ -35,7 +33,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간을 추가한다.")
     @Test
     void createSection() {
-        // given & when
+        // given
+        insert(getStationRequest("name3"), "/stations");
+
+        // when
         ExtractableResponse<Response> response = insert(getSectionRequest(sectionBetweenTwoAndThree),
                 "/lines/1/sections");
 
@@ -43,7 +44,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철 구간을 추가할 경우 400코드를 보낸다.")
+    @DisplayName("존재하지 않는 노선의 id값을 입력한 경우 404에러를 발생시킨다.")
+    @Test
+    void createSectionLineNotExist() {
+        // given
+        insert(getStationRequest("name3"), "/stations");
+
+        // when
+        ExtractableResponse<Response> response = insert(getSectionRequest(sectionBetweenTwoAndThree),
+                "/lines/2/sections");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+
+    @DisplayName("존재하지 않는 지하철역의 id값을 입력한 경우 404에러를 발생시킨다.")
+    @Test
+    void createSectionStationNotExist() {
+        // given & when
+        ExtractableResponse<Response> response = insert(getSectionRequest(sectionBetweenTwoAndThree),
+                "/lines/1/sections");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("기존에 존재하는 지하철 구간을 추가할 경우 400에러를 발생시킨다.")
     @Test
     void createSectionByStationExist() {
         // given & when
@@ -54,10 +81,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("기존에 존재하지 않는 지하철 구간을 추가할 경우 400코드를 보낸다.")
+    @DisplayName("기존에 존재하지 않는 지하철 구간을 추가할 경우 400에러를 발생시킨다.")
     @Test
     void createSectionByStationNotExist() {
-        // given & when
+        // given
+        insert(getStationRequest("name3"), "/stations");
+        insert(getStationRequest("name4"), "/stations");
+
+        //when
         ExtractableResponse<Response> response = insert(getSectionRequest(sectionBetweenThreeAndFour),
                 "/lines/1/sections");
 
@@ -69,6 +100,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection() {
         // given
+        insert(getStationRequest("name3"), "/stations");
         insert(getSectionRequest(sectionBetweenTwoAndThree), "/lines/1/sections");
 
         // when
@@ -76,6 +108,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는 line의 id값을 입력할 경우 404에러를 발생시킨다.")
+    @Test
+    void deleteSectionNotExistLine() {
+        // given
+        insert(getStationRequest("name3"), "/stations");
+        insert(getSectionRequest(sectionBetweenTwoAndThree), "/lines/1/sections");
+
+        // when
+        ExtractableResponse<Response> response = delete("/lines/2/sections", 1L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 구간에 해당하는 역이 두개 뿐일 경우 400코드를 보낸다.")
