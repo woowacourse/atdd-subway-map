@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.acceptance.utils.StationAcceptanceTestFixture.*;
+import static wooteco.subway.utils.StationTestFixture.*;
 
 @DisplayName("지하철 역 E2E")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -33,7 +33,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 역_생성_요청("강남역");
+        ExtractableResponse<Response> response = 역_등록_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -45,10 +45,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        역_생성_요청("강남역");
+        역_등록_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response = 역_생성_요청("강남역");
+        ExtractableResponse<Response> response = 역_등록_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -59,7 +59,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @ValueSource(strings = {"", "  ", "     "})
     void createStationWithEmptyName(String stationName) {
         // when
-        ExtractableResponse<Response> response = 역_생성_요청(stationName);
+        ExtractableResponse<Response> response = 역_등록_요청(stationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -69,8 +69,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 역_생성_요청("강남역");
-        ExtractableResponse<Response> createResponse2 = 역_생성_요청("역삼역");
+        ExtractableResponse<Response> createResponse1 = 역_등록_요청("강남역");
+        ExtractableResponse<Response> createResponse2 = 역_등록_요청("역삼역");
 
         // when
         ExtractableResponse<Response> response = 역_목록_요청();
@@ -89,7 +89,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 역_생성_요청("강남역");
+        ExtractableResponse<Response> createResponse = 역_등록_요청("강남역");
 
         // when
         String uri = createResponse.header("Location");

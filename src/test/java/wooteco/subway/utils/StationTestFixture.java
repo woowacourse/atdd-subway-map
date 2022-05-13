@@ -1,4 +1,4 @@
-package wooteco.subway.acceptance.utils;
+package wooteco.subway.utils;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -7,12 +7,12 @@ import org.springframework.http.MediaType;
 
 import java.util.Map;
 
-public class StationAcceptanceTestFixture {
+public class StationTestFixture {
 
-    private StationAcceptanceTestFixture() {
+    private StationTestFixture() {
     }
 
-    public static ExtractableResponse<Response> 역_생성_요청(String stationName) {
+    public static ExtractableResponse<Response> 역_등록_요청(String stationName) {
         return RestAssured.given().log().all()
                 .body(Map.of("name", stationName))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
