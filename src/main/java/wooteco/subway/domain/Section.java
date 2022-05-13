@@ -19,6 +19,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section merge(Long lineId, Section leftSection, Section rightSection) {
+        return new Section(
+                lineId,
+                leftSection.getUpStation(),
+                rightSection.getDownStation(),
+                leftSection.plusDistance(rightSection.getDistance()));
+    }
+
     public boolean isEqualsAndSmallerThan(int distance) {
         return this.distance <= distance;
     }

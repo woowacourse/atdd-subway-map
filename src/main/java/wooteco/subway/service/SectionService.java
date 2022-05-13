@@ -113,12 +113,7 @@ public class SectionService {
 
         if (deleteSections.size() == DELETE_BETWEEN_STATION_STANDARD) {
             Section rightSection = deleteSections.get(1);
-            Section section = new Section(
-                    line.getId(),
-                    leftSection.getUpStation(),
-                    rightSection.getDownStation(),
-                    leftSection.plusDistance(rightSection.getDistance())
-            );
+            Section section = Section.merge(line.getId(), leftSection, rightSection);
             sectionRepository.deleteById(rightSection.getId());
             sectionRepository.save(section);
         }

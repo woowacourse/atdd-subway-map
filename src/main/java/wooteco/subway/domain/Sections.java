@@ -61,7 +61,6 @@ public class Sections {
     public boolean isDuplicateSection(Long upStationId, Long downStationId) {
         return sections.stream()
                 .anyMatch(section -> section.isSameUpDownStation(upStationId, downStationId));
-
     }
 
     public boolean isNonMatchStations(Long upStationId, Long downStationId) {
