@@ -1,13 +1,16 @@
 package wooteco.subway.dto;
 
+import wooteco.subway.utils.ExceptionMessage;
+
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+
 
 public class SimpleLineRequest {
 
-    //TODO: ControllerTest에서 검증해보기!
-    @NotEmpty
+    @NotBlank(message = ExceptionMessage.NO_NAME_BLANK)
     private String name;
-    @NotEmpty
+    @NotEmpty(message = ExceptionMessage.NO_COLOR_BLANK)
     private String color;
 
     public SimpleLineRequest() {

@@ -2,11 +2,14 @@ package wooteco.subway.domain;
 
 import wooteco.subway.dto.StationResponse;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Sections {
+    @NotBlank(message = "구간은 하나이상 등록되어 있어야 합니다.")
     private List<SectionWithStation> sections;
 
     public Sections(List<SectionWithStation> sectionWithStations) {
@@ -62,6 +65,6 @@ public class Sections {
     }
 
     public boolean isLessThanOneSection() {
-        return sections.size() <= 1;
+        return sections.size() == 1;
     }
 }
