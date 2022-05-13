@@ -47,7 +47,7 @@ class SectionsTest {
     void findByStationIdNotFound() {
         Sections sections = new Sections(List.of(section1, section2));
 
-        assertThatThrownBy(() -> sections.findByStationId(4L))
+        assertThatThrownBy(() -> sections.getTargetSectionByStationId(4L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("해당 노선에서는 입력한 지하철 역을 찾을 수 없습니다.");
     }

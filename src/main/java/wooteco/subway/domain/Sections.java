@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import wooteco.subway.exception.NotFoundException;
 
 public class Sections {
     private static final String ALREADY_CONTAINS_UP_AND_DOWN_STATIONS = "상행역과 하행역이 이미 모두 노선에 등록되어 있습니다.";
     private static final String NOT_CONTAINS_UP_AND_DOWN_STATIONS = "상행역과 하행역이 모두 노선에 등록되어 있지 않습니다.";
-    private static final String STATION_NOT_FOUND_IN_SECTIONS = "해당 노선에서는 입력한 지하철 역을 찾을 수 없습니다.";
     private static final String CAN_NOT_DELETE_MORE = "해당 노선은 더 삭제할 수 없습니다.";
+    private static final String COMBINE_ONLY_VALUE_LENGTH_IS_TWO = "두개의 노선이 존재할 때에만 병합할 수 있습니다";
 
     private static final long DEFAULT = -1L;
 
@@ -43,7 +42,7 @@ public class Sections {
         }
     }
 
-    public Optional<Section> getTargetSection(Section inputSection) {
+    public Optional<Section> getTargetSectionBySection(Section inputSection) {
         return value.stream()
                 .filter(section -> section.isSameUpStationId(inputSection) || section.isSameDownStationId(inputSection))
                 .findAny();
@@ -82,15 +81,14 @@ public class Sections {
         }
     }
 
-    public List<Section> findByStationId(long stationId) {
+    public Section getTargetSectionByStationId(long stationId) {
         List<Section> sections = value.stream()
                 .filter(section -> section.getUpStationId() == stationId || section.getDownStationId() == stationId)
                 .collect(Collectors.toUnmodifiableList());
 
-        if (sections.isEmpty()) {
-            throw new NotFoundException(STATION_NOT_FOUND_IN_SECTIONS);
-        }
-        return sections;
+        Sections targetSections = new Sections(sections);
+        targetSections.checkSectionsSize();
+        return targetSections.mergeSections();
     }
 
     public void checkCanDelete() {
@@ -99,7 +97,23 @@ public class Sections {
         }
     }
 
-    public int size() {
-        return value.size();
+    private void checkSectionsSize() {
+        if (value.size() != 2) {
+            throw new IllegalArgumentException(COMBINE_ONLY_VALUE_LENGTH_IS_TWO);
+        }
+    }
+
+    private Section mergeSections() {
+        int newDistance = value.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
+
+        Section firstSection = value.get(0);
+        Section secondSection = value.get(1);
+
+        if (firstSection.isSameDownStationId(secondSection.getUpStationId())) {
+            return Section.of(firstSection.getUpStationId(), secondSection.getDownStationId(), newDistance);
+        }
+        return Section.of(secondSection.getUpStationId(), firstSection.getDownStationId(), newDistance);
     }
 }

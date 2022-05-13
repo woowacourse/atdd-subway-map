@@ -37,6 +37,10 @@ public class Section {
         return downStationId.equals(section.downStationId);
     }
 
+    public boolean isSameDownStationId(long id) {
+        return downStationId.equals(id);
+    }
+
     public void checkDistanceIsLongerThan(Section section) {
         if (distance <= section.distance) {
             throw new IllegalArgumentException("기존 역 사이보다 긴 길이를 등록할 수 없습니다.");

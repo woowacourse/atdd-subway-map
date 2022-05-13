@@ -62,11 +62,6 @@ public class LineDao {
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
     }
 
-    public boolean isExistId(Long id) {
-        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
-    }
-
     public boolean isExistName(String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE name = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));

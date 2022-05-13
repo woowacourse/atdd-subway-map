@@ -74,7 +74,6 @@ public class LineService {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         List<Long> stationIds = sections.convertToStationIds();
 
-
         return stationIds.stream()
                 .map(stationDao::findById)
                 .map(station -> new StationResponse(

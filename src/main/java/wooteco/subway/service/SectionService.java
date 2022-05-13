@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -16,13 +15,14 @@ public class SectionService {
 
     private static final String LINE_NOT_FOUND = "존재하지 않는 노선입니다.";
     private static final String STATION_NOT_FOUND = "존재하지 않는 지하철역입니다.";
+    private static final int TWO = 2;
 
     private final SectionDao sectionDao;
     private final StationDao stationDao;
     private final LineDao lineDao;
 
-    public SectionService(SectionDao dao, StationDao stationDao, LineDao lineDao) {
-        this.sectionDao = dao;
+    public SectionService(SectionDao sectionDao, StationDao stationDao, LineDao lineDao) {
+        this.sectionDao = sectionDao;
         this.stationDao = stationDao;
         this.lineDao = lineDao;
     }
@@ -37,7 +37,7 @@ public class SectionService {
                 sectionRequest.getDistance());
 
         sections.checkSection(inputSection);
-        sections.getTargetSection(inputSection)
+        sections.getTargetSectionBySection(inputSection)
                 .ifPresent(targetSection -> processTargetSection(lineId, inputSection, targetSection));
 
         Section section = Section.of(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
@@ -69,13 +69,11 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         sections.checkCanDelete();
 
-        List<Section> targetStations = sections.findByStationId(stationId);
+        int sectionDeletedNum = sectionDao.deleteByLineIdAndStationId(lineId, stationId);
 
-        sectionDao.deleteByLineIdAndStationId(lineId, stationId);
-
-        if (targetStations.size() == 2) {
-            Section combinedSection = combineSection(stationId, targetStations);
-            sectionDao.insert(combinedSection, lineId);
+        if (sectionDeletedNum == TWO) {
+            Section section = sections.getTargetSectionByStationId(stationId);
+            sectionDao.insert(section, lineId);
         }
     }
 
@@ -89,19 +87,5 @@ public class SectionService {
     private void checkLineExist(Long lineId) {
         lineDao.findById(lineId)
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
-    }
-
-    private Section combineSection(Long stationId, List<Section> targetStations) {
-        int newDistance = targetStations.stream()
-                .mapToInt(Section::getDistance)
-                .sum();
-
-        Section firstSection = targetStations.get(0);
-        Section secondSection = targetStations.get(1);
-
-        if (firstSection.getDownStationId().equals(stationId)) {
-            return Section.of(firstSection.getUpStationId(), secondSection.getDownStationId(), newDistance);
-        }
-        return Section.of(secondSection.getUpStationId(), firstSection.getDownStationId(), newDistance);
     }
 }
