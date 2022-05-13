@@ -1,6 +1,7 @@
 package wooteco.subway.application;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -21,6 +22,7 @@ public class SectionService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public Section addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
         checkExistsLineId(lineId);
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
@@ -74,6 +76,7 @@ public class SectionService {
         throw new IllegalArgumentException("구간을 추가할 수 없습니다");
     }
 
+    @Transactional
     public int deleteSection(Long lineId, Long stationId) {
         checkMinSectionCount(lineId);
         checkExistsLineId(lineId);
