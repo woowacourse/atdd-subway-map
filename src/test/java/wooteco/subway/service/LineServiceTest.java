@@ -342,7 +342,7 @@ public class LineServiceTest {
         // then
         assertThatThrownBy(() -> lineService.addSection(1L, sectionRequest))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("[ERROR] 상,하행 Station 모두 구간에 존재하지 않는다면 추가할 수 없습니다.");
+            .hasMessageContaining("[ERROR] 상,하행 역이 모두 구간에 존재하지 않는다면 추가할 수 없습니다.");
     }
 
     @DisplayName("기존에 존재하는 노선의 구간 사이에 하행 기준으로 새로운 구간을 등록할 때 일치하는 상,하행 지하철 역이 없다면 예외를 발생한다.")
@@ -358,6 +358,6 @@ public class LineServiceTest {
         // then
         assertThatThrownBy(() -> lineService.addSection(1L, sectionRequest))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("[ERROR] 상,하행 Station이 구간에 모두 포함된 경우 추가할 수 없습니다.");
+            .hasMessageContaining("[ERROR] 상,하행 역이 구간에 모두 포함된 경우 추가할 수 없습니다.");
     }
 }

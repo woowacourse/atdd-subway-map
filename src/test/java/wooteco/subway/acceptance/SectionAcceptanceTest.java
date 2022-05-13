@@ -56,7 +56,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 상,하행 Station이 구간에 모두 포함된 경우 추가할 수 없습니다.")
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 상,하행 역이 구간에 모두 포함된 경우 추가할 수 없습니다.")
         );
     }
 
@@ -71,7 +71,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 상,하행 Station 모두 구간에 존재하지 않는다면 추가할 수 없습니다.")
+            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 상,하행 역이 모두 구간에 존재하지 않는다면 추가할 수 없습니다.")
         );
     }
 

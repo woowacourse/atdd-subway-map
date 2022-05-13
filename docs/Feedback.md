@@ -44,7 +44,7 @@
     - mock : 어노테이션을 통해서 Mock 객체를 반환(즉, StationDao 클래스의 mock 객체를 반환)합니다.
     - Injectmocks : 어노테이션이 붙은 클래스의 인스턴스를 만들고 @mock을 통해 생성한 Mock 객체를 주입합니다.
 - [x] `JdbcTemplate` 빈으로 등록한 적이 없으나 빈으로 관리되는 이유
-  - `spirng-boot-stater-jdbc`에서 주입해주기때문에 자동 Bean 등록 가능
+    - `spirng-boot-stater-jdbc`에서 주입해주기때문에 자동 Bean 등록 가능
 - [ ] 예외 메시지 - 톤 앤 매너
 - [x] `ControllerAdvice`
 
@@ -54,24 +54,35 @@
     - 인텔리제이의 test coverage 기능을 이용
 - [x] `Section`
     - [x] boolean 타입을 반환하지만 메서드명이 `find`로 시작함 - 네이밍 수정 필요
-      - find -> `isSame`
+        - find -> `isSame`
     - [x] `isLongDistance` - 더 길다의 의미를 가질 수 있도록 수정
-- [ ] `Sections`
-    - [ ] 역과 Station 단어가 혼용되어 사용됨. 일관성있게 수정 필요
-    - [ ] `Sections()` 기본 생성자 사용하는 곳이 있는지
-    - [ ] 변수명에 동사 사용 -> 메서드의 네이밍 컨벤션
-    - [ ] `findDownSection`은 if문을 통과하여 도달했기에 항상 Optional에 값이 채워져있는지?
-    - [ ] `addSplitByUpStation`
-        - if문이 메서드에 있어야 하는지
-        - add/split 두가지 동가사 이름에 들어있을을 고려
-        - `stream()`에서 바로 get을 한다면 발생하는 문제
-    - [ ] `removeWayPointSection`
+- [x] `Sections`
+    - [x] 역과 Station 단어가 혼용되어 사용됨. 일관성있게 수정 필요
+        - "역"이라는 단어로 통일
+    - [x] `Sections()` 기본 생성자 사용하는 곳이 있는지
+        - 사용되는 곳 없기때문에 제거
+    - [x] 변수명에 동사 사용 -> 메서드의 네이밍 컨벤션
+    - [x] `findDownSection`은 if문을 통과하여 도달했기에 항상 Optional에 값이 채워져있는지?
+        - 위 StationId를 통해 상,하행 지하철역이 있는지 검증하는 코드 + 그 아래 존재하는 if() 2개를 통해 항상 참이라고 생각
+        - 하지만 인텔리제이에서는 `isPresent()`없이 사용했다는 메세지 출력
+        - `ifPresent`를 통해 메서드 수행하도록 수정
+    - [x] `addSplitByUpStation`
+        - [x] if 문이 메서드에 있어야 하는지
+            - 메서드 내 사용하던 조건문을 `add()` 메서드에서 사용하도록 수정
+        - [x] add/split 두가지 동사가 이름에 들어있음을 고려
+            - 실질적인 새로운 구간 추가는 if() 문이 끝난 뒤에 적용하기 때문에 `split`만 사용하여 메서드 이름 구성
+        - [x] `stream()`에서 바로 get을 한다면 발생하는 문제
+            - Optional.get() 시 비어있다면 `NoSuchElementException`발생할 수 있따.
+            - 조건문에서 한번 검증 필요
+    - [x] `removeWayPointSection`
         - 함수명에 대한 고민 필요, 내부에서는 제거뿐만 아니라 추가도함.
-    - [ ] `SectionsTest`
-        - [ ] 상행, 하행 종점 `Section`의 상수화
-        - [ ] `hasSection()` 테스트에만 사용되기 때문에 테스트 클래스에서 private으로 사용 권장
-        - [ ] 오타 수정
-        - [ ] 코드를 보는 사람이 이해할 수 있도록 변수명 수정
+            - 두 구간을 합치는 의미로 `merge`를 사용하여 함수명 변경
+            - `mergeUpAndDownSection`
+- [ ] `SectionsTest`
+    - [ ] 상행, 하행 종점 `Section`의 상수화
+    - [ ] `hasSection()` 테스트에만 사용되기 때문에 테스트 클래스에서 private으로 사용 권장
+    - [ ] 오타 수정
+    - [ ] 코드를 보는 사람이 이해할 수 있도록 변수명 수정
 - [ ] `LineService`
     - [ ] 원자성과 트랜잭션 학습
         - 메서드가 진행되다가 예기치 못한 상황으로 애플리케이션이 종료된다면?

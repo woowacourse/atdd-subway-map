@@ -49,7 +49,7 @@ public class SectionsTest {
 
         assertThatThrownBy(() -> sections.add(addSection))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("[ERROR] 상,하행 Station이 구간에 모두 포함된 경우 추가할 수 없습니다.");
+            .hasMessage("[ERROR] 상,하행 역이 구간에 모두 포함된 경우 추가할 수 없습니다.");
     }
 
     @DisplayName("상,하행 지하철역이 구간 목록에 모두 없다면 예외가 발생한다.")
@@ -59,7 +59,7 @@ public class SectionsTest {
 
         assertThatThrownBy(() -> sections.add(section))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("[ERROR] 상,하행 Station 모두 구간에 존재하지 않는다면 추가할 수 없습니다.");
+            .hasMessage("[ERROR] 상,하행 역이 모두 구간에 존재하지 않는다면 추가할 수 없습니다.");
     }
 
     @DisplayName("동일한 상행 지하철역이 존재한다면 기존 구간을 분리하여 저장한다.")
