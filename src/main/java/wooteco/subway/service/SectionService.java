@@ -9,7 +9,7 @@ import wooteco.subway.ui.dto.SectionDeleteRequest;
 import wooteco.subway.ui.dto.SectionRequest;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class SectionService {
 
     private final SectionDao sectionDao;
@@ -18,6 +18,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public Long save(SectionRequest sectionRequest, Long lineId) {
         Section section = toSection(sectionRequest, lineId);
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
@@ -69,6 +70,7 @@ public class SectionService {
             updateSection.getDistance() - section.getDistance()));
     }
 
+    @Transactional
     public boolean removeSection(SectionDeleteRequest sectionDeleteRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(sectionDeleteRequest.getLineId()));
 
