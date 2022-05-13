@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.domain.domainTestFixture.section1to2;
 import static wooteco.subway.domain.domainTestFixture.section1to3;
-import static wooteco.subway.domain.domainTestFixture.section2to3;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,8 +41,8 @@ class SectionTest {
         //then
         assertAll(
                 () -> assertThat(splitSection.getDistance()).isEqualTo(expectedSection.getDistance()),
-                () -> assertThat(splitSection.isSameUpStationId(expectedSection)).isTrue(),
-                () -> assertThat(splitSection.isSameDownStationId(expectedSection)).isTrue()
+                () -> assertThat(splitSection.isSameUpStationId(expectedSection.getUpStationId())).isTrue(),
+                () -> assertThat(splitSection.isSameDownStationId(expectedSection.getDownStationId())).isTrue()
         );
     }
 
@@ -58,13 +57,7 @@ class SectionTest {
     @DisplayName("입력된 Section과 upStationId값이 같으면 true를 반환한다.")
     @Test
     void isSameUpStationId() {
-        assertThat(section1to2.isSameUpStationId(section1to3)).isTrue();
-    }
-
-    @DisplayName("입력된 Section과 downStationId값이 같으면 true를 반환한다.")
-    @Test
-    void isSameDownStationIdBySection() {
-        assertThat(section2to3.isSameDownStationId(section1to3)).isTrue();
+        assertThat(section1to2.isSameUpStationId(1L)).isTrue();
     }
 
     @DisplayName("입력된 Section과 downStationId값이 같으면 true를 반환한다.")

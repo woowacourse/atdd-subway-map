@@ -51,18 +51,14 @@ public class Section {
         checkDistanceIsLongerThan(section);
         int newDistance = distance - section.distance;
 
-        if(upStationId.equals(section.upStationId)){
+        if (upStationId.equals(section.upStationId)) {
             return Section.of(section.getDownStationId(), downStationId, newDistance);
         }
         return Section.of(upStationId, section.upStationId, distance);
     }
 
-    public boolean isSameUpStationId(Section section) {
-        return upStationId.equals(section.upStationId);
-    }
-
-    public boolean isSameDownStationId(Section section) {
-        return downStationId.equals(section.downStationId);
+    public boolean isSameUpStationId(long id) {
+        return upStationId.equals(id);
     }
 
     public boolean isSameDownStationId(long id) {

@@ -115,8 +115,8 @@ class SectionsTest {
         //then
         assertAll(
                 () -> assertThat(section.getDistance()).isEqualTo(section1to3.getDistance()),
-                () -> assertThat(section.isSameUpStationId(section1to3)).isTrue(),
-                () -> assertThat(section.isSameDownStationId(section1to3)).isTrue()
+                () -> assertThat(section.isSameUpStationId(section1to3.getUpStationId())).isTrue(),
+                () -> assertThat(section.isSameDownStationId(section1to3.getDownStationId())).isTrue()
         );
     }
 }

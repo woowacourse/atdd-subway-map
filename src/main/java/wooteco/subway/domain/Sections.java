@@ -46,7 +46,8 @@ public class Sections {
 
     public Optional<Section> getTargetSectionToInsert(Section inputSection) {
         return value.stream()
-                .filter(section -> section.isSameUpStationId(inputSection) || section.isSameDownStationId(inputSection))
+                .filter(section -> section.isSameUpStationId(inputSection.getUpStationId())
+                        || section.isSameDownStationId(inputSection.getDownStationId()))
                 .findAny();
     }
 
@@ -91,7 +92,7 @@ public class Sections {
 
     public Section getMergedTargetSectionToDelete(long stationId) {
         List<Section> sections = value.stream()
-                .filter(section -> section.getUpStationId() == stationId || section.getDownStationId() == stationId)
+                .filter(section -> section.isSameUpStationId(stationId) || section.isSameDownStationId(stationId))
                 .collect(Collectors.toUnmodifiableList());
 
         Sections targetSections = new Sections(sections);
