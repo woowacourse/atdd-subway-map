@@ -126,4 +126,19 @@ public class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("노선에 역이 2개 존재하는 경우는 삭제할 수 없습니다.");
     }
+
+    @DisplayName("구간 내부의 지하철역을 정렬한다.")
+    @Test
+    void sortSection() {
+        Section section1 = new Section(1L, 1L, 1L, 2L, 7);
+        Section section2 = new Section(4L, 1L, 5L, 4L, 3);
+        Section section3 = new Section(2L, 1L, 2L, 3L, 6);
+        Section section4 = new Section(3L, 1L, 3L, 5L, 7);
+        List<Section> unsortedSections
+                = List.of(section1, section2, section3, section4);
+
+        Sections sections = new Sections(unsortedSections);
+        List<Long> stationIds = sections.sortSection();
+        assertThat(stationIds).containsExactly(1L, 2L, 3L, 5L, 4L);
+    }
 }

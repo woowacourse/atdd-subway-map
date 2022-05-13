@@ -1,7 +1,9 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -143,5 +145,28 @@ public class Sections {
 
     public List<Section> getSections() {
         return List.copyOf(sections);
+    }
+
+    public List<Long> sortSection() {
+        List<Long> sortedStations = new ArrayList<>();
+        Map<Long, Long> sectionMap = new HashMap<>();
+        for (Section section : sections) {
+            sectionMap.put(section.getUpStationId(), section.getDownStationId());
+        }
+
+        Long mostUpStation = 0L;
+        for (Long stationId : sectionMap.keySet()) {
+            if (sectionMap.containsKey(stationId) && !sectionMap.containsValue(stationId)) {
+                mostUpStation = stationId;
+            }
+        }
+        sortedStations.add(mostUpStation);
+
+        for (int i = 0; i < sectionMap.size(); i++) {
+            Long nextStation = sectionMap.get(mostUpStation);
+            sortedStations.add(nextStation);
+            mostUpStation = nextStation;
+        }
+        return sortedStations;
     }
 }

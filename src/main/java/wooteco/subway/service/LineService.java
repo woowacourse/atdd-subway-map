@@ -1,12 +1,12 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -48,15 +48,7 @@ public class LineService {
     }
 
     private List<Long> findStationInSections(List<Section> sections) {
-        List<Long> stationIds = new ArrayList<>();
-        for (Section section : sections) {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
-        }
-
-        return stationIds.stream()
-                .distinct()
-                .collect(Collectors.toList());
+        return new Sections(sections).sortSection();
     }
 
     private void validateDuplication(String name) {
