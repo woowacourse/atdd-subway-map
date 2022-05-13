@@ -121,7 +121,6 @@ public class Sections {
                                                           final Station newDownStation,
                                                           final Integer distance) {
         final Section oldSection = findSectionThisUpStation(newUpStation);
-        validateDistance(distance, oldSection);
         final int oldSectionIndex = value.indexOf(oldSection);
         final Section frontSection = Section.createWithoutId(newUpStation, newDownStation, distance);
         final Section backSection = Section.createWithoutId(
@@ -160,7 +159,6 @@ public class Sections {
                                                         final Station newDownStation,
                                                         final Integer distance) {
         final Section oldSection = findSectionThisDownStation(newDownStation);
-        validateDistance(distance, oldSection);
         final int oldSectionIndex = value.indexOf(oldSection);
         final Section frontSection = Section.createWithoutId(
                 oldSection.getUpStation(),
@@ -168,12 +166,6 @@ public class Sections {
                 oldSection.getDistance() - distance);
         final Section backSection = Section.createWithoutId(newUpStation, newDownStation, distance);
         return splitSection(oldSectionIndex, frontSection, backSection);
-    }
-
-    private void validateDistance(final Integer distance, final Section oldSection) {
-        if (distance >= oldSection.getDistance()) {
-            throw new ResisterSectionException("[ERROR] 역 사이에 새 역을 등록할 경우엔 길이가 원래 있던 길이보다 짧아야합니다.");
-        }
     }
 
     private SectionsUpdateResult splitSection(final int oldSectionIndex,

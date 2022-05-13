@@ -7,7 +7,7 @@ public class Section {
     private final Long id;
     private final Station upStation;
     private final Station downStation;
-    private final Integer distance;
+    private final Distance distance;
 
     public Section(final Long id,
                    final Station upStation,
@@ -16,7 +16,7 @@ public class Section {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public static Section createWithoutId(final Station upStation,
@@ -38,7 +38,7 @@ public class Section {
     }
 
     public Integer getDistance() {
-        return distance;
+        return distance.getValue();
     }
 
     @Override
