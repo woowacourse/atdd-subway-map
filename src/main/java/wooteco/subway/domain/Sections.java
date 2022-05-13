@@ -23,6 +23,7 @@ public class Sections {
             throw new EmptyException("[ERROR] 구간이 비었습니다.");
         }
     }
+
     public List<Station> getStations() {
         Map<Station, Station> hash = sections.stream()
                 .collect(Collectors.toMap(

@@ -114,7 +114,7 @@ public class SectionService {
         if (deleteSections.size() == DELETE_BETWEEN_STATION_STANDARD) {
             Section rightSection = deleteSections.get(1);
             Section section = new Section(
-                    lineId,
+                    line.getId(),
                     leftSection.getUpStation(),
                     rightSection.getDownStation(),
                     leftSection.plusDistance(rightSection.getDistance())
