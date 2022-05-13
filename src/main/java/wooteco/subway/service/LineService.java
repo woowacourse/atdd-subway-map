@@ -2,6 +2,8 @@ package wooteco.subway.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -74,11 +77,13 @@ public class LineService {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         List<Long> stationIds = sections.convertToStationIds();
 
+        Map<Long, Station> stations = stationDao.findAll().stream()
+                .collect(Collectors.toMap(Station::getId, Function.identity()));
+
         return stationIds.stream()
-                .map(stationDao::findById)
-                .map(station -> new StationResponse(
-                        station.orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND))))
-                .collect(Collectors.toList());
+                .map(stations::get)
+                .map(StationResponse::new)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Transactional
