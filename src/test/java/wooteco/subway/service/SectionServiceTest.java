@@ -19,8 +19,7 @@ import wooteco.subway.utils.exception.NotFoundException;
 import javax.sql.DataSource;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
@@ -38,7 +37,9 @@ class SectionServiceTest {
     private SectionRepository sectionRepository;
     private StationRepository stationRepository;
     private LineRepository lineRepository;
-
+    private Station upStation;
+    private Station middleStation;
+    private Station downStation;
 
     @BeforeEach
     void setUp() {
@@ -46,6 +47,16 @@ class SectionServiceTest {
         lineRepository = new LineRepositoryImpl(dataSource);
         stationRepository = new StationRepositoryImpl(dataSource);
         sectionService = new SectionService(sectionRepository, stationRepository);
+        initData();
+    }
+
+    private void initData() {
+        upStation = stationRepository.findById(UP_STATION_ID)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 역을 찾을수 없습니다."));
+        middleStation = stationRepository.findById(MIDDLE_STATION_ID)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 역을 찾을수 없습니다."));
+        downStation = stationRepository.findById(DOWN_STATION_ID)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 역을 찾을수 없습니다."));
     }
 
 
@@ -77,26 +88,38 @@ class SectionServiceTest {
     @Test
     void addDownTerminal() {
         //given
-        Station downStation = stationRepository.save(new Station("신도림역"));
-        SectionRequest sectionRequest = new SectionRequest(DOWN_STATION_ID, downStation.getId(), 5);
+        Station newStation = stationRepository.save(new Station("신도림역"));
+        SectionRequest sectionRequest = new SectionRequest(DOWN_STATION_ID, newStation.getId(), 5);
         //when
         sectionService.add(LINE_ID, sectionRequest);
         List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
         //then
-        assertThat(sections).hasSize(3);
+        assertThat(sections).hasSize(3)
+                .extracting(Section::getUpStation, Section::getDownStation)
+                .contains(
+                        tuple(upStation, middleStation),
+                        tuple(middleStation, downStation),
+                        tuple(downStation, newStation)
+                );
     }
 
     @DisplayName("상행 종점에 구간을 추가한다.")
     @Test
     void addUpTerminal() {
         //given
-        Station station = stationRepository.save(new Station("신도림역"));
-        SectionRequest sectionRequest = new SectionRequest(station.getId(), UP_STATION_ID, 5);
+        Station newStation = stationRepository.save(new Station("신도림역"));
+        SectionRequest sectionRequest = new SectionRequest(newStation.getId(), UP_STATION_ID, 5);
         //when
         sectionService.add(LINE_ID, sectionRequest);
         List<Section> sections = sectionRepository.findAllByLineId(LINE_ID);
         //then
-        assertThat(sections).hasSize(3);
+        assertThat(sections).hasSize(3)
+                .extracting(Section::getUpStation, Section::getDownStation)
+                .contains(
+                        tuple(newStation, upStation),
+                        tuple(upStation, middleStation),
+                        tuple(middleStation, downStation)
+                );
     }
 
     @DisplayName("역 중간에 넣을 구간중 하행역이 일치할때 구간을 추가한다.")
