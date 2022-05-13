@@ -79,21 +79,17 @@ public class Sections {
     }
 
     private void validateStationRegistration(final Station newUpStation, final Station newDownStation) {
-        if (!isResistedStation(newUpStation) && !isResistedStation(newDownStation)) {
+        if (!newUpStation.isResistedStation(value) && !newDownStation.isResistedStation(value)) {
             throw new ResisterSectionException("[ERROR] 등록하려는 구간의 상행선 또는 하행선 중 한개는 노선에 존재해야합니다.");
         }
 
-        if (isResistedStation(newUpStation) && isResistedStation(newDownStation)) {
+        if (newUpStation.isResistedStation(value) && newDownStation.isResistedStation(value)) {
             throw new ResisterSectionException("[ERROR] 등록하려는 구간의 상행선 또는 하행선 중 한개만 노선에 존재해야합니다.");
         }
     }
 
     private boolean isResistedStation(final Station station) {
-        return value.stream()
-                .anyMatch(section ->
-                        section.getDownStation().equals(station)
-                                || section.getUpStation().equals(station)
-                );
+        return station.isResistedStation(value);
     }
 
     private SectionsUpdateResult addDownDirectionSection(final Station newUpStation,

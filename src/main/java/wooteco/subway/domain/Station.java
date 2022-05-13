@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Station {
@@ -14,6 +15,14 @@ public class Station {
 
     public static Station createWithoutId(final String name) {
         return new Station(null, name);
+    }
+
+    public boolean isResistedStation(final List<Section> sections) {
+        return sections.stream()
+                .anyMatch(section ->
+                        section.getDownStation().equals(this)
+                                || section.getUpStation().equals(this)
+                );
     }
 
     public Long getId() {
