@@ -30,14 +30,14 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public Section getSameUpStationSection(Long id) {
+    private Section getSameUpStationSection(Long id) {
         return sections.stream()
             .filter(it -> it.isSameUpStation(id))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_SAME_SECTION));
     }
 
-    public Section getSameDownStationSection(Long id) {
+    private Section getSameDownStationSection(Long id) {
         return sections.stream()
             .filter(it -> it.isSameDownStation(id))
             .findFirst()
@@ -71,15 +71,15 @@ public class Sections {
         throw new IllegalArgumentException(NOT_EXIST_SAME_SECTION);
     }
 
-    public boolean isExistUpStation(Long upStationId) {
+    private boolean isExistUpStation(Long upStationId) {
         return sectionLinks.isExistUpStation(upStationId);
     }
 
-    public boolean isExistDownStation(Long downStationId) {
+    private boolean isExistDownStation(Long downStationId) {
         return sectionLinks.isExistDownStation(downStationId);
     }
 
-    public boolean isNotExistStation(Long stationId) {
+    private boolean isNotExistStation(Long stationId) {
         return sectionLinks.isNotExistStation(stationId);
     }
 
