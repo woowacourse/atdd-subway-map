@@ -33,25 +33,31 @@ public class Sections {
     }
 
     private void splitAndAdd(Section newSection) {
-        Predicate<Section> hasSameUpStation = (section) -> section.hasSameUpStationWith(newSection);
-        Section originalSection = findSection(hasSameUpStation);
-        if (originalSection != null) {
-            Section splitSection = originalSection.splitRightBy(newSection);
-            sections.add(sections.indexOf(originalSection), newSection);
-            sections.add(sections.indexOf(originalSection), splitSection);
-            sections.remove(originalSection);
+        if (containsSameUpStationWith(newSection)) {
+            splitRightAndAdd(newSection);
             return;
         }
-        Predicate<Section> hasSameDownStation = (section) -> section.hasSameDownStationWith(newSection);
-        originalSection = findSection(hasSameDownStation);
-        if (originalSection != null) {
-            Section splitSection = originalSection.splitLeftBy(newSection);
-            sections.add(sections.indexOf(originalSection), splitSection);
-            sections.add(sections.indexOf(originalSection), newSection);
-            sections.remove(originalSection);
+        if (containsSameDownStationWith(newSection)) {
+            splitLeftAndAdd(newSection);
             return;
         }
         throw new IllegalArgumentException("노선에 상행 종점과 하행 종점이 모두 존재하지 않아 구간을 추가할 수 없습니다.");
+    }
+
+    private void splitLeftAndAdd(Section newSection) {
+        Section originalSection = findSection(section -> section.hasSameDownStationWith(newSection));
+        Section splitSection = originalSection.splitLeftBy(newSection);
+        sections.add(sections.indexOf(originalSection), splitSection);
+        sections.add(sections.indexOf(originalSection), newSection);
+        sections.remove(originalSection);
+    }
+
+    private void splitRightAndAdd(Section newSection) {
+        Section originalSection = findSection(section -> section.hasSameUpStationWith(newSection));
+        Section splitSection = originalSection.splitRightBy(newSection);
+        sections.add(sections.indexOf(originalSection), newSection);
+        sections.add(sections.indexOf(originalSection), splitSection);
+        sections.remove(originalSection);
     }
 
     public Section delete(Station station) {
@@ -66,7 +72,7 @@ public class Sections {
     }
 
     private Section mergeAndDelete(Station station) {
-        Section originalSection = findSection((section) -> section.isDownStation(station));
+        Section originalSection = findSection(section -> section.isDownStation(station));
         if (originalSection == null) {
             throw new IllegalArgumentException("해당 역은 노선에 존재하지 않습니다.");
         }
@@ -88,6 +94,16 @@ public class Sections {
                 .filter(sectionPredicate)
                 .findAny()
                 .orElse(null);
+    }
+
+    private boolean containsSameUpStationWith(Section otherSection) {
+        return sections.stream()
+                .anyMatch((section) -> section.hasSameUpStationWith(otherSection));
+    }
+
+    private boolean containsSameDownStationWith(Section otherSection) {
+        return sections.stream()
+                .anyMatch((section) -> section.hasSameDownStationWith(otherSection));
     }
 
     private Station getUpTermination() {
