@@ -27,9 +27,17 @@ public class Sections {
         Long inputUpStationId = inputSection.getUpStationId();
         Long inputDownStationId = inputSection.getDownStationId();
 
-        if (stationIds.containsAll(List.of(inputUpStationId, inputDownStationId))) {
+        checkContainsAll(stationIds, List.of(inputUpStationId, inputDownStationId));
+        checkNotContains(stationIds, inputUpStationId, inputDownStationId);
+    }
+
+    private void checkContainsAll(List<Long> stationIds, List<Long> inputIds) {
+        if (stationIds.containsAll(inputIds)) {
             throw new IllegalArgumentException(ALREADY_CONTAINS_UP_AND_DOWN_STATIONS);
         }
+    }
+
+    private void checkNotContains(List<Long> stationIds, Long inputUpStationId, Long inputDownStationId) {
         if (!stationIds.contains(inputDownStationId) && !stationIds.contains(inputUpStationId)) {
             throw new IllegalArgumentException(NOT_CONTAINS_UP_AND_DOWN_STATIONS);
         }
