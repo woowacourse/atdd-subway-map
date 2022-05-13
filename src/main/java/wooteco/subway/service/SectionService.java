@@ -15,7 +15,7 @@ public class SectionService {
 
     private static final String LINE_NOT_FOUND = "존재하지 않는 노선입니다.";
     private static final String STATION_NOT_FOUND = "존재하지 않는 지하철역입니다.";
-    private static final int TWO = 2;
+    private static final int DELETE_TWO_LINE = 2;
 
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -60,7 +60,7 @@ public class SectionService {
 
         int sectionDeletedNum = sectionDao.deleteByLineIdAndStationId(lineId, stationId);
 
-        if (sectionDeletedNum == TWO) {
+        if (sectionDeletedNum == DELETE_TWO_LINE) {
             Section section = sections.getMergedTargetSectionToDelete(stationId);
             sectionDao.insert(section, lineId);
         }

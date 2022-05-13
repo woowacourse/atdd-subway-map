@@ -13,6 +13,8 @@ public class Sections {
     private static final String INCORRECT_TARGET_SECTIONS_SIZE = "대상 Sections의 크기가 올바르지 않습니다.";
 
     private static final long DEFAULT = -1L;
+    private static final int VALID_SECTIONS_TO_MERGE_SIZE = 2;
+    private static final int DELETE_LIMIT = 1;
 
     private final List<Section> value;
 
@@ -82,7 +84,7 @@ public class Sections {
     }
 
     public void checkCanDelete() {
-        if (value.size() == 1) {
+        if (value.size() <= DELETE_LIMIT) {
             throw new IllegalArgumentException(CAN_NOT_DELETE_MORE);
         }
     }
@@ -98,7 +100,7 @@ public class Sections {
     }
 
     private void checkSectionsSize() {
-        if (value.size() != 2) {
+        if (value.size() != VALID_SECTIONS_TO_MERGE_SIZE) {
             throw new IllegalArgumentException(INCORRECT_TARGET_SECTIONS_SIZE);
         }
     }
