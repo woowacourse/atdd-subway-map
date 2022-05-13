@@ -50,4 +50,11 @@ public class SectionDaoImpl implements SectionDao {
         String sql = "delete from section where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public boolean exists(Long lineId, Long stationId) {
+        String sql = "select exists (select lineId, upStationId, downStationId from section "
+                + "where lineId = ? and (upStationId = ? or downStationId = ?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
+    }
 }

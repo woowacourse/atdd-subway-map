@@ -7,6 +7,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.exception.section.NonExistenceSectionDeletion;
 
 @Service
 public class SectionService {
@@ -53,10 +54,17 @@ public class SectionService {
     }
 
     public void deleteStation(Long lineId, Long stationId) {
+        validateLineIdAndStationId(lineId, stationId);
         Sections previousSections = new Sections(sectionDao.findByLineId(lineId));
         Sections deletedSections = previousSections.delete(stationId);
         deletePrevious(previousSections, deletedSections);
         addChanged(previousSections, deletedSections);
+    }
+
+    private void validateLineIdAndStationId(Long lineId, Long stationId) {
+        if (!sectionDao.exists(lineId, stationId)) {
+            throw NonExistenceSectionDeletion.getInstance();
+        }
     }
 
     private void addChanged(Sections previousSections, Sections deletedSections) {

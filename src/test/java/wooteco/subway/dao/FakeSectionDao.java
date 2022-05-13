@@ -41,4 +41,10 @@ public class FakeSectionDao implements SectionDao {
                 .findAny();
         changedSection.ifPresent(sections::remove);
     }
+
+    @Override
+    public boolean exists(final Long lineId, final Long stationId) {
+        return sections.stream()
+                .anyMatch(section -> section.getLindId().equals(lineId) && section.hasStationId(stationId));
+    }
 }

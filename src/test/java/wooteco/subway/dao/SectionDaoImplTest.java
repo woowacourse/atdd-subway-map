@@ -7,6 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -53,5 +55,17 @@ class SectionDaoImplTest {
         sectionDao.update(updatingSection);
 
         assertThat(sectionDao.findByLineId(1L)).contains(updatingSection);
+    }
+
+    @DisplayName("노선 id와 지하철 역 id를 받아, 해당 id 들을 가진 구간이 있는지 반환한다.")
+    @ParameterizedTest
+    @CsvSource({"1, 1, true", "1, 2, true", "2, 1, false", "1, 3, false", "2, 3, false"})
+    void exists(Long lindId, Long stationId, boolean expected) {
+        Section section = new Section(1L, 1L, 2L, 10);
+        sectionDao.save(section);
+
+        boolean actual = sectionDao.exists(lindId, stationId);
+
+        assertThat(actual).isEqualTo(expected);
     }
 }

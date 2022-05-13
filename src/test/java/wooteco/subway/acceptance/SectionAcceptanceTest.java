@@ -9,6 +9,7 @@ import io.restassured.response.Response;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -98,14 +99,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void delete(Long stationId) {
         requestToConnectNewSection(1L, "3", "4", "2");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/1/sections?stationId=" + stationId)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = requestToDeleteSection(stationId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는 구간을 삭제하려고 하면 400을 반환한다.")
+    @Test
+    void delete_badRequest() {
+        requestToConnectNewSection(1L, "3", "4", "2");
+        requestToDeleteSection(3L);
+        ExtractableResponse<Response> response = requestToDeleteSection(3L);
+        ExceptionResponse exception = response.jsonPath().getObject(".", ExceptionResponse.class);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exception.getExceptionMessage()).isEqualTo("존재하지 않는 구간은 삭제할 수 없습니다.")
+        );
     }
 
     private ExtractableResponse<Response> requestToConnectNewSection(Long lineId, String upStationId,
@@ -148,6 +158,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> requestToDeleteSection(Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }

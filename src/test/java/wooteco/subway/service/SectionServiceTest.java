@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import wooteco.subway.dao.FakeSectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.exception.section.NonExistenceSectionDeletion;
 
 class SectionServiceTest {
 
@@ -104,5 +106,14 @@ class SectionServiceTest {
 
         assertThat(sections).contains(new Section(3L, 1L, 2L, 4L, 16))
                 .hasSize(1);
+    }
+
+    @DisplayName("존재하지 않는 구간을 삭제하려고 하면 예외를 발생시킨다.")
+    @Test
+    void delete_exceptionByNonExistenceSection() {
+        sectionService.deleteStation(1L, 3L);
+
+        assertThatThrownBy(() -> sectionService.deleteStation(1L, 3L))
+                .isInstanceOf(NonExistenceSectionDeletion.class);
     }
 }
