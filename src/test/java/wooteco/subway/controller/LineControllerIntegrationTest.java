@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -38,6 +39,7 @@ import wooteco.subway.dto.SectionRequest;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Sql("/testSchema.sql")
 public class LineControllerIntegrationTest {
 
     @Autowired

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.dao.JdbcStationDao;
@@ -22,6 +23,7 @@ import wooteco.subway.dto.LineDto;
 import wooteco.subway.dto.SectionDto;
 
 @SpringBootTest
+@Sql("/testSchema.sql")
 public class LineRepositoryTest {
 
     @Autowired
