@@ -46,8 +46,8 @@ public class Sections {
     }
 
     private void validateDistance(Section section, Section currentSection) {
-        if (section.getDistance() >= currentSection.getDistance()) {
-            throw new IllegalStateException("기존 구간보다 거리가 긴 구간을 입력할 수 없습니다.");
+        if (section.isMoreDistance(currentSection)) {
+            throw new IllegalStateException("기존 구간보다 거리가 길거나 같은 구간을 입력할 수 없습니다.");
         }
     }
 
@@ -200,7 +200,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(upStationId))
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException("해당하는 Section을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalStateException("해당하는 구간을 찾을 수 없습니다."));
     }
 
     private boolean checkSectionByUpStationId(Long upStationId) {

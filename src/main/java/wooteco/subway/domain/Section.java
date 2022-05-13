@@ -66,4 +66,8 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, lineId, upStationId, downStationId, distance);
     }
+
+    public boolean isMoreDistance(Section currentSection) {
+        return distance >= currentSection.distance;
+    }
 }
