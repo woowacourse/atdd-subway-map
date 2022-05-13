@@ -34,6 +34,16 @@ public class Section {
         return this.downStationId.equals(downStationId);
     }
 
+    public Section createExceptSection(Section section) {
+        if (upStationId.equals(section.upStationId)) {
+            return createExceptUpSection(section);
+        }
+        if (downStationId.equals(section.downStationId)) {
+            return createExceptDownSection(section);
+        }
+        throw new IllegalArgumentException();
+    }
+
     public Section createExceptDownSection(Section section) {
         validateDistance(section);
         return new Section(
