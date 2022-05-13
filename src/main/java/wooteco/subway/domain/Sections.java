@@ -18,8 +18,8 @@ public class Sections {
     public void add(Section section) {
         validateDuplicate(section.getUpStationId(), section.getDownStationId());
         validateNoExist(section.getUpStationId(), section.getDownStationId());
-        checkForkDownSection(section);
-        checkForkUpSection(section);
+        pushIfForkDownSection(section);
+        pushIfForkUpSection(section);
         this.sections.add(section);
     }
 
@@ -37,7 +37,7 @@ public class Sections {
         }
     }
 
-    private void checkForkUpSection(Section section) {
+    private void pushIfForkUpSection(Section section) {
         if (isUpSection(section) && isAnotherUpSection(section)) {
             Section currentSection = getAnotherUpSection(section);
             validateDistance(section, currentSection);
@@ -80,7 +80,7 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("다른 구간을 찾을 수 없습니다."));
     }
 
-    private void checkForkDownSection(Section section) {
+    private void pushIfForkDownSection(Section section) {
         if (isDownSection(section) && isAnotherDownSection(section)) {
             Section currentSection = getAnotherDownSection(section);
             validateDistance(section, currentSection);
@@ -121,7 +121,7 @@ public class Sections {
         final Set<Long> stations = new LinkedHashSet<>();
         Long stationId = getFirstStationId();
 
-        while (checkSectionByUpStationId(stationId)) {
+        while (isSectionByUpStationId(stationId)) {
             Section section = getSectionByUpStationId(stationId);
             stations.add(section.getUpStationId());
             stations.add(section.getDownStationId());
@@ -190,7 +190,7 @@ public class Sections {
 
     private Long getFirstStationId() {
         return sections.stream()
-                .filter(section -> checkFirstStation(section.getUpStationId()))
+                .filter(section -> isFirstStation(section.getUpStationId()))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("첫번째 역을 찾을 수 없습니다."))
                 .getUpStationId();
@@ -203,12 +203,12 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("해당하는 구간을 찾을 수 없습니다."));
     }
 
-    private boolean checkSectionByUpStationId(Long upStationId) {
+    private boolean isSectionByUpStationId(Long upStationId) {
         return sections.stream()
                 .anyMatch(section -> section.getUpStationId().equals(upStationId));
     }
 
-    private boolean checkFirstStation(Long upStationId) {
+    private boolean isFirstStation(Long upStationId) {
         return sections.stream()
                 .noneMatch(section -> section.getDownStationId().equals(upStationId));
     }

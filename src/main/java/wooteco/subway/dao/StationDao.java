@@ -70,7 +70,7 @@ public class StationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public Station findById(Long stationId) {
+    public Station getById(Long stationId) {
         final String sql = "select id, name from station where id=?";
         return jdbcTemplate.queryForObject(
                 sql,

@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class Section {
 
+    private static final long DEFAULT_SESSION_ID = 0L;
+
     private Long id;
     private Long lineId;
     private Long upStationId;
@@ -19,7 +21,7 @@ public class Section {
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this(0L, lineId, upStationId, downStationId, distance);
+        this(DEFAULT_SESSION_ID, lineId, upStationId, downStationId, distance);
     }
 
     public Long getId() {

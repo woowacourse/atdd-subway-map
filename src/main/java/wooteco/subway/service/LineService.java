@@ -53,10 +53,10 @@ public class LineService {
     }
 
     private List<StationResponse> getStationResponsesByLine(Line newLine) {
-        Sections sections = new Sections(sectionDao.getSectionByLineId(newLine.getId()));
+        Sections sections = new Sections(sectionDao.findSectionByLineId(newLine.getId()));
         Set<Long> stationIds = sections.getStations();
         return stationIds.stream()
-                .map(stationDao::findById)
+                .map(stationDao::getById)
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
@@ -69,7 +69,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(final Long id) {
+    public LineResponse getById(final Long id) {
         final Line line = lineDao.findById(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), getStationResponsesByLine(line));
     }

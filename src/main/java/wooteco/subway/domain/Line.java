@@ -8,8 +8,6 @@ public class Line {
     private String name;
     private String color;
 
-    private long sectionId = 0;
-
     public Line() {
     }
 

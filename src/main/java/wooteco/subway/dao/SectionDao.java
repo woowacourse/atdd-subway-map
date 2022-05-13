@@ -35,7 +35,7 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, stationId, stationId);
     }
 
-    public List<Section> getSectionByLineId(Long lineId) {
+    public List<Section> findSectionByLineId(Long lineId) {
         final String sql = "select id, line_id, up_station_id, down_station_id, distance from section where line_id=?";
         return jdbcTemplate.query(sql, rowMapper, lineId);
     }

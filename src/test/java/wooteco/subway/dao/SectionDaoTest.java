@@ -49,7 +49,7 @@ public class SectionDaoTest {
         sectionDao.save(1L, 1L, 2L, 5);
         sectionDao.save(1L, 1L, 3L, 3);
 
-        assertThat(sectionDao.getSectionByLineId(1L).size()).isEqualTo(2);
+        assertThat(sectionDao.findSectionByLineId(1L).size()).isEqualTo(2);
     }
 
     @Test
@@ -58,6 +58,6 @@ public class SectionDaoTest {
         sectionDao.save(1L, 1L, 2L, 5);
         sectionDao.save(1L, 1L, 3L, 3);
 
-        assertThat(sectionDao.getSectionByLineId(2L).size()).isEqualTo(0);
+        assertThat(sectionDao.findSectionByLineId(2L).size()).isEqualTo(0);
     }
 }
