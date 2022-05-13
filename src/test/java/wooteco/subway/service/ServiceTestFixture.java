@@ -13,7 +13,7 @@ public class ServiceTestFixture {
     public static Station 선릉역 = new Station(1L, "선릉");
     public static Station 잠실역 = new Station(2L, "잠실");
 
-    public static final LineRequest.Put 이호선_수정 = new LineRequest.Put("2호선", "blue");
+    public static final LineRequest.Put 일호선_수정 = new LineRequest.Put("1호선", "blue");
     public static final LineRequest.Put 수인분당선_수정 = new LineRequest.Put("수인분당선", "blue");
 
     public static LineRequest.Post 일호선_생성(long upStationId, long downStationId){
