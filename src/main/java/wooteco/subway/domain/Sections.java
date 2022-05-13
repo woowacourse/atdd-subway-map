@@ -55,18 +55,18 @@ public class Sections {
     }
 
     private void validateDuplicateSection(final Section section) {
-        boolean isDuplicateSection = values.stream()
+        boolean exist = values.stream()
                 .anyMatch(value -> value.isSameSection(section));
-        if (isDuplicateSection) {
+        if (exist) {
             throw new SectionCreateException(SECTION_NOT_CONNECT_MESSAGE);
         }
 
     }
 
     private void validateSectionConnect(final Section section) {
-        boolean isConnected = values.stream()
+        boolean exist = values.stream()
                 .anyMatch(value -> value.haveStation(section));
-        if (!isConnected) {
+        if (!exist) {
             throw new SectionCreateException(SECTION_NOT_CONNECT_MESSAGE);
         }
     }
@@ -82,10 +82,16 @@ public class Sections {
     private void updateCutInSection(final Section section, final Section foundSection) {
         validateCutInDistance(section, foundSection);
         if (foundSection.isSameUpStation(section.getUpStation())) {
-            updateStationAndDistance(foundSection, section.getDownStation(), foundSection.getDownStation(), section.getDistance());
+            updateStationAndDistance(foundSection,
+                    section.getDownStation(),
+                    foundSection.getDownStation(),
+                    section.getDistance());
             return;
         }
-        updateStationAndDistance(foundSection, foundSection.getUpStation(), section.getUpStation(), section.getDistance());
+        updateStationAndDistance(foundSection,
+                foundSection.getUpStation(),
+                section.getUpStation(),
+                section.getDistance());
     }
 
     private void validateCutInDistance(Section section, Section foundSection) {
@@ -119,10 +125,7 @@ public class Sections {
                 .filter(value -> value.isSameUpStation(station)
                         || value.isSameDownStation(station))
                 .collect(toList());
-
-        for (Section section : sections) {
-            values.remove(section);
-        }
+        values.removeAll(sections);
         return sections;
     }
 
