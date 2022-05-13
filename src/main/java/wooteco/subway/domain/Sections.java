@@ -38,8 +38,8 @@ public class Sections {
     }
 
     public void remove(long stationId) {
-        Optional<Section> findUpSection = sections.stream().filter(it -> it.findByUpStationId(stationId)).findFirst();
-        Optional<Section> findDownSection = sections.stream().filter(it -> it.findByDownStationId(stationId)).findFirst();
+        Optional<Section> findUpSection = sections.stream().filter(it -> it.isSameUpStationId(stationId)).findFirst();
+        Optional<Section> findDownSection = sections.stream().filter(it -> it.isSameDownStationId(stationId)).findFirst();
         validateExistStationId(findUpSection, findDownSection);
         validateMinimumListSize();
         if (findUpSection.isPresent() && findDownSection.isPresent()) {
@@ -124,7 +124,7 @@ public class Sections {
     }
 
     private void validateDistance(Section section, Section findSection) {
-        if (!findSection.isLongDistance(section)) {
+        if (!findSection.isLongerThan(section)) {
             throw new IllegalArgumentException(WAY_POINT_STATION_DISTANCE_EXCEPTION);
         }
     }

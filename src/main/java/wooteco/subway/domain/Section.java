@@ -49,11 +49,11 @@ public class Section {
         return distance;
     }
 
-    public boolean findByUpStationId(Long id) {
+    public boolean isSameUpStationId(Long id) {
         return upStationId.equals(id);
     }
 
-    public boolean findByDownStationId(Long id) {
+    public boolean isSameDownStationId(Long id) {
         return downStationId.equals(id);
     }
 
@@ -73,7 +73,7 @@ public class Section {
         return Objects.equals(downStationId, section.getDownStationId());
     }
 
-    public boolean isLongDistance(Section section) {
+    public boolean isLongerThan(Section section) {
         return distance > section.getDistance();
     }
 

@@ -52,9 +52,10 @@
 
 - [ ] public 메서드는 테스트 필요
     - 인텔리제이의 test coverage 기능을 이용
-- [ ] `Section`
-    - [ ] boolean 타입을 반환하지만 메서드명이 `find`로 시작함 - 네이밍 수정 필요
-    - [ ] `isLongDistance` - 더 길다의 의미를 가질 수 있도록 수정
+- [x] `Section`
+    - [x] boolean 타입을 반환하지만 메서드명이 `find`로 시작함 - 네이밍 수정 필요
+      - find -> `isSame`
+    - [x] `isLongDistance` - 더 길다의 의미를 가질 수 있도록 수정
 - [ ] `Sections`
     - [ ] 역과 Station 단어가 혼용되어 사용됨. 일관성있게 수정 필요
     - [ ] `Sections()` 기본 생성자 사용하는 곳이 있는지
