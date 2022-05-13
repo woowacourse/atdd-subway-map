@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -166,9 +167,9 @@ public class Sections {
             );
     }
 
-    public List<Section> remove(final Long lineId, final Long stationId) {
+    public List<Section> remove(final Long stationId) {
         validateMinimumSectionSize();
-        List<Section> removeSections = this.sections.stream()
+        List<Section> removeSections = sections.stream()
             .filter(s -> s.getUpStation().getId().equals(stationId) ||
                 s.getDownStation().getId().equals(stationId))
             .collect(Collectors.toList());
@@ -183,17 +184,21 @@ public class Sections {
         }
     }
 
-    public Section mergeSection(final Long lineId, final Long stationId) {
-        Section upSection = sections.stream()
-            .filter(s -> s.getDownStation().getId().equals(stationId))
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("구간을 찾을 수 없습니다."));
-        Section downSection = sections.stream()
-            .filter(s -> s.getUpStation().getId().equals(stationId))
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("구간을 찾을 수 없습니다."));
-        int newDistance = upSection.getDistance() + downSection.getDistance();
+    public Optional<Section> mergeSection(final Long lineId, final Long stationId) {
+        try {
+            Section upSection = sections.stream()
+                .filter(s -> s.getDownStation().getId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("구간을 찾을 수 없습니다."));
+            Section downSection = sections.stream()
+                .filter(s -> s.getUpStation().getId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("구간을 찾을 수 없습니다."));
+            int newDistance = upSection.getDistance() + downSection.getDistance();
 
-        return new Section(lineId, upSection.getUpStation(), downSection.getDownStation(), newDistance);
+            return Optional.of(new Section(lineId, upSection.getUpStation(), downSection.getDownStation(), newDistance));
+        } catch (IllegalStateException e) {
+            return Optional.empty();
+        }
     }
 }
