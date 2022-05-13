@@ -62,7 +62,7 @@ public class LineService {
                 .map(line -> new LineResponse(line.getId(),
                         line.getName(),
                         line.getColor(),
-                        sortSections(line.getSections())))
+                        line.getSections().sortSections()))
                 .collect(Collectors.toList());
     }
 
@@ -72,22 +72,10 @@ public class LineService {
         return new LineResponse(line.getId(),
                 line.getName(),
                 line.getColor(),
-                sortSections(new Sections(sectionRepository.findByLineId(id)))
-        );
+                new Sections(sectionRepository.findByLineId(id)).sortSections());
     }
 
-    private List<StationResponse> sortSections(final Sections sections) {
-        List<StationResponse> stationResponses = new ArrayList<>();
-        Station firstStation = sections.findFirstStation();
-        stationResponses.add(new StationResponse(firstStation));
-        while (sections.nextStation(firstStation).isPresent()) {
-            firstStation = sections.nextStation(firstStation).get();
-            stationResponses.add(new StationResponse(firstStation));
-        }
-        return stationResponses;
-    }
-
-    // ㅅTODO id name
+    // TODO id name
     public void update(final Long id, final LineRequest lineRequest) {
         Line currentLine = lineRepository.findById(id);
         if (!currentLine.isSameName(lineRequest.getName())) {

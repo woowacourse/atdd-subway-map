@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exception.SectionCreateException;
 import wooteco.subway.utils.exception.SectionDeleteException;
 import wooteco.subway.utils.exception.SubwayException;
@@ -135,7 +136,18 @@ public class Sections {
         }
     }
 
-    public Station findFirstStation() {
+    public List<StationResponse> sortSections() {
+        List<StationResponse> stationResponses = new ArrayList<>();
+        Station firstStation = findFirstStation();
+        stationResponses.add(new StationResponse(firstStation));
+        while (nextStation(firstStation).isPresent()) {
+            firstStation = nextStation(firstStation).get();
+            stationResponses.add(new StationResponse(firstStation));
+        }
+        return stationResponses;
+    }
+
+    private Station findFirstStation() {
         List<Station> downStations = getDownStations();
         List<Station> upStations = getUpStations();
 
@@ -145,7 +157,7 @@ public class Sections {
                 .orElseThrow(() -> new SubwayException("[ERROR] 첫번째 구간을 찾을 수 없습니다."));
     }
 
-    public Optional<Station> nextStation(final Station station) {
+    private Optional<Station> nextStation(final Station station) {
         return values.stream()
                 .filter(value -> value.isSameUpStation(station))
                 .map(Section::getDownStation)

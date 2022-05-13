@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exception.SectionCreateException;
 import wooteco.subway.utils.exception.SectionDeleteException;
 
@@ -126,22 +127,15 @@ public class SectionsTest {
                 .isInstanceOf(SectionDeleteException.class);
     }
 
-    @DisplayName("첫번째 구간을 탐색한다.")
-    @Test
-    void findFirstStation() {
-        Sections sections = createInitialSections(신당역, 창신역);
-        sections.add(createSection(2L, 동묘앞역, 창신역, 2));
-
-        assertThat(sections.findFirstStation()).isEqualTo(신당역);
-    }
-
-    @DisplayName("다음 역을 탐색한다.")
+    @DisplayName("역을 순서대로 정렬한다.")
     @Test
     void findNextStation() {
         Sections sections = createInitialSections(신당역, 창신역);
         sections.add(createSection(2L, 동묘앞역, 창신역, 2));
 
-        assertThat(sections.nextStation(신당역).get()).isEqualTo(동묘앞역);
+        assertThat(sections.sortSections()).containsExactly(new StationResponse(신당역),
+                new StationResponse(동묘앞역),
+                new StationResponse(창신역));
     }
 
     private List<Section> getSections() {
