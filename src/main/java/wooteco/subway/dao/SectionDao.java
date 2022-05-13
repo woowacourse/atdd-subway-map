@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -57,6 +58,12 @@ public class SectionDao {
                 jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, upStationId, downStationId));
     }
 
+    public List<Section> findAllByUpOrDownStationId(Long lineId, Long stationId) {
+        final String sql = "SELECT * FROM SECTION WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
+
+        return jdbcTemplate.query(sql, sectionRowMapper, lineId, stationId, stationId);
+    }
+
     public void updateUpStationId(Long id, Long upStationId, int distance) {
         final String sql = "UPDATE SECTION SET up_station_id = ?, distance = ? WHERE id = ?";
         jdbcTemplate.update(sql, upStationId, distance, id);
@@ -70,5 +77,10 @@ public class SectionDao {
     public Section findById(Long id) {
         final String sql = "SELECT id, line_id, up_station_id, down_station_id, distance FROM SECTION WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, sectionRowMapper, id);
+    }
+
+    public void deleteByLineIdAndStationId(Long lineId, Long stationId) {
+        final String sql = "DELETE FROM SECTION WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
+        jdbcTemplate.update(sql, lineId, stationId, stationId);
     }
 }

@@ -1,10 +1,13 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.DataNotFoundException;
 
@@ -65,9 +68,9 @@ public class SectionService {
         int newDistance = calculateDistanceDifference(section, prevSection);
 
         if (prevSection.equalsUpSection(section)) {
-            sectionDao.updateUpStationId(prevSection.getId(), section.getUpStationId(), newDistance);
+            sectionDao.updateUpStationId(prevSection.getId(), section.getDownStationId(), newDistance);
         }
-        sectionDao.updateDownStationId(prevSection.getId(), section.getDownStationId(), newDistance);
+        sectionDao.updateDownStationId(prevSection.getId(), section.getUpStationId(), newDistance);
     }
 
     private int calculateDistanceDifference(Section section, Section prevSection) {
@@ -76,5 +79,24 @@ public class SectionService {
             throw new IllegalArgumentException("새로운 구간의 길이는 기존 역 사이 길이보다 작아야합니다.");
         }
         return distanceDifference;
+    }
+
+    public void delete(Long lineId, Long stationId) {
+        validateLineExistence(lineId);
+        validateStationExistence(stationId);
+        Line line = lineDao.findById(lineId);
+        Station station = stationDao.findById(stationId);
+
+        line.deleteStation(station);
+        updateIfIntervalSection(lineId, stationId);
+        sectionDao.deleteByLineIdAndStationId(lineId, stationId);
+    }
+
+    private void updateIfIntervalSection(Long lineId, Long stationId) {
+        List<Section> sections = sectionDao.findAllByUpOrDownStationId(lineId, stationId);
+        if (sections.size() == 2) {
+            Section section = sections.get(0).realignSection(sections.get(1));
+            sectionDao.save(section);
+        }
     }
 }

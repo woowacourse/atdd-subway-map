@@ -22,6 +22,10 @@ public class Station {
         }
     }
 
+    public boolean equalsId(Station stationId) {
+        return Objects.equals(this.id, stationId.id);
+    }
+
     public Long getId() {
         return id;
     }

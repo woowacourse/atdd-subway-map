@@ -1,8 +1,10 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -98,6 +100,25 @@ class SectionDaoTest {
     }
 
     @Test
+    @DisplayName("지하철 역 id와 노선 id에 해당하는 구간을 모두 조회한다.")
+    void findAllByUpOrDownStationId() {
+        // given
+        Long upStationId = stationDao.save(seolleungStation);
+        Long downStationId = stationDao.save(gangnamStation);
+        Long lineId = lineDao.save(line);
+        Section section = new Section(lineId, upStationId, downStationId, 10);
+        Long sectionId = sectionDao.save(section);
+
+        // when
+        List<Section> sections = sectionDao.findAllByUpOrDownStationId(lineId, upStationId);
+
+        // then
+        assertThat(sections).hasSize(1)
+                .isEqualTo(List.of(new Section(sectionId, section.getLineId(), section.getUpStationId(),
+                        section.getDownStationId(), section.getDistance())));
+    }
+
+    @Test
     @DisplayName("id에 해당하는 구간의 upStationId와 거리를 수정한다.")
     void updateUpStationId() {
         Long upStationId = stationDao.save(seolleungStation);
@@ -134,7 +155,7 @@ class SectionDaoTest {
     }
 
     @Test
-    @DisplayName("id에 해당하는 지하철 노선을 조회한다.")
+    @DisplayName("id에 해당하는 구간을 조회한다.")
     void findById() {
         // given
         Long upStationId = stationDao.save(seolleungStation);
@@ -150,5 +171,22 @@ class SectionDaoTest {
         Section expected = new Section(id, section.getLineId(), section.getUpStationId(), section.getDownStationId(),
                 section.getDistance());
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("지하철 노선 id와 역 id에 해당하는 구간을 삭제한다.")
+    void deleteByLineIdAndStationId() {
+        // given
+        Long upStationId = stationDao.save(seolleungStation);
+        Long downStationId = stationDao.save(gangnamStation);
+        Long lineId = lineDao.save(line);
+        Section section = new Section(lineId, upStationId, downStationId, 10);
+        Long sectionId = sectionDao.save(section);
+
+        // when
+        sectionDao.deleteByLineIdAndStationId(lineId, upStationId);
+
+        // then
+        assertFalse(sectionDao.existByLineIdAndUpStationId(lineId, upStationId));
     }
 }

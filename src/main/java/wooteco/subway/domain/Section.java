@@ -28,6 +28,14 @@ public class Section {
         this(null, lineId, upStationId, downStationId, distance);
     }
 
+    public Section realignSection(Section section) {
+        int newDistance = this.distance + section.distance;
+        if (Objects.equals(this.downStationId, section.upStationId)) {
+            return new Section(this.lineId, this.upStationId, section.downStationId, newDistance);
+        }
+        return new Section(this.lineId, this.downStationId, section.upStationId, newDistance);
+    }
+
     public boolean equalsUpSection(Section section) {
         return Objects.equals(this.upStationId, section.upStationId);
     }

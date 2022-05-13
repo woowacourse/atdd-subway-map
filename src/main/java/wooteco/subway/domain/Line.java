@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class Line {
@@ -36,6 +37,25 @@ public class Line {
         if (color.isBlank() || color.length() > 30) {
             throw new IllegalArgumentException("노선 색상은 최소 1글자이상 30글자 이하여야 합니다.");
         }
+    }
+
+    public void deleteStation(Station station) {
+        if (!containsStation(station)) {
+            throw new NoSuchElementException("노선에 해당하는 역만 삭제할 수 있습니다.");
+        }
+        if (isDefaultSection()) {
+            throw new IllegalStateException("마지막 구간은 삭제할 수 없습니다.");
+        }
+        stations.remove(station);
+    }
+
+    public boolean containsStation(Station another) {
+        return stations.stream()
+                .anyMatch(station -> station.equalsId(another));
+    }
+
+    public boolean isDefaultSection() {
+        return stations.size() == 2;
     }
 
     public Long getId() {
