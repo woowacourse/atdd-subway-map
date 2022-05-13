@@ -60,8 +60,10 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .getObject(".", ExceptionResponse.class);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("노선 이름 혹은 노선 색이 이미 존재합니다.");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("노선 이름 혹은 노선 색이 이미 존재합니다.")
+        );
     }
 
     @DisplayName("노선 목록을 반환한다.")
@@ -125,13 +127,19 @@ class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = requestToFindLineById(resultLineId);
         LineResponse lineResponse = response.jsonPath()
                 .getObject(".", LineResponse.class);
+        StationResponse firstStation = lineResponse.getStations().get(0);
+        StationResponse secondStation = lineResponse.getStations().get(1);
 
         //then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(lineResponse.getId()).isEqualTo(1L),
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
-                () -> assertThat(lineResponse.getColor()).isEqualTo("red")
+                () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
+                () -> assertThat(firstStation.getId()).isEqualTo(1L),
+                () -> assertThat(firstStation.getName()).isEqualTo("강남역"),
+                () -> assertThat(secondStation.getId()).isEqualTo(2L),
+                () -> assertThat(secondStation.getName()).isEqualTo("선릉역")
         );
     }
 
@@ -149,11 +157,18 @@ class LineAcceptanceTest extends AcceptanceTest {
                         .getId();
 
         //when
-        ExtractableResponse<Response> response =
+        ExtractableResponse<Response> updateResponse =
                 requestToUpdateLine(resultLineId, "5호선", "skyBlue");
 
+        LineResponse updatedLine = requestToFindLineById(resultLineId).jsonPath()
+                .getObject(".", LineResponse.class);
+
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+                () -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(updatedLine.getName()).isEqualTo("5호선"),
+                () -> assertThat(updatedLine.getColor()).isEqualTo("skyBlue")
+        );
     }
 
     @DisplayName("구간을 추가할 수 있다.")
@@ -217,8 +232,10 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .getObject(".", ExceptionResponse.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("존재하지 않는 노선입니다.");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("존재하지 않는 노선입니다.")
+        );
     }
 
     private void requestToCreateStation(String stationName) {

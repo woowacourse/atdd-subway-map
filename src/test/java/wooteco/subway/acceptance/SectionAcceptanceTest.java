@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -13,6 +14,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.ExceptionResponse;
 
 class SectionAcceptanceTest extends AcceptanceTest {
 
@@ -46,14 +48,33 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("새로 연결하는 구간의 상행선과 하행선이 노선에 둘 다 존재하거나, 둘 다 존재하지 않느면 400을 반환한다.")
+    @DisplayName("새로 연결하는 구간의 상행선과 하행선이 노선에 둘 다 존재하면 400을 반환한다.")
     @ParameterizedTest
-    @CsvSource({"1, 4", "4, 1", "2, 3", "3, 2"})
-    void createNewSection_badRequest_duplicatedOrNonExistenceStations(String upStationId, String downStationId) {
+    @CsvSource({"2, 3", "3, 2"})
+    void createNewSection_badRequest_duplicatedStations(String upStationId, String downStationId) {
         ExtractableResponse<Response> response =
                 requestToConnectNewSection(1L, upStationId, downStationId, "2");
+        ExceptionResponse exception = response.jsonPath()
+                .getObject(".", ExceptionResponse.class);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exception.getExceptionMessage()).isEqualTo("상행선과 하행선이 이미 등록되어있습니다.")
+        );
+    }
+
+    @DisplayName("새로 연결하는 구간의 상행선과 하행선이 노선에 둘 다 존재하지 않으면 400을 반환한다.")
+    @ParameterizedTest
+    @CsvSource({"1, 4", "4, 1"})
+    void createNewSection_badRequest_nonExistenceStations(String upStationId, String downStationId) {
+        ExtractableResponse<Response> response =
+                requestToConnectNewSection(1L, upStationId, downStationId, "2");
+        ExceptionResponse exception = response.jsonPath().getObject(".", ExceptionResponse.class);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exception.getExceptionMessage()).isEqualTo("상행선과 하행선이 둘다 현재 노선에 존재하지 않습니다.")
+        );
     }
 
     @DisplayName("노선의 기존 구간 사이에 새 구간을 연결하려고 할 때, 새 구간의 길이가 더 길거나 같으면 400을 반환한다.")
@@ -63,7 +84,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response =
                 requestToConnectNewSection(1L, upStationId, downStationId, "8");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ExceptionResponse exception = response.jsonPath().getObject(".", ExceptionResponse.class);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exception.getExceptionMessage()).isEqualTo("기존의 구간보다 추가하려는 구간의 거리가 깁니다.")
+        );
     }
 
     @DisplayName("구간을 삭제할 수 있다.")
