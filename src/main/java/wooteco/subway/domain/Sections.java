@@ -87,7 +87,7 @@ public class Sections {
                 .filter(section -> section.getUpStationId() == stationId || section.getDownStationId() == stationId)
                 .collect(Collectors.toUnmodifiableList());
 
-        if (sections.size() == 0) {
+        if (sections.isEmpty()) {
             throw new NotFoundException(STATION_NOT_FOUND_IN_SECTIONS);
         }
         return sections;
