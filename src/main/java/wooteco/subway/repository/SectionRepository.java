@@ -44,11 +44,11 @@ public class SectionRepository {
     }
 
     public Section findById(final Long id) {
-        String sql = "SELECT s.id as section_id, s.line_id, s.up_station_id, s.down_station_id, s.distance,"
-                + " us.name as up_station_name, ds.name as down_station_name "
-                + "FROM section as s "
-                + "LEFT JOIN station as us ON us.id = s.up_station_id "
-                + "LEFT JOIN station as ds ON ds.id = s.down_station_id "
+        String sql = "SELECT s.id AS section_id, s.line_id, s.up_station_id, s.down_station_id, s.distance,"
+                + " us.name AS up_station_name, ds.name AS down_station_name "
+                + "FROM section AS s "
+                + "LEFT JOIN station AS us ON us.id = s.up_station_id "
+                + "LEFT JOIN station AS ds ON ds.id = s.down_station_id "
                 + "WHERE s.id = :id";
 
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
@@ -60,11 +60,11 @@ public class SectionRepository {
     }
 
     public List<Section> findByLineId(final Long id) {
-        String sql = "SELECT s.id as section_id, s.line_id, s.up_station_id, s.down_station_id, s.distance,"
-                + " us.name as up_station_name, ds.name as down_station_name "
-                + "FROM section as s "
-                + "LEFT JOIN station as us ON us.id = s.up_station_id "
-                + "LEFT JOIN station as ds ON ds.id = s.down_station_id "
+        String sql = "SELECT s.id AS section_id, s.line_id, s.up_station_id, s.down_station_id, s.distance,"
+                + " us.name AS up_station_name, ds.name AS down_station_name "
+                + "FROM section AS s "
+                + "LEFT JOIN station AS us ON us.id = s.up_station_id "
+                + "LEFT JOIN station AS ds ON ds.id = s.down_station_id "
                 + "WHERE s.line_id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {

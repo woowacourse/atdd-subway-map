@@ -50,14 +50,14 @@ public class LineRepository {
     }
 
     public List<Line> findAll() {
-        String sql = "SELECT l.id as line_id, l.name, l.color, "
-                + "s.id as section_id, "
-                + "s.up_station_id, us.name as up_station_name, "
-                + "s.down_station_id, ds.name as down_station_name, s.distance "
-                + "FROM line as l "
-                + "LEFT JOIN section as s ON s.line_id = l.id "
-                + "LEFT JOIN station as us ON us.id = s.up_station_id "
-                + "LEFT JOIN station as ds ON ds.id = s.down_station_id";
+        String sql = "SELECT l.id AS line_id, l.name, l.color, "
+                + "s.id AS section_id, "
+                + "s.up_station_id, us.name AS up_station_name, "
+                + "s.down_station_id, ds.name AS down_station_name, s.distance "
+                + "FROM line AS l "
+                + "LEFT JOIN section AS s ON s.line_id = l.id "
+                + "LEFT JOIN station AS us ON us.id = s.up_station_id "
+                + "LEFT JOIN station AS ds ON ds.id = s.down_station_id";
 
         List<LineSection> lineSections = namedParameterJdbcTemplate.query(sql, joinRowMapper());
         Map<Line, List<LineSection>> groupByLine = lineSections.stream()
