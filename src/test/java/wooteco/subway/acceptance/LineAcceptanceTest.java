@@ -96,7 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("존재하지 않는 노선을 조회한다")
+    @DisplayName("존재하지 않는 노선을 조회하는 경우 예외를 발생시킨다.")
     @Test
     void getLineNotExist() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -133,7 +133,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("존재하지 않는 노선을 업데이트한다")
+    @DisplayName("존재하지 않는 노선을 업데이트하는 경우 예외를 발생시킨다.")
     @Test
     public void updateLineNotExist() {
 
@@ -180,7 +180,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds.contains(id)).isFalse();
     }
 
-    @DisplayName("존재하지 않는 노선을 삭제한다.")
+    @DisplayName("존재하지 않는 노선을 삭제하는 경우 예외를 발생시킨다.")
     @Test
     void deleteLineNotExist() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()

@@ -44,7 +44,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("이미 등록된 상행과 하행을 연결하는 경우를 테스트한다.")
+    @DisplayName("이미 등록된 상행과 하행을 연결하는 구간을 추가하는 경우 예외를 발생시킨다.")
     void createSectionDuplicateTest() {
         ExtractableResponse<Response> response = createSection(강남역_ID, 역삼역_ID, 5);
 
@@ -52,7 +52,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 상행과 하행을 연결하는 경우를 테스트한다.")
+    @DisplayName("존재하지 않는 상행과 하행을 연결하는 구간을 추가하는 경우 예외를 발생시킨다.")
     void createSectionNoExistTest() {
         ExtractableResponse<Response> response = createSection(강남역_ID, 역삼역_ID, 5);
 
@@ -68,12 +68,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(section.getUpStationId()).isEqualTo(선릉역_ID),
-                () -> assertThat(section.getDownStationId()).isEqualTo(역삼역_ID)
+                () -> assertThat(section.getDownStationId()).isEqualTo(역삼역_ID),
+                () -> assertThat(section.getDistance()).isEqualTo(5)
         );
     }
 
     @Test
-    @DisplayName("단 2개의 역만 있는 경우는 구간 제거가 불가능하다")
+    @DisplayName("단 2개의 역만 있는 경우는 구간 제거 시 예외를 발생시킨다.")
     void deleteSectionOnlyTwoStationTest() {
         ExtractableResponse<Response> response = deleteSection(강남역_ID);
 
@@ -83,13 +84,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("상행과 하행에 모두 걸쳐있는 역의 경우 제거 시 양옆의 구간을 통합시킨다")
     void deleteSectionOverlapTest() {
-        createSection(역삼역_ID, 선릉역_ID, 1);
+        createSection(역삼역_ID, 선릉역_ID, 5);
         ExtractableResponse<Response> response = deleteSection(역삼역_ID);
         Section section = getSections().get(0);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(section.getUpStationId()).isEqualTo(1),
-                () -> assertThat(section.getDownStationId()).isEqualTo(3)
+                () -> assertThat(section.getUpStationId()).isEqualTo(강남역_ID),
+                () -> assertThat(section.getDownStationId()).isEqualTo(선릉역_ID)
         );
     }
 
@@ -108,7 +109,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 역을 제거할 수 없다")
+    @DisplayName("존재하지 않는 역을 제거하는 경우 예외를 발생시킨다.")
     void deleteSectionNotExistTest() {
 
         ExtractableResponse<Response> response = deleteSection(9999L);
