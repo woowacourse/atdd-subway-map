@@ -46,20 +46,9 @@ public class SectionService {
     }
 
     private void processTargetSection(Long lineId, Section inputSection, Section targetSection) {
-        targetSection.checkDistanceIsLongerThan(inputSection);
-
-        Section newSection = getNewSection(inputSection, targetSection);
+        Section section = targetSection.splitSection(inputSection);
         sectionDao.deleteById(targetSection.getId());
-        sectionDao.insert(newSection, lineId);
-    }
-
-    private Section getNewSection(Section inputSection, Section targetSection) {
-        int newDistance = targetSection.getDistance() - inputSection.getDistance();
-
-        if (targetSection.isSameUpStationId(inputSection)) {
-            return Section.of(inputSection.getDownStationId(), targetSection.getDownStationId(), newDistance);
-        }
-        return Section.of(targetSection.getUpStationId(), inputSection.getUpStationId(), newDistance);
+        sectionDao.insert(section, lineId);
     }
 
     public void delete(Long lineId, Long stationId) {

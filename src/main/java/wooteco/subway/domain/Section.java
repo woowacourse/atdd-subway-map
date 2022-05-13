@@ -29,24 +29,6 @@ public class Section {
         return new Section(0L, upStationId, downStationId, distance);
     }
 
-    public boolean isSameUpStationId(Section section) {
-        return upStationId.equals(section.upStationId);
-    }
-
-    public boolean isSameDownStationId(Section section) {
-        return downStationId.equals(section.downStationId);
-    }
-
-    public boolean isSameDownStationId(long id) {
-        return downStationId.equals(id);
-    }
-
-    public void checkDistanceIsLongerThan(Section section) {
-        if (distance <= section.distance) {
-            throw new IllegalArgumentException("기존 역 사이보다 긴 길이를 등록할 수 없습니다.");
-        }
-    }
-
     private static void validate(Long upStationId, Long downStationId, int distance) {
         validateStationIds(upStationId, downStationId);
         validateDistance(distance);
@@ -61,6 +43,34 @@ public class Section {
     private static void validateDistance(int distance) {
         if (distance <= 0) {
             throw new IllegalArgumentException(NON_POSITIVE_DISTANCE_ERROR);
+        }
+    }
+
+    public Section splitSection(Section section) {
+        checkDistanceIsLongerThan(section);
+        int newDistance = distance - section.distance;
+
+        if(upStationId.equals(section.upStationId)){
+            return Section.of(section.getDownStationId(), downStationId, newDistance);
+        }
+        return Section.of(upStationId, section.upStationId, distance);
+    }
+
+    public boolean isSameUpStationId(Section section) {
+        return upStationId.equals(section.upStationId);
+    }
+
+    public boolean isSameDownStationId(Section section) {
+        return downStationId.equals(section.downStationId);
+    }
+
+    public boolean isSameDownStationId(long id) {
+        return downStationId.equals(id);
+    }
+
+    private void checkDistanceIsLongerThan(Section section) {
+        if (distance <= section.distance) {
+            throw new IllegalArgumentException("기존 역 사이보다 긴 길이를 등록할 수 없습니다.");
         }
     }
 }
