@@ -18,9 +18,10 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.EMPTY_MAP;
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.utils.Fixture.*;
+import static wooteco.subway.utils.FixtureUtils.*;
 
 @DisplayName("지하철 역 E2E")
+@SuppressWarnings("NonAsciiCharacters")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
