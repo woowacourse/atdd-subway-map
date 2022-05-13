@@ -31,7 +31,7 @@ public class SectionDao {
 
     public Section insert(Long upStationId, Long downStationId, Integer distance, Long lineId) {
         Long id = simpleJdbcInsert.executeAndReturnKey(
-                Map.of("LINE_ID", lineId, "UP_STATION_ID", upStationId, "DOWN_STATION_ID", downStationId, "DISTANCE",
+                Map.of("line_id", lineId, "up_station_id", upStationId, "down_station_id", downStationId, "distance",
                         distance)).longValue();
 
         return Section.of(id, upStationId, downStationId, distance);
@@ -39,8 +39,8 @@ public class SectionDao {
 
     public void insert(Section section, Long lineId) {
         simpleJdbcInsert.execute(
-                Map.of("LINE_ID", lineId, "UP_STATION_ID", section.getUpStationId(), "DOWN_STATION_ID",
-                        section.getDownStationId(), "DISTANCE", section.getDistance()));
+                Map.of("line_id", lineId, "up_station_id", section.getUpStationId(), "down_station_id",
+                        section.getDownStationId(), "distance", section.getDistance()));
     }
 
     public List<Section> findByLineId(Long lineId) {
