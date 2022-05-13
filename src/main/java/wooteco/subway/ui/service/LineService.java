@@ -3,6 +3,7 @@ package wooteco.subway.ui.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
@@ -36,7 +37,12 @@ public class LineService {
 
         Line line = new Line(name, color, section);
         Line createdLine = lineDao.save(line);
-        sectionDao.save(section, createdLine.getId());
+        try {
+            sectionDao.save(section, createdLine.getId());
+        } catch (DataAccessException e) {
+            lineDao.delete(line.getId());
+            throw e;
+        }
 
         return LineResponse.from(createdLine);
     }
@@ -54,11 +60,7 @@ public class LineService {
     }
 
     public void modify(Long id, LineRequest lineRequest) {
-        final Line line = new Line(
-                id,
-                lineRequest.getName(),
-                lineRequest.getColor()
-        );
+        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
     }
 
