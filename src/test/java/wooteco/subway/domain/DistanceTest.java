@@ -42,4 +42,15 @@ class DistanceTest {
         // then
         assertThat(subtracted.getValue()).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("거리끼리 덧셈 연산을 할 수 있다.")
+    public void plus() {
+        Distance distanceA = new Distance(5);
+        Distance distanceB = new Distance(6);
+        // when
+        final Distance subtracted = distanceB.plus(distanceA);
+        // then
+        assertThat(subtracted.getValue()).isEqualTo(11);
+    }
 }

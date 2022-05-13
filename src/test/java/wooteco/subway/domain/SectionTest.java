@@ -77,4 +77,37 @@ class SectionTest {
         assertThat(reconnect.getDownStation()).isEqualTo(STATION_A);
 
     }
+
+    @Test
+    @DisplayName("ID가 어느 역(상행)이던 해당하면 True를 반환한다.")
+    public void isIdMatchOnAnyStationWhenUp() {
+        // given
+        final Section section = SectionFixture.SECTION_AB;
+        // when
+        final boolean isMatch = section.isAnyIdMatch(STATION_A.getId());
+        // then
+        assertThat(isMatch).isTrue();
+    }
+
+    @Test
+    @DisplayName("ID가 어느 역(하행)이던 해당하면 True를 반환한다.")
+    public void isIdMatchOnAnyStationWhenDown() {
+        // given
+        final Section section = SectionFixture.SECTION_AB;
+        // when
+        final boolean isMatch = section.isAnyIdMatch(STATION_B.getId());
+        // then
+        assertThat(isMatch).isTrue();
+    }
+
+    @Test
+    @DisplayName("ID가 어느 역이던 해당하지 않으면 False를 반환한다.")
+    public void isIdMatchOnAnyStationWhenNone() {
+        // given
+        final Section section = SectionFixture.SECTION_AB;
+        // when
+        final boolean isMatch = section.isAnyIdMatch(STATION_C.getId());
+        // then
+        assertThat(isMatch).isFalse();
+    }
 }
