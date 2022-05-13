@@ -52,9 +52,12 @@ public class JdbcSectionDao {
     }
 
     public boolean update(Long lineId, Section section) {
-        String sql = "update section set up_station_id = ?, down_station_id = ? , distance = ? where line_id = ? and id = ? ";
-        return jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(),
-                lineId, section.getId()) == UPDATE_SUCCESS_VALUE;
+        String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where line_id = ? and id = ? ";
+        int count = jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(),
+                section.getDistance(), lineId, section.getId());
+
+        System.out.println("count = " + count);
+        return count == UPDATE_SUCCESS_VALUE;
     }
 
     public int delete(long stationId, long lineId) {
