@@ -21,9 +21,6 @@ import wooteco.subway.exception.NotFoundException;
 @Service
 public class LineService {
 
-    private static final int BEFORE_SECTION = 0;
-    private static final int AFTER_SECTION = 1;
-
     private final LineDao lineDao;
     private final StationDao stationDao;
     private final SectionDao sectionDao;
@@ -76,18 +73,11 @@ public class LineService {
         Station downStation = stationDao.findById(request.getDownStationId()).orElseThrow();
         int distance = request.getDistance();
 
-        Section newSection = new Section(line, upStation, downStation, distance);
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
-
+        Section newSection = new Section(line, upStation, downStation, distance);
         List<Section> updateSections = sections.findUpdateSections(newSection);
-        if (updateSections.size() == 1) {
-            sectionDao.save(new Section(line, upStation, downStation, distance));
-            return;
-        }
-
-        if (updateSections.size() == 2) {
-            sectionDao.update(updateSections.get(BEFORE_SECTION));
-            sectionDao.save(updateSections.get(AFTER_SECTION));
+        for (Section updateSection : updateSections) {
+            sectionDao.save(updateSection);
         }
     }
 

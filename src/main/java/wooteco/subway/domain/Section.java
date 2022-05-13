@@ -103,4 +103,13 @@ public class Section {
         return Objects.hash(upStation, downStation);
     }
 
+    @Override
+    public String toString() {
+        return "Section{" +
+            "line=" + line +
+            ", upStation=" + upStation +
+            ", downStation=" + downStation +
+            ", distance=" + distance +
+            '}';
+    }
 }

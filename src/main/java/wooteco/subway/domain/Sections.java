@@ -33,7 +33,7 @@ public class Sections {
             return findSection.splitFromDownStation(section);
         }
 
-        return findSection(section);
+        return List.of(section);
     }
 
     public List<Section> findDeleteSections(Station station) {
@@ -107,12 +107,6 @@ public class Sections {
     private boolean existDownStation(Station station) {
         return values.stream()
             .anyMatch(value -> value.isEqualToDownStation(station));
-    }
-
-    private List<Section> findSection(Section section) {
-        return values.stream()
-            .filter(value -> value.containsSection(section))
-            .collect(Collectors.toList());
     }
 
     private boolean containsSection(Section section) {

@@ -29,22 +29,11 @@ public class SectionDao {
             .usingGeneratedKeyColumns("id");
     }
 
-    public Section save(Section section) {
-        SqlParameterSource params = new MapSqlParameterSource()
-            .addValue("id", section.getId())
-            .addValue("line_id", section.getLine().getId())
-            .addValue("up_station_id", section.getUpStation().getId())
-            .addValue("down_station_id", section.getDownStation().getId())
-            .addValue("distance", section.getDistance());
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
-
-        return new Section(
-            id,
-            section.getLine(),
-            section.getUpStation(),
-            section.getDownStation(),
-            section.getDistance()
-        );
+    public void save(Section section) {
+        if (isUpdate(section)) {
+            return;
+        }
+        insert(section);
     }
 
     public List<SectionEntity> findByLineId(Long lineId) {
@@ -52,18 +41,32 @@ public class SectionDao {
         return jdbcTemplate.query(sql, mapper, lineId);
     }
 
-    public void update(Section section) {
-        String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
-        Long id = section.getUpStation().getId();
-        Long downStationId = section.getDownStation().getId();
-        int distance = section.getDistance();
-        Long sectionId = section.getId();
-
-        jdbcTemplate.update(sql, id, downStationId, distance, sectionId);
-    }
-
     public void deleteById(Long id) {
         String sql = "delete from section where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    private boolean isUpdate(Section section) {
+        if (section.getId() != null) {
+            String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
+            Long id = section.getUpStation().getId();
+            Long downStationId = section.getDownStation().getId();
+            int distance = section.getDistance();
+            Long sectionId = section.getId();
+
+            jdbcTemplate.update(sql, id, downStationId, distance, sectionId);
+            return true;
+        }
+        return false;
+    }
+
+    private void insert(Section section) {
+        SqlParameterSource params = new MapSqlParameterSource()
+            .addValue("id", section.getId())
+            .addValue("line_id", section.getLine().getId())
+            .addValue("up_station_id", section.getUpStation().getId())
+            .addValue("down_station_id", section.getDownStation().getId())
+            .addValue("distance", section.getDistance());
+        jdbcInsert.executeAndReturnKey(params).longValue();
     }
 }
