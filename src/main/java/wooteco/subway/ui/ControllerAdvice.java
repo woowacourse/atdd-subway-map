@@ -16,7 +16,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> subwayExceptionHandler(IllegalArgumentException e) {
+    public ResponseEntity<ErrorResponse> IllegalArgumentExceptionHandler(IllegalArgumentException e) {
         e.printStackTrace();
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
