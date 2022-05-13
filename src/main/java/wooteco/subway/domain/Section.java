@@ -18,8 +18,7 @@ public class Section {
                    final Long lineId,
                    final Station upStation,
                    final Station downStation,
-                   final int distance
-    ) {
+                   final int distance) {
         validateDistance(distance);
         validateSameSection(upStation, downStation);
         this.id = id;
@@ -45,9 +44,13 @@ public class Section {
         }
     }
 
-    public boolean haveStation(final Station upStation, final Station downStation) {
-        return isSameUpStation(upStation) || isSameUpStation(downStation)
-                || isSameDownStation(upStation) || isSameDownStation(downStation);
+    public boolean haveStation(final Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        return isSameUpStation(upStation)
+                || isSameUpStation(downStation)
+                || isSameDownStation(upStation)
+                || isSameDownStation(downStation);
     }
 
     public boolean isSameUpStation(final Station station) {
@@ -73,7 +76,8 @@ public class Section {
 
     public boolean isUpdate(final Section section) {
         return equals(section)
-                && !(isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation()));
+                && !(isSameUpStation(section.getUpStation())
+                && isSameDownStation(section.getDownStation()));
     }
 
     public Section merge(Section section) {
@@ -85,8 +89,9 @@ public class Section {
     }
 
     public boolean isSameSection(final Section section) {
-        return equals(section) && isSameUpStation(section.getUpStation()) && isSameDownStation(
-                section.getDownStation());
+        return equals(section)
+                && isSameUpStation(section.getUpStation())
+                && isSameDownStation(section.getDownStation());
     }
 
     public Long getId() {

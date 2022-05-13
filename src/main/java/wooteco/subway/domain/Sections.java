@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import wooteco.subway.utils.exception.SectionCreateException;
 import wooteco.subway.utils.exception.SectionDeleteException;
 import wooteco.subway.utils.exception.SubwayException;
@@ -46,13 +45,13 @@ public class Sections {
     private List<Station> getUpStations() {
         return values.stream()
                 .map(Section::getUpStation)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private List<Station> getDownStations() {
         return values.stream()
                 .map(Section::getDownStation)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private void validateDuplicateSection(final Section section) {
@@ -65,10 +64,11 @@ public class Sections {
     }
 
     private void validateSectionConnect(final Section section) {
-        values.stream()
-                .filter(value -> value.haveStation(section.getUpStation(), section.getDownStation()))
-                .findAny()
-                .orElseThrow(() -> new SectionCreateException(SECTION_NOT_CONNECT_MESSAGE));
+        boolean isConnected = values.stream()
+                .anyMatch(value -> value.haveStation(section));
+        if (isConnected) {
+            throw new SectionCreateException(SECTION_NOT_CONNECT_MESSAGE);
+        }
     }
 
     private void cutInSection(final Section section) {
