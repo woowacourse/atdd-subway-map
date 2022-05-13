@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.LineSection;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
@@ -143,25 +144,6 @@ public class LineRepository {
         int rowCounts = namedParameterJdbcTemplate.update(sql, parameters);
         if (rowCounts == NO_ROW) {
             throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + id);
-        }
-    }
-
-    static class LineSection {
-
-        private final Line line;
-        private final Section section;
-
-        public LineSection(Line line, Section section) {
-            this.line = line;
-            this.section = section;
-        }
-
-        public Line getLine() {
-            return line;
-        }
-
-        public Section getSection() {
-            return section;
         }
     }
 }
