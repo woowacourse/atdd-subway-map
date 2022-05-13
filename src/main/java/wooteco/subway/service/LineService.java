@@ -35,7 +35,7 @@ public class LineService {
 
     @Transactional
     public LineResponse create(final LineRequest lineRequest) {
-        validateDuplicateName(lineRepository.findByName(lineRequest.getName()));
+        validateDuplicateName(lineRepository.findByName(lineRequest.getName()).isPresent());
         Long id = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor(), new Sections(Collections.emptyList()));
 
@@ -50,10 +50,10 @@ public class LineService {
                         new StationResponse(downStation)));
     }
 
-    private void validateDuplicateName(final Optional<Line> line) {
-        line.ifPresent(l -> {
+    private void validateDuplicateName(final boolean isDuplicateName) {
+        if (isDuplicateName) {
             throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE);
-        });
+        }
     }
 
     public List<LineResponse> showLines() {
@@ -88,7 +88,7 @@ public class LineService {
     public void update(final Long id, final LineRequest lineRequest) {
         Line currentLine = lineRepository.findById(id);
         if (!currentLine.isSameName(lineRequest.getName())) {
-            validateDuplicateName(lineRepository.findByName(lineRequest.getName()));
+            validateDuplicateName(lineRepository.findByName(lineRequest.getName()).isPresent());
         }
         lineRepository.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }

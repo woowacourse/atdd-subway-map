@@ -56,12 +56,12 @@ public class Sections {
     }
 
     private void validateDuplicateSection(final Section section) {
-        values.stream()
-                .filter(value -> value.isSameSection(section))
-                .findAny()
-                .ifPresent(value -> {
-                    throw new SectionCreateException(SECTION_ALREADY_EXIST_MESSAGE);
-                });
+        boolean isDuplicateSection = values.stream()
+                .anyMatch(value -> value.isSameSection(section));
+        if (isDuplicateSection) {
+            throw new SectionCreateException(SECTION_NOT_CONNECT_MESSAGE);
+        }
+
     }
 
     private void validateSectionConnect(final Section section) {
