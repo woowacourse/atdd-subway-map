@@ -46,7 +46,7 @@ class SectionServiceTest {
         sectionRepository = new SectionRepositoryImpl(dataSource);
         lineRepository = new LineRepositoryImpl(dataSource);
         stationRepository = new StationRepositoryImpl(dataSource);
-        sectionService = new SectionService(sectionRepository, stationRepository);
+        sectionService = new SectionService(sectionRepository, stationRepository, lineRepository);
         initData();
     }
 

@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.utils.exception.EmptyException;
 import wooteco.subway.utils.exception.NoTerminalStationException;
 import wooteco.subway.utils.exception.NotDeleteException;
 import wooteco.subway.utils.exception.NotFoundException;
@@ -13,9 +14,15 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
+        validateEmptySections(sections);
         this.sections = new ArrayList<>(sections);
     }
 
+    private void validateEmptySections(List<Section> sections) {
+        if (sections.isEmpty()) {
+            throw new EmptyException("[ERROR] 구간이 비었습니다.");
+        }
+    }
     public List<Station> getStations() {
         Map<Station, Station> hash = sections.stream()
                 .collect(Collectors.toMap(

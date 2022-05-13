@@ -2,9 +2,11 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.repository.LineRepository;
 import wooteco.subway.domain.repository.SectionRepository;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.service.dto.SectionRequest;
@@ -22,10 +24,12 @@ public class SectionService {
 
     private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
+    private final LineRepository lineRepository;
 
-    public SectionService(SectionRepository sectionRepository, StationRepository stationRepository) {
+    public SectionService(SectionRepository sectionRepository, StationRepository stationRepository, LineRepository lineRepository) {
         this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
+        this.lineRepository = lineRepository;
     }
 
     public void add(Long lineId, SectionRequest sectionRequest) {
@@ -99,7 +103,9 @@ public class SectionService {
     public void delete(Long lineId, Long stationId) {
         Station station = stationRepository.findById(stationId)
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, stationId)));
-        Sections sections = new Sections(sectionRepository.findAllByLineId(lineId));
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 노선을 찾을수 없습니다."));
+        Sections sections = new Sections(sectionRepository.findAllByLineId(line.getId()));
 
         List<Section> deleteSections = sections.delete(station);
         Section leftSection = deleteSections.get(0);
@@ -117,4 +123,6 @@ public class SectionService {
             sectionRepository.save(section);
         }
     }
+
+
 }
