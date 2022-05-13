@@ -86,9 +86,9 @@ public class LineRepositoryImpl implements LineRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Line line) {
         String sql = "DELETE FROM line WHERE id = :id";
-        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        SqlParameterSource parameters = new MapSqlParameterSource("id", line.getId());
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 

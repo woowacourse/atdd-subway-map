@@ -117,7 +117,6 @@ public class LineServiceTest {
         assertThatThrownBy(
                 () -> lineService.deleteById(NONE_LINE_ID)
         ).isExactlyInstanceOf(NotFoundException.class).hasMessage("[ERROR] 식별자에 해당하는 노선을 찾을수 없습니다.");
-
     }
 
 }

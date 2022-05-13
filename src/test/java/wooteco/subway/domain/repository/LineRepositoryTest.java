@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.domain.Line;
+import wooteco.subway.utils.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -104,7 +105,9 @@ public class LineRepositoryTest {
     @DisplayName("노선을 삭제한다.")
     @Test
     void deleteById() {
-        lineRepository.delete(LINE_ID);
+        Line line = lineRepository.findById(LINE_ID)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 노선을 찾지 못했습니다."));
+        lineRepository.delete(line);
 
         assertThat(lineRepository.findAll()).isEmpty();
     }

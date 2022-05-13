@@ -17,7 +17,7 @@ public interface LineRepository {
 
     void update(Long id, Line line);
 
-    void delete(Long id);
+    void delete(Line line);
 
     boolean existByName(String name);
 }

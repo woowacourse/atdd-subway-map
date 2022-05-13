@@ -66,6 +66,6 @@ public class LineService {
     public void deleteById(final Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 노선을 찾을수 없습니다."));
-        lineRepository.delete(line.getId());
+        lineRepository.delete(line);
     }
 }
