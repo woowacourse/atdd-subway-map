@@ -12,7 +12,6 @@ class StationTest {
     @DisplayName("지하철역의 이름은 공백일 수 없다.")
     @Test
     public void blankNameTest() {
-        // given & when & then
         assertThatThrownBy(() -> new Station(""))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -20,7 +19,6 @@ class StationTest {
     @DisplayName("지하철역의 이름은 255보다 클 수 없다.")
     @Test
     public void stationNameLengthTest() {
-        // given & when & then
         assertThatThrownBy(() -> new Station(EXCESS_MAX_LENGTH_STRING))
                 .isInstanceOf(IllegalArgumentException.class);
     }
