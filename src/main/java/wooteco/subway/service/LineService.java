@@ -32,15 +32,12 @@ public class LineService {
     }
 
     public LineResponse create(LineRequest lineRequest) {
+        validateDuplicateNameAndColor(lineRequest.getName(), lineRequest.getColor());
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        validateDuplicateNameAndColor(line.getName(), line.getColor());
+        Station upStation = findStation(lineRequest.getUpStationId());
+        Station downStation = findStation(lineRequest.getDownStationId());
+
         Line savedLine = lineDao.save(line);
-
-        Station upStation = stationDao.findById(lineRequest.getUpStationId())
-            .orElseThrow(() -> new NotFoundException("조회하려는 상행역이 없습니다."));
-        Station downStation = stationDao.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new NotFoundException("조회하려는 하행역이 없습니다."));
-
         sectionDao.save(new Section(savedLine, upStation, downStation, lineRequest.getDistance()));
 
         return LineResponse.of(savedLine, List.of(upStation, downStation));
@@ -72,11 +69,10 @@ public class LineService {
         Station upStation = stationDao.findById(request.getUpStationId()).orElseThrow();
         Station downStation = stationDao.findById(request.getDownStationId()).orElseThrow();
         int distance = request.getDistance();
-
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
         Section newSection = new Section(line, upStation, downStation, distance);
-        List<Section> updateSections = sections.findUpdateSections(newSection);
-        for (Section updateSection : updateSections) {
+
+        for (Section updateSection : sections.findUpdateSections(newSection)) {
             sectionDao.save(updateSection);
         }
     }
@@ -104,8 +100,13 @@ public class LineService {
         }
     }
 
-    private Line findLine(Long id) {
-        return lineDao.findById(id)
+    private Station findStation(Long stationId) {
+        return stationDao.findById(stationId)
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 역입니다. id : " + stationId));
+    }
+
+    private Line findLine(Long lineId) {
+        return lineDao.findById(lineId)
             .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
     }
 

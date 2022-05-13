@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.domain.fixtures.TestFixtures.강남;
 import static wooteco.subway.domain.fixtures.TestFixtures.건대;
 import static wooteco.subway.domain.fixtures.TestFixtures.삼성;
@@ -71,6 +72,46 @@ class SectionsTest {
         List<Section> sections = new Sections(추가된_구간).getValues();
         assertThat(sections.get(0).getUpStation().getName()).isEqualTo("합정");
         assertThat(sections.get(0).getDistance()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("하행 종점을 추가한다.")
+    void addDownStation() {
+        Line line = new Line("2호선", "green");
+        Sections 기존_구간 = new Sections(getSections(line));
+
+        Section 추가할_구간 = new Section(line, 왕십리, 합정, 5);
+        List<Section> 추가된_구간 = 기존_구간.findUpdateSections(추가할_구간);
+
+        List<Section> sections = new Sections(추가된_구간).getValues();
+        assertThat(sections.get(0).getUpStation().getName()).isEqualTo("왕십리");
+        assertThat(sections.get(0).getDistance()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("기존에 존재하는 구간인 경우 예외를 발생한다.")
+    void existSection() {
+        Line line = new Line("2호선", "green");
+        Sections 기존_구간 = new Sections(getSections(line));
+
+        Section 추가할_구간 = new Section(line, 강남, 잠실, 5);
+
+        assertThatThrownBy(() -> 기존_구간.findUpdateSections(추가할_구간))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("기존에 존재하는 구간입니다.");
+    }
+
+    @Test
+    @DisplayName("기존에 존재하지 않는 역들을 추가할 경우 예외를 발생한다.")
+    void notExistStations() {
+        Line line = new Line("2호선", "green");
+        Sections 기존_구간 = new Sections(getSections(line));
+
+        Section 추가할_구간 = new Section(line, 건대, 합정, 5);
+
+        assertThatThrownBy(() -> 기존_구간.findUpdateSections(추가할_구간))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("생성할 수 없는 구간입니다.");
     }
 
     private List<Section> getSections(Line line) {

@@ -31,6 +31,7 @@ public class SectionDao {
 
     public void save(Section section) {
         if (isUpdate(section)) {
+            update(section);
             return;
         }
         insert(section);
@@ -47,17 +48,7 @@ public class SectionDao {
     }
 
     private boolean isUpdate(Section section) {
-        if (section.getId() != null) {
-            String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
-            Long id = section.getUpStation().getId();
-            Long downStationId = section.getDownStation().getId();
-            int distance = section.getDistance();
-            Long sectionId = section.getId();
-
-            jdbcTemplate.update(sql, id, downStationId, distance, sectionId);
-            return true;
-        }
-        return false;
+        return section.getId() != null;
     }
 
     private void insert(Section section) {
@@ -68,5 +59,15 @@ public class SectionDao {
             .addValue("down_station_id", section.getDownStation().getId())
             .addValue("distance", section.getDistance());
         jdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    private void update(Section section) {
+        String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
+        Long id = section.getUpStation().getId();
+        Long downStationId = section.getDownStation().getId();
+        int distance = section.getDistance();
+        Long sectionId = section.getId();
+
+        jdbcTemplate.update(sql, id, downStationId, distance, sectionId);
     }
 }
