@@ -3,6 +3,8 @@ package wooteco.subway.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static wooteco.subway.TestFixtures.LINE_COLOR;
+import static wooteco.subway.TestFixtures.STANDARD_DISTANCE;
 import static wooteco.subway.TestFixtures.동묘앞역;
 import static wooteco.subway.TestFixtures.보문역;
 import static wooteco.subway.TestFixtures.신당역;
@@ -21,7 +23,7 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("노선을 저장한다.")
     @Test
     void save() {
-        Line line = new Line("분당선", "bg-red-600");
+        Line line = new Line("분당선", LINE_COLOR);
         Long id = lineRepository.save(line);
         assertThat(id).isNotNull();
     }
@@ -29,7 +31,7 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("노선 저장시 유니크 키에 위반되면 에러를 발생한다")
     @Test
     void saveUniqueException() {
-        Line line = new Line("분당선", "bg-red-600");
+        Line line = new Line("분당선", LINE_COLOR);
         lineRepository.save(line);
 
         assertThatThrownBy(() -> lineRepository.save(line))
@@ -41,16 +43,16 @@ public class LineRepositoryTest extends RepositoryTest {
     void findAll() {
         Station saved_신당역 = stationRepository.save(신당역);
         Station saved_동묘앞역 = stationRepository.save(동묘앞역);
-        Line line1 = new Line("분당선", "bg-red-600");
+        Line line1 = new Line("분당선", LINE_COLOR);
         Long id1 = lineRepository.save(line1);
-        Section section1 = new Section(id1, saved_신당역, saved_동묘앞역, 5);
+        Section section1 = new Section(id1, saved_신당역, saved_동묘앞역, STANDARD_DISTANCE);
         sectionRepository.save(section1);
 
         Station saved_보문역 = stationRepository.save(보문역);
         Station saved_창신역 = stationRepository.save(창신역);
-        Line line2 = new Line("신분당선", "bg-red-600");
+        Line line2 = new Line("신분당선", LINE_COLOR);
         Long id2 = lineRepository.save(line2);
-        Section section2 = new Section(id2, saved_보문역, saved_창신역, 5);
+        Section section2 = new Section(id2, saved_보문역, saved_창신역, STANDARD_DISTANCE);
         sectionRepository.save(section2);
 
         List<Line> lines = lineRepository.findAll();
@@ -60,7 +62,7 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("노선을 조회한다.")
     @Test
     void findById() {
-        Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
+        Long id = lineRepository.save(new Line("분당선", LINE_COLOR));
         Line line = lineRepository.findById(id);
         assertThat(line.isSameName("분당선"));
     }
@@ -68,7 +70,7 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("이름으로 노선을 조회한다.")
     @Test
     void findByName() {
-        Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
+        Long id = lineRepository.save(new Line("분당선", LINE_COLOR));
         Line line = lineRepository.findByName("분당선").orElse(null);
 
         assertThat(line.getId()).isEqualTo(id);
@@ -83,7 +85,7 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("노선을 수정한다.")
     @Test
     void update() {
-        Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
+        Long id = lineRepository.save(new Line("분당선", LINE_COLOR));
         lineRepository.update(new Line(id, "신분당선", "bg-yellow-600"));
         Line findUpdateLine = lineRepository.findById(id);
 
@@ -96,7 +98,7 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("노선을 삭제한다.")
     @Test
     void deleteById() {
-        Long id = lineRepository.save(new Line("분당선", "bg-red-600"));
+        Long id = lineRepository.save(new Line("분당선", LINE_COLOR));
         lineRepository.deleteById(id);
 
         assertThat(lineRepository.findAll()).isEmpty();

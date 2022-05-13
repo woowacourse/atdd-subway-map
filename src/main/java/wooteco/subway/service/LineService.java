@@ -75,7 +75,6 @@ public class LineService {
                 new Sections(sectionRepository.findByLineId(id)).sortSections());
     }
 
-    // TODO id name
     public void update(final Long id, final LineRequest lineRequest) {
         Line currentLine = lineRepository.findById(id);
         if (!currentLine.isSameName(lineRequest.getName())) {
