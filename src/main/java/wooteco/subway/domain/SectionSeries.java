@@ -3,8 +3,9 @@ package wooteco.subway.domain;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import wooteco.subway.util.CollectorsUtils;
 
 public class SectionSeries {
     private final List<Section> sections;
@@ -43,19 +44,7 @@ public class SectionSeries {
     private Section findIntermediateSection(Section newSection) {
         return sections.stream()
             .filter(section -> section.isDividable(newSection))
-            .collect(findOneCertainly());
-    }
-
-    private <T> Collector<T, ?, T> findOneCertainly() {
-        return Collectors.collectingAndThen(
-            Collectors.toList(),
-            list -> {
-                if (list.size() == 1) {
-                    return list.get(0);
-                }
-                throw new RuntimeException("not connecetd"); // TODO : fix to custom exception
-            }
-        );
+            .collect(CollectorsUtils.findOneCertainly());
     }
 
     public RemoveSections findRemoveSections(Long stationId) {
@@ -69,8 +58,6 @@ public class SectionSeries {
             return deleteTerminal(relatedSections.get(0));
         }
         throw new RuntimeException("delete error");
-        // 상행 종점이면 업섹션을 삭제 // 하행 종점이면 다운섹션을 삭제하고, 수정 X
-        // 중간이면 상행 하행 상관이 없이, 다운섹션 삭제하고, 업섹션 수정
     }
 
     private RemoveSections deleteTerminal(Section section) {
