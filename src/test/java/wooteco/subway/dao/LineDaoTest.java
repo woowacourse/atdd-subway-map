@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.util.List;
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +29,7 @@ class LineDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private LineDao dao;
+
     private Section section;
 
     @BeforeEach
@@ -148,15 +148,5 @@ class LineDaoTest {
         // then
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(() -> dao.delete(deleteId));
-    }
-
-    @AfterEach
-    void setDown() {
-        final String sectionSql = "DELETE FROM section";
-        jdbcTemplate.update(sectionSql);
-        final String lineSql = "DELETE FROM line";
-        jdbcTemplate.update(lineSql);
-        final String stationSql = "DELETE FROM station";
-        jdbcTemplate.update(stationSql);
     }
 }

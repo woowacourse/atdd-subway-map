@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -91,10 +90,5 @@ class StationDaoTest {
         assertThatThrownBy(() -> dao.deleteById(1L))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("삭제하고자 하는 역이 존재하지 않습니다.");
-    }
-
-    @AfterEach
-    void setDown() {
-        jdbcTemplate.update("DELETE FROM station");
     }
 }
