@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -19,6 +20,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -31,6 +34,10 @@ import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.exception.duplicate.DuplicateException;
+import wooteco.subway.exception.duplicate.DuplicateLineException;
+import wooteco.subway.exception.notfound.NotFoundLineException;
+import wooteco.subway.exception.notfound.NotFoundStationException;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -76,6 +83,20 @@ class LineServiceTest {
             assertThat(stationResponses.get(1).getId()).isEqualTo(2L);
             assertThat(stationResponses.get(1).getName()).isEqualTo(SINSA);
         });
+    }
+
+    @Test
+    @DisplayName("기존에 존재하는 노선 이름으로 생성하면, 예외를 발생한다.")
+    void createWithDuplicateName() {
+        // given
+        final CreateLineRequest request = new CreateLineRequest(LINE_2, RED, 1L, 2L, 10);
+
+        // mocking
+        given(lineDao.save(any(Line.class))).willThrow(DuplicateKeyException.class);
+
+        // when & then
+        assertThatThrownBy(() -> lineService.create(request))
+                .isInstanceOf(DuplicateLineException.class);
     }
 
     @Test
@@ -134,6 +155,17 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("없는 지하철 노선을 조회하면, 예외를 발생시킨다.")
+    void showWhenNotWithExistLineId() {
+        // mocking
+        given(lineDao.find(1L)).willThrow(NotFoundLineException.class);
+
+        // when & then
+        assertThatThrownBy(() -> lineService.show(1L))
+                .isInstanceOf(NotFoundLineException.class);
+    }
+
+    @Test
     @DisplayName("노선을 업데이트 한다.")
     void updateLine() {
         // given
@@ -149,6 +181,17 @@ class LineServiceTest {
 
         // then
         verify(lineDao).update(id, name, color);
+    }
+
+    @Test
+    @DisplayName("없는 노선을 없데이트 한다면, 예외를 발생시킨다.")
+    void updateWithNotExistLineId() {
+        // mocking
+        given(lineDao.existsById(1L)).willReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> lineService.updateLine(1L, new UpdateLineRequest(LINE_4, BLUE)))
+                .isInstanceOf(NotFoundLineException.class);
     }
 
     @Test
@@ -170,8 +213,19 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("지하철 구간을 등록한다.")
-    void createSection() {
+    @DisplayName("없는 노선을 삭제하면, 예외를 발생시킨다.")
+    void deleteWithNotExistLineId() {
+        // mocking
+        given(lineDao.existsById(1L)).willReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> lineService.deleteLine(1L))
+                .isInstanceOf(NotFoundLineException.class);
+    }
+
+    @Test
+    @DisplayName("노선의 끝에 구간을 등록한다.")
+    void createSectionLast() {
         // given
         final long lineId = 1L;
 
@@ -186,6 +240,101 @@ class LineServiceTest {
 
         // then
         verify(sectionDao).batchSave(List.of(new Section(2L, 1L, 2L, 3L, 10)));
+    }
+
+    @Test
+    @DisplayName("노선의 처음에 구간을 등록한다.")
+    void createSectionFirst() {
+        // given
+        final long lineId = 1L;
+
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(true);
+        given(stationDao.existsById(any(Long.class))).willReturn(true);
+        given(sectionDao.findAllByLineId(lineId)).willReturn(
+                new Sections(List.of(new Section(1L, 1L, 2L, 3L, 10))));
+
+        // when
+        lineService.createSection(lineId, new CreateSectionRequest(1L, 2L, 10));
+
+        // then
+        verify(sectionDao).batchSave(List.of(new Section(2L, 1L, 1L, 2L, 10)));
+    }
+
+    @Test
+    @DisplayName("노선의 중간에 상행역이 겹치는 구간을 등록한다.")
+    void createSectionMiddleSameUp() {
+        // given
+        final long lineId = 1L;
+
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(true);
+        given(stationDao.existsById(any(Long.class))).willReturn(true);
+        given(sectionDao.findAllByLineId(lineId)).willReturn(
+                new Sections(List.of(new Section(1L, 1L, 1L, 3L, 10))));
+
+        // when
+        lineService.createSection(lineId, new CreateSectionRequest(1L, 2L, 5));
+
+        // then
+        verify(sectionDao).batchDelete(List.of(new Section(1L, 1L, 1L, 3L, 10)));
+        verify(sectionDao).batchSave(List.of(new Section(2L, 1L, 1L, 2L, 5),
+                new Section(1L, 2L, 3L, 5)));
+    }
+
+    @Test
+    @DisplayName("노선의 중간에 하행역이 겹치는 구간을 등록한다.")
+    void createSectionMiddleSameDown() {
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(true);
+        given(stationDao.existsById(any(Long.class))).willReturn(true);
+        given(sectionDao.findAllByLineId(any(Long.class))).willReturn(
+                new Sections(List.of(new Section(1L, 1L, 1L, 3L, 10))));
+
+        // when
+        lineService.createSection(1L, new CreateSectionRequest(2L, 3L, 5));
+
+        // then
+        verify(sectionDao).batchDelete(List.of(new Section(1L, 1L, 1L, 3L, 10)));
+        verify(sectionDao).batchSave(List.of(new Section(1L, 2L, 3L, 5),
+                new Section(1L, 1L, 2L, 5)));
+    }
+
+    @Test
+    @DisplayName("기존보다 긴 구간을 등록하면, 예외를 발생시킨다.")
+    void createWithLongDistance() {
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(true);
+        given(stationDao.existsById(any(Long.class))).willReturn(true);
+        given(sectionDao.findAllByLineId(any(Long.class))).willThrow(IllegalArgumentException.class);
+
+        // when
+        assertThatThrownBy(() -> lineService.createSection(1L, new CreateSectionRequest(1L, 2L, 5)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("없는 라인의 구간을 등록하면, 예외를 발생시킨다.")
+    void createWithNotExistLine() {
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> lineService.createSection(1L, new CreateSectionRequest(1L, 2L, 5)))
+                .isInstanceOf(NotFoundLineException.class);
+
+    }
+
+    @Test
+    @DisplayName("없는 역을 가진 구간을 등록하면, 예외를 발생시킨다.")
+    void createWithNotExistStation() {
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(true);
+        given(stationDao.existsById(any(Long.class))).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> lineService.createSection(1L, new CreateSectionRequest(1L, 2L, 5)))
+                .isInstanceOf(NotFoundStationException.class);
     }
 
     @Test
@@ -208,5 +357,43 @@ class LineServiceTest {
         // then
         verify(sectionDao).batchSave(List.of());
         verify(sectionDao).batchDelete(List.of(new Section(1L, 1L, 1L, 2L, 10)));
+    }
+
+    @Test
+    @DisplayName("구간을 삭제 후 노선에 구간이 하나만 남는다면, 예외를 발생시킨다.")
+    void deleteWhenRemainOneSection() {
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(true);
+        given(stationDao.existsById(any(Long.class))).willReturn(true);
+        given(sectionDao.findAllByLineId(any(Long.class))).willReturn(
+                new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10))));
+
+        // when
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("없는 노선의 구간을 삭제하면, 예외를 발생시킨다.")
+    void deleteWithNotExistLine() {
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L))
+                .isInstanceOf(NotFoundLineException.class);
+    }
+
+    @Test
+    @DisplayName("없는 역의 구간을 삭제하면, 예외를 발생시킨다.")
+    void deleteWithNotExistStation() {
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(true);
+        given(stationDao.existsById(any(Long.class))).willReturn(false);
+
+
+        // when
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L))
+                .isInstanceOf(NotFoundStationException.class);
     }
 }
