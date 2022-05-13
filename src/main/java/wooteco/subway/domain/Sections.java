@@ -17,7 +17,7 @@ public class Sections {
         List<Long> stationIds = new ArrayList<>();
         Long downStationId = 0L;
         for (Section section : sections) {
-            if (countFinalUpStation(section) == 0) {
+            if (isFinalUpSection(section)) {
                 stationIds.add(section.getUpStationId());
                 downStationId = section.getDownStationId();
                 break;
@@ -26,10 +26,11 @@ public class Sections {
         return findStationInOrder(downStationId, stationIds);
     }
 
-    private long countFinalUpStation(Section section) {
-        return sections.stream()
+    private boolean isFinalUpSection(Section section) {
+        long upSectionCount = sections.stream()
                 .filter(s -> section.getUpStationId().equals(s.getDownStationId()))
                 .count();
+        return upSectionCount == 0;
     }
 
     private List<Long> findStationInOrder(Long downStationId, List<Long> stationIds) {

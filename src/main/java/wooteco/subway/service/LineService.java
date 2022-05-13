@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -36,9 +37,11 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         validDuplicatedLine(lineRequest.getName(), lineRequest.getColor());
         Long id = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        Section section = new Section(id, lineRequest);
+        Section section = new Section(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
+
         sectionDao.save(section);
-        List<StationResponse> responses = findStationBySection(section);
+        List<StationResponse> responses = findStationsBySection(section);
         return new LineResponse(id, lineRequest.getName(), lineRequest.getColor(), responses);
     }
 
@@ -48,26 +51,27 @@ public class LineService {
         }
     }
 
-    private List<StationResponse> findStationBySection(Section section) {
-        List<Station> stations = findBySection(section);
-        return stations.stream()
+    private List<StationResponse> findStationsBySection(Section section) {
+        Station upStation = stationDao.findById(section.getUpStationId());
+        Station downStation = stationDao.findById(section.getDownStationId());
+        return Stream.of(upStation, downStation)
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
 
-    private List<Station> findBySection(Section section) {
-        Station upStation = stationDao.findById(section.getUpStationId());
-        Station downStation = stationDao.findById(section.getDownStationId());
-        return List.of(upStation, downStation);
-    }
-
     public void saveSection(Long lineId, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        validSection(sections, sectionRequest);
+        validSections(sections, sectionRequest);
         if (sections.countLinkedSection(sectionRequest) == midPointCount) {
             processBiDirectionSection(sectionRequest, sections);
         }
         sectionDao.save(new Section(lineId, sectionRequest));
+    }
+
+    private void validSections(Sections sections, SectionRequest sectionRequest) {
+        sections.validSameStations(sectionRequest);
+        sections.validNonLinkSection(sectionRequest);
+        sections.validExistingSectionDistance(sectionRequest);
     }
 
     private void processBiDirectionSection(SectionRequest sectionRequest, Sections sections) {
@@ -76,12 +80,6 @@ public class LineService {
         sections.findDownSection(sectionRequest.getDownStationId())
                 .ifPresent(section -> sectionDao.updateDistanceById(section.getId(),
                         section.getDistance() - sectionRequest.getDistance()));
-    }
-
-    private void validSection(Sections sections, SectionRequest sectionRequest) {
-        sections.validSameStations(sectionRequest);
-        sections.validNonLinkSection(sectionRequest);
-        sections.validExistingSectionDistance(sectionRequest);
     }
 
     @Transactional(readOnly = true)

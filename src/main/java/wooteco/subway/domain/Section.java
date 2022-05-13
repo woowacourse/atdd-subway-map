@@ -15,10 +15,6 @@ public class Section {
         this(null, lineId, upStationId, downStationId, distance);
     }
 
-    public Section(Long lineId, LineRequest lineRequest) {
-        this(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-    }
-
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         validDistance(distance);
         validStationsId(upStationId, downStationId);

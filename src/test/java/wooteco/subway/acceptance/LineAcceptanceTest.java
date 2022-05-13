@@ -147,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> response = executeGetApi(path);
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("id 를 이용하여 line 을 수정한다.")

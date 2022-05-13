@@ -47,7 +47,7 @@ public class LineController {
     }
 
     @GetMapping
-    public List<LineResponse> fineLineAll() {
+    public List<LineResponse> findLineAll() {
         return lineService.findLineAll();
     }
 
