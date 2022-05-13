@@ -4,6 +4,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.StationRequest;
 
+@SuppressWarnings("NonAsciiCharacters")
 public class ServiceTestFixture {
     public static StationRequest 선릉역_요청 = new StationRequest("선릉");
     public static StationRequest 잠실역_요청 = new StationRequest("잠실");
