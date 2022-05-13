@@ -17,8 +17,8 @@ import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
-    StationRequest gangnamStationRequest = new StationRequest("강남역");
-    StationRequest seolleungStationRequest = new StationRequest("선릉역");
+    private StationRequest gangnamStationRequest = new StationRequest("강남역");
+    private StationRequest seolleungStationRequest = new StationRequest("선릉역");
 
 
     @DisplayName("지하철역을 생성한다.")

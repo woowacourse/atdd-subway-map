@@ -32,7 +32,7 @@ public class StationController {
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
-        java.util.List<StationResponse> stationResponses = stationService.findAll();
+        List<StationResponse> stationResponses = stationService.findAll();
         return ResponseEntity.ok(stationResponses);
     }
 
