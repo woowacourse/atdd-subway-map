@@ -9,6 +9,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -39,10 +40,11 @@ public class LineService {
         checkDuplicateName(lineDao.isExistName(name));
 
         Line line = lineDao.insert(name, request.getColor());
-        sectionDao.insert(request.getUpStationId(), request.getDownStationId(), request.getDistance(), line.getId());
+        Section section = Section.of(request.getUpStationId(), request.getDownStationId(), request.getDistance());
+
+        sectionDao.insert(section, line.getId());
 
         List<StationResponse> stationResponses = getStationResponsesByLineId(line.getId());
-
         return new LineResponse(line, stationResponses);
     }
 

@@ -37,12 +37,12 @@ public class SectionService {
                 sectionRequest.getDistance());
 
         sections.checkSection(inputSection);
-
         sections.getTargetSection(inputSection)
                 .ifPresent(targetSection -> processTargetSection(lineId, inputSection, targetSection));
 
-        sectionDao.insert(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
-                sectionRequest.getDistance(), lineId);
+        Section section = Section.of(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
+        sectionDao.insert(section, lineId);
     }
 
     private void processTargetSection(Long lineId, Section inputSection, Section targetSection) {
