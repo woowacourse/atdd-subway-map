@@ -6,6 +6,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.*;
+import wooteco.subway.domain.section.*;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -42,7 +43,9 @@ public class LineService {
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
-        return lines.stream().map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), createStationResponseOf(line))).collect(Collectors.toList());
+        return lines.stream()
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), createStationResponseOf(line)))
+                .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
@@ -51,12 +54,14 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponseOf(Line line) {
-        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
+        Sections sections = new Sections(sectionDao.findByLineId(line.getId()), new ConcreteCreationStrategy(), new ConcreteDeletionStrategy(), new ConcreteSortStrategy());
         List<Station> stations = stationDao.findByIdIn(sections.getStationIds());
 
         List<Station> sortedStations = sections.sort(stations);
 
-        return sortedStations.stream().map(station -> new StationResponse(station.getId(), station.getName())).collect(Collectors.toList());
+        return sortedStations.stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
     }
 
     public void edit(Long id, String name, String color) {

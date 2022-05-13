@@ -3,12 +3,12 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.section.*;
 import wooteco.subway.dto.SectionRequest;
 
 import java.util.*;
 
+@Transactional
 @Service
 public class SectionService {
     private final SectionDao sectionDao;
@@ -17,10 +17,9 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    @Transactional
     public void save(Long lineId, SectionRequest sectionRequest) {
         Section section = sectionRequest.toSection(lineId);
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        Sections sections = new Sections(sectionDao.findByLineId(lineId), new ConcreteCreationStrategy(), new ConcreteDeletionStrategy(), new ConcreteSortStrategy());
 
         sections.save(section);
         Optional<Section> revisedSection = sections.fixOverLappedSection(section);
@@ -30,7 +29,7 @@ public class SectionService {
     }
 
     public void delete(Long lineId, Long stationId) {
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        Sections sections = new Sections(sectionDao.findByLineId(lineId), new ConcreteCreationStrategy(), new ConcreteDeletionStrategy(), new ConcreteSortStrategy());
 
         Optional<Section> connectedSection = sections.fixDisconnectedSection(lineId, stationId);
         sections.delete(lineId, stationId);
