@@ -26,12 +26,14 @@ public class Sections {
     public void add(final Section section) {
         validateDuplicateSection(section);
         validateSectionConnect(section);
-        validateExistSection(section.getUpStation(), section.getDownStation());
+        validateExistSection(section);
         cutInSection(section);
         values.add(section);
     }
 
-    private void validateExistSection(final Station upStation, final Station downStation) {
+    private void validateExistSection(final Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
         if (isSectionConnected(upStation, downStation) || isSectionConnected(downStation, upStation)) {
             throw new SectionCreateException(SECTION_ALREADY_EXIST_MESSAGE);
         }
