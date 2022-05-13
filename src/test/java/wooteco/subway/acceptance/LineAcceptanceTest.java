@@ -42,85 +42,58 @@ public class LineAcceptanceTest extends AcceptanceTest {
         lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
     }
 
+
     @DisplayName("노선을 생성하면 201 created를 반환하고 Location header에 url resource를 반환한다.")
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = createLines(lineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 400 bad-request가 발생한다.")
-    @Test
-    void createLineWithDuplicateName() {
-
-        RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all();
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+    private ExtractableResponse<Response> createLines(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 400 bad-request가 발생한다.")
+    @Test
+    void createLineWithDuplicateName() {
+
+        createLines(lineRequest);
+
+        ExtractableResponse<Response> response = createLines(lineRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("전체 노선을 조회하면 200 ok와 노선 정보를 반환한다.")
     @Test
-    void getLines() {
-
-        ExtractableResponse<Response> newBundangPostResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
+    void getLinesTest() {
         Station upStation = stationRepository.save(new Station("을지로입구역"));
         Station downStation = stationRepository.save(new Station("을지로3가역"));
         LineRequest request2 = new LineRequest("분당선", "bg-green-600", upStation.getId(), downStation.getId(), 5);
 
-        ExtractableResponse<Response> bundangPostResponse = RestAssured.given().log().all()
-                .body(request2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> newBundangPostResponse = createLines(lineRequest);
+        ExtractableResponse<Response> bundangPostResponse = createLines(request2);
+        ExtractableResponse<Response> response = getLines();
 
         List<Long> expectedLineIds = Stream.of(newBundangPostResponse, bundangPostResponse)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<LineResponse> responses = response.jsonPath().getList(".", LineResponse.class);
-
         List<Long> ids = responses.stream().map(LineResponse::getId).collect(Collectors.toList());
 
         assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(ids).containsAll(expectedLineIds),
                 () -> assertThat(responses.get(0).getName()).isEqualTo("신분당선"),
                 () -> assertThat(responses.get(0).getColor()).isEqualTo("bg-red-600"),
@@ -129,20 +102,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    private ExtractableResponse<Response> getLines() {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
     @DisplayName("단건 노선을 조회하면 200 OK와 노선 정보를 반환한다")
     @Test
     void getLine() {
 
         long lineId = createLineResponse();
+        ExtractableResponse<Response> getResponse = getLine(lineId);
 
-        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+        long responseId = getResponse.jsonPath().getLong("id");
+        assertThat(lineId).isEqualTo(responseId);
+    }
+
+    private long createLineResponse() {
+        ExtractableResponse<Response> createResponse = createLines(lineRequest);
+        return Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
+    }
+
+    private ExtractableResponse<Response> getLine(long lineId) {
+        return RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
-
-        long responseId = getResponse.jsonPath().getLong("id");
-        assertThat(lineId).isEqualTo(responseId);
     }
 
     @DisplayName("노선을 수정하면 200 OK를 반환한다.")
@@ -150,9 +139,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
 
         long id = createLineResponse();
-
         LineRequest request = new LineRequest("다른분당선", "bg-red-600");
-
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -167,14 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 제거하면 204 No Content를 반환한다.")
     @Test
     void deleteStation() {
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = createLines(lineRequest);
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -189,24 +169,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 생성하면 200 ok를 반환한다.")
     @Test
     void createSection() {
-        //given
         long id = createLineResponse();
-
         SectionRequest sectionRequest = new SectionRequest(thirdStation.getId(), upStation.getId(), 10);
         ExtractableResponse<Response> response = createSection(sectionRequest, id);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private long createLineResponse() {
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-        return Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
     }
 
     private ExtractableResponse<Response> createSection(SectionRequest sectionRequest, long lineId) {
