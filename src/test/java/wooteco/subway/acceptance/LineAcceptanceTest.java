@@ -3,6 +3,7 @@ package wooteco.subway.acceptance;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,8 +28,8 @@ import wooteco.subway.ui.response.StationResponse;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final Long stationIdA = 1L;
-    private static final Long stationIdB = 2L;
+    private static Long stationIdA;
+    private static Long stationIdB;
 
     private final String defaultUri = "/lines";
 
@@ -36,10 +37,19 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Override
     public void setUp() {
         RestAssured.port = port;
-        StationRequest stationRequestA = new StationRequest("강남");
-        StationRequest stationRequestB = new StationRequest("역삼");
-        getExtractablePostResponse(stationRequestA, "/stations");
-        getExtractablePostResponse(stationRequestB, "/stations");
+        List<Long> ids = postStations("강남", "역삼");
+        stationIdA = ids.get(0);
+        stationIdB = ids.get(1);
+    }
+
+    private List<Long> postStations(String... StationNames) {
+        return Arrays.stream(StationNames)
+            .map(name -> getIdFrom(getExtractablePostResponse(new StationRequest(name), "/stations")))
+            .collect(Collectors.toList());
+    }
+
+    private long getIdFrom(ExtractableResponse<Response> response) {
+        return Long.parseLong(response.header("Location").split("/")[2]);
     }
 
     @Test
@@ -52,7 +62,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = getExtractablePostResponse(request, defaultUri);
-        Long lineId = Long.parseLong(response.header("Location").split("/")[2]);
+        Long lineId = getIdFrom(response);
 
         // then
         assertAll(
@@ -113,12 +123,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("모든 노선을 조회한다.")
     void getLines() {
         // given
-        StationRequest stationRequestA = new StationRequest("선릉");
-        StationRequest stationRequestB = new StationRequest("삼성");
-        String idA = getExtractablePostResponse(stationRequestA, "/stations").header("Location").split("/")[2];
-        String idB = getExtractablePostResponse(stationRequestB, "/stations").header("Location").split("/")[2];
+        List<Long> ids = postStations("선릉", "삼성");
+        long idC = ids.get(0);
+        long idD = ids.get(1);
 
-        LineRequest firstRequest = new LineRequest("4호선", "sky-blue", Long.parseLong(idA), Long.parseLong(idB), 10);
+        LineRequest firstRequest = new LineRequest("4호선", "sky-blue", idC, idD, 10);
         ExtractableResponse<Response> firstResponse = getExtractablePostResponse(firstRequest, defaultUri);
 
         LineRequest secondRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
@@ -196,10 +205,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     void updateWithDuplicatedName() {
         // given
         LineRequest request = new LineRequest("4호선", "sky-blue", stationIdA, stationIdB, 10);
-        ExtractableResponse<Response> createResponse = getExtractablePostResponse(request, defaultUri);
+        long savedId = getIdFrom(getExtractablePostResponse(request, defaultUri));
 
         // when
-        long savedId = Long.parseLong(createResponse.header("Location").split("/")[2]);
         long otherId = savedId + 1;
 
         LineRequest updateRequest = new LineRequest("4호선", "green");
@@ -239,17 +247,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행 종점 좌우측에 구간을 추가한다(C -> D -> A -> B).")
     void addUpDestination() {
         //given
-        StationRequest stationRequest = new StationRequest("선릉");
-        ExtractableResponse<Response> createStationResponse = getExtractablePostResponse(stationRequest, "/stations");
-        long stationIdC = Long.parseLong(createStationResponse.header("Location").split("/")[2]);
 
-        StationRequest stationRequest1 = new StationRequest("삼성");
-        ExtractableResponse<Response> createStationResponse1 = getExtractablePostResponse(stationRequest1, "/stations");
-        long stationIdD = Long.parseLong(createStationResponse1.header("Location").split("/")[2]);
+        List<Long> ids = postStations("선릉", "삼성");
+        long stationIdC = ids.get(0);
+        long stationIdD = ids.get(1);
 
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
         //when
         SectionRequest sectionRequestA = new SectionRequest(stationIdC, stationIdA, 10);
@@ -284,17 +288,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("하행 종점 좌우측에 구간을 추가한다(A -> B -> D -> C).")
     void addDownDestination() {
         //given
-        StationRequest stationRequestC = new StationRequest("선릉");
-        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
-        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
-
-        StationRequest stationRequestD = new StationRequest("삼성");
-        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
-        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+        List<Long> ids = postStations("선릉", "삼성");
+        long stationIdC = ids.get(0);
+        long stationIdD = ids.get(1);
 
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
         //when
         SectionRequest sectionRequestA = new SectionRequest(stationIdB, stationIdC, 10);
@@ -329,17 +328,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 목록의 중간에 구간을 추가한다(A -> C -> D -> B).")
     void addSectionsInMiddle() {
         //given
-        StationRequest stationRequestC = new StationRequest("선릉");
-        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
-        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
-
-        StationRequest stationRequestD = new StationRequest("삼성");
-        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
-        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+        List<Long> ids = postStations("선릉", "삼성");
+        long stationIdC = ids.get(0);
+        long stationIdD = ids.get(1);
 
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
         //when
         SectionRequest sectionRequestA = new SectionRequest(stationIdC, stationIdB, 4);
@@ -374,13 +368,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 사이 새로운 역 등록시 기존 역 사이 길이보다 크거나 같으면(>=) 400 응답을 던진다.")
     void addSectionWithInvalidDistance(int distance) {
         //given
-        StationRequest stationRequestC = new StationRequest("선릉");
-        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
-        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
+        long stationIdC = postStations("선릉").get(0);
 
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 5);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
         //when
         SectionRequest sectionRequest = new SectionRequest(stationIdA, stationIdC, distance);
@@ -397,8 +388,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void addSectionWithDuplicated(Long idA, Long idB) {
         //given
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 5);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
         //when
         SectionRequest sectionRequest = new SectionRequest(idA, idB, 4);
@@ -414,16 +404,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     void addSectionWithDuplicated() {
         //given
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 5);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
-        StationRequest stationRequestC = new StationRequest("선릉");
-        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
-        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
-
-        StationRequest stationRequestD = new StationRequest("삼성");
-        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
-        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+        List<Long> ids = postStations("선릉", "삼성");
+        long stationIdC = ids.get(0);
+        long stationIdD = ids.get(1);
 
         //when
         SectionRequest sectionRequest = new SectionRequest(stationIdC, stationIdD, 4);
@@ -438,17 +423,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("맨 앞 구간을 삭제한다.(A -> B -> C -> D) => (B -> C -> D) => (C -> D)")
     void deleteFirstSection() {
         //given
-        StationRequest stationRequestC = new StationRequest("선릉");
-        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
-        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
-
-        StationRequest stationRequestD = new StationRequest("삼성");
-        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
-        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+        List<Long> ids = postStations("선릉", "삼성");
+        long stationIdC = ids.get(0);
+        long stationIdD = ids.get(1);
 
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
         SectionRequest sectionRequestA = new SectionRequest(stationIdB, stationIdC, 4);
         getExtractablePostResponse(sectionRequestA, defaultUri + "/" + lineId + "/sections");
@@ -484,17 +464,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("맨 뒤 구간을 삭제한다(A -> B -> C -> D) => (A -> B -> C) => (A -> B).")
     void deleteLastSection() {
         //given
-        StationRequest stationRequestC = new StationRequest("선릉");
-        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
-        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
-
-        StationRequest stationRequestD = new StationRequest("삼성");
-        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
-        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+        List<Long> ids = postStations("선릉", "삼성");
+        long stationIdC = ids.get(0);
+        long stationIdD = ids.get(1);
 
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
         SectionRequest sectionRequestA = new SectionRequest(stationIdB, stationIdC, 4);
         getExtractablePostResponse(sectionRequestA, defaultUri + "/" + lineId + "/sections");
@@ -530,17 +505,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("중간 구간을 삭제한다(A -> B -> C -> D) => (A -> D).")
     void deleteSectionInMiddle() {
         //given
-        StationRequest stationRequestC = new StationRequest("선릉");
-        ExtractableResponse<Response> createStationResponseC = getExtractablePostResponse(stationRequestC, "/stations");
-        long stationIdC = Long.parseLong(createStationResponseC.header("Location").split("/")[2]);
-
-        StationRequest stationRequestD = new StationRequest("삼성");
-        ExtractableResponse<Response> createStationResponseD = getExtractablePostResponse(stationRequestD, "/stations");
-        long stationIdD = Long.parseLong(createStationResponseD.header("Location").split("/")[2]);
+        List<Long> ids = postStations("선릉", "삼성");
+        long stationIdC = ids.get(0);
+        long stationIdD = ids.get(1);
 
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
         SectionRequest sectionRequestA = new SectionRequest(stationIdB, stationIdC, 4);
         getExtractablePostResponse(sectionRequestA, defaultUri + "/" + lineId + "/sections");
@@ -577,8 +547,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void deleteInOneSection(long id) {
         //given
         LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
-        ExtractableResponse<Response> createLineResponse = getExtractablePostResponse(lineRequest, defaultUri);
-        long lineId = Long.parseLong(createLineResponse.header("Location").split("/")[2]);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
 
         // when
         ExtractableResponse<Response> actualResponse = getExtractableDeleteResponse(
