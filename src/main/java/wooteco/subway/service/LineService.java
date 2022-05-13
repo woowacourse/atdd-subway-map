@@ -40,9 +40,9 @@ public class LineService {
             Station downStation = stationDao.findById(savedSection.getDownStationId());
             return new Line(savedLine, List.of(upStation, downStation));
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
+            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE, e);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException(NO_EXIST_STATION);
+            throw new IllegalArgumentException(NO_EXIST_STATION, e);
         }
     }
 
@@ -73,7 +73,7 @@ public class LineService {
         try {
             lineDao.update(line);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
+            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE, e);
         }
     }
 
