@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.ui.dto.LineRequest;
-import wooteco.subway.ui.dto.LineResponse;
 
 @RestController
 public class LineController {

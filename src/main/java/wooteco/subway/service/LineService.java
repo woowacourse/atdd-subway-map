@@ -13,9 +13,9 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.LineRequest;
-import wooteco.subway.ui.dto.LineResponse;
-import wooteco.subway.ui.dto.StationResponse;
 
 @Service
 @Transactional(readOnly = true)

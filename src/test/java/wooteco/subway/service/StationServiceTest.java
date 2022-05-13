@@ -13,8 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.StationRequest;
-import wooteco.subway.ui.dto.StationResponse;
 
 @JdbcTest
 class StationServiceTest {

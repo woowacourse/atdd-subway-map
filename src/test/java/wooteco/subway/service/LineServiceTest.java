@@ -18,8 +18,8 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.ui.dto.LineRequest;
-import wooteco.subway.ui.dto.LineResponse;
 
 @JdbcTest
 class LineServiceTest {

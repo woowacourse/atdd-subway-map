@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.StationRequest;
-import wooteco.subway.ui.dto.StationResponse;
 
 @Service
 @Transactional(readOnly = true)
