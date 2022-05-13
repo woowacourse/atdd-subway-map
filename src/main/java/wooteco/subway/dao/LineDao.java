@@ -31,9 +31,11 @@ public class LineDao {
                     resultSet.getString("color")
             );
 
-    public Line insert(String name, String color) {
-        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name, "color", color)).longValue();
-        return new Line(id, name, color);
+    public Line insert(Line line) {
+        long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", line.getName(), "color", line.getColor()))
+                .longValue();
+
+        return new Line(id, line.getName(), line.getColor());
     }
 
     public List<Line> findAll() {

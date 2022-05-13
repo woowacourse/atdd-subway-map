@@ -23,7 +23,7 @@ public class LineService {
     private static final String LINE_NOT_FOUND = "존재하지 않는 노선입니다.";
     private static final String DUPLICATE_LINE_NAME = "지하철 노선 이름이 중복될 수 없습니다.";
 
-    private static final String STATION_NOT_EXIST_IN_LINE = "해당 노선에 존재하는 노선이 없습니다.";
+    private static final String STATION_NOT_EXIST_IN_LINE = "해당 지하철 역은 노선에 이 없습니다.";
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -40,9 +40,10 @@ public class LineService {
         String name = request.getName();
         checkDuplicateName(lineDao.isExistName(name));
 
-        Line line = lineDao.insert(name, request.getColor());
-        Section section = Section.of(request.getUpStationId(), request.getDownStationId(), request.getDistance());
+        Line line = new Line(request.getName(), request.getColor());
+        line = lineDao.insert(line);
 
+        Section section = Section.of(request.getUpStationId(), request.getDownStationId(), request.getDistance());
         sectionDao.insert(section, line.getId());
 
         List<StationResponse> stationResponses = getStationResponsesByLineId(line.getId());
@@ -75,7 +76,7 @@ public class LineService {
         List<Long> stationIds = sections.convertToStationIds();
 
         List<Station> stations = stationDao.findByIds(stationIds);
-        if(stations.isEmpty()){
+        if (stations.isEmpty()) {
             throw new IllegalStateException(STATION_NOT_EXIST_IN_LINE);
         }
 
@@ -100,7 +101,7 @@ public class LineService {
         Line oldLine = lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
         Line newLine = new Line(oldLine.getId(), request.getName(), request.getColor());
-        
+
         lineDao.update(newLine);
     }
 
