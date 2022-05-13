@@ -58,10 +58,14 @@ public class LineService {
     }
 
     public void update(final Long id, final LineRequest lineRequest) {
-        lineRepository.update(id, lineRequest.toLine());
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 노선을 찾을수 없습니다."));
+        lineRepository.update(line.getId(), lineRequest.toLine());
     }
 
-    public void delete(final Long id) {
-        lineRepository.deleteById(id);
+    public void deleteById(final Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 노선을 찾을수 없습니다."));
+        lineRepository.delete(line.getId());
     }
 }

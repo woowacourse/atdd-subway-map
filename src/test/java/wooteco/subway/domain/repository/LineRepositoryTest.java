@@ -104,7 +104,7 @@ public class LineRepositoryTest {
     @DisplayName("노선을 삭제한다.")
     @Test
     void deleteById() {
-        lineRepository.deleteById(LINE_ID);
+        lineRepository.delete(LINE_ID);
 
         assertThat(lineRepository.findAll()).isEmpty();
     }

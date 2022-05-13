@@ -12,6 +12,7 @@ import wooteco.subway.domain.repository.SectionRepositoryImpl;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.utils.exception.DuplicatedException;
+import wooteco.subway.utils.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class LineServiceTest {
 
     private static final long LINE_ID = 1L;
+    private static final long NONE_LINE_ID = 5L;
     @Autowired
     private DataSource dataSource;
 
@@ -53,17 +55,17 @@ public class LineServiceTest {
     void createDuplicateName() {
         lineRepository.save(new Line("분당선", "bg-red-600"));
         assertThatThrownBy(() -> lineService.create(new LineRequest("분당선", "bg-red-600")))
-                .isInstanceOf(DuplicatedException.class);
+                .isInstanceOf(DuplicatedException.class).hasMessage("[ERROR] 이미 존재하는 노선의 이름입니다.");
     }
 
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void showLines() {
-
+        int 노선에_포함된_모든_역의_개수 = 3;
         List<LineResponse> lineResponses = lineService.getLines();
         assertAll(
                 () -> assertThat(lineResponses).hasSize(1),
-                () -> assertThat(lineResponses.get(0).getStations()).hasSize(3)
+                () -> assertThat(lineResponses.get(0).getStations()).hasSize(노선에_포함된_모든_역의_개수)
         );
     }
 
@@ -92,13 +94,30 @@ public class LineServiceTest {
         );
     }
 
+    @DisplayName("존재하지 않는 아이디로 노선을 업데이트 하려고 하면 예외가 발생한다.")
+    @Test
+    void updateFailure() {
+        assertThatThrownBy(
+                () -> lineService.update(NONE_LINE_ID, new LineRequest("신분당선", "bg-yellow-600"))
+        ).isExactlyInstanceOf(NotFoundException.class)
+                .hasMessage("[ERROR] 식별자에 해당하는 노선을 찾을수 없습니다.");
+    }
 
     @DisplayName("노선을 제거 한다.")
     @Test
     void delete() {
-        lineService.delete(LINE_ID);
+        lineService.deleteById(LINE_ID);
 
         assertThat(lineRepository.findAll()).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 아이디로 노선을 제거하려고 하면 예외가 발생한다.")
+    @Test
+    void deleteFailure() {
+        assertThatThrownBy(
+                () -> lineService.deleteById(NONE_LINE_ID)
+        ).isExactlyInstanceOf(NotFoundException.class).hasMessage("[ERROR] 식별자에 해당하는 노선을 찾을수 없습니다.");
+
     }
 
 }
