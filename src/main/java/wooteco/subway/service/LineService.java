@@ -25,8 +25,6 @@ public class LineService {
     private static final String LINE_NOT_FOUND = "존재하지 않는 노선입니다.";
     private static final String DUPLICATE_LINE_NAME = "지하철 노선 이름이 중복될 수 없습니다.";
 
-    private static final String STATION_NOT_FOUND = "존재하지 않는 지하철역입니다.";
-
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
