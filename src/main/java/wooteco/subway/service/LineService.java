@@ -5,6 +5,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.utils.ExceptionMessage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class LineService {
 
     public LineResponse findById(long id) {
         Line line = lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.NO_LINE));
         return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(id).sortStations());
     }
 
