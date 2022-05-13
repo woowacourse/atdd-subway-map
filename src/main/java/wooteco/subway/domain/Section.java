@@ -76,9 +76,11 @@ public class Section {
     }
 
     public boolean isUpdate(final Section section) {
-        return equals(section)
-                && !(isSameUpStation(section.getUpStation())
-                && isSameDownStation(section.getDownStation()));
+        return equals(section) && !isSameStations(section);
+    }
+
+    private boolean isSameStations(final Section section) {
+        return isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation());
     }
 
     public Section merge(final Section section) {
@@ -90,9 +92,7 @@ public class Section {
     }
 
     public boolean isSameSection(final Section section) {
-        return equals(section)
-                && isSameUpStation(section.getUpStation())
-                && isSameDownStation(section.getDownStation());
+        return equals(section) && isSameStations(section);
     }
 
     public Long getId() {

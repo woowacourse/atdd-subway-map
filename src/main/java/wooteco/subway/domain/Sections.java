@@ -102,17 +102,15 @@ public class Sections {
         section.subtractDistance(distance);
     }
 
-    // TODO 이중 포문 제거
-    public Optional<Section> pickUpdate(List<Section> sections) {
-        for (Section section : sections) {
-            Optional<Section> updateSection = values.stream()
-                    .filter(value -> value.isUpdate(section))
-                    .findFirst();
-            if (updateSection.isPresent()) {
-                return updateSection;
-            }
-        }
-        return Optional.empty();
+    public Optional<Section> pickUpdate(final List<Section> sections) {
+        return values.stream()
+                .filter(value -> findUpdateSection(sections, value))
+                .findFirst();
+    }
+
+    private boolean findUpdateSection(final List<Section> sections, final Section section) {
+        return sections.stream()
+                .anyMatch(value -> value.isUpdate(section));
     }
 
     public List<Section> delete(final Station station) {
