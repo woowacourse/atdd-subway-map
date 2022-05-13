@@ -3,24 +3,32 @@ package wooteco.subway.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.SectionRequest;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 관련 service 테스트")
 @JdbcTest
 class SectionServiceTest {
+
+    private static final RowMapper<Section> SECTION_ROW_MAPPER = (resultSet, rowNum) -> {
+        return new Section(
+                resultSet.getLong("up_station_id"),
+                resultSet.getLong("down_station_id"),
+                resultSet.getInt("distance")
+        );
+    };
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -86,10 +94,12 @@ class SectionServiceTest {
 
         sectionDao.save(1L, new Section(station1Id, station2Id, 10));
 
-        // when & then
-        assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(station1Id, station3Id, 5)))
-                .doesNotThrowAnyException();
+        // when
+        sectionService.save(1L, new SectionRequest(station1Id, station3Id, 5));
+
+        // then
+        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        assertThat(sections).contains(new Section(station1Id, station3Id, 5));
     }
 
     @DisplayName("구간 생성 시 상행 종점을 등록한다.")
@@ -102,10 +112,12 @@ class SectionServiceTest {
 
         sectionDao.save(1L, new Section(station2Id, station3Id, 10));
 
-        // when & then
-        assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10))
-        ).doesNotThrowAnyException();
+        // when
+        sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10));
+
+        // then
+        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        assertThat(sections).contains(new Section(station1Id, station2Id, 10));
     }
 
     @DisplayName("구간 생성 시 하행 종점을 등록한다.")
@@ -118,10 +130,12 @@ class SectionServiceTest {
 
         sectionDao.save(1L, new Section(station1Id, station2Id, 10));
 
-        // when & then
-        assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(station2Id, station3Id, 10))
-        ).doesNotThrowAnyException();
+        // when
+        sectionService.save(1L, new SectionRequest(station2Id, station3Id, 10));
+
+        // then
+        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        assertThat(sections).contains(new Section(station2Id, station3Id, 10));
     }
 
     @DisplayName("구간 생성 시 상행역을 등록한다.")
@@ -134,10 +148,12 @@ class SectionServiceTest {
 
         sectionDao.save(1L, new Section(station1Id, station2Id, 10));
 
-        // when & then
-        assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(station3Id, station1Id, 5))
-        ).doesNotThrowAnyException();
+        // when
+        sectionService.save(1L, new SectionRequest(station3Id, station1Id, 5));
+
+        // then
+        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        assertThat(sections).contains(new Section(station3Id, station1Id, 5));
     }
 
     @DisplayName("구간 생성 시 하행역을 등록한다.")
@@ -150,10 +166,12 @@ class SectionServiceTest {
 
         sectionDao.save(1L, new Section(station1Id, station2Id, 10));
 
-        // when & then
-        assertThatCode(
-                () -> sectionService.save(1L, new SectionRequest(station1Id, station3Id, 5))
-        ).doesNotThrowAnyException();
+        // when
+        sectionService.save(1L, new SectionRequest(station1Id, station3Id, 5));
+
+        // then
+        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        assertThat(sections).contains(new Section(station1Id, station3Id, 5));
     }
 
     @DisplayName("구간 생성 시 다른 구간과 연결되어 있지 않으면 예외가 발생한다.")

@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -17,6 +16,10 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.StationResponse;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @DisplayName("지하철 노선 관련 service 테스트")
 @JdbcTest
@@ -51,10 +54,14 @@ class LineServiceTest {
         LineResponse lineResponse = lineService.save(lineRequest);
 
         // then
+        List<String> stationNames = lineResponse.getStations().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600"),
-                () -> assertThat(lineResponse.getStations()).hasSize(2)
+                () -> assertThat(stationNames).contains("강남역", "역삼역")
         );
     }
 
@@ -90,8 +97,13 @@ class LineServiceTest {
         // given
         lineService.save(LINE_REQUEST);
 
-        // when & then
-        assertThat(lineService.findAll()).hasSize(1);
+        // when
+        List<String> lineNames = lineService.findAll().stream()
+                .map(LineResponse::getName)
+                .collect(Collectors.toList());
+
+        // then
+        assertThat(lineNames).contains("신분당선");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -124,9 +136,15 @@ class LineServiceTest {
         LineResponse lineResponse = lineService.save(LINE_REQUEST);
         long lineId = lineResponse.getId();
 
-        // when & then
-        assertThatCode(() -> lineService.update(lineId, new LineRequest("다른분당선", "bg-green-600", null, null, 0)))
-                .doesNotThrowAnyException();
+        // when
+        lineService.update(lineId, new LineRequest("다른분당선", "bg-green-600", null, null, 0));
+
+        // then
+        List<String> lineNames = lineService.findAll().stream()
+                .map(LineResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(lineNames).contains("다른분당선");
     }
 
     @DisplayName("중복된 이름으로 지하철 노선을 수정할 경우 예외를 발생시킨다.")
@@ -171,9 +189,11 @@ class LineServiceTest {
         LineResponse lineResponse = lineService.save(LINE_REQUEST);
         long lineId = lineResponse.getId();
 
-        // when & then
-        assertThatCode(() -> lineService.delete(lineId))
-                .doesNotThrowAnyException();
+        // when
+        lineService.delete(lineId);
+
+        // then
+        assertThat(lineService.findAll()).hasSize(0);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 삭제할 경우 예외를 발생시킨다.")

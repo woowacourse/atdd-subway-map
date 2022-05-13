@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -11,14 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.StationRequest;
+import wooteco.subway.service.dto.StationResponse;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @DisplayName("지하철역 관련 service 테스트")
 @JdbcTest
 class StationServiceTest {
 
-    private static final Station STATION = new Station("강남역");
     private static final StationRequest STATION_REQUEST = new StationRequest("강남역");
 
     @Autowired
@@ -39,7 +40,11 @@ class StationServiceTest {
         stationService.save(STATION_REQUEST);
 
         // then
-        assertThat(stationService.findAll().get(0).getName()).isEqualTo("강남역");
+        List<String> stationNames = stationService.findAll().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(stationNames).contains("강남역");
     }
 
     @DisplayName("중복된 지하철역을 생성할 경우 예외를 발생시킨다.")
@@ -60,8 +65,13 @@ class StationServiceTest {
         // given
         stationService.save(STATION_REQUEST);
 
-        // when & then
-        assertThat(stationService.findAll()).hasSize(1);
+        // when
+        List<String> stationNames = stationService.findAll().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        // then
+        assertThat(stationNames).contains("강남역");
     }
 
     @DisplayName("지하철역을 삭제한다.")
@@ -70,9 +80,11 @@ class StationServiceTest {
         // given
         long stationId = stationService.save(STATION_REQUEST);
 
-        // when & then
-        assertThatCode(() -> stationService.delete(stationId))
-                .doesNotThrowAnyException();
+        // when
+        stationService.delete(stationId);
+
+        // then
+        assertThat(stationService.findAll()).hasSize(0);
     }
 
     @DisplayName("존재하지 않는 지하철역을 삭제할 경우 예외가 발생한다.")
