@@ -31,23 +31,31 @@ public class Sections {
         }
 
         for (Section section : values) {
-            if (section.getUpStation().equals(newSection.getUpStation())) {
-                int index = values.indexOf(section);
-                values.set(index, newSection);
-                values.add(index + 1,
-                    new Section(section.getId(), newSection.getDownStation(), section.getDownStation(),
-                        section.getDistance() - newSection.getDistance()));
+            if (section.hasSameUpStation(newSection)) {
+                insertAfterUpStation(newSection, section);
                 return;
             }
 
-            if (section.getDownStation().equals(newSection.getDownStation())) {
-                int index = values.indexOf(section);
-                values.set(index, new Section(section.getId(), section.getUpStation(), newSection.getUpStation(),
-                    section.getDistance() - newSection.getDistance()));
-                values.add(index + 1, newSection);
+            if (section.hasSameDownStation(newSection)) {
+                insertBeforeDownStation(newSection, section);
                 return;
             }
         }
+    }
+
+    private void insertAfterUpStation(Section newSection, Section section) {
+        int index = values.indexOf(section);
+        values.set(index, newSection);
+        values.add(index + 1,
+            new Section(section.getId(), newSection.getDownStation(), section.getDownStation(),
+                section.getDistance() - newSection.getDistance()));
+    }
+
+    private void insertBeforeDownStation(Section newSection, Section section) {
+        int index = values.indexOf(section);
+        values.set(index, new Section(section.getId(), section.getUpStation(), newSection.getUpStation(),
+            section.getDistance() - newSection.getDistance()));
+        values.add(index + 1, newSection);
     }
 
     private void validateAddable(Section section) {
@@ -109,18 +117,20 @@ public class Sections {
             return;
         }
 
-        Section section = values.stream()
-            .filter(it -> it.contains(station))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("삭제할 역이 존재하지 않습니다."));
-
-        mergeTwoSections(section);
+        mergeTwoSections(findSectionToDelete(station));
     }
 
     private void validateDeletable() {
         if (values.size() <= 1) {
             throw new IllegalArgumentException("구간이 하나인 경우 삭제할 수 없습니다.");
         }
+    }
+
+    private Section findSectionToDelete(Station station) {
+        return values.stream()
+            .filter(it -> it.contains(station))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("삭제할 역이 존재하지 않습니다."));
     }
 
     private void mergeTwoSections(Section section) {

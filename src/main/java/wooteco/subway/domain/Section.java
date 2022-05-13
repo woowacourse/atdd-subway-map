@@ -27,6 +27,23 @@ public class Section {
         }
     }
 
+    public boolean hasSameStations(Section section) {
+        return (downStation.equals(section.getDownStation()) && upStation.equals(section.getUpStation())) ||
+            (downStation.equals(section.getUpStation()) && upStation.equals(section.getDownStation()));
+    }
+
+    public boolean hasSameUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean hasSameDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
+    public boolean contains(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }
@@ -41,15 +58,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public boolean hasSameStations(Section section) {
-        return (downStation.equals(section.getDownStation()) && upStation.equals(section.getUpStation())) ||
-            (downStation.equals(section.getUpStation()) && upStation.equals(section.getDownStation()));
-    }
-
-    public boolean contains(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
     }
 
     @Override
