@@ -81,11 +81,12 @@ public class Section {
         if (this == o) return true;
         if (!(o instanceof Section)) return false;
         Section section = (Section) o;
-        return distance == section.distance && Objects.equals(upStationId, section.upStationId);
+        return distance == section.distance && Objects.equals(upStationId, section.upStationId)
+                && Objects.equals(downStationId, section.downStationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStationId, downStationId);
+        return Objects.hash(upStationId, downStationId, distance);
     }
 }

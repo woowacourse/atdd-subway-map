@@ -193,7 +193,11 @@ class LineServiceTest {
         lineService.delete(lineId);
 
         // then
-        assertThat(lineService.findAll()).hasSize(0);
+        List<String> lineNames = lineService.findAll().stream()
+                .map(LineResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(lineNames).doesNotContain("신분당선");
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 삭제할 경우 예외를 발생시킨다.")

@@ -84,7 +84,11 @@ class StationServiceTest {
         stationService.delete(stationId);
 
         // then
-        assertThat(stationService.findAll()).hasSize(0);
+        List<String> stationNames = stationService.findAll().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(stationNames).doesNotContain("강남역");
     }
 
     @DisplayName("존재하지 않는 지하철역을 삭제할 경우 예외가 발생한다.")
