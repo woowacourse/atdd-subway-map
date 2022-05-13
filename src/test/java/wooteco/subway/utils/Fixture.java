@@ -11,8 +11,9 @@ import java.util.Map;
 public class Fixture {
 
     public static String LINE = "/lines";
-
     public static String STATION = "/stations";
+    public static Map<String, String> 상도역 = Map.of("name", "상도역");
+    public static Map<String, String> 이수역 = Map.of("name", "이수역");
 
     public static Map<String, String> 신분당선 = Map.of(
             "name", "신분당선",
