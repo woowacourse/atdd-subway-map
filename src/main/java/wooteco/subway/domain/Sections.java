@@ -27,7 +27,8 @@ public class Sections {
         boolean existDownStation = hasSameDownByDown(section) || hasSameUpByDown(section);
         validateAddSectionCondition(existUpStation, existDownStation);
         Optional<Section> sameUpStationSection = sections.stream().filter(it -> it.isSameUpStation(section)).findAny();
-        Optional<Section> sameDownStationSection = sections.stream().filter(it -> it.isSameDownStation(section)).findAny();
+        Optional<Section> sameDownStationSection = sections.stream().filter(it -> it.isSameDownStation(section))
+            .findAny();
         if (hasSameUpByUp(section) && sameUpStationSection.isPresent()) {
             splitByUpStation(section, sameUpStationSection.get());
         }
@@ -35,20 +36,6 @@ public class Sections {
             splitByDownStation(section, sameDownStationSection.get());
         }
         sections.add(section);
-    }
-
-    private void splitByUpStation(Section section, Section findSection) {
-        validateDistance(section, findSection);
-        int distance = findSection.getDistance() - section.getDistance();
-        sections.add(new Section(section.getDownStationId(), findSection.getDownStationId(), distance));
-        sections.remove(findSection);
-    }
-
-    private void splitByDownStation(Section section, Section findSection) {
-        validateDistance(section, findSection);
-        int distance = findSection.getDistance() - section.getDistance();
-        sections.add(new Section(findSection.getUpStationId(), section.getUpStationId(), distance));
-        sections.remove(findSection);
     }
 
     public void remove(long stationId) {
@@ -71,11 +58,6 @@ public class Sections {
         return List.copyOf(sections);
     }
 
-    public boolean hasSection(Section section) {
-        return sections.stream()
-            .anyMatch(it -> it.equals(section));
-    }
-
     public List<Long> getStationIds() {
         Set<Long> distinctStationIds = new HashSet<>();
         for (Section section : sections) {
@@ -92,6 +74,20 @@ public class Sections {
         if (!existUpStation && !existDownStation) {
             throw new IllegalArgumentException(NO_EXIST_BOTH_STATION_EXCEPTION);
         }
+    }
+
+    private void splitByUpStation(Section section, Section findSection) {
+        validateDistance(section, findSection);
+        int distance = findSection.getDistance() - section.getDistance();
+        sections.add(new Section(section.getDownStationId(), findSection.getDownStationId(), distance));
+        sections.remove(findSection);
+    }
+
+    private void splitByDownStation(Section section, Section findSection) {
+        validateDistance(section, findSection);
+        int distance = findSection.getDistance() - section.getDistance();
+        sections.add(new Section(findSection.getUpStationId(), section.getUpStationId(), distance));
+        sections.remove(findSection);
     }
 
     private boolean hasSameUpByDown(Section section) {
