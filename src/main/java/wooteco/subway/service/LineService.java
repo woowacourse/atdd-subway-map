@@ -1,48 +1,40 @@
 package wooteco.subway.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
-import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.line.DuplicatedLineNameException;
 import wooteco.subway.exception.line.InvalidLineIdException;
-import wooteco.subway.exception.station.InvalidStationIdException;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
-    private StationDao stationDao;
-    private SectionDao sectionDao;
-
-    public LineService(LineDao lineDao) {
-        this.lineDao = lineDao;
-    }
+    private final StationService stationService;
+    private final SectionService sectionService;
 
     @Autowired
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao, StationService stationService, SectionService sectionService) {
         this.lineDao = lineDao;
-        this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     public LineResponse save(LineRequest lineRequest) {
         Line savedLine = saveLine(lineRequest);
         saveSection(lineRequest, savedLine.getId());
-        List<StationResponse> stationResponses =
+        List<StationResponse> stations =
                 findStations(lineRequest.getUpStationId(), lineRequest.getDownStationId());
-        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), stationResponses);
+        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), stations);
     }
 
     private Line saveLine(LineRequest lineRequest) {
@@ -60,21 +52,11 @@ public class LineService {
     private void saveSection(LineRequest lineRequest, Long lineId) {
         Section section = new Section(lineId, lineRequest.getUpStationId(),
                 lineRequest.getDownStationId(), lineRequest.getDistance());
-        sectionDao.save(section);
+        sectionService.saveInitSection(section);
     }
 
     private List<StationResponse> findStations(Long upStationId, Long downStationId) {
-        validateStationId(upStationId, downStationId);
-        final List<Station> stations = stationDao.findByIds(List.of(upStationId, downStationId));
-        return stations.stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toUnmodifiableList());
-    }
-
-    private void validateStationId(Long upStationId, Long downStationId) {
-        if (!stationDao.exists(upStationId) || !stationDao.exists(downStationId)) {
-            throw new InvalidStationIdException();
-        }
+        return stationService.findByIds(Arrays.asList(upStationId, downStationId));
     }
 
     public List<LineResponse> findAll() {
@@ -92,13 +74,9 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         validateId(id);
         Line line = lineDao.findById(id);
-        Sections sections = new Sections(sectionDao.findByLineId(id));
+        Sections sections = new Sections(sectionService.findByLineId(id));
         List<Long> stationIds = sections.getAllStationIds();
-        Stations unSortedStations = new Stations(stationDao.findByIds(stationIds));
-        List<StationResponse> stations = unSortedStations.sortByOrder(stationIds)
-                .stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toUnmodifiableList());
+        List<StationResponse> stations = stationService.findByIds(stationIds);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 

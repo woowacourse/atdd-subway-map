@@ -32,7 +32,9 @@ class LineServiceTest {
         stationDao.save(new Station("판교역"));
         stationDao.save(new Station("서울대입구역"));
         stationDao.save(new Station("사당역"));
-        lineService = new LineService(new FakeLineDao(), stationDao, new FakeSectionDao());
+        StationService stationService = new StationService(stationDao);
+        SectionService sectionService = new SectionService(new FakeSectionDao());
+        lineService = new LineService(new FakeLineDao(), stationService, sectionService);
         lineService.save(new LineRequest("신분당선", "red", 1L, 2L, 3));
     }
 

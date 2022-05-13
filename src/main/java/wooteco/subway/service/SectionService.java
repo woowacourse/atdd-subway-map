@@ -17,6 +17,14 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    public void saveInitSection(Section section) {
+        sectionDao.save(section);
+    }
+
+    public List<Section> findByLineId(Long lineId) {
+        return sectionDao.findByLineId(lineId);
+    }
+
     public void connectNewSection(Long lineId, SectionRequest sectionRequest) {
         Section section = new Section(lineId, sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(), sectionRequest.getDistance());
@@ -30,14 +38,14 @@ public class SectionService {
         updateChangedSection(updated);
     }
 
-    private void updateChangedSection(final List<Section> updated) {
+    private void updateChangedSection(List<Section> updated) {
         final Optional<Section> changedSection = updated.stream()
                 .filter(section -> !section.hasNoId())
                 .findAny();
         changedSection.ifPresent(sectionDao::update);
     }
 
-    private void saveNewSection(final List<Section> updated) {
+    private void saveNewSection(List<Section> updated) {
         final Optional<Section> newSection = updated.stream()
                 .filter(Section::hasNoId)
                 .findAny();
