@@ -14,7 +14,7 @@ public class Section {
     private final Station downStation;
     private final int distance;
 
-    private Section(Station upStation,
+    public Section(Station upStation,
                     Station downStation,
                     int distance) {
         validateSection(upStation, downStation, distance);
@@ -54,6 +54,18 @@ public class Section {
         }
     }
 
+    public boolean hasUpStationOf(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasDownStationOf(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean hasStationOf(Station station) {
+        return upStation.equals(station) || downStation.equals(station) ;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -62,8 +74,8 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance;
+    public int toConnectedDistance(Section adjacentDistance) {
+        return distance + adjacentDistance.distance;
     }
 
     public SectionEntity2 toEntity(Long lineId) {
