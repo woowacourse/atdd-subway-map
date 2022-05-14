@@ -7,7 +7,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.dto.DeleteAndUpdateSectionsInfo;
+import wooteco.subway.dto.SectionsToBeDeletedAndUpdated;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionsToBeCreatedAndUpdated;
 import wooteco.subway.exception.AccessNoneDataException;
@@ -55,7 +55,7 @@ public class SectionService {
     public void delete(Long lineId, Long stationId) {
         validateExistLine(lineId);
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        DeleteAndUpdateSectionsInfo result = sections.delete(stationId);
+        SectionsToBeDeletedAndUpdated result = sections.delete(stationId);
 
         sectionDao.deleteById(result.getSectionToBeRemoved().getId());
         if (result.getSectionToBeUpdated() != null) {

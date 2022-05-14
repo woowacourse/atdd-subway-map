@@ -2,17 +2,17 @@ package wooteco.subway.dto;
 
 import wooteco.subway.domain.Section;
 
-public class DeleteAndUpdateSectionsInfo {
+public class SectionsToBeDeletedAndUpdated {
 
     private final Section sectionToBeRemoved;
     private final Section sectionToBeUpdated;
 
-    public DeleteAndUpdateSectionsInfo(Section sectionToBeRemoved, Section sectionToBeUpdated) {
+    public SectionsToBeDeletedAndUpdated(Section sectionToBeRemoved, Section sectionToBeUpdated) {
         this.sectionToBeRemoved = sectionToBeRemoved;
         this.sectionToBeUpdated = sectionToBeUpdated;
     }
 
-    public DeleteAndUpdateSectionsInfo(Section sectionToBeRemoved) {
+    public SectionsToBeDeletedAndUpdated(Section sectionToBeRemoved) {
         this(sectionToBeRemoved, null);
     }
 

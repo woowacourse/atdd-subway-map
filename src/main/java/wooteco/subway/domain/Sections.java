@@ -1,6 +1,6 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.dto.DeleteAndUpdateSectionsInfo;
+import wooteco.subway.dto.SectionsToBeDeletedAndUpdated;
 import wooteco.subway.dto.SectionsToBeCreatedAndUpdated;
 import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.SectionServiceException;
@@ -86,7 +86,7 @@ public class Sections {
                 .orElseThrow(() -> new SectionServiceException("중간역 생성중 기존역을 찾지 못하였습니다."));
     }
 
-    public DeleteAndUpdateSectionsInfo delete(Long stationId) {
+    public SectionsToBeDeletedAndUpdated delete(Long stationId) {
         validateExistStation(stationId);
         validateRemainOneSection();
         Section currentLastUpSection = findLastUpSection();
@@ -100,7 +100,7 @@ public class Sections {
         Section downSideStation = extractDownSideStation(stationId);
         Section sectionToBeUpdated = new Section(upSideStation.getId(), upSideStation.getUpStationId(),
                 downSideStation.getDownStationId(), upSideStation.getDistance() + downSideStation.getDistance());
-        return new DeleteAndUpdateSectionsInfo(downSideStation, sectionToBeUpdated);
+        return new SectionsToBeDeletedAndUpdated(downSideStation, sectionToBeUpdated);
     }
 
     private void validateExistStation(Long stationId) {
@@ -115,12 +115,12 @@ public class Sections {
         }
     }
 
-    private DeleteAndUpdateSectionsInfo deleteLastSection(Section lastUpSection, Section lastDownSection, Long stationId) {
+    private SectionsToBeDeletedAndUpdated deleteLastSection(Section lastUpSection, Section lastDownSection, Long stationId) {
         if (stationId.equals(lastUpSection.getUpStationId())) {
-            return new DeleteAndUpdateSectionsInfo(lastUpSection);
+            return new SectionsToBeDeletedAndUpdated(lastUpSection);
         }
         if (stationId.equals(lastDownSection.getDownStationId())) {
-            return new DeleteAndUpdateSectionsInfo(lastDownSection);
+            return new SectionsToBeDeletedAndUpdated(lastDownSection);
         }
         return null;
     }
