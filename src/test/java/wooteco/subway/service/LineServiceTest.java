@@ -66,15 +66,17 @@ class LineServiceTest {
                             name, color, upStation.getId(), downStation.getId(), 10);
 
                     assertThatThrownBy(() -> lineService.save(lineRequest))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage(name + "은 이미 존재하는 노선 이름입니다.");
                 }),
 
                 dynamicTest("노선의 저장 시 상행과 하행이 같은 지하철역인 경우 예외를 던진다.", () -> {
                     LineRequest lineRequest = new LineRequest(
-                            "2호선", "bg-green-600", 1L, 1L, 10);
+                            "3호선", "bg-green-600", 1L, 1L, 10);
 
                     assertThatThrownBy(() -> lineService.save(lineRequest))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("상행과 하행은 같을 수 없습니다.");
                 })
         );
     }
@@ -86,7 +88,8 @@ class LineServiceTest {
                 "2호선", "bg-green-600", 1L, 2L, 10);
 
         assertThatThrownBy(() -> lineService.save(lineRequest))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(lineRequest.getUpStationId() + "의 지하철역은 존재하지 않습니다.");
     }
 
     @DisplayName("노선 조작과 관련된 기능")
@@ -142,7 +145,8 @@ class LineServiceTest {
                     LineUpdateRequest updateRequest = new LineUpdateRequest(updateName, updateColor);
 
                     assertThatThrownBy(() -> lineService.update(lineResponse2.getId(), updateRequest))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage(updateName + "은 이미 존재하는 노선 이름입니다.");
                 }),
 
                 dynamicTest("노선을 삭제한다.", () -> {
@@ -158,7 +162,8 @@ class LineServiceTest {
     @Test
     void 존재하지_않는_노선_조회_예외발생() {
         assertThatThrownBy(() -> lineService.findById(0L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(0 + "의 노선은 존재하지 않습니다.");
     }
 
     @DisplayName("존재하지 않는 노선을 수정하는 경우 예외를 던진다.")
@@ -169,14 +174,16 @@ class LineServiceTest {
         LineUpdateRequest updateRequest = new LineUpdateRequest(name, updateColor);
 
         assertThatThrownBy(() -> lineService.update(0L, updateRequest))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(0 + "의 노선은 존재하지 않습니다.");
     }
 
     @DisplayName("존재하지 않는 노선을 삭제하는 경우 예외를 던진다.")
     @Test
     void 존재하지_않는_노선_삭제_예외발생() {
         assertThatThrownBy(() -> lineService.deleteById(0L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(0 + "의 노선은 존재하지 않습니다.");
     }
 
     @DisplayName("노선에 구간을 추가하는 기능")
@@ -198,7 +205,8 @@ class LineServiceTest {
 
                     SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
                     assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("새로운 구간의 길이가 기존 구간의 길이 보다 크거나 같으므로 추가할 수 없습니다.");
                 }),
 
                 dynamicTest("상행 종점이 같은 경우 가장 앞단의 구간 보다 길이가 작으면 추가한다.", () -> {
@@ -235,7 +243,8 @@ class LineServiceTest {
                     SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
                     assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
-                            .isInstanceOf(NotFoundException.class);
+                            .isInstanceOf(NotFoundException.class)
+                            .hasMessage("0의 지하철역은 존재하지 않습니다.");
                 }),
 
                 dynamicTest("상행 종점 추가 시 상행역이 기존 노선에 존재하는 경우 예외를 던진다.", () -> {
@@ -246,7 +255,8 @@ class LineServiceTest {
                     SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
                     assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("상행역과 하행역 모두 노선에 포함되어 있으므로 추가할 수 없습니다.");
                 }),
 
                 dynamicTest("하행 종점이 같은 경우 가장 뒷간의 구간 보다 길이가 크거나 같으면 예외를 던진다.", () -> {
@@ -257,7 +267,8 @@ class LineServiceTest {
                     SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
                     assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("새로운 구간의 길이가 기존 구간의 길이 보다 크거나 같으므로 추가할 수 없습니다.");
                 }),
 
                 dynamicTest("하행 종점이 같은 경우 가장 앞단의 구간보다 길이가 작으면 추가한다.", () -> {
@@ -288,7 +299,8 @@ class LineServiceTest {
                     SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
                     assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("상행역과 하행역 모두 노선에 포함되어 있으므로 추가할 수 없습니다.");
                 }),
 
                 dynamicTest("상행역과 하행역이 노선에 모두 존재하지 않으면 예외를 던진다.", () -> {
@@ -299,7 +311,8 @@ class LineServiceTest {
                     SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
                     assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("상행역과 하행역이 모두 노선에 포함되지 않으므로 추가할 수 없습니다.");
                 })
         );
     }
@@ -331,7 +344,8 @@ class LineServiceTest {
 
                 dynamicTest("존재하지 않는 역을 삭제할 경우 예외를 던진다.", () -> {
                     assertThatThrownBy(() -> lineService.deleteSection(lineId, stationId1))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("일치하는 구간이 존재하지 않습니다.");
                 }),
 
                 dynamicTest("하행 종점의 구간을 삭제한다.", () -> {
@@ -340,7 +354,8 @@ class LineServiceTest {
 
                 dynamicTest("구간이 한개 뿐인 경우 예외를 던진다.", () -> {
                     assertThatThrownBy(() -> lineService.deleteSection(lineId, stationId2))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("구간이 1개만 존재하므로 삭제가 불가능 합니다.");
                 })
         );
     }

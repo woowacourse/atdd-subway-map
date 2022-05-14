@@ -43,7 +43,8 @@ class StationServiceTest {
         stationService.save(stationRequest);
 
         assertThatThrownBy(() -> stationService.save(stationRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(name + "은 이미 존재하는 지하철역 이름입니다.");
     }
 
     @DisplayName("다수의 지하철역을 조회한다.")
