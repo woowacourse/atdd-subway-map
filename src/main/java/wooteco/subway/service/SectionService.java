@@ -42,6 +42,19 @@ public class SectionService {
         return new Sections(sections);
     }
 
+    private Stream<SectionDto> getSectionsByLineId(long lineId) {
+        return sectionDao.findAll().stream()
+                .filter(sectionDto -> sectionDto.getLineId() == lineId);
+    }
+
+    private void updateSections(Sections sections) {
+        List<SectionDto> sectionDtos = sections.getSections().stream()
+                .map(SectionDto::new)
+                .collect(Collectors.toList());
+        sectionDao.deleteByLineId(sections.getLineId());
+        sectionDao.update(sectionDtos);
+    }
+
     public List<StationResponse> create(long lineId, SectionRequest sectionRequest) {
         Sections sections = loadSections(lineId);
         sections.validateDistance(sectionRequest.getDistance());
@@ -58,19 +71,6 @@ public class SectionService {
         return Stream.of(upStation, downStation)
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
-    }
-
-    private Stream<SectionDto> getSectionsByLineId(long lineId) {
-        return sectionDao.findAll().stream()
-                .filter(sectionDto -> sectionDto.getLineId() == lineId);
-    }
-
-    private void updateSections(Sections sections) {
-        List<SectionDto> sectionDtos = sections.getSections().stream()
-                .map(SectionDto::new)
-                .collect(Collectors.toList());
-        sectionDao.deleteByLineId(sections.getLineId());
-        sectionDao.update(sectionDtos);
     }
 
     public void delete(long lineId, long stationId) {

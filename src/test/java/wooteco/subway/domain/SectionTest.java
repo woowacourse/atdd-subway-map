@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import wooteco.subway.dao.dto.SectionDto;
 
 public class SectionTest {
 
@@ -33,5 +36,41 @@ public class SectionTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("두 종점간의 거리는 0보다 커야합니다.");
     }
+
+    @Test
+    @DisplayName("상행역이 일치하는 section을 갈래길이 생기지 않게 2개로 분리한다.")
+    void splitSectionIfSameUpStation() {
+        Section section = new Section(1L, "강남역", "잠실역", 8);
+
+        List<Section> sections = section.splitSectionIfSameUpStation(new Station("선릉역"), 4);
+
+        Section splitSection1 = new Section(1L, "강남역", "선릉역", 4);
+        Section splitSection2 = new Section(1L, "선릉역", "잠실역", 4);
+        assertThat(sections).isEqualTo(Arrays.asList(splitSection1, splitSection2));
+    }
+
+    @Test
+    @DisplayName("상행역이 일치하는 section을 갈래길이 생기지 않게 2개로 분리한다.")
+    void splitSectionIfSameDownStation() {
+        Section section = new Section(1L, "강남역", "잠실역", 8);
+
+        List<Section> sections = section.splitSectionIfSameDownStation(new Station("선릉역"), 4);
+
+        Section splitSection1 = new Section(1L, "선릉역", "잠실역", 4);
+        Section splitSection2 = new Section(1L, "강남역", "선릉역", 4);
+        assertThat(sections).isEqualTo(Arrays.asList(splitSection1, splitSection2));
+    }
+
+    @Test
+    @DisplayName("두 구간을 하나로 합친다.")
+    void concatSections() {
+        Section section1 = new Section(1L, "강남역", "선릉역", 4);
+        Section section2 = new Section(1L, "선릉역", "잠실역", 4);
+
+        Section section = section1.concatSections(section2);
+
+        assertThat(section).isEqualTo(new Section(1L, "강남역", "잠실역", 8));
+    }
+
 }
 
