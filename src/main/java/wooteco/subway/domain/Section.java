@@ -42,7 +42,7 @@ public class Section {
     }
 
     public boolean isEqualToUpOrDownStation(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
+        return isEqualToUpStation(station) || isEqualToDownStation(station);
     }
 
     public boolean isEqualToUpStation(Station station) {
