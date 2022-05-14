@@ -25,7 +25,7 @@ public class Sections {
         }
         final List<Section> existedStations = new ArrayList<>(value);
         for (Section section : existedStations) {
-            final MatchingResult result = MatchingResult.matchMiddleStation(section, newSection);
+            final AddMatchingResult result = AddMatchingResult.matchMiddleStation(section, newSection);
             if (canAddStation(result, section, newSection)) {
                 add(section, newSection, result);
                 return;
@@ -35,13 +35,13 @@ public class Sections {
     }
 
     private boolean isNewUpSection(final Section newSection) {
-        return MatchingResult.matchStartStation(value.get(0), newSection)
-                == MatchingResult.ADD_TO_LEFT;
+        return AddMatchingResult.matchStartStation(value.get(0), newSection)
+                == AddMatchingResult.ADD_TO_LEFT;
     }
 
     private boolean isNewDownSection(final Section newSection) {
-        return MatchingResult.matchEndStation(value.get(value.size() - 1), newSection)
-                == MatchingResult.ADD_TO_RIGHT;
+        return AddMatchingResult.matchEndStation(value.get(value.size() - 1), newSection)
+                == AddMatchingResult.ADD_TO_RIGHT;
     }
 
     private List<Section> addFirst(final Section newSection) {
@@ -50,13 +50,13 @@ public class Sections {
         return newSections;
     }
 
-    private boolean canAddStation(final MatchingResult result, final Section section, final Section newSection) {
-        return (result == MatchingResult.ADD_TO_LEFT
-                || result == MatchingResult.ADD_TO_RIGHT)
+    private boolean canAddStation(final AddMatchingResult result, final Section section, final Section newSection) {
+        return (result == AddMatchingResult.ADD_TO_LEFT
+                || result == AddMatchingResult.ADD_TO_RIGHT)
                 && section.isDistanceLongerThan(newSection);
     }
 
-    private void add(final Section section, final Section newSection, final MatchingResult result) {
+    private void add(final Section section, final Section newSection, final AddMatchingResult result) {
         final List<Section> seperatedSection = separateSection(section, newSection, result);
         final int standardSection = value.indexOf(section) + 1;
         List<Section> leftSection = value.subList(0, standardSection);
@@ -70,7 +70,7 @@ public class Sections {
 
     private List<Section> separateSection(final Section section,
                                           final Section newSection,
-                                          final MatchingResult result) {
+                                          final AddMatchingResult result) {
         final Station newStation = newSection.getNewStation(result);
         final Section upSection = section.changeDownStationAndDistance(newSection, newStation);
         final Section downSection = section.changeUpStationAndDistance(newSection, newStation);

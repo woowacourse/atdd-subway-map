@@ -1,13 +1,13 @@
 package wooteco.subway.domain;
 
-public enum MatchingResult {
+public enum AddMatchingResult {
     ADD_TO_RIGHT,
     ADD_TO_LEFT,
     SAME_SECTION,
     NO_MATCHED
     ;
 
-    public static MatchingResult matchMiddleStation(final Section exSection, final Section newSection) {
+    public static AddMatchingResult matchMiddleStation(final Section exSection, final Section newSection) {
         if (exSection.isSameSection(newSection)) {
             return SAME_SECTION;
         }
@@ -20,17 +20,17 @@ public enum MatchingResult {
         return NO_MATCHED;
     }
 
-    public static MatchingResult matchStartStation(final Section exSection, final Section newSection) {
+    public static AddMatchingResult matchStartStation(final Section exSection, final Section newSection) {
         if (exSection.isUpStationSameAsDownStation(newSection)) {
-            return MatchingResult.ADD_TO_LEFT;
+            return AddMatchingResult.ADD_TO_LEFT;
         }
-        return MatchingResult.NO_MATCHED;
+        return AddMatchingResult.NO_MATCHED;
     }
 
-    public static MatchingResult matchEndStation(final Section exSection, final Section newSection) {
+    public static AddMatchingResult matchEndStation(final Section exSection, final Section newSection) {
         if (exSection.isDownStationSameAsUpStation(newSection)) {
-            return MatchingResult.ADD_TO_RIGHT;
+            return AddMatchingResult.ADD_TO_RIGHT;
         }
-        return MatchingResult.NO_MATCHED;
+        return AddMatchingResult.NO_MATCHED;
     }
 }

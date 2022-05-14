@@ -38,8 +38,8 @@ public class Section {
         return this.distance > newSection.distance;
     }
 
-    public Station getNewStation(final MatchingResult result) {
-        if (result == MatchingResult.ADD_TO_LEFT) {
+    public Station getNewStation(final AddMatchingResult result) {
+        if (result == AddMatchingResult.ADD_TO_LEFT) {
             return upStation;
         }
         return downStation;
