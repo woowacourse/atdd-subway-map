@@ -87,7 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("노선의 이름과 색은 빈 값일 수 없습니다."));
+                () -> assertThat(response.body().asString()).isEqualTo("지하철의 이름은 빈 값일 수 없습니다."));
     }
 
     @DisplayName("line 목록을 조회한다.")
