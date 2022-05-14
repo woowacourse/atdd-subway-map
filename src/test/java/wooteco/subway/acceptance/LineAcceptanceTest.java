@@ -80,18 +80,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                         List.of(new Station(stationId1, "강남역"), new Station(stationId2, "선릉역"))));
     }
 
-    @DisplayName("기존에 존재하는 line name 으로 line 을 저장한다.")
-    @Test
-    void saveLineWithDuplicateName() {
-        // given
-        LineRequest request = new LineRequest("신분당선", "red", stationId1, stationId2, 10);
-        String path = "/lines";
-        // when
-        ExtractableResponse<Response> response = executePostLineApi(request, path);
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
     @DisplayName("line 목록을 조회한다.")
     @Test
     void getLines() {
@@ -147,7 +135,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> response = executeGetApi(path);
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+                () -> assertThat(response.body().asString()).isEqualTo("노선이 존재하지 않습니다."));
     }
 
     @DisplayName("id 를 이용하여 line 을 수정한다.")
@@ -160,30 +149,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = executePutApi(line, path);
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @DisplayName("line 을 중복된 name 으로 수정한다.")
-    @Test
-    void updateLineWithDuplicatedName() {
-        //given
-        Line line = new Line("분당선", "blue");
-        String path = "/lines/" + lineId1;
-        //when
-        ExtractableResponse<Response> response = executePutApi(line, path);
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @DisplayName("line 을 중복된 color 으로 수정한다.")
-    @Test
-    void updateLineWithDuplicatedColor() {
-        //given
-        Line line = new Line("신분당선", "red");
-        String path = "/lines/" + lineId1;
-        //when
-        ExtractableResponse<Response> response = executePutApi(line, path);
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("id 를 이용하여 line 을 삭제한다.")
@@ -209,7 +174,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("line id와 section id를 이용하여 section을 삭제한다.")
+    @DisplayName("line id와 section id를 이용하여 section 를 삭제한다.")
     @Test
     void deleteSection() {
         //given
