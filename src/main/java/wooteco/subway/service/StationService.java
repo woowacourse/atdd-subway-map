@@ -5,7 +5,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.AccessNoneDataException;
+import wooteco.subway.exception.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +40,7 @@ public class StationService {
     private void validateExistData(Long lineId) {
         boolean isExisted = stationDao.existStationById(lineId);
         if (!isExisted) {
-            throw new AccessNoneDataException("접근하려는 역이 존재하지 않습니다.");
+            throw new NotFoundException("접근하려는 역이 존재하지 않습니다.");
         }
     }
 }

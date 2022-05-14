@@ -2,8 +2,7 @@ package wooteco.subway.domain;
 
 import wooteco.subway.dto.SectionsToBeCreatedAndUpdated;
 import wooteco.subway.dto.SectionsToBeDeletedAndUpdated;
-import wooteco.subway.exception.AccessNoneDataException;
-import wooteco.subway.exception.SectionServiceException;
+import wooteco.subway.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +31,10 @@ public class Sections {
         boolean hasUpStation = hasStation(section.getUpStationId());
         boolean hasDownStation = hasStation(section.getDownStationId());
         if (!hasUpStation && !hasDownStation) {
-            throw new SectionServiceException("구간을 추가하기 위해서는 노선에 들어있는 역이 필요합니다.");
+            throw new IllegalArgumentException("구간을 추가하기 위해서는 노선에 들어있는 역이 필요합니다.");
         }
         if (hasUpStation && hasDownStation) {
-            throw new SectionServiceException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
     }
 
@@ -63,7 +62,7 @@ public class Sections {
 
     private void validateNewSectionDistance(Section newSection, Section existNearSection) {
         if (newSection.getDistance() >= existNearSection.getDistance()) {
-            throw new SectionServiceException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
+            throw new IllegalArgumentException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
         }
     }
 
@@ -72,7 +71,7 @@ public class Sections {
                 .filter(s -> s.getUpStationId().equals(newSection.getUpStationId()) ||
                         s.getDownStationId().equals(newSection.getDownStationId()))
                 .findFirst()
-                .orElseThrow(() -> new SectionServiceException("중간역 생성중 기존역을 찾지 못하였습니다."));
+                .orElseThrow(() -> new NotFoundException("중간역 생성중 기존역을 찾지 못하였습니다."));
     }
 
     public SectionsToBeDeletedAndUpdated delete(Long stationId) {
@@ -94,13 +93,13 @@ public class Sections {
 
     private void validateExistStation(Long stationId) {
         if (!hasStation(stationId)) {
-            throw new AccessNoneDataException("현재 라인에 존재하지 않는 역입니다.");
+            throw new NotFoundException("현재 라인에 존재하지 않는 역입니다.");
         }
     }
 
     private void validateRemainOneSection() {
         if (values.size() == 1) {
-            throw new SectionServiceException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
+            throw new IllegalArgumentException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
         }
     }
 
@@ -108,7 +107,7 @@ public class Sections {
         return values.stream()
                 .filter(this::isLastUpStation)
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException("상행 종점을 찾지 못했습니다."));
     }
 
     private boolean isLastUpStation(Section section) {
@@ -120,7 +119,7 @@ public class Sections {
         return values.stream()
                 .filter(this::isLastDownStation)
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException("하행 종점을 찾지 못했습니다."));
     }
 
     private boolean isLastDownStation(Section section) {
@@ -142,14 +141,14 @@ public class Sections {
         return values.stream()
                 .filter(s -> s.getDownStationId().equals(stationId))
                 .findFirst()
-                .orElseThrow(() -> new SectionServiceException("중간역 삭제중 상행역을 찾지 못하였습니다."));
+                .orElseThrow(() -> new NotFoundException("중간역 삭제중 상행역을 찾지 못하였습니다."));
     }
 
     private Section extractDownSideStation(Long stationId) {
         return values.stream()
                 .filter(s -> s.getUpStationId().equals(stationId))
                 .findFirst()
-                .orElseThrow(() -> new SectionServiceException("중간역 삭제중 하행역을 찾지 못하였습니다."));
+                .orElseThrow(() -> new NotFoundException("중간역 삭제중 하행역을 찾지 못하였습니다."));
     }
 
     public List<Long> getSortedStationIds() {

@@ -5,8 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dto.SectionsToBeCreatedAndUpdated;
 import wooteco.subway.dto.SectionsToBeDeletedAndUpdated;
-import wooteco.subway.exception.AccessNoneDataException;
-import wooteco.subway.exception.SectionServiceException;
+import wooteco.subway.exception.NotFoundException;
 
 import java.util.List;
 
@@ -91,7 +90,7 @@ class SectionsTest {
         Section newSection = new Section(lineId, newStationId, middleStationId, 10);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(SectionServiceException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageMatching("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
     }
 
@@ -101,7 +100,7 @@ class SectionsTest {
         Section newSection = new Section(lineId, 100L, 101L, 10);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(SectionServiceException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageMatching("구간을 추가하기 위해서는 노선에 들어있는 역이 필요합니다.");
     }
 
@@ -111,7 +110,7 @@ class SectionsTest {
         Section newSection = new Section(lineId, lastUpStationId, lastDownStationId, 10);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(SectionServiceException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageMatching("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
     }
 
@@ -154,7 +153,7 @@ class SectionsTest {
     @Test
     void throwsExceptionWhenDeleteStationNotExistInLine() {
         assertThatThrownBy(() -> sections.delete(newStationId))
-                .isInstanceOf(AccessNoneDataException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessageMatching("현재 라인에 존재하지 않는 역입니다.");
     }
 
@@ -163,7 +162,7 @@ class SectionsTest {
     void throwsExceptionWhenDeleteStationWithOnlyOneSectionInLine() {
         Sections sectionsThatHaveOneSection = new Sections(List.of(section1));
         assertThatThrownBy(() -> sectionsThatHaveOneSection.delete(middleStationId))
-                .isInstanceOf(SectionServiceException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageMatching("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
     }
 

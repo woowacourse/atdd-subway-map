@@ -15,14 +15,14 @@ public class ServiceExceptionHandler {
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(AccessNoneDataException.class)
-    public ResponseEntity<ErrorMessageResponse> handleAccessNoneDataException(AccessNoneDataException e) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorMessageResponse> handleAccessNoneDataException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(SectionServiceException.class)
-    public ResponseEntity<ErrorMessageResponse> handleSectionServiceException(SectionServiceException e) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessageResponse> handleSectionServiceException(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }

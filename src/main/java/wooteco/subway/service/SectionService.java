@@ -10,7 +10,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionsToBeCreatedAndUpdated;
 import wooteco.subway.dto.SectionsToBeDeletedAndUpdated;
-import wooteco.subway.exception.AccessNoneDataException;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class SectionService {
@@ -41,13 +41,13 @@ public class SectionService {
 
     private void validateExistLine(Long id) {
         if (!lineDao.existLineById(id)) {
-            throw new AccessNoneDataException("존재하지 않는 노선입니다.");
+            throw new NotFoundException("존재하지 않는 노선입니다.");
         }
     }
 
     private void validateExistStations(Long upStationId, Long downStationId) {
         if (!stationDao.existStationById(upStationId) || !stationDao.existStationById(downStationId)) {
-            throw new AccessNoneDataException("등록되지 않은 역으로는 구간을 만들 수 없습니다.");
+            throw new NotFoundException("등록되지 않은 역으로는 구간을 만들 수 없습니다.");
         }
     }
 

@@ -12,7 +12,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.AccessNoneDataException;
+import wooteco.subway.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class LineService {
 
     private void validateExistStation(Long upStationId, Long downStationId) {
         if (!stationDao.existStationById(upStationId) || !stationDao.existStationById(downStationId)) {
-            throw new AccessNoneDataException("등록되지 않은 역으로는 구간을 만들 수 없습니다.");
+            throw new NotFoundException("등록되지 않은 역으로는 구간을 만들 수 없습니다.");
         }
     }
 
@@ -104,7 +104,7 @@ public class LineService {
     private void validateExistData(Long lineId) {
         boolean isExisted = lineDao.existLineById(lineId);
         if (!isExisted) {
-            throw new AccessNoneDataException("접근하려는 노선이 존재하지 않습니다.");
+            throw new NotFoundException("접근하려는 노선이 존재하지 않습니다.");
         }
     }
 }

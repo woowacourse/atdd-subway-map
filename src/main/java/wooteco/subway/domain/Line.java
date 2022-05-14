@@ -50,7 +50,9 @@ public class Line {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(getId(), line.getId()) && Objects.equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor());
+        return Objects.equals(getId(), line.getId()) &&
+                Objects.equals(getName(), line.getName()) &&
+                Objects.equals(getColor(), line.getColor());
     }
 
     @Override

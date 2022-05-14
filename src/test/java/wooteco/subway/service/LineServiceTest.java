@@ -13,7 +13,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.AccessNoneDataException;
+import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -177,7 +177,7 @@ class LineServiceTest {
     void throwsExceptionWhenUpdateNotExistLine() {
         LineRequest request = new LineRequest("신분당선", "red", 0L, 0L, 0);
         assertThatThrownBy(() -> lineService.update(100L, request))
-                .isInstanceOf(AccessNoneDataException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessageMatching("접근하려는 노선이 존재하지 않습니다.");
     }
 
@@ -197,7 +197,7 @@ class LineServiceTest {
     @Test
     void throwsExceptionWhenDeleteNotExistLine() {
         assertThatThrownBy(() -> lineService.delete(100L))
-                .isInstanceOf(AccessNoneDataException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessageMatching("접근하려는 노선이 존재하지 않습니다.");
     }
 }
