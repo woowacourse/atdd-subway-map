@@ -76,7 +76,7 @@ public class LineDao {
     }
 
     public boolean isValidId(Long id) {
-        String sql = "select count(*) from line where id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
+        String sql = "select * from line where exists (select name from line where id = ?)";
+        return jdbcTemplate.query(sql, lineRowMapper, id).size() > 0;
     }
 }

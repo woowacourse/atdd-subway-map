@@ -52,10 +52,10 @@ public class SectionDao {
     }
 
     public boolean isAnySectionWithStationId(Long stationId) {
-        String upSql = "select count(*) from section where up_station_id = (?)";
-        String downSql = "select count(*) from section where down_station_id = (?)";
-        int upCount = jdbcTemplate.queryForObject(upSql, Integer.class, stationId);
-        int downCount = jdbcTemplate.queryForObject(downSql, Integer.class, stationId);
+        String upSql = "select * from section where exists (select * from section where up_station_id = ?)";
+        String downSql = "select * from section where exists (select * from section where down_station_id = ?)";
+        int upCount = jdbcTemplate.query(upSql, sectionRowMapper, stationId).size();
+        int downCount = jdbcTemplate.query(downSql, sectionRowMapper, stationId).size();
         return upCount > 0 || downCount > 0;
     }
 
