@@ -25,7 +25,6 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-//    @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         final LineDto lineDto = new LineDto(lineRequest.getName(), lineRequest.getColor(),
                 lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
@@ -33,18 +32,14 @@ public class LineService {
         return LineResponse.from(line);
     }
 
-//    @Transactional(readOnly = true)
     public LineResponse findById(final Long id) {
         return LineResponse.from(lineRepository.findById(id));
     }
 
-//    @Transactional(readOnly = true)
     public List<Line> findAll() {
         return lineRepository.findAll();
-//        return lineDao.findAll();
     }
 
-    @Transactional
     public void update(final Long id, final LineRequest lineRequest) {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final int theNumberOfAffectedRow = lineDao.update(id, line);
@@ -53,7 +48,6 @@ public class LineService {
         }
     }
 
-    @Transactional
     public void deleteById(final Long id) {
         final int theNumberOfAffectedRow = lineDao.deleteById(id);
         if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
