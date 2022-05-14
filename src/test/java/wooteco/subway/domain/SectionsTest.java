@@ -45,6 +45,14 @@ class SectionsTest {
     }
 
     @Test
+    @DisplayName("한 구간의 상행성과 하행선이 같으면 예외를 반환해야 한다.")
+    void validateSameStation() {
+        assertThatThrownBy(() -> new Section(new Station("a"), new Station("a"), 5))
+            .hasMessage("구간의 상행선과 하행선이 같을 수 없습니다.")
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("sections의 맨 앞에 삽입되어야 한다.")
     void insertFirst() {
         Sections sections1 = Sections.of(sections);

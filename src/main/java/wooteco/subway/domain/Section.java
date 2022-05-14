@@ -10,6 +10,7 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
+        checkSameStation(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -22,6 +23,12 @@ public class Section {
 
     public static Section from(Long id, Section section) {
         return new Section(id, section.getUpStation(), section.getDownStation(), section.getDistance());
+    }
+
+    private void checkSameStation(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException("구간의 상행선과 하행선이 같을 수 없습니다.");
+        }
     }
 
     public boolean hasUpStation(Station station) {
