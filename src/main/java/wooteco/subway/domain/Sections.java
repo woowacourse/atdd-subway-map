@@ -30,6 +30,16 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
+    public Section searchMatchedSection(Section section) {
+        if (isExistUpStation(section.getUpStationId())) {
+            return getSameUpStationSection(section.getUpStationId());
+        }
+        if (isExistDownStation(section.getDownStationId())) {
+            return getSameDownStationSection(section.getDownStationId());
+        }
+        throw new IllegalArgumentException(NOT_EXIST_SAME_SECTION);
+    }
+
     private Section getSameUpStationSection(Long id) {
         return sections.stream()
             .filter(it -> it.isSameUpStation(id))
@@ -61,26 +71,12 @@ public class Sections {
         return sectionLinks.isEndStation(id);
     }
 
-    public Section searchMatchedSection(Section section) {
-        if (isExistUpStation(section.getUpStationId())) {
-            return getSameUpStationSection(section.getUpStationId());
-        }
-        if (isExistDownStation(section.getDownStationId())) {
-            return getSameDownStationSection(section.getDownStationId());
-        }
-        throw new IllegalArgumentException(NOT_EXIST_SAME_SECTION);
-    }
-
     private boolean isExistUpStation(Long upStationId) {
         return sectionLinks.isExistUpStation(upStationId);
     }
 
     private boolean isExistDownStation(Long downStationId) {
         return sectionLinks.isExistDownStation(downStationId);
-    }
-
-    private boolean isNotExistStation(Long stationId) {
-        return sectionLinks.isNotExistStation(stationId);
     }
 
     public void validateDeletable(Long stationId) {
@@ -90,6 +86,10 @@ public class Sections {
         if (isNotExistStation(stationId)) {
             throw new IllegalArgumentException(NOT_EXIST_STATION);
         }
+    }
+
+    private boolean isNotExistStation(Long stationId) {
+        return sectionLinks.isNotExistStation(stationId);
     }
 
     public Section createCombineSection(Long stationId) {

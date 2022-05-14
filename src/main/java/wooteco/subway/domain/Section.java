@@ -2,8 +2,8 @@ package wooteco.subway.domain;
 
 public class Section {
 
+    private static final String CAN_NOT_CREATE_SECTION = "노선을 생성할 수 없습니다.";
     private static final String DISTANCE_EXCEPTION = "추가하려는 구간이 기존 역 사이 길이보다 크거나 같습니다.";
-    private static final String CAN_NOT_COMBINE_SECTION = "노선을 결합할 수 없습니다.";
 
     private Long id;
     private Long lineId;
@@ -35,27 +35,23 @@ public class Section {
     }
 
     public Section createExceptSection(Section section) {
+        validateDistance(section);
         if (upStationId.equals(section.upStationId)) {
             return createExceptUpSection(section);
         }
         if (downStationId.equals(section.downStationId)) {
             return createExceptDownSection(section);
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(CAN_NOT_CREATE_SECTION);
     }
 
-    public Section createExceptDownSection(Section section) {
-        validateDistance(section);
-        return new Section(
-            lineId,
-            upStationId,
-            section.upStationId,
-            distance - section.getDistance()
-        );
+    private void validateDistance(Section section) {
+        if (distance <= section.distance) {
+            throw new IllegalStateException(DISTANCE_EXCEPTION);
+        }
     }
 
-    public Section createExceptUpSection(Section section) {
-        validateDistance(section);
+    private Section createExceptUpSection(Section section) {
         return new Section(
             lineId,
             section.downStationId,
@@ -64,10 +60,13 @@ public class Section {
         );
     }
 
-    private void validateDistance(Section section) {
-        if (distance <= section.distance) {
-            throw new IllegalStateException(DISTANCE_EXCEPTION);
-        }
+    private Section createExceptDownSection(Section section) {
+        return new Section(
+            lineId,
+            upStationId,
+            section.upStationId,
+            distance - section.getDistance()
+        );
     }
 
     public Section createCombineSection(Section section) {
@@ -77,7 +76,7 @@ public class Section {
         if (downStationId.equals(section.upStationId)) {
             return new Section(lineId, upStationId, section.downStationId, distance + section.distance);
         }
-        throw new IllegalArgumentException(CAN_NOT_COMBINE_SECTION);
+        throw new IllegalArgumentException(CAN_NOT_CREATE_SECTION);
     }
 
     public Long getId() {

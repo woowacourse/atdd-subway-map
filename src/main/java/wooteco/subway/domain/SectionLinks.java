@@ -20,18 +20,6 @@ public class SectionLinks {
         return new SectionLinks(stationIds);
     }
 
-    public boolean isExistUpStation(Long id) {
-        return sections.containsKey(id);
-    }
-
-    public boolean isExistDownStation(Long id) {
-        return sections.containsValue(id);
-    }
-
-    public boolean isNotExistStation(Long id) {
-        return !isExistUpStation(id) && !isExistDownStation(id);
-    }
-
     public boolean isNotExistMatchedStation(Section section) {
         return isNotExistStation(section.getUpStationId()) && isNotExistStation(section.getDownStationId());
     }
@@ -48,5 +36,17 @@ public class SectionLinks {
     public boolean isEndStation(Long stationId) {
         return (isExistDownStation(stationId) && !isExistUpStation(stationId))
             || (!isExistDownStation(stationId) && isExistUpStation(stationId));
+    }
+
+    public boolean isNotExistStation(Long id) {
+        return !isExistUpStation(id) && !isExistDownStation(id);
+    }
+
+    public boolean isExistUpStation(Long id) {
+        return sections.containsKey(id);
+    }
+
+    public boolean isExistDownStation(Long id) {
+        return sections.containsValue(id);
     }
 }
