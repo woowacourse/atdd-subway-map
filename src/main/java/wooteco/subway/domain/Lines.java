@@ -28,6 +28,24 @@ public class Lines {
         }
     }
 
+    public void validateExist(Long id) {
+        boolean exist = lines.stream()
+                .anyMatch(line -> line.getId() == id);
+
+        if (!exist) {
+            throw new ClientException("존재하지 않는 노선입니다.");
+        }
+    }
+
+    public void validateCanDelete(Long id) {
+        boolean exist = lines.stream()
+                .anyMatch(line -> line.getId() == id);
+
+        if (exist) {
+            throw new ClientException("노선에 등록되어 있는 역은 제거할 수 없습니다.");
+        }
+    }
+
     public List<Line> getLines() {
         return Collections.unmodifiableList(lines);
     }

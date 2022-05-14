@@ -49,6 +49,8 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
+        lineDao.findAll().validateExist(id);
+
         Line line = lineDao.findById(id);
         Sections sections = sectionJdbcDao.findById(line.getId());
         return makeLineResponseWithLinkedStations(line, sections);
@@ -64,6 +66,8 @@ public class LineService {
     }
 
     public SectionsResponse findSections(Long id) {
+        lineDao.findAll().validateExist(id);
+
         Sections sections = sectionJdbcDao.findById(id);
         return new SectionsResponse(sections.linkSections());
     }
@@ -77,12 +81,14 @@ public class LineService {
 
     public int update(Long id, LineRequest request) {
         Lines lines = lineDao.findAll();
+        lines.validateExist(id);
         Line line = new Line(request.getName(), request.getColor());
         lines.add(line);
         return lineDao.update(id, new Line(line.getName(), line.getColor()));
     }
 
     public int delete(Long id) {
+        lineDao.findAll().validateExist(id);
         return lineDao.delete(id);
     }
 }

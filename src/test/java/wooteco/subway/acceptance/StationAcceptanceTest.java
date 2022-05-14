@@ -46,7 +46,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .when()
                 .post("/stations")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철역 조회")

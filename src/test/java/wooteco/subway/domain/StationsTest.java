@@ -20,4 +20,15 @@ class StationsTest {
                 .isInstanceOf(ClientException.class)
                 .hasMessageContaining("이미 등록된 지하철역입니다.");
     }
+
+    @Test
+    @DisplayName("존재하지 않는 지하철 역 검색시 예외")
+    void canDelete() {
+        Stations stations = new Stations(new ArrayList<>(List.of(new Station(1L,"선릉역"),
+                new Station(2L, "강남역"))));
+
+        assertThatThrownBy(() -> stations.validateExist(3L))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("존재하지 않는 역입니다.");
+    }
 }

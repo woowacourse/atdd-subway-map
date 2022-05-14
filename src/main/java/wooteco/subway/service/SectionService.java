@@ -4,7 +4,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.dao.SectionJdbcDao;
+import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineResponse;
@@ -15,12 +17,17 @@ import wooteco.subway.dto.SectionsResponse;
 public class SectionService {
 
     private final SectionJdbcDao sectionJdbcDao;
+    private final LineJdbcDao lineDao;
+    private final StationJdbcDao stationJdbcDao;
 
-    public SectionService(SectionJdbcDao sectionJdbcDao) {
+    public SectionService(SectionJdbcDao sectionJdbcDao, LineJdbcDao lineDao, StationJdbcDao stationJdbcDao) {
         this.sectionJdbcDao = sectionJdbcDao;
+        this.lineDao = lineDao;
+        this.stationJdbcDao = stationJdbcDao;
     }
 
     public void save(Long id, SectionRequest request, SectionsResponse response, LineResponse line) {
+        lineDao.findAll().validateExist(id);
         Sections sections = new Sections(response.getSections());
         sections.validateUpAndDownSameStation(request);
         sections.validateSaveCondition(request, line);
@@ -50,9 +57,11 @@ public class SectionService {
     }
 
     public void delete(Long id, Long stationId) {
+        lineDao.findAll().validateExist(id);
+        stationJdbcDao.findAll().validateExist(id);
         sectionJdbcDao.findById(id).validateDeleteCondition();
-        Sections sections = sectionJdbcDao.findById(id);
 
+        Sections sections = sectionJdbcDao.findById(id);
         if (sections.isMiddleSection(stationId)) {
             deleteMiddleSection(id, sections.findDownSection(stationId).get(), sections.findDownSection(stationId).get());
             return;

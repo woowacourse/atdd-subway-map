@@ -47,7 +47,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         insert(new LineRequest("신분당선", "bg-red-600", 1L, 3L, 10), "/lines", 201);
 
         //지하철 구간 등록 예외
-        insert(new SectionRequest(1L, 2L, 10), "/lines/" + 1 + "/sections", 400);
+        insert(new SectionRequest(1L, 2L, 10), "/lines/" + 1 + "/sections", 404);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         insert(new LineRequest("신분당선", "bg-red-600", 1L, 3L, 10), "/lines", 201);
 
         //지하철 구간 등록 예외
-        insert(new SectionRequest(1L, 3L, 2), "/lines/" + 1 + "/sections", 400);
+        insert(new SectionRequest(1L, 3L, 2), "/lines/" + 1 + "/sections", 404);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         insert(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10), "/lines", 201);
 
         //지하철 구간 등록 예외
-        insert(new SectionRequest(3L, 4L, 2), "/lines/" + 1 + "/sections", 400);
+        insert(new SectionRequest(3L, 4L, 2), "/lines/" + 1 + "/sections", 404);
     }
 
     @Test
@@ -90,6 +90,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         insert(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10), "/lines", 201);
 
         //지하철 구간 삭제 예외
-        delete("/lines/1/sections?stationId=2", 400);
+        delete("/lines/1/sections?stationId=2", 404);
     }
 }
