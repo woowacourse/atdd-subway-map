@@ -1,9 +1,9 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +13,6 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
@@ -101,14 +100,11 @@ public class LineService {
     }
 
     private List<Long> getStationIdsByLineId(Long lineId) {
-        Sections sections = sectionDao.findSectionsByLineId(lineId);
+        List<Section> sections = sectionDao.findSectionsByLineId(lineId).getValue();
 
-        List<Long> stationIds = new ArrayList<>();
-        for (Section section : sections.getValue()) {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
-        }
-        stationIds = stationIds.stream().distinct().collect(Collectors.toList());
-        return stationIds;
+        return Stream.concat(
+                sections.stream().map(Section::getDownStationId),
+                sections.stream().map(Section::getUpStationId)
+        ).distinct().collect(Collectors.toList());
     }
 }
