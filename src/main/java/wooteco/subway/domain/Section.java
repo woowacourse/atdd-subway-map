@@ -33,7 +33,7 @@ public class Section {
     }
 
     public boolean isSameUpAndDownStation(Section section) {
-        return upStationId.equals(section.upStationId) && downStationId.equals(section.downStationId);
+        return isSameUpStation(section) && isSameDownStation(section);
     }
 
     public boolean isConnect(Section section) {
@@ -66,7 +66,7 @@ public class Section {
         return downStationId;
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return distance;
     }
 }
