@@ -63,10 +63,8 @@ public class Section {
         return new Section(id, generatedDistance, lineId, upStationId, sectionToInsert.upStationId);
     }
 
-    public boolean canAddAsLastStation(Sections sections) {
-        List<Long> lastStationIds = sections.getLastStationIds();
-
-        return lastStationIds.contains(upStationId) || lastStationIds.contains(downStationId);
+    public boolean canAddAsLastStation(Long upLastStationId, Long downLastStationId) {
+        return upLastStationId.equals(downStationId) != downLastStationId.equals(upStationId) ;
     }
 
     public SectionResult canAddAsBetweenStation(Sections sections) {
@@ -112,12 +110,6 @@ public class Section {
 
     public boolean isUpStationIdEquals(Section section) {
         return section.upStationId.equals(this.upStationId);
-    }
-
-    public boolean isUnableToAdd(Section section) {
-
-
-        return isUpStationIdEquals(section) || isDownStationIdEquals(section);
     }
 
     public boolean isDownStationIdEquals(Section section) {

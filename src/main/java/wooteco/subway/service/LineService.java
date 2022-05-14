@@ -34,7 +34,7 @@ public class LineService {
         Line line = lineRequest.toEntity();
         validateDuplicateName(line);
         Line savedLine = lineDao.save(line);
-        Section section = sectionService.save(Section.of(savedLine, lineRequest));
+        Section section = sectionService.init(Section.of(savedLine, lineRequest));
         Station upStation = stationService.findById(section.getUpStationId());
         Station downStation = stationService.findById(section.getDownStationId());
         return LineResponse.of(savedLine, List.of(upStation, downStation));

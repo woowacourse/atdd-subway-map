@@ -41,7 +41,7 @@ public class LineServiceTest extends ServiceTest {
 
         given(lineDao.save(any()))
                 .willReturn(line);
-        given(sectionService.save(any()))
+        given(sectionService.init(any()))
                 .willReturn(section);
         given(stationService.findById(1L))
                 .willReturn(s1);

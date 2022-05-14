@@ -66,7 +66,7 @@ public class Sections {
 
     public void validateSize() {
         if (sections.size() == ONE_SECTION) {
-            throw new IllegalArgumentException("구간이 하나인 경우에는 삭제할 수 없습니다.");
+            throw new SubwayException("구간이 하나인 경우에는 삭제할 수 없습니다.");
         }
     }
 
@@ -79,10 +79,6 @@ public class Sections {
         List<Long> mergedIds = getMergedStationIds();
 
         return new Section(distance, sections.get(0).getLineId(), mergedIds.get(0), mergedIds.get(1));
-    }
-
-    private boolean isEqualDownStationId(Long downStationId, Section section) {
-        return section.getDownStationId().equals(downStationId);
     }
 
     private List<Long> getMergedStationIds() {
@@ -130,16 +126,47 @@ public class Sections {
 
     //이건 Section의 책임일듯
     private void validateDistance(Section existingSection, Section insertableSection) {
-        if (insertableSection.getDistance() > existingSection.getDistance()) {
-            throw new SubwayException("구간의 길이가 불가능합니다.");
+        if (insertableSection.getDistance() >= existingSection.getDistance()) {
+            throw new SubwayException("불가능한 구간의 길이입니다.");
         }
     }
 
     private boolean canAddAsLastStation(Section section) {
-        List<Long> lastStationIds = getLastStationIds();
+        List<Long> upStationIds = getUpStationIds();
+        List<Long> downStationIds = getDownStationIds();
 
-        return lastStationIds.contains(section.getUpStationId())
-                || lastStationIds.contains(section.getDownStationId());
+        Long upLastStationId = getUpLastStationId(upStationIds, downStationIds);
+        Long downLastStationId = getDownLastStationId(upStationIds, downStationIds);
+
+        return section.canAddAsLastStation(upLastStationId, downLastStationId);
+    }
+
+    private List<Long> getUpStationIds() {
+        return sections.stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> getDownStationIds() {
+        return sections.stream()
+                .map(Section::getDownStationId)
+                .collect(Collectors.toList());
+    }
+
+    private Long getUpLastStationId(List<Long> upStationIds, List<Long> downStationIds) {
+        List<Long> upIds = new ArrayList<>(upStationIds);
+        upIds.removeAll(downStationIds);
+
+        //이거 검증해줘야할까?
+        return upIds.get(0);
+    }
+
+    private Long getDownLastStationId(List<Long> upStationIds, List<Long> downStationIds) {
+        List<Long> downIds = new ArrayList<>(downStationIds);
+        downIds.removeAll(upStationIds);
+
+        //이거 검증해줘야할까?
+        return downIds.get(0);
     }
 
     public void validateInsertable(Section section) {

@@ -8,6 +8,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResult;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +22,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public Section save(Section section) {
-        validateSection(section);
+    public Section init(Section section) {
         return sectionDao.save(section);
     }
 
@@ -33,36 +33,14 @@ public class SectionService {
     }
 
     @Transactional
-    public void add2(Line line, SectionRequest sectionRequest) {
-        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
-        Section section = Section.of(line, sectionRequest);
-        if (section.canAddAsLastStation(sections)) {
-            save(section);
-            return;
-        }
-
-        SectionResult result = section.canAddAsBetweenStation(sections);
-        if (result.canAddAsBetweenStation()) {
-            sectionDao.deleteById(result.getExistedSection().getId());
-            save(result.getInsertedSection());
-            save(result.getGeneratedSection());
-            return;
-        }
-        throw new IllegalArgumentException("추가할 수 없는 노선입니다.");
-    }
-
     public void add(Line line, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         Section sectionToInsert = Section.of(line, sectionRequest);
-        //validate 먼저 해줘야하나? -> 갈래길도, 종점도 아닌거에 대한 validate 먼저 해주고
         sections.validateInsertable(sectionToInsert);
-
         Optional<Section> deletableSection = sections.getSectionToDelete(sectionToInsert);
 
-        // 변경한 섹션을 저장
         sectionDao.save(sectionToInsert);
 
-        // 수정할 섹션을 수정
         deletableSection.ifPresent(sectionToDelete -> {
             Section sectionToUpdate = sections.getSectionToUpdate(sectionToDelete, sectionToInsert);
             sectionDao.update(sectionToUpdate);
@@ -82,13 +60,6 @@ public class SectionService {
         if (sectionsToDelete.isIntermediateStation()) {
             Section section = sectionsToDelete.mergeSections();
             sectionDao.save(section);
-        }
-    }
-
-    private void validateSection(Section section) {
-        List<Section> sections = sectionDao.findByLineId(section.getLineId());
-        if (section.isExistedIn(sections)) {
-            throw new IllegalArgumentException("기존에 존재하는 노선 구간은 등록할 수 없습니다.");
         }
     }
 }

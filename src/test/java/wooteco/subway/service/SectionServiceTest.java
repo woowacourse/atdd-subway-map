@@ -3,7 +3,10 @@ package wooteco.subway.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
 
@@ -28,7 +31,7 @@ public class SectionServiceTest extends ServiceTest {
                 .willReturn(section);
 
         //when
-        Section savedSection = sectionService.save(section);
+        Section savedSection = sectionService.init(section);
 
         //then
         assertThat(savedSection.getDistance()).isEqualTo(section.getDistance());
@@ -38,9 +41,11 @@ public class SectionServiceTest extends ServiceTest {
     @Test
     void saveSameSectionThenThrowException() {
         //given
-        Section section = new Section(10, 2L, 1L, 2L);
         Section existedSection1 = new Section(10, 2L, 1L, 2L);
         Section existedSection2 = new Section(10, 2L, 2L, 3L);
+
+        Line line = new Line(2L, "2호선", "green");
+        SectionRequest request = new SectionRequest(1L, 2L, 10);
 
 
         given(sectionDao.findByLineId(anyLong()))
@@ -48,18 +53,21 @@ public class SectionServiceTest extends ServiceTest {
 
         //when & then
         assertThatThrownBy(() -> {
-            sectionService.save(section);
-        }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("기존에 존재하는 노선 구간은 등록할 수 없습니다.");
+            sectionService.add(line, request);
+        }).isInstanceOf(SubwayException.class)
+                .hasMessageContaining("추가할 수 없는 구간입니다.");
     }
 
     @DisplayName("[ERROR] 정확히 일치하지 않더라도 구간이 연결되어 있으면 새로 등록할 수 없다.")
     @Test
     void saveLinearlySameSectionThenThrowException() {
         //given
-        Section section = new Section(10, 2L, 1L, 3L);
         Section existedSection1 = new Section(10, 2L, 1L, 2L);
         Section existedSection2 = new Section(10, 2L, 2L, 3L);
+
+        Line line = new Line(2L, "2호선", "green");
+        SectionRequest request = new SectionRequest(1L, 3L, 10);
+
 
 
         given(sectionDao.findByLineId(any()))
@@ -67,9 +75,9 @@ public class SectionServiceTest extends ServiceTest {
 
         //when & then
         assertThatThrownBy(() -> {
-            sectionService.save(section);
-        }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("기존에 존재하는 노선 구간은 등록할 수 없습니다.");
+            sectionService.add(line, request);
+        }).isInstanceOf(SubwayException.class)
+                .hasMessageContaining("추가할 수 없는 구간입니다.");
     }
 
     @DisplayName("구간에 포함된 지하철 역 ID 리스트를 조회한다.")
