@@ -15,7 +15,7 @@ import wooteco.subway.dto.section.SectionRequest;
 import wooteco.subway.dto.station.StationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AcceptanceTest {
+abstract class AcceptanceTest {
 
     protected static final String STATION_PATH_PREFIX = "/stations";
     protected static final String LINE_PATH_PREFIX = "/lines";

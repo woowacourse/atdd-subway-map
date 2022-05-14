@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -78,9 +79,12 @@ class StationDaoTest extends DaoTest {
     @DisplayName("노선 id에 해당하는 모든 역을 조회한다.")
     void FindAllByLineId() {
         // given
-        final Long lineId = lineDao.insert(new Line("2호선", "bg-green-600"))
+        final String lineName = "2호선";
+        final String lineColor = "bg-green-600";
+        final Long lineId = lineDao.insert(new Line(lineName, lineColor))
                 .orElseThrow()
                 .getId();
+        final Line line = new Line(lineId, lineName, lineColor);
 
         final Station upStation = stationDao.insert(new Station("선릉"))
                 .orElseThrow();
@@ -91,10 +95,10 @@ class StationDaoTest extends DaoTest {
         final List<Station> expected = List.of(upStation, downStation);
 
         final Section section = new Section(
-                lineId,
-                upStation.getId(),
-                downStation.getId(),
-                10
+                line,
+                upStation,
+                downStation,
+                new Distance(10)
         );
         sectionDao.insert(section);
 

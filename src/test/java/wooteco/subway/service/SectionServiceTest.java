@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
+import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Name;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
@@ -28,11 +30,18 @@ class SectionServiceTest extends ServiceTest {
     @InjectMocks
     private SectionService sectionService;
 
+    private Station upStation;
+    private Station downStation;
+    private Sections sections;
     private Line line;
 
     @BeforeEach
     void setUpData() {
-        line = new Line(1L, "수인분당선", "bg-yellow-600");
+        upStation = new Station(1L, "서울숲역");
+        downStation = new Station(2L, "왕십리역");
+        final Section section = new Section(1L, line, upStation, downStation, new Distance(10));
+        sections = new Sections(List.of(section));
+        line = new Line(1L, new Name("수인분당선"), "bg-yellow-600", sections);
     }
 
     @Test
@@ -107,16 +116,22 @@ class SectionServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
+        final Station upStation = new Station(1L, "왕십리역");
+        final Station downStation = new Station(2L, "서울숲역");
         final List<Station> stations = List.of(
-                new Station(1L, "왕십리역"),
-                new Station(2L, "서울숲역")
+                upStation,
+                downStation
         );
         given(stationDao.findAllByLineId(any(Long.class)))
                 .willReturn(stations);
 
-        final Section section = new Section(1L, lineId, 1L, 2L, 10);
+        final Section section = new Section(1L, line, upStation, downStation, new Distance(10));
         given(sectionDao.findBy(any(Long.class), any(Long.class), any(Long.class)))
                 .willReturn(Optional.of(section));
+
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.of(upStation))
+                .willReturn(Optional.of(downStation));
 
         // then
         assertThatThrownBy(() -> sectionService.save(request))
@@ -136,9 +151,11 @@ class SectionServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
+        final Station upStation = new Station(upStationId, "왕십리역");
+        final Station downStation = new Station(downStationId, "서울숲역");
         final List<Station> stations = List.of(
-                new Station(upStationId, "왕십리역"),
-                new Station(downStationId, "서울숲역")
+                upStation,
+                downStation
         );
         given(stationDao.findAllByLineId(any(Long.class)))
                 .willReturn(stations);
@@ -146,9 +163,15 @@ class SectionServiceTest extends ServiceTest {
         given(sectionDao.findBy(any(Long.class), any(Long.class), any(Long.class)))
                 .willReturn(Optional.empty());
 
-        final Section section = new Section(1L, lineId, upStationId, downStationId, 10);
+        final Section section = new Section(1L, line, upStation, downStation, new Distance(10));
         given(sectionDao.findByLineIdAndUpStationId(any(Long.class), any(Long.class)))
                 .willReturn(Optional.of(section));
+
+        given(lineDao.findById(any(Long.class)))
+                .willReturn(Optional.of(line));
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.of(upStation))
+                .willReturn(Optional.of(downStation));
 
         // then
         assertThatCode(() -> sectionService.save(request))
@@ -167,9 +190,11 @@ class SectionServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
+        final Station upStation = new Station(upStationId, "왕십리역");
+        final Station downStation = new Station(downStationId, "서울숲역");
         final List<Station> stations = List.of(
-                new Station(upStationId, "왕십리역"),
-                new Station(downStationId, "서울숲역")
+                upStation,
+                downStation
         );
         given(stationDao.findAllByLineId(any(Long.class)))
                 .willReturn(stations);
@@ -177,9 +202,18 @@ class SectionServiceTest extends ServiceTest {
         given(sectionDao.findBy(any(Long.class), any(Long.class), any(Long.class)))
                 .willReturn(Optional.empty());
 
-        final Section section = new Section(1L, lineId, upStationId, downStationId, 10);
+        given(sectionDao.findByLineIdAndUpStationId(any(Long.class), any(Long.class)))
+                .willReturn(Optional.empty());
+
+        final Section section = new Section(1L, line, upStation, downStation, new Distance(10));
         given(sectionDao.findByLineIdAndDownStationId(any(Long.class), any(Long.class)))
                 .willReturn(Optional.of(section));
+
+        given(lineDao.findById(any(Long.class)))
+                .willReturn(Optional.of(line));
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.of(upStation))
+                .willReturn(Optional.of(downStation));
 
         // then
         assertThatCode(() -> sectionService.save(request))
@@ -196,12 +230,15 @@ class SectionServiceTest extends ServiceTest {
                 .willReturn(Optional.of(line));
 
         final Sections sections = new Sections(List.of(
-                new Section(1L, line.getId(), 1L, 2L, 5),
-                new Section(2L, line.getId(), 2L, 3L, 7),
-                new Section(3L, line.getId(), 3L, 4L, 11)
+                new Section(1L, line, upStation, downStation, new Distance(5)),
+                new Section(2L, line, new Station(2L, "2"), new Station(3L, "3"), new Distance(7)),
+                new Section(3L, line, new Station(3L, "3"), new Station(4L, "4"), new Distance(11))
         ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
+
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.of(new Station(2L, "2")));
 
         // then
         assertThatCode(() -> sectionService.delete(request))
@@ -218,12 +255,15 @@ class SectionServiceTest extends ServiceTest {
                 .willReturn(Optional.of(line));
 
         final Sections sections = new Sections(List.of(
-                new Section(1L, line.getId(), 1L, 2L, 5),
-                new Section(2L, line.getId(), 2L, 3L, 7),
-                new Section(3L, line.getId(), 3L, 4L, 11)
+                new Section(1L, line, upStation, downStation, new Distance(5)),
+                new Section(2L, line, new Station(2L, "2"), new Station(3L, "3"), new Distance(7)),
+                new Section(3L, line, new Station(3L, "3"), new Station(4L, "4"), new Distance(11))
         ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
+
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.of(new Station(2L, "2")));
 
         // then
         assertThatCode(() -> sectionService.delete(request))
@@ -240,12 +280,15 @@ class SectionServiceTest extends ServiceTest {
                 .willReturn(Optional.of(line));
 
         final Sections sections = new Sections(List.of(
-                new Section(1L, line.getId(), 1L, 2L, 5),
-                new Section(2L, line.getId(), 2L, 3L, 7),
-                new Section(3L, line.getId(), 3L, 4L, 11)
+                new Section(1L, line, upStation, downStation, new Distance(5)),
+                new Section(2L, line, new Station(2L, "2"), new Station(3L, "3"), new Distance(7)),
+                new Section(3L, line, new Station(3L, "3"), new Station(4L, "4"), new Distance(11))
         ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
+
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.of(new Station(2L, "2")));
 
         // then
         assertThatCode(() -> sectionService.delete(request))
@@ -261,11 +304,11 @@ class SectionServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
-        final Sections sections = new Sections(List.of(
-                new Section(1L, line.getId(), 1L, 2L, 10)
-        ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
+
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.of(upStation));
 
         // then
         assertThatThrownBy(() -> sectionService.delete(request))
@@ -283,12 +326,15 @@ class SectionServiceTest extends ServiceTest {
                 .willReturn(Optional.of(line));
 
         final Sections sections = new Sections(List.of(
-                new Section(1L, line.getId(), 2L, 3L, 5),
-                new Section(2L, line.getId(), 3L, 4L, 7),
-                new Section(3L, line.getId(), 5L, 2L, 11)
+                new Section(1L, line, upStation, downStation, new Distance(5)),
+                new Section(2L, line, new Station(2L, "2"), new Station(3L, "3"), new Distance(7)),
+                new Section(3L, line, new Station(3L, "3"), new Station(4L, "4"), new Distance(11))
         ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
+
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.empty());
 
         // then
         assertThatThrownBy(() -> sectionService.delete(request))

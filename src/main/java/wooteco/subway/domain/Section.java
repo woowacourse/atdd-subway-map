@@ -9,36 +9,35 @@ import wooteco.subway.exception.IllegalInputException;
 public class Section {
 
     private final Long id;
-    private final Long lineId;
-    private final Long upStationId;
-    private final Long downStationId;
+    private final Line line;
+    private final Station upStation;
+    private final Station downStation;
     private final Distance distance;
 
-    public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
+    public Section(final Long id, final Line line, final Station upStation, final Station downStation,
                    final Distance distance) {
-        validate(upStationId, downStationId);
+        validate(upStation, downStation);
         this.id = id;
-        this.lineId = Objects.requireNonNull(lineId);
-        this.upStationId = Objects.requireNonNull(upStationId);
-        this.downStationId = Objects.requireNonNull(downStationId);
-        this.distance = Objects.requireNonNull(distance);
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
-    public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
-                   final int distance) {
-        this(id, lineId, upStationId, downStationId, new Distance(distance));
+    public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
+        this(null, line, upStation, downStation, distance);
     }
 
-    public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        this(null, lineId, upStationId, downStationId, distance);
+    public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
+        this(id, line, upStation, downStation, new Distance(distance));
     }
 
-    public Section(final Long lineId, final Long upStationId, final Long downStationId, final Distance distance) {
-        this(null, lineId, upStationId, downStationId, distance);
+    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
+        this(null, line, upStation, downStation, new Distance(distance));
     }
 
-    private void validate(final Long upStationId, final Long downStationId) {
-        if (upStationId.equals(downStationId)) {
+    private void validate(final Station upStation, final Station downStation) {
+        if (upStation.equals(downStation)) {
             throw new IllegalInputException("두 종점이 동일합니다.");
         }
     }
@@ -47,53 +46,53 @@ public class Section {
         distance.checkCanAssign(newSection.distance);
 
         final Distance assignedDistance = distance.minus(newSection.distance);
-        if (upStationId.equals(newSection.upStationId)) {
+        if (upStation.equals(newSection.upStation)) {
             return List.of(
                     newSection,
-                    new Section(lineId, newSection.downStationId, downStationId, assignedDistance)
+                    new Section(line, newSection.downStation, downStation, assignedDistance)
             );
         }
         return List.of(
-                new Section(lineId, upStationId, newSection.upStationId, assignedDistance),
+                new Section(line, upStation, newSection.upStation, assignedDistance),
                 newSection
         );
     }
 
     public Section merge(final Section section) {
-        final Long criteriaId = findDuplicateId(section);
+        final Station criteriaStation = findDuplicateStation(section);
         final Distance mergedDistance = distance.plus(section.distance);
-        if (criteriaId.equals(upStationId)) {
+        if (criteriaStation.equals(upStation)) {
             return new Section(
-                    lineId,
-                    section.upStationId,
-                    downStationId,
+                    line,
+                    section.upStation,
+                    downStation,
                     mergedDistance
             );
         }
         return new Section(
-                lineId,
-                upStationId,
-                section.downStationId,
+                line,
+                upStation,
+                section.downStation,
                 mergedDistance
         );
     }
 
-    private Long findDuplicateId(final Section section) {
-        final Set<Long> stationIds = new HashSet<>();
-        stationIds.add(upStationId);
-        stationIds.add(downStationId);
-        if (stationIds.contains(section.upStationId)) {
-            return section.upStationId;
+    private Station findDuplicateStation(final Section section) {
+        final Set<Station> stationIds = new HashSet<>();
+        stationIds.add(upStation);
+        stationIds.add(downStation);
+        if (stationIds.contains(section.upStation)) {
+            return section.upStation;
         }
-        return section.downStationId;
+        return section.downStation;
     }
 
-    public boolean contains(final Long stationId) {
-        return upStationId.equals(stationId) || downStationId.equals(stationId);
+    public boolean contains(final Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 
-    public boolean hasSameUpStationId(final Long upStationId) {
-        return this.upStationId.equals(upStationId);
+    public boolean hasSameUpStation(final Station upStation) {
+        return this.upStation.equals(upStation);
     }
 
     public Long getId() {
@@ -101,15 +100,27 @@ public class Section {
     }
 
     public Long getLineId() {
-        return lineId;
+        return line.getId();
     }
 
     public Long getUpStationId() {
-        return upStationId;
+        return upStation.getId();
+    }
+
+    public Station getUpStation() {
+        return upStation;
     }
 
     public Long getDownStationId() {
-        return downStationId;
+        return downStation.getId();
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     public int getDistance() {
@@ -124,25 +135,25 @@ public class Section {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Section section = (Section) o;
-        return Objects.equals(lineId, section.lineId) && Objects.equals(upStationId,
-                section.upStationId) && Objects.equals(downStationId, section.downStationId)
-                && Objects.equals(distance, section.distance) && Objects.equals(id, section.id);
+        final Section that = (Section) o;
+        return Objects.equals(id, that.id) && Objects.equals(line, that.line)
+                && Objects.equals(upStation, that.upStation) && Objects.equals(downStation,
+                that.downStation) && Objects.equals(distance, that.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lineId, upStationId, downStationId, distance, id);
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 
     @Override
     public String toString() {
-        return "Section{" +
-                "lineId=" + lineId +
-                ", upStationId=" + upStationId +
-                ", downStationId=" + downStationId +
+        return "SectionDomain{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
                 ", distance=" + distance +
-                ", id=" + id +
                 '}';
     }
 }

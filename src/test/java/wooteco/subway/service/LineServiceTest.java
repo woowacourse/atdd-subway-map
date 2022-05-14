@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -122,9 +123,9 @@ class LineServiceTest extends ServiceTest {
                 .collect(Collectors.toList());
         assertThat(actualStationNames1).containsExactly("선릉역", "삼성역");
 
-        final LineResponse actualLine2 = actual.get(1);
-        assertThat(actualLine2.getName()).isEqualTo("5호선");
-        final List<String> actualStationNames2 = actualLine2.getStations()
+        final LineResponse actualLine = actual.get(1);
+        assertThat(actualLine.getName()).isEqualTo("5호선");
+        final List<String> actualStationNames2 = actualLine.getStations()
                 .stream()
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());
@@ -138,6 +139,8 @@ class LineServiceTest extends ServiceTest {
         final long id = 1L;
         final String name = "7호선";
         final String color = "bg-red-600";
+        final Station upStation = new Station(1L, "선릉역");
+        final Station downStation = new Station(2L, "삼성역");
 
         final Line expected = new Line(id, name, color);
 
@@ -145,14 +148,10 @@ class LineServiceTest extends ServiceTest {
                 .willReturn(Optional.of(expected));
 
         final Sections sections = new Sections(List.of(
-                new Section(1L, id, 1L, 2L, 10)
+                new Section(1L, expected, upStation, downStation, new Distance(10))
         ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
-
-        given(stationDao.findById(any(Long.class)))
-                .willReturn(Optional.of(new Station(1L, "선릉역")))
-                .willReturn(Optional.of(new Station(2L, "삼성역")));
 
         // when
         final LineResponse actual = lineService.findById(id);

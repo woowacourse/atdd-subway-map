@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Name;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
@@ -32,7 +34,7 @@ public class LineService {
     }
 
     public LineResponse create(final LineRequest request) {
-        final Line line = new Line(request.getName(), request.getColor());
+        final Line line = new Line(new Name(request.getName()), request.getColor());
         final Line savedLine = lineDao.insert(line)
                 .orElseThrow(DuplicateLineException::new);
 
@@ -42,10 +44,11 @@ public class LineService {
                 .orElseThrow(NoSuchStationException::new);
 
         final Section section = new Section(
-                savedLine.getId(),
-                upStation.getId(),
-                downStation.getId(),
-                request.getDistance());
+                savedLine,
+                upStation,
+                downStation,
+                new Distance(request.getDistance())
+        );
         sectionDao.insert(section);
 
         return LineResponse.of(savedLine, List.of(upStation, downStation));
@@ -74,18 +77,14 @@ public class LineService {
 
     private List<Station> findSortedStationsByLineId(final Long lineId) {
         final Sections sections = sectionDao.findAllByLineId(lineId);
-        final List<Long> stationIds = sections.toStationIds();
-        return stationIds.stream()
-                .map(it -> stationDao.findById(it).orElseThrow(NoSuchStationException::new))
-                .collect(Collectors.toList());
+        return sections.toStation();
     }
 
     public void updateById(final Long id, final LineRequest request) {
         final Line line = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
-        line.updateName(request.getName());
-        line.updateColor(request.getColor());
-        lineDao.updateById(id, line)
+        final Line updatedLine = new Line(line.getId(), new Name(request.getName()), request.getColor(), line.getSections());
+        lineDao.updateById(id, updatedLine)
                 .orElseThrow(DuplicateLineException::new);
     }
 

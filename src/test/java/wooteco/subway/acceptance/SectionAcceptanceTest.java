@@ -21,7 +21,7 @@ import wooteco.subway.dto.section.SectionRequest;
 import wooteco.subway.dto.station.StationRequest;
 
 @DisplayName("지하철 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+class SectionAcceptanceTest extends AcceptanceTest {
 
     private static final String LINE_NAME = "2호선";
     private static final String LINE_COLOR = "bg-green-600";

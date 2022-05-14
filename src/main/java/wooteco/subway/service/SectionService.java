@@ -6,13 +6,18 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Distance;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.section.SectionCreationRequest;
 import wooteco.subway.dto.section.SectionDeletionRequest;
 import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.line.NoSuchLineException;
+import wooteco.subway.exception.section.NoSuchSectionException;
+import wooteco.subway.exception.station.NoSuchStationException;
 
 @Service
 @Transactional
@@ -51,9 +56,24 @@ public class SectionService {
 
     private void insertBetween(final SectionCreationRequest request, final Section existingSection) {
         sectionDao.deleteById(existingSection.getId());
-        final Section newSection = request.toEntity();
+        final Section newSection = toSection(request);
         existingSection.assign(newSection)
                 .forEach(sectionDao::insert);
+    }
+
+    private Section toSection(final SectionCreationRequest request) {
+        final Line line = lineDao.findById(request.getLineId())
+                .orElseThrow(NoSuchLineException::new);
+        final Station upStation = stationDao.findById(request.getUpStationId())
+                .orElseThrow(NoSuchStationException::new);
+        final Station downStation = stationDao.findById(request.getDownStationId())
+                .orElseThrow(NoSuchStationException::new);
+        return new Section(
+                line,
+                upStation,
+                downStation,
+                new Distance(request.getDistance())
+        );
     }
 
     private void extendEndStation(final SectionCreationRequest request) {
@@ -65,7 +85,7 @@ public class SectionService {
     }
 
     private void extendSection(final SectionCreationRequest request) {
-        final Section newUpSection = request.toEntity();
+        final Section newUpSection = toSection(request);
         sectionDao.insert(newUpSection);
     }
 
@@ -74,7 +94,9 @@ public class SectionService {
                 .orElseThrow(NoSuchLineException::new);
 
         final Sections sections = sectionDao.findAllByLineId(request.getLineId());
-        final Sections deletableSections = sections.findDeletableSections(request.getStationId());
+        final Station stationToDelete = stationDao.findById(request.getStationId())
+                .orElseThrow(NoSuchSectionException::new);
+        final Sections deletableSections = sections.findDeletableSections(stationToDelete);
         deleteAll(deletableSections);
 
         if (deletableSections.needMerge()) {
@@ -84,9 +106,9 @@ public class SectionService {
     }
 
     private void deleteAll(final Sections deletableSections) {
-        final List<Long> sectionIds = deletableSections.findAllId();
-        for (Long id : sectionIds) {
-            sectionDao.deleteById(id);
+        final List<Section> sections = deletableSections.getValue();
+        for (Section section : sections) {
+            sectionDao.deleteById(section.getId());
         }
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @JdbcTest
-class DaoTest {
+abstract class DaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -17,8 +17,6 @@ class DaoTest {
 
     protected StationDao stationDao;
 
-    protected JdbcSectionDomainDao sectionDomainDao;
-
     protected LineDao lineDao;
 
     protected SectionDao sectionDao;
@@ -26,8 +24,7 @@ class DaoTest {
     @BeforeEach
     void setUp() {
         stationDao = new JdbcStationDao(jdbcTemplate, dataSource);
-        lineDao = new JdbcLineDao(jdbcTemplate, dataSource);
-        sectionDao = new JdbcSectionDao(jdbcTemplate, dataSource);
-        sectionDomainDao = new JdbcSectionDomainDao(jdbcTemplate);
+        sectionDao = new JdbcSectionDao(jdbcTemplate);
+        lineDao = new JdbcLineDao(jdbcTemplate, dataSource, sectionDao);
     }
 }

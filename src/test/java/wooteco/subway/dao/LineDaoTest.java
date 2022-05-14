@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.line.NoSuchLineException;
 
-public class LineDaoTest extends DaoTest {
+class LineDaoTest extends DaoTest {
 
     @Test
     @DisplayName("노선을 저장하면 저장된 노선 정보를 반환한다.")

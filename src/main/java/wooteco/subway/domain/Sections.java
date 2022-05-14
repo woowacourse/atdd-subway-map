@@ -18,11 +18,11 @@ public class Sections {
         this.value = value;
     }
 
-    public Sections findDeletableSections(final Long stationIdToDelete) {
+    public Sections findDeletableSections(final Station stationToDelete) {
         validateMinSize();
         final List<Section> deletableSections = value
                 .stream()
-                .filter(it -> it.contains(stationIdToDelete))
+                .filter(it -> it.contains(stationToDelete))
                 .collect(Collectors.toList());
         if (deletableSections.isEmpty()) {
             throw new NoSuchSectionException();
@@ -46,45 +46,43 @@ public class Sections {
         return first.merge(second);
     }
 
-    public List<Long> toStationIds() {
-        Long upStationId = findEndUpStation();
+    public List<Station> toStation() {
+        Station upStation = findEndUpStation();
 
-        final List<Long> stationIds = new ArrayList<>();
-        stationIds.add(upStationId);
-        while (stationIds.size() != value.size() + 1) {
-            final Section section = findSectionByUpStationId(upStationId);
-            upStationId = section.getDownStationId();
-            stationIds.add(upStationId);
+        final List<Station> stations = new ArrayList<>();
+        stations.add(upStation);
+        while (stations.size() != value.size() + 1) {
+            final Section section = findSectionByUpStation(upStation);
+            upStation = section.getDownStation();
+            stations.add(upStation);
         }
-        return stationIds;
+        return stations;
     }
 
-    private Long findEndUpStation() {
+    private Station findEndUpStation() {
         if (value.size() < MIN_SECTION_SIZE) {
             throw new NoSuchSectionException();
         }
-        final List<Long> upStationIds = value.stream()
-                .map(Section::getUpStationId)
+        final List<Station> upStations = value.stream()
+                .map(Section::getUpStation)
                 .collect(Collectors.toList());
-        final List<Long> downStationIds = value.stream()
-                .map(Section::getDownStationId)
+        final List<Station> downStations = value.stream()
+                .map(Section::getDownStation)
                 .collect(Collectors.toList());
-        upStationIds.removeAll(downStationIds);
-        return upStationIds.get(0);
+        upStations.removeAll(downStations);
+        return upStations.get(0);
     }
 
-    private Section findSectionByUpStationId(final Long upStationId) {
+    private Section findSectionByUpStation(final Station upStation) {
         return value
                 .stream()
-                .filter(it -> it.hasSameUpStationId(upStationId))
+                .filter(it -> it.hasSameUpStation(upStation))
                 .findFirst()
                 .orElseThrow(NoSuchSectionException::new);
     }
 
-    public List<Long> findAllId() {
-        return value.stream()
-                .map(Section::getId)
-                .collect(Collectors.toList());
+    public List<Section> getValue() {
+        return value;
     }
 
     @Override
@@ -95,12 +93,19 @@ public class Sections {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Sections sections = (Sections) o;
-        return Objects.equals(value, sections.value);
+        final Sections that = (Sections) o;
+        return Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return "SectionsDomain{" +
+                "value=" + value +
+                '}';
     }
 }
