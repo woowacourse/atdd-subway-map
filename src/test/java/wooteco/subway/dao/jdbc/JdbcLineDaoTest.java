@@ -16,6 +16,7 @@ import wooteco.subway.domain.Line;
 class JdbcLineDaoTest {
 
     private static final String FAIL_FIND_LINE = "fail";
+    private static final Line INAPPROPRIATE_LINE = new Line(FAIL_FIND_LINE, FAIL_FIND_LINE);
 
     private final JdbcLineDao jdbcLineDao;
 
@@ -67,7 +68,7 @@ class JdbcLineDaoTest {
 
         // when
         final Line findLine = jdbcLineDao.findById(savedLine.getId())
-                .orElseGet(() -> new Line(FAIL_FIND_LINE, FAIL_FIND_LINE));
+                .orElse(INAPPROPRIATE_LINE);
 
         // then
         assertThat(findLine).extracting("name", "color")
@@ -87,7 +88,7 @@ class JdbcLineDaoTest {
 
         // then
         final Line findLine = jdbcLineDao.findById(savedLine.getId())
-                        .orElseGet(() -> new Line(FAIL_FIND_LINE, FAIL_FIND_LINE));
+                        .orElse(INAPPROPRIATE_LINE);
 
         assertThat(findLine).extracting("name", "color")
                 .contains("다른분당선", "bg-red-600");
