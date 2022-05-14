@@ -2,6 +2,7 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,16 +31,9 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> saveLine(@RequestBody LineRequest lineRequest) {
-        validEmpty(lineRequest.getName(), lineRequest.getColor());
+    public ResponseEntity<LineResponse> saveLine(@Valid @RequestBody LineRequest lineRequest) {
         LineResponse response = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
-    }
-
-    private void validEmpty(String name, String color) {
-        if (name.isEmpty() || color.isEmpty()) {
-            throw new IllegalArgumentException("노선의 이름과 색은 빈 값일 수 없습니다.");
-        }
     }
 
     @PostMapping("/{line-id}/sections")

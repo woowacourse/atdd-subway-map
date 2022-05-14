@@ -2,6 +2,7 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,16 +28,9 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        validEmpty(stationRequest.getName());
+    public ResponseEntity<StationResponse> createStation(@Valid @RequestBody StationRequest stationRequest) {
         StationResponse response = stationService.save(stationRequest.getName());
         return ResponseEntity.created(URI.create("/stations/" + response.getId())).body(response);
-    }
-
-    private void validEmpty(String name) {
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("지하철 역의 이름은 빈 값일 수 없습니다.");
-        }
     }
 
     @GetMapping

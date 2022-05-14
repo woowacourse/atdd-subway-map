@@ -72,7 +72,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("지하철 역의 이름은 빈 값일 수 없습니다."));
+                () -> assertThat(response.body().asString()).isEqualTo("station의 name(은)는 공백일 수 없습니다 입력된 값: []"));
     }
 
     @DisplayName("지하철역을 조회한다.")

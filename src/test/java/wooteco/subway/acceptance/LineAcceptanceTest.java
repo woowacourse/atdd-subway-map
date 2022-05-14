@@ -71,7 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("노선의 이름과 색은 빈 값일 수 없습니다."));
+                () -> assertThat(response.body().asString()).isEqualTo("line의 name(은)는 공백일 수 없습니다 입력된 값: []"));
     }
 
     @DisplayName("empty color 을 이용하여 line 을 저장할 경우, 예외를 발생시킨다.")
@@ -87,7 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("지하철의 이름은 빈 값일 수 없습니다."));
+                () -> assertThat(response.body().asString()).isEqualTo("line의 color(은)는 공백일 수 없습니다 입력된 값: []"));
     }
 
     @DisplayName("line 목록을 조회한다.")
