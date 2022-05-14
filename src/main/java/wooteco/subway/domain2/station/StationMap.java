@@ -1,4 +1,4 @@
-package wooteco.subway.domain2;
+package wooteco.subway.domain2.station;
 
 import java.util.HashSet;
 import java.util.List;

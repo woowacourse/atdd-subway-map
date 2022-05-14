@@ -1,4 +1,4 @@
-package wooteco.subway.domain2;
+package wooteco.subway.domain2.line;
 
 import static java.util.stream.Collectors.groupingBy;
 

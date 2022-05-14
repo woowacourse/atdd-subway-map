@@ -1,7 +1,7 @@
 package wooteco.subway.entity;
 
 import java.util.Objects;
-import wooteco.subway.domain2.Station;
+import wooteco.subway.domain2.station.Station;
 
 public class StationEntity {
 

@@ -1,8 +1,9 @@
-package wooteco.subway.domain2;
+package wooteco.subway.domain2.section;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import wooteco.subway.domain2.station.Station;
 import wooteco.subway.entity.SectionEntity2;
 
 public class SectionStationMap2 {

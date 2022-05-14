@@ -1,19 +1,21 @@
-package wooteco.subway.domain2;
+package wooteco.subway.domain2.section;
 
 import java.util.LinkedList;
 import java.util.List;
+import wooteco.subway.domain2.station.Station;
+import wooteco.subway.domain2.station.StationMap;
 import wooteco.subway.entity.SectionEntity2;
 
 // TODO: names should be changed
 public class SectionViews2 {
 
     private final SectionStationMap2 sectionMap;
-    private final StationMap entityMap;
+    private final StationMap stationMap;
 
     private SectionViews2(SectionStationMap2 sectionMap,
-                         StationMap entityMap) {
+                         StationMap stationMap) {
         this.sectionMap = sectionMap;
-        this.entityMap = entityMap;
+        this.stationMap = stationMap;
     }
 
     public static SectionViews2 of(List<SectionEntity2> sectionEntities) {
@@ -25,7 +27,7 @@ public class SectionViews2 {
     public List<Station> getSortedStationsList() {
         Long initialStationId = sectionMap.findAnyStationId();
         boolean isDownDirection = true;
-        int stationEntityCount = entityMap.getSize();
+        int stationEntityCount = stationMap.getSize();
 
         return toSortedStationList(initialStationId, isDownDirection, stationEntityCount);
     }
@@ -34,7 +36,7 @@ public class SectionViews2 {
                                                     boolean isDownDirection,
                                                     int capacity) {
         LinkedList<Station> list = new LinkedList<>();
-        list.add(entityMap.findEntityOfId(initialStationId));
+        list.add(stationMap.findEntityOfId(initialStationId));
         Long currentStationId = initialStationId;
 
         while (list.size() < capacity) {
@@ -50,13 +52,13 @@ public class SectionViews2 {
 
     private Long addDownStationIdAndGetNextKey(List<Station> list, Long upStationId) {
         Long downStationId = sectionMap.getDownStationIdOf(upStationId);
-        list.add(entityMap.findEntityOfId(downStationId));
+        list.add(stationMap.findEntityOfId(downStationId));
         return downStationId;
     }
 
     private Long addUpStationIdAndGetNextKey(List<Station> list, Long downStationId) {
         Long upStationId = sectionMap.getUpStationIdOf(downStationId);
-        list.add(0, entityMap.findEntityOfId(upStationId));
+        list.add(0, stationMap.findEntityOfId(upStationId));
         return upStationId;
     }
 }
