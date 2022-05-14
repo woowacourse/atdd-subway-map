@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
@@ -12,33 +13,41 @@ import wooteco.subway.exception.line.NoSuchLineException;
 
 class LineDaoTest extends DaoTest {
 
+    private static final String RED_LINE_NAME = "레드라인";
+    private static final String RED = "bg-red-600";
+    private static final String BLUE_LINE_NAME = "블루라인";
+    private static final String BLUE = "bg-blue-600";
+
+    private Line redLine;
+    private Line blueLine;
+
+    @BeforeEach
+    void setUpData() {
+        redLine = new Line(RED_LINE_NAME, RED);
+        blueLine = new Line(BLUE_LINE_NAME, BLUE);
+    }
+
     @Test
     @DisplayName("노선을 저장하면 저장된 노선 정보를 반환한다.")
     void Save() {
-        // given
-        final Line line = new Line("7호선", "bg-red-600");
-
         // when
-        final Line savedLine = lineDao.insert(line).orElseThrow();
+        final Line savedLine = lineDao.insert(redLine).orElseThrow();
 
         // then
-        assertThat(savedLine.getName()).isEqualTo(line.getName());
-        assertThat(savedLine.getColor()).isEqualTo(line.getColor());
+        assertThat(savedLine.getName()).isEqualTo(redLine.getName());
+        assertThat(savedLine.getColor()).isEqualTo(redLine.getColor());
     }
 
     @Test
     @DisplayName("저장하려는 노선 이름이 중복이면 예외를 던진다.")
     void Save_DuplicateName_ExceptionThrown() {
-        // given
-        final String name = "7호선";
-
-        lineDao.insert(new Line(name, "bg-red-600")).orElseThrow();
+        lineDao.insert(redLine).orElseThrow();
 
         // when
-        final Line line = new Line(name, "bg-blue-600");
+        final Line duplicateLine = new Line(RED_LINE_NAME, BLUE);
 
         // then
-        final Optional<Line> possibleLine = lineDao.insert(line);
+        final Optional<Line> possibleLine = lineDao.insert(duplicateLine);
         assertThat(possibleLine).isEmpty();
     }
 
@@ -46,13 +55,8 @@ class LineDaoTest extends DaoTest {
     @DisplayName("모든 노선을 조회한다.")
     void FindAll() {
         // given
-        final Line line7 = new Line("7호선", "bg-red-600");
-        lineDao.insert(line7);
-
-        final String line5Name = "5호선";
-        final String line5Color = "bg-green-600";
-        final Line line5 = new Line(line5Name, line5Color);
-        lineDao.insert(line5);
+        lineDao.insert(redLine);
+        lineDao.insert(blueLine);
 
         // when
         final List<Line> lines = lineDao.findAll();
@@ -65,8 +69,7 @@ class LineDaoTest extends DaoTest {
     @DisplayName("id를 통해 해당하는 노선을 조회한다.")
     void FindById() {
         // given
-        final Line line7 = new Line("7호선", "bg-red-600");
-        final Line persistLine = lineDao.insert(line7).orElseThrow();
+        final Line persistLine = lineDao.insert(redLine).orElseThrow();
 
         // when
         final Optional<Line> actual = lineDao.findById(persistLine.getId());
@@ -80,7 +83,7 @@ class LineDaoTest extends DaoTest {
     @DisplayName("존재하지 않은 id로 노선을 조회하면 Empty Optional을 반환한다.")
     void FindById_InvalidId_EmptyOptional() {
         // when
-        final Optional<Line> possibleLine = lineDao.findById(1L);
+        final Optional<Line> possibleLine = lineDao.findById(999L);
 
         // then
         assertThat(possibleLine).isEmpty();
@@ -90,27 +93,19 @@ class LineDaoTest extends DaoTest {
     @DisplayName("id를 통해 해당하는 노선을 업데이트한다.")
     void UpdateById() {
         // given
-        final Line persistLine = lineDao.insert(new Line("7호선", "bg-red-600")).orElseThrow();
+        final Line persistLine = lineDao.insert(redLine).orElseThrow();
 
         // when
-        final Line line = new Line("5호선", "bg-green-600");
-        final Line updatedLine = lineDao.updateById(persistLine.getId(), line).orElseThrow();
+        final Line updatedLine = lineDao.updateById(persistLine.getId(), blueLine).orElseThrow();
 
         // then
-        assertThat(updatedLine).isEqualTo(line);
+        assertThat(updatedLine).isEqualTo(blueLine);
     }
 
     @Test
     @DisplayName("업데이트하려는 노선이 존재하지 않으면 에외가 발생한다.")
     void UpdateById_InvalidId_ExceptionThrown() {
-        // given
-        final String name = "5호선";
-
-        // when
-        final Line line = new Line(name, "bg-green-600");
-
-        // then
-        assertThatThrownBy(() -> lineDao.updateById(999L, line))
+        assertThatThrownBy(() -> lineDao.updateById(999L, redLine))
                 .isInstanceOf(NoSuchLineException.class);
     }
 
@@ -118,7 +113,7 @@ class LineDaoTest extends DaoTest {
     @DisplayName("id를 통해 해당하는 노선을 삭제한다.")
     void DeleteById() {
         // given
-        final Line persistLine = lineDao.insert(new Line("7호선", "bg-red-600")).orElseThrow();
+        final Line persistLine = lineDao.insert(redLine).orElseThrow();
 
         // when
         final Long id = persistLine.getId();
