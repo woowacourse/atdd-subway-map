@@ -1,12 +1,18 @@
 package wooteco.subway.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.dto.SectionsToBeCreatedAndUpdated;
+import wooteco.subway.dto.SectionsToBeDeletedAndUpdated;
+import wooteco.subway.exception.AccessNoneDataException;
+import wooteco.subway.exception.SectionServiceException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionsTest {
 
@@ -16,90 +22,148 @@ class SectionsTest {
     private final Long lastDownStationId = 3L;
     private final Long newStationId = 4L;
 
-    private final Section section1 = new Section(1L, lineId, lastUpStationId, middleStationId, 10);
-    private final Section section2 = new Section(2L, lineId, middleStationId, lastDownStationId, 10);
-    private final Sections sections = new Sections(List.of(section1, section2));
+    private Section section1;
+    private Section section2;
+    private Sections sections;
 
-    @DisplayName("새로운 구간의 하행역이 현재의 상행 종점일경우 true를 반환한다.")
-    @Test
-    void isLastUpStation() {
-        boolean isLastStation = sections.isLastStation(newStationId, lastUpStationId);
-
-        assertThat(isLastStation).isTrue();
+    @BeforeEach
+    void setUp() {
+        section1 = new Section(1L, lineId, lastUpStationId, middleStationId, 10);
+        section2 = new Section(2L, lineId, middleStationId, lastDownStationId, 10);
+        sections = new Sections(List.of(section1, section2));
     }
 
-    @DisplayName("새로운 구간의 상행역이 현재의 하행 종점일경우 true를 반환한다.")
+    @DisplayName("상행 구간을 등록한다.")
     @Test
-    void isLastDownStation() {
-        boolean isLastStation = sections.isLastStation(lastDownStationId, newStationId);
+    void addLastUpSection() {
+        Section newSection = new Section(lineId, newStationId, lastUpStationId, 10);
+        SectionsToBeCreatedAndUpdated result = sections.add(newSection);
 
-        assertThat(isLastStation).isTrue();
+        assertAll(
+                () -> assertThat(result.getSectionToBeCreated()).isEqualTo(newSection),
+                () -> assertThat(result.getSectionToBeUpdated()).isNull()
+        );
     }
 
-    @DisplayName("새로 생성하려는 구간에 붙어있는 기존 구간을 구한다.")
+    @DisplayName("하행 구간을 등록한다.")
     @Test
-    void findExistSection() {
-//        Section newSection = new Section(lineId, up)
-//        Section existSection = sections.findNearSection(lastUpStationId, newStationId);
-//
-//        assertThat(existSection).isEqualTo(section1);
+    void addLastDownSection() {
+        Section newSection = new Section(lineId, lastDownStationId, newStationId, 10);
+        SectionsToBeCreatedAndUpdated result = sections.add(newSection);
+
+        assertAll(
+                () -> assertThat(result.getSectionToBeCreated()).isEqualTo(newSection),
+                () -> assertThat(result.getSectionToBeUpdated()).isNull()
+        );
     }
 
-    @DisplayName("해당 역이 구간들 안에 존재할 경우 true를 반환한다.")
+    @DisplayName("중간 구간을 등록한다. (기존 구간의 앞쪽에 등록)")
     @Test
-    void hasStation() {
-        boolean expected = sections.hasStation(lastUpStationId);
-        boolean actual = true;
+    void addMiddleSectionInFrontOfExistSection() {
+        Section newSection = new Section(lineId, lastUpStationId, newStationId, 7);
+        SectionsToBeCreatedAndUpdated result = sections.add(newSection);
 
-        assertThat(expected).isEqualTo(actual);
+        Section updatedSection = new Section(section1.getId(), section1.getLineId(),
+                newStationId, section1.getDownStationId(), section1.getDistance() - 7);
+        assertAll(
+                () -> assertThat(result.getSectionToBeCreated()).isEqualTo(newSection),
+                () -> assertThat(result.getSectionToBeUpdated()).isEqualTo(updatedSection)
+        );
     }
 
-    @DisplayName("구간이 1개 이하일 경우 true, 더 많을 경우 false를 반환한다.")
+    @DisplayName("중간 구간을 등록한다. (기존 구간의 뒤쪽에 등록)")
     @Test
-    void hasOneSection() {
-        boolean expected = sections.hasOneSection();
-        boolean actual = false;
+    void addMiddleSectionBehindOfExistSection() {
+        Section newSection = new Section(lineId, newStationId, middleStationId, 7);
+        SectionsToBeCreatedAndUpdated result = sections.add(newSection);
 
-        assertThat(expected).isEqualTo(actual);
+        Section updatedSection = new Section(section1.getId(), section1.getLineId(),
+                section1.getUpStationId(), newStationId, section1.getDistance() - 7);
+        assertAll(
+                () -> assertThat(result.getSectionToBeCreated()).isEqualTo(newSection),
+                () -> assertThat(result.getSectionToBeUpdated()).isEqualTo(updatedSection)
+        );
     }
 
-    @DisplayName("해당 역이 상행 종점인 경우 마지막 상행 구간을 가져온다.")
+    @DisplayName("새로운 구간의 길이가 기존 구간의 길이보다 같거나 큰 경우 예외가 발생한다.")
     @Test
-    void checkAndExtractLastUpStation() {
-        Optional<Section> section = sections.checkAndExtractLastStation(lastUpStationId);
+    void throwsExceptionWhenNewSectionDistanceLongerThanExistSection() {
+        Section newSection = new Section(lineId, newStationId, middleStationId, 10);
 
-        assertThat(section.get().getId()).isEqualTo(section1.getId());
+        assertThatThrownBy(() -> sections.add(newSection))
+                .isInstanceOf(SectionServiceException.class)
+                .hasMessageMatching("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
     }
 
-    @DisplayName("해당 역이 하행 종점인 경우 마지막 하행 구간을 가져온다.")
+    @DisplayName("생성하려는 구간의 역이 모두 노선에 존재하지 않으면 생성할시 예외가 발생한다.")
     @Test
-    void checkAndExtractLastDownStation() {
-        Optional<Section> section = sections.checkAndExtractLastStation(lastDownStationId);
+    void throwsExceptionWhenAddSectionWithNotExistStations() {
+        Section newSection = new Section(lineId, 100L, 101L, 10);
 
-        assertThat(section.get().getId()).isEqualTo(section2.getId());
+        assertThatThrownBy(() -> sections.add(newSection))
+                .isInstanceOf(SectionServiceException.class)
+                .hasMessageMatching("구간을 추가하기 위해서는 노선에 들어있는 역이 필요합니다.");
     }
 
-    @DisplayName("해당 역이 종점이 아닌 경우 Optional.Empty를 반환한다.")
+    @DisplayName("생성하려는 구간의 역이 모두 노선에 존재하지 않으면 생성할시 예외가 발생한다.")
     @Test
-    void checkAndExtractStation() {
-        Optional<Section> section = sections.checkAndExtractLastStation(middleStationId);
+    void throwsExceptionWhenAddSectionWithAllExistStationInLine() {
+        Section newSection = new Section(lineId, lastUpStationId, lastDownStationId, 10);
 
-        assertThat(section.isEmpty()).isTrue();
+        assertThatThrownBy(() -> sections.add(newSection))
+                .isInstanceOf(SectionServiceException.class)
+                .hasMessageMatching("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
     }
 
-    @DisplayName("해당 역의 상행(앞) 구간을 추출한다.")
+    @DisplayName("상행역을 삭제한다.")
     @Test
-    void extractUpSideStation() {
-        Section expected = sections.extractUpSideStation(middleStationId);
+    void deleteLastUpStation() {
+        SectionsToBeDeletedAndUpdated result = sections.delete(lastUpStationId);
 
-        assertThat(expected).isEqualTo(section1);
+        assertAll(
+                () -> assertThat(result.getSectionToBeRemoved()).isEqualTo(section1),
+                () -> assertThat(result.getSectionToBeUpdated()).isNull()
+        );
     }
 
-    @DisplayName("해당 역의 하행(뒤) 구간을 추출한다.")
+    @DisplayName("하행역을 삭제한다.")
     @Test
-    void extractDownSideStation() {
-        Section expected = sections.extractDownSideStation(middleStationId);
+    void deleteLastDownStation() {
+        SectionsToBeDeletedAndUpdated result = sections.delete(lastDownStationId);
 
-        assertThat(expected).isEqualTo(section2);
+        assertAll(
+                () -> assertThat(result.getSectionToBeRemoved()).isEqualTo(section2),
+                () -> assertThat(result.getSectionToBeUpdated()).isNull()
+        );
+    }
+
+    @DisplayName("중간역을 삭제한다.")
+    @Test
+    void deleteMiddleStation() {
+        SectionsToBeDeletedAndUpdated result = sections.delete(middleStationId);
+
+        Section updatedSection = new Section(section1.getId(), section1.getLineId(),
+                section1.getUpStationId(), section2.getDownStationId(), section1.getDistance() + section2.getDistance());
+        assertAll(
+                () -> assertThat(result.getSectionToBeRemoved()).isEqualTo(section2),
+                () -> assertThat(result.getSectionToBeUpdated()).isEqualTo(updatedSection)
+        );
+    }
+
+    @DisplayName("노선에 존재하지 않는 역을 삭제할 시 예외가 발생한다.")
+    @Test
+    void throwsExceptionWhenDeleteStationNotExistInLine() {
+        assertThatThrownBy(() -> sections.delete(newStationId))
+                .isInstanceOf(AccessNoneDataException.class)
+                .hasMessageMatching("현재 라인에 존재하지 않는 역입니다.");
+    }
+
+    @DisplayName("구간이 하나인 노선은 구간 삭제가 불가능하다.")
+    @Test
+    void throwsExceptionWhenDeleteStationWithOnlyOneSectionInLine() {
+        Sections sectionsThatHaveOneSection = new Sections(List.of(section1));
+        assertThatThrownBy(() -> sectionsThatHaveOneSection.delete(middleStationId))
+                .isInstanceOf(SectionServiceException.class)
+                .hasMessageMatching("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
     }
 }
