@@ -23,24 +23,6 @@ public class Section {
         this.id = id;
     }
 
-    public static Section of(Line line, LineRequest lineRequest) {
-        return new Section(
-                lineRequest.getDistance(),
-                line.getId(),
-                lineRequest.getUpStationId(),
-                lineRequest.getDownStationId()
-        );
-    }
-
-    public static Section of(Line line, SectionRequest sectionRequest) {
-        return new Section(
-                sectionRequest.getDistance(),
-                line.getId(),
-                sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId()
-        );
-    }
-
     public Section createSection(Section sectionToInsert) {
         int generatedDistance = distance - sectionToInsert.getDistance();
         if (isUpStationIdEquals(sectionToInsert)) {
