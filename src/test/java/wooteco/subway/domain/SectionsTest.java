@@ -1,18 +1,17 @@
 package wooteco.subway.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionsTest {
 
@@ -73,18 +72,6 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.add(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
-    }
-
-    @DisplayName("등록할 구간이 갈래길인지 확인한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"1,아차산역,3,장한평역,true", "3,천호역,1,아차산역,false"})
-    void isBranched(final long stationId1, final String stationName1,
-                    final long stationId2, final String stationName2, final boolean expected) {
-        final Station newStation1 = new Station(stationId1, stationName1);
-        final Station newStation2 = new Station(stationId2, stationName2);
-        final Section newSection = new Section(newStation1, newStation2, 5, 1L);
-
-        assertThat(sections.isBranched(newSection)).isEqualTo(expected);
     }
 
     @DisplayName("갈래길이 아닌 경우 상행 종점으로 등록된다.")

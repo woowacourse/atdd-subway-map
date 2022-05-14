@@ -10,6 +10,9 @@ import java.util.stream.Stream;
 public class Sections {
     private static final int MINIMUM_SIZE = 1;
     private static final int NEEDS_MERGE_SIZE = 2;
+    private static final int FIRST = 0;
+    private static final int SECOND = 1;
+    private static final int EMPTY = 0;
 
     private final List<Section> value;
 
@@ -39,10 +42,7 @@ public class Sections {
 
         value.removeAll(sections);
 
-        if (sections.size() != NEEDS_MERGE_SIZE) {
-            return sections;
-        }
-        mergeSection(sections.get(0), sections.get(1)).ifPresent(value::add);
+        findMergedSection(sections).ifPresent(value::add);
         return sections;
     }
 
@@ -50,10 +50,10 @@ public class Sections {
         if (sections.size() != NEEDS_MERGE_SIZE) {
             return Optional.empty();
         }
-        return mergeSection(sections.get(0), sections.get(1));
+        return merge(sections.get(FIRST), sections.get(SECOND));
     }
 
-    private Optional<Section> mergeSection(Section source, Section target) {
+    private Optional<Section> merge(Section source, Section target) {
         if (source.getDownStation().equals(target.getUpStation())) {
             return Optional.of(source.merge(target));
         }
@@ -69,12 +69,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public boolean isBranched(final Section other) {
-        final Optional<Section> upSection = findUpSection(other);
-        final Optional<Section> downSection = findDownSection(other);
-        return upSection.isPresent() || downSection.isPresent();
-    }
-
     private void update(final Section source, final Section target) {
         value.remove(target);
         value.add(target.createSectionInBetween(source));
@@ -88,7 +82,7 @@ public class Sections {
     }
 
     private void validateSectionNotFound(final List<Section> sections) {
-        if (sections.size() == 0) {
+        if (sections.size() == EMPTY) {
             throw new IllegalArgumentException("구간에 존재하지 않는 지하철 역입니다.");
         }
     }
