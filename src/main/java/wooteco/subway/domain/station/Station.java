@@ -2,24 +2,28 @@ package wooteco.subway.domain.station;
 
 import java.util.Objects;
 
+import wooteco.subway.domain.Id;
+
 public class Station {
 
-    private static final long TEMPORARY_ID = 0L;
-
-    private final Long id;
+    private final Id id;
     private final StationName name;
 
-    public Station(Long id, String name) {
+    public Station(Id id, String name) {
         this.id = id;
         this.name = new StationName(name);
     }
 
+    public Station(Long id, String name) {
+        this(new Id(id), name);
+    }
+
     public Station(String name) {
-        this(TEMPORARY_ID, name);
+        this(new Id(), name);
     }
 
     public Long getId() {
-        return id;
+        return id.getId();
     }
 
     public String getName() {

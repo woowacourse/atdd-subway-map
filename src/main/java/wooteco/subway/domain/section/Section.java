@@ -1,25 +1,35 @@
 package wooteco.subway.domain.section;
 
+import wooteco.subway.domain.Id;
 import wooteco.subway.domain.station.Station;
 
 public class Section {
 
-    private static final Long TEMPORARY_ID = 0L;
-
-    private final Long id;
+    private final Id id;
     private final Station upStation;
     private final Station downStation;
     private final Distance distance;
 
-    public Section(Long id, Station upStation, Station downStation, int distance) {
+    public Section(Id id, Station upStation, Station downStation, int distance) {
+        validateStationsNotSame(upStation, downStation);
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
     }
 
+    private void validateStationsNotSame(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException("상행역과 하행역은 동일할 수 없습니다.");
+        }
+    }
+
+    public Section(Long id, Station upStation, Station downStation, int distance) {
+        this(new Id(id), upStation, downStation, distance);
+    }
+
     public Section(Station upStation, Station downStation, int distance) {
-        this(TEMPORARY_ID, upStation, downStation, distance);
+        this(new Id(), upStation, downStation, distance);
     }
 
     public boolean containsStation(Station station) {
@@ -51,7 +61,7 @@ public class Section {
     }
 
     public Long getId() {
-        return id;
+        return id.getId();
     }
 
     public Station getUpStation() {
