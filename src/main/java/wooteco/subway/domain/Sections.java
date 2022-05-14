@@ -27,12 +27,12 @@ public class Sections {
     }
 
     private void validateExistStationInLine(Section section) {
-        boolean isExistUpStation = hasStation(section.getUpStationId());
-        boolean isExistDownStation = hasStation(section.getDownStationId());
-        if (!isExistUpStation && !isExistDownStation) {
+        boolean hasUpStation = hasStation(section.getUpStationId());
+        boolean hasDownStation = hasStation(section.getDownStationId());
+        if (!hasUpStation && !hasDownStation) {
             throw new SectionServiceException("구간을 추가하기 위해서는 노선에 들어있는 역이 필요합니다.");
         }
-        if (isExistUpStation && isExistDownStation) {
+        if (hasUpStation && hasDownStation) {
             throw new SectionServiceException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
     }
