@@ -169,12 +169,14 @@ public class SubwayRepository implements LineRepository, SectionRepository, Stat
     @Override
     public void removeLine(Long lineId) {
         Line line = findLineById(lineId);
-        removeSections(line.getSectionIds());
+        removeSections(line.getSections());
         lineDao.remove(lineId);
     }
 
-    private void removeSections(List<Long> sectionIds) {
-        sectionIds.forEach(this::removeSection);
+    private void removeSections(List<Section> sections) {
+        sections.stream()
+                .map(Section::getId)
+                .forEach(this::removeSection);
     }
 
     private void removeSection(Long sectionId) {
