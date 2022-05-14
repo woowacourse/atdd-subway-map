@@ -28,18 +28,18 @@ public class SectionService {
     }
 
     public void save(Long lineId, SectionRequest sectionReq) {
-        save(lineId, sectionReq.getUpStationId(), sectionReq.getDownStationId(), sectionReq.getDistance());
-    }
+        long upStationId = sectionReq.getUpStationId();
+        long downStationId = sectionReq.getDownStationId();
+        int distance = sectionReq.getDistance();
 
-    private void save(Long lineId, long upStationId, long downStationId, int distance) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         sections.validateSection(upStationId, downStationId, distance);
 
-        List<Section> updateSections = sections.findOverlapSection(upStationId, downStationId, distance);
-        updateEachSection(updateSections);
+        List<Section> targetSections = sections.findOverlapSection(upStationId, downStationId, distance);
+        updateSections(targetSections);
     }
 
-    private void updateEachSection(List<Section> sections) {
+    private void updateSections(List<Section> sections) {
         updateFrontSection(sections.get(0));
         updateBackSection(sections.get(1));
     }
