@@ -2,7 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.DynamicTest.*;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -39,13 +39,12 @@ class SectionDaoTest {
         Station downStation = generateStation("잠실역");
         Integer distance = 10;
 
-        Section createdSection = sectionDao.save(
-                new Section(line.getId(), upStation.getId(), downStation.getId(), distance));
+        Section createdSection = sectionDao.save(new Section(line, upStation, downStation, distance));
 
         assertAll(
-                () -> assertThat(createdSection.getLineId()).isEqualTo(line.getId()),
-                () -> assertThat(createdSection.getUpStationId()).isEqualTo(upStation.getId()),
-                () -> assertThat(createdSection.getDownStationId()).isEqualTo(downStation.getId()),
+                () -> assertThat(createdSection.getLine()).isEqualTo(line),
+                () -> assertThat(createdSection.getUpStation()).isEqualTo(upStation),
+                () -> assertThat(createdSection.getDownStation()).isEqualTo(downStation),
                 () -> assertThat(createdSection.getDistance()).isEqualTo(distance)
         );
     }
@@ -60,8 +59,8 @@ class SectionDaoTest {
         Station upStation2 = generateStation("신도림역");
         Station downStation2 = generateStation("신대방역");
         Integer distance2 = 7;
-        sectionDao.save(new Section(line.getId(), upStation1.getId(), downStation1.getId(), distance1));
-        sectionDao.save(new Section(line.getId(), upStation2.getId(), downStation2.getId(), distance2));
+        sectionDao.save(new Section(line, upStation1, downStation1, distance1));
+        sectionDao.save(new Section(line, upStation2, downStation2, distance2));
 
         return Stream.of(
                 dynamicTest("노선 별 구간을 조회한다.", () -> {
@@ -89,8 +88,8 @@ class SectionDaoTest {
         Station upStation2 = generateStation("신도림역");
         Station downStation2 = generateStation("신대방역");
         Integer distance2 = 7;
-        Section section1 = new Section(line.getId(), upStation1.getId(), downStation1.getId(), distance1);
-        Section section2 = new Section(line.getId(), upStation2.getId(), downStation2.getId(), distance2);
+        Section section1 = new Section(line, upStation1, downStation1, distance1);
+        Section section2 = new Section(line, upStation2, downStation2, distance2);
 
         sectionDao.saveAll(List.of(section1, section2));
 

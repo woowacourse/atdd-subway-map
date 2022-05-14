@@ -235,7 +235,7 @@ class LineServiceTest {
                     SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
                     assertThatThrownBy(() -> lineService.addSection(line.getId(), sectionRequest))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(NotFoundException.class);
                 }),
 
                 dynamicTest("상행 종점 추가 시 상행역이 기존 노선에 존재하는 경우 예외를 던진다.", () -> {

@@ -6,12 +6,14 @@ import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class SectionDao {
@@ -30,13 +32,9 @@ public class SectionDao {
     }
 
     public Section save(Section section) {
-        Map<String, Object> params = Map.of(
-                "line_id", section.getLineId(),
-                "up_station_id", section.getUpStationId(),
-                "down_station_id", section.getDownStationId(),
-                "distance", section.getDistance());
+        SqlParameterSource sqlParameterSource = generateParameter(section);
 
-        Long id = insertActor.executeAndReturnKey(params).longValue();
+        Long id = insertActor.executeAndReturnKey(sqlParameterSource).longValue();
 
         return findById(id).get();
     }
@@ -45,33 +43,77 @@ public class SectionDao {
         String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) "
                 + "values (:lineId, :upStationId, :downStationId, :distance)";
 
-        SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(sections.toArray());
+        SqlParameterSource[] batch = generateParameters(sections);
         jdbcTemplate.batchUpdate(sql, batch);
     }
 
+    private SqlParameterSource[] generateParameters(List<Section> sections) {
+        return sections.stream()
+                .map(this::generateParameter)
+                .toArray(MapSqlParameterSource[]::new);
+    }
+
+    private MapSqlParameterSource generateParameter(Section section) {
+        return new MapSqlParameterSource("lineId", section.getLine().getId())
+                .addValue("upStationId", section.getUpStation().getId())
+                .addValue("downStationId", section.getDownStation().getId())
+                .addValue("distance", section.getDistance());
+    }
+
     public Optional<Section> findById(Long id) {
-        String sql = "select id, line_id, up_station_id, down_station_id, distance from SECTION where id = :id";
+        String sql = "select s.id, "
+                + "s.line_id, l.name as line_name, l.color as line_color, "
+                + "s.up_station_id, up.name as up_station_name, "
+                + "s.down_station_id, down.name as down_station_name, "
+                + "s.distance "
+                + "from SECTION s "
+                + "join LINE l on s.line_id = l.id "
+                + "join STATION up on s.up_station_id = up.id "
+                + "join STATION down on s.down_station_id = down.id "
+                + "where s.id = :id";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, Map.of("id", id), generateMapper()));
+            return Optional.of(jdbcTemplate.queryForObject(sql, Map.of("id", id), generateRowMapper()));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     public List<Section> findByLineId(Long lineId) {
-        String sql = "select id, line_id, up_station_id, down_station_id, distance from SECTION where line_id = :lineId";
-        return jdbcTemplate.query(sql, Map.of("lineId", lineId), generateMapper());
+        String sql = "select s.id, "
+                + "s.line_id, l.name as line_name, l.color as line_color, "
+                + "s.up_station_id, up.name as up_station_name, "
+                + "s.down_station_id, down.name as down_station_name, "
+                + "s.distance "
+                + "from SECTION s "
+                + "join LINE l on s.line_id = l.id "
+                + "join STATION up on s.up_station_id = up.id "
+                + "join STATION down on s.down_station_id = down.id "
+                + "where s.line_id = :lineId";
+
+        return jdbcTemplate.query(sql, Map.of("lineId", lineId), generateRowMapper());
     }
 
-    private RowMapper<Section> generateMapper() {
-        return (resultSet, rowNum) ->
-                new Section(
-                        resultSet.getLong("id"),
-                        resultSet.getLong("line_id"),
-                        resultSet.getLong("up_station_id"),
-                        resultSet.getLong("down_station_id"),
-                        resultSet.getInt("distance")
-                );
+    private RowMapper<Section> generateRowMapper() {
+        return (resultSet, rowNum) -> {
+            Long sectionId = resultSet.getLong("id");
+
+            Long lineId = resultSet.getLong("line_id");
+            String lineName = resultSet.getString("line_name");
+            String lineColor = resultSet.getString("line_color");
+            Line line = new Line(lineId, lineName, lineColor);
+
+            Long upStationId = resultSet.getLong("up_station_id");
+            String upStationName = resultSet.getString("up_station_name");
+            Station upStation = new Station(upStationId, upStationName);
+
+            Long downStationId = resultSet.getLong("down_station_id");
+            String downStationName = resultSet.getString("down_station_name");
+            Station downStation = new Station(downStationId, downStationName);
+
+            int distance = resultSet.getInt("distance");
+
+            return new Section(sectionId, line, upStation, downStation, distance);
+        };
     }
 
     public void deleteByLineId(Long lineId) {

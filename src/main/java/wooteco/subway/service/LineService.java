@@ -48,14 +48,19 @@ public class LineService {
         }
 
         Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        sectionDao.save(new Section(line.getId(), upStation.getId(), downStation.getId(), lineRequest.getDistance()));
+        sectionDao.save(new Section(line, upStation, downStation, lineRequest.getDistance()));
 
         return findById(line.getId());
     }
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Section saveSection = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+        Line line = getLine(lineId);
+
+        Station upStation = getStation(sectionRequest.getUpStationId());
+        Station downStation = getStation(sectionRequest.getDownStationId());
+
+        Section saveSection = new Section(line, upStation, downStation,
                 sectionRequest.getDistance());
 
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
@@ -68,20 +73,24 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        sections.remove(stationId);
+        sections.remove(getStation(stationId));
 
         sectionDao.deleteByLineId(lineId);
         sectionDao.saveAll(sections.getSortedValue());
+    }
+
+    private Station getStation(Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(id + "의 지하철역은 존재하지 않습니다."));
     }
 
     public LineResponse findById(Long id) {
         Line line = getLine(id);
 
         Sections sections = new Sections(sectionDao.findByLineId(id));
-        List<Long> stationIds = sections.getSortedStationIds();
 
-        List<StationResponse> stations = stationIds.stream()
-                .map(this::getStation)
+        List<StationResponse> stations = sections.getSortedStations()
+                .stream()
                 .map(StationResponse::new)
                 .collect(toList());
 
@@ -97,17 +106,11 @@ public class LineService {
 
     private LineResponse getLineResponse(Line line) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
-        List<StationResponse> stationResponses = sections.getSortedStationIds()
+        List<StationResponse> stationResponses = sections.getSortedStations()
                 .stream()
-                .map(this::getStation)
                 .map(StationResponse::new)
                 .collect(toList());
         return new LineResponse(line, stationResponses);
-    }
-
-    private Station getStation(Long id) {
-        return stationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(id + "의 지하철역은 존재하지 않습니다."));
     }
 
     @Transactional

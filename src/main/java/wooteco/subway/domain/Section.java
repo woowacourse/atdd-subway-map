@@ -5,67 +5,67 @@ import java.util.Objects;
 public class Section {
 
     private final Long id;
-    private final Long lineId;
-    private Long upStationId;
-    private Long downStationId;
+    private final Line line;
+    private Station upStation;
+    private Station downStation;
     private int distance;
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
         this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this(null, lineId, upStationId, downStationId, distance);
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this(null, line, upStation, downStation, distance);
     }
 
-    public boolean existsStation(Long stationId) {
-        return upStationId.equals(stationId) || downStationId.equals(stationId);
-    }
-
-    public boolean isSameUpStation(Section section) {
-        return upStationId.equals(section.upStationId);
-    }
-
-    public boolean isSameDownStation(Section section) {
-        return downStationId.equals(section.downStationId);
+    public boolean existsStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 
     public boolean isSameUpAndDownStation(Section section) {
         return isSameUpStation(section) && isSameDownStation(section);
     }
 
+    public boolean isSameUpStation(Section section) {
+        return upStation.equals(section.upStation);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return downStation.equals(section.downStation);
+    }
+
     public boolean isConnect(Section section) {
-        return downStationId.equals(section.getUpStationId());
+        return downStation.equals(section.upStation);
     }
 
     public void changeUpStation(Section section) {
-        this.upStationId = section.downStationId;
-        this.distance -= section.distance;
+        upStation = section.downStation;
+        distance -= section.distance;
     }
 
     public void changeDownStation(Section section) {
-        this.downStationId = section.upStationId;
-        this.distance -= section.distance;
+        downStation = section.downStation;
+        distance -= section.distance;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getLineId() {
-        return lineId;
+    public Line getLine() {
+        return line;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {
@@ -81,13 +81,13 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(lineId,
-                section.lineId) && Objects.equals(upStationId, section.upStationId) && Objects.equals(
-                downStationId, section.downStationId);
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line,
+                section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(
+                downStation, section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lineId, upStationId, downStationId, distance);
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }

@@ -257,7 +257,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     );
                 }),
 
-                dynamicTest("상행 종점 추가 시 지하철이 존재하지 않는 경우 400을 반환한다.", () -> {
+                dynamicTest("상행 종점 추가 시 지하철이 존재하지 않는 경우 404을 반환한다.", () -> {
                     Long upStationId = 0L;
                     Long downStationId = basedUpStationId;
                     Integer distance = 7;
@@ -270,7 +270,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                             .then().log().all()
                             .extract();
 
-                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
                 }),
 
                 dynamicTest("상행 종점 추가 시 상행역이 기존 노선에 존재하는 경우 400을 반환한다.", () -> {
