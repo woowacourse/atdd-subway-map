@@ -82,22 +82,30 @@ public class Sections {
                 return insertBeforeDownStation(newSection, section);
             }
         }
-        throw new IllegalStateException("추가할 수 있는 상태가 아닙니다.");
+        throw new IllegalStateException("구간을 추가할 수 있는 상태가 아닙니다.");
     }
 
     private Section insertAfterUpStation(Section newSection, Section section) {
         int index = values.indexOf(section);
         Section sectionToModify = new Section(section.getId(), newSection.getDownStation(), section.getDownStation(),
-            section.getDistance() - newSection.getDistance());
+            getNewDistance(section, newSection));
         values.set(index, newSection);
         values.add(index + 1, sectionToModify);
         return sectionToModify;
     }
 
+    private int getNewDistance(Section section, Section newSection) {
+        int newDistance = section.getDistance() - newSection.getDistance();
+        if (newDistance <= 0) {
+            throw new IllegalArgumentException("추가하려는 구간의 거리가 기존 구간의 거리보다 작아야합니다.");
+        }
+        return newDistance;
+    }
+
     private Section insertBeforeDownStation(Section newSection, Section section) {
         int index = values.indexOf(section);
         Section sectionToModify = new Section(section.getId(), section.getUpStation(), newSection.getUpStation(),
-            section.getDistance() - newSection.getDistance());
+            getNewDistance(section, newSection));
         values.set(index, sectionToModify);
         values.add(index + 1, newSection);
         return sectionToModify;

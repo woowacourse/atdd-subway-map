@@ -148,7 +148,7 @@ public class SectionsTest {
         //then
         assertThatThrownBy(() -> sections.add(newSection))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("거리는 0보다 작을 수 없습니다.");
+            .hasMessageContaining("추가하려는 구간의 거리가 기존 구간의 거리보다 작아야합니다.");
     }
 
     @ParameterizedTest
