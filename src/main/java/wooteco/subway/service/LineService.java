@@ -89,7 +89,7 @@ public class LineService {
                     updateLineData(id, name, color);
                 },
                 () -> {
-                    throw new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다");
+                    throw new NotFoundLineException("[ERROR] 노선이 존재하지 않습니다");
                 }
         );
     }

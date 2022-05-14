@@ -67,12 +67,9 @@ public class Fixture {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> deleteSectionRequest(final Long lineId,
-                                                               final Long newStationId,
-                                                               final Map<String, String> params) {
+    public static ExtractableResponse<Response> deleteSectionRequest(final Long lineId, final Long newStationId) {
         return RestAssured.given().log().all()
                 .when()
-                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .delete("/lines/" + lineId + "/sections?stationId=" + newStationId)
                 .then().log().all()
@@ -97,5 +94,23 @@ public class Fixture {
         lineParams2.put("downStationId", downStationId.toString());
         lineParams2.put("distance", "10");
         return lineParams2;
+    }
+
+    public static ExtractableResponse<Response> deleteLineRequest(final String uri) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> updateLineRequest(final String uri, final Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .extract();
     }
 }

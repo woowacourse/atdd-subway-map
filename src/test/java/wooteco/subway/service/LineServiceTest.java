@@ -137,7 +137,7 @@ class LineServiceTest {
 
         lineService.remove(savedLine.getId());
         assertThatThrownBy(() -> lineService.modify(savedLine.getId(), "신분당선", "bg-red-600"))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(NotFoundLineException.class)
                 .hasMessage("[ERROR] 노선이 존재하지 않습니다");
     }
 
