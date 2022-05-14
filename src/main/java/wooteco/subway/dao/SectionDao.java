@@ -34,7 +34,8 @@ public class SectionDao {
     }
 
     public Section save(final Section section) {
-        final String sql = "insert into section(up_station_id, down_station_id, distance, line_id) values(:upStationId, :downStationId, :distance, :lineId)";
+        final String sql = "INSERT INTO SECTION(up_station_id, down_station_id, distance, line_id) " +
+                "VALUES (:upStationId, :downStationId, :distance, :lineId)";
 
         final Map<String, Object> params = new HashMap<>();
         params.put("lineId", section.getLineId());
