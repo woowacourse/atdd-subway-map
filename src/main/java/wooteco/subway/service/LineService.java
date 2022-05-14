@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +25,8 @@ public class LineService {
     private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository,
+    public LineService(LineRepository lineRepository,
+                       SectionRepository sectionRepository,
                        StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.sectionRepository = sectionRepository;

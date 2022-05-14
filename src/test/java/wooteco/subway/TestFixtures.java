@@ -1,6 +1,5 @@
 package wooteco.subway;
 
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 
 public class TestFixtures {

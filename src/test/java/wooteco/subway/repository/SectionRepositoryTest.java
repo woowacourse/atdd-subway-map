@@ -24,7 +24,6 @@ class SectionRepositoryTest extends RepositoryTest {
         assertThat(id).isNotNull();
     }
 
-
     @DisplayName("저장한 Section을 탐생한다.")
     @Test
     void findById() {
@@ -46,7 +45,7 @@ class SectionRepositoryTest extends RepositoryTest {
         Station saved_신당역 = stationRepository.save(신당역);
         Station saved_동묘앞역 = stationRepository.save(동묘앞역);
         Station saved_창신역 = stationRepository.save(창신역);
-        
+
         Section section = new Section(1L, saved_신당역, saved_동묘앞역, STANDARD_DISTANCE);
         Long id = sectionRepository.save(section);
         sectionRepository.update(new Section(id, 1L, saved_신당역, saved_창신역, STANDARD_DISTANCE - 1));
@@ -64,7 +63,7 @@ class SectionRepositoryTest extends RepositoryTest {
         Station saved_신당역 = stationRepository.save(신당역);
         Station saved_동묘앞역 = stationRepository.save(동묘앞역);
         Station saved_창신역 = stationRepository.save(창신역);
-        
+
         Section firstSection = new Section(1L, saved_신당역, saved_동묘앞역, STANDARD_DISTANCE);
         Long id1 = sectionRepository.save(firstSection);
 
@@ -76,5 +75,5 @@ class SectionRepositoryTest extends RepositoryTest {
 
         assertThat(sectionRepository.findByLineId(1L)).isEmpty();
     }
-    
+
 }
