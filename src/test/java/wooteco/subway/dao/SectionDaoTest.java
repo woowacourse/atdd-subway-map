@@ -24,8 +24,6 @@ class SectionDaoTest {
     private Station station1;
     private Station station2;
 
-    private Section testSection1;
-
     @Autowired
     private SectionDaoTest(JdbcTemplate jdbcTemplate) {
         this.sectionDao = new SectionDao(jdbcTemplate);

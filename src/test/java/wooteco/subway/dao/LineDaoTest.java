@@ -63,7 +63,7 @@ class LineDaoTest {
         List<LineEntity> findLines = lineDao.findAll();
         int beforeSize = findLines.size();
 
-        LineEntity line = lineDao.save(testLine2);
+        lineDao.save(testLine2);
 
         assertThat(lineDao.findAll().size()).isEqualTo(beforeSize + 1);
     }
@@ -71,7 +71,7 @@ class LineDaoTest {
     @DisplayName("중복되는 노선 이름이 있을 때 예외 반환 테스트")
     @Test
     void save_fail() {
-        LineEntity line = lineDao.save(testLine1);
+        lineDao.save(testLine1);
         assertThatThrownBy(() -> lineDao.save(testLine1SameName))
                 .isInstanceOf(DuplicateKeyException.class);
     }
@@ -87,7 +87,7 @@ class LineDaoTest {
     @DisplayName("존재하는 노선 id가 없으면 삭제되지 않는지 테스트")
     @Test
     void deleteById_not_exist() {
-        LineEntity line = lineDao.save(testLine1);
+        lineDao.save(testLine1);
         lineDao.deleteById(-1L);
         assertThat(lineDao.findAll().isEmpty()).isFalse();
     }
@@ -103,7 +103,7 @@ class LineDaoTest {
     @DisplayName("존재하는 노선 id가 없으면 빈 옵셔널 반환하는지 테스트")
     @Test
     void findById_not_exist() {
-        LineEntity line = lineDao.save(testLine1);
+        lineDao.save(testLine1);
         assertThat(lineDao.findById(-1L).isEmpty()).isTrue();
     }
 
@@ -111,7 +111,7 @@ class LineDaoTest {
     @Test
     void changeLineName_duplicate() {
         LineEntity line = lineDao.save(testLine1);
-        LineEntity line2 = lineDao.save(testLine3);
+        lineDao.save(testLine3);
         assertThatThrownBy(() -> lineDao.changeLineName(line.getId(), testLine3.getName()))
                 .isInstanceOf(DuplicateKeyException.class);
     }
@@ -120,7 +120,7 @@ class LineDaoTest {
     @Test
     void changeLineName_success() {
         LineEntity line = lineDao.save(testLine1);
-        LineEntity line2 = lineDao.save(testLine3);
+        lineDao.save(testLine3);
 
         lineDao.changeLineName(line.getId(), "testName4");
 
@@ -131,7 +131,7 @@ class LineDaoTest {
     @Test
     void changeLineName_self_loop() {
         LineEntity line = lineDao.save(testLine1);
-        LineEntity line2 = lineDao.save(testLine3);
+        lineDao.save(testLine3);
         lineDao.changeLineName(line.getId(), "testName");
         assertThat(line.getName()).isEqualTo("testName");
     }

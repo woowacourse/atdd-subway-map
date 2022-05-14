@@ -80,7 +80,7 @@ class SectionControllerTest {
     @Test
     void createSection_success() {
         SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10L);
-        ExtractableResponse<Response> extract = RestAssured.
+        RestAssured.
                 given().log().all().
                     body(sectionRequest).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
@@ -94,7 +94,7 @@ class SectionControllerTest {
     @DisplayName("구간을 제거한다")
     @Test
     void deleteSection_success() {
-        ExtractableResponse<Response> extract = RestAssured.
+        RestAssured.
                 given().log().all().
                 when().
                     delete("/lines/1/sections?stationId=3").

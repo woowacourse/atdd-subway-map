@@ -43,12 +43,12 @@ class StationControllerTest {
         // when
         ExtractableResponse<Response> response = RestAssured.
                 given().log().all().
-                body(testStation1).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testStation1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/stations").
+                    post("/stations").
                 then().log().all().
-                extract();
+                    extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -61,22 +61,22 @@ class StationControllerTest {
         // given
         RestAssured.
                 given().log().all().
-                body(testStation1).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testStation1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/stations").
+                    post("/stations").
                 then().
-                extract();
+                    extract();
 
         // when
         RestAssured.
                 given().log().all().
-                body(testStation1).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testStation1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/stations").
+                    post("/stations").
                 then().
-                statusCode(HttpStatus.BAD_REQUEST.value());
+                    statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철역을 조회한다.")
