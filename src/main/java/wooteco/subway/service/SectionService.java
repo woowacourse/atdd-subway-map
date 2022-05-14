@@ -61,11 +61,4 @@ public class SectionService {
         sectionDao.deleteAll(sectionsToDelete);
         mergedSection.ifPresent(sectionDao::save);
     }
-
-    @Transactional(readOnly = true)
-    public List<Station> queryStationsByLine(final long lineId) {
-        final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
-        final Sections sections = new Sections(lineSections);
-        return sections.extractStations();
-    }
 }

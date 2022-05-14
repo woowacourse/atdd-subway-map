@@ -51,7 +51,7 @@ class LineServiceTest {
         lineDao.save(new Line("2호선", "bg-green-600"));
         lineDao.save(new Line("5호선", "bg-purple-600"));
 
-        final List<Line> lines = lineService.queryAll();
+        final List<Line> lines = lineService.getAll();
 
         assertThat(lines.size()).isEqualTo(2);
     }
@@ -61,7 +61,7 @@ class LineServiceTest {
     void queryByIdTest() {
         final Line line = lineDao.save(new Line("2호선", "bg-green-600"));
 
-        final Line foundLine = lineService.queryById(line.getId());
+        final Line foundLine = lineService.getById(line.getId());
 
         assertThat(line).isEqualTo(foundLine);
     }
@@ -73,7 +73,7 @@ class LineServiceTest {
 
         lineService.modify(savedLine.getId(), new Line("5호선", "bg-green-600"));
 
-        final Line foundLine = lineService.queryById(savedLine.getId());
+        final Line foundLine = lineService.getById(savedLine.getId());
 
         assertThat(foundLine).isEqualTo(new Line(savedLine.getId(), "5호선", "bg-green-600"));
     }
@@ -93,7 +93,7 @@ class LineServiceTest {
 
         lineService.remove(savedLine.getId());
 
-        assertThatThrownBy(() -> lineService.queryById(savedLine.getId()))
+        assertThatThrownBy(() -> lineService.getById(savedLine.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 노선이 존재하지 않습니다.");
     }

@@ -71,4 +71,14 @@ public class StationDao {
 
         return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
     }
+
+    public List<Station> findAllByLineId(long lineId) {
+        String sql = "select distinct s.id, s.name from station s, section se " +
+                "where se.line_id=:lineId and (s.id=se.up_station_id or s.id=down_station_id)";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+
+        return namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
+    }
 }

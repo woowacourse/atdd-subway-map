@@ -9,6 +9,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
+import wooteco.subway.service.StationService;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -22,9 +23,12 @@ public class LineController {
 
     private final SectionService sectionService;
 
-    public LineController(LineService lineService, SectionService sectionService) {
+    private final StationService stationService;
+
+    public LineController(LineService lineService, SectionService sectionService, StationService stationService) {
         this.lineService = lineService;
         this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     @PostMapping("/lines")
@@ -37,12 +41,12 @@ public class LineController {
     }
 
     private List<Station> getStationsByLine(long lineId) {
-        return sectionService.queryStationsByLine(lineId);
+        return stationService.getAllByLineId(lineId);
     }
 
     @GetMapping("/lines")
     public List<LineResponse> getAllLines() {
-        List<Line> allLines = lineService.queryAll();
+        List<Line> allLines = lineService.getAll();
         return allLines.stream()
                 .map(line -> LineResponse.from(line, getStationsByLine(line.getId())))
                 .collect(Collectors.toList());
@@ -50,7 +54,7 @@ public class LineController {
 
     @GetMapping("/lines/{lineId}")
     public LineResponse getLineById(@PathVariable Long lineId) {
-        return LineResponse.from(lineService.queryById(lineId), sectionService.queryStationsByLine(lineId));
+        return LineResponse.from(lineService.getById(lineId), stationService.getAllByLineId(lineId));
     }
 
     @PutMapping("/lines/{lineId}")

@@ -30,12 +30,12 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<Line> queryAll() {
+    public List<Line> getAll() {
         return lineDao.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Line queryById(Long id) {
+    public Line getById(Long id) {
         return extractLine(lineDao.findById(id));
     }
 
