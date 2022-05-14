@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.exception;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
