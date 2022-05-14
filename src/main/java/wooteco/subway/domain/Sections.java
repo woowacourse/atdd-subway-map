@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.dto.DeleteAndUpdateSectionsInfo;
+import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.SectionServiceException;
 
 import java.util.List;
@@ -84,49 +86,48 @@ public class Sections {
                 .orElseThrow(() -> new SectionServiceException("중간역 생성중 기존역을 찾지 못하였습니다."));
     }
 
-
-    //////
-
-    public boolean isLastStation(Long newUpStationId, Long newDownStationId) {
-        return isLastUpStation(newDownStationId) || isLastDownStation(newUpStationId);
-    }
-
-    private boolean isLastUpStation(Long stationId) {
-        boolean notExitInLine = values.stream()
-                .anyMatch(s -> s.getDownStationId().equals(stationId) || s.getUpStationId().equals(stationId));
-        if (!notExitInLine) {
-            return false;
+    public DeleteAndUpdateSectionsInfo delete(Long stationId) {
+        validateExistStation(stationId);
+        validateRemainOneSection();
+        Long currentLastUpStationId = findLastUpStationId();
+        Long currentLastDownStationId = findLastDownStationId();
+        if (currentLastUpStationId.equals(stationId) || currentLastDownStationId.equals(stationId)) {
+            return deleteLastSection(currentLastUpStationId, currentLastDownStationId, stationId);
         }
-        return values.stream()
-                .noneMatch(s -> s.getDownStationId().equals(stationId));
+
+        Section upSideStation = extractUpSideStation(stationId);
+        Section downSideStation = extractDownSideStation(stationId);
+        Section sectionToBeUpdated = new Section(upSideStation.getId(), upSideStation.getUpStationId(),
+                downSideStation.getDownStationId(), upSideStation.getDistance() + downSideStation.getDistance());
+        return new DeleteAndUpdateSectionsInfo(downSideStation, sectionToBeUpdated);
     }
 
-    private boolean isLastDownStation(Long stationId) {
-        boolean notExitInLine = values.stream()
-                .anyMatch(s -> s.getDownStationId().equals(stationId) || s.getUpStationId().equals(stationId));
-        if (!notExitInLine) {
-            return false;
+    private void validateExistStation(Long stationId) {
+        if (!hasStation(stationId)) {
+            throw new AccessNoneDataException("현재 라인에 존재하지 않는 역입니다.");
         }
-        return values.stream()
-                .noneMatch(s -> s.getUpStationId().equals(stationId));
     }
 
-    public boolean hasOneSection() {
-        return values.size() <= 1;
+    private void validateRemainOneSection() {
+        if (values.size() == 1) {
+            throw new SectionServiceException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
+        }
     }
 
-    public Optional<Section> checkAndExtractLastStation(Long stationId) {
-        if (isLastUpStation(stationId)) {
-            return values.stream()
+    private DeleteAndUpdateSectionsInfo deleteLastSection(Long lastUpStationId, Long lastDownStationId, Long stationId) {
+        if (lastUpStationId.equals(stationId)) {
+            Section section = values.stream()
                     .filter(s -> s.getUpStationId().equals(stationId))
-                    .findFirst();
+                    .findFirst().orElseThrow();
+            return new DeleteAndUpdateSectionsInfo(section);
         }
-        if (isLastDownStation(stationId)) {
-            return values.stream()
+        if (lastDownStationId.equals(stationId)) {
+            Section section = values.stream()
                     .filter(s -> s.getDownStationId().equals(stationId))
-                    .findFirst();
+                    .findFirst().orElseThrow();
+            return new DeleteAndUpdateSectionsInfo(section);
         }
-        return Optional.empty();
+        return null;
     }
 
     public Section extractUpSideStation(Long stationId) {
@@ -141,9 +142,5 @@ public class Sections {
                 .filter(s -> s.getUpStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(() -> new SectionServiceException("중간역 삭제중 하행역을 찾지 못하였습니다."));
-    }
-
-    public List<Section> getValues() {
-        return List.copyOf(values);
     }
 }

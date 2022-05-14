@@ -7,9 +7,9 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.dto.DeleteAndUpdateSectionsInfo;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.AccessNoneDataException;
-import wooteco.subway.exception.SectionServiceException;
 
 import java.util.Optional;
 
@@ -54,36 +54,11 @@ public class SectionService {
     public void delete(Long lineId, Long stationId) {
         validateExistLine(lineId);
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        validateExistStationInLine(sections, stationId);
-        validateRemainOneSection(sections);
+        DeleteAndUpdateSectionsInfo deleteAndUpdateSectionsInfo = sections.delete(stationId);
 
-        Optional<Section> sectionWithLastStation = sections.checkAndExtractLastStation(stationId);
-        if (sectionWithLastStation.isPresent()) {
-            sectionDao.deleteById(sectionWithLastStation.get().getId());
-            return;
+        sectionDao.deleteById(deleteAndUpdateSectionsInfo.getSectionToBeRemoved().getId());
+        if (deleteAndUpdateSectionsInfo.getSectionToBeUpdated() != null) {
+            sectionDao.update(deleteAndUpdateSectionsInfo.getSectionToBeUpdated());
         }
-        deleteMiddleStation(sections, lineId, stationId);
-    }
-
-    private void validateExistStationInLine(Sections sections, Long stationId) {
-        if (!sections.hasStation(stationId)) { // sections로 이동
-            throw new AccessNoneDataException("현재 라인에 존재하지 않는 역입니다.");
-        }
-    }
-
-    private void validateRemainOneSection(Sections sections) {
-        if (sections.hasOneSection()) { // sections로 이동
-            throw new SectionServiceException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
-        }
-    }
-
-    private void deleteMiddleStation(Sections sections, Long lineId, Long stationId) {
-        Section upSideStation = sections.extractUpSideStation(stationId);
-        Section downSideStation = sections.extractDownSideStation(stationId);
-        Section newSection = new Section(lineId, upSideStation.getUpStationId(), downSideStation.getDownStationId(),
-                upSideStation.getDistance() + downSideStation.getDistance());
-        sectionDao.deleteById(upSideStation.getId());
-        sectionDao.deleteById(downSideStation.getId());
-        sectionDao.insert(newSection);
     }
 }
