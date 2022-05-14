@@ -8,9 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.dto.SectionDto;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.SectionRequest;
 
 @SpringBootTest
@@ -18,18 +22,21 @@ import wooteco.subway.dto.SectionRequest;
 public class SectionServiceTest {
 
     private final SectionService sectionService;
+    private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public SectionServiceTest(SectionService sectionService, SectionDao sectionDao,
+    public SectionServiceTest(SectionService sectionService, LineDao lineDao, SectionDao sectionDao,
             StationDao stationDao) {
         this.sectionService = sectionService;
+        this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
 
     @AfterEach
     void reset() {
+        lineDao.deleteAll();
         stationDao.deleteAll();
         sectionDao.deleteAll();
     }
@@ -37,9 +44,11 @@ public class SectionServiceTest {
     @Test
     @DisplayName("기존의 구간의 길이와 같은 구간을 추가하면 예외를 반환한다")
     void create_inValidDistance_same() {
-        stationDao.save("강남역");
-        stationDao.save("선릉역");
-        sectionDao.save(1L, 1L, 2L, 5);
+        lineDao.save(new Line("2호선", "green"));
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("선릉역"));
+        Section section = new Section(1L, stationDao.findById(1L).get(), stationDao.findById(2L).get(), 5);
+        sectionDao.save(section);
 
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 5);
 
@@ -51,9 +60,11 @@ public class SectionServiceTest {
     @Test
     @DisplayName("기존의 구간의 길이보다 큰 구간을 추가하면 예외를 반환한다")
     void create_inValidDistance_longer() {
-        stationDao.save("강남역");
-        stationDao.save("선릉역");
-        sectionDao.save(1L, 1L, 2L, 5);
+        lineDao.save(new Line("2호선", "green"));
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("선릉역"));
+        Section section = new Section(1L, stationDao.findById(1L).get(), stationDao.findById(2L).get(), 5);
+        sectionDao.save(section);
 
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 8);
 
@@ -65,9 +76,11 @@ public class SectionServiceTest {
     @Test
     @DisplayName("이미 존재하는 구간을 추가하면 예외를 반환한다.")
     void create_inValidStations_bothExist() {
-        stationDao.save("강남역");
-        stationDao.save("선릉역");
-        sectionDao.save(1L, 1L, 2L, 5);
+        lineDao.save(new Line("2호선", "green"));
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("선릉역"));
+        Section section = new Section(1L, stationDao.findById(1L).get(), stationDao.findById(2L).get(), 5);
+        sectionDao.save(section);
 
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 3);
 
@@ -79,11 +92,13 @@ public class SectionServiceTest {
     @Test
     @DisplayName("상행역과 하행역이 모두 존재하지 않는 구간을 추가하면 예외를 반환한다.")
     void create_inValidStations_bothDoNotExist() {
-        stationDao.save("강남역");
-        stationDao.save("역삼역");
-        stationDao.save("선릉역");
-        stationDao.save("잠실역");
-        sectionDao.save(1L, 1L, 2L, 5);
+        lineDao.save(new Line("2호선", "green"));
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("역삼역"));
+        stationDao.save(new Station("선릉역"));
+        stationDao.save(new Station("잠실역"));
+        Section section = new Section(1L, stationDao.findById(1L).get(), stationDao.findById(2L).get(), 5);
+        sectionDao.save(section);
         SectionRequest sectionRequest = new SectionRequest(3L, 4L, 3);
 
         assertThatThrownBy(() -> sectionService.create(1L, sectionRequest))
@@ -94,16 +109,12 @@ public class SectionServiceTest {
     @Test
     @DisplayName("갈래길이 생기지 않도록 기존 역을 수정하여 저장한다.")
     void create_updateOrigin() {
-        stationDao.save("강남역");
-        stationDao.save("선릉역");
-        stationDao.save("잠실역");
-
-        long expectedLineId = 1L;
-        long expectedUpStationId = 1L;
-        long expectedDownStationId = 3L;
-        int expectedDistance = 3;
-
-        sectionDao.save(1L, 1L, 2L, 5);
+        lineDao.save(new Line("2호선", "green"));
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("선릉역"));
+        stationDao.save(new Station("잠실역"));
+        Section section = new Section(1L, stationDao.findById(1L).get(), stationDao.findById(2L).get(), 5);
+        sectionDao.save(section);
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 3);
 
         sectionService.create(1L, sectionRequest);
@@ -113,9 +124,9 @@ public class SectionServiceTest {
         long actualDownStationId = sectionDto.getDownStationId();
         int actualDistance = sectionDto.getDistance();
 
-        assertThat(actualLineId).isEqualTo(expectedLineId);
-        assertThat(actualUpStationId).isEqualTo(expectedUpStationId);
-        assertThat(actualDownStationId).isEqualTo(expectedDownStationId);
-        assertThat(actualDistance).isEqualTo(expectedDistance);
+        assertThat(actualLineId).isEqualTo(1L);
+        assertThat(actualUpStationId).isEqualTo(1L);
+        assertThat(actualDownStationId).isEqualTo(3L);
+        assertThat(actualDistance).isEqualTo(3);
     }
 }

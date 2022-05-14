@@ -1,11 +1,9 @@
 package wooteco.subway.dao;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -35,13 +33,6 @@ public class SectionDao {
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("section")
                 .usingGeneratedKeyColumns("id");
-    }
-
-    public SectionDto save(long lineId, long upStationId, long downStationId, int distance) {
-        SectionDto section = new SectionDto(lineId, upStationId, downStationId, distance);
-        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(section);
-        long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return new SectionDto(id, lineId, upStationId, downStationId, distance);
     }
 
     public Section save(Section section) {

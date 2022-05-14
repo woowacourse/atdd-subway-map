@@ -42,13 +42,6 @@ public class LineDao {
         return new Line(id, lineDto.getName(), lineDto.getColor());
     }
 
-    public Line save(String name, String color) {
-        SqlParameterSource parameterSource = new MapSqlParameterSource("name", name)
-                .addValue("color", color);
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return new Line(id, name, color);
-    }
-
     public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM line WHERE id = :id";
         MapSqlParameterSource parameterSource = new MapSqlParameterSource("id", id);

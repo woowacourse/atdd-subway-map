@@ -10,6 +10,7 @@ import org.springframework.test.context.TestConstructor;
 
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineCreateResponse;
 
@@ -46,8 +47,8 @@ class LineCreateServiceTest {
     @DisplayName("section 길이가 0보다 작거나 같은 경우 생성에 실패한다")
     @Test
     void sectionLengthLineCreateFail() {
-        stationDao.save("선릉역");
-        stationDao.save("잠실역");
+        stationDao.save(new Station("선릉역"));
+        stationDao.save(new Station("잠실역"));
 
         LineCreateRequest request = new LineCreateRequest("2호선", "bg-green", 1L, 2L, 0);
 
@@ -59,8 +60,8 @@ class LineCreateServiceTest {
     @DisplayName("Line 이 성공적으로 생성된다")
     @Test
     void lineCreateSuccessfully() {
-        stationDao.save("선릉역");
-        stationDao.save("잠실역");
+        stationDao.save(new Station("선릉역"));
+        stationDao.save(new Station("잠실역"));
 
         String lineName = "2호선";
         String lineColor = "bg-green";

@@ -10,12 +10,8 @@ public class SectionDto {
     private final int distance;
 
     public SectionDto(Section section) {
-        this(section.getLineId(), section.getUpStation().getId(), section.getDownStation().getId(),
+        this(0L, section.getLineId(), section.getUpStation().getId(), section.getDownStation().getId(),
                 section.getDistance());
-    }
-
-    public SectionDto(long lineId, long upStationId, long downStationId, int distance) {
-        this(0L, lineId, upStationId, downStationId, distance);
     }
 
     public SectionDto(long id, long lineId, long upStationId, long downStationId, int distance) {

@@ -25,7 +25,7 @@ public class StationDaoTest {
 
     @BeforeEach
     void set() {
-        stationDao.save("선릉역");
+        stationDao.save(new Station("선릉역"));
     }
 
     @AfterEach
@@ -36,10 +36,9 @@ public class StationDaoTest {
     @Test
     @DisplayName("지하철역을 저장한다.")
     void save() {
-        String expected = "강남역";
+        Station expected = new Station("강남역");
 
-        Station station = stationDao.save(expected);
-        String actual = station.getName();
+        Station actual = stationDao.save(expected);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -47,7 +46,7 @@ public class StationDaoTest {
     @Test
     @DisplayName("모든 지하철 역을 조회한다")
     void findAll() {
-        stationDao.save("잠실역");
+        stationDao.save(new Station("잠실역"));
 
         List<Station> stations = stationDao.findAll();
 

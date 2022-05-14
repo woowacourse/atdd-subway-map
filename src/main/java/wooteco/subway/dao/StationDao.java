@@ -42,12 +42,6 @@ public class StationDao {
         return new Station(id, station.getName());
     }
 
-    public Station save(String name) {
-        SqlParameterSource parameterSource = new MapSqlParameterSource("name", name);
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return new Station(id, name);
-    }
-
     public Optional<Station> findById(long id) {
         String sql = "SELECT * FROM station WHERE id = :id";
         MapSqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
