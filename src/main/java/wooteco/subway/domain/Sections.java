@@ -21,7 +21,6 @@ public class Sections {
 
     public void add(final Section section) {
         validateCanAdd(section);
-        validateSection(section);
 
         findUpSection(section).ifPresent(it -> update(section, it));
         findDownSection(section).ifPresent(it -> update(section, it));
@@ -110,9 +109,28 @@ public class Sections {
         return value.stream().filter(it -> it.equals(section)).findAny();
     }
 
-    private void validateSection(final Section other) {
+    private void validateCanAdd(final Section other) {
+        validateSectionInsertion(other, extractStations());
         validateUpSection(other);
         validateDownSection(other);
+    }
+
+    private void validateSectionInsertion(final Section other, final List<Station> stations) {
+        final boolean hasUpStation = stations.contains(other.getUpStation());
+        final boolean hasDownStation = stations.contains(other.getDownStation());
+
+        if (hasUpStation && hasDownStation) {
+            throw new SectionAlreadyExistsException();
+        }
+        if (!hasUpStation && !hasDownStation) {
+            throw new NoStationExistsException();
+        }
+    }
+
+    private void validateUpSection(final Section other) {
+        final Optional<Section> upSection = findUpSection(other);
+
+        upSection.ifPresent(it -> validateDistance(it, other));
     }
 
     private void validateDownSection(final Section other) {
@@ -129,37 +147,14 @@ public class Sections {
         return value.stream().filter(it -> it.getUpStation().equals(other.getUpStation())).findAny();
     }
 
-    private void validateUpSection(final Section other) {
-        final Optional<Section> upSection = findUpSection(other);
-
-        upSection.ifPresent(it -> validateDistance(it, other));
-    }
-
     private void validateDistance(final Section section, final Section other) {
         if (other.isGreaterOrEqualTo(section)) {
             throw new DistanceTooLongException();
         }
     }
 
-    private void validateCanAdd(final Section other) {
-        final List<Station> stations = extractStations();
-        validateSectionInsertion(other, stations);
-    }
-
     private Stream<Station> getStations(Function<Section, Station> function) {
         return value.stream().map(function);
-    }
-
-    private void validateSectionInsertion(final Section other, final List<Station> stations) {
-        final boolean hasUpStation = stations.contains(other.getUpStation());
-        final boolean hasDownStation = stations.contains(other.getDownStation());
-
-        if (hasUpStation && hasDownStation) {
-            throw new SectionAlreadyExistsException();
-        }
-        if (!hasUpStation && !hasDownStation) {
-            throw new NoStationExistsException();
-        }
     }
 
     public List<Section> getSections() {
