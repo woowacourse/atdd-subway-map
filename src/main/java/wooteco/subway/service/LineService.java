@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.dao.SectionJdbcDao;
 import wooteco.subway.dao.StationJdbcDao;
@@ -61,12 +61,9 @@ public class LineService {
 
     private LineResponse makeLineResponseWithLinkedStations(Line line, Sections sections) {
         Set<Station> stations = new LinkedHashSet<>();
-        if (sections.isExistSection()) {
-            for (Section section : sections.linkSections()) {
-                stations.add(toMapStations().get(section.getUpStationId()));
-                stations.add(toMapStations().get(section.getDownStationId()));
-            }
-            return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+        for (Section section : sections.linkSections()) {
+            stations.add(toMapStations().get(section.getUpStationId()));
+            stations.add(toMapStations().get(section.getDownStationId()));
         }
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
