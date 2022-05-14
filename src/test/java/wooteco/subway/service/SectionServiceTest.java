@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
@@ -220,61 +221,12 @@ class SectionServiceTest extends ServiceTest {
                 .doesNotThrowAnyException();
     }
 
-    @Test
-    @DisplayName("중간에 위치한 구간을 삭제한다.")
-    void Delete_MiddleStation_Success() {
+    @ParameterizedTest
+    @DisplayName("[중간, 상행 종점, 하행 종점]에 위치한 구간을 삭제한다.")
+    @ValueSource(longs = {2, 1, 4})
+    void Delete_MiddleStation_Success(final Long stationIdToDelete) {
         // given
-        final SectionDeletionRequest request = new SectionDeletionRequest(line.getId(), 2L);
-
-        given(lineDao.findById(any(Long.class)))
-                .willReturn(Optional.of(line));
-
-        final Sections sections = new Sections(List.of(
-                new Section(1L, line, upStation, downStation, new Distance(5)),
-                new Section(2L, line, new Station(2L, "2"), new Station(3L, "3"), new Distance(7)),
-                new Section(3L, line, new Station(3L, "3"), new Station(4L, "4"), new Distance(11))
-        ));
-        given(sectionDao.findAllByLineId(any(Long.class)))
-                .willReturn(sections);
-
-        given(stationDao.findById(any(Long.class)))
-                .willReturn(Optional.of(new Station(2L, "2")));
-
-        // then
-        assertThatCode(() -> sectionService.delete(request))
-                .doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("상행 종점에 위치한 구간을 삭제한다.")
-    void Delete_UpStation_Success() {
-        // given
-        final SectionDeletionRequest request = new SectionDeletionRequest(line.getId(), 1L);
-
-        given(lineDao.findById(any(Long.class)))
-                .willReturn(Optional.of(line));
-
-        final Sections sections = new Sections(List.of(
-                new Section(1L, line, upStation, downStation, new Distance(5)),
-                new Section(2L, line, new Station(2L, "2"), new Station(3L, "3"), new Distance(7)),
-                new Section(3L, line, new Station(3L, "3"), new Station(4L, "4"), new Distance(11))
-        ));
-        given(sectionDao.findAllByLineId(any(Long.class)))
-                .willReturn(sections);
-
-        given(stationDao.findById(any(Long.class)))
-                .willReturn(Optional.of(new Station(2L, "2")));
-
-        // then
-        assertThatCode(() -> sectionService.delete(request))
-                .doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("하행 종점에 위치한 구간을 삭제한다.")
-    void Delete_DownStation_Success() {
-        // given
-        final SectionDeletionRequest request = new SectionDeletionRequest(line.getId(), 4L);
+        final SectionDeletionRequest request = new SectionDeletionRequest(line.getId(), stationIdToDelete);
 
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));

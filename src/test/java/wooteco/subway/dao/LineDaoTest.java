@@ -58,7 +58,7 @@ class LineDaoTest extends DaoTest {
         final List<Line> lines = lineDao.findAll();
 
         // then
-        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines).hasSize(2);
     }
 
     @Test

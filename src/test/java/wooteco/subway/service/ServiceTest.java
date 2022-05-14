@@ -8,7 +8,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 
 @ExtendWith(MockitoExtension.class)
-class ServiceTest {
+abstract class ServiceTest {
 
     @Mock
     protected StationDao stationDao;

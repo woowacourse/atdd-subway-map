@@ -193,7 +193,8 @@ class LineServiceTest extends ServiceTest {
                 .willReturn(new Sections(Collections.emptyList()));
 
         // then
-        assertThatThrownBy(() -> lineService.findById(line.getId()))
+        final Long lineId = line.getId();
+        assertThatThrownBy(() -> lineService.findById(lineId))
                 .isInstanceOf(NoSuchSectionException.class);
     }
 

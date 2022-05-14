@@ -129,17 +129,18 @@ class SectionsTest {
     @DisplayName("구간이 1개인 역은 삭제할 수 없다.")
     void FindDeletableSections_OnlyOneSection_ExceptionThrown() {
         // given
+        final Station stationToDelete = new Station(2L, "2");
         final Sections sections = new Sections(List.of(
                 new Section(
                         new Line(1L, "1", "1"),
                         new Station(1L, "1"),
-                        new Station(2L, "2"),
+                        stationToDelete,
                         1
                 )
         ));
 
         // then
-        assertThatThrownBy(() -> sections.findDeletableSections(new Station(2L, "2")))
+        assertThatThrownBy(() -> sections.findDeletableSections(stationToDelete))
                 .isInstanceOf(IllegalInputException.class)
                 .hasMessage("구간을 삭제할 수 없습니다.");
     }
@@ -164,7 +165,8 @@ class SectionsTest {
         ));
 
         // then
-        assertThatThrownBy(() -> sections.findDeletableSections(new Station(999L, "999")))
+        final Station station = new Station(999L, "999");
+        assertThatThrownBy(() -> sections.findDeletableSections(station))
                 .isInstanceOf(NoSuchSectionException.class);
     }
 }
