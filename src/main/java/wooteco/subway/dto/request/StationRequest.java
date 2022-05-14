@@ -3,7 +3,7 @@ package wooteco.subway.dto.request;
 public class StationRequest {
     private String name;
 
-    public StationRequest() {
+    private StationRequest() {
     }
 
     public StationRequest(final String name) {
