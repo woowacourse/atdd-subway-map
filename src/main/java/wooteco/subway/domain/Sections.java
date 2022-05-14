@@ -1,9 +1,6 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.IllegalDeleteException;
-import wooteco.subway.exception.IllegalSectionInsertException;
-import wooteco.subway.exception.InvalidDistanceException;
+import wooteco.subway.domain.exception.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sections {
+
     private static final int MINIMUM_SIZE = 1;
     private static final int NEEDS_MERGE_SIZE = 2;
 
@@ -59,9 +57,7 @@ public class Sections {
     }
 
     public List<Station> extractStations() {
-        return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation))
-                .distinct()
-                .collect(Collectors.toList());
+        return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation)).distinct().collect(Collectors.toList());
     }
 
     private Optional<Section> mergeSection(final List<Section> sections) {
@@ -74,7 +70,7 @@ public class Sections {
         if (section1.getUpStation().equals(section2.getDownStation())) {
             return findSection(section2.merge(section1));
         }
-        throw new IllegalStateException("서버에 오류가 발생했습니다.");
+        throw new CannotMergeException();
     }
 
     private void update(final Section source, final Section target) {
@@ -83,21 +79,18 @@ public class Sections {
     }
 
     private List<Section> findSectionByStationId(final long stationId) {
-        return value.stream()
-                .filter(section -> section.getUpStation().getId() == stationId ||
-                        section.getDownStation().getId() == stationId)
-                .collect(Collectors.toList());
+        return value.stream().filter(section -> section.getUpStation().getId() == stationId || section.getDownStation().getId() == stationId).collect(Collectors.toList());
     }
 
     private void validateSectionNotFound(final List<Section> sections) {
         if (sections.size() == 0) {
-            throw new DataNotFoundException("구간에 존재하지 않는 지하철 역입니다.");
+            throw new SectionNotFoundException();
         }
     }
 
     private void validateMinimumSize() {
         if (value.size() <= MINIMUM_SIZE) {
-            throw new IllegalDeleteException("구간이 " + value.size() + "개 이므로 삭제할 수 없습니다.");
+            throw new IllegalSectionDeleteBySizeException();
         }
     }
 
@@ -114,9 +107,7 @@ public class Sections {
     }
 
     private Optional<Section> findSection(final Section section) {
-        return value.stream()
-                .filter(it -> it.equals(section))
-                .findAny();
+        return value.stream().filter(it -> it.equals(section)).findAny();
     }
 
     private void validateSection(final Section other) {
@@ -131,15 +122,11 @@ public class Sections {
     }
 
     private Optional<Section> findDownSection(final Section other) {
-        return value.stream()
-                .filter(it -> it.getDownStation().equals(other.getDownStation()))
-                .findAny();
+        return value.stream().filter(it -> it.getDownStation().equals(other.getDownStation())).findAny();
     }
 
     private Optional<Section> findUpSection(final Section other) {
-        return value.stream()
-                .filter(it -> it.getUpStation().equals(other.getUpStation()))
-                .findAny();
+        return value.stream().filter(it -> it.getUpStation().equals(other.getUpStation())).findAny();
     }
 
     private void validateUpSection(final Section other) {
@@ -150,7 +137,7 @@ public class Sections {
 
     private void validateDistance(final Section section, final Section other) {
         if (other.isGreaterOrEqualTo(section)) {
-            throw new InvalidDistanceException("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
+            throw new DistanceTooLongException();
         }
     }
 
@@ -160,8 +147,7 @@ public class Sections {
     }
 
     private Stream<Station> getStations(Function<Section, Station> function) {
-        return value.stream()
-                .map(function);
+        return value.stream().map(function);
     }
 
     private void validateSectionInsertion(final Section other, final List<Station> stations) {
@@ -169,10 +155,10 @@ public class Sections {
         final boolean hasDownStation = stations.contains(other.getDownStation());
 
         if (hasUpStation && hasDownStation) {
-            throw new IllegalSectionInsertException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+            throw new SectionAlreadyExistsException();
         }
         if (!hasUpStation && !hasDownStation) {
-            throw new IllegalSectionInsertException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
+            throw new NoStationExistsException();
         }
     }
 
@@ -182,8 +168,6 @@ public class Sections {
 
     @Override
     public String toString() {
-        return "Sections{" +
-                "value=" + value +
-                '}';
+        return "Sections{" + "value=" + value + '}';
     }
 }

@@ -8,12 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.IllegalDeleteException;
-import wooteco.subway.exception.IllegalSectionInsertException;
-import wooteco.subway.exception.InvalidDistanceException;
+import wooteco.subway.domain.exception.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +34,7 @@ class SectionsTest {
         final Section newSection = new Section(newStation1, newStation2, 5, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(IllegalSectionInsertException.class)
+                .isInstanceOf(NoStationExistsException.class)
                 .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
     }
 
@@ -48,8 +44,8 @@ class SectionsTest {
         final Section newSection = new Section(upStation, downStation, 5, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(IllegalSectionInsertException.class)
-                .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+                .isInstanceOf(SectionAlreadyExistsException.class)
+                .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
     }
 
     @DisplayName("상행 구간 등록시 역 사이 거리가 기존 구간보다 크거나 같을 경우 예외를 발생한다.")
@@ -61,7 +57,7 @@ class SectionsTest {
         final Section newSection = new Section(newStation1, newStation2, distance, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(InvalidDistanceException.class)
+                .isInstanceOf(DistanceTooLongException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
     }
 
@@ -74,7 +70,7 @@ class SectionsTest {
         final Section newSection = new Section(newStation1, newStation2, distance, 1L);
 
         assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(InvalidDistanceException.class)
+                .isInstanceOf(DistanceTooLongException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우 기존 구간 거리보다 적어야 합니다.");
     }
 
@@ -182,16 +178,16 @@ class SectionsTest {
         final long stationId = 4L;
 
         assertThatThrownBy(() -> newSections.pop(stationId))
-                .isInstanceOf(DataNotFoundException.class)
-                .hasMessage("구간에 존재하지 않는 지하철 역입니다.");
+                .isInstanceOf(SectionNotFoundException.class)
+                .hasMessage("해당 지하철역으로 구성된 구간이 존재하지 않습니다.");
     }
 
     @DisplayName("구간이 1개일 때 삭제를 시도할 경우 예외를 발생한다.")
     @Test
     void delete_throwsSectionsSizeException() {
         assertThatThrownBy(() -> sections.pop(1L))
-                .isInstanceOf(IllegalDeleteException.class)
-                .hasMessage("구간이 1개 이므로 삭제할 수 없습니다.");
+                .isInstanceOf(IllegalSectionDeleteBySizeException.class)
+                .hasMessage("구간이 1개 이하 이므로 삭제할 수 없습니다.");
     }
 
     @DisplayName("종점 구간의 역을 삭제한다.")

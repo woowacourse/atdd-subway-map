@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.domain.exception.ExpectedException;
 import wooteco.subway.exception.ClientRuntimeException;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,11 @@ public class ControllerAdvice {
     @ExceptionHandler(ClientRuntimeException.class)
     public ResponseEntity<String> handleClientRuntimeException(final ClientRuntimeException e) {
         return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ExpectedException.class)
+    public ResponseEntity<String> handleExceptedException(final ExpectedException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

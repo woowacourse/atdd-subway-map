@@ -9,7 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DataNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

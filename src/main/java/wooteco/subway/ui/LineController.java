@@ -1,6 +1,5 @@
 package wooteco.subway.ui;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.domain.Line;
