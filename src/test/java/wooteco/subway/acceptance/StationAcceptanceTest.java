@@ -48,7 +48,20 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithNameBlank() {
         // given && when
-        ExtractableResponse<Response> response = createStationAndReturnResponse("");
+        String name = "";
+        ExtractableResponse<Response> response = createStationAndReturnResponse(name);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+    }
+
+    @DisplayName("지하철역 이름을 빈 값으로 지하철역을 생성한다.")
+    @Test
+    void createStationWithNameNull() {
+        // given && when
+        String name = null;
+        ExtractableResponse<Response> response = createStationAndReturnResponse(name);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
