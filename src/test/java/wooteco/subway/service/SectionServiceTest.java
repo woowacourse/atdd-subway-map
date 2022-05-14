@@ -39,8 +39,8 @@ class SectionServiceTest {
         Long downStationId = 3L;
 
         doReturn(new Sections(List.of(
-                new Section(LINE_ID, 1L, 2L,5),
-                new Section(LINE_ID, 2L,5L,5)
+                new Section(LINE_ID, 1L, 2L, 5),
+                new Section(LINE_ID, 2L, 5L, 5)
         )))
                 .when(jdbcSectionDao)
                 .findByLineIdAndStationIds(LINE_ID, upStationId, downStationId);
@@ -56,13 +56,14 @@ class SectionServiceTest {
         Long downStationId = 2L;
 
         doReturn(new Sections(List.of(
-                new Section(LINE_ID, upStationId, downStationId,5),
-                new Section(LINE_ID, 2L,5L,5)
+                new Section(LINE_ID, upStationId, downStationId, 5),
+                new Section(LINE_ID, 2L, 5L, 5)
         )))
                 .when(jdbcSectionDao)
                 .findByLineIdAndStationIds(LINE_ID, upStationId, downStationId);
 
-        assertThatThrownBy(() -> sectionService.createSection(new SectionRequest(upStationId, downStationId, 5), LINE_ID))
+        assertThatThrownBy(
+                () -> sectionService.createSection(new SectionRequest(upStationId, downStationId, 5), LINE_ID))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -129,7 +130,7 @@ class SectionServiceTest {
         Long stationId = 2L;
 
         doReturn(new Sections(List.of(
-                new Section(lineId, 1L,stationId,5),
+                new Section(lineId, 1L, stationId, 5),
                 new Section(lineId, stationId, 5L, 5)
 
         )))
@@ -138,7 +139,7 @@ class SectionServiceTest {
 
         doReturn(true)
                 .when(jdbcSectionDao)
-                .deleteByLineIdAndUpStationId(lineId,stationId);
+                .deleteByLineIdAndUpStationId(lineId, stationId);
 
         doReturn(true)
                 .when(jdbcSectionDao)
@@ -155,7 +156,7 @@ class SectionServiceTest {
         Long stationId = 2L;
 
         doReturn(new Sections(List.of(
-                new Section(lineId, 1L,stationId,5)
+                new Section(lineId, 1L, stationId, 5)
 
         )))
                 .when(jdbcSectionDao)

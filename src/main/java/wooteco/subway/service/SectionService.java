@@ -47,11 +47,15 @@ public class SectionService {
     private void addBranch(Section section, Long upStationId, Long downStationId, int distance, Long lineId) {
         validateDistance(section, distance);
 
+        int newDistance = section.getDistance() - distance;
         if (section.isSameAsDownStation(downStationId)) {
-            jdbcSectionDao.updateDownStationIdByLineIdAndUpStationId(lineId, section.getUpStationId(), upStationId);
+            jdbcSectionDao
+                    .updateDownStationIdAndDistanceByLineIdAndUpStationId(lineId, section.getUpStationId(),
+                            upStationId, newDistance);
         }
         if (section.isSameAsUpStation(upStationId)) {
-            jdbcSectionDao.updateUpStationIdByLineIdAndDownStationId(lineId, section.getDownStationId(), downStationId);
+            jdbcSectionDao.updateUpStationIdAndDistanceByLineIdAndDownStationId(lineId, section.getDownStationId(),
+                    downStationId, newDistance);
         }
     }
 

@@ -79,7 +79,8 @@ public class JdbcSectionDao {
         String sql = "select * from section where line_id = ? and ("
                 + "up_station_id = ? or up_station_id = ? or down_station_id = ? or down_station_id = ?"
                 + ")";
-        List<Section> sections = jdbcTemplate.query(sql, rowMapper, lineId, upStationId, downStationId, upStationId, downStationId);
+        List<Section> sections = jdbcTemplate
+                .query(sql, rowMapper, lineId, upStationId, downStationId, upStationId, downStationId);
         return new Sections(sections);
     }
 
@@ -91,6 +92,18 @@ public class JdbcSectionDao {
     public boolean updateUpStationIdByLineIdAndDownStationId(Long lineId, Long downStationId, Long upStationId) {
         String sql = "update section set up_station_id = ? where line_id = ? and down_station_id = ?";
         return jdbcTemplate.update(sql, upStationId, lineId, downStationId) == FUNCTION_SUCCESS;
+    }
+
+    public boolean updateDownStationIdAndDistanceByLineIdAndUpStationId(Long lineId, Long upStationId,
+                                                                        Long downStationId, int distance) {
+        String sql = "update section set down_station_id  = ?, distance = ? where line_id = ? and up_station_id = ?";
+        return jdbcTemplate.update(sql, downStationId, distance, lineId, upStationId) == FUNCTION_SUCCESS;
+    }
+
+    public boolean updateUpStationIdAndDistanceByLineIdAndDownStationId(Long lineId, Long downStationId,
+                                                                        Long upStationId, int distance) {
+        String sql = "update section set up_station_id = ?, distance = ? where line_id = ? and down_station_id = ?";
+        return jdbcTemplate.update(sql, upStationId, distance, lineId, downStationId) == FUNCTION_SUCCESS;
     }
 
     public boolean deleteByLineIdAndUpStationId(Long lineId, Long upStationId) {

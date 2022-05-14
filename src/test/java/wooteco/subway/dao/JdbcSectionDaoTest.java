@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.Optional;
@@ -164,5 +165,38 @@ class JdbcSectionDaoTest {
     void updateUpStationIdByLineIdAndDownStationId() {
         boolean isUpdated = jdbcSectionDao.updateUpStationIdByLineIdAndDownStationId(lineId, 3L, 4L);
         assertThat(isUpdated).isTrue();
+    }
+
+    @DisplayName("지하철 호선과 행역을 기준으로 구간의 상행역과 거리를 바꾼다")
+    @Test
+    void updateUpStationIdAndDistanceByLineIdAndDownStationId() {
+        Section section1 = new Section(lineId, 3L, 4L, 5);
+        jdbcSectionDao.save(section1);
+
+        boolean isUpdated = jdbcSectionDao.updateUpStationIdAndDistanceByLineIdAndDownStationId(lineId, 4L, 5L, 3);
+        assertThat(isUpdated).isTrue();
+
+        Section section = jdbcSectionDao.findByLineIdAndDownStationId(lineId, 4L).get();
+
+        assertAll(
+                () -> assertThat(section.getDistance()).isEqualTo(3),
+                () -> assertThat(section.getUpStationId()).isEqualTo(5L)
+        );
+    }
+
+    @DisplayName("지하철 호선과 행역을 기준으로 구간의 하행역과 거리를 바꾼다")
+    @Test
+    void updateDownStationIdAndDistanceByLineIdAndUpStationId() {
+        Section section1 = new Section(lineId, 3L, 4L, 5);
+        jdbcSectionDao.save(section1);
+
+        boolean isUpdated = jdbcSectionDao.updateDownStationIdAndDistanceByLineIdAndUpStationId(lineId, 3L, 5L, 3);
+        assertThat(isUpdated).isTrue();
+
+        Section section = jdbcSectionDao.findByLineIdAndUpStationId(lineId, 3L).get();
+        assertAll(
+                () -> assertThat(section.getDistance()).isEqualTo(3),
+                () -> assertThat(section.getDownStationId()).isEqualTo(5L)
+        );
     }
 }
