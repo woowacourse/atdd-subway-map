@@ -123,8 +123,7 @@ public class LineService {
         validateExist(id);
         Line persistLine = lineDao.findById(id);
         Sections sections = new Sections(sectionDao.findAllByLine(persistLine));
-        Line line = new Line(persistLine.getId(), persistLine.getName(), persistLine.getColor());
-        return new LineResponse(line, sections.getSortedStations());
+        return new LineResponse(persistLine, sections.getSortedStations());
     }
 
     @Transactional
