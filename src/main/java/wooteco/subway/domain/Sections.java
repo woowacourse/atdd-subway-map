@@ -61,10 +61,12 @@ public class Sections {
         final int standardSection = value.indexOf(section) + 1;
         List<Section> leftSection = value.subList(0, standardSection);
         List<Section> rightSection = new ArrayList<>(List.of(seperatedSection.get(1)));
+
         rightSection.addAll(value.subList(standardSection, value.size()));
         leftSection.remove(leftSection.size() - 1);
         leftSection.add(seperatedSection.get(0));
         leftSection.addAll(rightSection);
+
         value = new ArrayList<>(leftSection);
     }
 
@@ -113,12 +115,15 @@ public class Sections {
         final int targetNextIndex = targetIndex + 1;
         final Section targetNext = value.get(targetNextIndex);
         final Section newSection = section.combineTwoSection(targetNext);
+
         if (value.size() == 2) {
             value = new ArrayList<>(List.of(newSection));
             return;
         }
+
         final List<Section> leftSections = value.subList(0, targetIndex);
         final List<Section> rightSections = value.subList(targetIndex + 2, value.size());
+
         leftSections.add(newSection);
         leftSections.addAll(rightSections);
         value = new ArrayList<>(leftSections);
