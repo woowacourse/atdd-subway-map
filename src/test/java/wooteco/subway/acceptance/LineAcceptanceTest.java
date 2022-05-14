@@ -69,22 +69,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 }),
 
-//                dynamicTest("기존과 동일한 구간을 갖는 노선 추가 시 실패한다.", () -> {
-//                    //when
-//                    ExtractableResponse<Response> response = createLine("2호선", "green", station1.getId(), station2.getId(), 10);
-//
-//                    // then
-//                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//                }),
-
                 dynamicTest("구간 생성시 예외 발생한 경우 노선도 생성되지 않음을 확인한다.", () -> {
                     //when
                     ExtractableResponse<Response> response = get("/lines");
 
                     //then
-                    Long count = response.jsonPath().getList(".", LineResponse.class)
-                            .stream()
-                            .count();
+                    int count = response.jsonPath().getList(".", LineResponse.class)
+                            .size();
                     assertThat(count).isOne();
                 })
         );

@@ -75,7 +75,7 @@ public class Sections {
                 .collect(Collectors.toList()));
     }
 
-    public boolean isIntermediateStation() {
+    public boolean needMerge() {
         return sections.size() == MERGE_SECTION_SIZE;
     }
 
@@ -86,14 +86,17 @@ public class Sections {
     }
 
     public Section mergeSections() {
-        if (sections.size() != MERGE_SECTION_SIZE) {
-            throw new IllegalMergeSectionException();
-        }
-
+        validateMergeSections();
         int distance = calculateMergedDistance();
         List<Long> mergedIds = getMergedStationIds();
 
         return new Section(distance, sections.get(0).getLineId(), mergedIds.get(0), mergedIds.get(1));
+    }
+
+    private void validateMergeSections() {
+        if (sections.size() != MERGE_SECTION_SIZE) {
+            throw new IllegalMergeSectionException();
+        }
     }
 
     public void validateInsertable(Section section) {
@@ -133,17 +136,13 @@ public class Sections {
         if (section1.isEqualUpStationId(section2.getDownStationId())) {
             return List.of(section2.getUpStationId(), section1.getDownStationId());
         }
-        if (section2.isEqualUpStationId(section1.getDownStationId())) {
-            return List.of(section1.getUpStationId(), section2.getDownStationId());
-        }
-        throw new IllegalMergeSectionException();
+        return List.of(section1.getUpStationId(), section2.getDownStationId());
     }
 
     private Long getUpLastStationId(List<Long> upStationIds, List<Long> downStationIds) {
         List<Long> upIds = new ArrayList<>(upStationIds);
         upIds.removeAll(downStationIds);
 
-        //이거 검증해줘야할까?
         return upIds.get(0);
     }
 
@@ -151,7 +150,6 @@ public class Sections {
         List<Long> downIds = new ArrayList<>(downStationIds);
         downIds.removeAll(upStationIds);
 
-        //이거 검증해줘야할까?
         return downIds.get(0);
     }
 

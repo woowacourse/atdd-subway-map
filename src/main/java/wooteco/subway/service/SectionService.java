@@ -55,7 +55,7 @@ public class SectionService {
             sectionDao.deleteById(section.getId());
         }
 
-        if (sectionsToDelete.isIntermediateStation()) {
+        if (sectionsToDelete.needMerge()) {
             Section section = sectionsToDelete.mergeSections();
             sectionDao.save(section);
         }
