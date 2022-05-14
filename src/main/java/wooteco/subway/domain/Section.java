@@ -2,14 +2,8 @@ package wooteco.subway.domain;
 
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.SectionResult;
-
-import java.util.List;
-import java.util.Optional;
 
 public class Section {
-    private static final int EXACTLY_SAME_COUNT = 1;
-    private static final int LINEARLY_SAME_COUNT = 2;
 
     private Long id;
     private final int distance;
@@ -47,14 +41,6 @@ public class Section {
         );
     }
 
-    public static Section createBySections(Section existedSection, Section insertedSection) {
-        int generatedDistance = existedSection.getDistance() - insertedSection.distance;
-        if (existedSection.upStationId.equals(insertedSection.upStationId)) {
-            return new Section(generatedDistance, existedSection.getLineId(), insertedSection.downStationId, existedSection.downStationId);
-        }
-        return new Section(generatedDistance, existedSection.getLineId(), existedSection.upStationId, insertedSection.upStationId);
-    }
-
     public Section createSection(Section sectionToInsert) {
         int generatedDistance = distance - sectionToInsert.getDistance();
         if (isUpStationIdEquals(sectionToInsert)) {
@@ -67,19 +53,6 @@ public class Section {
         return upLastStationId.equals(downStationId) != downLastStationId.equals(upStationId) ;
     }
 
-    public SectionResult canAddAsBetweenStation(Sections sections) {
-        Optional<Section> upStationSection = sections.getExistingUpStationSection(this);
-        if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {
-            return SectionResult.of(upStationSection.get(), this);
-        }
-
-        Optional<Section> downStationSection = sections.getExistingDownStationSection(this);
-        if (downStationSection.isPresent() && downStationSection.get().getDistance() > distance) {
-            return SectionResult.of(downStationSection.get(), this);
-        }
-        return new SectionResult(false);
-    }
-
     public boolean isEqualDownStationId(Long stationId) {
         return downStationId.equals(stationId);
     }
@@ -88,32 +61,16 @@ public class Section {
         return upStationId.equals(stationId);
     }
 
-    public boolean isExistedIn(List<Section> sections) {
-        return isEquallyExistedIn(sections) || isLinearlyExistedIn(sections);
-    }
-
-    private boolean isEquallyExistedIn(List<Section> sections) {
-        long count = sections.stream()
-                .filter(section -> isUpStationIdEquals(section) && isDownStationIdEquals(section))
-                .count();
-
-        return count == EXACTLY_SAME_COUNT;
-    }
-
-    private boolean isLinearlyExistedIn(List<Section> sections) {
-        long count = sections.stream()
-                .filter(section -> isUpStationIdEquals(section) || isDownStationIdEquals(section))
-                .count();
-
-        return count == LINEARLY_SAME_COUNT;
-    }
-
     public boolean isUpStationIdEquals(Section section) {
         return section.upStationId.equals(this.upStationId);
     }
 
     public boolean isDownStationIdEquals(Section section) {
         return section.downStationId.equals(this.downStationId);
+    }
+
+    public boolean isDistanceBiggerThan(Section section) {
+        return distance >= section.getDistance();
     }
 
     public Long getId() {

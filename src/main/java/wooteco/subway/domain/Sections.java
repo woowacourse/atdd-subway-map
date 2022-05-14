@@ -9,9 +9,7 @@ import java.util.stream.Collectors;
 
 public class Sections {
     private static final int MERGE_SECTION_SIZE = 2;
-    private static final int LAST_STATION_SIZE = 1;
     private static final int ONE_SECTION = 1;
-    public static final int NO_STATION_MATCH = 0;
 
     private final List<Section> sections;
 
@@ -19,22 +17,39 @@ public class Sections {
         this.sections = sections;
     }
 
+    public Optional<Section> getSectionToDelete(Section section) {
+        if (canAddAsLastStation(section)) {
+            return Optional.empty();
+        }
+        return Optional.of(getModifiableSectionAfterInsert(section));
+    }
+
+    private boolean canAddAsLastStation(Section section) {
+        List<Long> upStationIds = getUpStationIds();
+        List<Long> downStationIds = getDownStationIds();
+
+        Long upLastStationId = getUpLastStationId(upStationIds, downStationIds);
+        Long downLastStationId = getDownLastStationId(upStationIds, downStationIds);
+
+        return section.canAddAsLastStation(upLastStationId, downLastStationId);
+    }
+
+    private Section getModifiableSectionAfterInsert(Section insertableSection) {
+        Optional<Section> upStationSection = getExistingUpStationSection(insertableSection);
+        Optional<Section> downStationSection = getExistingDownStationSection(insertableSection);
+
+        Section existingSection = upStationSection.orElseGet(() -> downStationSection.orElseThrow(NoSuchSectionException::new));
+
+        validateDistance(existingSection, insertableSection);
+
+        return existingSection;
+    }
+
     public List<Long> getDistinctStationIds() {
         return sections.stream()
                 .map(section -> Arrays.asList(section.getUpStationId(), section.getDownStationId()))
                 .flatMap(Collection::stream)
                 .distinct()
-                .collect(Collectors.toList());
-    }
-
-    public List<Long> getLastStationIds() {
-        return sections.stream()
-                .map(section -> Arrays.asList(section.getUpStationId(), section.getDownStationId()))
-                .flatMap(Collection::stream)
-                .collect(Collectors.groupingBy(it -> it))
-                .entrySet().stream()
-                .filter(entry -> entry.getValue().size() == LAST_STATION_SIZE)
-                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -48,10 +63,6 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isDownStationIdEquals(downStationSection))
                 .findFirst();
-    }
-
-    public boolean isLastStation(Long stationId) {
-        return getLastStationIds().contains(stationId);
     }
 
     public Sections getByStationId(Long stationId) {
@@ -81,17 +92,10 @@ public class Sections {
         return new Section(distance, sections.get(0).getLineId(), mergedIds.get(0), mergedIds.get(1));
     }
 
-    private List<Long> getMergedStationIds() {
-        Section section1 = sections.get(0);
-        Section section2 = sections.get(1);
-
-        if (section1.isEqualUpStationId(section2.getDownStationId())) {
-            return List.of(section2.getUpStationId(), section1.getDownStationId());
+    public void validateInsertable(Section section) {
+        if (isUnableToAdd(section)) {
+            throw new SubwayException("추가할 수 없는 구간입니다.");
         }
-        if (section2.isEqualUpStationId(section1.getDownStationId())) {
-            return List.of(section1.getUpStationId(), section2.getDownStationId());
-        }
-        throw new IllegalMergeSectionException();
     }
 
     private int calculateMergedDistance() {
@@ -100,45 +104,10 @@ public class Sections {
                 .sum();
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public Optional<Section> getSectionToDelete(Section section) {
-        // 종점에 추가하는 경우 -> 아무것도 반환하지 않음
-        if (canAddAsLastStation(section)) {
-            return Optional.empty();
-        }
-        // 갈래길로 추가하는 경우 -> 수정할 갈래길을 반환하기
-        return Optional.of(getModifiableSectionAfterInsert(section));
-    }
-
-    private Section getModifiableSectionAfterInsert(Section insertableSection) {
-        Optional<Section> upStationSection = getExistingUpStationSection(insertableSection);
-        Optional<Section> downStationSection = getExistingDownStationSection(insertableSection);
-
-        Section existingSection = upStationSection.orElseGet(() -> downStationSection.orElseThrow(NoSuchSectionException::new));
-
-        validateDistance(existingSection, insertableSection);
-
-        return existingSection;
-    }
-
-    //이건 Section의 책임일듯
     private void validateDistance(Section existingSection, Section insertableSection) {
-        if (insertableSection.getDistance() >= existingSection.getDistance()) {
+        if (insertableSection.isDistanceBiggerThan(existingSection)) {
             throw new SubwayException("불가능한 구간의 길이입니다.");
         }
-    }
-
-    private boolean canAddAsLastStation(Section section) {
-        List<Long> upStationIds = getUpStationIds();
-        List<Long> downStationIds = getDownStationIds();
-
-        Long upLastStationId = getUpLastStationId(upStationIds, downStationIds);
-        Long downLastStationId = getDownLastStationId(upStationIds, downStationIds);
-
-        return section.canAddAsLastStation(upLastStationId, downLastStationId);
     }
 
     private List<Long> getUpStationIds() {
@@ -151,6 +120,19 @@ public class Sections {
         return sections.stream()
                 .map(Section::getDownStationId)
                 .collect(Collectors.toList());
+    }
+
+    private List<Long> getMergedStationIds() {
+        Section section1 = sections.get(0);
+        Section section2 = sections.get(1);
+
+        if (section1.isEqualUpStationId(section2.getDownStationId())) {
+            return List.of(section2.getUpStationId(), section1.getDownStationId());
+        }
+        if (section2.isEqualUpStationId(section1.getDownStationId())) {
+            return List.of(section1.getUpStationId(), section2.getDownStationId());
+        }
+        throw new IllegalMergeSectionException();
     }
 
     private Long getUpLastStationId(List<Long> upStationIds, List<Long> downStationIds) {
@@ -169,19 +151,13 @@ public class Sections {
         return downIds.get(0);
     }
 
-    public void validateInsertable(Section section) {
-        if (isUnableToAdd(section)) {
-            throw new SubwayException("추가할 수 없는 구간입니다.");
-        }
-    }
-
-    public Section getSectionToUpdate(Section sectionToDelete, Section sectionToInsert) {
-        return sectionToDelete.createSection(sectionToInsert);
-    }
-
     private boolean isUnableToAdd(Section checkableSection) {
         List<Long> distinctStationIds = getDistinctStationIds();
 
         return distinctStationIds.contains(checkableSection.getUpStationId()) == distinctStationIds.contains(checkableSection.getDownStationId());
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

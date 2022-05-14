@@ -7,8 +7,6 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.SectionResult;
-import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
 import java.util.Optional;
