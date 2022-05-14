@@ -45,7 +45,7 @@ public class LineService {
 
     private void validateExistStation(Long upStationId, Long downStationId) {
         if (!stationDao.existStationById(upStationId) || !stationDao.existStationById(downStationId)) {
-            throw new AccessNoneDataException("존재하지 않는 역으로 구간을 만드는 시도가 있었습니다.");
+            throw new AccessNoneDataException("등록되지 않은 역으로는 구간을 만들 수 없습니다.");
         }
     }
 
