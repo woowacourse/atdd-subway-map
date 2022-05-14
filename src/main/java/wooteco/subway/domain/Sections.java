@@ -11,6 +11,7 @@ import wooteco.subway.exception.StationNotFoundException;
 
 public class Sections {
 
+    private static final int MIN_REMOVE_SIZE = 2;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -60,6 +61,22 @@ public class Sections {
         }
     }
 
+    public List<Section> delete(final Station station) {
+        if (sections.size() < MIN_REMOVE_SIZE) {
+            throw new IllegalStateException("역을 삭제할 수 없습니다.");
+        }
+        final List<Section> deleteSections = new ArrayList<>();
+        sections.forEach(section -> {
+            final boolean isSameUpStation = section.getUpStation().isSameStation(station);
+            final boolean isSameDownStation = section.getDownStation().isSameStation(station);
+            if (isSameUpStation || isSameDownStation) {
+                deleteSections.add(section);
+            }
+        });
+        deleteSections.forEach(sections::remove);
+        return deleteSections;
+    }
+
     public List<Station> sortByStation() {
         final List<Station> sortedStations = new ArrayList<>();
         Station currentStation = findFirstStation();
@@ -86,12 +103,21 @@ public class Sections {
                 .orElseThrow(StationNotFoundException::new);
     }
 
+    private Station findLastStation() {
+        final List<Station> upStations = findAllUpStation();
+        final List<Station> downStations = findAllDownStation();
+        return downStations.stream()
+                .filter(station -> !upStations.contains(station))
+                .findFirst()
+                .orElseThrow(StationNotFoundException::new);
+    }
+
     private Station nextStation(final Station currentStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().isSameStation(currentStation))
                 .findFirst()
                 .map(Section::getDownStation)
-                .get();
+                .orElseThrow(StationNotFoundException::new);
     }
 
     private List<Station> findAllUpStation() {

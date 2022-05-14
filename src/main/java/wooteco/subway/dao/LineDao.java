@@ -37,7 +37,7 @@ public class LineDao {
         return jdbcTemplate.query(sql, rowMapper());
     }
 
-    public Line find(final Long id) {
+    public Line findById(final Long id) {
         final String sql = "SELECT * FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper(), id);
     }

@@ -20,6 +20,7 @@ import wooteco.subway.exception.LineNotFoundException;
 public class LineService {
 
     private static final int NOT_FOUND = 0;
+    private static final int CONNECT_SIZE = 2;
 
     private final LineDao lineDao;
     private final StationDao stationDao;
@@ -34,8 +35,8 @@ public class LineService {
     public LineResponse createLine(final LineRequest request) {
         final Line line = new Line(request.getName(), request.getColor());
         final Long lineId = lineDao.save(line);
-        final Station upStation = stationDao.find(request.getUpStationId());
-        final Station downStation = stationDao.find(request.getDownStationId());
+        final Station upStation = stationDao.findById(request.getUpStationId());
+        final Station downStation = stationDao.findById(request.getDownStationId());
 
         sectionDao.save(new Section(lineId, upStation, downStation, request.getDistance()));
 
@@ -45,8 +46,12 @@ public class LineService {
     public void createSection(final Long lineId, final SectionRequest sectionRequest) {
         final Sections sections = new Sections(toSections(sectionDao.findAllByLineId(lineId)));
         final Section newSection = getNewSection(lineId, sectionRequest);
-        final Long sectionId = sectionDao.save(newSection);
-        sections.add(new Section(sectionId, newSection));
+        saveAndUpdateSection(sections, newSection);
+    }
+
+    private void saveAndUpdateSection(final Sections sections, final Section newSection) {
+        final Long savedId = sectionDao.save(newSection);
+        sections.add(new Section(savedId, newSection));
         sectionDao.updateAll(sections.getSections());
     }
 
@@ -55,16 +60,16 @@ public class LineService {
                 .map(entity -> new Section(
                         entity.getId(),
                         entity.getLineId(),
-                        stationDao.find(entity.getUpStationId()),
-                        stationDao.find(entity.getDownStationId()),
+                        stationDao.findById(entity.getUpStationId()),
+                        stationDao.findById(entity.getDownStationId()),
                         entity.getDistance()
                 ))
                 .collect(Collectors.toList());
     }
 
     private Section getNewSection(Long lineId, SectionRequest sectionRequest) {
-        final Station upStation = stationDao.find(sectionRequest.getUpStationId());
-        final Station downStation = stationDao.find(sectionRequest.getDownStationId());
+        final Station upStation = stationDao.findById(sectionRequest.getUpStationId());
+        final Station downStation = stationDao.findById(sectionRequest.getDownStationId());
         final int distance = sectionRequest.getDistance();
         return new Section(lineId, upStation, downStation, distance);
     }
@@ -77,7 +82,7 @@ public class LineService {
     }
 
     public LineResponse showLine(final long id) {
-        final Line line = lineDao.find(id);
+        final Line line = lineDao.findById(id);
         return LineResponse.of(line, findStations(line.getId()));
     }
 
@@ -93,8 +98,34 @@ public class LineService {
     }
 
     public void deleteLine(final long id) {
+        sectionDao.deleteByLineId(id);
         if (lineDao.delete(id) == NOT_FOUND) {
             throw new LineNotFoundException();
         }
+    }
+
+    public void deleteSection(long lineId, long stationId) {
+        final Station deleteStation = stationDao.findById(stationId);
+        final Sections sections = new Sections(toSections(sectionDao.findAllByLineId(lineId)));
+
+        final List<Section> deletedSections = sections.delete(deleteStation);
+        for (final Section section : deletedSections) {
+            sectionDao.delete(section.getId());
+        }
+
+        if (isPossibleToConnect(deletedSections)) {
+            final Section newSection = connectNewSection(deletedSections);
+            saveAndUpdateSection(sections, newSection);
+        }
+    }
+
+    private boolean isPossibleToConnect(List<Section> deletedSections) {
+        return deletedSections.size() == CONNECT_SIZE;
+    }
+
+    private Section connectNewSection(List<Section> deletedSections) {
+        final Section firstSection = deletedSections.get(0);
+        final Section secondSection = deletedSections.get(1);
+        return firstSection.connect(secondSection);
     }
 }

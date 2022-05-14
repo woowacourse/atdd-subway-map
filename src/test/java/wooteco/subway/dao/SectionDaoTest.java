@@ -35,4 +35,18 @@ class SectionDaoTest {
 
         assertThat(id).isNotNull();
     }
+
+    @Test
+    @DisplayName("구간을 삭제한다.")
+    void deleteSection() {
+        final long lineId = 1L;
+        final Station upStation = new Station(1L, "신대방역");
+        final Station downStation = new Station(2L, "선릉역");
+        final int distance = 10;
+        final Long savedId = sectionDao.save(new Section(lineId, upStation, downStation, distance));
+
+        sectionDao.delete(savedId);
+
+        assertThat(sectionDao.findAll()).hasSize(0);
+    }
 }

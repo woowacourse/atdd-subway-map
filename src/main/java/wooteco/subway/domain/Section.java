@@ -44,6 +44,14 @@ public class Section {
         }
     }
 
+    public Section connect(final Section otherSection) {
+        final int newDistance = this.distance + otherSection.getDistance();
+        if (isSameDownStation(otherSection.getUpStation())) {
+            return new Section(lineId, upStation, otherSection.getDownStation(), newDistance);
+        }
+        return new Section(lineId, downStation, otherSection.getUpStation(), newDistance);
+    }
+
     public void updateSection(final Station upStation, final Station downStation, final int overlappingDistance) {
         this.upStation = upStation;
         this.downStation = downStation;

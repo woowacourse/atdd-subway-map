@@ -34,7 +34,7 @@ public class LineDaoTest {
 
         final Long id = lineDao.save(line);
 
-        final Line foundLine = lineDao.find(id);
+        final Line foundLine = lineDao.findById(id);
         assertAll(() -> {
             assertThat(foundLine.getId()).isNotNull();
             assertThat(foundLine.getName()).isEqualTo(line.getName());
@@ -89,7 +89,7 @@ public class LineDaoTest {
         final Line line = new Line("신분당선", "bg-red-600");
         final Long id = lineDao.save(line);
 
-        final Line foundLine = lineDao.find(id);
+        final Line foundLine = lineDao.findById(id);
 
         assertAll(() -> {
             assertThat(foundLine.getName()).isEqualTo(line.getName());
@@ -102,7 +102,7 @@ public class LineDaoTest {
     void findNotExistId() {
         final long id = 1L;
 
-        assertThatThrownBy(() -> lineDao.find(id))
+        assertThatThrownBy(() -> lineDao.findById(id))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
@@ -116,7 +116,7 @@ public class LineDaoTest {
         String updateColor = "bg-blue-900";
         lineDao.update(id, updateName, updateColor);
 
-        final Line updatedLine = lineDao.find(id);
+        final Line updatedLine = lineDao.findById(id);
         assertAll(() -> {
             assertThat(updatedLine.getName()).isEqualTo(updateName);
             assertThat(updatedLine.getColor()).isEqualTo(updateColor);

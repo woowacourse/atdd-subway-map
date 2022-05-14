@@ -106,6 +106,43 @@ class SectionsTest {
         });
     }
 
+    @Test
+    @DisplayName("삭제할 역이 최상단 혹은 최하단인 경우, 해당 역만 삭제한다.")
+    void delete() {
+        final Station stationForRemoving = new Station(1L, "신대방역");
+        final Section existingSection = new Section(1L, 1L, stationForRemoving, new Station(2L, "선릉역"), 10);
+        final Sections sections = initializeSections(existingSection);
+        final Section newSection = new Section(2L, 1L, new Station(2L, "선릉역"), new Station(3L, "잠실역"), 5);
+        sections.add(newSection);
+
+        final List<Section> deletedSections = sections.delete(stationForRemoving);
+
+        assertAll(() -> {
+            assertThat(deletedSections).hasSize(1);
+            assertThat(deletedSections.get(0).getId()).isEqualTo(1L);
+        });
+    }
+
+    @Test
+    @DisplayName("삭제할 역이 가운데일 때, 연결된 양쪽 구간을 모두 삭제한다.")
+    void deleteMiddleStation() {
+        final Station targetStation = new Station(2L, "선릉역");
+        final Section section1 = new Section(1L, 1L, new Station(1L, "신대방역"), targetStation, 10);
+        final Section section2 = new Section(2L, 1L, targetStation, new Station(3L, "잠실역"), 5);
+        List<Section> list = new ArrayList<>();
+        list.add(section1);
+        list.add(section2);
+        final Sections sections = new Sections(list);
+
+        final List<Section> deletedSections = sections.delete(targetStation);
+
+        assertAll(() -> {
+            assertThat(deletedSections).hasSize(2);
+            assertThat(deletedSections.get(0).getId()).isEqualTo(1L);
+            assertThat(deletedSections.get(1).getId()).isEqualTo(2L);
+        });
+    }
+
     private Sections initializeSections(final Section section) {
         final List<Section> sections = new ArrayList<>();
         sections.add(section);

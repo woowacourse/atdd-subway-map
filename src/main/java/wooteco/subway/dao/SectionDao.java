@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -57,12 +58,31 @@ public class SectionDao {
 
     public List<SectionEntity> findAllByLineId(final Long lineId) {
         final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new SectionEntity(
+        return jdbcTemplate.query(sql, rowMapper(), lineId);
+    }
+
+    public int delete(final Long id) {
+        final String sql = "DELETE FROM SECTION WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
+
+    public int deleteByLineId(final long lineId) {
+        final String sql = "DELETE FROM SECTION WHERE line_id = ?";
+        return jdbcTemplate.update(sql, lineId);
+    }
+
+    public List<SectionEntity> findAll() {
+        final String sql = "SELECT * FROM SECTION";
+        return jdbcTemplate.query(sql, rowMapper());
+    }
+
+    private RowMapper<SectionEntity> rowMapper() {
+        return (rs, rowNum) -> new SectionEntity(
                 rs.getLong("id"),
                 rs.getLong("line_id"),
                 rs.getLong("up_station_id"),
                 rs.getLong("down_station_id"),
                 rs.getInt("distance")
-        ), lineId);
+        );
     }
 }
