@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -281,6 +282,21 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.removeStation(station4))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("해당 역이 존재하지 않습니다.");
+    }
+
+    @DisplayName("구간을 순서대로 정렬하여 역을 반환한다.")
+    @Test
+    void returnSortedStations() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(1L, station1, station3, 10));
+        sections.add(new Section(2L, station3, station2, 10));
+
+        // when
+        List<Station> stations = sections.sortedStations();
+
+        // then
+        assertThat(stations).containsExactly(station1, station3, station2);
     }
 
 }

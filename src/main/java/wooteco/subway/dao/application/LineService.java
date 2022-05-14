@@ -10,7 +10,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineSaveRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
@@ -22,42 +22,29 @@ import wooteco.subway.exception.NoSuchStationException;
 @Transactional
 public class LineService {
 
-    private final StationDao stationDao;
     private final LineDao lineDao;
-    private final SectionDao sectionDao;
+    private final StationDao stationDao;
+    private final SectionService sectionService;
 
-    public LineService(final StationDao stationDao, final LineDao lineDao,
-                       final SectionDao sectionDao) {
+    public LineService(final StationDao stationDao, final LineDao lineDao, final SectionService sectionService) {
         this.stationDao = stationDao;
         this.lineDao = lineDao;
-        this.sectionDao = sectionDao;
+        this.sectionService = sectionService;
     }
 
-    public LineResponse createLine(final LineRequest request) {
+    public LineResponse createLine(final LineSaveRequest request) {
         if (lineDao.existByName(request.getName()) || lineDao.existByColor(request.getColor())) {
             throw new DuplicateLineException();
         }
-        Line createdLine = lineDao.save(new Line(request.getName(), request.getColor()));
-
-
-        Station upStation = stationDao.findById(request.getUpStationId())
-                .orElseThrow(() -> new NoSuchStationException(request.getUpStationId()));
-        Station downStation = stationDao.findById(request.getDownStationId())
-                .orElseThrow(() -> new NoSuchStationException(request.getDownStationId()));
-
-        Section createdSection = sectionDao.save(createdLine.getId(),
-                new Section(upStation, downStation, request.getDistance()));
-
+        Line createdLine = lineDao.save(request.toLine());
+        Section createdSection = sectionService.createSection(createdLine.getId(), request.getUpStationId(), request.getDownStationId(), request.getDistance());
         createdLine.addSection(createdSection);
         return LineResponse.from(createdLine);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(final long id) {
-        Line findLine = lineDao.findById(id)
-                .orElseThrow(() -> new NoSuchLineException(id));
-        List<Section> sections = sectionDao.findByLineId(findLine.getId());
-        findLine.addAllSections(sections);
+        Line findLine = findLineAndInitializeSections(id);
         return LineResponse.from(findLine);
     }
 
@@ -66,7 +53,7 @@ public class LineService {
         List<LineResponse> result = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
         for (Line line : lines) {
-            List<Section> sectionsByLine = sectionDao.findByLineId(line.getId());
+            List<Section> sectionsByLine = sectionService.findSectionsByLineId(line.getId());
             line.addAllSections(sectionsByLine);
             result.add(LineResponse.from(line));
         }
@@ -78,42 +65,32 @@ public class LineService {
     }
 
     public void deleteLineById(final Long id) {
-        sectionDao.deleteSectionsByLineId(id);
+        sectionService.deleteAllSectionsRelevantToLine(id);
         lineDao.deleteById(id);
     }
 
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
-        Line line = loadLine(lineId);
+        Line line = findLineAndInitializeSections(lineId);
 
-        Station upStation = stationDao.findById(sectionRequest.getUpStationId())
-                .orElseThrow(() -> new NoSuchStationException(sectionRequest.getUpStationId()));
-        Station downStation = stationDao.findById(sectionRequest.getDownStationId())
-                .orElseThrow(() -> new NoSuchStationException(sectionRequest.getDownStationId()));
-        Section section = sectionDao.save(lineId, new Section(upStation, downStation, sectionRequest.getDistance()));
-
+        Section section = sectionService.createSection(lineId, sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(), sectionRequest.getDistance());
         line.addSection(section);
-
-        sectionDao.batchUpdate(line.getId(), line.getSections());
+        sectionService.updateSections(lineId, line.getSections());
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {
-        Line line = loadLine(lineId);
-
+        Line line = findLineAndInitializeSections(lineId);
         Station station = stationDao.findById(stationId)
                 .orElseThrow(() -> new NoSuchStationException(stationId));
-
         Long removedSectionId = line.removeStation(station);
-        sectionDao.deleteById(removedSectionId, lineId);
-        sectionDao.batchUpdate(lineId, line.getSections());
+        sectionService.deleteSection(lineId, removedSectionId, line.getSections());
     }
 
-    private Line loadLine(final Long lineId) {
-        Line line = lineDao.findById(lineId)
-                .orElseThrow(() -> new NoSuchLineException(lineId));
-        List<Section> sections = sectionDao.findByLineId(lineId);
-        for (Section each : sections) {
-            line.addSection(each);
-        }
+    private Line findLineAndInitializeSections(final Long id) {
+        Line line = lineDao.findById(id)
+                .orElseThrow(() -> new NoSuchLineException(id));
+        List<Section> sections = sectionService.findSectionsByLineId(id);
+        line.addAllSections(sections);
         return line;
     }
 }

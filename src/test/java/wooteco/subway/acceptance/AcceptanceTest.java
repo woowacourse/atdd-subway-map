@@ -9,7 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineSaveRequest;
 import wooteco.subway.dto.StationRequest;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -45,7 +45,7 @@ class AcceptanceTest {
     protected ExtractableResponse<Response> createLineAndReturnResponse(
             final String name, final String color, final long upStationId, final long downStationId, final int distance
     ) {
-        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
+        LineSaveRequest lineRequest = new LineSaveRequest(name, color, upStationId, downStationId, distance);
         return RestAssured
                 .given()
                 .body(lineRequest)

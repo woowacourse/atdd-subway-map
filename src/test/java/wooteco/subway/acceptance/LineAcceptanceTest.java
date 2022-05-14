@@ -12,11 +12,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineSaveRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
@@ -173,7 +171,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         long id1 = createStation("station1").getId();
         long id2 = createStation("station2").getId();
 
-        LineRequest lineRequest1 = new LineRequest("line1", lineColor, id1, id2, 10);
+        LineSaveRequest lineRequest1 = new LineSaveRequest("line1", lineColor, id1, id2, 10);
         RestAssured.given()
                 .body(lineRequest1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

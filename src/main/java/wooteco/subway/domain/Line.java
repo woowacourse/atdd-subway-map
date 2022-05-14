@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,7 +48,7 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return List.copyOf(sections.stations());
+        return Collections.unmodifiableList(sections.sortedStations());
     }
 
     private void validateNullOrBlank(final String string) {

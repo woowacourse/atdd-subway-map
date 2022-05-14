@@ -1,8 +1,11 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -144,11 +147,41 @@ public class Sections {
         return false;
     }
 
-    public Set<Station> stations() {
+    private Set<Station> stations() {
         Set<Station> upStations = upStations();
         Set<Station> downStations = downStations();
         upStations.addAll(downStations);
         return upStations;
+    }
+
+    public List<Station> sortedStations() {
+        Map<Station, Station> map = new HashMap<>();
+        List<Station> result = new ArrayList<>();
+
+        for (final Section section : values) {
+            map.put(section.getUpStation(), section.getDownStation());
+        }
+
+        ArrayList<Station> topOrLowest = new ArrayList<>(lastStations());
+        Station station = topOrLowest.get(0);
+        if (map.containsKey(station)) {
+            // 최상단역
+            result.add(station);
+            Station nextStation = map.get(station);
+            while (nextStation != null) {
+                result.add(nextStation);
+                nextStation = map.get(nextStation);
+            }
+        } else {
+            Station station1 = topOrLowest.get(1);
+            result.add(station1);
+            Station nextStation = map.get(station1);
+            while (nextStation != null) {
+                result.add(nextStation);
+                nextStation = map.get(nextStation);
+            }
+        }
+        return result;
     }
 
     private Set<Station> upStations() {
