@@ -6,10 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -21,6 +18,10 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
+
+    private static final String NOT_FOUND_ERROR_MESSAGE = "존재하지 않습니다";
+    private static final String DUPLICATE_LINE_ERROR_MESSAGE = "노선이 이미 있습니다";
+    private static final String BLANK_OR_NULL_ERROR_MESSAGE = "빈 값";
 
     /*
      * given
@@ -37,27 +38,24 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        long id1 = createStation("station1").getId();
-        long id2 = createStation("station2").getId();
+        StationResponse station1 = createStation("station1");
+        StationResponse station2 = createStation("station2");
 
         // when
         String lineName = "line1";
         String lineColor = "color1";
-        ExtractableResponse<Response> response = createLineAndReturnResponse(lineName, lineColor, id1, id2, 10);
+        ExtractableResponse<Response> response = createLineAndReturnResponse(lineName, lineColor, station1.getId(),
+                station2.getId(), 10);
 
         // then
+        List<StationResponse> stations = response.body().jsonPath().getList("stations", StationResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank(),
                 () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineName),
-                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineColor)
+                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineColor),
+                () -> assertThat(stations).usingRecursiveComparison().isEqualTo(List.of(station1, station2))
         );
-
-        List<Long> expectedStationIds = List.of(id1, id2);
-        List<Long> stationIds = response.body().jsonPath().getList("stations", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(stationIds).containsAll(expectedStationIds);
     }
 
 
@@ -87,7 +85,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+                () -> assertThat(response.body().jsonPath().getString("message")).contains(NOT_FOUND_ERROR_MESSAGE)
         );
     }
 
@@ -116,7 +114,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+                () -> assertThat(response.body().jsonPath().getString("message")).contains("거리")
         );
     }
 
@@ -149,7 +147,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+                () -> assertThat(response.body().jsonPath().getString("message")).contains(DUPLICATE_LINE_ERROR_MESSAGE)
         );
     }
 
@@ -186,7 +184,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+                () -> assertThat(response.body().jsonPath().getString("message")).contains(DUPLICATE_LINE_ERROR_MESSAGE)
         );
     }
 
@@ -204,7 +202,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+                () -> assertThat(response.body().jsonPath().getString("message")).contains(BLANK_OR_NULL_ERROR_MESSAGE)
         );
     }
 
@@ -222,7 +220,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+                () -> assertThat(response.body().jsonPath().getString("message")).contains(BLANK_OR_NULL_ERROR_MESSAGE)
         );
     }
 
@@ -240,7 +238,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+                () -> assertThat(response.body().jsonPath().getString("message")).contains(BLANK_OR_NULL_ERROR_MESSAGE)
         );
     }
 
@@ -258,7 +256,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+                () -> assertThat(response.body().jsonPath().getString("message")).contains(BLANK_OR_NULL_ERROR_MESSAGE)
         );
     }
 
@@ -274,7 +272,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isNotBlank()
+                () -> assertThat(response.body().jsonPath().getString("message")).contains("같은 역")
         );
     }
 
@@ -292,13 +290,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        long id1 = createStation("지하철역1").getId();
-        long id2 = createStation("지하철역2").getId();
-        long id3 = createStation("지하철역3").getId();
-        long id4 = createStation("지하철역4").getId();
+        StationResponse station1 = createStation("지하철역1");
+        StationResponse station2 = createStation("지하철역2");
+        StationResponse station3 = createStation("지하철역3");
+        StationResponse station4 = createStation("지하철역4");
 
-        ExtractableResponse<Response> createResponse1 = createLineAndReturnResponse("노선1", "색깔1", id1, id2, 10);
-        ExtractableResponse<Response> createResponse2 = createLineAndReturnResponse("노선2", "색깔2", id3, id4, 10);
+        LineResponse line1 = createLine("노선1", "색깔1", station1.getId(),
+                station2.getId(), 10);
+        LineResponse line2 = createLine("노선2", "색깔2", station3.getId(),
+                station4.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -308,24 +308,12 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        List<LineResponse> lines = response.jsonPath().getList(".", LineResponse.class);
 
-        List<LineResponse> responseEntities = response.jsonPath().getList(".", LineResponse.class);
-
-        ArrayList<String> stationNames = new ArrayList<>();
-        for (LineResponse responseEntity : responseEntities) {
-            stationNames.addAll(
-                    responseEntity.getStations().stream().map(StationResponse::getName).collect(Collectors.toList()));
-        }
-        assertThat(stationNames).containsExactly("지하철역1", "지하철역2", "지하철역3", "지하철역4");
-
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lines).usingRecursiveComparison().isEqualTo(List.of(line1, line2))
+        );
     }
 
     /*
@@ -342,31 +330,22 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        long upStationId = createStation("서울역").getId();
-        long downStationId = createStation("시청").getId();
-        ExtractableResponse<Response> createResponse = createLineAndReturnResponse(
-                "1호선", "파란색", upStationId, downStationId, 10);
-        long createdLineId = createResponse.body().jsonPath().getLong("id");
+        StationResponse upStation = createStation("서울역");
+        StationResponse downStation = createStation("시청");
+        LineResponse line = createLine("1호선", "파란색", upStation.getId(), downStation.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + createdLineId)
+                .get("/lines/" + line.getId())
                 .then().log().all()
                 .extract();
 
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("1호선"),
-                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("파란색")
+                () -> assertThat(response.as(LineResponse.class)).usingRecursiveComparison().isEqualTo(line)
         );
-
-        List<Long> expectedStationIds = List.of(upStationId, downStationId);
-        List<Long> stationIds = response.body().jsonPath().getList("stations", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(stationIds).containsAll(expectedStationIds);
     }
 
     /*
@@ -400,7 +379,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertThat(response.body().jsonPath().getString("message")).contains(NOT_FOUND_ERROR_MESSAGE);
     }
 
     /*
@@ -412,6 +391,7 @@ class LineAcceptanceTest extends AcceptanceTest {
      *
      * then
      * 성공적으로 응답한다.
+     * 조회된 노선이 수정한 정보로 업데이트 되어있다.
      * */
     @DisplayName("노선 정보를 수정한다.")
     @Test
@@ -419,8 +399,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         long id1 = createStation("지하철역1").getId();
         long id2 = createStation("지하철역2").getId();
-        String createdLinePath = createLineAndReturnResponse("노선", "색깔", id1, id2, 10)
-                .header("Location");
+        LineResponse originLine = createLine("노선", "색깔", id1, id2, 10);
 
         // when
         LineUpdateRequest updateRequest = new LineUpdateRequest("changedName", "changedColor");
@@ -428,12 +407,23 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .body(updateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put(createdLinePath)
+                .put("/lines/" + originLine.getId())
                 .then().log().all()
                 .extract();
 
         // then
-        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse line = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + originLine.getId())
+                .then().log().all()
+                .extract()
+                .as(LineResponse.class);
+
+        assertAll(
+                () -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(line).usingRecursiveComparison().isEqualTo(
+                        new LineResponse(originLine.getId(), "changedName", "changedColor", originLine.getStations()))
+        );
     }
 
     /*
@@ -470,7 +460,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertThat(response.body().jsonPath().getString("message")).contains(DUPLICATE_LINE_ERROR_MESSAGE);
     }
 
     /*
@@ -506,13 +496,19 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertThat(response.body().jsonPath().getString("message")).contains(DUPLICATE_LINE_ERROR_MESSAGE);
     }
 
     @DisplayName("존재하지 않는 노선을 수정한다.")
     @Test
     void updateNonExistLine() {
         // given
+        long id1 = createStation("지하철역1").getId();
+        long id2 = createStation("지하철역2").getId();
+        String uri = createLineAndReturnResponse("노선", "색깔", id1, id2, 10)
+                .header("Location");
+
+        RestAssured.when().delete(uri);
         LineUpdateRequest updateRequest = new LineUpdateRequest("2호선", "파란색");
 
         // when
@@ -520,15 +516,26 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .body(updateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/1")
+                .put(uri)
                 .then().log().all()
                 .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertThat(response.body().jsonPath().getString("message")).contains(NOT_FOUND_ERROR_MESSAGE);
     }
 
+    /*
+     * given
+     * 노선이 등록되어 있다.
+     *
+     * when
+     * 노선을 제거한다.
+     *
+     * then
+     * 성공을 응답한다.
+     * 제거된 노선으로 조회하면 예외를 응답한다.
+     * */
     @DisplayName("노선을 제거한다")
     @Test
     void deleteById() {
@@ -538,7 +545,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         String createdLinePath = createLineAndReturnResponse("1호선", "파란색", id1, id2, 10).header("Location");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .delete(createdLinePath)
@@ -546,70 +553,120 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(createdLinePath)
+                .then().log().all()
+                .extract();
+
+        assertAll(
+                () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).contains(NOT_FOUND_ERROR_MESSAGE)
+        );
     }
 
     /*
      * given
-     * station1, station2를 상행종점, 하행종점으로 하는 line1이 생성되어 있다.
+     * station1, station3를 상행종점, 하행종점으로 하는 line1이 생성되어 있다.
      *
      * when
-     * station2를 상행, station3을 하행으로 하는 거리 5짜리 구간을 생성한다.
+     * station2를 상행, station3을 하행으로 하는 거리 7짜리 구간을 추가한다.
      *
      * then
      * 성공 응답을 반환한다.
+     * 구간 추가정보가 잘 적용됨.
      * */
     @DisplayName("구간을 추가한다")
     @Test
     void addSection() {
         // given
-        long id1 = createStation("station1").getId();
-        long id2 = createStation("station2").getId();
-        String createdLinePath = createLineAndReturnResponse("line", "color", id1, id2, 10).header("Location");
+        StationResponse station1 = createStation("station1");
+        StationResponse station3 = createStation("station3");
+        LineResponse createdLine = createLine("line", "color", station1.getId(), station3.getId(), 10);
 
-        long id3 = createStation("station3").getId();
-        SectionRequest sectionRequest = new SectionRequest(id2, id3, 5);
+        StationResponse station2 = createStation("station2");
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 7);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(sectionRequest)
                 .when().log().all()
-                .post(createdLinePath + "/sections")
+                .post("/lines/" + createdLine.getId() + "/sections")
                 .then().log().all()
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse line = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + createdLine.getId())
+                .then()
+                .extract()
+                .as(LineResponse.class);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(line).usingRecursiveComparison().isEqualTo(
+                        new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(),
+                                List.of(station1, station2, station3)))
+        );
     }
 
+    /*
+     * given
+     * station1, station3를 상행종점, 하행종점으로 하는 line1이 생성되어 있다.
+     * station2를 상행, station3을 하행으로 하는 거리 7짜리 구간을 추가한다.
+     *
+     * when
+     * station2를 구간에서 제거한다.
+     *
+     * then
+     * 성공 응답을 반환한다.
+     * 구간 추가정보가 잘 적용됨.
+     * */
     @DisplayName("구간을 제거한다.")
     @Test
     void removeSection() {
         // given
-        long id1 = createStation("station1").getId();
-        long id2 = createStation("station2").getId();
-        String createdLinePath = createLineAndReturnResponse("line", "color", id1, id2, 10).header("Location");
+        StationResponse station1 = createStation("station1");
+        StationResponse station3 = createStation("station3");
+        LineResponse createdLine = createLine("line", "color", station1.getId(), station3.getId(), 10);
 
-        long id3 = createStation("station3").getId();
-        SectionRequest sectionRequest = new SectionRequest(id2, id3, 5);
+        StationResponse station2 = createStation("station2");
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 7);
 
-        RestAssured.given()
+        RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(sectionRequest)
-                .when()
-                .post(createdLinePath + "/sections")
-                .then()
+                .when().log().all()
+                .post("/lines/" + createdLine.getId() + "/sections")
+                .then().log().all()
                 .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().log().all().queryParam("stationId", id2)
-                .delete(createdLinePath + "/sections")
+                .when().log().all().queryParam("stationId", station2.getId())
+                .delete("/lines/" + createdLine.getId() + "/sections")
                 .then().log().all()
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse line = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + createdLine.getId())
+                .then()
+                .extract()
+                .as(LineResponse.class);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(line).usingRecursiveComparison().isEqualTo(
+                        new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(),
+                                List.of(station1, station3)))
+        );
     }
 }
