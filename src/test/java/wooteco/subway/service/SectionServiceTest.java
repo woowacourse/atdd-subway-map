@@ -28,18 +28,21 @@ class SectionServiceTest {
     private final SectionService sectionService = new SectionService(sectionDao, stationService);
     private final LineService lineService = new LineService(lineDao, stationService, sectionService);
 
+    private Long upStationId;
+    private Long downStationId;
+
     @BeforeEach
     void initStore() {
         MockLineDao.removeAll();
         MockStationDao.removeAll();
         MockSectionDao.removeAll();
+        upStationId = Fixture.saveStation("선릉역");
+        downStationId = Fixture.saveStation("잠실역");
     }
 
     @DisplayName("노선 id, 상행역 id, 하행역 id, 길이를 입력받아 첫 구간을 등록한다.")
     @Test
     void resisterFirst() {
-        final Long upStationId = Fixture.saveStation("선릉역");
-        final Long downStationId = Fixture.saveStation("잠실역");
         final LineEntity line = lineDao.save(new LineEntity(null, "2호선", "bg-green-600"));
 
         sectionService.resisterFirst(line.getId(), upStationId, downStationId, 10);
@@ -57,8 +60,6 @@ class SectionServiceTest {
     @Test
     @DisplayName("노선 id로 구간목록을 불러온다.")
     void searchSectionsByLineId() {
-        final Long upStationId = Fixture.saveStation("선릉역");
-        final Long downStationId = Fixture.saveStation("잠실역");
         final Line line = lineService.register("2호선", "bg-green-600", upStationId, downStationId, 10);
 
         final Long newDownStationId = Fixture.saveStation("삼성역");
@@ -83,8 +84,6 @@ class SectionServiceTest {
     @DisplayName("노선 id, 상행역 id, 하행역 id, 길이를 입력받아 새 구간을 등록한다.")
     @Test
     void resister() {
-        final Long upStationId = Fixture.saveStation("선릉역");
-        final Long downStationId = Fixture.saveStation("잠실역");
         final Line line = lineService.register("2호선", "bg-green-600", upStationId, downStationId, 10);
 
         final Long newDownStationId = Fixture.saveStation("삼성역");
@@ -97,8 +96,6 @@ class SectionServiceTest {
     @DisplayName("노선 id와 지하철역 id를 입력받아서 해당 노선에서 역을 제거한다. - 맨 뒤")
     @Test
     void removeStationBack() {
-        final Long upStationId = Fixture.saveStation("선릉역");
-        final Long downStationId = Fixture.saveStation("잠실역");
         final Line line = lineService.register("2호선", "bg-green-600", upStationId, downStationId, 10);
         final Long newDownStationId = Fixture.saveStation("삼성역");
         sectionService.resister(line.getId(), upStationId, newDownStationId, 5);
@@ -115,8 +112,6 @@ class SectionServiceTest {
     @DisplayName("노선 id와 지하철역 id를 입력받아서 해당 노선에서 역을 제거한다. - 맨 앞")
     @Test
     void removeStationFront() {
-        final Long upStationId = Fixture.saveStation("선릉역");
-        final Long downStationId = Fixture.saveStation("잠실역");
         final Line line = lineService.register("2호선", "bg-green-600", upStationId, downStationId, 10);
         final Long newDownStationId = Fixture.saveStation("삼성역");
         sectionService.resister(line.getId(), upStationId, newDownStationId, 5);
@@ -132,8 +127,6 @@ class SectionServiceTest {
     @DisplayName("노선 id와 지하철역 id를 입력받아서 해당 노선에서 역을 제거한다. - 사이")
     @Test
     void removeStation() {
-        final Long upStationId = Fixture.saveStation("선릉역");
-        final Long downStationId = Fixture.saveStation("잠실역");
         final Line line = lineService.register("2호선", "bg-green-600", upStationId, downStationId, 10);
         final Long newDownStationId = Fixture.saveStation("삼성역");
         sectionService.resister(line.getId(), upStationId, newDownStationId, 5);
@@ -149,8 +142,6 @@ class SectionServiceTest {
     @DisplayName("노선에 구간이 한개인 경우 삭제 요청시 예외가 발생한다.")
     @Test
     void removeStationOneSection() {
-        final Long upStationId = Fixture.saveStation("선릉역");
-        final Long downStationId = Fixture.saveStation("잠실역");
         final Line line = lineService.register("2호선", "bg-green-600", upStationId, downStationId, 10);
 
         assertThatThrownBy(() -> sectionService.removeStation(line.getId(), downStationId))
