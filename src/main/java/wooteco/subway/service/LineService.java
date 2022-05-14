@@ -60,14 +60,13 @@ public class LineService {
         Station upStation = getStation(sectionRequest.getUpStationId());
         Station downStation = getStation(sectionRequest.getDownStationId());
 
-        Section saveSection = new Section(line, upStation, downStation,
-                sectionRequest.getDistance());
+        Section saveSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
 
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         sections.append(saveSection);
 
         sectionDao.deleteByLineId(lineId);
-        sectionDao.saveAll(sections.getSortedValue());
+        sectionDao.saveAll(sections.getValue());
     }
 
     @Transactional
@@ -76,7 +75,7 @@ public class LineService {
         sections.remove(getStation(stationId));
 
         sectionDao.deleteByLineId(lineId);
-        sectionDao.saveAll(sections.getSortedValue());
+        sectionDao.saveAll(sections.getValue());
     }
 
     private Station getStation(Long id) {
@@ -89,7 +88,7 @@ public class LineService {
 
         Sections sections = new Sections(sectionDao.findByLineId(id));
 
-        List<StationResponse> stations = sections.getSortedStations()
+        List<StationResponse> stations = sections.getStations()
                 .stream()
                 .map(StationResponse::new)
                 .collect(toList());
@@ -106,7 +105,7 @@ public class LineService {
 
     private LineResponse getLineResponse(Line line) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
-        List<StationResponse> stationResponses = sections.getSortedStations()
+        List<StationResponse> stationResponses = sections.getStations()
                 .stream()
                 .map(StationResponse::new)
                 .collect(toList());

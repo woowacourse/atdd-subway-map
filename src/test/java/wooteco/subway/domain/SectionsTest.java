@@ -135,13 +135,17 @@ class SectionsTest {
 
         Sections sections = new Sections(List.of(basedSection1, basedSection2, basedSection3, basedSection4));
 
+        sections.getValue().forEach(System.out::println);
+
         return Stream.of(
                 dynamicTest("중간에 위치한 역을 삭제한다.", () -> {
                     assertDoesNotThrow(() -> sections.remove(온수역));
+                    sections.getValue().forEach(System.out::println);
                 }),
 
                 dynamicTest("상행 종점의 구간을 삭제한다.", () -> {
                     assertDoesNotThrow(() -> sections.remove(신도림역));
+                    sections.getValue().forEach(System.out::println);
                 }),
 
                 dynamicTest("존재하지 않는 역을 삭제할 경우 예외를 던진다.", () -> {
@@ -168,7 +172,7 @@ class SectionsTest {
         Section basedSection3 = 역곡역_부천역_5;
         Sections sections = new Sections(List.of(basedSection1, basedSection2, basedSection3));
 
-        List<Section> value = sections.getSortedValue();
+        List<Section> value = sections.getValue();
 
         assertAll(
                 () -> assertThat(value.get(0).getUpStation()).isEqualTo(신도림역),
@@ -185,7 +189,7 @@ class SectionsTest {
         Section basedSection3 = 역곡역_부천역_5;
         Sections sections = new Sections(List.of(basedSection1, basedSection2, basedSection3));
 
-        List<Station> stations = sections.getSortedStations();
+        List<Station> stations = sections.getStations();
 
         assertAll(
                 () -> assertThat(stations.size()).isEqualTo(4),
