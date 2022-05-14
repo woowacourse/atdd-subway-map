@@ -11,8 +11,9 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.LineSaveRequest;
 import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.LineUpdateRequest;
 import wooteco.subway.service.dto.StationResponse;
 
 @Service
@@ -30,9 +31,9 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse save(final LineRequest lineRequest) {
-        Line line = convertLine(lineRequest);
-        Section section = convertSection(lineRequest);
+    public LineResponse save(final LineSaveRequest lineSaveRequest) {
+        Line line = convertLine(lineSaveRequest);
+        Section section = convertSection(lineSaveRequest);
 
         validateLine(line);
 
@@ -57,8 +58,8 @@ public class LineService {
     }
 
     @Transactional
-    public void update(final long id, final LineRequest lineRequest) {
-        Line line = convertLine(lineRequest);
+    public void update(final long id, final LineUpdateRequest lineUpdateRequest) {
+        Line line = convertLine(lineUpdateRequest);
         validateLine(line);
         validateExistedLine(id);
         lineDao.update(id, line);
@@ -99,12 +100,16 @@ public class LineService {
         }
     }
 
-    private Line convertLine(final LineRequest lineRequest) {
-        return new Line(lineRequest.getName(), lineRequest.getColor());
+    private Line convertLine(final LineSaveRequest lineSaveRequest) {
+        return new Line(lineSaveRequest.getName(), lineSaveRequest.getColor());
     }
 
-    private Section convertSection(final LineRequest lineRequest) {
-        return new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+    private Line convertLine(final LineUpdateRequest lineUpdateRequest) {
+        return new Line(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+    }
+
+    private Section convertSection(final LineSaveRequest lineSaveRequest) {
+        return new Section(lineSaveRequest.getUpStationId(), lineSaveRequest.getDownStationId(), lineSaveRequest.getDistance());
     }
 
     private List<StationResponse> convertStationResponses(final List<Station> stations) {
