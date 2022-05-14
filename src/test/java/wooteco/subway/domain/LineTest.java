@@ -1,25 +1,13 @@
 package wooteco.subway.domain;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.exception.DataLengthException;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
-
-    @DisplayName("노선 인스턴스를 생성한다.")
-    @Test
-    void createLineInstance() {
-        String name = "분당선";
-        String color = "yellow";
-
-        assertThatCode(() -> new Line(name, color))
-                .doesNotThrowAnyException();
-    }
 
     @DisplayName("노선의 이름이 빈 값이거나 최대범위인 20을 초과한 경우 예외를 발생한다.")
     @ParameterizedTest(name = "{index} {displayName} name: {0}")

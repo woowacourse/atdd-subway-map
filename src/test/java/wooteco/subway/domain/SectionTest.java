@@ -3,23 +3,9 @@ package wooteco.subway.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionTest {
-
-    @DisplayName("구간 인스턴스를 생성한다.")
-    @Test
-    void createSectionInstance() {
-        Long lineId = 1L;
-        Long upStationId = 2L;
-        Long downStationId = 3L;
-        int distance = 10;
-
-        assertThatCode(() -> new Section(lineId, upStationId, downStationId, distance))
-                .doesNotThrowAnyException();
-    }
-
 
     @DisplayName("상행역, 하행역이 같은 역이면 예외가 발생한다.")
     @Test
