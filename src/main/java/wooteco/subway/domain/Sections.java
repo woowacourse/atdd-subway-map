@@ -79,6 +79,31 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("하행 쪽의 역이 존재하지 않습니다."));
     }
 
+    public boolean isNewSectionDownEnd(Section section, Sections sections) {
+        Station existDownEndStation = sections.calculateDownStation();
+        return section.getUpStation().equals(existDownEndStation);
+    }
+
+    public boolean isNewSectionUpEnd(Section section, Sections sections) {
+        Station existUpEndStation = sections.calculateUpStation();
+        return section.getDownStation().equals(existUpEndStation);
+    }
+
+    public void validateCanAddSection(Section section) {
+        boolean upStationExist = sections.contains(section.getUpStation());
+        boolean downStationExist = section.contains(section.getDownStation());
+        if (!upStationExist && !downStationExist) {
+            throw new IllegalArgumentException(
+                    String.format("%s와 %s 모두 존재하지 않아 구간을 등록할 수 없습니다.", section.getUpStationName(),
+                            section.getDownStationName()));
+        }
+        if (upStationExist && downStationExist) {
+            throw new IllegalArgumentException(
+                    String.format("%s와 %s 이미 모두 등록 되어있어 구간을 등록할 수 없습니다.", section.getUpStationName(),
+                            section.getDownStationName()));
+        }
+    }
+
     public int size() {
         return sections.size();
     }

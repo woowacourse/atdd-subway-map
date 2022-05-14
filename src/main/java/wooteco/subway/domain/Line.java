@@ -41,10 +41,10 @@ public class Line {
     }
 
     public AddSectionResult addSection(Section section) {
-        validateCanAddSection(section);
+        sections.validateCanAddSection(section);
 
         if (onlyDownStationExistInLine(section)) {
-            if (isNewSectionUpEnd(section, sections)) {
+            if (sections.isNewSectionUpEnd(section, sections)) {
                 sections.add(section);
                 return createWithNewEndSection(section);
             }
@@ -52,7 +52,7 @@ public class Line {
         }
 
         if (onlyUpStationExistInLine(section)) {
-            if (isNewSectionDownEnd(section, sections)) {
+            if (sections.isNewSectionDownEnd(section, sections)) {
                 sections.add(section);
                 return createWithNewEndSection(section);
             }
@@ -73,31 +73,6 @@ public class Line {
         List<Section> newAddedSections = sectionWithLowerStation.putBetweenDownStation(section);
         Section removedSection = sections.changeSectionWithNewSections(sectionWithLowerStation, newAddedSections);
         return createSplitSections(newAddedSections, removedSection);
-    }
-
-    private boolean isNewSectionDownEnd(Section section, Sections sections) {
-        Station existDownEndStation = sections.calculateDownStation();
-        return section.getUpStation().equals(existDownEndStation);
-    }
-
-    private boolean isNewSectionUpEnd(Section section, Sections sections) {
-        Station existUpEndStation = sections.calculateUpStation();
-        return section.getDownStation().equals(existUpEndStation);
-    }
-
-    private void validateCanAddSection(Section section) {
-        boolean upStationExist = sections.containsStation(section.getUpStation());
-        boolean downStationExist = sections.containsStation(section.getDownStation());
-        if (!upStationExist && !downStationExist) {
-            throw new IllegalArgumentException(
-                    String.format("%s와 %s 모두 존재하지 않아 구간을 등록할 수 없습니다.", section.getUpStationName(),
-                            section.getDownStationName()));
-        }
-        if (upStationExist && downStationExist) {
-            throw new IllegalArgumentException(
-                    String.format("%s와 %s 이미 모두 등록 되어있어 구간을 등록할 수 없습니다.", section.getUpStationName(),
-                            section.getDownStationName()));
-        }
     }
 
     private void changeEndStations() {
