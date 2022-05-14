@@ -21,7 +21,7 @@ import wooteco.subway.dto.StationResponse;
 @Transactional
 public class LineService {
 
-    private static final int midPointCount = 2;
+    private static final int MID_POINT_COUNT = 2;
     private static final int MINIMUM_SECTIONS_SIZE = 1;
 
     private final StationDao stationDao;
@@ -62,7 +62,7 @@ public class LineService {
     public void saveSection(Long lineId, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         validSections(sections, sectionRequest);
-        if (sections.countLinkedSection(sectionRequest) == midPointCount) {
+        if (sections.countLinkedSection(sectionRequest) == MID_POINT_COUNT) {
             processBiDirectionSection(sectionRequest, sections);
         }
         sectionDao.save(new Section(lineId, sectionRequest));
