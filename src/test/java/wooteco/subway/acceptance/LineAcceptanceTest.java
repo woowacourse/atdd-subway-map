@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.Fixture.createLineRequest;
 import static wooteco.subway.Fixture.createSectionRequest;
 import static wooteco.subway.Fixture.deleteSectionRequest;
+import static wooteco.subway.Fixture.makeLineSinBunDangCreationParams;
+import static wooteco.subway.Fixture.makeLineTwoCreationParams;
 import static wooteco.subway.Fixture.save2StationsRequest;
 
 import io.restassured.RestAssured;
@@ -19,7 +21,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.Fixture;
 import wooteco.subway.dto.response.LineResponseDto;
 
 @DisplayName("노선 관련 기능")
@@ -30,15 +31,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-600");
-        params.put("upStationId", stationIds.get(0).toString());
-        params.put("downStationId", stationIds.get(1).toString());
-        params.put("distance", "10");
+        final Map<String, String> params = makeLineTwoCreationParams(stationIds.get(0), stationIds.get(1));
 
         // when
-        ExtractableResponse<Response> response = createLineRequest(params);
+        final ExtractableResponse<Response> response = createLineRequest(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -50,16 +46,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
         // given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-600");
-        params.put("upStationId", stationIds.get(0).toString());
-        params.put("downStationId", stationIds.get(1).toString());
-        params.put("distance", "10");
+        final Map<String, String> params = makeLineTwoCreationParams(stationIds.get(0), stationIds.get(1));
         createLineRequest(params);
 
         // when
-        ExtractableResponse<Response> response = createLineRequest(params);
+        final ExtractableResponse<Response> response = createLineRequest(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -70,24 +61,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     void showLines() {
         /// given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
-        Map<String, String> lineParams1 = new HashMap<>();
-        lineParams1.put("name", "2호선");
-        lineParams1.put("color", "bg-green-600");
-        lineParams1.put("upStationId", stationIds.get(0).toString());
-        lineParams1.put("downStationId", stationIds.get(1).toString());
-        lineParams1.put("distance", "10");
-        ExtractableResponse<Response> createResponse1 = createLineRequest(lineParams1);
+        final Map<String, String> lineParams1 = makeLineTwoCreationParams(stationIds.get(0), stationIds.get(1));
+        final ExtractableResponse<Response> createResponse1 = createLineRequest(lineParams1);
 
-        Map<String, String> lineParams2 = new HashMap<>();
-        lineParams2.put("name", "신분당선");
-        lineParams2.put("color", "bg-red-600");
-        lineParams2.put("upStationId", stationIds.get(0).toString());
-        lineParams2.put("downStationId", stationIds.get(1).toString());
-        lineParams2.put("distance", "10");
-        ExtractableResponse<Response> createResponse2 = createLineRequest(lineParams2);
+        final Map<String, String> lineParams2 = makeLineSinBunDangCreationParams(stationIds.get(0), stationIds.get(1));
+        final ExtractableResponse<Response> createResponse2 = createLineRequest(lineParams2);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/lines")
                 .then().log().all()
@@ -95,10 +76,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+        final List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponseDto.class).stream()
+        final List<Long> resultLineIds = response.jsonPath().getList(".", LineResponseDto.class).stream()
                 .map(LineResponseDto::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -110,22 +91,17 @@ class LineAcceptanceTest extends AcceptanceTest {
         /// given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
 
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-600");
-        params.put("upStationId", stationIds.get(0).toString());
-        params.put("downStationId", stationIds.get(1).toString());
-        params.put("distance", "10");
-        ExtractableResponse<Response> createResponse = createLineRequest(params);
+        final Map<String, String> params = makeLineTwoCreationParams(stationIds.get(0), stationIds.get(1));
+        final ExtractableResponse<Response> createResponse = createLineRequest(params);
         long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + id)
                 .then().log().all()
                 .extract();
-        LineResponseDto responseBody = response.jsonPath().getObject(".", LineResponseDto.class);
+        final LineResponseDto responseBody = response.jsonPath().getObject(".", LineResponseDto.class);
 
         // then
         assertAll(
@@ -139,20 +115,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     void modifyLine() {
         // given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-600");
-        params.put("upStationId", stationIds.get(0).toString());
-        params.put("downStationId", stationIds.get(1).toString());
-        params.put("distance", "10");
-        ExtractableResponse<Response> createResponse = createLineRequest(params);
+        final Map<String, String> params = makeLineTwoCreationParams(stationIds.get(0), stationIds.get(1));
+        final ExtractableResponse<Response> createResponse = createLineRequest(params);
         long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
-        Map<String, String> modifyParams = new HashMap<>();
+        final Map<String, String> modifyParams = new HashMap<>();
         modifyParams.put("name", "신분당선");
         modifyParams.put("color", "bg-red-600");
-        ExtractableResponse<Response> modifyResponse = RestAssured.given().log().all()
+        final ExtractableResponse<Response> modifyResponse = RestAssured.given().log().all()
                 .body(modifyParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -169,17 +140,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     void removeLine() {
         // given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-600");
-        params.put("upStationId", stationIds.get(0).toString());
-        params.put("downStationId", stationIds.get(1).toString());
-        params.put("distance", "10");
-        ExtractableResponse<Response> createResponse = createLineRequest(params);
+        final Map<String, String> params = makeLineTwoCreationParams(stationIds.get(0), stationIds.get(1));
+        final ExtractableResponse<Response> createResponse = createLineRequest(params);
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final String uri = createResponse.header("Location");
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
@@ -194,12 +160,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void addSection() {
         // given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
-        final Map<String, String> lineParams = new HashMap<>();
-        lineParams.put("name", "2호선");
-        lineParams.put("color", "bg-green-600");
-        lineParams.put("upStationId", stationIds.get(0).toString());
-        lineParams.put("downStationId", stationIds.get(1).toString());
-        lineParams.put("distance", "10");
+        final Map<String, String> lineParams = makeLineTwoCreationParams(stationIds.get(0), stationIds.get(1));
         final ExtractableResponse<Response> lineCreateResponse = createLineRequest(lineParams);
         final LineResponseDto createdLine = lineCreateResponse.jsonPath()
                 .getObject(".", LineResponseDto.class);
@@ -221,19 +182,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     void removeStation() {
         // given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
-        Map<String, String> lineParams = new HashMap<>();
-        lineParams.put("name", "2호선");
-        lineParams.put("color", "bg-green-600");
-        lineParams.put("upStationId", stationIds.get(0).toString());
-        lineParams.put("downStationId", stationIds.get(1).toString());
-        lineParams.put("distance", "10");
-        ExtractableResponse<Response> lineCreateResponse = createLineRequest(lineParams);
+        final Map<String, String> lineParams = makeLineTwoCreationParams(stationIds.get(0), stationIds.get(1));
+        final ExtractableResponse<Response> lineCreateResponse = createLineRequest(lineParams);
         final LineResponseDto createdLine = lineCreateResponse.jsonPath()
                 .getObject(".", LineResponseDto.class);
 
         final Long newStationId = save2StationsRequest("삼성역", "봉은사역").get(0);
 
-        Map<String, String> sectionParams = new HashMap<>();
+        final Map<String, String> sectionParams = new HashMap<>();
         sectionParams.put("upStationId", stationIds.get(0).toString());
         sectionParams.put("downStationId", newStationId.toString());
         sectionParams.put("distance", "5");

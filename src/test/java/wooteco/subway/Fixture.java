@@ -78,4 +78,24 @@ public class Fixture {
                 .then().log().all()
                 .extract();
     }
+
+    public static Map<String, String> makeLineTwoCreationParams(final Long upStationId, final Long downStationId) {
+        final Map<String, String> lineParams1 = new HashMap<>();
+        lineParams1.put("name", "2호선");
+        lineParams1.put("color", "bg-green-600");
+        lineParams1.put("upStationId", upStationId.toString());
+        lineParams1.put("downStationId", downStationId.toString());
+        lineParams1.put("distance", "10");
+        return lineParams1;
+    }
+
+    public static Map<String, String> makeLineSinBunDangCreationParams(final Long upStationId, final Long downStationId) {
+        final Map<String, String> lineParams2 = new HashMap<>();
+        lineParams2.put("name", "신분당선");
+        lineParams2.put("color", "bg-red-600");
+        lineParams2.put("upStationId", upStationId.toString());
+        lineParams2.put("downStationId", downStationId.toString());
+        lineParams2.put("distance", "10");
+        return lineParams2;
+    }
 }
