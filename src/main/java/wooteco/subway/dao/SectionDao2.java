@@ -52,6 +52,14 @@ public class SectionDao2 {
         jdbcTemplate.update(sql, paramSource);
     }
 
+    public void delete(SectionEntity2 sectionEntity) {
+        final String sql = "DELETE FROM section WHERE line_id = :lineId "
+                + "AND (up_station_id = :upStationId OR down_station_id = :downStationId)";
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(sectionEntity);
+
+        jdbcTemplate.update(sql, paramSource);
+    }
+
     public void deleteAllByLineId(Long lineId) {
         final String sql = "DELETE FROM section WHERE line_id = :lineId ";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
