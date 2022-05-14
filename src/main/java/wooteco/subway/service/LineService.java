@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.FullStationDao;
+import wooteco.subway.dao.RegisteredStationDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.SectionViewDao;
@@ -16,7 +16,7 @@ import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
-import wooteco.subway.entity.FullStationEntity;
+import wooteco.subway.entity.RegisteredStationEntity;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.domain.SectionViews;
@@ -32,26 +32,26 @@ public class LineService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
-    private final StationDao stationDao;
     private final SectionViewDao sectionViewDao;
-    private final FullStationDao fullStationDao;
+    private final StationDao stationDao;
+    private final RegisteredStationDao registeredStationDao;
 
     public LineService(LineDao lineDao,
-                       StationDao stationDao,
                        SectionDao sectionDao,
                        SectionViewDao sectionViewDao,
-                       FullStationDao fullStationDao) {
+                       StationDao stationDao,
+                       RegisteredStationDao registeredStationDao) {
         this.lineDao = lineDao;
-        this.stationDao = stationDao;
         this.sectionDao = sectionDao;
         this.sectionViewDao = sectionViewDao;
-        this.fullStationDao = fullStationDao;
+        this.stationDao = stationDao;
+        this.registeredStationDao = registeredStationDao;
     }
 
     public List<LineResponse> findAll() {
-        return fullStationDao.findAll()
+        return registeredStationDao.findAll()
                 .stream()
-                .collect(groupingBy(FullStationEntity::getId))
+                .collect(groupingBy(RegisteredStationEntity::getId))
                 .values()
                 .stream()
                 .map(this::toLineResponse)
@@ -126,10 +126,10 @@ public class LineService {
                 lineRequest.getDistance());
     }
 
-    private LineResponse toLineResponse(List<FullStationEntity> fullStations) {
+    private LineResponse toLineResponse(List<RegisteredStationEntity> fullStations) {
         LineEntity lineEntity = fullStations.get(0).getLineEntity();
         List<StationEntity> stations = fullStations.stream()
-                .map(FullStationEntity::getStationEntity)
+                .map(RegisteredStationEntity::getStationEntity)
                 .collect(Collectors.toList());
         return toLineResponse(lineEntity, stations);
     }
