@@ -4,6 +4,9 @@ import java.util.Objects;
 
 public class Station {
 
+    private static final int MIN_NAME_LENGTH = 1;
+    private static final int MAX_NAME_LENGTH = 30;
+
     private final Long id;
     private final String name;
 
@@ -24,7 +27,7 @@ public class Station {
 
     private void validateNameLength(String name) {
         int length = name.length();
-        if (length < 1 || length > 30) {
+        if (length < MIN_NAME_LENGTH || length > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("이름은 1~30 자 이내여야 합니다.");
         }
     }

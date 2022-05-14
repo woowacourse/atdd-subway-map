@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class Section {
 
+    private static final int MIN_DISTANCE = 0;
+
     private final Long id;
     private final Station upStation;
     private final Station downStation;
@@ -22,7 +24,7 @@ public class Section {
     }
 
     private void validateDistance(int distance) {
-        if (distance <= 0) {
+        if (distance <= MIN_DISTANCE) {
             throw new IllegalArgumentException("거리는 0보다 작을 수 없습니다.");
         }
     }

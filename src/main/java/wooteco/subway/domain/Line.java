@@ -6,6 +6,8 @@ import java.util.Objects;
 
 public class Line {
 
+    private static final int MIN_LENGTH = 1;
+
     private final Long id;
     private final String name;
     private final String color;
@@ -51,7 +53,7 @@ public class Line {
     }
 
     private void validateLength(int length, int max, String message) {
-        if (length < 1 || length > max) {
+        if (length < MIN_LENGTH || length > max) {
             throw new IllegalArgumentException(message);
         }
     }
