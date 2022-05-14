@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,22 +15,36 @@ import wooteco.subway.exception.IllegalInputException;
 
 class SectionTest {
 
-    private final Line line = new Line(1L, "2호선", "bg-green-600");
-    private final Station seolleung = new Station(1L, "선릉역");
-    private final Station samseong = new Station(2L, "삼성역");
-    private final Station yeoksam = new Station(3L, "역삼역");
+    private Line line;
+    private Station seolleung;
+    private Station samseong;
+    private Station yeoksam;
+    private Distance distance10;
+    private Distance distance7;
+
+    @BeforeEach
+    void setUpData() {
+        line = new Line(1L, "2호선", "bg-green-600");
+
+        seolleung = new Station(1L, "선릉역");
+        samseong = new Station(2L, "삼성역");
+        yeoksam = new Station(3L, "역삼역");
+
+        distance10 = new Distance(10);
+        distance7 = new Distance(7);
+    }
 
     @Test
     @DisplayName("구간 객체를 생성한다.")
     void NewSection() {
-        assertThatCode(() -> new Section(line, seolleung, samseong, new Distance(10)))
+        assertThatCode(() -> new Section(line, seolleung, samseong, distance10))
                 .doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("상행과 종점이 같으면 예외를 던진다.")
     void NewSection_SameStation_ExceptionThrown() {
-        assertThatThrownBy(() -> new Section(line, seolleung, seolleung, new Distance(10)))
+        assertThatThrownBy(() -> new Section(line, seolleung, seolleung, distance10))
                 .isInstanceOf(IllegalInputException.class)
                 .hasMessage("두 종점이 동일합니다.");
     }
@@ -99,7 +114,7 @@ class SectionTest {
     @ValueSource(ints = {10, 11})
     void Assign_LongerThanOrEqualExistingSection_ExceptionThrown(final int distance) {
         // given
-        final Section existingSection = new Section(line, samseong, yeoksam, new Distance(10));
+        final Section existingSection = new Section(line, samseong, yeoksam, distance10);
         final Section newSection = new Section(line, seolleung, yeoksam, new Distance(distance));
 
         // then
@@ -112,8 +127,8 @@ class SectionTest {
     @DisplayName("두 구간을 합친다.")
     void Merge() {
         // given
-        final Section section1 = new Section(line, samseong, yeoksam, new Distance(10));
-        final Section section2 = new Section(line, yeoksam, seolleung, new Distance(7));
+        final Section section1 = new Section(line, samseong, yeoksam, distance10);
+        final Section section2 = new Section(line, yeoksam, seolleung, distance7);
 
         // when
         final Section actual = section1.merge(section2);
