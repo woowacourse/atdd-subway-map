@@ -89,8 +89,7 @@ public class Sections {
         final Section previousSection = getPreviousSection(stationId);
         final Section laterSection = getLaterSection(stationId);
 
-        findAndRemoveFirstSection(stationId, previousSection);
-        findAndRemoveLastSection(stationId, laterSection);
+        removeFirstOrLastSection(previousSection);
         removeMiddleSection(previousSection, laterSection);
 
         sections = sortSections(sections);
@@ -117,32 +116,12 @@ public class Sections {
                 .orElse(null);
     }
 
-    private void findAndRemoveFirstSection(Long stationId, Section section) {
-        if (section == null) {
-            final Section findSection = getFirstSection(stationId);
-            sections.remove(findSection);
+    private void removeFirstOrLastSection(Section previousSection) {
+        if (previousSection == null) {
+            sections.remove(0);
+            return;
         }
-    }
-
-    private void findAndRemoveLastSection(Long stationId, Section section) {
-        if (section == null) {
-            final Section findSection = getLastSection(stationId);
-            sections.remove(findSection);
-        }
-    }
-
-    private Section getFirstSection(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.getUpStationId().equals(stationId))
-                .findAny()
-                .orElseThrow(() -> new IllegalSectionException("첫역을 찾을 수 없습니다."));
-    }
-
-    private Section getLastSection(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.getDownStationId().equals(stationId))
-                .findAny()
-                .orElseThrow(() -> new IllegalSectionException("마지막역을 찾을 수 없습니다."));
+        sections.remove(sections.size()-1);
     }
 
     private void removeMiddleSection(Section previousSection, Section laterSection) {
