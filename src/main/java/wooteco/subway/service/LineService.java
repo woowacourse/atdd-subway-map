@@ -28,6 +28,7 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         final Line line = new Line(
                 lineRequest.getName(),
@@ -69,15 +70,18 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse getById(final Long id) {
         final Line line = lineDao.findById(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), getStationResponsesByLine(line));
     }
 
+    @Transactional
     public void update(final Long id, final LineRequest lineRequest) {
         lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
     }
 
+    @Transactional
     public void deleteById(final Long id) {
         lineDao.deleteById(id);
     }
