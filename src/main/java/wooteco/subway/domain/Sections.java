@@ -27,7 +27,7 @@ public class Sections {
         for (Section section : existedStations) {
             final AddMatchingResult result = AddMatchingResult.matchMiddleStation(section, newSection);
             if (canAddStation(result, section, newSection)) {
-                add(section, newSection, result);
+                addSection(section, newSection, result);
                 return;
             }
         }
@@ -56,7 +56,7 @@ public class Sections {
                 && section.isDistanceLongerThan(newSection);
     }
 
-    private void add(final Section section, final Section newSection, final AddMatchingResult result) {
+    private void addSection(final Section section, final Section newSection, final AddMatchingResult result) {
         final List<Section> seperatedSection = separateSection(section, newSection, result);
         final int standardSection = value.indexOf(section) + 1;
         List<Section> leftSection = value.subList(0, standardSection);
