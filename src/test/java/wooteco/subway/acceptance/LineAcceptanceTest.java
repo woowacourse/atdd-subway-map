@@ -51,7 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         final List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
-
+        System.out.println("sdadasd");
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank(),
@@ -59,18 +59,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                         .ignoringFields("id")
                         .isEqualTo(List.of(stationRequest1, stationRequest2))
         );
-    }
-
-    private Long createStation(final StationRequest stationRequest) {
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-
-        return Long.parseLong(response.header("Location").split("/")[2]);
     }
 
     @DisplayName("노션을 조회한다.")
@@ -248,5 +236,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private Long createStation(final StationRequest stationRequest) {
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        return Long.parseLong(response.header("Location").split("/")[2]);
     }
 }

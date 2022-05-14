@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -25,6 +26,9 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
+
+    @Mock
+    private StationDao stationDao;
 
     @Mock
     private LineDao lineDao;
@@ -41,10 +45,14 @@ class LineServiceTest {
         final String lineName = "신분당선";
         final String lineColor = "bg-red-600";
         final Line line = new Line(lineName, lineColor);
-        final Section section = new Section(new Station(1L, null), new Station(2L, null), 3, 1L);
+        final Station station1 = new Station(1L, "선릉역");
+        final Station station2 = new Station(2L, "강남역");
+        final Section section = new Section(station1, station2, 3, 1L);
 
         given(lineDao.save(line)).willReturn(new Line(1L, lineName, lineColor));
         given(sectionDao.save(section)).willReturn(section);
+        given(stationDao.findById(section.getUpStation().getId())).willReturn(Optional.of(station1));
+        given(stationDao.findById(section.getDownStation().getId())).willReturn(Optional.of(station2));
 
         final Line actual = lineService.createLine(line, section);
 
@@ -120,5 +128,31 @@ class LineServiceTest {
         given(lineDao.deleteById(1L)).willReturn(1);
         lineService.delete(1L);
         verify(lineDao, times(1)).deleteById(1L);
+    }
+
+    @DisplayName("중복된 지하철 역으로 노선을 등록할 경우 예외를 발생한다.")
+    @Test
+    void create_throwsExceptionIfStationsNameIsDuplicated() {
+        final Station station = new Station("선릉역");
+        final Section section = new Section(station, station, 10);
+        final Line line = new Line("2호선", "bg-green-600");
+
+        given(stationDao.findById(station.getId())).willReturn(Optional.of(station));
+
+        assertThatThrownBy(() -> lineService.createLine(line, section))
+                .isInstanceOf(DuplicateNameException.class)
+                .hasMessage("한 구간의 지하철 역들의 이름은 중복될 수 없습니다.");
+    }
+
+    @DisplayName("노선 등록 시, 지하철 역이 존재하지 않는다면 예외를 발생한다.")
+    @Test
+    void create_throwsExceptionIfStationsDoesNotExist() {
+        final Station station = new Station("선릉역");
+        final Section section = new Section(station, station, 10);
+        final Line line = new Line("2호선", "bg-green-600");
+
+        assertThatThrownBy(() -> lineService.createLine(line, section))
+                .isInstanceOf(DataNotFoundException.class)
+                .hasMessage("존재하지 않는 지하철 역입니다.");
     }
 }
