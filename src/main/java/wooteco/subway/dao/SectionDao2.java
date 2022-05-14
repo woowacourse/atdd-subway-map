@@ -2,8 +2,10 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.entity.SectionEntity2;
 import wooteco.subway.entity.StationEntity;
@@ -40,5 +42,21 @@ public class SectionDao2 {
         paramSource.addValue("lineId", lineId);
 
         return jdbcTemplate.query(sql, paramSource, ROW_MAPPER);
+    }
+
+    public void save(SectionEntity2 sectionEntity) {
+        final String sql = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) "
+                + "VALUES(:lineId, :upStationId, :downStationId, :distance)";
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(sectionEntity);
+
+        jdbcTemplate.update(sql, paramSource);
+    }
+
+    public void deleteAllByLineId(Long lineId) {
+        final String sql = "DELETE FROM section WHERE line_id = :lineId ";
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("lineId", lineId);
+
+        jdbcTemplate.update(sql, paramSource);
     }
 }
