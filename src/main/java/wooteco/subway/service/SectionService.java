@@ -19,16 +19,12 @@ public class SectionService {
     }
 
     public void firstSave(Long lineId, SectionRequest sectionRequest) {
-        sectionDao.save(
-            createSection(lineId,
+        sectionDao.save(new Section(
+            null, lineId,
                 sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(),
                 sectionRequest.getDistance(),
                 1L));
-    }
-
-    private Section createSection(Long lineId, long upStationId, long downStationId, int distance, Long lineOrder) {
-        return new Section(null, lineId, upStationId, downStationId, distance, lineOrder);
     }
 
     public void save(Long lineId, SectionRequest sectionReq) {
@@ -39,28 +35,22 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         sections.validateSection(upStationId, downStationId, distance);
 
-        Section section = sections.findOverlapSection(upStationId, downStationId, distance);
-        updateSectionsAndGetLineOrder(lineId, section, upStationId);
-
-        sectionDao.save(
-            createSection(lineId, upStationId, downStationId, distance, section.getLineOrder()));
+        List<Section> updateSections = sections.findOverlapSection(upStationId, downStationId, distance);
+        updateEachSection(updateSections);
     }
 
-    private void updateSectionsAndGetLineOrder(Long lineId, Section section, long upStationId) {
-        if (section.getDownStationId() == upStationId) {
-            handleExistDownNewDownMatchingCase(lineId, section);
-            return;
-        }
-        if (section.getId() != null) {
-            sectionDao.deleteById(section.getId());
-            sectionDao.save(section);
-        }
-        sectionDao.updateLineOrderByInc(lineId, section.getLineOrder());
+    private void updateEachSection(List<Section> sections) {
+        updateFrontSection(sections.get(0));
+        updateBackSection(sections.get(1));
     }
 
-    private void handleExistDownNewDownMatchingCase(Long lineId, Section section) {
-        sectionDao.updateLineOrderByInc(lineId, section.getLineOrder());
+    private void updateFrontSection(Section section) {
         sectionDao.deleteById(section.getId());
+        sectionDao.save(section);
+    }
+
+    private void updateBackSection(Section section) {
+        sectionDao.updateLineOrderByInc(section.getLineId(), section.getLineOrder());
         sectionDao.save(section);
     }
 

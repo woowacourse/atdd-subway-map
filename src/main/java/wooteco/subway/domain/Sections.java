@@ -89,39 +89,39 @@ public class Sections {
             .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다."));
     }
 
-    public Section findOverlapSection(long upStationId, long downStationId, int distance) {
+    public List<Section> findOverlapSection(long upStationId, long downStationId, int distance) {
         if (existByUpStationId(upStationId)) {
-            return getUpdateSectionUpsideMatchingCase(upStationId, downStationId, distance);
+            Section section = findById(findIdByUpStationId(upStationId));
+            return separateSectionInExistUpMatchCase(upStationId, downStationId, distance, section);
         }
         if (existByDownStationId(downStationId)) {
-            return getUpdateSectionDownsideMatchingCase(upStationId, downStationId, distance);
+            Section section = findById(findIdByDownStationId(downStationId));
+            return separateSectionInExistDownMatchCase(upStationId, downStationId, distance, section);
         }
         if (existByUpStationId(downStationId)) {
-            return getSectionWithLineOrder(
-                findById(findIdByUpStationId(downStationId)).getLineOrder());
+            Section section = findById(findIdByUpStationId(downStationId));
+            return separateSectionInExistUpMatchCase(upStationId, downStationId, distance, section);
         }
-        return getSectionWithLineOrder(
-            findById(findIdByDownStationId(upStationId)).getLineOrder() + 1);
+        Section section =  findById(findIdByDownStationId(upStationId));
+        return separateSectionInExistDownMatchCase(upStationId, downStationId, distance, section);
     }
 
-    private Section getUpdateSectionUpsideMatchingCase(
-        long upStationId, long downStationId, int distance) {
-        Section section = findById(findIdByUpStationId(upStationId));
-        return new Section(
-            section.getId(), section.getLineId(), downStationId, section.getDownStationId(),
-            section.getDistance() - distance, section.getLineOrder());
+    private List<Section> separateSectionInExistUpMatchCase(
+        long upStationId, long downStationId, int distance, Section section) {
+        return List.of(
+            new Section(section.getId(), section.getLineId(), upStationId, downStationId,
+            section.getDistance() - distance, section.getLineOrder()),
+            new Section(section.getId(), section.getLineId(), downStationId, section.getDownStationId(),
+                section.getDistance() - distance, section.getLineOrder() + 1));
     }
 
-    private Section getUpdateSectionDownsideMatchingCase(
-        long upStationId, long downStationId, int distance) {
-        Section section = findById(findIdByDownStationId(downStationId));
-        return new Section(
-            section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
-            section.getDistance() - distance, section.getLineOrder() + 1);
-    }
-
-    private Section getSectionWithLineOrder(long lineOrder) {
-        return new Section(lineOrder);
+    private List<Section> separateSectionInExistDownMatchCase(
+        long upStationId, long downStationId, int distance, Section section) {
+        return List.of(
+            new Section(section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
+                section.getDistance() - distance, section.getLineOrder()),
+            new Section(section.getId(), section.getLineId(), upStationId, downStationId,
+                section.getDistance() - distance, section.getLineOrder() + 1));
     }
 
     private Section findById(long sectionId) {
