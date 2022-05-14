@@ -13,6 +13,7 @@ import wooteco.subway.exception.line.NoSuchLineException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -70,9 +71,9 @@ public class LineServiceTest extends ServiceTest {
         given(stationService.findAll())
                 .willReturn(List.of(station1, station2, station3, station4));
         when(sectionService.getStationIds(1L))
-                .thenReturn(List.of(1L, 2L));
+                .thenReturn(Set.of(1L, 2L));
         when(sectionService.getStationIds(2L))
-                .thenReturn(List.of(2L, 3L, 4L));
+                .thenReturn(Set.of(2L, 3L, 4L));
 
         //when
         List<LineResponse> responses = lineService.findAll();
@@ -94,7 +95,7 @@ public class LineServiceTest extends ServiceTest {
         given(stationService.findAll())
                 .willReturn(List.of(station1, station2));
         when(sectionService.getStationIds(1L))
-                .thenReturn(List.of(1L, 2L));
+                .thenReturn(Set.of(1L, 2L));
 
         //when
         LineResponse response = lineService.findById(1L);

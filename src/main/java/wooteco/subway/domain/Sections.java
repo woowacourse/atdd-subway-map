@@ -6,6 +6,7 @@ import wooteco.subway.exception.section.NoSuchSectionException;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Sections {
     private static final int MERGE_SECTION_SIZE = 2;
@@ -49,12 +50,10 @@ public class Sections {
         return existingSection;
     }
 
-    public List<Long> getDistinctStationIds() {
+    public Set<Long> getDistinctStationIds() {
         return sections.stream()
-                .map(section -> Arrays.asList(section.getUpStationId(), section.getDownStationId()))
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
+                .flatMap(section -> Stream.of(section.getUpStationId(), section.getDownStationId()))
+                .collect(Collectors.toSet());
     }
 
     public Optional<Section> getExistingUpStationSection(Section upStationSection) {
@@ -79,7 +78,7 @@ public class Sections {
         return sections.size() == MERGE_SECTION_SIZE;
     }
 
-    public void validateSize() {
+    public void validateDeletable() {
         if (sections.size() == ONE_SECTION) {
             throw new SubwayException("구간이 하나인 경우에는 삭제할 수 없습니다.");
         }
@@ -154,7 +153,7 @@ public class Sections {
     }
 
     private boolean isUnableToAdd(Section checkableSection) {
-        List<Long> distinctStationIds = getDistinctStationIds();
+        Set<Long> distinctStationIds = getDistinctStationIds();
 
         return distinctStationIds.contains(checkableSection.getUpStationId()) == distinctStationIds.contains(checkableSection.getDownStationId());
     }

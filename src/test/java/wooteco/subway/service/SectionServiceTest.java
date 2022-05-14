@@ -9,6 +9,7 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -93,10 +94,10 @@ public class SectionServiceTest extends ServiceTest {
                 .willReturn(List.of(existedSection1, existedSection2, existedSection3, existedSection4));
 
         //when
-        List<Long> stationIds = sectionService.getStationIds(1L);
+        Set<Long> stationIds = sectionService.getStationIds(1L);
 
         //then
         assertThat(stationIds.size()).isEqualTo(6);
-        assertThat(stationIds).isEqualTo(List.of(1L, 2L, 3L, 4L, 6L, 7L));
+        assertThat(stationIds).isEqualTo(Set.of(1L, 2L, 3L, 4L, 6L, 7L));
     }
 }

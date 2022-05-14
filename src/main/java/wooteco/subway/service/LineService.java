@@ -14,6 +14,7 @@ import wooteco.subway.exception.line.NoSuchLineException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +54,7 @@ public class LineService {
         Line line = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
         List<Station> stations = stationService.findAll();
-        List<Long> stationIds = sectionService.getStationIds(id);
+        Set<Long> stationIds = sectionService.getStationIds(id);
 
         return LineResponse.of(line, stations, stationIds);
     }
@@ -80,7 +81,7 @@ public class LineService {
 
     private LineResponse getLineResponse(Line line, List<Station> allStations) {
         Long lineId = line.getId();
-        List<Long> stationIds = sectionService.getStationIds(lineId);
+        Set<Long> stationIds = sectionService.getStationIds(lineId);
 
         List<Station> stations = allStations.stream()
                 .filter(station -> stationIds.contains(station.getId()))

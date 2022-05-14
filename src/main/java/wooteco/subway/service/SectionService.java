@@ -10,6 +10,7 @@ import wooteco.subway.dto.SectionRequest;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class SectionService {
@@ -24,7 +25,7 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
-    public List<Long> getStationIds(Long lineId) {
+    public Set<Long> getStationIds(Long lineId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
         return sections.getDistinctStationIds();
@@ -48,7 +49,7 @@ public class SectionService {
     @Transactional
     public void delete(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        sections.validateSize();
+        sections.validateDeletable();
         Sections sectionsToDelete = sections.getByStationId(stationId);
 
         for (Section section : sectionsToDelete.getSections()) {

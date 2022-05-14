@@ -4,6 +4,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LineResponse {
@@ -30,7 +31,7 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
-    public static LineResponse of(Line line, List<Station> allStations, List<Long> stationIds) {
+    public static LineResponse of(Line line, List<Station> allStations, Set<Long> stationIds) {
         List<Station> stationsOfLine = allStations.stream()
                 .filter(station -> stationIds.contains(station.getId()))
                 .collect(Collectors.toList());
