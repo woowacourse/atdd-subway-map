@@ -17,9 +17,12 @@ public class LineDao {
 
     public Optional<LineResponse> queryById(Long id) {
         String sql =
-            "SELECT l.id AS line_id, l.name AS line_name, l.color AS line_color, s.id AS station_id, s.name AS station_name "
+            "SELECT l.id AS line_id, l.name AS line_name, l.color AS line_color, "
+                + "up.id AS up_station_id, up.name AS up_station_name, "
+                + "down.id AS down_station_id, down.name AS down_station_name "
                 + "FROM LINE AS l JOIN SECTION AS sec ON l.id = sec.line_id "
-                + "JOIN STATION AS s ON s.id = sec.up_station_id or s.id = sec.down_station_id "
+                + "JOIN STATION AS up ON up.id = sec.up_station_id "
+                + "JOIN STATION AS down ON down.id = sec.down_station_id "
                 + "WHERE l.id = ?";
         List<LineResponse> responses = jdbcTemplate.query(sql, new LineResponsesExtractor(), id);
 
@@ -31,9 +34,12 @@ public class LineDao {
 
     public List<LineResponse> queryAll() {
         String sql =
-            "SELECT l.id AS line_id, l.name AS line_name, l.color AS line_color, s.id AS station_id, s.name AS station_name "
+            "SELECT l.id AS line_id, l.name AS line_name, l.color AS line_color, "
+                + "up.id AS up_station_id, up.name AS up_station_name, "
+                + "down.id AS down_station_id, down.name AS down_station_name "
                 + "FROM LINE AS l JOIN SECTION AS sec ON l.id = sec.line_id "
-                + "JOIN STATION AS s ON s.id = sec.up_station_id or s.id = sec.down_station_id";
+                + "JOIN STATION AS up ON up.id = sec.up_station_id "
+                + "JOIN STATION AS down ON down.id = sec.down_station_id ";
         return jdbcTemplate.query(sql, new LineResponsesExtractor());
     }
 

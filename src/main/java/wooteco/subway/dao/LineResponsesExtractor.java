@@ -2,12 +2,12 @@ package wooteco.subway.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -15,15 +15,17 @@ import wooteco.subway.dto.StationResponse;
 class LineResponsesExtractor implements ResultSetExtractor<List<LineResponse>> {
 
     private final Set<Long> lineIds;
-    private final Map<Long, Set<StationResponse>> stations;
-    private final Map<Long, String> names;
-    private final Map<Long, String> colors;
+    private final Map<Long, String> lineNames;
+    private final Map<Long, String> lineColors;
+    private final Map<Long, StationResponse> stations;
+    private final Map<Long, Map<Long, Long>> edges;
 
     LineResponsesExtractor() {
         lineIds = new HashSet<>();
         stations = new HashMap<>();
-        names = new HashMap<>();
-        colors = new HashMap<>();
+        lineNames = new HashMap<>();
+        lineColors = new HashMap<>();
+        edges = new HashMap<>();
     }
 
     @Override
@@ -33,36 +35,57 @@ class LineResponsesExtractor implements ResultSetExtractor<List<LineResponse>> {
             String lineName = rs.getString("line_name");
             String lineColor = rs.getString("line_color");
 
-            storeIdAndNameAndColor(lineId, lineName, lineColor);
-            storeStationResponse(rs, lineId);
+            long upStationId = rs.getLong("up_station_id");
+            String upStationName = rs.getString("up_station_name");
+
+            long downStationId = rs.getLong("down_station_id");
+            String downStationName = rs.getString("down_station_name");
+
+            lineIds.add(lineId);
+            lineNames.put(lineId, lineName);
+            lineColors.put(lineId, lineColor);
+
+            stations.put(upStationId, new StationResponse(upStationId, upStationName));
+            stations.put(downStationId, new StationResponse(downStationId, downStationName));
+
+            if (!edges.containsKey(lineId)) {
+                edges.put(lineId, new HashMap<>());
+            }
+
+            edges.get(lineId).put(upStationId, downStationId);
         }
 
-        return mapToLinResponses();
-    }
+        List<LineResponse> result = new ArrayList<>();
 
-    private void storeIdAndNameAndColor(long lineId, String lineName, String lineColor) {
-        lineIds.add(lineId);
-        names.put(lineId, lineName);
-        colors.put(lineId, lineColor);
-    }
-
-    private void storeStationResponse(ResultSet rs, long lineId) throws SQLException {
-        if (!stations.containsKey(lineId)) {
-            stations.put(lineId, new HashSet<>());
+        for (Long lineId : lineIds) {
+            List<StationResponse> stationResponses = mapToStationResponses(lineId);
+            result.add(new LineResponse(lineId, lineNames.get(lineId), lineColors.get(lineId), stationResponses));
         }
-        Set<StationResponse> stationResponses = stations.get(lineId);
-        stationResponses.add(mapToStationResponse(rs));
+
+        return result;
     }
 
-    private StationResponse mapToStationResponse(ResultSet rs) throws SQLException {
-        long id = rs.getLong("station_id");
-        String name = rs.getString("station_name");
-        return new StationResponse(id, name);
+    private List<StationResponse> mapToStationResponses(long lineId) {
+        Map<Long, Long> edge = edges.get(lineId);
+        List<StationResponse> result = new ArrayList<>();
+
+        Long next = findLastUpStation(edge);
+
+        while(next != null) {
+            StationResponse station = stations.get(next);
+            result.add(station);
+            next = edge.get(next);
+        }
+
+        return result;
     }
 
-    private List<LineResponse> mapToLinResponses() {
-        return lineIds.stream()
-            .map(id -> new LineResponse(id, names.get(id), colors.get(id), stations.get(id)))
-            .collect(Collectors.toList());
+    private Long findLastUpStation(Map<Long, Long> edge) {
+        for (Long upStationId : edge.keySet()) {
+            if (!edge.containsValue(upStationId)) {
+                return upStationId;
+            }
+        }
+        throw new IllegalStateException("상행 종점이 없습니다.");
     }
 }
