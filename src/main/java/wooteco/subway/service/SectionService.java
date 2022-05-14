@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.dto.SectionDto;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.dto.SectionDto;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
@@ -18,6 +18,7 @@ import wooteco.subway.dto.StationResponse;
 
 @Service
 public class SectionService {
+    private static final String ERROR_EMPTY = "존재하지 않는 역입니다.";
 
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -33,9 +34,9 @@ public class SectionService {
         for (SectionDto sectionDto : sectionDtos) {
             long id = sectionDto.getId();
             Station upStation = stationDao.findById(sectionDto.getUpStationId())
-                    .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
+                    .orElseThrow(() -> new IllegalArgumentException(ERROR_EMPTY));
             Station downStation = stationDao.findById(sectionDto.getDownStationId())
-                    .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
+                    .orElseThrow(() -> new IllegalArgumentException(ERROR_EMPTY));
             int distance = sectionDto.getDistance();
             sections.add(new Section(id, lineId, upStation, downStation, distance));
         }
@@ -59,12 +60,14 @@ public class SectionService {
         Sections sections = loadSections(lineId);
         sections.validateDistance(sectionRequest.getDistance());
         Station upStation = stationDao.findById(sectionRequest.getUpStationId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_EMPTY));
         Station downStation = stationDao.findById(sectionRequest.getDownStationId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_EMPTY));
+
         if (sections.isPresent()) {
             sections.validateStations(upStation, downStation);
         }
+
         Sections updatedSections = sections.updateSection(upStation, downStation, sectionRequest.getDistance());
         updateSections(updatedSections);
 
@@ -75,7 +78,8 @@ public class SectionService {
 
     public void delete(long lineId, long stationId) {
         Sections sections = loadSections(lineId);
-        Station station = stationDao.findById(stationId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+        Station station = stationDao.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_EMPTY));
         Sections deletedSections = sections.deleteSection(station);
         updateSections(deletedSections);
     }

@@ -24,7 +24,8 @@ class LineCreateServiceTest {
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public LineCreateServiceTest(LineCreateService sectionService, LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+    public LineCreateServiceTest(LineCreateService sectionService, LineDao lineDao, SectionDao sectionDao,
+            StationDao stationDao) {
         this.lineCreateService = sectionService;
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;

@@ -13,6 +13,7 @@ import wooteco.subway.dto.StationResponse;
 
 @Service
 public class StationService {
+    private static final String ERROR_EXIST = "이미 존재하는 지하철역 이름입니다.";
 
     private final StationDao stationDao;
 
@@ -26,7 +27,7 @@ public class StationService {
         try {
             savedStation = stationDao.save(station);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("이미 존재하는 지하철역 이름입니다.");
+            throw new IllegalArgumentException(ERROR_EXIST);
         }
         return new StationResponse(savedStation);
     }

@@ -20,6 +20,7 @@ import wooteco.subway.dto.StationResponse;
 @Service
 public class LineCreateService {
 
+    private static final String ERROR_EMPTY = "존재하지 않는 역입니다.";
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -33,9 +34,9 @@ public class LineCreateService {
     @Transactional
     public LineCreateResponse create(LineCreateRequest request) {
         Station upStation = stationDao.findById(request.getUpStationId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_EMPTY));
         Station downStation = stationDao.findById(request.getDownStationId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_EMPTY));
 
         Line savedLine = saveLine(request.getName(), request.getColor());
         Section savedSection = saveSection(savedLine.getId(), upStation, downStation, request.getDistance());

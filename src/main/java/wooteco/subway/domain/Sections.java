@@ -40,11 +40,13 @@ public class Sections {
 
     private void checkBothDoNotExist(Station upStation, Station downStation) {
         int upStationCount = (int)sections.stream()
-                .filter(section -> section.getUpStation().equals(upStation) || section.getDownStation().equals(upStation))
+                .filter(section -> section.getUpStation().equals(upStation) || section.getDownStation()
+                        .equals(upStation))
                 .count();
 
         int downStationCount = (int)sections.stream()
-                .filter(section -> section.getUpStation().equals(downStation) || section.getDownStation().equals(downStation))
+                .filter(section -> section.getUpStation().equals(downStation) || section.getDownStation()
+                        .equals(downStation))
                 .count();
 
         if (upStationCount == 0 && downStationCount == 0) {

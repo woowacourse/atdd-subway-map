@@ -12,6 +12,7 @@ import wooteco.subway.dto.LineResponse;
 
 @Service
 public class LineService {
+    private static final String ERROR_EMPTY = "해당 노선이 없습니다.";
 
     private final LineDao lineDao;
 
@@ -28,7 +29,7 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_EMPTY));
         return new LineResponse(line);
     }
 
