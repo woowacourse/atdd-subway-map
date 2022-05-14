@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,12 @@ import wooteco.subway.exception.NoSuchLineException;
 
 @Repository
 public class LineJdbcDao implements LineDao {
+
+    private static final RowMapper<Line> LINE_ROW_MAPPER = (resultSet, rowNum) -> new Line(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("color")
+    );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -31,11 +38,13 @@ public class LineJdbcDao implements LineDao {
         }
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        try {
-            trySave(line, keyHolder);
-        } catch (DuplicateKeyException exception) {
-            throw new DuplicateLineException();
-        }
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO LINE (name, color) VALUES (?, ?)", new String[]{"id"});
+            preparedStatement.setString(1, line.getName());
+            preparedStatement.setString(2, line.getColor());
+            return preparedStatement;
+        }, keyHolder);
         return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
@@ -54,11 +63,7 @@ public class LineJdbcDao implements LineDao {
     public Optional<Line> findById(final Long id) {
         final String sql = "SELECT id, name, color FROM LINE WHERE id = (?)";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Line(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("color")
-            ), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
@@ -85,15 +90,26 @@ public class LineJdbcDao implements LineDao {
         jdbcTemplate.update(sql, id);
     }
 
-    private void trySave(final Line line, final KeyHolder keyHolder)
-            throws DuplicateKeyException {
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO LINE (name, color) VALUES (?, ?)", new String[]{"id"});
-            preparedStatement.setString(1, line.getName());
-            preparedStatement.setString(2, line.getColor());
-            return preparedStatement;
-        }, keyHolder);
+    @Override
+    public boolean existByName(final String name) {
+        final String sql = "SELECT id, name, color FROM LINE WHERE name = (?)";
+        try {
+            jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, name);
+            return true;
+        } catch (EmptyResultDataAccessException exception) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean existByColor(final String color) {
+        final String sql = "SELECT id, name, color FROM LINE WHERE color = (?)";
+        try {
+            jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, color);
+            return true;
+        } catch (EmptyResultDataAccessException exception) {
+            return false;
+        }
     }
 
     private void checkUpdated(final int affectedRow, final Long id) {

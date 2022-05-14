@@ -43,30 +43,6 @@ class LineDaoTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("같은 이름의 노선이 있는 경우 예외를 던진다")
-    @Test
-    void throwExceptionWhenHasDuplicateName() {
-        // given
-        String name = "line";
-        dao.save(new Line(name, "color"));
-
-        // when & then
-        assertThatThrownBy(() -> dao.save(new Line(name, "color2")))
-                .isInstanceOf(DuplicateLineException.class);
-    }
-
-    @DisplayName("같은 색깔의 노선이 있는 경우 예외를 던진다")
-    @Test
-    void throwExceptionWhenHasDuplicateColor() {
-        // given
-        String color = "red";
-        dao.save(new Line("test", color));
-
-        // when & then
-        assertThatThrownBy(() -> dao.save(new Line("line", color)))
-                .isInstanceOf(DuplicateLineException.class);
-    }
-
     @DisplayName("노선 목록을 조회한다")
     @Test
     void findAll() {
@@ -164,5 +140,53 @@ class LineDaoTest {
 
         // then
         assertThat(dao.findById(savedLine.getId())).isEqualTo(Optional.empty());
+    }
+
+    @DisplayName("입력된 이름을 가진 노선이 존재하면 참을 반환한다.")
+    @Test
+    void existByNameReturnTrue() {
+        // given
+        String name = "line";
+        dao.save(new Line(name, "color"));
+
+        // when
+        boolean actual = dao.existByName(name);
+
+        // then
+        assertThat(actual).isEqualTo(true);
+    }
+
+    @DisplayName("입력된 이름을 가진 노선이 존재하지 않으면 거짓을 반환한다.")
+    @Test
+    void existByNameReturnFalse() {
+        // when
+        boolean actual = dao.existByName("nonExist");
+
+        // then
+        assertThat(actual).isEqualTo(false);
+    }
+
+    @DisplayName("입력된 색깔을 가진 노선이 존재하면 참을 반환한다.")
+    @Test
+    void existByColorReturnTrue() {
+        // given
+        String color = "color";
+        dao.save(new Line("line", color));
+
+        // when
+        boolean actual = dao.existByColor(color);
+
+        // then
+        assertThat(actual).isEqualTo(true);
+    }
+
+    @DisplayName("입력된 색깔을 가진 노선이 존재하지 않으면 거짓을 반환한다.")
+    @Test
+    void existByColorReturnFalse() {
+        // when
+        boolean actual = dao.existByColor("nonExist");
+
+        // then
+        assertThat(actual).isEqualTo(false);
     }
 }

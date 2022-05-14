@@ -14,6 +14,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.exception.NoSuchStationException;
 
@@ -33,7 +34,11 @@ public class LineService {
     }
 
     public LineResponse createLine(final LineRequest request) {
+        if (lineDao.existByName(request.getName()) || lineDao.existByColor(request.getColor())) {
+            throw new DuplicateLineException();
+        }
         Line createdLine = lineDao.save(new Line(request.getName(), request.getColor()));
+
 
         Station upStation = stationDao.findById(request.getUpStationId())
                 .orElseThrow(() -> new NoSuchStationException(request.getUpStationId()));
@@ -47,6 +52,7 @@ public class LineService {
         return LineResponse.from(createdLine);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(final long id) {
         Line findLine = lineDao.findById(id)
                 .orElseThrow(() -> new NoSuchLineException(id));
@@ -55,6 +61,7 @@ public class LineService {
         return LineResponse.from(findLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         List<LineResponse> result = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
