@@ -164,7 +164,7 @@ public class SectionControllerTest {
                 .extract();
 
         // then
-        assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 포함되는 구간보다 더 큰 거리를 가질 수 없습니다.");
+        assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 현재 구간의 거리가 너무 깁니다.");
     }
 
     @DisplayName("이미 있는 구간을 추가할 때 정확한 에러 메세지가 나오는지 테스트")
@@ -191,7 +191,7 @@ public class SectionControllerTest {
                 .extract();
 
         // then
-        assertThat(response2.jsonPath().getString("message")).isEqualTo("[ERROR] 이미 존재하는 구간입니다.");
+        assertThat(response2.jsonPath().getString("message")).isEqualTo("[ERROR] 이미 존재하는 노선은 추가할 수 없습니다.");
     }
 
     @DisplayName("역을 공유하지 않는 구간을 추가할 때 정확한 에러 메세지가 나오는지 테스트")
@@ -208,7 +208,7 @@ public class SectionControllerTest {
                 .extract();
 
         // then
-        assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 공유하는 역이 없습니다.");
+        assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 상행역과 하행역 중 하나는 공유되는 역이여야 합니다.");
     }
 
     @DisplayName("하나의 구간만 남았을 때 삭제할 때 정확한 에러 메세지가 나오는지 테스트")
@@ -222,7 +222,7 @@ public class SectionControllerTest {
                 .extract();
 
         // then
-        assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 하나의 구간만 남았을 때는 삭제할 수 없습니다.");
+        assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 노선을 유지할 수 없습니다.");
     }
 
     @DisplayName("직선 구간 중 하나를 삭제한다")

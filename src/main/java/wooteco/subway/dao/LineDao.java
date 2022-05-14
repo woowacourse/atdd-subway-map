@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,7 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.WooTecoException;
+import wooteco.subway.SubwayException;
 import wooteco.subway.domain.Line;
 
 @Repository
@@ -42,7 +41,7 @@ public class LineDao {
             return new Line(insertedId, line.getName(), line.getColor());
         }
         catch (DuplicateKeyException e) {
-            throw new WooTecoException("[ERROR] 이미 같은 이름의 노선이 존재합니다.");
+            throw new SubwayException("[ERROR] 이미 같은 이름의 노선이 존재합니다.");
         }
     }
 
@@ -62,7 +61,7 @@ public class LineDao {
             return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
         }
         catch (EmptyResultDataAccessException e) {
-            throw new WooTecoException("[ERROR] 해당 노선이 없습니다.");
+            throw new SubwayException("[ERROR] 해당 노선이 없습니다.");
         }
     }
 
@@ -72,7 +71,7 @@ public class LineDao {
             jdbcTemplate.update(sql, newName, id);
         }
         catch (DuplicateKeyException e) {
-            throw new WooTecoException("[ERROR] 중복된 이름으로 바꿀 수 없습니다.");
+            throw new SubwayException("[ERROR] 중복된 이름으로 바꿀 수 없습니다.");
         }
     }
 

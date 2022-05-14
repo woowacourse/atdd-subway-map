@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.SubwayException;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -41,7 +42,7 @@ public class StationService {
 
     private void validateId(Long id) {
         if (!stationDao.isValidId(id)) {
-            throw new EmptyResultDataAccessException(id.intValue());
+            throw new SubwayException("[ERROR] 존재하지 않는 역을 삭제할 수 없습니다.");
         }
     }
 

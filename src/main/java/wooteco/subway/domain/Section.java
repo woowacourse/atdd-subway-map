@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import wooteco.subway.SubwayException;
 
 public class Section {
     private Long id;
@@ -29,7 +30,7 @@ public class Section {
 
     private void validateSelfLoop(Long upStationId, Long downStationId) {
         if (upStationId == downStationId.longValue()) {
-            throw new IllegalArgumentException();
+            throw new SubwayException("[ERROR] 상행역과 하행역이 같을 수 없습니다.");
         }
     }
 

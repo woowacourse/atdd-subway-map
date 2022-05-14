@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.WooTecoException;
+import wooteco.subway.SubwayException;
 import wooteco.subway.domain.Station;
 
 @Repository
@@ -38,9 +38,8 @@ public class StationDao {
             return new Station(insertedId, station.getName());
         }
         catch (DuplicateKeyException e) {
-            throw new WooTecoException("[ERROR] 중복된 이름으로 추가할 수 없습니다.");
+            throw new SubwayException("[ERROR] 중복된 이름으로 추가할 수 없습니다.");
         }
-
     }
 
     public List<Station> findAll() {

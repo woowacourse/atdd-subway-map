@@ -1,21 +1,15 @@
 package wooteco.subway.dao;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.SubwayException;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
@@ -41,7 +35,7 @@ class StationDaoTest {
     void save_fail() {
         Station station = stationDao.save(new Station("testName"));
         assertThatThrownBy(() -> stationDao.save(new Station("testName")))
-                .isInstanceOf(DuplicateKeyException.class);
+                .isInstanceOf(SubwayException.class);
     }
 
     @DisplayName("존재하는 역 id가 있으면 삭제되는지 테스트")

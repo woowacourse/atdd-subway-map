@@ -1,18 +1,12 @@
 package wooteco.subway.service;
 
-import java.nio.channels.SeekableByteChannel;
-import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.WooTecoException;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.DeleteResult;
-import wooteco.subway.domain.MetroManager;
+import wooteco.subway.domain.ModifyResult;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.StationInfo;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.SectionResponse;
 
 @Service
 @Transactional
@@ -24,91 +18,29 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public Section save(SectionRequest sectionRequest, Long lineId) {
+    public ModifyResult save(SectionRequest sectionRequest, Long lineId) {
         Section section = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
-        MetroManager metroManager = new MetroManager(sectionDao.findAll(section.getLineId()));
-        validateNonExistSection(section, metroManager);
-        if ((metroManager.findUpStationEnd() == section.getDownStationId().longValue()) && (metroManager.findDownStationEnd() == section.getUpStationId().longValue())) {
-            sectionDao.deleteByLineId(lineId);
-            metroManager.add_cycle(section);
-            List<Section> sections = metroManager.generateUpdatedSection(lineId);
-            for (Section eachSection : sections) {
-                sectionDao.save(eachSection, lineId);
-            }
-            return section;
+        Sections sections = new Sections(sectionDao.findAll(section.getLineId()));
+        ModifyResult modifyResult = sections.add(section);
+        for (Section eachSection : modifyResult.getSaveResult()) {
+            sectionDao.save(eachSection, section.getLineId());
         }
-        validateExistSection(section, metroManager);
-        return addSection(section, metroManager);
+        for (Section eachSection : modifyResult.getDeleteResult()) {
+            sectionDao.deleteByLineIdAndStationIds(section.getLineId(), eachSection.getUpStationId(), eachSection.getDownStationId());
+        }
+        return modifyResult;
     }
 
-    private void validateExistSection(Section section, MetroManager metroManager) {
-        if ((metroManager.isIn(section.getUpStationId())) && (metroManager.isIn(section.getDownStationId()))) {
-            throw new WooTecoException("[ERROR] 이미 존재하는 구간입니다.");
+    public ModifyResult delete(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findAll(lineId));
+        ModifyResult modifyResult = sections.delete(lineId, stationId);
+        for (Section eachSection : modifyResult.getSaveResult()) {
+            sectionDao.save(eachSection, lineId);
         }
-    }
-
-    private void validateNonExistSection(Section section, MetroManager metroManager) {
-        if ((!metroManager.isIn(section.getUpStationId())) && (!metroManager.isIn(section.getDownStationId()))) {
-            throw new WooTecoException("[ERROR] 공유하는 역이 없습니다.");
+        for (Section eachSection : modifyResult.getDeleteResult()) {
+            sectionDao.deleteByLineIdAndStationIds(lineId, eachSection.getUpStationId(), eachSection.getDownStationId());
         }
-    }
-
-    private Section addSection(Section section, MetroManager metroManager) {
-        sectionDao.deleteByLineId(section.getLineId());
-        if (metroManager.isIn(section.getUpStationId())) {
-            StationInfo rightInfo = metroManager.getAdjacency(section.getUpStationId()).getRight();
-            validateDistance(section, rightInfo);
-            metroManager.add_right(section);
-            List<Section> sections = metroManager.generateUpdatedSection(section.getLineId());
-            for (Section eachSection : sections) {
-                sectionDao.save(eachSection, eachSection.getLineId());
-            }
-            return section;
-        }
-        StationInfo leftInfo = metroManager.getAdjacency(section.getDownStationId()).getLeft();
-        validateDistance(section, leftInfo);
-        metroManager.add_left(section);
-        List<Section> sections = metroManager.generateUpdatedSection(section.getLineId());
-        for (Section eachSection : sections) {
-            sectionDao.save(eachSection, eachSection.getLineId());
-        }
-        return section;
-    }
-
-    private void validateDistance(Section section, StationInfo stationInfo) {
-        if (!stationInfo.canDivisible(section.getDistance())) {
-            throw new WooTecoException("[ERROR] 포함되는 구간보다 더 큰 거리를 가질 수 없습니다.");
-        }
-    }
-
-    public void delete(Long lineId, Long stationId) {
-        MetroManager metroManager = new MetroManager(sectionDao.findAll(lineId));
-        validateOneSectionExist(metroManager);
-        if (metroManager.isCycle()) {
-            List<Section> deletedSections = metroManager.delete_cycle(lineId, stationId);
-            for (Section section : deletedSections) {
-                sectionDao.deleteByLineIdAndStationIds(lineId, section.getUpStationId(), section.getDownStationId());
-            }
-            return;
-        }
-        Map<DeleteResult, List<Section>> deleteResult = metroManager.delete(lineId, stationId);
-        for (Section section : deleteResult.get(DeleteResult.NEW_DELETE)) {
-            sectionDao.deleteByLineIdAndStationIds(lineId, section.getUpStationId(), section.getDownStationId());
-        }
-        for (Section section : deleteResult.get(DeleteResult.NEW_SAVE)) {
-            sectionDao.save(section, lineId);
-        }
-    }
-
-    private void validateOneSectionExist(MetroManager metroManager) {
-        if (metroManager.isOneExist()) {
-            throw new WooTecoException("[ERROR] 하나의 구간만 남았을 때는 삭제할 수 없습니다.");
-        }
-    }
-
-    public SectionResponse findAll(Long lineId) {
-        List<Section> sections = sectionDao.findAll(lineId);
-        return new SectionResponse(sections);
+        return modifyResult;
     }
 }

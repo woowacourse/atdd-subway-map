@@ -29,18 +29,6 @@ public class Sections {
         return totalId;
     }
 
-    private Optional<Section> searchLeft(Long stationId) {
-        return this.sections.stream()
-                .filter(section -> section.getDownStationId() == stationId.longValue())
-                .findFirst();
-    }
-
-    private Optional<Section> searchRight(Long stationId) {
-        return this.sections.stream()
-                .filter(section -> section.getUpStationId() == stationId.longValue())
-                .findFirst();
-    }
-
     public List<Long> getStations() {
         List<Long> result = new ArrayList<>();
         Long nowId = findUpperEndId();

@@ -3,16 +3,15 @@ package wooteco.subway.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.WooTecoException;
+import wooteco.subway.SubwayException;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.MetroManager;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -34,7 +33,7 @@ public class LineService {
     public LineResponse save(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         if (!stationDao.isValidId(lineRequest.getUpStationId()) || !stationDao.isValidId(lineRequest.getDownStationId())) {
-            throw new IllegalArgumentException();
+            throw new SubwayException("[ERROR] 노선의 종점들은 존재하는 역이어야 합니다.");
         }
         Line newLine = lineDao.save(line);
         sectionDao.save(new Section(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
@@ -62,7 +61,7 @@ public class LineService {
 
     private void validateId(Long id) {
         if (!lineDao.isValidId(id)) {
-            throw new WooTecoException("[ERROR] 유효한 id가 아닙니다.");
+            throw new SubwayException("[ERROR] 유효한 id가 아닙니다.");
         }
     }
 
@@ -73,8 +72,8 @@ public class LineService {
     }
 
     private List<Station> generateStations(Long lineId) {
-        MetroManager metroManager = new MetroManager(sectionDao.findAll(lineId));
-        List<Long> totalIds = metroManager.getStationsId();
+        Sections sections = new Sections(sectionDao.findAll(lineId));
+        List<Long> totalIds = sections.getStations();
         List<Station> result = new ArrayList<>();
         for (Long stationId : totalIds) {
             result.add(stationDao.findById(stationId));

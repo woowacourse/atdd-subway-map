@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -386,8 +387,6 @@ class LineControllerTest {
                 .then().log().all()
                 .extract();
 
-        List<LineResponse> list = response.jsonPath().getList("$", LineResponse.class);
-
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(initResponse1, initResponse2).stream()
@@ -500,5 +499,10 @@ class LineControllerTest {
 
         // then
         assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 중복된 이름으로 바꿀 수 없습니다.");
+    }
+
+    @Test
+    void temp() {
+        ValidatableResponse qwe = RestAssured.given().log().all().get("qwe").then();
     }
 }
