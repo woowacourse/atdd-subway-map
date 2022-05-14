@@ -35,7 +35,7 @@ public class SectionService {
 
     private void checkAddingBranch(Long upStationId, Long downStationId, int distance, Long lineId) {
         Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, upStationId, downStationId);
-        if (sections.isBlack()) {
+        if (sections.isBlank()) {
             throw new IllegalArgumentException("연결된 역이 없기 때문에 구간을 등록할 수 없습니다.");
         }
 

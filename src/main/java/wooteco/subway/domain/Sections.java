@@ -58,7 +58,7 @@ public class Sections {
         return sections.get(0);
     }
 
-    public boolean isBlack() {
+    public boolean isBlank() {
         return sections.size() == 0;
     }
 
