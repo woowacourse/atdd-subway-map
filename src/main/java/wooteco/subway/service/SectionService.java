@@ -28,7 +28,10 @@ public class SectionService {
         validate(lineId, sectionRequest);
         Long upStationId = sectionRequest.getUpStationId();
         Long downStationId = sectionRequest.getDownStationId();
-        Section newSection = new Section(lineId, sectionRequest);
+        Section newSection = new Section(lineId,
+                sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
         sectionDao.findBy(lineId, upStationId, downStationId)
                 .ifPresentOrElse(
                         section -> insert(section, newSection),

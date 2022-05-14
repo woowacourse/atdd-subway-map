@@ -1,13 +1,12 @@
 package wooteco.subway.domain;
 
 import java.util.List;
-import wooteco.subway.dto.SectionRequest;
 
 public class Section {
 
     public static final int MIN_DISTANCE = 1;
 
-    private Long id;
+    private final Long id;
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
@@ -23,15 +22,7 @@ public class Section {
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        validate(upStationId, downStationId, distance);
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
-    }
-
-    public Section(Long lineId, SectionRequest sectionRequest) {
-        this(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        this(null, lineId, upStationId, downStationId, distance);
     }
 
     private void validate(Long upStationId, Long downStationId, int distance) {
