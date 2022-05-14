@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
@@ -27,6 +28,7 @@ public class SectionService {
         sectionDao.save(sectionDto.toEntity());
     }
 
+    @Transactional
     public void addSectionInLine(SectionDto sectionDto) {
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(sectionDto.getLineId());
         List<Section> convertedSections = convertSectionEntitiesToSections(sectionEntities);
@@ -67,6 +69,7 @@ public class SectionService {
         return sections.getStations();
     }
 
+    @Transactional
     public void deleteStation(Long lineId, Long stationId) {
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(lineId);
         List<Section> originalSections = convertSectionEntitiesToSections(sectionEntities);

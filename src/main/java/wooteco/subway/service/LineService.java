@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -28,6 +29,7 @@ public class LineService {
         this.stationService = stationService;
     }
 
+    @Transactional
     public Line createLine(LineDto lineDto) {
         Optional<Line> foundLine = lineDao.findByName(lineDto.getName());
         if (foundLine.isPresent()) {
