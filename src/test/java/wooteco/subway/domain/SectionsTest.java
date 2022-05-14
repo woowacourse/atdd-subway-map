@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +20,18 @@ class SectionsTest {
     private final Section section3 = new Section(3L, 4L, 10);
 
     private final Sections sections = new Sections(List.of(section1, section2, section3));
+
+    @DisplayName("Sections 생성 시 구간이 없으면 예외가 발생한다.")
+    @Test
+    void createSectionsEmpty() {
+        // given
+        List<Section> empty = new ArrayList<>();
+
+        // when & then
+        assertThatThrownBy(() -> new Sections(empty))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선에 구간이 하나 이상 존재해야 합니다.");
+    }
 
     @ParameterizedTest
     @ValueSource(longs = {2L, 3L, 4L})
@@ -112,7 +125,7 @@ class SectionsTest {
         // when & then
         assertThatThrownBy(() -> sections.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("노선에 구간이 하나만 존재하기 때문에 삭제할 수 없습니다.");
+                .hasMessage("노선에 구간이 2개 이상이어야 삭제 가능합니다.");
     }
 
     @DisplayName("상행 종점을 삭제한다.")

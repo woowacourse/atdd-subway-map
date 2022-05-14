@@ -13,6 +13,7 @@ public class Sections {
 
     public Sections(final List<Section> sections) {
         this.sections = new ArrayList<>(sections);
+        validateSectionCount();
     }
 
     public void add(final Section section) {
@@ -27,7 +28,7 @@ public class Sections {
     }
 
     public void delete(final Long stationId) {
-        validateStationCount();
+        validateDeletedSectionCount();
 
         if (isEndStation(stationId)) {
             Section existSection = getExistSection(stationId);
@@ -65,9 +66,15 @@ public class Sections {
         }
     }
 
-    private void validateStationCount() {
-        if (sections.size() == MINIMUM_SECTIONS_COUNT) {
-            throw new IllegalArgumentException("노선에 구간이 하나만 존재하기 때문에 삭제할 수 없습니다.");
+    private void validateSectionCount() {
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("노선에 구간이 하나 이상 존재해야 합니다.");
+        }
+    }
+
+    private void validateDeletedSectionCount() {
+        if (sections.size() <= MINIMUM_SECTIONS_COUNT) {
+            throw new IllegalArgumentException("노선에 구간이 2개 이상이어야 삭제 가능합니다.");
         }
     }
 
