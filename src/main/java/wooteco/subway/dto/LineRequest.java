@@ -5,15 +5,12 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 public class LineRequest {
 
-    @NotNull(message = "노선 이름은 공백일 수 없습니다.")
     @NotBlank(message = "노선 이름은 공백일 수 없습니다.")
     private String name;
 
-    @NotNull(message = "노선 색상은 공백일 수 없습니다.")
     @NotBlank(message = "노선 색상은 공백일 수 없습니다.")
     private String color;
 
@@ -25,6 +22,10 @@ public class LineRequest {
 
 
     public LineRequest() {
+    }
+
+    public LineRequest(String name, String color) {
+        this(name, color, null, null, 0);
     }
 
     public LineRequest(final String name,
@@ -44,7 +45,28 @@ public class LineRequest {
     }
 
     public Section toSectionEntity() {
+        validateUpStation();
+        validateDownStation();
+        validateDistance();
         return new Section(new Station(upStationId, ""), new Station(downStationId, ""), distance);
+    }
+
+    private void validateUpStation() {
+        if (upStationId == null) {
+            throw new IllegalArgumentException("상행역은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateDownStation() {
+        if (downStationId == null) {
+            throw new IllegalArgumentException("하행역은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateDistance() {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("거리는 양수이어야 합니다.");
+        }
     }
 
     public String getName() {

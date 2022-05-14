@@ -14,9 +14,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,22 +62,36 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("라인을 등록할 때 이름이 존재하지 않으면 예외를 발생한다.")
+    @DisplayName("라인을 등록할 때 입력값이 올바르지 않으면 예외를 발생한다.")
     @MethodSource("thrownArguments")
     @ParameterizedTest
-    void thrown_blankName(String name, String color, String message) {
-        LineRequest newLineRequest = new LineRequest(name, color, upStationId, downStationId, 10);
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", newLineRequest);
+    void thrown_invalidArguments(String name, String color, int distance, String message) {
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", new LineRequest(name, color, upStationId, downStationId, distance));
         assertThat(response.jsonPath().getString("message")).isEqualTo(message);
     }
 
     private static Stream<Arguments> thrownArguments() {
         return Stream.of(
-                Arguments.of("", "bg-purple-600", "노선 이름은 공백일 수 없습니다."),
-                Arguments.of(null, "bg-purple-600", "노선 이름은 공백일 수 없습니다."),
-                Arguments.of("이름", "", "노선 색상은 공백일 수 없습니다."),
-                Arguments.of("이름", null, "노선 색상은 공백일 수 없습니다.")
+                Arguments.of("", "bg-purple-600", 10, "노선 이름은 공백일 수 없습니다."),
+                Arguments.of(null, "bg-purple-600", 10, "노선 이름은 공백일 수 없습니다."),
+                Arguments.of("이름", "", 10, "노선 색상은 공백일 수 없습니다."),
+                Arguments.of("이름", null, 10, "노선 색상은 공백일 수 없습니다."),
+                Arguments.of("이름", "색상", 0, "거리는 양수이어야 합니다.")
         );
+    }
+
+    @DisplayName("라인을 등록할 때 상행역이 입력되지 않으면 예외를 발생한다.")
+    @Test
+    void thrown_upStationBlank() {
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", new LineRequest("이름", "색상", null, downStationId, 10));
+        assertThat(response.jsonPath().getString("message")).isEqualTo("상행역은 비어있을 수 없습니다.");
+    }
+
+    @DisplayName("라인을 등록할 때 하행역이 입력되지 않으면 예외를 발생한다.")
+    @Test
+    void thrown_downStationBlank() {
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", new LineRequest("이름", "색상", upStationId, null, 10));
+        assertThat(response.jsonPath().getString("message")).isEqualTo("하행역은 비어있을 수 없습니다.");
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 예외를 발생한다.")
@@ -166,11 +178,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "6호선");
-        params2.put("color", "rgb-brown-600");
+        LineRequest newLineRequest = new LineRequest("6호선", "bg-brown-600");
 
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.put("/lines/" + id, params2);
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.put("/lines/" + id, newLineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
