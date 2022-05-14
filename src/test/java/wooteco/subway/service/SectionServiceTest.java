@@ -10,9 +10,12 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -136,7 +139,10 @@ class SectionServiceTest {
 
         sectionService.deleteSection(station2.getId(), line.getId());
 
-        assertThat(sectionDao.findByLine(line.getId()).get()).hasSize(1);
+        List<Section> actual = sectionDao.findByLine(line.getId()).get();
+        assertThat(actual).hasSize(1);
+        assertThat(actual.get(0).getUpStationId()).isEqualTo(station1.getId());
+        assertThat(actual.get(0).getDownStationId()).isEqualTo(station3.getId());
     }
 
     @Test
