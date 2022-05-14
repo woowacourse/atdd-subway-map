@@ -9,7 +9,8 @@ ALTER TABLE section ALTER COLUMN id RESTART WITH 1;
 INSERT INTO station(id, name)
 VALUES (1, '이미 존재하는 역 이름'),
        (2, '선릉역'),
-       (3, '잠실역');
+       (3, '잠실역'),
+       (4, '미등록역');
 
 INSERT INTO line(id, name, color)
 VALUES (1, '이미 존재하는 노선 이름', '노란색'),

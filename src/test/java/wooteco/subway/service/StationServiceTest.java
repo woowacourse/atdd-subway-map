@@ -40,7 +40,8 @@ class StationServiceTest extends ServiceTest {
         List<StationResponse> expected = List.of(
                 new StationResponse(1L, "이미 존재하는 역 이름"),
                 new StationResponse(2L, "선릉역"),
-                new StationResponse(3L, "잠실역"));
+                new StationResponse(3L, "잠실역"),
+                new StationResponse(4L, "미등록역"));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -53,7 +54,7 @@ class StationServiceTest extends ServiceTest {
         void 중복되지_않는_이름인_경우_성공() {
             StationResponse actual = service.save(new StationRequest("새로운 지하철역"));
 
-            StationResponse expected = new StationResponse(4L, "새로운 지하철역");
+            StationResponse expected = new StationResponse(5L, "새로운 지하철역");
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -70,10 +71,10 @@ class StationServiceTest extends ServiceTest {
     class DeleteTest {
 
         @Test
-        void 존재하는_데이터의_id가_입력된_경우_삭제성공() {
-            service.delete(1L);
+        void 유효한_데이터의_id가_입력된_경우_삭제성공() {
+            service.delete(4L);
 
-            boolean notFound = stationDao.findById(1L).isEmpty();
+            boolean notFound = stationDao.findById(4L).isEmpty();
 
             assertThat(notFound).isTrue();
         }
@@ -82,6 +83,12 @@ class StationServiceTest extends ServiceTest {
         void 존재하지_않는_데이터의_id가_입력된_경우_예외발생() {
             assertThatThrownBy(() -> service.delete(99999L))
                     .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 노선에_등록된_지하철역의_id가_입력된_경우_예외발생() {
+            assertThatThrownBy(() -> service.delete(1L))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
     }
 }
