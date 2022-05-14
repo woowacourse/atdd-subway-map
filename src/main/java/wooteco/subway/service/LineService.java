@@ -34,10 +34,10 @@ public class LineService {
 
         Long lineId = lineDao.save(newLine);
         sectionService.firstSave(lineId, new SectionRequest(
-            lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
+            lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+            lineRequest.getDistance()));
 
-        return createLineResponse(lineDao.findById(lineId),
-            stationService.findByStationsId(sectionService.findAllStationByLineId(lineId)));
+        return createLineResponse(lineDao.findById(lineId), getStationsByStationIds(lineId));
     }
 
     private void validateCreateRequest(Line line) {
@@ -61,19 +61,22 @@ public class LineService {
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
     }
 
+    private List<StationResponse> getStationsByStationIds(Long line) {
+        return stationService.findByStationIds(
+            sectionService.findAllStationByLineId(line));
+    }
+
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll().stream()
-            .map(line -> createLineResponse(line,
-                stationService.findByStationsId(sectionService.findAllStationByLineId(line.getId()))))
-            .collect(Collectors.toList());
+            .map(line -> createLineResponse(line, getStationsByStationIds(line.getId())))
+            .collect(Collectors.toUnmodifiableList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long lineId) {
         Line line = lineDao.findById(lineId);
-        return createLineResponse(line,
-            stationService.findByStationsId(sectionService.findAllStationByLineId(line.getId())));
+        return createLineResponse(line, getStationsByStationIds(line.getId()));
     }
 
     public void update(Long lineId, LineRequest lineRequest) {
