@@ -60,7 +60,6 @@ public class LineController {
     public ResponseEntity<Void> updateLine(@PathVariable final Long id,
                                            @RequestBody @Valid final LineRequest lineRequest) {
         final Line line = lineRequest.toEntity();
-        System.out.println(line);
         lineService.update(id, line);
 
         return ResponseEntity.ok().build();

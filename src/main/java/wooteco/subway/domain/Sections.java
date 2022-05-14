@@ -102,7 +102,6 @@ public class Sections {
     }
 
     private void mergeSections(final List<Section> sections) {
-        System.out.println(sections);
         final Section section1 = sections.get(0);
         final Section section2 = sections.get(1);
 
