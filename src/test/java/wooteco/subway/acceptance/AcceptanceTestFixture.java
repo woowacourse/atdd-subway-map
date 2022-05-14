@@ -9,16 +9,6 @@ import java.util.Map;
 
 public class AcceptanceTestFixture {
 
-    static ExtractableResponse<Response> post(String uri, Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(uri)
-                .then().log().all()
-                .extract();
-    }
-
     public static ExtractableResponse<Response> post(String uri, Object param) {
         return RestAssured.given().log().all()
                 .body(param)

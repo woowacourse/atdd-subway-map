@@ -85,14 +85,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 예외를 발생한다.")
     @Test
     void createLineWithDuplicateName() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "경의중앙선");
-        params.put("color", "rgb-mint-600");
-        AcceptanceTestFixture.post("/lines", params);
+        LineRequest newLineRequest = new LineRequest("5호선", "bg-purple-600", upStationId, downStationId, 10);
+        AcceptanceTestFixture.post("/lines", newLineRequest);
 
         // when
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", params);
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", newLineRequest);
 
         // then
         assertAll(

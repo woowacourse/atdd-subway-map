@@ -23,29 +23,38 @@ public class SectionService {
     }
 
     @Transactional
-    public Section addSection(final long lineId, final Section section) {
-        final Station upStation = stationDao.findById(section.getUpStation().getId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역 입니다."));
-        final Station downStation = stationDao.findById(section.getDownStation().getId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역 입니다."));
-
-        Section newSection = new Section(upStation, downStation, section.getDistance(), lineId);
+    public Section create(final long lineId, final Section section) {
+        Section newSection = new Section(findUpStation(section), findDownStation(section), section.getDistance(), lineId);
 
         final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
         final Sections sections = new Sections(lineSections);
         sections.add(newSection);
 
         lineSections.add(newSection);
-        List<Section> sectionsToUpdate = sections.extract(lineSections);
-        for (Section sectionToUpdate : sectionsToUpdate) {
-            sectionDao.update(sectionToUpdate.getId(), sectionToUpdate);
-        }
+        modify(sections, lineSections);
 
         return sectionDao.save(newSection);
     }
 
+    private void modify(Sections sections, List<Section> lineSections) {
+        List<Section> sectionsToUpdate = sections.extract(lineSections);
+        for (Section sectionToUpdate : sectionsToUpdate) {
+            sectionDao.update(sectionToUpdate.getId(), sectionToUpdate);
+        }
+    }
+
+    private Station findUpStation(Section section) {
+        return stationDao.findById(section.getUpStation().getId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역 입니다."));
+    }
+
+    private Station findDownStation(Section section) {
+        return stationDao.findById(section.getDownStation().getId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역 입니다."));
+    }
+
     @Transactional
-    public void delete(final Long lineId, final Long stationId) {
+    public void remove(final Long lineId, final Long stationId) {
         final Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         final List<Section> sectionsToDelete = sections.pop(stationId);
         final Optional<Section> mergedSection = sections.findMergedSection(sectionsToDelete);
@@ -54,12 +63,7 @@ public class SectionService {
     }
 
     @Transactional(readOnly = true)
-    public List<Section> getSectionsByLine(final long lineId) {
-        return sectionDao.findAllByLineId(lineId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Station> getStationsByLine(final long lineId) {
+    public List<Station> queryStationsByLine(final long lineId) {
         final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
         final Sections sections = new Sections(lineSections);
         return sections.extractStations();

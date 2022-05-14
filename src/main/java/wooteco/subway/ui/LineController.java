@@ -39,7 +39,7 @@ public class LineController {
     }
 
     private List<Station> getStationsByLine(long lineId) {
-        return sectionService.getStationsByLine(lineId);
+        return sectionService.queryStationsByLine(lineId);
     }
 
     @GetMapping("/lines")
@@ -52,7 +52,7 @@ public class LineController {
 
     @GetMapping("/lines/{lineId}")
     public LineResponse getLineById(@PathVariable Long lineId) {
-        return LineResponse.from(lineService.queryById(lineId), sectionService.getStationsByLine(lineId));
+        return LineResponse.from(lineService.queryById(lineId), sectionService.queryStationsByLine(lineId));
     }
 
     @PutMapping("/lines/{lineId}")
@@ -69,11 +69,11 @@ public class LineController {
 
     @PostMapping("/lines/{id}/sections")
     public void addSection(@PathVariable final Long id, @RequestBody @Valid final SectionRequest sectionRequest) {
-        sectionService.addSection(id, SectionRequest.toEntity(sectionRequest));
+        sectionService.create(id, SectionRequest.toEntity(sectionRequest));
     }
 
     @DeleteMapping("/lines/{id}/sections")
     public void deleteSection(@PathVariable final Long id, @RequestParam final Long stationId) {
-        sectionService.delete(id, stationId);
+        sectionService.remove(id, stationId);
     }
 }

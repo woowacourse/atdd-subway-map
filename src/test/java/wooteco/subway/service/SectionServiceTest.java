@@ -56,7 +56,7 @@ class SectionServiceTest {
     void addNotBranchedSection() {
         final Station newStation = stationDao.save(new Station("마장역"));
         final Section section = new Section(downStation, newStation, 10, savedLine.getId());
-        final Section savedSection = sectionService.addSection(savedLine.getId(), section);
+        final Section savedSection = sectionService.create(savedLine.getId(), section);
 
         assertThat(savedSection).usingRecursiveComparison()
                 .ignoringFields("id")
@@ -68,7 +68,7 @@ class SectionServiceTest {
     void addBranchedSection() {
         final Station newStation = stationDao.save(new Station("마장역"));
         final Section newSection = new Section(newStation, downStation, 9, savedLine.getId());
-        final Section savedSection = sectionService.addSection(savedLine.getId(), newSection);
+        final Section savedSection = sectionService.create(savedLine.getId(), newSection);
 
         final Optional<Section> foundSection = sectionDao.findAllByLineId(savedLine.getId())
                 .stream()
@@ -91,13 +91,14 @@ class SectionServiceTest {
         final Station newStation = stationDao.save(new Station("마장역"));
         sectionDao.save(new Section(downStation, newStation, 10, savedLine.getId()));
 
-        sectionService.delete(savedLine.getId(), downStation.getId());
+        sectionService.remove(savedLine.getId(), downStation.getId());
 
-        final List<Section> list = sectionService.getSectionsByLine(savedLine.getId());
-        // 아차산 - 마장
+        final List<Section> list = sectionDao.findAllByLineId(savedLine.getId());
+
         Optional<Section> foundSection = list.stream()
                 .filter(section -> section.getDownStation().equals(newStation))
                 .findAny();
+        stationDao.findById(newStation.getId());
 
         assert (foundSection.isPresent());
 
@@ -112,9 +113,9 @@ class SectionServiceTest {
         final Station newStation = stationDao.save(new Station("마장역"));
         sectionDao.save(new Section(downStation, newStation, 10, savedLine.getId()));
 
-        sectionService.delete(savedLine.getId(), newStation.getId());
+        sectionService.remove(savedLine.getId(), newStation.getId());
 
-        final List<Section> list = sectionService.getSectionsByLine(savedLine.getId());
+        final List<Section> list = sectionDao.findAllByLineId(savedLine.getId());
 
         Optional<Section> foundSection = list.stream()
                 .filter(section -> section.getDownStation().equals(downStation))

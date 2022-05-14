@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
@@ -20,6 +21,7 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public Line create(Line line, Section section) {
         validateNameExist(line);
         final Line savedLine = lineDao.save(line);
@@ -27,14 +29,17 @@ public class LineService {
         return savedLine;
     }
 
+    @Transactional(readOnly = true)
     public List<Line> queryAll() {
         return lineDao.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Line queryById(Long id) {
         return extractLine(lineDao.findById(id));
     }
 
+    @Transactional
     public void modify(Long id, Line line) {
         extractLine(lineDao.findById(id));
         validateNameExist(line);
@@ -47,6 +52,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void remove(Long id) {
         extractLine(lineDao.findById(id));
         lineDao.deleteById(id);
