@@ -62,7 +62,7 @@ public class SectionDao {
 
     public void deleteById(Long id) {
         String sql = "DELETE FROM section WHERE id = :id";
-        Map<String,Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
         int affected = jdbcTemplate.update(sql, params);

@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class LineService {
 
     private final LineDao lineDao;
@@ -30,7 +31,6 @@ public class LineService {
         this.stationService = stationService;
     }
 
-    @Transactional
     public LineResponse save(LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
         validateDuplicateName(line);

@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@Transactional
 public class SectionService {
 
     private final SectionDao sectionDao;
@@ -31,7 +32,6 @@ public class SectionService {
         return sections.getDistinctStationIds();
     }
 
-    @Transactional
     public void add(Line line, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         Section sectionToInsert = Section.of(line, sectionRequest);
@@ -46,7 +46,6 @@ public class SectionService {
         });
     }
 
-    @Transactional
     public void delete(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         sections.validateDeletable();
