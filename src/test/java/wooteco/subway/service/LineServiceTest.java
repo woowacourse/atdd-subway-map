@@ -19,6 +19,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.error.exception.NotFoundException;
@@ -125,7 +126,7 @@ class LineServiceTest {
 
                 dynamicTest("존재하는 노선을 수정한다.", () -> {
                     String updateColor = "bg-blue-600";
-                    LineRequest updateRequest = new LineRequest(name1, updateColor);
+                    LineUpdateRequest updateRequest = new LineUpdateRequest(name1, updateColor);
                     lineService.update(lineResponse1.getId(), updateRequest);
 
                     LineResponse updatedResponse = lineService.findById(lineResponse1.getId());
@@ -138,7 +139,7 @@ class LineServiceTest {
                 dynamicTest("중복된 이름을 가진 노선으로 수정할 경우 예외를 던진다.", () -> {
                     String updateName = "2호선";
                     String updateColor = "bg-green-600";
-                    LineRequest updateRequest = new LineRequest(updateName, updateColor);
+                    LineUpdateRequest updateRequest = new LineUpdateRequest(updateName, updateColor);
 
                     assertThatThrownBy(() -> lineService.update(lineResponse2.getId(), updateRequest))
                             .isInstanceOf(IllegalArgumentException.class);
@@ -165,7 +166,7 @@ class LineServiceTest {
     void 존재하지_않는_노선_수정_예외발생() {
         String name = "2호선";
         String updateColor = "bg-blue-600";
-        LineRequest updateRequest = new LineRequest(name, updateColor);
+        LineUpdateRequest updateRequest = new LineUpdateRequest(name, updateColor);
 
         assertThatThrownBy(() -> lineService.update(0L, updateRequest))
                 .isInstanceOf(NotFoundException.class);

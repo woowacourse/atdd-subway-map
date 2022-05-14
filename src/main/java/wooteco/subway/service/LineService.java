@@ -15,6 +15,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.error.exception.NotFoundException;
@@ -110,7 +111,7 @@ public class LineService {
     }
 
     @Transactional
-    public void update(Long id, LineRequest lineRequest) {
+    public void update(Long id, LineUpdateRequest lineRequest) {
         getLine(id);
 
         try {
