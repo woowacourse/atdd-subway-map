@@ -251,4 +251,28 @@ class LineServiceTest {
                 );
     }
 
+    @DisplayName("없는 노선으로 구간을 제거하려고 하면 예외가 발생한다.")
+    @Test
+    void deleteSectionWithInvalidLine() {
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "green", gangnam.getId(), yeoksam.getId(),
+                1);
+        LineResponse lineResponse = lineService.save(lineCreateRequest);
+
+        assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId() + 1, yeoksam.getId()))
+                .isInstanceOf(DataNotFoundException.class)
+                .hasMessage("존재하지 않는 노선입니다.");
+    }
+
+    @DisplayName("노선에 존재하지 않는 역으로 구간을 제거하려고 하면 예외가 발생한다.")
+    @Test
+    void deleteSectionWithInvalidStation() {
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "green", gangnam.getId(), yeoksam.getId(),
+                1);
+        LineResponse lineResponse = lineService.save(lineCreateRequest);
+
+        assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId(), seolleung.getId()))
+                .isInstanceOf(DataNotFoundException.class)
+                .hasMessage("요청하는 역을 포함하는 구간이 없습니다.");
+    }
+
 }

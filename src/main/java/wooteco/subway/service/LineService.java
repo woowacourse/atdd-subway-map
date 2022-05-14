@@ -149,6 +149,7 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Station station = stationService.findById(stationId);
+        validateExist(lineId);
         Line line = lineDao.findById(lineId);
         Sections originSections = new Sections(sectionDao.findAllByLine(line));
         Sections newSections = new Sections(originSections.getValues());
