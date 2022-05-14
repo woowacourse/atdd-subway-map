@@ -34,7 +34,7 @@ public class SectionService {
 
     @Transactional
     public void deleteById(final Long lineId, final Long stationId) {
-        Sections sections = new Sections(sectionDao.findAllSectionByLineId(lineId));
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         sections.remove(stationId);
         updateSection(lineId, sections);
     }
@@ -48,7 +48,7 @@ public class SectionService {
 
     @Transactional(readOnly = true)
     public Sections findSections(final Long lineId) {
-        List<Section> sections = sectionDao.findAllSectionByLineId(lineId);
+        List<Section> sections = sectionDao.findAllByLineId(lineId);
         return new Sections(sections);
     }
 }
