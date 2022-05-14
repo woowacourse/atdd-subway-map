@@ -56,7 +56,7 @@ public class Sections {
 
     private void checkDistance(Section existingSection, Section newSection) {
         if (existingSection.getDistance() <= newSection.getDistance()) {
-            throw new IllegalSectionException("등록하려는 구간 길이가 기존 구간의 길이보다 더 길 수 없습니다.");
+            throw new IllegalSectionException("등록하려는 구간 길이가 기존 구간의 길이와 같거나 더 길 수 없습니다.");
         }
     }
 
