@@ -17,6 +17,10 @@ public class Sections {
         this.sections = sections;
     }
 
+    public Section getSectionToUpdate(Section sectionToDelete, Section sectionToInsert) {
+        return sectionToDelete.createSection(sectionToInsert);
+    }
+
     public Optional<Section> getSectionToDelete(Section section) {
         if (canAddAsLastStation(section)) {
             return Optional.empty();
