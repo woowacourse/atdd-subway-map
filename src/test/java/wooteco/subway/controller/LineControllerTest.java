@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
@@ -29,7 +30,7 @@ import wooteco.subway.dto.LineResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 @Sql("classpath:test-schema.sql")
-class LineControllerTest {
+class LineControllerTest extends AcceptanceTest {
 
     private LineRequest testLine1;
     private LineRequest testLine2;
@@ -39,14 +40,14 @@ class LineControllerTest {
     int port;
 
     @Autowired
-    StationDao stationDao;
+    private StationDao stationDao;
 
-    Station testStation1;
-    Station testStation2;
-    Station testStation3;
-    Station testStation4;
-    Station testStation5;
-    Station testStation6;
+    private Station testStation1;
+    private Station testStation2;
+    private Station testStation3;
+    private Station testStation4;
+    private Station testStation5;
+    private Station testStation6;
 
     @BeforeEach
     public void setUp() {

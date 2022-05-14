@@ -29,13 +29,13 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse stationResponse = stationService.create(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> all = stationService.findAll();
         return ResponseEntity.ok().body(all);

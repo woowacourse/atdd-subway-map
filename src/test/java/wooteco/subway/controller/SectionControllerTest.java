@@ -41,23 +41,23 @@ class SectionControllerTest {
     int port;
 
     @Autowired
-    StationDao stationDao;
+    private StationDao stationDao;
     @Autowired
-    SectionDao sectionDao;
+    private SectionDao sectionDao;
     @Autowired
-    LineDao lineDao;
+    private LineDao lineDao;
 
     @Autowired
-    SectionService sectionService;
+    private SectionService sectionService;
     @Autowired
-    LineService lineService;
+    private LineService lineService;
 
-    Station testStation1;
-    Station testStation2;
-    Station testStation3;
-    Station testStation4;
-    Station testStation5;
-    Station testStation6;
+    private Station testStation1;
+    private Station testStation2;
+    private Station testStation3;
+    private Station testStation4;
+    private Station testStation5;
+    private Station testStation6;
 
     @BeforeEach
     public void setUp() {
@@ -85,7 +85,7 @@ class SectionControllerTest {
                     body(sectionRequest).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                    post("/lines/1/sections").
+                    post("/lines/{lineId}/sections", 1).
                 then().log().all().
                     statusCode(HttpStatus.OK.value()).
                     extract();
@@ -97,7 +97,7 @@ class SectionControllerTest {
         RestAssured.
                 given().log().all().
                 when().
-                    delete("/lines/1/sections?stationId=3").
+                    delete("/lines/{lineId}/sections?stationId=3", 1).
                 then().log().all().
                     statusCode(HttpStatus.OK.value()).
                     extract();

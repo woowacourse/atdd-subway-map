@@ -19,9 +19,9 @@ import wooteco.subway.domain.entity.LineEntity;
 @JdbcTest
 class LineDaoTest {
 
-    private LineDao lineDao;
-    private StationDao stationDao;
-    private SectionDao sectionDao;
+    private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
     private Station station1;
     private Station station2;
