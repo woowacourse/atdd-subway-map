@@ -106,9 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
-        );
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("특정 노선을 업데이트한다")
@@ -212,7 +210,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createStation(final String name) {
-        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 

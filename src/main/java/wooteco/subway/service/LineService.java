@@ -54,7 +54,7 @@ public class LineService {
     }
 
     private List<StationResponse> getStationResponsesByLine(Line newLine) {
-        Sections sections = new Sections(sectionDao.findSectionByLineId(newLine.getId()));
+        Sections sections = new Sections(sectionDao.findAllSectionByLineId(newLine.getId()));
         Set<Long> stationIds = sections.getStations();
         return stationIds.stream()
                 .map(stationDao::getById)
