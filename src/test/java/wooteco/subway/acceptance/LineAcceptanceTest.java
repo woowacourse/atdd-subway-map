@@ -19,9 +19,7 @@ import wooteco.subway.dto.StationResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final String NOT_FOUND_ERROR_MESSAGE = "존재하지 않습니다";
     private static final String DUPLICATE_LINE_ERROR_MESSAGE = "노선이 이미 있습니다";
-    private static final String BLANK_OR_NULL_ERROR_MESSAGE = "빈 값";
 
     /*
      * given

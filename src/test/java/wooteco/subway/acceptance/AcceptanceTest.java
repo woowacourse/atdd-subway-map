@@ -17,6 +17,10 @@ import wooteco.subway.dto.StationResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AcceptanceTest {
+
+    protected static final String NOT_FOUND_ERROR_MESSAGE = "존재하지 않습니다";
+    protected static final String BLANK_OR_NULL_ERROR_MESSAGE = "빈 값";
+
     @LocalServerPort
     int port;
 
