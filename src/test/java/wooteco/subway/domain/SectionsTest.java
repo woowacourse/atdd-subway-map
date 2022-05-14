@@ -18,11 +18,11 @@ class SectionsTest {
     public void addNewSection() {
         // given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 2L, 3L, 1));
+        sectionList.add(new Section(1L, 2L, 3L, 1));
         final Sections sections = new Sections(sectionList);
 
         // when & then
-        final Section section = new Section(2L, 1L, 1L, 2L, 1);
+        final Section section = new Section(1L, 1L, 2L, 1);
         assertDoesNotThrow(() -> sections.add(section));
     }
     
@@ -31,11 +31,11 @@ class SectionsTest {
     public void forkRodeSameUpStation() {
         // given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 3L, 7));
+        sectionList.add(new Section(1L, 1L, 3L, 7));
         final Sections sections = new Sections(sectionList);
 
         // when
-        final Section section = new Section(2L, 1L, 1L, 2L, 4);
+        final Section section = new Section(1L, 1L, 2L, 4);
         sections.add(section);
 
         // then
@@ -49,11 +49,11 @@ class SectionsTest {
     public void forkRodeSameDownStation() {
         // given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 3L, 7));
+        sectionList.add(new Section(1L, 1L, 3L, 7));
         final Sections sections = new Sections(sectionList);
 
         // when
-        final Section section = new Section(2L, 1L, 2L, 3L, 4);
+        final Section section = new Section(1L, 2L, 3L, 4);
         sections.add(section);
 
         // then
@@ -85,7 +85,7 @@ class SectionsTest {
         final Sections sections = new Sections(sectionList);
 
         // when & then
-        final Section section = new Section(2L, 1L, 1L, 3L, 7);
+        final Section section = new Section(2L,1L, 1L, 3L, 7);
         assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalSectionException.class);
     }
@@ -95,12 +95,12 @@ class SectionsTest {
     public void IllegalAddSection() {
         // given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 2L, 3L, 4));
-        sectionList.add(new Section(2L, 1L, 1L, 2L, 3));
+        sectionList.add(new Section(1L, 2L, 3L, 4));
+        sectionList.add(new Section(1L, 1L, 2L, 3));
         final Sections sections = new Sections(sectionList);
 
         // when & then
-        final Section section = new Section(2L, 1L, 4L, 5L, 7);
+        final Section section = new Section(1L, 4L, 5L, 7);
         assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalSectionException.class);
         assertThat(sections.getSections().size()).isEqualTo(2);
@@ -111,8 +111,8 @@ class SectionsTest {
     public void deleteSection() {
         // given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 3));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
+        sectionList.add(new Section(1L, 1L, 2L, 3));
+        sectionList.add(new Section(1L, 2L, 3L, 4));
         final Sections sections = new Sections(sectionList);
 
         // when
@@ -132,7 +132,7 @@ class SectionsTest {
     public void IllegalDeleteSection() {
         // given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 3L, 7));
+        sectionList.add(new Section(1L, 1L, 3L, 7));
         final Sections sections = new Sections(sectionList);
 
         // when & then
@@ -146,8 +146,8 @@ class SectionsTest {
     public void deleteFirstSection() {
         // given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 7));
-        sectionList.add(new Section(1L, 1L, 2L, 3L, 7));
+        sectionList.add(new Section(1L, 1L, 2L, 7));
+        sectionList.add(new Section(1L, 2L, 3L, 7));
         final Sections sections = new Sections(sectionList);
 
         final Station deleteStation = new Station(1L, "첫번째역");
@@ -168,8 +168,8 @@ class SectionsTest {
     public void deleteLastSection() {
         // given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 7));
-        sectionList.add(new Section(1L, 1L, 2L, 3L, 7));
+        sectionList.add(new Section(1L, 1L, 2L, 7));
+        sectionList.add(new Section(1L, 2L, 3L, 7));
         final Sections sections = new Sections(sectionList);
 
         final Station deleteStation = new Station(3L, "마지막역");
@@ -190,10 +190,10 @@ class SectionsTest {
     public void sortedSection() {
         //given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 4L, 5L, 3));
-        sectionList.add(new Section(2L, 1L, 1L, 2L, 3));
-        sectionList.add(new Section(3L, 1L, 3L, 4L, 4));
-        sectionList.add(new Section(4L, 1L, 2L, 3L, 4));
+        sectionList.add(new Section(1L, 4L, 5L, 3));
+        sectionList.add(new Section(1L, 1L, 2L, 3));
+        sectionList.add(new Section(1L, 3L, 4L, 4));
+        sectionList.add(new Section(1L, 2L, 3L, 4));
         final Sections sections = new Sections(sectionList);
 
         //when
