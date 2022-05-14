@@ -9,6 +9,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain2.section.Section;
 import wooteco.subway.domain2.section.Sections2;
 import wooteco.subway.domain2.station.Station;
+import wooteco.subway.dto.request.CreateSectionRequest2;
 import wooteco.subway.entity.SectionEntity2;
 import wooteco.subway.exception.NotFoundException;
 
@@ -26,15 +27,30 @@ public class SectionService2 {
         this.stationDao = stationDao;
     }
 
+
+    @Transactional
+    public void save(Long lineId, CreateSectionRequest2 request) {
+        Sections2 sections = Sections2.of(findValidSections(lineId));
+        Station upStation = findExistingStation(request.getUpStationId());
+        Station downStation = findExistingStation(request.getDownStationId());
+        Sections2 updatedSections = sections.save(new Section(upStation, downStation, request.getDistance()));
+
+        updateSectionChanges(sections, updatedSections, lineId);
+    }
+
     @Transactional
     public void delete(Long lineId, Long stationId) {
         Sections2 sections = Sections2.of(findValidSections(lineId));
         Sections2 updatedSections = sections.delete(findExistingStation(stationId));
 
-        for (Section deletedSection : updatedSections.extractDeletedSections(sections)) {
+        updateSectionChanges(sections, updatedSections, lineId);
+    }
+
+    private void updateSectionChanges(Sections2 oldSections, Sections2 updatedSections, Long lineId) {
+        for (Section deletedSection : updatedSections.extractDeletedSections(oldSections)) {
             sectionDao.delete(deletedSection.toEntity(lineId));
         }
-        for (Section deletedSection : updatedSections.extractNewSections(sections)) {
+        for (Section deletedSection : updatedSections.extractNewSections(oldSections)) {
             sectionDao.save(deletedSection.toEntity(lineId));
         }
     }
