@@ -14,36 +14,24 @@ public class Section {
         this.distance = distance;
     }
 
-    public MatchingResult match(final Section newSection) {
-        if (isSameSection(newSection)) {
-            return MatchingResult.SAME_SECTION;
-        }
-        if (this.downStation.equals(newSection.downStation)) {
-            return MatchingResult.ADD_TO_LEFT;
-        }
-        if (this.upStation.equals(newSection.upStation)) {
-            return MatchingResult.ADD_TO_RIGHT;
-        }
-        return MatchingResult.NO_MATCHED;
+    public boolean isSameSection(final Section newSection) {
+        return isSameUpStation(newSection) && isSameDownStation(newSection);
     }
 
-    public MatchingResult matchStartStation(final Section newSection) {
-        if (this.upStation.equals(newSection.downStation)) {
-            return MatchingResult.ADD_TO_LEFT;
-        }
-        return MatchingResult.NO_MATCHED;
+    public boolean isSameDownStation(final Section newSection) {
+        return downStation.equals(newSection.downStation);
     }
 
-    public MatchingResult matchEndStation(final Section newSection) {
-        if (this.downStation.equals(newSection.upStation)) {
-            return MatchingResult.ADD_TO_RIGHT;
-        }
-        return MatchingResult.NO_MATCHED;
+    public boolean isSameUpStation(final Section newSection) {
+        return upStation.equals(newSection.upStation);
     }
 
-    private boolean isSameSection(final Section newSection) {
-        return upStation.equals(newSection.upStation)
-                && downStation.equals(newSection.downStation);
+    public boolean isUpStationSameAsDownStation(final Section newSection) {
+        return upStation.equals(newSection.downStation);
+    }
+
+    public boolean isDownStationSameAsUpStation(final Section newSection) {
+        return downStation.equals(newSection.upStation);
     }
 
     public boolean isDistanceLongerThan(final Section newSection) {
@@ -69,25 +57,25 @@ public class Section {
         return new Section(upStation, section.downStation, distance + section.distance);
     }
 
-    public MatchingResult matchStation(final Station target) {
+    public DeleteMatchingResult matchStation(final Station target) {
         if (this.downStation.isSameName(target)) {
-            return MatchingResult.POSSIBLE_TO_DELETE;
+            return DeleteMatchingResult.POSSIBLE_TO_DELETE;
         }
-        return MatchingResult.NO_MATCHED;
+        return DeleteMatchingResult.NO_MATCHED;
     }
 
-    public MatchingResult matchWithLastUpStation(final Station target) {
+    public DeleteMatchingResult matchWithLastUpStation(final Station target) {
         if (this.upStation.isSameName(target)) {
-            return MatchingResult.POSSIBLE_TO_DELETE;
+            return DeleteMatchingResult.POSSIBLE_TO_DELETE;
         }
-        return MatchingResult.NO_MATCHED;
+        return DeleteMatchingResult.NO_MATCHED;
     }
 
-    public MatchingResult matchWithLastDownStation(final Station taret) {
+    public DeleteMatchingResult matchWithLastDownStation(final Station taret) {
         if (this.downStation.isSameName(taret)) {
-            return MatchingResult.POSSIBLE_TO_DELETE;
+            return DeleteMatchingResult.POSSIBLE_TO_DELETE;
         }
-        return MatchingResult.NO_MATCHED;
+        return DeleteMatchingResult.NO_MATCHED;
     }
 
     public Long getUpStationId() {

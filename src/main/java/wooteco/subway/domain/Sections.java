@@ -25,7 +25,7 @@ public class Sections {
         }
         final List<Section> existedStations = new ArrayList<>(value);
         for (Section section : existedStations) {
-            final MatchingResult result = section.match(newSection);
+            final MatchingResult result = MatchingResult.matchMiddleStation(section, newSection);
             if (canAddStation(result, section, newSection)) {
                 add(section, newSection, result);
                 return;
@@ -35,11 +35,13 @@ public class Sections {
     }
 
     private boolean isNewUpSection(final Section newSection) {
-        return value.get(0).matchStartStation(newSection) == MatchingResult.ADD_TO_LEFT;
+        return MatchingResult.matchStartStation(value.get(0), newSection)
+                == MatchingResult.ADD_TO_LEFT;
     }
 
     private boolean isNewDownSection(final Section newSection) {
-        return value.get(value.size() - 1).matchEndStation(newSection) == MatchingResult.ADD_TO_RIGHT;
+        return MatchingResult.matchEndStation(value.get(value.size() - 1), newSection)
+                == MatchingResult.ADD_TO_RIGHT;
     }
 
     private List<Section> addFirst(final Section newSection) {
@@ -79,17 +81,17 @@ public class Sections {
         if (!canDelete()) {
             return;
         }
-        if (sameWithLastUpStation(target) == MatchingResult.POSSIBLE_TO_DELETE) {
+        if (sameWithLastUpStation(target) == DeleteMatchingResult.POSSIBLE_TO_DELETE) {
             value = value.subList(1, value.size());
             return;
         }
-        if (sameWithLastDownStation(target) == MatchingResult.POSSIBLE_TO_DELETE) {
+        if (sameWithLastDownStation(target) == DeleteMatchingResult.POSSIBLE_TO_DELETE) {
             value = value.subList(0, value.size() - 1);
             return;
         }
         final List<Section> existedStations = new ArrayList<>(value);
         for (Section section : existedStations) {
-            final MatchingResult result = section.matchStation(target);
+            final DeleteMatchingResult result = section.matchStation(target);
             if (canDeleteStation(result)) {
                 deleteStation(section, target);
                 return;
@@ -98,11 +100,11 @@ public class Sections {
         throw new IllegalArgumentException(CANNOT_DELETE_SECTION + " " + target);
     }
 
-    private MatchingResult sameWithLastDownStation(final Station target) {
+    private DeleteMatchingResult sameWithLastDownStation(final Station target) {
         return value.get(value.size() - 1).matchWithLastDownStation(target);
     }
 
-    private MatchingResult sameWithLastUpStation(final Station target) {
+    private DeleteMatchingResult sameWithLastUpStation(final Station target) {
         return value.get(0).matchWithLastUpStation(target);
     }
 
@@ -122,8 +124,8 @@ public class Sections {
         value = new ArrayList<>(leftSections);
     }
 
-    private boolean canDeleteStation(final MatchingResult result) {
-        return result == MatchingResult.POSSIBLE_TO_DELETE;
+    private boolean canDeleteStation(final DeleteMatchingResult result) {
+        return result == DeleteMatchingResult.POSSIBLE_TO_DELETE;
     }
 
     private boolean canDelete() {
