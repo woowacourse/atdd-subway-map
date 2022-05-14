@@ -37,12 +37,31 @@ public class Sections {
         }
     }
 
-    private void pushIfForkUpSection(Section section) {
-        if (isUpSection(section) && isAnotherUpSection(section)) {
-            Section currentSection = getAnotherUpSection(section);
+    private void pushIfForkDownSection(Section section) {
+        if (isDownSection(section) && isAnotherDownSection(section)) {
+            Section currentSection = getAnotherDownSection(section);
             validateDistance(section, currentSection);
-            addUpMiddleSection(section, currentSection);
+            addDownMiddleSection(section, currentSection);
         }
+    }
+
+    private boolean isDownSection(Section section) {
+        return sections.stream()
+                .noneMatch(s -> s.isContainStationId(section.getDownStationId()));
+    }
+
+    private boolean isAnotherDownSection(Section section) {
+        return sections.stream()
+                .filter(another -> section.getUpStationId().equals(another.getUpStationId()))
+                .anyMatch(another -> !section.getDownStationId().equals(another.getDownStationId()));
+    }
+
+    private Section getAnotherDownSection(Section section) {
+        return sections.stream()
+                .filter(another -> section.isSameUpStationId(another.getUpStationId()))
+                .filter(another -> !section.isSameDownStationId(another.getDownStationId()))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("다른 구간을 찾을 수 없습니다."));
     }
 
     private void validateDistance(Section section, Section currentSection) {
@@ -51,14 +70,22 @@ public class Sections {
         }
     }
 
-    private void addUpMiddleSection(Section section, Section currentSection) {
+    private void addDownMiddleSection(Section section, Section currentSection) {
         this.sections.add(new Section(
                 currentSection.getLineId(),
-                currentSection.getUpStationId(),
-                section.getUpStationId(),
+                section.getDownStationId(),
+                currentSection.getDownStationId(),
                 currentSection.getDistance() - section.getDistance()
         ));
         this.sections.remove(currentSection);
+    }
+
+    private void pushIfForkUpSection(Section section) {
+        if (isUpSection(section) && isAnotherUpSection(section)) {
+            Section currentSection = getAnotherUpSection(section);
+            validateDistance(section, currentSection);
+            addUpMiddleSection(section, currentSection);
+        }
     }
 
     private boolean isUpSection(Section section) {
@@ -80,41 +107,14 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("다른 구간을 찾을 수 없습니다."));
     }
 
-    private void pushIfForkDownSection(Section section) {
-        if (isDownSection(section) && isAnotherDownSection(section)) {
-            Section currentSection = getAnotherDownSection(section);
-            validateDistance(section, currentSection);
-            addDownMiddleSection(section, currentSection);
-        }
-    }
-
-    private void addDownMiddleSection(Section section, Section currentSection) {
+    private void addUpMiddleSection(Section section, Section currentSection) {
         this.sections.add(new Section(
                 currentSection.getLineId(),
-                section.getDownStationId(),
-                currentSection.getDownStationId(),
+                currentSection.getUpStationId(),
+                section.getUpStationId(),
                 currentSection.getDistance() - section.getDistance()
         ));
         this.sections.remove(currentSection);
-    }
-
-    private boolean isAnotherDownSection(Section section) {
-        return sections.stream()
-                .filter(another -> section.getUpStationId().equals(another.getUpStationId()))
-                .anyMatch(another -> !section.getDownStationId().equals(another.getDownStationId()));
-    }
-
-    private Section getAnotherDownSection(Section section) {
-        return sections.stream()
-                .filter(another -> section.isSameUpStationId(another.getUpStationId()))
-                .filter(another -> !section.isSameDownStationId(another.getDownStationId()))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("다른 구간을 찾을 수 없습니다."));
-    }
-
-    private boolean isDownSection(Section section) {
-        return sections.stream()
-                .noneMatch(s -> s.isContainStationId(section.getDownStationId()));
     }
 
     public Set<Long> getStations() {
