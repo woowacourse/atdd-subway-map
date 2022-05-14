@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
@@ -87,14 +87,11 @@ public class LineService {
         }
     }
 
-    // TODO: 리팩토링
     private List<StationResponse> getStationResponsesByLineId(Long lineId) {
         List<Long> stationIds = getStationIdsByLineId(lineId);
+        List<Station> stations = stationDao.findAllByIds(stationIds);
 
-        return stationIds.stream()
-                .map(stationDao::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+        return stations.stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
