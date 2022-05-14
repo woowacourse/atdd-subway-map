@@ -72,7 +72,6 @@ class LineServiceTest {
         final List<Line> lines = List.of(Line.initialCreateWithId(1L, "신분당선", "빨강이", 강남역, 청계산입구역, 1),
                 Line.initialCreateWithId(2L, "2호선", "초록이", 강남역, 청계산입구역,2));
         given(lineDao.findAll()).willReturn(lines);
-        given(sectionDao.findByLineId(any())).willReturn(List.of(new Section(1L, 강남역, 청계산입구역, 4)));
         //when
         final List<LineResponse> lineResponses = lineService.showLines();
         //then
@@ -82,9 +81,8 @@ class LineServiceTest {
     @Test
     void showLine() {
         //given
-        final Line line = Line.createWithoutSection(1L,"신분당선", "빨강이");
+        final Line line = Line.createWithId(1L, "신분당선", "color", List.of(Section.createWithId(1L, 강남역, 청계산입구역, 5)));
         given(lineDao.findById(1L)).willReturn(line);
-        given(sectionDao.findByLineId(any())).willReturn(List.of(new Section(1L, 강남역, 청계산입구역, 4)));
         //when
         final LineResponse lineResponse = lineService.showLine(1L);
         //then

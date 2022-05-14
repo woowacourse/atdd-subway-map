@@ -1,22 +1,23 @@
 package wooteco.subway.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class LineDao {
-    
+
     private static final String NON_EXISTENT_ID_EXCEPTION = "존재하지 않는 id입니다.";
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
-            Line.createWithoutSection(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -42,17 +43,33 @@ public class LineDao {
 
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
-
-        return jdbcTemplate.query(sql, lineRowMapper);
+        return jdbcTemplate.query(sql, this::lineMapper);
     }
 
     public Line findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
-        final Line line = jdbcTemplate.queryForObject(sql, lineRowMapper, id);
-        if (line == null) {
-            throw new IllegalArgumentException(NON_EXISTENT_ID_EXCEPTION);
-        }
-        return line;
+        return jdbcTemplate.queryForObject(sql, this::lineMapper, id);
+    }
+
+    private Line lineMapper(ResultSet rs, int rowNum) throws SQLException {
+        return Line.createWithId(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color"),
+                findSectionsByLineId(rs.getLong("id"))
+        );
+    }
+
+    private List<Section> findSectionsByLineId(Long lineId) {
+        final String sql = "select s.id sid, s.distance sdistance, us.id usid, us.name usname, ds.id dsid, ds.name dsname " +
+                "from sections s " +
+                "join station us on s.up_station_id = us.id " +
+                "join station ds on s.down_station_id = ds.id " +
+                "where line_id = ?";
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> {
+            return Section.createWithId(rs.getLong("sid"), new Station(rs.getLong("usid"), rs.getString("usname")),
+                    new Station(rs.getLong("dsid"), rs.getString("dsname")), rs.getInt("sdistance"));
+        }), lineId);
     }
 
     public void updateLineById(Long id, String name, String color) {

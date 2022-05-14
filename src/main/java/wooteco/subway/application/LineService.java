@@ -8,7 +8,6 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -50,10 +49,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse showLine(Long id) {
-        final Line savedLine = lineDao.findById(id);
-        final List<Section> sections = sectionDao.findByLineId(id);
-
-        final Line line = Line.createWithId(savedLine.getId(), savedLine.getName(), savedLine.getColor(), sections);
+        final Line line = lineDao.findById(id);
         return new LineResponse(line);
     }
 
@@ -68,7 +64,6 @@ public class LineService {
     public List<LineResponse> showLines() {
         final List<Line> savedLines = lineDao.findAll();
         return savedLines.stream()
-                .map(it -> Line.createWithId(it.getId(), it.getName(), it.getColor(), sectionDao.findByLineId(it.getId())))
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
