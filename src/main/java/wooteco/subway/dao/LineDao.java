@@ -22,52 +22,53 @@ public class LineDao {
             rs.getString("color")
     );
 
-    public LineDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public LineDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public Line save(Line line) {
-        String sql = "insert into LINE (name, color) values (:name, :color)";
-        
-        Map<String, Object> params = new HashMap<>();
+    public Line save(final Line line) {
+        final String sql = "insert into LINE (name, color) values (:name, :color)";
+
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
         return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), line.getName(), line.getColor());
     }
 
     public List<Line> findAll() {
-        String sql = "select * from LINE";
+        final String sql = "select * from LINE";
 
         return namedParameterJdbcTemplate.query(sql,
                 (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
     }
 
-    public Optional<Line> findById(Long id) {
-        String sql = "select * from LINE where id=:id";
+    public Optional<Line> findById(final Long id) {
+        final String sql = "select * from LINE where id=:id";
 
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        List<Line> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
+        final List<Line> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public Optional<Line> findByName(String name) {
-        String sql = "select * from LINE where name=:name";
+    public Optional<Line> findByName(final String name) {
+        final String sql = "select * from LINE where name=:name";
 
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
 
-        List<Line> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
+        final List<Line> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public int update(Long id, Line newLine) {
-        String sql = "update LINE set name=:name, color=:color where id=:id";
-        Map<String, Object> params = new HashMap<>();
+    public int update(final Long id, final Line newLine) {
+        final String sql = "update LINE set name=:name, color=:color where id=:id";
+
+        final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         params.put("name", newLine.getName());
         params.put("color", newLine.getColor());
@@ -75,10 +76,10 @@ public class LineDao {
         return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
     }
 
-    public int deleteById(Long id) {
-        String sql = "delete from LINE where id = :id";
+    public int deleteById(final Long id) {
+        final String sql = "delete from LINE where id = :id";
 
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
         return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));

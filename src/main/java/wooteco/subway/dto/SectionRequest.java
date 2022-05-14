@@ -9,15 +9,16 @@ import javax.validation.constraints.NotNull;
 public class SectionRequest {
 
     @NotNull(message = "상행역은 비어있을 수 없습니다.")
-    private Long upStationId;
+    private final Long upStationId;
 
     @NotNull(message = "하행역은 비어있을 수 없습니다.")
-    private Long downStationId;
+    private final Long downStationId;
 
     @Min(value = 1, message = "거리는 양수이어야 합니다.")
-    private int distance;
+    private final int distance;
 
     public SectionRequest() {
+        this(null, null, 0);
     }
 
     public SectionRequest(Long upStationId, Long downStationId, int distance) {

@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,8 +32,22 @@ public class Sections {
 
     public List<Section> extract(final List<Section> sections) {
         List<Section> origin = new ArrayList<>(value);
-        origin.removeAll(sections);
+        origin.removeAll(findSections(sections));
         return origin;
+    }
+
+    private List<Section> findSections(List<Section> sections) {
+        return sections.stream()
+                .map(this::findSection)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    private Optional<Section> findSection(Section section) {
+        return value.stream()
+                .filter(originSection -> originSection.equals(section))
+                .findFirst();
     }
 
     public List<Section> pop(final long stationId) {

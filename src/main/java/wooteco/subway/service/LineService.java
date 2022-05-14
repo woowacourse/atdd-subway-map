@@ -16,13 +16,13 @@ public class LineService {
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
     }
 
     @Transactional
-    public Line create(Line line, Section section) {
+    public Line create(final Line line, final Section section) {
         validateNameExist(line);
         final Line savedLine = lineDao.save(line);
         sectionDao.save(new Section(section.getUpStation(), section.getDownStation(), section.getDistance(), savedLine.getId()));
@@ -35,30 +35,30 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public Line getById(Long id) {
+    public Line getById(final Long id) {
         return extractLine(lineDao.findById(id));
     }
 
     @Transactional
-    public void modify(Long id, Line line) {
+    public void modify(final Long id, final Line line) {
         extractLine(lineDao.findById(id));
         validateNameExist(line);
         lineDao.update(id, line);
     }
 
-    private void validateNameExist(Line line) {
+    private void validateNameExist(final Line line) {
         if (lineDao.findByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("이미 같은 이름의 노선이 존재합니다.");
         }
     }
 
     @Transactional
-    public void remove(Long id) {
+    public void remove(final Long id) {
         extractLine(lineDao.findById(id));
         lineDao.deleteById(id);
     }
 
-    private Line extractLine(Optional<Line> wrappedLine) {
+    private Line extractLine(final Optional<Line> wrappedLine) {
         return wrappedLine.orElseThrow(() -> new IllegalArgumentException("해당 노선이 존재하지 않습니다."));
     }
 }

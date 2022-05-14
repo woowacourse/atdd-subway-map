@@ -18,29 +18,29 @@ public class StationController {
 
     private final StationService stationService;
 
-    public StationController(StationService stationService) {
+    public StationController(final StationService stationService) {
         this.stationService = stationService;
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station savedStation = stationService.create(station);
-        StationResponse stationResponse = new StationResponse(savedStation.getId(), savedStation.getName());
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid final StationRequest stationRequest) {
+        final Station station = new Station(stationRequest.getName());
+        final Station savedStation = stationService.create(station);
+        final StationResponse stationResponse = new StationResponse(savedStation.getId(), savedStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + savedStation.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationService.getAll();
-        List<StationResponse> stationResponses = stations.stream()
+        final List<Station> stations = stationService.getAll();
+        final List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable final Long id) {
         stationService.remove(id);
         return ResponseEntity.noContent().build();
     }

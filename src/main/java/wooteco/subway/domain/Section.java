@@ -58,7 +58,7 @@ public class Section {
         return this.distance + section.distance;
     }
 
-    public Section createSectionInBetween(Section section) {
+    public Section createSectionInBetween(final Section section) {
         if (this.upStation.equals(section.upStation)) {
             return new Section(this.id, section.downStation, this.downStation, subtractDistance(section), this.lineId);
         }

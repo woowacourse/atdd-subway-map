@@ -4,8 +4,6 @@ import java.util.Objects;
 
 public class Station {
 
-    private static final int NAME_LENGTH = 255;
-
     private final Long id;
     private final String name;
 
@@ -13,11 +11,11 @@ public class Station {
         this(null, null);
     }
 
-    public Station(String name) {
+    public Station(final String name) {
         this(null, name);
     }
 
-    public Station(Long id, String name) {
+    public Station(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }

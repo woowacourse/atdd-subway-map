@@ -9,22 +9,22 @@ import javax.validation.constraints.NotBlank;
 public class LineRequest {
 
     @NotBlank(message = "노선 이름은 공백일 수 없습니다.")
-    private String name;
+    private final String name;
 
     @NotBlank(message = "노선 색상은 공백일 수 없습니다.")
-    private String color;
+    private final String color;
 
-    private Long upStationId;
+    private final Long upStationId;
 
-    private Long downStationId;
+    private final Long downStationId;
 
-    private int distance;
-
+    private final int distance;
 
     public LineRequest() {
+        this(null, null, null, null, 0);
     }
 
-    public LineRequest(String name, String color) {
+    public LineRequest(final String name, final String color) {
         this(name, color, null, null, 0);
     }
 

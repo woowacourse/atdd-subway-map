@@ -17,14 +17,14 @@ public class SectionService {
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public SectionService(final SectionDao sectionDao, StationDao stationDao) {
+    public SectionService(final SectionDao sectionDao, final StationDao stationDao) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
 
     @Transactional
-    public Section create(final long lineId, final Section section) {
-        Section newSection = new Section(findUpStation(section), findDownStation(section), section.getDistance(), lineId);
+    public Section create(long lineId, Section section) {
+        final Section newSection = new Section(findUpStation(section), findDownStation(section), section.getDistance(), lineId);
 
         final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
         final Sections sections = new Sections(lineSections);
@@ -36,19 +36,19 @@ public class SectionService {
         return sectionDao.save(newSection);
     }
 
-    private void modify(Sections sections, List<Section> lineSections) {
-        List<Section> sectionsToUpdate = sections.extract(lineSections);
+    private void modify(final Sections sections, final List<Section> lineSections) {
+        final List<Section> sectionsToUpdate = sections.extract(lineSections);
         for (Section sectionToUpdate : sectionsToUpdate) {
             sectionDao.update(sectionToUpdate.getId(), sectionToUpdate);
         }
     }
 
-    private Station findUpStation(Section section) {
+    private Station findUpStation(final Section section) {
         return stationDao.findById(section.getUpStation().getId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역 입니다."));
     }
 
-    private Station findDownStation(Section section) {
+    private Station findDownStation(final Section section) {
         return stationDao.findById(section.getDownStation().getId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역 입니다."));
     }
