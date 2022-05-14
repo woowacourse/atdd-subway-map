@@ -24,13 +24,13 @@ class SectionsTest {
         final List<Station> stations = generateStations(1, 8);
 
         final List<Section> shuffledSections = new ArrayList<>(List.of(
-                new Section(1L, line, stations.get(0),stations.get(1), 1),
-                new Section(2L, line, stations.get(1),stations.get(2), 1),
-                new Section(3L, line, stations.get(2),stations.get(3), 1),
-                new Section(4L, line, stations.get(3),stations.get(4), 1),
-                new Section(5L, line, stations.get(4),stations.get(5), 1),
-                new Section(6L, line, stations.get(5),stations.get(6), 1),
-                new Section(7L, line, stations.get(6),stations.get(7), 1)
+                new Section(1L, line, stations.get(0), stations.get(1), new Distance(1)),
+                new Section(2L, line, stations.get(1), stations.get(2), new Distance(1)),
+                new Section(3L, line, stations.get(2), stations.get(3), new Distance(1)),
+                new Section(4L, line, stations.get(3), stations.get(4), new Distance(1)),
+                new Section(5L, line, stations.get(4), stations.get(5), new Distance(1)),
+                new Section(6L, line, stations.get(5), stations.get(6), new Distance(1)),
+                new Section(7L, line, stations.get(6), stations.get(7), new Distance(1))
         ));
         Collections.shuffle(shuffledSections);
         final Sections sections = new Sections(shuffledSections);
@@ -60,13 +60,13 @@ class SectionsTest {
         final List<Station> stations = generateStations(1, 4);
 
         final Sections sections = new Sections(List.of(
-                new Section(line, stations.get(0), stations.get(1), 1),
-                new Section(line, stations.get(1), stations.get(2), 1),
-                new Section(line, stations.get(2), stations.get(3), 1)
+                new Section(line, stations.get(0), stations.get(1), new Distance(1)),
+                new Section(line, stations.get(1), stations.get(2), new Distance(1)),
+                new Section(line, stations.get(2), stations.get(3), new Distance(1))
         ));
 
         final Sections expected = new Sections(List.of(
-                new Section(line, stations.get(0), stations.get(1), 1)
+                new Section(line, stations.get(0), stations.get(1), new Distance(1))
         ));
 
         // when
@@ -84,13 +84,13 @@ class SectionsTest {
         final List<Station> stations = generateStations(1, 4);
 
         final Sections sections = new Sections(List.of(
-                new Section(line, stations.get(0), stations.get(1), 1),
-                new Section(line, stations.get(1), stations.get(2), 1),
-                new Section(line, stations.get(2), stations.get(3), 1)
+                new Section(line, stations.get(0), stations.get(1), new Distance(1)),
+                new Section(line, stations.get(1), stations.get(2), new Distance(1)),
+                new Section(line, stations.get(2), stations.get(3), new Distance(1))
         ));
 
         final Sections expected = new Sections(List.of(
-                new Section(line, stations.get(2), stations.get(3), 1)
+                new Section(line, stations.get(2), stations.get(3), new Distance(1))
         ));
 
         // when
@@ -108,14 +108,14 @@ class SectionsTest {
         final List<Station> stations = generateStations(1, 4);
 
         final Sections sections = new Sections(List.of(
-                new Section(line, stations.get(0), stations.get(1), 1),
-                new Section(line, stations.get(1), stations.get(2), 1),
-                new Section(line, stations.get(2), stations.get(3), 1)
+                new Section(line, stations.get(0), stations.get(1), new Distance(1)),
+                new Section(line, stations.get(1), stations.get(2), new Distance(1)),
+                new Section(line, stations.get(2), stations.get(3), new Distance(1))
         ));
 
         final Sections expected = new Sections(List.of(
-                new Section(line, stations.get(0), stations.get(1), 1),
-                new Section(line, stations.get(1), stations.get(2), 1)
+                new Section(line, stations.get(0), stations.get(1), new Distance(1)),
+                new Section(line, stations.get(1), stations.get(2), new Distance(1))
         ));
 
         // when
@@ -135,7 +135,7 @@ class SectionsTest {
                         new Line(1L, "1", "1"),
                         new Station(1L, "1"),
                         stationToDelete,
-                        1
+                        new Distance(1)
                 )
         ));
 
@@ -154,13 +154,13 @@ class SectionsTest {
                         new Line(1L, "1", "1"),
                         new Station(1L, "1"),
                         new Station(2L, "2"),
-                        1
+                        new Distance(1)
                 ),
                 new Section(
                         new Line(1L, "1", "1"),
                         new Station(2L, "2"),
                         new Station(3L, "3"),
-                        1
+                        new Distance(1)
                 )
         ));
 

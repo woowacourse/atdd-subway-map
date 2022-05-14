@@ -34,7 +34,7 @@ public class LineService {
     }
 
     public LineResponse create(final LineRequest request) {
-        final Line line = new Line(new Name(request.getName()), request.getColor());
+        final Line line = new Line(request.getName(), request.getColor());
         final Line savedLine = lineDao.insert(line)
                 .orElseThrow(DuplicateLineException::new);
 

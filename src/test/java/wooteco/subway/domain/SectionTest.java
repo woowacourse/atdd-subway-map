@@ -22,14 +22,14 @@ class SectionTest {
     @Test
     @DisplayName("구간 객체를 생성한다.")
     void NewSection() {
-        assertThatCode(() -> new Section(line, seolleung, samseong, 10))
+        assertThatCode(() -> new Section(line, seolleung, samseong, new Distance(10)))
                 .doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("상행과 종점이 같으면 예외를 던진다.")
     void NewSection_SameStation_ExceptionThrown() {
-        assertThatThrownBy(() -> new Section(line, seolleung, seolleung, 10))
+        assertThatThrownBy(() -> new Section(line, seolleung, seolleung, new Distance(10)))
                 .isInstanceOf(IllegalInputException.class)
                 .hasMessage("두 종점이 동일합니다.");
     }
@@ -39,7 +39,7 @@ class SectionTest {
     @ValueSource(ints = {-1, 0})
     void NewSection_InvalidDistance_ExceptionThrown(final int distance) {
         // then
-        assertThatThrownBy(() -> new Section(line, seolleung, samseong, distance))
+        assertThatThrownBy(() -> new Section(line, seolleung, samseong, new Distance(distance)))
                 .isInstanceOf(IllegalInputException.class)
                 .hasMessage("두 종점간의 거리가 유효하지 않습니다.");
     }
@@ -49,8 +49,8 @@ class SectionTest {
     @CsvSource(value = {"10:3:7", "10:5:5", "10:7:3"}, delimiter = ':')
     void Assign_SameUpStation_Success(final int existingDistance, final int newDistance, final int expectedDistance) {
         // given
-        final Section existingSection = new Section(line, samseong, yeoksam, existingDistance);
-        final Section newSection = new Section(line, samseong, seolleung, newDistance);
+        final Section existingSection = new Section(line, samseong, yeoksam, new Distance(existingDistance));
+        final Section newSection = new Section(line, samseong, seolleung, new Distance(newDistance));
 
         final List<Section> expected = List.of(
                 newSection,
@@ -58,7 +58,7 @@ class SectionTest {
                         line,
                         newSection.getDownStation(),
                         existingSection.getDownStation(),
-                        expectedDistance
+                        new Distance(expectedDistance)
                 )
         );
 
@@ -74,15 +74,15 @@ class SectionTest {
     @CsvSource(value = {"10:3:7", "10:5:5", "10:7:3"}, delimiter = ':')
     void Assign_SameDownStation_Success(final int existingDistance, final int newDistance, final int expectedDistance) {
         // given
-        final Section existingSection = new Section(line, samseong, yeoksam, existingDistance);
-        final Section newSection = new Section(line, seolleung, yeoksam, newDistance);
+        final Section existingSection = new Section(line, samseong, yeoksam, new Distance(existingDistance));
+        final Section newSection = new Section(line, seolleung, yeoksam, new Distance(newDistance));
 
         final List<Section> expected = List.of(
                 new Section(
                         line,
                         existingSection.getUpStation(),
                         newSection.getUpStation(),
-                        expectedDistance
+                        new Distance(expectedDistance)
                 ),
                 newSection
         );
@@ -99,8 +99,8 @@ class SectionTest {
     @ValueSource(ints = {10, 11})
     void Assign_LongerThanOrEqualExistingSection_ExceptionThrown(final int distance) {
         // given
-        final Section existingSection = new Section(line, samseong, yeoksam, 10);
-        final Section newSection = new Section(line, seolleung, yeoksam, distance);
+        final Section existingSection = new Section(line, samseong, yeoksam, new Distance(10));
+        final Section newSection = new Section(line, seolleung, yeoksam, new Distance(distance));
 
         // then
         assertThatThrownBy(() -> existingSection.assign(newSection))
@@ -112,8 +112,8 @@ class SectionTest {
     @DisplayName("두 구간을 합친다.")
     void Merge() {
         // given
-        final Section section1 = new Section(line, samseong, yeoksam, 10);
-        final Section section2 = new Section(line, yeoksam, seolleung, 7);
+        final Section section1 = new Section(line, samseong, yeoksam, new Distance(10));
+        final Section section2 = new Section(line, yeoksam, seolleung, new Distance(7));
 
         // when
         final Section actual = section1.merge(section2);

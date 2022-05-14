@@ -20,10 +20,6 @@ public class Line {
         this(id, name, color, null);
     }
 
-    public Line(final Name name, final String color) {
-        this(null, name, color, null);
-    }
-
     public Line(final String name, final String color) {
         this(null, new Name(name), color, null);
     }

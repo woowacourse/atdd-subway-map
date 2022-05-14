@@ -28,14 +28,6 @@ public class Section {
         this(null, line, upStation, downStation, distance);
     }
 
-    public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
-        this(id, line, upStation, downStation, new Distance(distance));
-    }
-
-    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
-        this(null, line, upStation, downStation, new Distance(distance));
-    }
-
     private void validate(final Station upStation, final Station downStation) {
         if (upStation.equals(downStation)) {
             throw new IllegalInputException("두 종점이 동일합니다.");
