@@ -109,14 +109,32 @@ class SectionServiceTest {
 
     @Test
     @DisplayName("기존 구간의 길이가 추가하려는 구간의 길이보다 짧다면 예외를 발생시킨다.")
-    void addSection_distanceException() {
+    void addSection_distance1Exception() {
         Station station1 = stationDao.save("강남역");
         Station station2 = stationDao.save("선릉역");
         Station station3 = stationDao.save("잠실역");
         LineRequest lineRequest = new LineRequest("2호선", "green", station1.getId(), station2.getId(), 10);
         Line line = lineDao.save(lineRequest);
         sectionDao.saveInitialSection(lineRequest, line.getId());
-        SectionRequest sectionRequest = new SectionRequest(station1.getId(), station3.getId(), 20);
+        SectionRequest sectionRequest = new SectionRequest(station1.getId(), station3.getId(), 11);
+
+
+        assertThatThrownBy(() -> sectionService.addSection(sectionRequest, line.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("추가하려는 구간의 길이는 기존 구간길이보다 길 수 없습니다.");
+
+    }
+
+    @Test
+    @DisplayName("기존 구간의 길이가 추가하려는 구간의 길이와 같다면 예외를 발생시킨다.")
+    void addSection_equalDistanceException() {
+        Station station1 = stationDao.save("강남역");
+        Station station2 = stationDao.save("선릉역");
+        Station station3 = stationDao.save("잠실역");
+        LineRequest lineRequest = new LineRequest("2호선", "green", station1.getId(), station2.getId(), 10);
+        Line line = lineDao.save(lineRequest);
+        sectionDao.saveInitialSection(lineRequest, line.getId());
+        SectionRequest sectionRequest = new SectionRequest(station1.getId(), station3.getId(), 10);
 
 
         assertThatThrownBy(() -> sectionService.addSection(sectionRequest, line.getId()))
@@ -146,7 +164,7 @@ class SectionServiceTest {
     }
 
     @Test
-    @DisplayName("삭제하려는 역이 포함된 구간이 존재하지 않으면 예외를 발생시킨다..")
+    @DisplayName("삭제하려는 역이 포함된 구간이 존재하지 않으면 예외를 발생시킨다.")
     void deleteSection_NoStationException() {
         Station station1 = stationDao.save("강남역");
         Station station2 = stationDao.save("선릉역");
