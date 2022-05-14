@@ -55,17 +55,14 @@ public class StationDao {
         return namedParameterJdbcTemplate.query(sql, StationDao::rowMapper);
     }
 
-    public void deleteById(final Long id) {
+    public int deleteById(final Long id) {
         final String sql = "DELETE FROM STATION WHERE id = :id";
 
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        final int affectedRows = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
+        return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
 
-        if (affectedRows == 0) {
-            throw new DataNotFoundException("존재하지 않는 노선 id 입니다.");
-        }
     }
 
     public boolean existByName(final String name) {

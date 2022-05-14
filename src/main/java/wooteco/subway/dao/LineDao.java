@@ -68,15 +68,12 @@ public class LineDao {
         namedParameterJdbcTemplate.update(sql, params);
     }
 
-    public void deleteById(final Long id) {
+    public int deleteById(final Long id) {
         final String sql = "DELETE FROM LINE WHERE id = :id";
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-        final int affectedRows = namedParameterJdbcTemplate.update(sql, params);
 
-        if (affectedRows == 0) {
-            throw new DataNotFoundException("존재하지 않는 노선 id 입니다.");
-        }
+        return namedParameterJdbcTemplate.update(sql, params);
     }
 
     public boolean existByName(final String name) {

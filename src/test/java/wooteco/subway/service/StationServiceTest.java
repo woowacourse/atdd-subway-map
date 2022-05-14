@@ -71,6 +71,7 @@ class StationServiceTest {
     @DisplayName("등록된 지하철역을 삭제한다.")
     @Test
     void delete() {
+        given(stationDao.deleteById(1L)).willReturn(1);
         stationService.delete(1L);
         verify(stationDao, times(1)).deleteById(1L);
     }

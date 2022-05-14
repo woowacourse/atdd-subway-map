@@ -26,7 +26,11 @@ public class StationService {
     }
 
     public void delete(final Long id) {
-        stationDao.deleteById(id);
+        final int affectedRows = stationDao.deleteById(id);
+
+        if (affectedRows == 0) {
+            throw new DataNotFoundException("존재하지 않는 노선 id 입니다.");
+        }
     }
 
     private void validateDuplicateName(final Station station) {

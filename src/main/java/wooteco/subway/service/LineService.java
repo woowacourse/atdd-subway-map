@@ -51,7 +51,11 @@ public class LineService {
     }
 
     public void delete(final Long id) {
-        lineDao.deleteById(id);
+        final int affectedRows = lineDao.deleteById(id);
+
+        if (affectedRows == 0) {
+            throw new DataNotFoundException("존재하지 않는 노선 id 입니다.");
+        }
     }
 
     private void validateDuplicateName(final Line line) {

@@ -85,18 +85,6 @@ public class SectionDao {
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
     }
 
-    public void deleteById(final Long id) {
-        final String sql = "DELETE FROM SECTION WHERE id=:id";
-        final Map<String, Object> params = new HashMap<>();
-        params.put("id", id);
-
-        final int affectedRows = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
-
-        if (affectedRows == 0) {
-            throw new DataNotFoundException("존재하지 않는 노선 id 입니다.");
-        }
-    }
-
     public void deleteAll(final List<Section> sections) {
         final String sql = "DELETE FROM SECTION WHERE id = :id";
         namedParameterJdbcTemplate.batchUpdate(sql, SqlParameterSourceUtils.createBatch(sections));

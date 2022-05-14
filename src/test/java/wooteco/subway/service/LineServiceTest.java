@@ -117,6 +117,7 @@ class LineServiceTest {
     @DisplayName("등록된 노선을 삭제한다.")
     @Test
     void delete() {
+        given(lineDao.deleteById(1L)).willReturn(1);
         lineService.delete(1L);
         verify(lineDao, times(1)).deleteById(1L);
     }
