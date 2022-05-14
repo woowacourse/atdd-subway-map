@@ -33,7 +33,6 @@ public class SectionDao {
             .addValue("up_station_id", section.getUpStation().getId())
             .addValue("down_station_id", section.getDownStation().getId())
             .addValue("distance", section.getDistance());
-        // final SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(section);
         final Long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return new Section(id, section.getLineId(), section.getUpStation(), section.getDownStation(), section.getDistance());
     }
@@ -48,13 +47,13 @@ public class SectionDao {
     }
 
     private RowMapper<Section> rowMapper() {
-        return ((rs, rowNum) -> new Section(
+        return (rs, rowNum) -> new Section(
             rs.getLong("id"),
             rs.getLong("line_id"),
             new Station(rs.getLong("up_station_id"), rs.getString("up_station_name")),
             new Station(rs.getLong("down_station_id"), rs.getString("down_station_name")),
             rs.getInt("distance")
-        ));
+        );
     }
 
     public void deleteByLineId(final Long lineId) {
