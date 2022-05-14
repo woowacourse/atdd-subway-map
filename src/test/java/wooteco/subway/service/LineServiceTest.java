@@ -141,6 +141,6 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.update(secondNewLine.getId(),
                 new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10)))
                 .isInstanceOf(ClientException.class)
-                .hasMessageContaining("이미 등록된 지하철노선입니다.");
+                .hasMessageContaining("해당 지하철 노선이 존재하고 있습니다.");
     }
 }

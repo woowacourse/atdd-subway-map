@@ -86,8 +86,9 @@ public class LineService {
     public int update(Long id, LineRequest request) {
         Lines lines = lineDao.findAll();
         lines.validateExist(id);
+        lines.validateCanModify(new Line(request.getName(), request.getColor()));
+
         Line line = new Line(request.getName(), request.getColor());
-        lines.add(line);
         return lineDao.update(id, new Line(line.getName(), line.getColor()));
     }
 

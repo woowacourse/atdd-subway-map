@@ -28,6 +28,16 @@ public class Lines {
         }
     }
 
+    public void validateCanModify(Line request) {
+        boolean duplicate = lines.stream()
+                .filter(line -> line.isSameName(request.getName()))
+                .anyMatch(line -> line.getColor().equals(request.getColor()));
+
+        if (duplicate) {
+            throw new ClientException("해당 지하철 노선이 존재하고 있습니다.");
+        }
+    }
+
     public void validateExist(Long id) {
         boolean exist = lines.stream()
                 .anyMatch(line -> line.getId() == id);

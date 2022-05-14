@@ -66,10 +66,10 @@ public class SectionService {
 
         Sections sections = sectionJdbcDao.findById(id);
         if (sections.isMiddleSection(stationId)) {
-            deleteMiddleSection(id, sections.findDownSection(stationId).get(), sections.findDownSection(stationId).get());
+            deleteMiddleSection(id, sections.findDownSection(stationId).get(), sections.findUpSection(stationId).get());
             return;
         }
-        deleteEndSection(id, sections.findDownSection(stationId), sections.findDownSection(stationId));
+        deleteEndSection(id, sections.findDownSection(stationId), sections.findUpSection(stationId));
     }
 
     private void deleteMiddleSection(Long id, Section downSection, Section upSection) {
