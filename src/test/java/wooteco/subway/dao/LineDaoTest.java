@@ -34,24 +34,13 @@ public class LineDaoTest {
 
     @DisplayName("노선을 등록한다.")
     @Test
-    void save() {
+    void insert() {
         Line actual = lineDao.insert(line);
 
         assertAll(
                 () -> assertThat(actual.getName()).isEqualTo(line.getName()),
                 () -> assertThat(actual.getColor()).isEqualTo(line.getColor())
         );
-    }
-
-    @DisplayName("모든 노선 목록을 조회한다.")
-    @Test
-    void findAll() {
-        Line savedLine1 = lineDao.insert(line);
-        Line savedLine2 = lineDao.insert(new Line("1호선", "blue"));
-
-        List<Line> lines = lineDao.findAll();
-
-        assertThat(lines).containsExactly(savedLine1, savedLine2);
     }
 
     @DisplayName("id에 맞는 노선을 조회한다.")
@@ -69,6 +58,17 @@ public class LineDaoTest {
     void findByIdException() {
         assertThatThrownBy(() -> lineDao.findById(1L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @DisplayName("모든 노선 목록을 조회한다.")
+    @Test
+    void findAll() {
+        Line savedLine1 = lineDao.insert(line);
+        Line savedLine2 = lineDao.insert(new Line("1호선", "blue"));
+
+        List<Line> lines = lineDao.findAll();
+
+        assertThat(lines).containsExactly(savedLine1, savedLine2);
     }
 
     @DisplayName("노선의 이름과 색깔을 수정한다.")
