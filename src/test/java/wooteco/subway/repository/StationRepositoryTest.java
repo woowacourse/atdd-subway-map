@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import wooteco.subway.domain.StationSeries;
-import wooteco.subway.domain.fixture.StationFixture;
+import wooteco.subway.domain.station.StationSeries;
 
 @SpringBootTest
 class StationRepositoryTest {

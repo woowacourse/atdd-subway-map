@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Distance;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionSeries;
+import wooteco.subway.domain.property.Distance;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.SectionSeries;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.util.SimpleReflectionUtils;
 

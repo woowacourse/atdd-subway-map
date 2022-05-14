@@ -3,23 +3,14 @@ package wooteco.subway.repository;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.dao.JdbcLineDao;
-import wooteco.subway.dao.JdbcStationDao;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.LineSeries;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.line.LineSeries;
 
 @SpringBootTest
 class LineRepositoryTest {

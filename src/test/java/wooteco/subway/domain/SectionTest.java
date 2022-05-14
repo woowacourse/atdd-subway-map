@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.fixture.SectionFixture;
+import wooteco.subway.domain.section.Section;
 
 class SectionTest {
 

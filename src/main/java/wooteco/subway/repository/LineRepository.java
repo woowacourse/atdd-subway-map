@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.LineSeries;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.line.LineSeries;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.exception.RowNotFoundException;
 import wooteco.subway.util.SimpleReflectionUtils;

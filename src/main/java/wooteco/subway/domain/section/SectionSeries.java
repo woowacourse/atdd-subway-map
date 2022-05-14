@@ -1,10 +1,11 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.section;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.IdMissingException;
 import wooteco.subway.exception.RowNotFoundException;
 import wooteco.subway.exception.SectionNotEnoughException;
@@ -32,7 +33,7 @@ public class SectionSeries {
     public void add(Section section) {
         if (sections.isEmpty() || isAppending(section)) {
             this.sections.add(section);
-            return ;
+            return;
         }
         insert(section);
     }
@@ -76,10 +77,8 @@ public class SectionSeries {
             .filter(section -> section.isAnyIdMatch(stationId))
             .collect(Collectors.toList());
 
-        if (relatedSections.size() == 1) {
-            this.sections.remove(relatedSections.get(0));
+        if (isTerminalRemoval(relatedSections))
             return;
-        }
         if (relatedSections.size() == 2) {
             this.sections.remove(relatedSections.get(0));
             this.sections.remove(relatedSections.get(1));
@@ -89,6 +88,14 @@ public class SectionSeries {
                     relatedSections.get(0).getDistance().plus(relatedSections.get(1).getDistance())
                 ));
         }
+    }
+
+    private boolean isTerminalRemoval(List<Section> relatedSections) {
+        if (relatedSections.size() == 1) {
+            this.sections.remove(relatedSections.get(0));
+            return true;
+        }
+        return false;
     }
 
     private void validateSectionEnough() {

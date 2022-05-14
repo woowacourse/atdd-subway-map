@@ -1,7 +1,8 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.station;
 
 import java.util.Objects;
 
+import wooteco.subway.domain.property.Name;
 import wooteco.subway.util.Id;
 
 public class Station {

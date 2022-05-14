@@ -5,10 +5,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.LineSeries;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.line.LineSeries;
+import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.repository.LineRepository;
 
 @Service

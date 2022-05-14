@@ -1,6 +1,6 @@
 package wooteco.subway.entity;
 
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.line.Line;
 
 public class LineEntity {
 

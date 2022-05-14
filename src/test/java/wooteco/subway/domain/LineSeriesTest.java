@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.fixture.LineFixture;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.line.LineSeries;
 import wooteco.subway.exception.RowDuplicatedException;
 
 class LineSeriesTest {

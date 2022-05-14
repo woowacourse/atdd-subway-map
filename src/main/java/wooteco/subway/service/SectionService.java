@@ -1,14 +1,11 @@
 package wooteco.subway.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.domain.Distance;
-import wooteco.subway.domain.RemoveSections;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionSeries;
-import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.domain.property.Distance;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.SectionSeries;
+import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.repository.SectionRepository;
 
 @Service

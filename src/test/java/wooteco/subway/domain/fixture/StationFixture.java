@@ -1,6 +1,6 @@
 package wooteco.subway.domain.fixture;
 
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.station.Station;
 
 public class StationFixture {
 

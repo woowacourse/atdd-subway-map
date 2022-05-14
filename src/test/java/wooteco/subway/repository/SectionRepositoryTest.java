@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import wooteco.subway.domain.LineSeries;
-import wooteco.subway.domain.SectionSeries;
-import wooteco.subway.domain.StationSeries;
+import wooteco.subway.domain.line.LineSeries;
+import wooteco.subway.domain.section.SectionSeries;
+import wooteco.subway.domain.station.StationSeries;
 
 @SpringBootTest
 class SectionRepositoryTest {

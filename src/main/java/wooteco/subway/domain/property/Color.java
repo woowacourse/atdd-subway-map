@@ -1,14 +1,12 @@
-package wooteco.subway.domain;
-
-import java.util.Objects;
+package wooteco.subway.domain.property;
 
 import wooteco.subway.exception.InvalidRequestException;
 
-public class Name {
+public class Color {
 
     private final String value;
 
-    public Name(String value) {
+    public Color(String value) {
         validatePresent(value);
         this.value = value;
     }
@@ -24,23 +22,8 @@ public class Name {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Name name = (Name)o;
-        return Objects.equals(value, name.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
-    @Override
     public String toString() {
-        return "Name{" +
+        return "Color{" +
             "value='" + value + '\'' +
             '}';
     }

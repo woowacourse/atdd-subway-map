@@ -15,9 +15,9 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.acceptance.fixture.SimpleRestAssured;
-import wooteco.subway.dto.ExceptionResponse;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.response.ExceptionResponse;
+import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.exception.RowNotFoundException;
 
 public class LineAcceptanceTest extends AcceptanceTest {

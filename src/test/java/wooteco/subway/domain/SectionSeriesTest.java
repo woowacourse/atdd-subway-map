@@ -9,6 +9,10 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import wooteco.subway.domain.property.Distance;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.SectionSeries;
+
 class SectionSeriesTest {
 
     @Test

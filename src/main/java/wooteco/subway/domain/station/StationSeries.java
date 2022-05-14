@@ -1,10 +1,11 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.station;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import wooteco.subway.domain.section.Section;
 import wooteco.subway.exception.CustomException;
 import wooteco.subway.exception.IdMissingException;
 import wooteco.subway.exception.RowDuplicatedException;
@@ -65,7 +66,7 @@ public class StationSeries {
 
     private static List<Station> getOrderedStations(Map<Station, Station> sectionMap, Station cursor) {
         List<Station> orderedStations = new ArrayList<>();
-        while (cursor != null)  {
+        while (cursor != null) {
             orderedStations.add(cursor);
             cursor = sectionMap.get(cursor);
         }

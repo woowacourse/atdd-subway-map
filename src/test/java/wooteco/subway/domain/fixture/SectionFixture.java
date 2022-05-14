@@ -2,8 +2,8 @@ package wooteco.subway.domain.fixture;
 
 import static wooteco.subway.domain.fixture.StationFixture.*;
 
-import wooteco.subway.domain.Distance;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.property.Distance;
+import wooteco.subway.domain.section.Section;
 
 public class SectionFixture {
     public static final Section SECTION_AB = new Section(1L, STATION_A, STATION_B, new Distance(7));

@@ -1,15 +1,13 @@
 package wooteco.subway.repository;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
-import wooteco.subway.domain.StationSeries;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.station.StationSeries;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.RowNotFoundException;
 import wooteco.subway.util.SimpleReflectionUtils;

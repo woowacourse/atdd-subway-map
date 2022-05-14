@@ -1,8 +1,12 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.line;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import wooteco.subway.domain.property.Color;
+import wooteco.subway.domain.property.Name;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.SectionSeries;
 import wooteco.subway.util.Id;
 
 public class Line {
