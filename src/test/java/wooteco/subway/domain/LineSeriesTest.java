@@ -18,7 +18,7 @@ class LineSeriesTest {
         // given
         LineSeries series = new LineSeries(List.of(LineFixture.LINE_AB));
         // when
-        Line line = new Line("first", "color3");
+        Line line = new Line("분당선", "color3");
         // then
         assertThatExceptionOfType(RowDuplicatedException.class)
             .isThrownBy(() -> series.add(line));
