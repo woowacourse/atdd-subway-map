@@ -12,6 +12,10 @@ public class Section {
     }
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validateLineId(lineId);
+        validateStationId(upStationId);
+        validateStationId(downStationId);
+
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -20,10 +24,7 @@ public class Section {
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this(null, lineId, upStationId, downStationId, distance);
     }
 
     public Long getId() {
@@ -44,5 +45,17 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    private void validateLineId(Long id) {
+        if (id == null) {
+            throw new NullPointerException("노선 id 값이 누락되었습니다.");
+        }
+    }
+
+    private void validateStationId(Long id) {
+        if (id == null) {
+            throw new NullPointerException("역 id 값이 누락되었습니다.");
+        }
     }
 }

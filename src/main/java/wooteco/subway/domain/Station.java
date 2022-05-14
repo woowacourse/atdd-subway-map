@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
 public class Station {
+    private static final int NAME_MAX_LENGTH = 255;
+
     private Long id;
     private String name;
 
@@ -8,12 +10,14 @@ public class Station {
     }
 
     public Station(Long id, String name) {
+        validateName(name);
+
         this.id = id;
         this.name = name;
     }
 
     public Station(String name) {
-        this.name = name;
+        this(null, name);
     }
 
     public Long getId() {
@@ -26,6 +30,12 @@ public class Station {
 
     public boolean isSameName(Station station) {
         return this.name.equals(station.name);
+    }
+
+    private void validateName(String name) {
+        if (name.isBlank() || name.length() > NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException("역 이름의 길이는 1 이상 " + NAME_MAX_LENGTH + " 이하여야 합니다.");
+        }
     }
 
     @Override
