@@ -1,6 +1,7 @@
 package wooteco.subway.entity;
 
 import java.util.Objects;
+import wooteco.subway.domain2.Station;
 
 public class StationEntity {
 
@@ -31,8 +32,8 @@ public class StationEntity {
         return name;
     }
 
-    public boolean hasIdOf(Long id) {
-        return id.equals(this.id);
+    public Station toDomain() {
+        return new Station(id, name);
     }
 
     @Override
