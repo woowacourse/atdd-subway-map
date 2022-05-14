@@ -80,8 +80,8 @@ public class SectionService {
     }
 
     private void validateRemoveSection(Sections sections) {
-        if (sections.isSingleSection()) {
-            throw new IllegalArgumentException("구간이 하나 밖에 없어서 제거할 수 없습니다.");
+        if (sections.canRemoveSection()) {
+            throw new IllegalArgumentException("구간을 제거할 수 없는 상태입니다.");
         }
     }
 

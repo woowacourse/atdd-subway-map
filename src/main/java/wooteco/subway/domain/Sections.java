@@ -90,4 +90,8 @@ public class Sections {
     public boolean isSingleSection() {
         return sections.size() == MINIMUM_SIZE;
     }
+
+    public boolean canRemoveSection() {
+        return !(isSingleSection() && sections.isEmpty());
+    }
 }
