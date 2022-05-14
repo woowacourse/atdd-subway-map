@@ -39,6 +39,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
                     // then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("공백 문자열로 역을 생성하면 실패한다.", () -> {
+                    // when
+                    ExtractableResponse<Response> response = createStation(" ");
+
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 })
         );
     }
