@@ -192,4 +192,16 @@ class SectionsTest {
                 new Section(new Station("8"), new Station("10"), 5)
             );
     }
+
+    @Test
+    @DisplayName("구간이 하나 남을 경우에 구간삭제를 시도하면 예외가 반환되어야 합니다.")
+    void deleteLastSection() {
+        Sections sections1 = Sections.of(sections);
+        sections1.delete(new Station("2"));
+        sections1.delete(new Station("4"));
+        sections1.delete(new Station("6"));
+        assertThatThrownBy(() -> sections1.delete(new Station("8")))
+            .hasMessage("한개 남은 구간은 제거할 수 없습니다.")
+            .isInstanceOf(IllegalArgumentException.class);
+    }
 }
