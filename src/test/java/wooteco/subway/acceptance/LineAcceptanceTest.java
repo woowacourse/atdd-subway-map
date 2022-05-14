@@ -194,8 +194,18 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .when()
+                .get(location)
+                .then().log().all()
+                .extract();
+
+        LineResponse lineResponse = getResponse.jsonPath().getObject(".", LineResponse.class);
+
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse).extracting("id", "name", "color")
+                .containsExactly(1L, "분당선", "bg-green-600");
     }
 
     @Test
