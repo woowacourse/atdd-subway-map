@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,15 +37,27 @@ public class LineCreateService {
         Station downStation = stationDao.findById(request.getDownStationId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
 
-        Line line = new Line(request.getName(), request.getColor());
-        Line savedLine = lineDao.save(line);
+        Line savedLine = saveLine(request.getName(), request.getColor());
+        Section savedSection = saveSection(savedLine.getId(), upStation, downStation, request.getDistance());
 
-        Section section = new Section(savedLine.getId(), upStation, downStation, request.getDistance());
-        Section savedSection = sectionDao.save(section);
+        return getLineCreateResponse(savedLine, savedSection);
+    }
 
-        return new LineCreateResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(),
-                Stream.of(savedSection.getUpStation(), savedSection.getDownStation())
-                        .map(it -> new StationResponse(it.getId(), it.getName()))
-                        .collect(Collectors.toList()));
+    private Line saveLine(String name, String color) {
+        Line line = new Line(name, color);
+        return lineDao.save(line);
+    }
+
+    private Section saveSection(long lineId, Station upStation, Station downStation, int distance) {
+        Section section = new Section(lineId, upStation, downStation, distance);
+        return sectionDao.save(section);
+    }
+
+    private LineCreateResponse getLineCreateResponse(Line line, Section section) {
+        List<StationResponse> stationResponses = Stream.of(section.getUpStation(), section.getDownStation())
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toList());
+
+        return new LineCreateResponse(line, stationResponses);
     }
 }
