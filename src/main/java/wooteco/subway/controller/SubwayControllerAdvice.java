@@ -14,20 +14,20 @@ public class SubwayControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException() {
-        ErrorResponse errorResponse = new ErrorResponse("잘못된 접근입니다.");
+        ErrorResponse errorResponse = ErrorResponse.from("잘못된 접근입니다.");
         return ResponseEntity.internalServerError().body(errorResponse);
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> handleNoHandlerFoundException() {
-        ErrorResponse errorResponse = new ErrorResponse("잘못된 주소입니다.");
+        ErrorResponse errorResponse = ErrorResponse.from("잘못된 주소입니다.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(Exception exception) {
-        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.from(exception);
         return ResponseEntity.badRequest().body(errorResponse);
     }
 

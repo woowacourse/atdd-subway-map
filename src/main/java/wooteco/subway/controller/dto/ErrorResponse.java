@@ -11,8 +11,16 @@ public class ErrorResponse {
 
     private final String message;
 
-    public ErrorResponse(String message) {
+    private ErrorResponse(final String message) {
         this.message = message;
+    }
+
+    public static ErrorResponse from(final String message) {
+        return new ErrorResponse(message);
+    }
+
+    public static ErrorResponse from(final Exception exception) {
+        return new ErrorResponse(exception.getMessage());
     }
 
     public static ErrorResponse from(final MethodArgumentNotValidException exception) {
