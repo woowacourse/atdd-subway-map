@@ -1,9 +1,8 @@
 package wooteco.subway.domain.section;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.IdMissingException;
@@ -16,7 +15,7 @@ public class SectionSeries {
 
     public SectionSeries(List<Section> sections) {
         validateHasId(sections);
-        this.sections = new ArrayList<>(sections);
+        this.sections = new SectionSeriesSorter().sort(sections);
     }
 
     private void validateHasId(List<Section> sections) {
@@ -31,26 +30,23 @@ public class SectionSeries {
     }
 
     public void add(Section section) {
-        if (sections.isEmpty() || isAppending(section)) {
+        if (sections.isEmpty() || isAppending(section.getUpStation(), section.getDownStation())) {
             this.sections.add(section);
             return;
         }
         insert(section);
     }
 
-    private boolean isAppending(Section newSection) {
-        final Map<Station, Station> sectionMap = sections.stream()
-            .collect(Collectors.toMap(
-                Section::getUpStation,
-                Section::getDownStation));
-        return doesTerminalExist(newSection, sectionMap);
+    private boolean isAppending(Station upStation, Station downStation) {
+        return isUpTerminal(downStation) || isDownTerminal(upStation);
     }
 
-    private boolean doesTerminalExist(Section newSection, Map<Station, Station> sectionMap) {
-        return !sectionMap.containsKey(newSection.getUpStation()) &&
-            !sectionMap.containsValue(newSection.getDownStation()) &&
-            (sectionMap.containsKey(newSection.getDownStation()) ||
-                sectionMap.containsValue(newSection.getUpStation()));
+    private boolean isDownTerminal(Station station) {
+        return sections.get(sections.size() - 1).isDownStationSame(station);
+    }
+
+    private boolean isUpTerminal(Station station) {
+        return sections.get(0).isUpStationSame(station);
     }
 
     private void insert(Section newSection) {
@@ -71,37 +67,41 @@ public class SectionSeries {
             ));
     }
 
-    public void remove(Long stationId) {
+    public void remove(Station deleteStation) {
         validateSectionEnough();
-        final List<Section> relatedSections = sections.stream()
-            .filter(section -> section.isAnyIdMatch(stationId))
-            .collect(Collectors.toList());
-
-        if (isTerminalRemoval(relatedSections))
+        if (isUpTerminal(deleteStation)) {
+            this.sections.remove(0);
             return;
-        if (relatedSections.size() == 2) {
-            this.sections.remove(relatedSections.get(0));
-            this.sections.remove(relatedSections.get(1));
-            this.sections.add(
-                new Section(relatedSections.get(0).getUpStation(),
-                    relatedSections.get(1).getDownStation(),
-                    relatedSections.get(0).getDistance().plus(relatedSections.get(1).getDistance())
-                ));
         }
-    }
+        if (isDownTerminal(deleteStation)) {
+            this.sections.remove(sections.size() - 1);
+            return;
+        }
+        removeIntermediate(deleteStation);
 
-    private boolean isTerminalRemoval(List<Section> relatedSections) {
-        if (relatedSections.size() == 1) {
-            this.sections.remove(relatedSections.get(0));
-            return true;
-        }
-        return false;
     }
 
     private void validateSectionEnough() {
         if (this.sections.size() == 1) {
             throw new SectionNotEnoughException("구간이 하나인 경우에는 삭제할 수 없습니다.");
         }
+    }
+
+    private void removeIntermediate(Station deleteStation) {
+        final int upIndex = findIntermediateStation(deleteStation);
+        final Section upSection = sections.get(upIndex);
+        final Section downSection = sections.get(upIndex + 1);
+
+        sections.add(upSection.connect(downSection));
+        sections.remove(upSection);
+        sections.remove(downSection);
+    }
+
+    private int findIntermediateStation(Station station) {
+        return IntStream.range(0, sections.size())
+            .filter(it -> sections.get(it).isDownStationSame(station))
+            .findAny()
+            .orElseThrow(() -> new RowNotFoundException("삭제하려는 역이 구간에 등록되어 있지 않습니다."));
     }
 
     public List<Section> getSections() {

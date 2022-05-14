@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.domain.property.Distance;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.SectionSeries;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.repository.SectionRepository;
 
@@ -40,7 +41,7 @@ public class SectionService {
 
     public void delete(Long lineId, Long stationId) {
         final SectionSeries sectionSeries = new SectionSeries(sectionRepository.readAllSections(lineId));
-        sectionSeries.remove(stationId);
+        sectionSeries.remove(stationService.findOne(lineId));
         sectionRepository.persist(lineId, sectionSeries);
     }
 }

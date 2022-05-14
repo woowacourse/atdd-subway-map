@@ -58,7 +58,7 @@ class SectionRepositoryTest {
         sectionRepository.persist(lineId, sectionSeries);
 
         // when
-        sectionSeries.remove(STATION_B.getId());
+        sectionSeries.remove(STATION_B);
         sectionRepository.persist(lineId, sectionSeries);
 
         // then

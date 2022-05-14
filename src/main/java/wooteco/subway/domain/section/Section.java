@@ -2,8 +2,8 @@ package wooteco.subway.domain.section;
 
 import java.util.Objects;
 
-import wooteco.subway.domain.property.Distance;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.property.Distance;
 import wooteco.subway.util.Id;
 
 public class Section {
@@ -25,12 +25,20 @@ public class Section {
         this(null, upStation, downStation, distance);
     }
 
-    public boolean isDividable(Section other) {
-        return isOneStationMatch(other) && this.distance.isLongerThan(other.distance);
+    public boolean isUpStationSame(Station upStation) {
+        return this.upStation.equals(upStation);
     }
 
-    private boolean isOneStationMatch(Section other) {
-        return this.upStation.equals(other.upStation) ^ this.downStation.equals(other.downStation);
+    public boolean isDownStationSame(Station downStation) {
+        return this.downStation.equals(downStation);
+    }
+
+    public boolean isDividable(Section other) {
+        return isOneStationMatched(other) && this.distance.isLongerThan(other.distance);
+    }
+
+    private boolean isOneStationMatched(Section other) {
+        return isUpStationSame(other.upStation) & isDownStationSame(other.downStation);
     }
 
     public Section divide(Section other) {
@@ -40,16 +48,16 @@ public class Section {
         return new Section(upStation, other.upStation, distance.subtract(other.distance));
     }
 
+    public Section connect(Section other) {
+        return new Section(upStation, other.downStation, distance.plus(other.distance));
+    }
+
     private boolean isUpStationConnected(Section other) {
         return this.upStation.equals(other.upStation);
     }
 
     public boolean isAnyIdMatch(Long stationId) {
         return upStation.getId().equals(stationId) || downStation.getId().equals(stationId);
-    }
-
-    public Section merge(Section other) {
-        return new Section(id, upStation, other.downStation, distance.plus(other.distance));
     }
 
     public Long getId() {

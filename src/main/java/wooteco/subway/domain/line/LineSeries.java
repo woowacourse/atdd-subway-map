@@ -19,9 +19,7 @@ public class LineSeries {
         lines.stream()
             .filter(line -> line.getId() == null)
             .findAny()
-            .ifPresent(line -> {
-                throw new IdMissingException(line.getName() + " 노선에 ID가 없습니다.");
-            });
+            .ifPresent(line -> {throw new IdMissingException(line.getName() + " 노선에 ID가 없습니다.");});
     }
 
     public void add(Line line) {
