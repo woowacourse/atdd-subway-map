@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
@@ -16,10 +17,12 @@ public class SectionService {
 
     private final SectionDao sectionDao;
     private final StationDao stationDao;
+    private final LineDao lineDao;
 
-    public SectionService(final SectionDao sectionDao, final StationDao stationDao) {
+    public SectionService(final SectionDao sectionDao, final StationDao stationDao, final LineDao lineDao) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
+        this.lineDao = lineDao;
     }
 
     @Transactional
@@ -28,6 +31,8 @@ public class SectionService {
                 .orElseThrow(() -> new DataNotFoundException("존재하지 않는 지하철역 ID입니다."));
         final Station downStation = stationDao.findById(section.getDownStation().getId())
                 .orElseThrow(() -> new DataNotFoundException("존재하지 않는 지하철역 ID입니다."));
+        lineDao.findById(lineId)
+                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 노선 ID입니다."));
 
         Section sectionToSave = new Section(upStation, downStation, section.getDistance(), lineId);
 
