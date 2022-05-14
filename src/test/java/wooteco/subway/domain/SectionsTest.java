@@ -204,4 +204,12 @@ class SectionsTest {
             .hasMessage("한개 남은 구간은 제거할 수 없습니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("없는 구간의 삭제를 시도하면 id는 -1이 반환되어야 합니다.")
+    void deleteNoSuchSection() {
+        Sections sections1 = Sections.of(sections);
+        Station station = new Station("xx");
+        assertThat(sections1.delete(station)).isEqualTo(-1L);
+    }
 }

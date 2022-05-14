@@ -1,7 +1,6 @@
 package wooteco.subway.domain;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Line {
     private Long id;
@@ -33,11 +32,11 @@ public class Line {
         this.color = color;
     }
 
-    public Optional<Section> insertSection(Section section) {
+    public int insertSection(Section section) {
         return sections.insert(section);
     }
 
-    public UpdatedSection deleteStation(Station station) {
+    public Long deleteSection(Station station) {
         return sections.delete(station);
     }
 
@@ -55,6 +54,10 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.EmptyResultException;
 
 @SpringBootTest
 @Transactional
@@ -141,7 +143,6 @@ class LineServiceTest {
         LineRequest originLine = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
         LineResponse lineResponse = lineService.save(originLine);
 
-
         // when
         Long newDownStationId = stationDao.save(new Station("교대역")).getId();
         SectionRequest sectionRequest = new SectionRequest(upStationId, newDownStationId, 3);
@@ -166,7 +167,6 @@ class LineServiceTest {
         // given
         LineRequest originLine = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
         LineResponse lineResponse = lineService.save(originLine);
-
 
         // when
         Long newUpStationId = stationDao.save(new Station("잠실역")).getId();
@@ -203,5 +203,24 @@ class LineServiceTest {
                 .hasSize(2)
                 .contains("강남역", "선릉역")
         );
+    }
+
+    @Test
+    @DisplayName("삭제할 구간을 찾지 못했을 경우 예외를 반환해야 합니다.")
+    void deleteNone() {
+        // given
+        LineRequest originLine = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 5);
+        LineResponse lineResponse = lineService.save(originLine);
+        Long newDownStationId = stationDao.save(new Station("교대역")).getId();
+        SectionRequest sectionRequest = new SectionRequest(upStationId, newDownStationId, 3);
+        lineService.insertSection(lineResponse.getId(), sectionRequest);
+
+        // when
+        Long notInLineStationId = stationDao.save(new Station("xx")).getId();
+
+        // then
+        assertThatThrownBy(() -> lineService.deleteStation(lineResponse.getId(), notInLineStationId))
+            .hasMessage("삭제할 구간을 찾지 못했습니다.")
+            .isInstanceOf(EmptyResultException.class);
     }
 }

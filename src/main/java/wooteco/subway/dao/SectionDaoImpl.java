@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -35,14 +37,15 @@ public class SectionDaoImpl implements SectionDao{
     }
 
     @Override
-    public boolean update(Section section) {
+    public void update(List<Section> sections) {
         final String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
-        int updateSize = jdbcTemplate.update(sql,
-            section.getUpStation().getId(),
-            section.getDownStation().getId(),
-            section.getDistance(),
-            section.getId());
-        return updateSize != 0;
+        List<Object[]> updateSections = sections.stream()
+            .map(section -> new Object[] {section.getUpStation().getId(),
+                section.getDownStation().getId(),
+                section.getDistance(),
+                section.getId()})
+            .collect(Collectors.toList());
+        jdbcTemplate.batchUpdate(sql, updateSections);
     }
 
     @Override

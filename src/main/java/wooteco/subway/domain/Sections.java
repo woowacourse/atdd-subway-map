@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -50,18 +49,18 @@ public class Sections {
             .orElseThrow(() -> new IllegalArgumentException("해당 구간을 찾을 수 없습니다."));
     }
 
-    public Optional<Section> insert(Section section) {
+    public int insert(Section section) {
         LinkedList<Section> flexibleSections = new LinkedList<>(this.sections);
         for (int i = 0; i < flexibleSections.size(); i++) {
             Section sectionInLine = flexibleSections.get(i);
             if (insertSection(section, flexibleSections, i, sectionInLine)) {
-                return Optional.of(sectionInLine);
+                return 2;
             }
         }
 
         if (flexibleSections.size() == sections.size()) {
             insertSectionSide(section, flexibleSections);
-            return Optional.empty();
+            return 1;
         }
 
         throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
@@ -126,7 +125,7 @@ public class Sections {
             && sectionInLine.isLongerThan(section.getDistance());
     }
 
-    public UpdatedSection delete(Station station) {
+    public Long delete(Station station) {
         LinkedList<Section> flexibleSections = new LinkedList<>(this.sections);
         validateMinSize(flexibleSections);
 
@@ -139,12 +138,7 @@ public class Sections {
             return removeSideStation(flexibleSections, lastIndex);
         }
 
-        Optional<UpdatedSection> updatedSection = deleteMiddleSection(station, flexibleSections, lastIndex);
-        if (updatedSection.isPresent()) {
-            return updatedSection.get();
-        }
-
-        throw new IllegalArgumentException("해당 역이 구간에 존재하지 않습니다.");
+        return deleteMiddleSection(station, flexibleSections, lastIndex);
     }
 
     private void validateMinSize(LinkedList<Section> flexibleSections) {
@@ -157,34 +151,34 @@ public class Sections {
         return flexibleSections.get(0).hasUpStation(station);
     }
 
-    private UpdatedSection removeSideStation(LinkedList<Section> flexibleSections, int index) {
+    private Long removeSideStation(LinkedList<Section> flexibleSections, int index) {
         Section section = flexibleSections.remove(index);
         sections = flexibleSections;
-        return UpdatedSection.of(section.getId());
+        return section.getId();
     }
 
     private boolean isBottomStation(Station station, LinkedList<Section> flexibleSections, int lastIndex) {
         return flexibleSections.get(lastIndex).hasDownStation(station);
     }
 
-    private Optional<UpdatedSection> deleteMiddleSection(Station station,
+    private Long deleteMiddleSection(Station station,
         LinkedList<Section> flexibleSections, int lastIndex) {
         for (int i = 0; i < lastIndex; i++) {
             Section leftSection = sections.get(i);
             if (leftSection.hasDownStation(station)) {
-                return Optional.of(removeMiddleStation(flexibleSections, i, leftSection));
+                return removeMiddleStation(flexibleSections, i, leftSection);
             }
         }
-        return Optional.empty();
+        return -1L;
     }
 
-    private UpdatedSection removeMiddleStation(LinkedList<Section> flexibleSections, int index, Section leftSection) {
+    private Long removeMiddleStation(LinkedList<Section> flexibleSections, int index, Section leftSection) {
         Section rightSection = sections.get(index + 1);
         leftSection.updateDownStation(rightSection.getDownStation(),
             leftSection.getDistance() + rightSection.getDistance());
         flexibleSections.remove(rightSection);
         sections = flexibleSections;
-        return UpdatedSection.from(rightSection.getId(), leftSection);
+        return rightSection.getId();
     }
 
     public List<Section> getSections() {

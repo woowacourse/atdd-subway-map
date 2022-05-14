@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -13,7 +12,6 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.domain.UpdatedSection;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -69,21 +67,22 @@ public class LineService {
         Line line = findLineById(id);
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
-
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
-        Optional<Section> updatedSection = line.insertSection(section);
-        updatedSection.ifPresent(sectionDao::update);
+
+        int updateSize = line.insertSection(section);
+        if (updateSize > 1) {
+            sectionDao.update(line.getSections());
+        }
         sectionDao.save(section, line.getId());
     }
 
     public void deleteStation(Long lineId, Long stationId) {
         Station station = findStationById(stationId);
         Line line = findLineById(lineId);
-        UpdatedSection updatedSection = line.deleteStation(station);
-        if (updatedSection.hasUpdatedSection()) {
-            sectionDao.update(updatedSection.getUpdatedSection());
-        }
-        sectionDao.delete(updatedSection.getDeletedSectionId());
+        Long sectionId = line.deleteSection(station);
+        checkEmptyResult(sectionId);
+        sectionDao.update(line.getSections());
+        sectionDao.delete(sectionId);
     }
 
     private Station findStationById(Long id) {
@@ -94,6 +93,12 @@ public class LineService {
     private Line findLineById(Long id) {
         return lineDao.findById(id)
             .orElseThrow(throwEmptyLineResultException());
+    }
+
+    private void checkEmptyResult(Long sectionId) {
+        if (sectionId == -1L) {
+            throw new EmptyResultException("삭제할 구간을 찾지 못했습니다.");
+        }
     }
 
     private Supplier<EmptyResultException> throwEmptyStationException() {
