@@ -6,7 +6,7 @@ import java.util.Optional;
 import wooteco.subway.entity.LineEntity;
 
 public interface LineDao {
-    LineEntity save(LineEntity entity);
+    Long save(LineEntity entity);
 
     List<LineEntity> findAll();
 

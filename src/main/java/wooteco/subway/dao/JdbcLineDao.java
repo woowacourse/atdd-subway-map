@@ -35,10 +35,9 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public LineEntity save(LineEntity entity) {
+    public Long save(LineEntity entity) {
         final SqlParameterSource param = new BeanPropertySqlParameterSource(entity);
-        final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
-        return new LineEntity(id, entity.getName(), entity.getColor());
+        return jdbcInsert.executeAndReturnKey(param).longValue();
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.Optional;
 import wooteco.subway.entity.StationEntity;
 
 public interface StationDao {
-    StationEntity save(StationEntity StationEntity);
+    Long save(StationEntity StationEntity);
 
     List<StationEntity> findAll();
 

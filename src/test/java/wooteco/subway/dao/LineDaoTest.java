@@ -20,130 +20,130 @@ import wooteco.subway.entity.LineEntity;
 @JdbcTest
 class LineDaoTest {
 
-    private static final String LINE_NAME = "신분당선";
-    private static final String LINE_COLOR = "bg-red-600";
-
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    private LineDao dao;
-
-    @BeforeEach
-    void setUp() {
-        dao = new JdbcLineDao(dataSource, jdbcTemplate);
-    }
-
-    @Test
-    @DisplayName("노선을 저장한다.")
-    public void save() {
-        // given
-        LineEntity entity = new LineEntity(LINE_NAME, LINE_COLOR);
-        // when
-        final LineEntity saved = dao.save(entity);
-        // then
-        assertThat(saved).isNotNull();
-    }
-
-    @Test
-    @DisplayName("중복된 이름을 저장하는 경우 예외가 발생한다.")
-    public void save_throwsExceptionWithDuplicatedName() {
-        // given
-        LineEntity entity = new LineEntity(LINE_NAME, LINE_COLOR);
-        // when
-        dao.save(entity);
-        // then
-        assertThatExceptionOfType(DuplicateKeyException.class)
-            .isThrownBy(() -> dao.save(entity));
-    }
-
-    @Test
-    @DisplayName("전체 노선을 조회한다.")
-    public void findAll() {
-        // given & when
-        List<LineEntity> lines = dao.findAll();
-        // then
-        assertThat(lines).hasSize(0);
-    }
-
-    @Test
-    @DisplayName("노선을 하나 추가한 뒤, 전체 노선을 조회한다")
-    public void findAll_afterSaveOneLine() {
-        // given
-        dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
-        // when
-        List<LineEntity> lines = dao.findAll();
-        // then
-        assertThat(lines).hasSize(1);
-    }
-
-    @Test
-    @DisplayName("ID 값으로 노선을 조회한다")
-    public void findById() {
-        // given
-        final LineEntity saved = dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
-        // when
-        final Optional<LineEntity> foundLine = dao.findById(saved.getId());
-        // then
-        assertThat(foundLine).isPresent();
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 ID 값으로 노선을 조회하면 빈 Optional을 돌려준다.")
-    public void findById_invalidID() {
-        // given
-        dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
-        // when
-        final Optional<LineEntity> found = dao.findById(2L);
-        // then
-        assertThat(found).isEmpty();
-    }
-
-    @Test
-    @DisplayName("노선 정보를 수정한다.")
-    public void update() {
-        // given
-        final LineEntity saved = dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
-        // when
-        final boolean isUpdated = dao.update(new LineEntity(saved.getId(), "구분당선", LINE_COLOR));
-        // then
-        assertThat(isUpdated).isTrue();
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 ID값을 수정하는 경우 False를 반환한다.")
-    public void update_throwsExceptionWithInvalidId() {
-        // given
-        dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
-        LineEntity updateLine = new LineEntity(100L, "사랑이넘치는", "우테코");
-        // when
-        final boolean isUpdated = dao.update(updateLine);
-        // then
-        assertThat(isUpdated).isFalse();
-    }
-
-    @Test
-    @DisplayName("ID값으로 노선을 삭제한다.")
-    public void delete() {
-        // given
-        LineEntity saved = dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
-        // when
-        final boolean isDeleted = dao.delete(saved.getId());
-        // then
-        assertThat(isDeleted).isTrue();
-    }
-
-    @Test
-    @DisplayName("존재하지않는 ID값을 삭제하는 경우 False를 반환한다.")
-    public void delete_throwsExceptionWithInvalidId() {
-        // given
-        dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
-        Long deleteId = 100L;
-        // when
-        final boolean isDeleted = dao.delete(deleteId);
-        // then
-        assertThat(isDeleted).isFalse();
-    }
+    // private static final String LINE_NAME = "신분당선";
+    // private static final String LINE_COLOR = "bg-red-600";
+    //
+    // @Autowired
+    // private DataSource dataSource;
+    //
+    // @Autowired
+    // private JdbcTemplate jdbcTemplate;
+    //
+    // private LineDao dao;
+    //
+    // @BeforeEach
+    // void setUp() {
+    //     dao = new JdbcLineDao(dataSource, jdbcTemplate);
+    // }
+    //
+    // @Test
+    // @DisplayName("노선을 저장한다.")
+    // public void save() {
+    //     // given
+    //     LineEntity entity = new LineEntity(LINE_NAME, LINE_COLOR);
+    //     // when
+    //     final LineEntity saved = dao.save(entity);
+    //     // then
+    //     assertThat(saved).isNotNull();
+    // }
+    //
+    // @Test
+    // @DisplayName("중복된 이름을 저장하는 경우 예외가 발생한다.")
+    // public void save_throwsExceptionWithDuplicatedName() {
+    //     // given
+    //     LineEntity entity = new LineEntity(LINE_NAME, LINE_COLOR);
+    //     // when
+    //     dao.save(entity);
+    //     // then
+    //     assertThatExceptionOfType(DuplicateKeyException.class)
+    //         .isThrownBy(() -> dao.save(entity));
+    // }
+    //
+    // @Test
+    // @DisplayName("전체 노선을 조회한다.")
+    // public void findAll() {
+    //     // given & when
+    //     List<LineEntity> lines = dao.findAll();
+    //     // then
+    //     assertThat(lines).hasSize(0);
+    // }
+    //
+    // @Test
+    // @DisplayName("노선을 하나 추가한 뒤, 전체 노선을 조회한다")
+    // public void findAll_afterSaveOneLine() {
+    //     // given
+    //     dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
+    //     // when
+    //     List<LineEntity> lines = dao.findAll();
+    //     // then
+    //     assertThat(lines).hasSize(1);
+    // }
+    //
+    // @Test
+    // @DisplayName("ID 값으로 노선을 조회한다")
+    // public void findById() {
+    //     // given
+    //     final LineEntity saved = dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
+    //     // when
+    //     final Optional<LineEntity> foundLine = dao.findById(saved.getId());
+    //     // then
+    //     assertThat(foundLine).isPresent();
+    // }
+    //
+    // @Test
+    // @DisplayName("존재하지 않는 ID 값으로 노선을 조회하면 빈 Optional을 돌려준다.")
+    // public void findById_invalidID() {
+    //     // given
+    //     dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
+    //     // when
+    //     final Optional<LineEntity> found = dao.findById(2L);
+    //     // then
+    //     assertThat(found).isEmpty();
+    // }
+    //
+    // @Test
+    // @DisplayName("노선 정보를 수정한다.")
+    // public void update() {
+    //     // given
+    //     final LineEntity saved = dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
+    //     // when
+    //     final boolean isUpdated = dao.update(new LineEntity(saved.getId(), "구분당선", LINE_COLOR));
+    //     // then
+    //     assertThat(isUpdated).isTrue();
+    // }
+    //
+    // @Test
+    // @DisplayName("존재하지 않는 ID값을 수정하는 경우 False를 반환한다.")
+    // public void update_throwsExceptionWithInvalidId() {
+    //     // given
+    //     dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
+    //     LineEntity updateLine = new LineEntity(100L, "사랑이넘치는", "우테코");
+    //     // when
+    //     final boolean isUpdated = dao.update(updateLine);
+    //     // then
+    //     assertThat(isUpdated).isFalse();
+    // }
+    //
+    // @Test
+    // @DisplayName("ID값으로 노선을 삭제한다.")
+    // public void delete() {
+    //     // given
+    //     LineEntity saved = dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
+    //     // when
+    //     final boolean isDeleted = dao.delete(saved.getId());
+    //     // then
+    //     assertThat(isDeleted).isTrue();
+    // }
+    //
+    // @Test
+    // @DisplayName("존재하지않는 ID값을 삭제하는 경우 False를 반환한다.")
+    // public void delete_throwsExceptionWithInvalidId() {
+    //     // given
+    //     dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
+    //     Long deleteId = 100L;
+    //     // when
+    //     final boolean isDeleted = dao.delete(deleteId);
+    //     // then
+    //     assertThat(isDeleted).isFalse();
+    // }
 }

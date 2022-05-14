@@ -41,9 +41,9 @@ class StationDaoTest {
         // given
         StationEntity entity = new StationEntity("청구역");
         // when
-        final StationEntity saved = dao.save(entity);
+        final Long id = dao.save(entity);
         // then
-        assertThat(saved).isNotNull();
+        assertThat(id).isNotNull();
     }
 
     @Test
@@ -52,7 +52,7 @@ class StationDaoTest {
         // given
         final StationEntity entity = new StationEntity("청구역");
         // when
-        final StationEntity saved = dao.save(entity);
+        dao.save(entity);
 
         // then
         assertThatExceptionOfType(DuplicateKeyException.class)
@@ -63,10 +63,10 @@ class StationDaoTest {
     @DisplayName("ID값으로 역을 불러온다.")
     public void findById() {
         // given
-        final StationEntity savedEntity = dao.save(new StationEntity(STATION_NAME));
+        final Long savedId = dao.save(new StationEntity(STATION_NAME));
 
         // when
-        final Optional<StationEntity> foundEntity = dao.findById(savedEntity.getId());
+        final Optional<StationEntity> foundEntity = dao.findById(savedId);
 
         // then
         assertThat(foundEntity).isPresent();
@@ -96,8 +96,7 @@ class StationDaoTest {
     @DisplayName("ID값으로 역을 삭제한다.")
     public void deleteById() {
         // given
-        final StationEntity saved = dao.save(new StationEntity(STATION_NAME));
-        final Long id = saved.getId();
+        final Long id = dao.save(new StationEntity(STATION_NAME));
         // when
         final boolean isDeleted = dao.deleteById(id);
         // then

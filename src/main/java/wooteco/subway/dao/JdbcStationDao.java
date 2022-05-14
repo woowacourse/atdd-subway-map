@@ -33,10 +33,9 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public StationEntity save(StationEntity station) {
+    public Long save(StationEntity station) {
         SqlParameterSource param = new BeanPropertySqlParameterSource(station);
-        final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
-        return new StationEntity(id, station.getName());
+        return jdbcInsert.executeAndReturnKey(param).longValue();
     }
 
     @Override
