@@ -1,10 +1,11 @@
 package wooteco.subway.dao;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
@@ -22,15 +23,18 @@ public class JdbcSectionDao implements SectionDao {
             .usingGeneratedKeyColumns("id");
     }
 
+    private final RowMapper<Section> sectionRowMapper = (rs, rowNum) -> new Section(
+        rs.getLong("id"),
+        rs.getLong("line_id"),
+        rs.getLong("up_station_id"),
+        rs.getLong("down_station_id"),
+        rs.getInt("distance"),
+        rs.getLong("line_order")
+    );
+
     @Override
     public Long save(Section section) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("line_id", section.getLineId());
-        parameters.put("up_station_id", section.getUpStationId());
-        parameters.put("down_station_id", section.getDownStationId());
-        parameters.put("distance", section.getDistance());
-        parameters.put("line_order", section.getLineOrder());
-
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(section);
         return insertActor.executeAndReturnKey(parameters).longValue();
     }
 
@@ -51,16 +55,7 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public List<Section> findAllByLineId(long lineId) {
         String sql = "SELECT * from \"SECTION\" WHERE line_id = (?)";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            return new Section(
-                rs.getLong("id"),
-                rs.getLong("line_id"),
-                rs.getLong("up_station_id"),
-                rs.getLong("down_station_id"),
-                rs.getInt("distance"),
-                rs.getLong("line_order")
-            );
-        }, lineId);
+        return jdbcTemplate.query(sql, sectionRowMapper, lineId);
     }
 
     @Override
@@ -73,16 +68,7 @@ public class JdbcSectionDao implements SectionDao {
     public List<Section> findByLineIdAndStationId(long lineId, long stationId) {
         String sql = "SELECT * FROM \"SECTION\""
             + " WHERE line_id = (?) AND (up_station_id = (?) OR down_station_id = (?))";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            return new Section(
-                rs.getLong("id"),
-                rs.getLong("line_id"),
-                rs.getLong("up_station_id"),
-                rs.getLong("down_station_id"),
-                rs.getInt("distance"),
-                rs.getLong("line_order")
-            );
-        }, lineId, stationId, stationId);
+        return jdbcTemplate.query(sql, sectionRowMapper, lineId, stationId, stationId);
     }
 
     @Override
