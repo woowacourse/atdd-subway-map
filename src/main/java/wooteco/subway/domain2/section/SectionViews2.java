@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import wooteco.subway.domain2.station.Station;
 import wooteco.subway.domain2.station.StationMap;
-import wooteco.subway.entity.SectionEntity2;
 
 // TODO: names should be changed
 public class SectionViews2 {
@@ -18,10 +17,10 @@ public class SectionViews2 {
         this.stationMap = stationMap;
     }
 
-    public static SectionViews2 of(List<SectionEntity2> sectionEntities) {
+    public static SectionViews2 of(List<Section> sections) {
         return new SectionViews2(
-                SectionStationMap2.of(sectionEntities),
-                StationMap.of(sectionEntities));
+                SectionStationMap2.of(sections),
+                StationMap.of(sections));
     }
 
     public List<Station> getSortedStationsList() {

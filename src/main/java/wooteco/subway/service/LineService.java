@@ -17,6 +17,7 @@ import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
+import wooteco.subway.entity.SectionEntity2;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
 
@@ -55,8 +56,12 @@ public class LineService {
     public LineResponse find(Long id) {
         LineEntity lineEntity = lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
-        SectionViews2 sections = SectionViews2.of(sectionDao.findAllByLineId(id));
-        return LineResponse.of(Line.of(lineEntity, sections.getSortedStationsList()));
+
+        List<Section> sections = sectionDao.findAllByLineId(id).stream()
+                .map(SectionEntity2::toDomain)
+                .collect(Collectors.toList());
+        SectionViews2 sectionViews = SectionViews2.of(sections);
+        return LineResponse.of(Line.of(lineEntity, sectionViews.getSortedStationsList()));
     }
 
     @Transactional

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import wooteco.subway.domain2.station.Station;
-import wooteco.subway.entity.SectionEntity2;
 
 public class SectionStationMap2 {
 
@@ -17,18 +16,15 @@ public class SectionStationMap2 {
         this.downToUpStationMap = downToUpStationMap;
     }
 
-    public static SectionStationMap2 of(List<SectionEntity2> sectionEntities) {
+    public static SectionStationMap2 of(List<Section> sections) {
         Map<Long, Station> upToDownStationMap = new HashMap<>();
         Map<Long, Station> downToUpStationMap = new HashMap<>();
 
-        for (SectionEntity2 sectionEntity : sectionEntities) {
-            Long upStationId = sectionEntity.getUpStationId();
-            Long downStationId = sectionEntity.getDownStationId();
-            Station upStation = sectionEntity.getUpStation().toDomain();
-            Station downStation = sectionEntity.getDownStation().toDomain();
-
-            upToDownStationMap.put(upStationId, downStation);
-            downToUpStationMap.put(downStationId,upStation);
+        for (Section section : sections) {
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+            upToDownStationMap.put(upStation.getId(), downStation);
+            downToUpStationMap.put(downStation.getId(),upStation);
         }
         return new SectionStationMap2(upToDownStationMap, downToUpStationMap);
     }

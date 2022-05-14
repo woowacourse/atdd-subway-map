@@ -54,6 +54,14 @@ public class Section {
         }
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     public SectionEntity2 toEntity(Long lineId) {
         return new SectionEntity2(lineId, upStation.toEntity(), downStation.toEntity(), distance);
     }

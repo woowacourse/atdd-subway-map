@@ -1,6 +1,7 @@
 package wooteco.subway.entity;
 
 import java.util.Objects;
+import wooteco.subway.domain2.section.Section;
 
 public class SectionEntity2 {
 
@@ -41,6 +42,10 @@ public class SectionEntity2 {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Section toDomain() {
+        return Section.of(upStation, downStation, distance);
     }
 
     @Override

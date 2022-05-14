@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import wooteco.subway.entity.SectionEntity2;
-import wooteco.subway.entity.StationEntity;
+import wooteco.subway.domain2.section.Section;
 
 public class StationMap {
 
@@ -16,30 +15,29 @@ public class StationMap {
         this.value = value;
     }
 
-    public static StationMap of(List<SectionEntity2> sectionEntities) {
-        Map<Long, Station> stationEntityMap = toUniqueStationList(sectionEntities)
+    public static StationMap of(List<Section> sections) {
+        Map<Long, Station> value = toUniqueStationList(sections)
                 .stream()
-                .collect(Collectors.toMap(StationEntity::getId, StationEntity::toDomain));
-
-        return new StationMap(stationEntityMap);
+                .collect(Collectors.toMap(Station::getId, station -> station));
+        return new StationMap(value);
     }
 
-    private static Set<StationEntity> toUniqueStationList(List<SectionEntity2> sectionEntities) {
-        Set<StationEntity> stations = new HashSet<>();
-        stations.addAll(extractUpStations(sectionEntities));
-        stations.addAll(extractDownStations(sectionEntities));
+    private static Set<Station> toUniqueStationList(List<Section> sections) {
+        Set<Station> stations = new HashSet<>();
+        stations.addAll(extractUpStations(sections));
+        stations.addAll(extractDownStations(sections));
         return stations;
     }
 
-    private static List<StationEntity> extractUpStations(List<SectionEntity2> sectionEntities) {
-        return sectionEntities.stream()
-                .map(SectionEntity2::getUpStation)
+    private static List<Station> extractUpStations(List<Section> sections) {
+        return sections.stream()
+                .map(Section::getUpStation)
                 .collect(Collectors.toList());
     }
 
-    private static List<StationEntity> extractDownStations(List<SectionEntity2> sectionEntities) {
-        return sectionEntities.stream()
-                .map(SectionEntity2::getDownStation)
+    private static List<Station> extractDownStations(List<Section> sections) {
+        return sections.stream()
+                .map(Section::getDownStation)
                 .collect(Collectors.toList());
     }
 
