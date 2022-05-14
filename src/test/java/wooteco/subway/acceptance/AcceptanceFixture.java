@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import wooteco.subway.dto.LineRequest;
 
 public class AcceptanceFixture {
 
@@ -23,12 +24,24 @@ public class AcceptanceFixture {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> select(String path) {
+    public static ExtractableResponse<Response> select(String path, int statusCode) {
         return RestAssured.given().log().all()
                 .when()
                 .get(path)
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(statusCode)
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> put(String path, LineRequest request, int statusCode) {
+        return RestAssured.given().log()
+                .all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(path)
+                .then().log().all()
+                .statusCode(statusCode)
                 .extract();
     }
 

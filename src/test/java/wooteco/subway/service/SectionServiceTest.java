@@ -7,8 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
 import wooteco.subway.dto.*;
+import wooteco.subway.exception.ClientException;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Sql(scripts = {"classpath:schema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -37,6 +39,15 @@ class SectionServiceTest {
                 thirdStation.getId(), 10), lineService.findSections(saveLine.getId()), lineService.findById(saveLine.getId())));
     }
 
+    @DisplayName("지하철 구간 저장 예외 - 존재하지 않는 노선")
+    @Test
+    void checkNotExistLine() {
+        assertThatThrownBy(() -> sectionService.save(0L, new SectionRequest(1L,
+                1L, 10), lineService.findSections(1L), lineService.findById(1L)))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("존재하지 않는 노선입니다.");
+    }
+
     @DisplayName("지하철 구간 삭제")
     @Test
     void delete() {
@@ -51,5 +62,13 @@ class SectionServiceTest {
                 lineService.findSections(saveLine.getId()), lineService.findById(saveLine.getId()));
 
         assertThatNoException().isThrownBy(() -> sectionService.delete(saveLine.getId(), firstStation.getId()));
+    }
+
+    @DisplayName("지하철 구간 삭제 예외 - 존재하지 않는 노선")
+    @Test
+    void checkNotExistDeleteLine() {
+        assertThatThrownBy(() -> sectionService.delete(0L, 1L))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 }

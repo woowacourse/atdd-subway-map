@@ -13,7 +13,6 @@ import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationRequest;
 import wooteco.subway.exception.ClientException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +55,6 @@ class LineServiceTest {
                 .hasMessageContaining("이미 등록된 지하철노선입니다.");
     }
 
-
     @DisplayName("노선 정보 전체 조회")
     @Test
     void findAll() {
@@ -74,6 +72,26 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("노선 정보 조회")
+    void find() {
+        Station firstStation = stationJdbcDao.save(new Station("역삼역"));
+        Station secondStation = stationJdbcDao.save(new Station("삼성역"));
+
+        LineRequest line = new LineRequest("4호선", "red", firstStation.getId(), secondStation.getId(), 10);
+        LineResponse newLine = lineService.save(line);
+
+        assertThat(lineService.findById(newLine.getId()).getName()).isEqualTo(line.getName());
+    }
+
+    @Test
+    @DisplayName("노선 정보 조회 예외 - 존재하지 않는 노선")
+    void checkNotExistFindLine() {
+        assertThatThrownBy(() -> lineService.findById(0L))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("존재하지 않는 노선입니다.");
+    }
+
+    @Test
     @DisplayName("노선 정보 삭제")
     void delete() {
         Station firstStation = stationJdbcDao.save(new Station("역삼역"));
@@ -84,6 +102,14 @@ class LineServiceTest {
         LineResponse newLine = lineService.save(line);
 
         assertThat(lineService.delete(newLine.getId())).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("노선 정보 삭제 예외 - 존재하지 않는 노선")
+    void checkNotExistDeleteLine() {
+        assertThatThrownBy(() -> lineService.delete(0L))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
     @Test
@@ -105,27 +131,16 @@ class LineServiceTest {
         Station firstStation = stationJdbcDao.save(new Station("역삼역"));
         Station secondStation = stationJdbcDao.save(new Station("삼성역"));
 
-        LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);;
+        LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);
         lineService.save(line);
 
-        LineRequest secondLine = new LineRequest("8호선", "red", firstStation.getId(), secondStation.getId(), 10);;
+        LineRequest secondLine = new LineRequest("8호선", "red", firstStation.getId(), secondStation.getId(), 10);
+        ;
         LineResponse secondNewLine = lineService.save(secondLine);
 
         assertThatThrownBy(() -> lineService.update(secondNewLine.getId(),
                 new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10)))
                 .isInstanceOf(ClientException.class)
                 .hasMessageContaining("이미 등록된 지하철노선입니다.");
-    }
-
-    @Test
-    @DisplayName("노선 정보 조회")
-    void find() {
-        Station firstStation = stationJdbcDao.save(new Station("역삼역"));
-        Station secondStation = stationJdbcDao.save(new Station("삼성역"));
-
-        LineRequest line = new LineRequest("4호선", "red", firstStation.getId(), secondStation.getId(), 10);
-        LineResponse newLine = lineService.save(line);
-
-        assertThat(lineService.findById(newLine.getId()).getName()).isEqualTo(line.getName());
     }
 }

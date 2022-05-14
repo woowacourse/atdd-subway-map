@@ -40,7 +40,7 @@ public class LineJdbcDaoTest {
         assertThat(line.getName()).isEqualTo("분당선");
     }
 
-    @DisplayName("노선정보들을 가져온다.")
+    @DisplayName("노선 정보 전체 조회")
     @Test
     void findAll() {
         Lines lines = lineDao.findAll();
@@ -48,7 +48,7 @@ public class LineJdbcDaoTest {
         assertThat(lines.getLines().size()).isEqualTo(3);
     }
 
-    @DisplayName("노선 정보를 삭제한다.")
+    @DisplayName("노선 정보 삭제")
     @Test
     void delete() {
         Line lineResponse = lineDao.save(new Line("4호선", "blue"));
@@ -56,7 +56,7 @@ public class LineJdbcDaoTest {
         assertThat(lineDao.delete(lineResponse.getId())).isOne();
     }
 
-    @DisplayName("노선 정보를 조회한다.")
+    @DisplayName("노선 정보 조회")
     @Test
     void find() {
         Line lineResponse = lineDao.save(new Line("5호선", "blue"));
@@ -64,7 +64,7 @@ public class LineJdbcDaoTest {
         assertThat(lineDao.findById(lineResponse.getId()).getName()).isEqualTo("5호선");
     }
 
-    @DisplayName("노선 정보를 변경한다.")
+    @DisplayName("노선 정보 변경")
     @Test
     void update() {
         Line lineResponse = lineDao.save(new Line("7호선", "blue"));

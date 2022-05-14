@@ -56,7 +56,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations", 201);
         ExtractableResponse<Response> newStationResponse = insert(new StationRequest("역삼역"), "/stations", 201);
 
-        ExtractableResponse<Response> response = select("/stations");
+        ExtractableResponse<Response> response = select("/stations", 200);
 
         // then
         List<Long> expectedLineIds = Arrays.asList(stationResponse, newStationResponse).stream()
