@@ -66,14 +66,9 @@ public class SectionService {
     }
 
     private void updateSections(Sections sections) {
-        List<SectionDto> sectionDtos = new ArrayList<>();
-        for (Section section : sections.getSections()) {
-            long lineId = section.getLineId();
-            long upStationId = section.getUpStation().getId();
-            long downStationId = section.getDownStation().getId();
-            int distance = section.getDistance();
-            sectionDtos.add(new SectionDto(lineId, upStationId, downStationId, distance));
-        }
+        List<SectionDto> sectionDtos = sections.getSections().stream()
+                .map(SectionDto::new)
+                .collect(Collectors.toList());
         sectionDao.deleteByLineId(sections.getLineId());
         sectionDao.update(sectionDtos);
     }

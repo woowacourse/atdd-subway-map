@@ -70,16 +70,6 @@ public class SectionDao {
         return namedParameterJdbcTemplate.query(sql, sectionRowMapper);
     }
 
-    public Optional<Integer> findDistanceById(long id) {
-        String sql = "SELECT distance FROM section WHERE id = :id";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Integer.class));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
     public void deleteByLineId(long lineId) {
         String sql = " DELETE FROM section WHERE line_id = :lineId";
         SqlParameterSource parameterSource = new MapSqlParameterSource("lineId", lineId);
