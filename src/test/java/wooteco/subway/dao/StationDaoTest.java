@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Distance;
@@ -15,30 +16,37 @@ import wooteco.subway.exception.station.NoSuchStationException;
 
 class StationDaoTest extends DaoTest {
 
+    private static final String RED_STATION_NAME = "선릉";
+    private static final String BLUE_STATION_NAME = "노원";
+
+    private Station redStation;
+    private Station blueStation;
+
+    @BeforeEach
+    void setUpData() {
+        redStation = new Station(RED_STATION_NAME);
+        blueStation = new Station(BLUE_STATION_NAME);
+    }
+
     @Test
     @DisplayName("역을 저장하면 저장된 역 정보를 반환한다.")
     void Save() {
-        // given
-        final String name = "선릉";
-        final Station station = new Station(name);
-
         // when
-        final Station savedStation = stationDao.insert(station).orElseThrow();
+        final Station savedStation = stationDao.insert(redStation).orElseThrow();
 
         // then
-        assertThat(savedStation.getName()).isEqualTo(name);
+        assertThat(savedStation.getName()).isEqualTo(RED_STATION_NAME);
     }
 
     @Test
     @DisplayName("id에 해당하는 노선을 조회한다.")
     void FindById() {
         // given
-        final String name = "선릉";
-        final Long id = stationDao.insert(new Station(name))
+        final Long id = stationDao.insert(redStation)
                 .orElseThrow()
                 .getId();
 
-        final Station expected = new Station(id, name);
+        final Station expected = new Station(id, RED_STATION_NAME);
 
         // when
         final Optional<Station> actual = stationDao.findById(id);
@@ -65,8 +73,8 @@ class StationDaoTest extends DaoTest {
     @DisplayName("모든 역 조회하기")
     void FindAll() {
         // given
-        stationDao.insert(new Station("선릉"));
-        stationDao.insert(new Station("노원"));
+        stationDao.insert(redStation);
+        stationDao.insert(blueStation);
 
         // when
         final List<Station> stations = stationDao.findAll();
@@ -86,10 +94,10 @@ class StationDaoTest extends DaoTest {
                 .getId();
         final Line line = new Line(lineId, lineName, lineColor);
 
-        final Station upStation = stationDao.insert(new Station("선릉"))
+        final Station upStation = stationDao.insert(redStation)
                 .orElseThrow();
 
-        final Station downStation = stationDao.insert(new Station("노원"))
+        final Station downStation = stationDao.insert(blueStation)
                 .orElseThrow();
 
         final List<Station> expected = List.of(upStation, downStation);
@@ -113,7 +121,7 @@ class StationDaoTest extends DaoTest {
     @DisplayName("id에 해당하는 역 삭제하기")
     void DeleteById() {
         // given
-        final Station station = stationDao.insert(new Station("선릉")).orElseThrow();
+        final Station station = stationDao.insert(redStation).orElseThrow();
 
         // when
         final Integer affectedRows = stationDao.deleteById(station.getId());
