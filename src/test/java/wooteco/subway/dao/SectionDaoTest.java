@@ -14,7 +14,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-@Import({JdbcSectionDao.class, JdbcStationDao.class})
+@Import({JdbcSectionDao.class, JdbcStationDao.class, JdbcLineDao.class})
 public class SectionDaoTest {
     @Autowired
     private SectionDao sectionDao;
