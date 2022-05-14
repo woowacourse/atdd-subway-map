@@ -37,6 +37,10 @@ public class SectionDao {
         return new Section(id, section.getLineId(), section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
+    public void saveAll(final List<Section> sections) {
+        sections.forEach(this::save);
+    }
+
     public List<Section> findByLineId(final Long id) {
         final String sql = "select id, line_id, up_station_id, down_station_id, distance, "
             + "(select name from STATION where STATION.id = SECTION.up_station_id) as up_station_name, "

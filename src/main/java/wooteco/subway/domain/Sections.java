@@ -2,7 +2,6 @@ package wooteco.subway.domain;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -131,8 +130,8 @@ public class Sections {
 
         sections.add(new Section(
             findSection.getLineId(),
-            section.getUpStation(),
             findSection.getUpStation(),
+            section.getUpStation(),
             newDistance
         ));
     }
@@ -151,31 +150,17 @@ public class Sections {
         }
     }
 
-    public List<Section> findUpdateSections(final Sections previousSections) {
-        return sections.stream()
-            .filter(previousSections::isUpdateSection)
-            .collect(Collectors.toList());
-    }
-
-    private boolean isUpdateSection(final Section section) {
-        return sections.stream()
-            .noneMatch(
-                s -> s.getDownStation().getId().equals(section.getDownStation().getId()) &&
-                s.getUpStation().getId().equals(section.getUpStation().getId()) &&
-                s.getDistance() == section.getDistance() &&
-                Objects.equals(s.getLineId(), section.getLineId())
-            );
-    }
-
-    public List<Section> remove(final Long stationId) {
+    public List<Section> removeSection(final Long stationId) {
         validateMinimumSectionSize();
+        Optional<Section> mergedSection = mergeSection(stationId);
         List<Section> removeSections = sections.stream()
             .filter(s -> s.getUpStation().getId().equals(stationId) ||
                 s.getDownStation().getId().equals(stationId))
             .collect(Collectors.toList());
 
         removeSections.forEach(sections::remove);
-        return removeSections;
+        mergedSection.ifPresent(sections::add);
+        return sections;
     }
 
     private void validateMinimumSectionSize() {
@@ -184,7 +169,7 @@ public class Sections {
         }
     }
 
-    public Optional<Section> mergeSection(final Long lineId, final Long stationId) {
+    private Optional<Section> mergeSection(final Long stationId) {
         try {
             Section upSection = sections.stream()
                 .filter(s -> s.getDownStation().getId().equals(stationId))
@@ -196,7 +181,7 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("구간을 찾을 수 없습니다."));
             int newDistance = upSection.getDistance() + downSection.getDistance();
 
-            return Optional.of(new Section(lineId, upSection.getUpStation(), downSection.getDownStation(), newDistance));
+            return Optional.of(new Section(upSection.getLineId(), upSection.getUpStation(), downSection.getDownStation(), newDistance));
         } catch (IllegalStateException e) {
             return Optional.empty();
         }

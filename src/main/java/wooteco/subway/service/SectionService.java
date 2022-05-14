@@ -27,21 +27,16 @@ public class SectionService {
             .orElseThrow(NoSuchElementException::new);
         final Station downStation = stationDao.findById(sectionRequest.getDownStationId())
             .orElseThrow(NoSuchElementException::new);
-        final Sections updatedSections = new Sections(sectionDao.findByLineId(lineId));
+        final Sections sections = new Sections(sectionDao.findByLineId(lineId));
         final Section newSection = new Section(lineId, upStation, downStation, sectionRequest.getDistance());
 
         sectionDao.deleteByLineId(lineId);
-        updatedSections.addSection(newSection)
-                .forEach(sectionDao::save);
+        sectionDao.saveAll(sections.addSection(newSection));
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {
-        final Sections previousSections = new Sections(sectionDao.findByLineId(lineId));
-        final Sections updatedSections = new Sections(sectionDao.findByLineId(lineId));
-
-        updatedSections.remove(stationId)
-            .forEach(section -> sectionDao.deleteById(section.getId()));
-        previousSections.mergeSection(lineId, stationId)
-            .ifPresent(sectionDao::save);
+        final Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        sectionDao.deleteByLineId(lineId);
+        sectionDao.saveAll(sections.removeSection(stationId));
     }
 }
