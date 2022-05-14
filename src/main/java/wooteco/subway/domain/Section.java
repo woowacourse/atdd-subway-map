@@ -32,14 +32,7 @@ public class Section {
         Section lowerSection = new Section(this.getLineId(), section.getDownStation(), getDownStation(),
                 getDistance() - section.getDistance());
 
-        ArrayList<Section> results = new ArrayList<>() {
-            {
-                add(upperSection);
-                add(lowerSection);
-            }
-        };
-
-        return results;
+        return List.of(upperSection, lowerSection);
     }
 
     public List<Section> putBetweenDownStation(Section section) {
@@ -49,14 +42,7 @@ public class Section {
         Section lowerSection = new Section(this.getLineId(), section.getUpStation(), getUpStation(),
                 getDistance() - section.getDistance());
 
-        ArrayList<Section> results = new ArrayList<>() {
-            {
-                add(upperSection);
-                add(lowerSection);
-            }
-        };
-
-        return results;
+        return List.of(upperSection, lowerSection);
     }
 
     private void validateDistance(Section section) {
