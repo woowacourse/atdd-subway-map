@@ -2,8 +2,11 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
+import wooteco.subway.util.Id;
+
 public class Section {
 
+    @Id
     private final Long id;
     private final Station upStation;
     private final Station downStation;

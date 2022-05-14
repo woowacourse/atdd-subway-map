@@ -3,8 +3,11 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import wooteco.subway.util.Id;
+
 public class Line {
 
+    @Id
     private final Long id;
     private final Name name;
     private final Color color;

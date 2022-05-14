@@ -7,14 +7,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 
-import wooteco.subway.dao.SequenceDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.StationSeries;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.RowNotFoundException;
+import wooteco.subway.util.SimpleReflectionUtils;
 
 @Repository
 public class StationRepository {
@@ -29,30 +27,38 @@ public class StationRepository {
         List<Long> persistedIds = toIds(findAllStations());
 
         deleteStations(stations, persistedIds);
-        updateStations(stations, persistedIds);
-    }
-
-    private void deleteStations(List<Station> stations, List<Long> persistedIds) {
-        final List<Long> ids = toIds(stations);
-        for (Long persistedId : persistedIds) {
-            if (!ids.contains(persistedId)) {
-                deleteById(persistedId);
-            }
-        }
-    }
-
-    private void updateStations(List<Station> stations, List<Long> persistedIds) {
-        for (Station station : stations) {
-            if (!persistedIds.contains(station.getId())) {
-                save(station);
-            }
-        }
+        saveStations(stations, persistedIds);
     }
 
     private List<Long> toIds(List<Station> stations) {
         return stations.stream()
             .map(Station::getId)
             .collect(Collectors.toList());
+    }
+
+    private void deleteStations(List<Station> stations, List<Long> persistedIds) {
+        final List<Long> ids = toIds(stations);
+        for (Long persistedId : persistedIds) {
+            deleteStationIfRemoved(ids, persistedId);
+        }
+    }
+
+    private void deleteStationIfRemoved(List<Long> ids, Long persistedId) {
+        if (!ids.contains(persistedId)) {
+            deleteById(persistedId);
+        }
+    }
+
+    private void saveStations(List<Station> stations, List<Long> persistedIds) {
+        for (Station station : stations) {
+            saveStationIfCreated(persistedIds, station);
+        }
+    }
+
+    private void saveStationIfCreated(List<Long> persistedIds, Station station) {
+        if (!persistedIds.contains(station.getId())) {
+            save(station);
+        }
     }
 
     public Station findById(Long id) {
@@ -70,14 +76,7 @@ public class StationRepository {
 
     private Station save(Station station) {
         final Long id = stationDao.save(StationEntity.from(station));
-        return injectID(station, id);
-    }
-
-    private Station injectID(Station station, Long id) {
-        final Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, id);
-        return station;
+        return SimpleReflectionUtils.injectId(station, id);
     }
 
     private void deleteById(Long id) {

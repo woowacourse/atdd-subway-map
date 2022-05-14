@@ -2,7 +2,10 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
+import wooteco.subway.util.Id;
+
 public class Station {
+    @Id
     private final Long id;
     private final Name name;
 

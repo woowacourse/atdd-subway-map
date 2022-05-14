@@ -1,17 +1,16 @@
 package wooteco.subway.repository;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.LineSeries;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.exception.RowNotFoundException;
+import wooteco.subway.util.SimpleReflectionUtils;
 
 @Repository
 public class LineRepository {
@@ -26,30 +25,10 @@ public class LineRepository {
 
     public void persist(LineSeries lineSeries) {
         final List<Line> lines = lineSeries.getLines();
-        List<Long> persistedIds = toIds(findAllLines());
+        final List<Long> persistedIds = toIds(findAllLines());
 
         deleteLines(lines, persistedIds);
-        updateLines(lines, persistedIds);
-    }
-
-    private void updateLines(List<Line> lines, List<Long> persistedIds) {
-        for (Line line : lines) {
-            if (persistedIds.contains(line.getId())) {
-                update(line);
-                continue;
-            }
-            save(line);
-        }
-    }
-
-    private void deleteLines(List<Line> lines, List<Long> persistedIds) {
-        final List<Long> ids = toIds(lines);
-
-        for (Long persistedId : persistedIds) {
-            if (!ids.contains(persistedId)) {
-                delete(persistedId);
-            }
-        }
+        saveOrUpdateLines(lines, persistedIds);
     }
 
     private List<Long> toIds(List<Line> lines) {
@@ -58,17 +37,38 @@ public class LineRepository {
             .collect(Collectors.toList());
     }
 
+    private void deleteLines(List<Line> lines, List<Long> persistedIds) {
+        final List<Long> ids = toIds(lines);
+
+        for (Long persistedId : persistedIds) {
+            deleteLineIfRemoved(ids, persistedId);
+        }
+    }
+
+    private void deleteLineIfRemoved(List<Long> ids, Long persistedId) {
+        if (!ids.contains(persistedId)) {
+            delete(persistedId);
+        }
+    }
+
+    private void saveOrUpdateLines(List<Line> lines, List<Long> persistedIds) {
+        for (Line line : lines) {
+            saveOrUpdateLineEach(persistedIds, line);
+        }
+    }
+
+    private void saveOrUpdateLineEach(List<Long> persistedIds, Line line) {
+        if (persistedIds.contains(line.getId())) {
+            update(line);
+            return;
+        }
+        save(line);
+    }
+
     private Line save(Line line) {
         final Long id = lineDao.save(LineEntity.from(line));
         sectionRepository.persist(id, line.getSectionSeries());
-        return injectID(line, id);
-    }
-
-    private Line injectID(Line line, Long id) {
-        final Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, id);
-        return line;
+        return SimpleReflectionUtils.injectId(line, id);
     }
 
     public List<Line> findAllLines() {
@@ -94,11 +94,10 @@ public class LineRepository {
         }
     }
 
-    private Long delete(Long id) {
+    private void delete(Long id) {
         final boolean isDeleted = lineDao.delete(id);
         if (!isDeleted) {
             throw new RowNotFoundException("삭제하고자 하는 노선이 존재하지 않습니다.");
         }
-        return id;
     }
 }
