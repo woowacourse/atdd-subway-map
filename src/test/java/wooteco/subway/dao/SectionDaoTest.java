@@ -53,9 +53,9 @@ public class SectionDaoTest {
         // given
         SectionEntity entity = new SectionEntity(lineId, stationAId, stationBId, 7);
         // when
-        final SectionEntity saved = sectionDao.save(entity);
+        final Long id = sectionDao.save(entity);
         // then
-        assertThat(saved.getId()).isNotNull();
+        assertThat(id).isNotNull();
     }
 
     @Test
@@ -64,37 +64,18 @@ public class SectionDaoTest {
         // given
         sectionDao.save(new SectionEntity(lineId, stationAId, stationBId, 7));
         // when
-        final List<SectionEntity> sectionEntities = sectionDao.readSectionsByLineId(lineId);
+        final List<SectionEntity> sectionEntities = sectionDao.findSectionsByLineId(lineId);
         // then
         assertThat(sectionEntities.size()).isEqualTo(1);
     }
 
     @Test
-    @DisplayName("구간을 갱신한다.")
-    public void update() {
-        // given
-        final SectionEntity savedEntity = sectionDao.save(new SectionEntity(lineId, stationAId, stationBId, 7));
-        // when
-        final SectionEntity updateEntity = new SectionEntity(
-            savedEntity.getId(),
-            savedEntity.getLineId(),
-            stationCId,
-            savedEntity.getDownStationId(),
-            savedEntity.getDistance());
-        // then
-        assertThatCode(() -> sectionDao.update(updateEntity)).doesNotThrowAnyException();
-    }
-
-    @Test
     @DisplayName("구간을 삭제한다.")
     public void delete() {
-        // given
-        final SectionEntity savedEntity = sectionDao.save(new SectionEntity(lineId, stationAId, stationBId, 7));
-
-        // when
-        final Long sectionId = savedEntity.getId();
+        // given & when
+        final Long id = sectionDao.save(new SectionEntity(lineId, stationAId, stationBId, 7));
 
         // then
-        assertThatCode(() -> sectionDao.deleteById(sectionId)).doesNotThrowAnyException();
+        assertThatCode(() -> sectionDao.deleteById(id)).doesNotThrowAnyException();
     }
 }

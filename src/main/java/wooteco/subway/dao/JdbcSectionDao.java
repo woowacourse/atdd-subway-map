@@ -2,10 +2,13 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +16,13 @@ import wooteco.subway.entity.SectionEntity;
 
 @Repository
 public class JdbcSectionDao implements SectionDao {
+    public static final RowMapper<SectionEntity> SECTION_ENTITY_ROW_MAPPER = (resultSet, rowNum) -> new SectionEntity(
+        resultSet.getLong("id"),
+        resultSet.getLong("line_id"),
+        resultSet.getLong("up_station_id"),
+        resultSet.getLong("down_station_id"),
+        resultSet.getInt("distance")
+    );
     /*
     id              BIGINT AUTO_INCREMENT NOT NULL,
     line_id         BIGINT                NOT NULL,
@@ -36,43 +46,40 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public SectionEntity save(SectionEntity section) {
-        final long sectionId = jdbcInsert.executeAndReturnKey(Map.of(
-            "line_id", section.getLineId(),
-            "up_station_id", section.getUpStationId(),
-            "down_station_id", section.getDownStationId(),
-            "distance", section.getDistance()
+    public Long save(SectionEntity entity) {
+        return jdbcInsert.executeAndReturnKey(Map.of(
+            "line_id", entity.getLineId(),
+            "up_station_id", entity.getUpStationId(),
+            "down_station_id", entity.getDownStationId(),
+            "distance", entity.getDistance()
         )).longValue();
-        return new SectionEntity(
-            sectionId,
-            section.getLineId(),
-            section.getUpStationId(),
-            section.getDownStationId(),
-            section.getDistance());
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Long deleteById(Long id) {
         final String sql = "DELETE FROM section WHERE id = ?";
         jdbcTemplate.update(sql, id);
+        return id;
     }
 
-    @Override
-    public List<SectionEntity> readSectionsByLineId(Long lineId) {
+    public List<SectionEntity> findSectionsByLineId(Long lineId) {
         final String sql = "SELECT * FROM section WHERE line_id = ?";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new SectionEntity(
-            resultSet.getLong("id"),
-            resultSet.getLong("line_id"),
-            resultSet.getLong("up_station_id"),
-            resultSet.getLong("down_station_id"),
-            resultSet.getInt("distance")
-        ), lineId);
+        return jdbcTemplate.query(sql, SECTION_ENTITY_ROW_MAPPER, lineId);
+    }
+
+    public Optional<SectionEntity> findById(Long id) {
+        final String sql = "SELECT * FROM section WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, SECTION_ENTITY_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public void update(SectionEntity entity) {
+    public Long update(SectionEntity entity) {
         final String sql = "UPDATE section SET up_station_id = ?, down_station_id = ? WHERE id = ?";
         jdbcTemplate.update(sql, entity.getUpStationId(), entity.getDownStationId(), entity.getId());
+        return entity.getId();
     }
-
 }

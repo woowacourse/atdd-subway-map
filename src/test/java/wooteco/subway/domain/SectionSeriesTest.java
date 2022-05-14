@@ -19,16 +19,11 @@ class SectionSeriesTest {
         // given
         SectionSeries sectionSeries = new SectionSeries(List.of(SECTION_AB, SECTION_BC));
         // when
-        final Section updateSection = sectionSeries.findUpdateSection(
+        final List<Section> updateSections = sectionSeries.add(
             new Section(3L, STATION_B, STATION_X, new Distance(3))
-        ).orElseThrow();
-        // then
-        Assertions.assertAll(
-            () -> assertThat(updateSection.getId()).isEqualTo(SECTION_BC.getId()),
-            () -> assertThat(updateSection.getUpStation()).isEqualTo(STATION_X),
-            () -> assertThat(updateSection.getDownStation()).isEqualTo(STATION_C),
-            () -> assertThat(updateSection.getDistance().getValue()).isEqualTo(5)
         );
+        // then
+        assertThat(updateSections.size()).isEqualTo(3);
     }
 
     @Test
@@ -37,16 +32,11 @@ class SectionSeriesTest {
         // given
         SectionSeries sectionSeries = new SectionSeries(List.of(SECTION_AB, SECTION_BC));
         // when
-        final Section updateSection = sectionSeries.findUpdateSection(
+        final List<Section> updateSections = sectionSeries.add(
             new Section(3L, STATION_X, STATION_B, new Distance(3))
-        ).orElseThrow();
-        // then
-        Assertions.assertAll(
-            () -> assertThat(updateSection.getId()).isEqualTo(SECTION_AB.getId()),
-            () -> assertThat(updateSection.getUpStation()).isEqualTo(STATION_A),
-            () -> assertThat(updateSection.getDownStation()).isEqualTo(STATION_X),
-            () -> assertThat(updateSection.getDistance().getValue()).isEqualTo(4)
         );
+        // then
+        assertThat(updateSections.size()).isEqualTo(3);
     }
 
     @Test
@@ -56,12 +46,12 @@ class SectionSeriesTest {
         SectionSeries sectionSeries = new SectionSeries(List.of(SECTION_AB, SECTION_BC));
 
         // when
-        final Optional<Section> optionalSection = sectionSeries.findUpdateSection(
+        final List<Section> updateSections = sectionSeries.add(
             new Section(3L, STATION_X, STATION_A, new Distance(3))
         );
 
         // then
-        assertThat(optionalSection).isEmpty();
+        assertThat(updateSections.size()).isEqualTo(1);
     }
 
     @Test
@@ -71,12 +61,12 @@ class SectionSeriesTest {
         SectionSeries sectionSeries = new SectionSeries(List.of(SECTION_AB, SECTION_BC));
 
         // when
-        final Optional<Section> optionalSection = sectionSeries.findUpdateSection(
+        final List<Section> updateSections = sectionSeries.add(
             new Section(3L, STATION_C, STATION_X, new Distance(3))
         );
 
         // then
-        assertThat(optionalSection).isEmpty();
+        assertThat(updateSections.size()).isEqualTo(1);
     }
 
     @Test
@@ -88,7 +78,7 @@ class SectionSeriesTest {
         final Section newSection = new Section(3L, STATION_A, STATION_B, new Distance(3));
         // then
         assertThatExceptionOfType(RuntimeException.class)
-            .isThrownBy(() -> sectionSeries.findUpdateSection(newSection));
+            .isThrownBy(() -> sectionSeries.add(newSection));
     }
 
     @Test
@@ -100,7 +90,7 @@ class SectionSeriesTest {
         final Section newSection = new Section(3L, STATION_A, STATION_C, new Distance(3));
         // then
         assertThatExceptionOfType(RuntimeException.class)
-            .isThrownBy(() -> sectionSeries.findUpdateSection(newSection));
+            .isThrownBy(() -> sectionSeries.add(newSection));
     }
 
     @Test
@@ -112,7 +102,7 @@ class SectionSeriesTest {
         final Section newSection = new Section(3L, STATION_X, STATION_Y, new Distance(3));
         // then
         assertThatExceptionOfType(RuntimeException.class)
-            .isThrownBy(() -> sectionSeries.findUpdateSection(newSection));
+            .isThrownBy(() -> sectionSeries.add(newSection));
     }
 
     @Test
@@ -124,6 +114,6 @@ class SectionSeriesTest {
         final Section newSection = new Section(3L, STATION_A, STATION_X, new Distance(100));
         // then
         assertThatExceptionOfType(RuntimeException.class)
-            .isThrownBy(() -> sectionSeries.findUpdateSection(newSection));
+            .isThrownBy(() -> sectionSeries.add(newSection));
     }
 }

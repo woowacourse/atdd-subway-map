@@ -2,7 +2,6 @@ package wooteco.subway.domain;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import wooteco.subway.util.CollectorsUtils;
@@ -14,16 +13,25 @@ public class SectionSeries {
         this.sections = sections;
     }
 
-    public EnrollSections findEnrollSections(Section newSection) {
-        return new EnrollSections(newSection, findUpdateSection(newSection));
+    public List<Section> add(Section section) {
+        if (sections.isEmpty()) {
+            return addInitial(section);
+        }
+        return insert(section);
     }
 
-    public Optional<Section> findUpdateSection(Section newSection) {
+    private List<Section> addInitial(Section section) {
+        this.sections.add(section);
+        return List.of(section);
+    }
+
+    private List<Section> insert(Section newSection) {
         if (isAppending(newSection)) {
-            return Optional.empty();
+            return List.of(newSection);
         }
-        final Section intermediateSection = findIntermediateSection(newSection);
-        return Optional.of(intermediateSection.divide(newSection));
+
+        final Section findSection = findIntermediateSection(newSection);
+        return List.of(findIntermediateSection(newSection), newSection, findSection.divide(newSection)); // TODO
     }
 
     private boolean isAppending(Section newSection) {
@@ -47,25 +55,21 @@ public class SectionSeries {
             .collect(CollectorsUtils.findOneCertainly());
     }
 
-    public RemoveSections findRemoveSections(Long stationId) {
+    public List<Section> remove(Long stationId) {
         final List<Section> relatedSections = sections.stream()
             .filter(section -> section.isAnyIdMatch(stationId))
             .collect(Collectors.toList());
+
         if (relatedSections.size() == 2) {
-            return deleteIntermediate(relatedSections.get(0), relatedSections.get(1));
+            return List.of(relatedSections.get(0),
+                relatedSections.get(1),
+                new Section(relatedSections.get(0).getUpStation(), relatedSections.get(1).getDownStation(),
+                    relatedSections.get(0).getDistance().plus(relatedSections.get(1).getDistance())));
         }
-        if (relatedSections.size() == 1) {
-            return deleteTerminal(relatedSections.get(0));
-        }
-        throw new RuntimeException("delete error");
+        return List.of(relatedSections.get(0));
     }
 
-    private RemoveSections deleteTerminal(Section section) {
-        return new RemoveSections(section, Optional.empty());
+    public List<Section> getSections() {
+        return sections;
     }
-
-    private RemoveSections deleteIntermediate(Section firstSection, Section secondSection) {
-        return new RemoveSections(secondSection, Optional.of(firstSection.merge(secondSection)));
-    }
-
 }

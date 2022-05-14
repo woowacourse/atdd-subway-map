@@ -5,58 +5,42 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.LineSeries;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionSeries;
-import wooteco.subway.domain.Station;
-import wooteco.subway.domain.StationSeries;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.SectionRepository;
-import wooteco.subway.repository.StationRepository;
 
 @Service
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
-    private final StationRepository stationRepository;
+    private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository,
-        SectionRepository sectionRepository,
-        StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, SectionService sectionService) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
-        this.stationRepository = stationRepository;
+        this.sectionService = sectionService;
     }
 
     public LineResponse save(LineRequest lineRequest) {
-        LineSeries lines = new LineSeries(lineRepository.findAllLines());
-        Line savedLine = lineRepository.save(lines.create(lineRequest.getName(), lineRequest.getColor()));
-
-        final Station upStation = stationRepository.findById(lineRequest.getUpStationId());
-        final Station downStation = stationRepository.findById(lineRequest.getDownStationId());
-        final Distance distance = new Distance(lineRequest.getDistance());
-
-        final Section savedSection = sectionRepository.create(
-            savedLine.getId(), new Section(upStation, downStation, distance)
-        );
-        return LineResponse.of(savedLine, savedSection);
+        LineSeries lineSeries = new LineSeries(lineRepository.findAllLines());
+        final Line line = lineSeries.create(lineRequest.getName(), lineRequest.getColor());
+        line.addSection(sectionService.create(
+            lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(),
+            lineRequest.getDistance()));
+        return LineResponse.from(lineRepository.save(line));
     }
 
     public List<LineResponse> findAll() {
         return lineRepository.findAllLines()
             .stream()
-            .map(line -> this.findOne(line.getId()))
+            .map(LineResponse::from)
             .collect(Collectors.toList());
     }
 
     public LineResponse findOne(Long id) {
-        final StationSeries stationSeries = StationSeries.fromSectionsAsOrdered(sectionRepository.readAllSections(id));
-        return LineResponse.from(lineRepository.findById(id), stationSeries.getStations());
+        return LineResponse.from(lineRepository.findById(id));
     }
 
     public void update(Long id, LineRequest lineRequest) {

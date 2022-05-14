@@ -1,40 +1,40 @@
 package wooteco.subway.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.domain.EnrollSections;
 import wooteco.subway.domain.RemoveSections;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionSeries;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.repository.SectionRepository;
-import wooteco.subway.repository.StationRepository;
 
 @Service
 public class SectionService {
 
     private final SectionRepository sectionRepository;
-    private final StationRepository stationRepository;
 
-    public SectionService(SectionRepository sectionRepository, StationRepository stationRepository) {
+    public SectionService(SectionRepository sectionRepository) {
         this.sectionRepository = sectionRepository;
-        this.stationRepository = stationRepository;
     }
 
-    public void create(Long lineId, SectionRequest sectionRequest) {
+    public void enroll(Long lineId, SectionRequest sectionRequest) {
         final SectionSeries sectionSeries = new SectionSeries(sectionRepository.readAllSections(lineId));
-        final Section newSection = sectionRepository.toSection(
-            null,
-            sectionRequest.getUpStationId(),
+        final Section newSection = create(sectionRequest.getUpStationId(),
             sectionRequest.getDownStationId(),
             sectionRequest.getDistance());
-        final EnrollSections enrollSections = sectionSeries.findEnrollSections(newSection);
-        sectionRepository.create(lineId, enrollSections.getCreateSection(), enrollSections.getUpdateSection());
+        final List<Section> dirties = sectionSeries.add(newSection);
+        sectionRepository.synchronize(lineId, dirties);
+    }
+
+    public Section create(Long upStationId, Long downStationId, int distance) {
+        return sectionRepository.toSection(null, upStationId, downStationId, distance);
     }
 
     public void delete(Long lineId, Long stationId) {
         final SectionSeries sectionSeries = new SectionSeries(sectionRepository.readAllSections(lineId));
-        RemoveSections removeSections = sectionSeries.findRemoveSections(stationId);
-        sectionRepository.delete(removeSections.getDeleteSection(), removeSections.getUpdateSection());
+        List<Section> dirties = sectionSeries.remove(stationId);
+        sectionRepository.synchronize(lineId, dirties);
     }
 }

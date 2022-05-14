@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.StationSeries;
 
 public class LineResponse {
     private final Long id;
@@ -24,21 +23,17 @@ public class LineResponse {
         this(null, null, null, null);
     }
 
-    public static LineResponse from(Line line, List<Station> stations) {
+    public static LineResponse from(Line line) {
         return new LineResponse(
             line.getId(),
             line.getName(),
             line.getColor(),
-            stations.stream().map(StationResponse::from).collect(Collectors.toList())
-        );
-    }
-
-    public static LineResponse of(Line line, Section section) {
-        return new LineResponse(
-            line.getId(),
-            line.getName(),
-            line.getColor(),
-            List.of(StationResponse.from(section.getUpStation()), StationResponse.from(section.getDownStation()))
+            StationSeries.fromSectionsAsOrdered(line.getSections())
+                .getStations()
+                .stream()
+                .map(StationResponse::from)
+                .collect(
+                    Collectors.toList()) // TODO
         );
     }
 

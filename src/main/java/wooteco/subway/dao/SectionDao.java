@@ -6,11 +6,12 @@ import wooteco.subway.entity.SectionEntity;
 
 public interface SectionDao {
 
-    SectionEntity save(SectionEntity section);
+    Long save(SectionEntity section);
 
-    void deleteById(Long id);
+    Long deleteById(Long id);
 
-    List<SectionEntity> readSectionsByLineId(Long lineId);
+    List<SectionEntity> findSectionsByLineId(Long lineId);
 
-    void update(SectionEntity entity);
+    Long update(SectionEntity entity);
+
 }

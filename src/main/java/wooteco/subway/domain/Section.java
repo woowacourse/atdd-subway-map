@@ -28,9 +28,9 @@ public class Section {
 
     public Section divide(Section other) {
         if (isUpStationConnected(other)) {
-            return new Section(id, other.downStation, downStation, distance.subtract(other.distance));
+            return new Section(other.downStation, downStation, distance.subtract(other.distance));
         }
-        return new Section(id, upStation, other.upStation, distance.subtract(other.distance));
+        return new Section(upStation, other.upStation, distance.subtract(other.distance));
     }
 
     private boolean isUpStationConnected(Section other) {
