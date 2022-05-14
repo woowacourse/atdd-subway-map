@@ -22,6 +22,13 @@ public class AcceptanceTest {
         RestAssured.port = port;
     }
 
+    private <T> RequestSpecification createBody(T request) {
+        return RestAssured.given()
+            .log()
+            .all()
+            .body(request);
+    }
+
     ExtractableResponse<Response> requestHttpGet(String uri) {
         return RestAssured.given().log().all()
             .when()
@@ -30,8 +37,8 @@ public class AcceptanceTest {
             .extract();
     }
 
-    ExtractableResponse<Response> requestHttpPost(RequestSpecification body, String uri) {
-        return body
+    <T> ExtractableResponse<Response> requestHttpPost(T request, String uri) {
+        return createBody(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(uri)
@@ -39,8 +46,8 @@ public class AcceptanceTest {
             .extract();
     }
 
-    ExtractableResponse<Response> requestHttpPut(RequestSpecification body, String uri) {
-        return body
+    <T> ExtractableResponse<Response> requestHttpPut(T request, String uri) {
+        return createBody(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put(uri)
@@ -50,6 +57,14 @@ public class AcceptanceTest {
 
     ExtractableResponse<Response> requestHttpDelete(String uri) {
         return RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+    }
+
+    <T> ExtractableResponse<Response> requestHttpDelete(T request, String uri) {
+        return createBody(request)
             .when()
             .delete(uri)
             .then().log().all()

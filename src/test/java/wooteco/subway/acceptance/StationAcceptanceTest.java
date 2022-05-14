@@ -2,10 +2,8 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,10 +18,6 @@ import wooteco.subway.dto.StationResponse;
 @Sql("/stationInitSchema.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private RequestSpecification createBody(StationRequest stationRequest) {
-        return RestAssured.given().log().all().body(stationRequest);
-    }
-
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStationTest() {
@@ -32,7 +26,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response =
-            requestHttpPost(createBody(stationRequest), "/stations");
+            requestHttpPost(stationRequest, "/stations");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -44,11 +38,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateNameTest() {
         // given
         StationRequest stationRequest = new StationRequest("강남역");
-        requestHttpPost(createBody(stationRequest), "/stations");
+        requestHttpPost(stationRequest, "/stations");
 
         // when
         ExtractableResponse<Response> response =
-            requestHttpPost(createBody(stationRequest), "/stations");
+            requestHttpPost(stationRequest, "/stations");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -60,11 +54,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         StationRequest stationRequest1 = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse1 =
-            requestHttpPost(createBody(stationRequest1), "/stations");
+            requestHttpPost(stationRequest1, "/stations");
 
         StationRequest stationRequest2 = new StationRequest("역삼역");
         ExtractableResponse<Response> createResponse2 =
-            requestHttpPost(createBody(stationRequest2), "/stations");
+            requestHttpPost(stationRequest2, "/stations");
 
         // when
         ExtractableResponse<Response> response = requestHttpGet("/stations");
@@ -72,7 +66,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<Long> expectedStationIds = extractStationIdsWithLocation(createResponse1, createResponse2);
+        List<Long> expectedStationIds = extractStationIdsWithLocation(createResponse1,
+            createResponse2);
         List<Long> resultStationIds = extractStationIdsWithJson(response);
         assertThat(resultStationIds).containsAll(expectedStationIds);
     }
@@ -97,7 +92,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         StationRequest stationRequest = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse =
-            requestHttpPost(createBody(stationRequest), "/stations");
+            requestHttpPost(stationRequest, "/stations");
 
         // when
         String uri = createResponse.header("Location");
