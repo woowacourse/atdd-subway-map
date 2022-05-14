@@ -1,11 +1,11 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.dto.DeleteAndUpdateSectionsInfo;
+import wooteco.subway.dto.SectionsToBeCreatedAndUpdated;
 import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.SectionServiceException;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Sections {
 
@@ -15,16 +15,18 @@ public class Sections {
         this.values = values;
     }
 
-    public Optional<Section> add(Section newSection) {
+    public SectionsToBeCreatedAndUpdated add(Section newSection) {
         validateExistStationInLine(newSection);
         Long currentLastUpStationId = findLastUpStationId();
         Long currentLastDownStationId = findLastDownStationId();
 
         if (newSection.isNewLastStation(currentLastUpStationId, currentLastDownStationId)) {
-            values.add(newSection);
-            return Optional.empty();
+            return new SectionsToBeCreatedAndUpdated(newSection);
         }
+        return addMiddleSection(newSection);
+    }
 
+    private SectionsToBeCreatedAndUpdated addMiddleSection(Section newSection) {
         Section existNearSection = findNearSection(newSection);
         if (newSection.getDistance() >= existNearSection.getDistance()) {
             throw new SectionServiceException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
@@ -33,7 +35,7 @@ public class Sections {
                 newSection.getUpStationId(), existNearSection.getDownStationId(),
                 existNearSection.getDistance() - newSection.getDistance());
 
-        return Optional.of(sectionThatNeedToBeUpdated);
+        return new SectionsToBeCreatedAndUpdated(newSection, sectionThatNeedToBeUpdated);
     }
 
     private void validateExistStationInLine(Section section) {
