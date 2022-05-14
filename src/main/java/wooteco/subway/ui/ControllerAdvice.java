@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class ControllerAdvice {
 
     @ExceptionHandler(ClientRuntimeException.class)
-    public ResponseEntity<String> handleDataNotFoundException(final ClientRuntimeException e) {
+    public ResponseEntity<String> handleClientRuntimeException(final ClientRuntimeException e) {
         return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
     }
 
