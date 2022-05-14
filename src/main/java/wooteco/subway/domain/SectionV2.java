@@ -52,6 +52,15 @@ public class SectionV2 {
         return isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation());
     }
 
+    public boolean isUpdate(SectionV2 section) {
+        return equals(section) && !isSameUpAndDownStation(section);
+    }
+
+    private boolean isSameUpAndDownStation(SectionV2 section) {
+        return isSameUpStation(section.getUpStation())
+                && isSameDownStation(section.getDownStation());
+    }
+
     public boolean isSameUpStation(Station upStation) {
         return this.upStation.equals(upStation);
     }
@@ -91,6 +100,23 @@ public class SectionV2 {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SectionV2)) {
+            return false;
+        }
+        SectionV2 sectionV2 = (SectionV2) o;
+        return Objects.equals(id, sectionV2.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

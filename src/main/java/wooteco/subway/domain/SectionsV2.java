@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SectionsV2 {
@@ -52,6 +53,17 @@ public class SectionsV2 {
         return values.stream()
                 .map(SectionV2::getDownStation)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<SectionV2> findUpdate(List<SectionV2> sections) {
+        return values.stream()
+                .filter(value -> findUpdateSection(sections, value))
+                .findFirst();
+    }
+
+    private boolean findUpdateSection(List<SectionV2> sections, SectionV2 section) {
+        return sections.stream()
+                .anyMatch(value -> value.isUpdate(section));
     }
 
     private void validateStationNotExistSection(SectionV2 section) {

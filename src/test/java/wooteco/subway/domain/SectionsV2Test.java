@@ -16,6 +16,7 @@ import static wooteco.subway.Fixtures.역삼역;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -126,6 +127,20 @@ public class SectionsV2Test {
                 .containsAll(
                         List.of(tuple(강남역, 역삼역, 5), tuple(역삼역, 선릉역, 5), tuple(선릉역, 삼성역, 5))
                 );
+    }
+
+    @Test
+    @DisplayName("변경할 구간을 찾을 수 있다.")
+    void findUpdateSection() {
+        // given
+        SectionsV2 newSections = createSections(강남_삼성);
+        newSections.add(강남_역삼);
+
+        // when
+        final Optional<SectionV2> updateSection = newSections.findUpdate(List.of(강남_삼성));
+
+        // then
+        assertThat(updateSection.get()).isEqualTo(강남_역삼);
     }
 
     private SectionsV2 createSections(SectionV2 section) {
