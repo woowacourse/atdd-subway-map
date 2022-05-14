@@ -42,7 +42,7 @@ public class LineService {
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        lineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        lineDao.update(id, lineRequest);
     }
 
     public void delete(Long id) {

@@ -78,7 +78,6 @@ public class SectionService {
 
     @Transactional
     public void deleteSection(long stationId, long lineId) {
-
         Station station = stationDao.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.NO_STATION));
 

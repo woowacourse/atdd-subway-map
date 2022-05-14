@@ -85,9 +85,9 @@ public class LineDaoTest {
     void update() {
         LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
         Line line = lineDao.save(lineRequest);
-        Line expected = new Line(line.getId(), "분당선", "green");
+        LineRequest updateRequest = new LineRequest( "분당선", "green");
 
-        lineDao.update(expected);
+        lineDao.update(line.getId(), updateRequest);
 
         assertThat(lineDao.findById(line.getId()).orElseThrow().getName()).isEqualTo("분당선");
     }
