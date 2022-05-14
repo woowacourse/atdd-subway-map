@@ -21,14 +21,14 @@ public class StationService {
     }
 
     public StationResponse create(StationRequest stationRequest) {
-        String name = stationRequest.getName();
-        Station station;
+        Station station = new Station(stationRequest.getName());
+        Station savedStation;
         try {
-            station = stationDao.save(name);
+            savedStation = stationDao.save(station);
         } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException("이미 존재하는 지하철역 이름입니다.");
         }
-        return new StationResponse(station);
+        return new StationResponse(savedStation);
     }
 
     public List<StationResponse> show() {

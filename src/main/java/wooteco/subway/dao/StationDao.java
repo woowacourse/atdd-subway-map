@@ -7,12 +7,14 @@ import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import wooteco.subway.dao.dto.StationDto;
 import wooteco.subway.domain.Station;
 
 @Repository
@@ -31,6 +33,13 @@ public class StationDao {
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("station")
                 .usingGeneratedKeyColumns("id");
+    }
+
+    public Station save(Station station) {
+        StationDto stationDto = new StationDto(station);
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(stationDto);
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return new Station(id, station.getName());
     }
 
     public Station save(String name) {
