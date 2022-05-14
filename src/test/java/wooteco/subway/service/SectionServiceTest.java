@@ -19,7 +19,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("구간 관련 service 테스트")
 @JdbcTest
@@ -255,10 +254,14 @@ class SectionServiceTest {
         // given
         long station1Id = stationDao.save(new Station(1L, "강남역"));
         long station2Id = stationDao.save(new Station(2L, "역삼역"));
+        long station3Id = stationDao.save(new Station(3L, "삼성역"));
+        long station4Id = stationDao.save(new Station(4L, "선릉역"));
+
+        sectionDao.save(1L, new Section(station1Id, station2Id, 10));
 
         // when & then
         assertThatThrownBy(
-                () -> sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10))
+                () -> sectionService.save(1L, new SectionRequest(station3Id, station4Id, 10))
         ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("추가하려는 구간이 노선에 포함되어 있지 않습니다.");
     }

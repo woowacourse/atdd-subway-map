@@ -6,27 +6,39 @@ public class Section {
 
     private static final int MINIMUM_DISTANCE = 0;
 
+    private Long sectionId;
+    private Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public Section(final Long upStationId, final Long downStationId, final int distance) {
+    public Section(final Long sectionId, final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         validateDistance(distance);
+        this.sectionId = sectionId;
+        this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
+    public Section(final Long upStationId, final Long downStationId, final int distance) {
+        this(null, null, upStationId, downStationId, distance);
+    }
+
     public static Section replaced(final Section existSection, final Section section) {
         int newDistance = subtractDistance(existSection, section);
         if (existSection.upStationId.equals(section.upStationId)) {
-            return new Section(section.downStationId, existSection.downStationId, newDistance);
+            return new Section(existSection.sectionId, existSection.lineId,
+                    section.downStationId, existSection.downStationId, newDistance);
         }
-        return new Section(existSection.upStationId, section.upStationId, newDistance);
+        return new Section(existSection.upStationId, existSection.lineId,
+                existSection.upStationId, section.upStationId, newDistance);
     }
 
     public static Section deleted(final Section sectionIncludedDownStation, final Section sectionIncludedUpStation) {
         return new Section(
+                sectionIncludedDownStation.sectionId,
+                sectionIncludedDownStation.lineId,
                 sectionIncludedDownStation.upStationId,
                 sectionIncludedUpStation.downStationId,
                 sectionIncludedUpStation.distance + sectionIncludedDownStation.distance
@@ -62,6 +74,14 @@ public class Section {
 
     public boolean hasDownStation(final Long sectionId) {
         return downStationId.equals(sectionId);
+    }
+
+    public Long getSectionId() {
+        return sectionId;
+    }
+
+    public Long getLineId() {
+        return lineId;
     }
 
     public Long getUpStationId() {
