@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.entity.LineEntity;
@@ -37,5 +38,17 @@ public class RegisteredStationDao {
                 + "AND (B.up_station_id = C.id OR B.down_station_id = C.id)";
 
         return jdbcTemplate.query(sql, new EmptySqlParameterSource(), FULL_ROW_MAPPER);
+    }
+
+    public List<RegisteredStationEntity> findAllByStationId(Long stationId) {
+        final String sql = "SELECT DISTINCT A.id AS line_id, A.name, A.color, "
+                + "C.id AS station_id, C.name AS station_name "
+                + "FROM line A, section B, station C "
+                + "WHERE C.id = :stationId AND A.id = B.line_id "
+                + "AND (B.up_station_id = C.id OR B.down_station_id = C.id)";
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("stationId", stationId);
+
+        return jdbcTemplate.query(sql, paramSource, FULL_ROW_MAPPER);
     }
 }

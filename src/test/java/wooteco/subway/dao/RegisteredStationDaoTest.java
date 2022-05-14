@@ -34,4 +34,15 @@ class RegisteredStationDaoTest extends DaoTest {
 
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
+
+    @Test
+    void findAllByStationId_메서드는_해당_역이_등록된_모든_노선들의_데이터를_조회() {
+        List<RegisteredStationEntity> actual = dao.findAllByStationId(1L);
+
+        List<RegisteredStationEntity> expected = List.of(
+                new RegisteredStationEntity(STATION1, LINE1),
+                new RegisteredStationEntity(STATION1, LINE2));
+
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+    }
 }
