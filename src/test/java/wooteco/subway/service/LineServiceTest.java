@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,22 +29,28 @@ import wooteco.subway.exception.section.NoSuchSectionException;
 
 class LineServiceTest extends ServiceTest {
 
+    private static final String LINE_NAME = "7호선";
+    private static final String LINE_COLOR = "bg-red-600";
+
     @InjectMocks
     private LineService lineService;
+
+    private Station upStation;
+    private Station downStation;
+    private LineRequest request;
+
+    @BeforeEach
+    void setUpData() {
+        upStation = new Station(1L, "선릉역");
+        downStation = new Station(2L, "삼성역");
+        request = new LineRequest(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), 10);
+    }
 
     @Test
     @DisplayName("노선과 구간을 생성한다.")
     void Create_WithSection_Success() {
         // given
-        final String name = "7호선";
-        final String color = "bg-red-600";
-
-        final Station upStation = new Station(1L, "선릉역");
-        final Station downStation = new Station(2L, "삼성역");
-
-        final LineRequest request = new LineRequest(name, color, upStation.getId(), downStation.getId(), 10);
-
-        final Line expected = new Line(1L, name, color);
+        final Line expected = new Line(1L, LINE_NAME, LINE_COLOR);
         given(lineDao.insert(any(Line.class)))
                 .willReturn(Optional.of(expected));
 
@@ -75,8 +82,6 @@ class LineServiceTest extends ServiceTest {
     @DisplayName("저장하려는 노선의 이름이 중복되면 예외를 던진다.")
     void Create_DuplicateName_ExceptionThrown() {
         // given
-        final LineRequest request = new LineRequest("7호선", "bg-red-600", null, null, 0);
-
         given(lineDao.insert(any(Line.class)))
                 .willReturn(Optional.empty());
 
@@ -90,15 +95,15 @@ class LineServiceTest extends ServiceTest {
     void FindAll() {
         // given
         final List<Line> expected = List.of(
-                new Line(1L, "7호선", "bg-red-600"),
+                new Line(1L, LINE_NAME, LINE_COLOR),
                 new Line(2L, "5호선", "bg-blue-600")
         );
         given(lineDao.findAll())
                 .willReturn(expected);
 
         final List<Station> expectedStations1 = List.of(
-                new Station(1L, "선릉역"),
-                new Station(2L, "삼성역")
+                upStation,
+                downStation
         );
         final List<Station> expectedStations2 = List.of(
                 new Station(3L, "왕십리역"),
@@ -115,13 +120,13 @@ class LineServiceTest extends ServiceTest {
         assertThat(actual).hasSameSizeAs(expected);
 
         final LineResponse actualLine1 = actual.get(0);
-        assertThat(actualLine1.getName()).isEqualTo("7호선");
+        assertThat(actualLine1.getName()).isEqualTo(LINE_NAME);
 
         final List<String> actualStationNames1 = actualLine1.getStations()
                 .stream()
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());
-        assertThat(actualStationNames1).containsExactly("선릉역", "삼성역");
+        assertThat(actualStationNames1).containsExactly(upStation.getName(), downStation.getName());
 
         final LineResponse actualLine = actual.get(1);
         assertThat(actualLine.getName()).isEqualTo("5호선");
@@ -137,12 +142,7 @@ class LineServiceTest extends ServiceTest {
     void FindById() {
         // given
         final long id = 1L;
-        final String name = "7호선";
-        final String color = "bg-red-600";
-        final Station upStation = new Station(1L, "선릉역");
-        final Station downStation = new Station(2L, "삼성역");
-
-        final Line expected = new Line(id, name, color);
+        final Line expected = new Line(id, LINE_NAME, LINE_COLOR);
 
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(expected));
@@ -164,7 +164,7 @@ class LineServiceTest extends ServiceTest {
                 .stream()
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());
-        final List<String> expectedStationNames = List.of("선릉역", "삼성역");
+        final List<String> expectedStationNames = List.of(upStation.getName(), downStation.getName());
         assertThat(actualStationNames).isEqualTo(expectedStationNames);
     }
 
@@ -185,7 +185,7 @@ class LineServiceTest extends ServiceTest {
     @DisplayName("노선에 해당하는 역이 존재하지 않으면 예외를 던진다.")
     void FindById_EmptyStations_ExceptionThrown() {
         // given
-        final Line line = new Line(1L, "5호선", "bg-violet-600");
+        final Line line = new Line(1L, LINE_NAME, LINE_COLOR);
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
@@ -203,18 +203,14 @@ class LineServiceTest extends ServiceTest {
     void UpdateById() {
         // given
         final long id = 1L;
-        final String name = "7호선";
-        final String color = "bg-red-600";
 
-        final Line existLine = new Line("5호선", "bg-red-600");
-        given(lineDao.findById(id))
+        final Line existLine = new Line("xxx", "xx-x-xx");
+        given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(existLine));
 
-        final Line updateLine = new Line(name, color);
+        final Line updateLine = new Line(LINE_NAME, LINE_COLOR);
         given(lineDao.updateById(id, updateLine))
                 .willReturn(Optional.of(updateLine));
-
-        final LineRequest request = new LineRequest(name, color, null, null, 0);
 
         // then
         assertThatCode(() -> lineService.updateById(id, request))
@@ -225,14 +221,11 @@ class LineServiceTest extends ServiceTest {
     @DisplayName("업데이트하려는 노선이 존재하지 않으면 예외를 던진다.")
     void UpdateById_NotExistId_ExceptionThrown() {
         // given
-        final long id = 1L;
-        given(lineDao.findById(id))
+        given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.empty());
 
-        final LineRequest request = new LineRequest("1호선", "bg-blue-600", null, null, 0);
-
         // then
-        assertThatThrownBy(() -> lineService.updateById(id, request))
+        assertThatThrownBy(() -> lineService.updateById(1L, request))
                 .isInstanceOf(NoSuchLineException.class);
     }
 
@@ -241,18 +234,14 @@ class LineServiceTest extends ServiceTest {
     void UpdateById_DuplicateName_ExceptionThrown() {
         // given
         final long id = 1L;
-        final String name = "7호선";
-        final String color = "bg-red-600";
 
-        final Line existLine = new Line("5호선", "bg-blue-600");
-        given(lineDao.findById(id))
+        final Line existLine = new Line("xxx", "xx-x-xx");
+        given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(existLine));
 
-        final Line updateLine = new Line(name, color);
+        final Line updateLine = new Line(LINE_NAME, LINE_COLOR);
         given(lineDao.updateById(id, updateLine))
                 .willReturn(Optional.empty());
-
-        final LineRequest request = new LineRequest(name, color, null, null, 0);
 
         // then
         assertThatThrownBy(() -> lineService.updateById(id, request))
