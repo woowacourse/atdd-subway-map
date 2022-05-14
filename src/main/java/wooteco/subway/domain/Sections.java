@@ -81,7 +81,7 @@ public class Sections {
 
     public void deleteIfPossible(final Station target) {
         if (!canDelete()) {
-            return;
+            throw new IllegalArgumentException(CANNOT_DELETE_SECTION + " " + target);
         }
         if (sameWithLastUpStation(target) == DeleteMatchingResult.POSSIBLE_TO_DELETE) {
             value = value.subList(1, value.size());
