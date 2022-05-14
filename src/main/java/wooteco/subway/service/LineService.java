@@ -35,10 +35,8 @@ public class LineService {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Long savedLineId = lineDao.save(line);
 
-        Station upStation = stationDao.findById(lineRequest.getUpStationId())
-            .orElseThrow((throwEmptyStationException()));
-        Station downStation = stationDao.findById(lineRequest.getDownStationId())
-            .orElseThrow(throwEmptyStationException());
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
 
         sectionDao.save(new Section(upStation, downStation, lineRequest.getDistance()), savedLineId);
         return LineResponse.from(savedLineId, line);
@@ -61,20 +59,16 @@ public class LineService {
     }
 
     public boolean updateById(Long id, LineRequest lineRequest) {
-        Line line = lineDao.findById(id)
-            .orElseThrow(throwEmptyLineResultException());
+        Line line = findLineById(id);
 
         line.update(lineRequest.getName(), lineRequest.getColor());
         return lineDao.updateById(id, line);
     }
 
     public void insertSection(Long id, SectionRequest sectionRequest) {
-        Line line = lineDao.findById(id)
-            .orElseThrow(throwEmptyLineResultException());
-        Station upStation = stationDao.findById(sectionRequest.getUpStationId())
-            .orElseThrow(throwEmptyStationException());
-        Station downStation = stationDao.findById(sectionRequest.getDownStationId())
-            .orElseThrow(throwEmptyStationException());
+        Line line = findLineById(id);
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
 
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
         Optional<Section> updatedSection = line.insertSection(section);
@@ -83,15 +77,23 @@ public class LineService {
     }
 
     public void deleteStation(Long lineId, Long stationId) {
-        Station station = stationDao.findById(stationId)
-            .orElseThrow(throwEmptyStationException());
-        Line line = lineDao.findById(lineId)
-            .orElseThrow(throwEmptyLineResultException());
+        Station station = findStationById(stationId);
+        Line line = findLineById(lineId);
         UpdatedSection updatedSection = line.deleteStation(station);
         if (updatedSection.hasUpdatedSection()) {
             sectionDao.update(updatedSection.getUpdatedSection());
         }
         sectionDao.delete(updatedSection.getDeletedSectionId());
+    }
+
+    private Station findStationById(Long id) {
+        return stationDao.findById(id)
+            .orElseThrow((throwEmptyStationException()));
+    }
+
+    private Line findLineById(Long id) {
+        return lineDao.findById(id)
+            .orElseThrow(throwEmptyLineResultException());
     }
 
     private Supplier<EmptyResultException> throwEmptyStationException() {
