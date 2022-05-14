@@ -57,25 +57,12 @@ public class Section {
         return new Section(upStation, section.downStation, distance + section.distance);
     }
 
-    public DeleteMatchingResult matchStation(final Station target) {
-        if (this.downStation.isSameName(target)) {
-            return DeleteMatchingResult.POSSIBLE_TO_DELETE;
-        }
-        return DeleteMatchingResult.NO_MATCHED;
+    public boolean isSameWithDownStation(final Station target) {
+        return this.downStation.isSameName(target);
     }
 
-    public DeleteMatchingResult matchWithLastUpStation(final Station target) {
-        if (this.upStation.isSameName(target)) {
-            return DeleteMatchingResult.POSSIBLE_TO_DELETE;
-        }
-        return DeleteMatchingResult.NO_MATCHED;
-    }
-
-    public DeleteMatchingResult matchWithLastDownStation(final Station taret) {
-        if (this.downStation.isSameName(taret)) {
-            return DeleteMatchingResult.POSSIBLE_TO_DELETE;
-        }
-        return DeleteMatchingResult.NO_MATCHED;
+    public boolean isSameWithUpStation(final Station target) {
+        return this.upStation.isSameName(target);
     }
 
     public Long getUpStationId() {

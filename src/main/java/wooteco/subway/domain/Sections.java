@@ -91,7 +91,7 @@ public class Sections {
         }
         final List<Section> existedStations = new ArrayList<>(value);
         for (Section section : existedStations) {
-            final DeleteMatchingResult result = section.matchStation(target);
+            final DeleteMatchingResult result = DeleteMatchingResult.matchStation(section, target);
             if (canDeleteStation(result)) {
                 deleteStation(section, target);
                 return;
@@ -101,11 +101,11 @@ public class Sections {
     }
 
     private DeleteMatchingResult sameWithLastDownStation(final Station target) {
-        return value.get(value.size() - 1).matchWithLastDownStation(target);
+        return DeleteMatchingResult.matchWithLastDownStation(value.get(value.size() - 1), target);
     }
 
     private DeleteMatchingResult sameWithLastUpStation(final Station target) {
-        return value.get(0).matchWithLastUpStation(target);
+        return DeleteMatchingResult.matchWithLastUpStation(value.get(0), target);
     }
 
     private void deleteStation(final Section section, final Station target) {
