@@ -5,13 +5,13 @@ import java.util.List;
 public class Line {
 
     private final Long id;
-    private final String name;
+    private final Name name;
     private final LineColor color;
     private final Sections sections;
 
     public Line(final Long id, final String name, final String color, final Sections sections) {
         this.id = id;
-        this.name = name;
+        this.name = new Name(name);
         this.color = new LineColor(color);
         this.sections = sections;
     }
@@ -25,7 +25,7 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public String getColor() {

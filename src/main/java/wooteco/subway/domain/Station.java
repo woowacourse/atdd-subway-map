@@ -6,11 +6,11 @@ import java.util.Objects;
 public class Station {
 
     private final Long id;
-    private final String name;
+    private final Name name;
 
     public Station(final Long id, final String name) {
         this.id = id;
-        this.name = name;
+        this.name = new Name(name);
     }
 
     public static Station createWithoutId(final String name) {
@@ -30,7 +30,7 @@ public class Station {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     @Override

@@ -144,7 +144,6 @@ class SectionsTest {
         final Section section1 = new Section(1L, station1, station2, 10);
         final Sections sections = new Sections(section1);
 
-
         assertThatThrownBy(() -> sections.addSection(station3, station4, 10))
                 .isInstanceOf(ResisterSectionException.class)
                 .hasMessage("[ERROR] 등록하려는 구간의 상행선 또는 하행선 중 한개는 노선에 존재해야합니다.");
