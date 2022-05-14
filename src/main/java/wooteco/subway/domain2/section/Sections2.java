@@ -11,6 +11,8 @@ public class Sections2 {
     private static final String NOT_EXISTING_LINE_EXCEPTION = "존재하지 않는 노선입니다.";
     private static final String STATION_NOT_REGISTERED_EXCEPTION = "구간에 등록되지 않은 지하철역입니다.";
     private static final String LAST_SECTION_EXCEPTION = "노선의 마지막 구간은 제거할 수 없습니다.";
+    private static final String ALL_STATIONS_REGISTERED_EXCEPTION = "이미 노선에 등록된 지하철역들입니다.";
+    private static final String NO_STATION_REGISTERED_EXCEPTION = "적어도 하나의 지하철역은 이미 노선에 등록되어 있어야 합니다.";
 
     private final List<Section> value;
 
@@ -62,6 +64,55 @@ public class Sections2 {
                 .get();
     }
 
+    public Sections2 save(Section newSection) {
+        validateSingleRegisteredStation(newSection);
+        List<Section> sections = new ArrayList<>(value);
+        if (!isEndSection(newSection)) {
+            updateOriginalSection(newSection, sections);
+        }
+        sections.add(newSection);
+        return new Sections2(sections);
+    }
+
+    private void updateOriginalSection(Section newSection, List<Section> sections) {
+        boolean isRegisteredUpStation = isRegistered(newSection.getUpStation());
+        if (isRegisteredUpStation) {
+            Section oldSection = getLowerSection(newSection.getUpStation());
+            sections.remove(oldSection);
+            Section updatedSection = new Section(newSection.getDownStation(),
+                    oldSection.getDownStation(),
+                    oldSection.toRemainderDistance(newSection));
+            sections.add(updatedSection);
+            return;
+        }
+        Section oldSection = getUpperSection(newSection.getDownStation());
+        sections.remove(oldSection);
+        Section updatedSection = new Section(oldSection.getUpStation(),
+                newSection.getUpStation(),
+                oldSection.toRemainderDistance(newSection));
+        sections.add(updatedSection);
+    }
+
+    private void validateSingleRegisteredStation(Section section) {
+        boolean isRegisteredUpStation = isRegistered(section.getUpStation());
+        boolean isRegisteredDownStation = isRegistered(section.getDownStation());
+        if (isRegisteredUpStation && isRegisteredDownStation) {
+            throw new IllegalArgumentException(ALL_STATIONS_REGISTERED_EXCEPTION);
+        }
+        if (!isRegisteredUpStation && !isRegisteredDownStation) {
+            throw new IllegalArgumentException(NO_STATION_REGISTERED_EXCEPTION);
+        }
+    }
+
+    private boolean isEndSection(Section section) {
+        boolean isNewUpperEndSection = value.get(0)
+                .hasUpStationOf(section.getDownStation());
+        boolean isNewLowerEndSection = value.get(value.size() - 1)
+                .hasDownStationOf(section.getUpStation());
+
+        return isNewUpperEndSection || isNewLowerEndSection;
+    }
+
     public Sections2 delete(Station station) {
         validateRegisteredStation(station);
         validateNotLastSection();
@@ -74,11 +125,14 @@ public class Sections2 {
     }
 
     private void validateRegisteredStation(Station station) {
-        boolean isRegistered = value.stream()
-                .anyMatch(section -> section.hasStationOf(station));
-        if (!isRegistered) {
+        if (!isRegistered(station)) {
             throw new IllegalArgumentException(STATION_NOT_REGISTERED_EXCEPTION);
         }
+    }
+
+    private boolean isRegistered(Station station) {
+        return value.stream()
+                .anyMatch(section -> section.hasStationOf(station));
     }
 
     private void validateNotLastSection() {
@@ -96,8 +150,8 @@ public class Sections2 {
     private Sections2 removeMiddleStation(Station station, List<Section> sections) {
         Section upperSection = getUpperSection(station);
         Section lowerSection = getLowerSection(station);
-        Section connectedSection = new Section(lowerSection.getUpStation(),
-                upperSection.getDownStation(),
+        Section connectedSection = new Section(upperSection.getUpStation(),
+                lowerSection.getDownStation(),
                 upperSection.toConnectedDistance(lowerSection));
 
         sections.removeAll(List.of(upperSection, lowerSection));
@@ -105,14 +159,14 @@ public class Sections2 {
         return new Sections2(sections);
     }
 
-    private Section getLowerSection(Station station) {
+    private Section getUpperSection(Station station) {
         return value.stream()
                 .filter(section -> section.hasDownStationOf(station))
                 .findFirst()
                 .get();
     }
 
-    private Section getUpperSection(Station station) {
+    private Section getLowerSection(Station station) {
         return value.stream()
                 .filter(section -> section.hasUpStationOf(station))
                 .findFirst()

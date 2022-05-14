@@ -74,8 +74,14 @@ public class Section {
         return downStation;
     }
 
-    public int toConnectedDistance(Section adjacentDistance) {
-        return distance + adjacentDistance.distance;
+    public int toConnectedDistance(Section adjacentSection) {
+        return distance + adjacentSection.distance;
+    }
+
+    public int toRemainderDistance(Section coveringSection) {
+        int remainderDistance = distance - coveringSection.distance;
+        validateDistance(remainderDistance);
+        return remainderDistance;
     }
 
     public SectionEntity2 toEntity(Long lineId) {
