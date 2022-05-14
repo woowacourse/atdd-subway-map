@@ -26,6 +26,8 @@ class SectionServiceTest {
 
     private static final RowMapper<Section> SECTION_ROW_MAPPER = (resultSet, rowNum) -> {
         return new Section(
+                resultSet.getLong("id"),
+                resultSet.getLong("line_id"),
                 resultSet.getLong("up_station_id"),
                 resultSet.getLong("down_station_id"),
                 resultSet.getInt("distance")
@@ -86,27 +88,6 @@ class SectionServiceTest {
                 .hasMessage("상행역과 하행역이 이미 지하철 노선에 존재합니다.");
     }
 
-    @DisplayName("구간 생성 시 상행역 또는 하행역 중 하나만 지하철 노선에 포함되어 있으면 등록 가능하다.")
-    @Test
-    void saveExistOneStation() {
-        // given
-        long station1Id = stationDao.save(new Station(1L, "강남역"));
-        long station2Id = stationDao.save(new Station(2L, "역삼역"));
-        long station3Id = stationDao.save(new Station(3L, "삼성역"));
-
-        sectionDao.save(1L, new Section(station1Id, station3Id, 10));
-
-        // when
-        sectionService.save(1L, new SectionRequest(station2Id, station3Id, 5));
-
-        // then
-        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
-        assertThat(sections).contains(
-                new Section(station1Id, station2Id, 5),
-                new Section(station2Id, station3Id, 5)
-        );
-    }
-
     @DisplayName("구간 생성 시 상행 종점을 등록한다.")
     @Test
     void saveNewUpStation() {
@@ -121,7 +102,7 @@ class SectionServiceTest {
         sectionService.save(1L, new SectionRequest(station1Id, station2Id, 10));
 
         // then
-        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        List<Section> sections = sectionDao.findAllById(1L);
         assertThat(sections).contains(
                 new Section(station1Id, station2Id, 10),
                 new Section(station2Id, station3Id, 10)
@@ -142,7 +123,7 @@ class SectionServiceTest {
         sectionService.save(1L, new SectionRequest(station2Id, station3Id, 10));
 
         // then
-        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        List<Section> sections = sectionDao.findAllById(1L);
         assertThat(sections).contains(
                 new Section(station1Id, station2Id, 10),
                 new Section(station2Id, station3Id, 10)
@@ -163,7 +144,7 @@ class SectionServiceTest {
         sectionService.save(1L, new SectionRequest(station2Id, station3Id, 5));
 
         // then
-        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        List<Section> sections = sectionDao.findAllById(1L);
         assertThat(sections).contains(
                 new Section(station1Id, station2Id, 5),
                 new Section(station2Id, station3Id, 5)
@@ -184,7 +165,7 @@ class SectionServiceTest {
         sectionService.save(1L, new SectionRequest(station1Id, station2Id, 5));
 
         // then
-        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        List<Section> sections = sectionDao.findAllById(1L);
         assertThat(sections).contains(
                 new Section(station1Id, station2Id, 5),
                 new Section(station2Id, station3Id, 5)
@@ -205,7 +186,7 @@ class SectionServiceTest {
         sectionService.save(1L, new SectionRequest(station1Id, station2Id, 5));
 
         // then
-        List<Section> sections = jdbcTemplate.query("select * from SECTION where line_id = ?", SECTION_ROW_MAPPER, 1L);
+        List<Section> sections = sectionDao.findAllById(1L);
         assertThat(sections).contains(
                 new Section(station1Id, station2Id, 5),
                 new Section(station2Id, station3Id, 5)

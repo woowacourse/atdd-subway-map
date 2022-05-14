@@ -57,7 +57,16 @@ public class SectionService {
     }
 
     private void update(final Long lineId, final Sections sections) {
-        sectionDao.delete(lineId);
-        sectionDao.saveAll(lineId, sections);
+        for (Section section : sections.getSections()) {
+            if (isNewSection(section)) {
+                sectionDao.save(lineId, section);
+                continue;
+            }
+            sectionDao.update(section);
+        }
+    }
+
+    private boolean isNewSection(final Section section) {
+        return section.getSectionId() == null;
     }
 }

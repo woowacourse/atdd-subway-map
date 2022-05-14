@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -48,7 +49,7 @@ public class LineDao {
             return preparedStatement;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public boolean existLineById(final Long id) {

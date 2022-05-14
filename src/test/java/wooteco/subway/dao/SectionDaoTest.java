@@ -86,6 +86,21 @@ class SectionDaoTest {
         assertThat(sectionDao.existDownStation(1L, 2L)).isTrue();
     }
 
+    @DisplayName("구간을 수정한다.")
+    @Test
+    void update() {
+        // given
+        long sectionId = sectionDao.save(1L, new Section(1L, 2L, 10));
+
+        // when
+        sectionDao.update(new Section(sectionId, 1L, 1L, 2L, 50));
+
+        // then
+        assertThat(sectionDao.findAllById(1L)).contains(
+                new Section(sectionId, 1L, 1L, 2L, 50)
+        );
+    }
+
     @DisplayName("특정 지하철 노선에 포함되어 있는 구간을 모두 삭제한다.")
     @Test
     void delete() {

@@ -2,11 +2,15 @@ package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class SectionDao {
@@ -27,9 +31,20 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(final Long lineId, final Section section) {
+    public long save(final Long lineId, final Section section) {
         final String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+            preparedStatement.setLong(1, lineId);
+            preparedStatement.setLong(2, section.getUpStationId());
+            preparedStatement.setLong(3, section.getDownStationId());
+            preparedStatement.setInt(4, section.getDistance());
+            return preparedStatement;
+        }, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public void saveAll(final Long lineId, final Sections sections) {
@@ -57,6 +72,12 @@ public class SectionDao {
     public boolean existDownStation(final Long lineId, final Long stationId) {
         final String sql = "select exists (select * from SECTION where line_id = ? and down_station_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
+    }
+
+    public void update(final Section section) {
+        final String sql = "update SECTION set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
+        jdbcTemplate.update(sql,
+                section.getUpStationId(), section.getDownStationId(), section.getDistance(), section.getSectionId());
     }
 
     public void delete(final Long id) {
