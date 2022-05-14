@@ -1,15 +1,17 @@
 package wooteco.subway.domain;
 
 public class Distance {
+    public static final int MINIMUM_DISTANCE = 1;
+
     private final int value;
 
     public Distance(int value) {
-        this.value = value;
         validatePositive(value);
+        this.value = value;
     }
 
     private void validatePositive(int value) {
-        if (value <= 0) {
+        if (value < MINIMUM_DISTANCE) {
             throw new IllegalArgumentException("거리는 0이하일 수 없습니다.");
         }
     }
