@@ -44,16 +44,14 @@ class LineServiceTest {
     @DisplayName("새로운 노선 셍성 정보를 이용해 노선을 생성한다.")
     @Test
     void create() {
-        String lineName = "신분당선";
-        String lineColor = "red";
-        int distance = 10;
-        LineRequest request = new LineRequest(lineName, lineColor, savedStation1.getId(), savedStation2.getId(), distance);
+        LineRequest request =
+                new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(), 10);
 
         LineResponse response = lineService.create(request);
 
         assertAll(
-                () -> assertThat(response.getName()).isEqualTo(lineName),
-                () -> assertThat(response.getColor()).isEqualTo(lineColor),
+                () -> assertThat(response.getName()).isEqualTo(request.getName()),
+                () -> assertThat(response.getColor()).isEqualTo(request.getColor()),
                 () -> assertThat(response.getStations()).hasSize(2)
         );
     }
@@ -61,10 +59,8 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 역으로 노선을 생성하면 예외가 발생한다.")
     @Test
     void throwsExceptionWhenCreateLineWithNotExistsStation() {
-        String lineName = "신분당선";
-        String lineColor = "red";
-        int distance = 10;
-        LineRequest request = new LineRequest(lineName, lineColor, savedStation1.getId(), 100L, distance);
+        LineRequest request =
+                new LineRequest("신분당선", "red", savedStation1.getId(), 100L, 10);
 
         assertThatThrownBy(() -> lineService.create(request))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -73,10 +69,8 @@ class LineServiceTest {
     @DisplayName("상행,하행 중복된 역으로 노선을 생성하면 예외가 발생한다.")
     @Test
     void throwsExceptionWhenCreateLineWithDuplicateStation() {
-        String lineName = "신분당선";
-        String lineColor = "red";
-        int distance = 10;
-        LineRequest request = new LineRequest(lineName, lineColor, savedStation1.getId(), savedStation1.getId(), distance);
+        LineRequest request =
+                new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 10);
 
         assertThatThrownBy(() -> lineService.create(request))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -85,10 +79,8 @@ class LineServiceTest {
     @DisplayName("거리가 0이하인 구간으로 노선을 생성하면 예외가 발생한다.")
     @Test
     void throwsExceptionWhenCreateLineWithZeroDistance() {
-        String lineName = "신분당선";
-        String lineColor = "red";
-        int distance = 0;
-        LineRequest request = new LineRequest(lineName, lineColor, savedStation1.getId(), savedStation1.getId(), distance);
+        LineRequest request =
+                new LineRequest("신분당선", "red", savedStation1.getId(), savedStation1.getId(), 10);
 
         assertThatThrownBy(() -> lineService.create(request))
                 .isInstanceOf(IllegalArgumentException.class);
