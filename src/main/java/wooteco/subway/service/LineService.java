@@ -62,7 +62,7 @@ public class LineService {
         sections.append(saveSection);
 
         sectionDao.deleteByLineId(lineId);
-        sectionDao.saveAll(sections.getValue());
+        sectionDao.saveAll(sections.getSortedValue());
     }
 
     @Transactional
@@ -71,14 +71,14 @@ public class LineService {
         sections.remove(stationId);
 
         sectionDao.deleteByLineId(lineId);
-        sectionDao.saveAll(sections.getValue());
+        sectionDao.saveAll(sections.getSortedValue());
     }
 
     public LineResponse findById(Long id) {
         Line line = getLine(id);
 
         Sections sections = new Sections(sectionDao.findByLineId(id));
-        List<Long> stationIds = sections.getStationIds();
+        List<Long> stationIds = sections.getSortedStationIds();
 
         List<StationResponse> stations = stationIds.stream()
                 .map(this::getStation)
@@ -97,7 +97,7 @@ public class LineService {
 
     private LineResponse getLineResponse(Line line) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
-        List<StationResponse> stationResponses = sections.getStationIds()
+        List<StationResponse> stationResponses = sections.getSortedStationIds()
                 .stream()
                 .map(this::getStation)
                 .map(StationResponse::new)

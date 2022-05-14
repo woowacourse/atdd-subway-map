@@ -172,7 +172,7 @@ class SectionsTest {
         Section basedSection3 = new Section(1L, 4L, 2L, 7);
         Sections sections = new Sections(List.of(basedSection1, basedSection2, basedSection3));
 
-        List<Section> value = sections.getValue();
+        List<Section> value = sections.getSortedValue();
 
         assertAll(
                 () -> assertThat(value.get(0).getUpStationId()).isEqualTo(4),
@@ -189,16 +189,11 @@ class SectionsTest {
         Section basedSection3 = new Section(1L, 4L, 2L, 7);
         Sections sections = new Sections(List.of(basedSection1, basedSection2, basedSection3));
 
-        List<Long> stationIds = sections.getStationIds();
-
-        System.out.println(stationIds);
+        List<Long> stationIds = sections.getSortedStationIds();
 
         assertAll(
                 () -> assertThat(stationIds.size()).isEqualTo(4),
-                () -> assertThat(stationIds.get(0)).isEqualTo(4),
-                () -> assertThat(stationIds.get(1)).isEqualTo(2),
-                () -> assertThat(stationIds.get(2)).isEqualTo(1),
-                () -> assertThat(stationIds.get(3)).isEqualTo(3)
+                () -> assertThat(stationIds).containsExactly(4L, 2L, 1L, 3L)
         );
     }
 }
