@@ -25,33 +25,29 @@ public class SectionService {
         Long downStationId = sectionRequest.getDownStationId();
         int distance = sectionRequest.getDistance();
 
-        checkAddingBranch(upStationId, downStationId, distance, lineId);
+        Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, upStationId, downStationId);
+        if (isAddingBranch(sections, upStationId, downStationId, distance, lineId)) {
+            addBranch(sections.getSectionForCombine(upStationId, downStationId), upStationId, downStationId, distance, lineId);
+        }
         return saveSection(sectionRequest, lineId);
     }
 
-    private void checkAddingBranch(Long upStationId, Long downStationId, int distance, Long lineId) {
-        Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, upStationId, downStationId);
+    private boolean isAddingBranch(Sections sections, Long upStationId, Long downStationId, int distance, Long lineId) {
         if (sections.isBlank()) {
             throw new IllegalArgumentException("연결된 역이 없기 때문에 구간을 등록할 수 없습니다.");
         }
         if (sections.isContain(new Section(upStationId, downStationId))) {
             throw new IllegalArgumentException("구간이 이미 존재하기 때문에 구간을 등록할 수 없습니다.");
         }
-
-        Section section = sections.getSectionForCombine(upStationId, downStationId);
-        if (section.isSameAsDownStation(downStationId) || section.isSameAsUpStation(upStationId)) {
-            addBranch(section, upStationId, downStationId, distance, lineId);
-        }
+        return true;
     }
 
     private void addBranch(Section section, Long upStationId, Long downStationId, int distance, Long lineId) {
         validateDistance(section, distance);
-
         int newDistance = section.getDistance() - distance;
         if (section.isSameAsDownStation(downStationId)) {
-            jdbcSectionDao
-                    .updateDownStationIdAndDistanceByLineIdAndUpStationId(lineId, section.getUpStationId(),
-                            upStationId, newDistance);
+            jdbcSectionDao.updateDownStationIdAndDistanceByLineIdAndUpStationId(lineId, section.getUpStationId(),
+                    upStationId, newDistance);
         }
         if (section.isSameAsUpStation(upStationId)) {
             jdbcSectionDao.updateUpStationIdAndDistanceByLineIdAndDownStationId(lineId, section.getDownStationId(),
