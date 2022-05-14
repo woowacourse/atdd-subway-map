@@ -17,6 +17,8 @@ class DaoTest {
 
     protected StationDao stationDao;
 
+    protected JdbcSectionDomainDao sectionDomainDao;
+
     protected LineDao lineDao;
 
     protected SectionDao sectionDao;
@@ -26,5 +28,6 @@ class DaoTest {
         stationDao = new JdbcStationDao(jdbcTemplate, dataSource);
         lineDao = new JdbcLineDao(jdbcTemplate, dataSource);
         sectionDao = new JdbcSectionDao(jdbcTemplate, dataSource);
+        sectionDomainDao = new JdbcSectionDomainDao(jdbcTemplate);
     }
 }
