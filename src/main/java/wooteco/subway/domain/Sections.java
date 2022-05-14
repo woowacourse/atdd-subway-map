@@ -84,7 +84,7 @@ public class Sections {
     }
 
     public List<Section> delete(Long stationId) {
-        validateThatHasMinimumSection();
+        validateDeletableSize();
 
         final Section previousSection = getPreviousSection(stationId);
         final Section laterSection = getLaterSection(stationId);
@@ -97,7 +97,7 @@ public class Sections {
         return List.copyOf(sections);
     }
 
-    private void validateThatHasMinimumSection() {
+    private void validateDeletableSize() {
         if (sections.size() <= MINIMUM_SECTION_COUNT) {
             throw new IllegalSectionException("노선이 구간을 하나는 가져야하므로 구간을 제거할 수 없습니다.");
         }
