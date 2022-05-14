@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
-@Transactional
 class SectionDaoTest {
 
     private final SectionDao sectionDao;
