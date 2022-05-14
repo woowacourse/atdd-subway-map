@@ -97,4 +97,11 @@ public class SectionsDomain {
     public int hashCode() {
         return Objects.hash(value);
     }
+
+    @Override
+    public String toString() {
+        return "SectionsDomain{" +
+                "value=" + value +
+                '}';
+    }
 }

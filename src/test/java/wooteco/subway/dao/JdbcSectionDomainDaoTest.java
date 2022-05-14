@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.SectionDomain;
+import wooteco.subway.domain.SectionsDomain;
 import wooteco.subway.domain.Station;
 
 class JdbcSectionDomainDaoTest extends DaoTest {
@@ -31,13 +33,13 @@ class JdbcSectionDomainDaoTest extends DaoTest {
         section = new SectionDomain(line, upStation, downStation, distance);
     }
 
-    private SectionDomain toSectionWithId(final Long id) {
+    private SectionDomain toSectionWithId(final Long id, final SectionDomain sectionDomain) {
         return new SectionDomain(
                 id,
-                line,
-                upStation,
-                downStation,
-                distance
+                sectionDomain.getLine(),
+                sectionDomain.getUpStation(),
+                sectionDomain.getDownStation(),
+                new Distance(sectionDomain.getDistance())
         );
     }
 
@@ -88,11 +90,37 @@ class JdbcSectionDomainDaoTest extends DaoTest {
     }
 
     @Test
+    @DisplayName("역 아이디에 해당하는 모든 구간을 조회한다.")
+    void FindAllByLineId() {
+        // given
+        final Long sectionId = sectionDomainDao.insert(section);
+        final Station endDownStation = stationDao.insert(new Station("홍대입구역"))
+                .orElseThrow();
+        final SectionDomain newSection = new SectionDomain(
+                line,
+                downStation,
+                endDownStation,
+                distance
+        );
+        final Long newSectionId = sectionDomainDao.insert(newSection);
+
+        final SectionsDomain expected = new SectionsDomain(
+                List.of(toSectionWithId(sectionId, section), toSectionWithId(newSectionId, newSection))
+        );
+
+        // when
+        final SectionsDomain actual = sectionDomainDao.findAllByLineId(line.getId());
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     @DisplayName("노선 아이디가 일치하고 상행 역 아이디가 일치하는 구간을 조회한다.")
     void FindBy_MatchLineIdAndUpStationId_Success() {
         // given
         final Long id = sectionDomainDao.insert(section);
-        final SectionDomain expected = toSectionWithId(id);
+        final SectionDomain expected = toSectionWithId(id, section);
 
         // when
         final Optional<SectionDomain> actual = sectionDomainDao.findBy(line.getId(), 999L,
@@ -108,7 +136,7 @@ class JdbcSectionDomainDaoTest extends DaoTest {
     void FindBy_MatchLineIdAndDownStationId_Success() {
         // given
         final Long id = sectionDomainDao.insert(section);
-        final SectionDomain expected = toSectionWithId(id);
+        final SectionDomain expected = toSectionWithId(id, section);
 
         // when
         final Optional<SectionDomain> actual = sectionDomainDao.findBy(line.getId(), 999L,
@@ -138,7 +166,7 @@ class JdbcSectionDomainDaoTest extends DaoTest {
     void FindByLIneIdAndUpStationId() {
         // given
         final Long id = sectionDomainDao.insert(section);
-        final SectionDomain expected = toSectionWithId(id);
+        final SectionDomain expected = toSectionWithId(id, section);
 
         // when
         final Optional<SectionDomain> actual = sectionDomainDao.findByLineIdAndUpStationId(line.getId(),
@@ -168,7 +196,7 @@ class JdbcSectionDomainDaoTest extends DaoTest {
     void FindByLIneIdAndDownStationId() {
         // given
         final Long id = sectionDomainDao.insert(section);
-        final SectionDomain expected = toSectionWithId(id);
+        final SectionDomain expected = toSectionWithId(id, section);
 
         // when
         final Optional<SectionDomain> actual = sectionDomainDao.findByLineIdAndDownStationId(line.getId(),

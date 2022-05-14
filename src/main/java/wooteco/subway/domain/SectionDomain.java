@@ -107,6 +107,10 @@ public class SectionDomain {
         return downStation;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     public int getDistance() {
         return distance.getValue();
     }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.SectionDomain;
-import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.SectionsDomain;
 import wooteco.subway.domain.Station;
 
 @Repository
@@ -56,7 +56,7 @@ public class JdbcSectionDomainDao {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, stationId, stationId));
     }
 
-    public Sections findAllByLineId(final Long lineId) {
+    public SectionsDomain findAllByLineId(final Long lineId) {
         final String sql =
                 "SELECT s.*, l.name AS line_name, l.color AS line_color, us.name AS up_station_name, ds.name AS down_station_name "
                         + "FROM section AS s "
@@ -64,8 +64,7 @@ public class JdbcSectionDomainDao {
                         + "INNER JOIN station AS us ON s.up_station_id = us.id "
                         + "INNER JOIN station AS ds ON s.down_station_id = ds.id "
                         + "WHERE line_id = ? ";
-        return null;
-        // return new Sections(jdbcTemplate.query(sql, rowMapper, lineId));
+         return new SectionsDomain(jdbcTemplate.query(sql, rowMapper, lineId));
     }
 
     public Optional<SectionDomain> findBy(final Long lineId, final Long upStationId, final Long downStationId) {
