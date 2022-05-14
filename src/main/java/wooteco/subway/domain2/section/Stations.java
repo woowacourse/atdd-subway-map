@@ -4,19 +4,20 @@ import java.util.LinkedList;
 import java.util.List;
 import wooteco.subway.domain2.station.Station;
 
-public class SectionViews2 {
+// TODO: Sections 구현 후 대체
+public class Stations {
 
     private final List<Station> value;
 
-    private SectionViews2(List<Station> value) {
+    private Stations(List<Station> value) {
         this.value = value;
     }
 
-    public static SectionViews2 of(List<Section> sections) {
-        return new SectionViews2(toSortedStationList(SectionStationMap2.of(sections)));
+    public static Stations of(List<Section> sections) {
+        return new Stations(toSortedStationList(SectionStationMap2.of(sections)));
     }
 
-    public static List<Station> toSortedStationList(SectionStationMap2 sectionMap) {
+    private static List<Station> toSortedStationList(SectionStationMap2 sectionMap) {
         LinkedList<Station> list = new LinkedList<>();
         Station upperEndStation = sectionMap.findUpperEndStation();
         list.add(upperEndStation);

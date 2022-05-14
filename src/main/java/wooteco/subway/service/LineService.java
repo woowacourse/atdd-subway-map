@@ -12,7 +12,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain2.line.Line;
 import wooteco.subway.domain2.line.Lines;
 import wooteco.subway.domain2.section.Section;
-import wooteco.subway.domain2.section.SectionViews2;
+import wooteco.subway.domain2.section.Stations;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
@@ -60,8 +60,7 @@ public class LineService {
         List<Section> sections = sectionDao.findAllByLineId(id).stream()
                 .map(SectionEntity2::toDomain)
                 .collect(Collectors.toList());
-        SectionViews2 sectionViews = SectionViews2.of(sections);
-        return LineResponse.of(Line.of(lineEntity, sectionViews.getValue()));
+        return LineResponse.of(Line.of(lineEntity, Stations.of(sections).getValue()));
     }
 
     @Transactional
