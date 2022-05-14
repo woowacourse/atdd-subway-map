@@ -44,7 +44,7 @@ public class SectionDaoTest {
         stationCId = stationDao.save(StationEntity.from(StationFixture.STATION_C));
 
         LineDao lineDao = new JdbcLineDao(dataSource, jdbcTemplate);
-        lineId = lineDao.save(LineEntity.from(LineFixture.LINE_A));
+        lineId = lineDao.save(LineEntity.from(LineFixture.LINE_AB));
     }
 
     @Test

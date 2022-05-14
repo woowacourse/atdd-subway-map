@@ -22,14 +22,13 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.LineSeries;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LineRepositoryTest {
 
     @Autowired
     private LineRepository lineRepository;
 
     @Test
-    @DisplayName("저장")
+    @DisplayName("persist를 통해 저장한다.")
     public void saveByPersist() {
         // given
         LineSeries lineSeries = new LineSeries(new ArrayList<>());
@@ -41,7 +40,7 @@ class LineRepositoryTest {
     }
 
     @Test
-    @DisplayName("업데이트")
+    @DisplayName("persist를 통해 업데이트한다.")
     public void updateByPersist() {
         // given
         LineSeries lineSeries = new LineSeries(new ArrayList<>());
@@ -57,7 +56,7 @@ class LineRepositoryTest {
     }
 
     @Test
-    @DisplayName("삭제")
+    @DisplayName("persist를 통해 삭제한다.")
     public void deleteByPersist() {
         // given
         LineSeries lineSeries = new LineSeries(new ArrayList<>());

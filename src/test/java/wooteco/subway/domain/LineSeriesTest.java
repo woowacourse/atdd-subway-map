@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import wooteco.subway.domain.fixture.LineFixture;
 import wooteco.subway.exception.RowDuplicatedException;
 
 class LineSeriesTest {
@@ -15,10 +16,7 @@ class LineSeriesTest {
     @DisplayName("중복된 이름인 경우 예외를 던진다.")
     public void throwsExceptionWithDuplicatedName() {
         // given
-        LineSeries series = new LineSeries(List.of(
-            new Line("first", "color1"),
-            new Line("second", "color2"))
-        );
+        LineSeries series = new LineSeries(List.of(LineFixture.LINE_AB));
         // when
         Line line = new Line("first", "color3");
         // then
