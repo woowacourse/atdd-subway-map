@@ -39,9 +39,10 @@ class SectionsTest {
         sections.add(section);
 
         // then
-        assertThat(sections.getSections().size()).isEqualTo(2);
-        assertThat(sections.getSections()).extracting("distance")
-                .containsExactlyInAnyOrder(4, 3);
+        assertThat(sections.getSections())
+                .hasSize(2)
+                .extracting("distance")
+                .containsExactly(4, 3);
     }
 
     @DisplayName("하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 하행역을 기준으로 기존 구간을 변경한다.")
@@ -57,8 +58,9 @@ class SectionsTest {
         sections.add(section);
 
         // then
-        assertThat(sections.getSections().size()).isEqualTo(2);
-        assertThat(sections.getSections()).extracting("distance")
+        assertThat(sections.getSections())
+                .hasSize(2)
+                .extracting("distance")
                 .containsExactly(3, 4);
     }
 
