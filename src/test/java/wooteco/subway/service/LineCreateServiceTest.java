@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -19,17 +20,20 @@ import wooteco.subway.dto.LineCreateResponse;
 class LineCreateServiceTest {
 
     private final LineCreateService lineCreateService;
+    private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public LineCreateServiceTest(LineCreateService sectionService, SectionDao sectionDao, StationDao stationDao) {
+    public LineCreateServiceTest(LineCreateService sectionService, LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineCreateService = sectionService;
+        this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
 
     @AfterEach
     void reset() {
+        lineDao.deleteAll();
         stationDao.deleteAll();
         sectionDao.deleteAll();
     }
