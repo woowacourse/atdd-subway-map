@@ -27,8 +27,8 @@ public class Sections {
         validateBothStationsExisting(newSection);
         validateBothStationsNotExisting(newSection);
 
-        if (isNeededToInsert(newSection)) {
-            insertSection(newSection);
+        if (isAbleToBeForkedRoad(newSection)) {
+            adjustBaseSection(newSection);
         }
 
         sections.add(newSection);
@@ -53,12 +53,12 @@ public class Sections {
         }
     }
 
-    private boolean isNeededToInsert(Section newSection) {
+    private boolean isAbleToBeForkedRoad(Section newSection) {
         return sections.stream()
                 .anyMatch(section -> section.isEitherUpStationOrDownStationSame(newSection));
     }
 
-    private void insertSection(Section newSection) {
+    private void adjustBaseSection(Section newSection) {
         Section baseSection = findBaseSection(newSection);
 
         validateDistanceOnInserting(baseSection, newSection);
