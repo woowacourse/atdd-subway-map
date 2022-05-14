@@ -21,7 +21,7 @@ public class SectionService {
     public ModifyResult save(SectionRequest sectionRequest, Long lineId) {
         Section section = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
-        Sections sections = new Sections(sectionDao.findAll(section.getLineId()));
+        Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
         ModifyResult modifyResult = sections.add(section);
         for (Section eachSection : modifyResult.getSaveResult()) {
             sectionDao.save(eachSection, section.getLineId());
@@ -33,7 +33,7 @@ public class SectionService {
     }
 
     public ModifyResult delete(Long lineId, Long stationId) {
-        Sections sections = new Sections(sectionDao.findAll(lineId));
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         ModifyResult modifyResult = sections.delete(lineId, stationId);
         for (Section eachSection : modifyResult.getSaveResult()) {
             sectionDao.save(eachSection, lineId);

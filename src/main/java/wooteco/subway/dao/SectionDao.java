@@ -41,7 +41,7 @@ public class SectionDao {
         return new Section(insertedId, lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
-    public List<Section> findAll(Long lineId) {
+    public List<Section> findAllByLineId(Long lineId) {
         String sql = "select id, line_id, up_station_id, down_station_id, distance from section where line_id = ?";
         return jdbcTemplate.query(sql, sectionRowMapper, lineId);
     }

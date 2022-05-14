@@ -24,7 +24,7 @@ public class SectionDaoTest {
     @Test
     void save_success() {
         Section section = sectionDao.save(new Section(1L, 2L, 10L), 1L);
-        assertThat(sectionDao.findAll(1L).size()).isEqualTo(1);
+        assertThat(sectionDao.findAllByLineId(1L).size()).isEqualTo(1);
     }
 
     @DisplayName("특정 호선의 모든 구간 갯수가 일치하는지 테스트")
@@ -33,7 +33,7 @@ public class SectionDaoTest {
         Section section1 = sectionDao.save(new Section(1L, 2L, 10L), 1L);
         Section section2 = sectionDao.save(new Section(2L, 3L, 10L), 1L);
         Section section3 = sectionDao.save(new Section(1L, 2L, 10L), 3L);
-        assertThat(sectionDao.findAll(3L).size()).isEqualTo(1);
+        assertThat(sectionDao.findAllByLineId(3L).size()).isEqualTo(1);
     }
 
     @DisplayName("존재하는 구간 id가 있을 때 null이 아닌 구간을 가져오는지 테스트")

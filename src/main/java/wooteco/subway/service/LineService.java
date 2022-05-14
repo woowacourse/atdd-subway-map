@@ -72,7 +72,7 @@ public class LineService {
     }
 
     private List<Station> generateStations(Long lineId) {
-        Sections sections = new Sections(sectionDao.findAll(lineId));
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         List<Long> totalIds = sections.getStations();
         List<Station> result = new ArrayList<>();
         for (Long stationId : totalIds) {

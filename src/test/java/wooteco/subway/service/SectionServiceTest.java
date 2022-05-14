@@ -110,14 +110,14 @@ public class SectionServiceTest {
     @Test
     void delete_end_point() {
         sectionService.delete(1L, 1L);
-        assertThat(sectionDao.findAll(1L).size()).isEqualTo(1);
+        assertThat(sectionDao.findAllByLineId(1L).size()).isEqualTo(1);
     }
 
     @DisplayName("일반 구간의 종점이 아닌 점을 삭제할 때 정확히 삭제하는지 테스트")
     @Test
     void delete_not_end_point() {
         sectionService.delete(1L, 2L);
-        assertThat(sectionDao.findAll(1L).size()).isEqualTo(1);
+        assertThat(sectionDao.findAllByLineId(1L).size()).isEqualTo(1);
     }
 
     @DisplayName("사이클을 형성하는 구간을 삭제할 때 정확히 삭제하는지 테스트")
@@ -125,6 +125,6 @@ public class SectionServiceTest {
     void delete_cycle() {
         sectionService.save(new SectionRequest(3L, 1L, 10L), 1L);
         sectionService.delete(1L, 3L);
-        assertThat(sectionDao.findAll(1L).size()).isEqualTo(1);
+        assertThat(sectionDao.findAllByLineId(1L).size()).isEqualTo(1);
     }
 }
