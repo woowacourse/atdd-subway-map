@@ -62,8 +62,8 @@ public class SectionService {
     public void deleteByLineIdAndStationId(long lineId, long stationId) {
         Sections sections = new Sections(sectionDao.findByLineIdAndStationId(lineId, stationId));
         if (sections.hasTwoSection()) {
-            Section upsideSection = sections.getUpsideEndSection();
-            Section downsideSection = sections.getDownsideEndSection();
+            Section upsideSection = sections.getUpsideSection();
+            Section downsideSection = sections.getDownsideSection();
 
             deleteAndUnionTwoSection(lineId, upsideSection, downsideSection);
             return;

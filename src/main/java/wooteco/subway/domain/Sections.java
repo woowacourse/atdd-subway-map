@@ -1,13 +1,13 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Sections {
+
+    public static final int FIRST_SECTION_INDEX = 0;
 
     private final List<Section> sections;
 
@@ -163,14 +163,14 @@ public class Sections {
     }
 
     public Section getSingleDeleteSection() {
-        return sections.get(0);
+        return sections.get(FIRST_SECTION_INDEX);
     }
 
-    public Section getUpsideEndSection() {
-        return createSortedSections().get(0);
+    public Section getUpsideSection() {
+        return createSortedSections().get(FIRST_SECTION_INDEX);
     }
 
-    public Section getDownsideEndSection() {
+    public Section getDownsideSection() {
         List<Section> sortedSections = createSortedSections();
         return sortedSections.get(sortedSections.size() - 1);
     }
