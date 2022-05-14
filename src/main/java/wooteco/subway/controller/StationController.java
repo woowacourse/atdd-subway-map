@@ -10,7 +10,7 @@ import java.util.List;
 import wooteco.subway.service.StationService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/stations")
@@ -36,7 +36,7 @@ public class StationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable @NotBlank Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable @NotNull Long id) {
         stationService.delete(id);
         return ResponseEntity.noContent().build();
     }

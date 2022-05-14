@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.service.SectionService;
 import wooteco.subway.service.dto.SectionRequest;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 @RestController
 @RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
@@ -22,13 +25,13 @@ public class SectionController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity<Void> createSection(@PathVariable @NotNull Long lineId, @RequestBody @Valid SectionRequest sectionRequest) {
         sectionService.save(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+    public ResponseEntity<Void> deleteSection(@PathVariable @NotNull Long lineId, @RequestParam @NotNull Long stationId) {
         sectionService.delete(lineId, stationId);
         return ResponseEntity.ok().build();
     }

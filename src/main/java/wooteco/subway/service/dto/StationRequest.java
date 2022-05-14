@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 public class StationRequest {
 
-    @NotBlank
+    @NotBlank(message = "이름 값을 입력해주세요.")
     private String name;
 
     private StationRequest() {

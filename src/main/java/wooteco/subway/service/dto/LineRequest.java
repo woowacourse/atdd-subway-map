@@ -4,10 +4,10 @@ import javax.validation.constraints.NotBlank;
 
 public class LineRequest {
 
-    @NotBlank
+    @NotBlank(message = "이름 값을 입력해주세요.")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "색상 값을 입력해주세요.")
     private String color;
 
     private Long upStationId;
