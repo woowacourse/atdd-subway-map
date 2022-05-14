@@ -65,8 +65,8 @@ public class SectionService {
         if (sections.isPresent()) {
             sections.validateStations(upStation, downStation);
         }
-        sections.updateSection(upStation, downStation, sectionRequest.getDistance());
-        updateSections(sections);
+        Sections updatedSections = sections.updateSection(upStation, downStation, sectionRequest.getDistance());
+        updateSections(updatedSections);
 
         return Stream.of(upStation, downStation)
                 .map(StationResponse::new)
@@ -76,7 +76,7 @@ public class SectionService {
     public void delete(long lineId, long stationId) {
         Sections sections = loadSections(lineId);
         Station station = stationDao.findById(stationId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
-        sections.deleteSection(station);
-        updateSections(sections);
+        Sections deletedSections = sections.deleteSection(station);
+        updateSections(deletedSections);
     }
 }

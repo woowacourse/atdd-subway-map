@@ -1,7 +1,10 @@
 package wooteco.subway.domain;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Sections {
     private final List<Section> sections;
@@ -61,33 +64,33 @@ public class Sections {
                 .findFirst();
     }
 
-    public void updateSection(Station upStation, Station downStation, int distance) {
+    public Sections updateSection(Station upStation, Station downStation, int distance) {
         Optional<Section> sameUpStation = findSameUpStation(upStation);
         if (sameUpStation.isPresent()) {
             Section section = sameUpStation.get();
             List<Section> splitSections = section.splitSectionIfSameUpStation(downStation, distance);
-            update(section, splitSections);
-            return;
+            return new Sections(update(section, splitSections));
         }
 
         Optional<Section> sameDownStation = findSameDownStation(downStation);
         if (sameDownStation.isPresent()) {
             Section section = sameDownStation.get();
             List<Section> splitSections = section.splitSectionIfSameDownStation(upStation, distance);
-            update(section, splitSections);
-            return;
+            return new Sections(update(section, splitSections));
         }
 
         sections.add(new Section(getLineId(), upStation, downStation, distance));
+        return new Sections(sections);
     }
 
-    private void update(Section section, List<Section> splitSections) {
-        sections.add(splitSections.get(0));
-        sections.add(splitSections.get(1));
-        sections.remove(section);
+    private List<Section> update(Section section, List<Section> splitSections) {
+        List<Section> updatedSections = Stream.concat(this.sections.stream(), splitSections.stream())
+                .collect(Collectors.toList());
+        updatedSections.remove(section);
+        return updatedSections;
     }
 
-    public void deleteSection(Station station) {
+    public Sections deleteSection(Station station) {
         if (sections.size() == 1) {
             throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
         }
@@ -99,17 +102,19 @@ public class Sections {
             Section downSection = sameUpStation.get();
             Section concatSection = upSection.concatSections(downSection);
 
-            delete(upSection, downSection, concatSection);
-            return;
+            return new Sections(delete(upSection, downSection, concatSection));
         }
 
         throw new IllegalArgumentException("해당 역이 포함된 구간이 존재하지 않습니다.");
     }
 
-    private void delete(Section upSection, Section downSection, Section concatSection) {
-        sections.remove(upSection);
-        sections.remove(downSection);
-        sections.add(concatSection);
+    private List<Section> delete(Section upSection, Section downSection, Section concatSection) {
+        List<Section> deletedSections = sections.stream()
+                .filter(section -> !section.equals(upSection))
+                .filter(section -> !section.equals(downSection))
+                .collect(Collectors.toList());
+        deletedSections.add(concatSection);
+        return deletedSections;
     }
 
     public long getLineId() {
@@ -122,5 +127,20 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Sections sections1 = (Sections)o;
+        return Objects.equals(sections, sections1.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections);
     }
 }

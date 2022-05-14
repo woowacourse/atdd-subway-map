@@ -2,14 +2,11 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import wooteco.subway.dao.dto.SectionDto;
 
 public class SectionTest {
 
@@ -50,7 +47,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("상행역이 일치하는 section을 갈래길이 생기지 않게 2개로 분리한다.")
+    @DisplayName("하행역이 일치하는 section을 갈래길이 생기지 않게 2개로 분리한다.")
     void splitSectionIfSameDownStation() {
         Section section = new Section(1L, "강남역", "잠실역", 8);
 
@@ -71,6 +68,5 @@ public class SectionTest {
 
         assertThat(section).isEqualTo(new Section(1L, "강남역", "잠실역", 8));
     }
-
 }
 
