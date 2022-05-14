@@ -3,6 +3,7 @@ package wooteco.subway.controller;
 import java.util.NoSuchElementException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,22 +19,17 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler({NoHandlerFoundException.class, NoSuchElementException.class})
-    public ResponseEntity<Void> handleNoHandlerFoundException() {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<String> handleNoHandlerFoundException() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HttpStatus.NOT_FOUND.getReasonPhrase());
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<Void> handleNotFoundException() {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<String> handleNotFoundException() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HttpStatus.NOT_FOUND.getReasonPhrase());
     }
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<Void> handleDataAccessException() {
-        return ResponseEntity.internalServerError().build();
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Void> handleException() {
         return ResponseEntity.internalServerError().build();
     }
 }

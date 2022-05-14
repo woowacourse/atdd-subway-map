@@ -58,6 +58,9 @@ class LineServiceTest {
         //then
         assertThat(response).extracting("id", "name", "color")
                 .containsExactly(1L, "분당선", "bg-red-600");
+
+        assertThat(response.getStations()).extracting("id", "name")
+                .containsExactly(tuple(1L, "신도림역"), tuple(2L, "왕십리역"));
     }
 
     @Test
