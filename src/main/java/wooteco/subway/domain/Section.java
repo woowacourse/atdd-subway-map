@@ -38,6 +38,10 @@ public class Section {
         }
     }
 
+    public boolean isNewLastStation(long currentLastUpStationId, long currentLastDownStationId) {
+        return upStationId == currentLastDownStationId || downStationId == currentLastUpStationId;
+    }
+
     public Long getId() {
         return id;
     }
@@ -63,7 +67,11 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return getDistance() == section.getDistance() && Objects.equals(getId(), section.getId()) && Objects.equals(getLineId(), section.getLineId()) && Objects.equals(getUpStationId(), section.getUpStationId()) && Objects.equals(getDownStationId(), section.getDownStationId());
+        return getDistance() == section.getDistance() &&
+                Objects.equals(getId(), section.getId()) &&
+                Objects.equals(getLineId(), section.getLineId()) &&
+                Objects.equals(getUpStationId(), section.getUpStationId()) &&
+                Objects.equals(getDownStationId(), section.getDownStationId());
     }
 
     @Override

@@ -29,25 +29,13 @@ public class SectionService {
     @Transactional
     public void create(Long lineId, SectionRequest request) {
         validateExistLine(lineId);
+        validateExistStations(request.getUpStationId(), request.getDownStationId());
+        Section newSection = request.toSection(lineId);
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        validateExistStationInLine(sections, request.getUpStationId(), request.getDownStationId());
 
-        if (sections.isLastStation(request.getUpStationId(), request.getDownStationId())) {
-            sectionDao.insert(new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
-            return;
-        }
-        createMiddleSection(lineId, request, sections);
-    }
-
-    private void createMiddleSection(Long lineId, SectionRequest request, Sections sections) {
-        Section existNearSection = sections.findNearSection(request.getUpStationId(), request.getDownStationId());
-        if (request.getDistance() >= existNearSection.getDistance()) {
-            throw new SectionServiceException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
-        }
-        sectionDao.insert(new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
-        Section updateExistSection = new Section(existNearSection.getId(), existNearSection.getLineId(), request.getUpStationId(),
-                existNearSection.getDownStationId(), existNearSection.getDistance() - request.getDistance());
-        sectionDao.update(updateExistSection);
+        Optional<Section> needToBeUpdatedSection = sections.add(newSection);
+        needToBeUpdatedSection.ifPresent(sectionDao::update);
+        sectionDao.insert(newSection);
     }
 
     private void validateExistLine(Long id) {
@@ -56,17 +44,9 @@ public class SectionService {
         }
     }
 
-    private void validateExistStationInLine(Sections sections, Long upStationId, Long downStationId) {
+    private void validateExistStations(Long upStationId, Long downStationId) {
         if (!stationDao.existStationById(upStationId) || !stationDao.existStationById(downStationId)) {
             throw new AccessNoneDataException("등록되지 않은 역으로는 구간을 만들 수 없습니다.");
-        }
-        boolean isExistUpStation = sections.hasStation(upStationId);
-        boolean isExistDownStation = sections.hasStation(downStationId);
-        if (!isExistUpStation && !isExistDownStation) {
-            throw new SectionServiceException("구간을 추가하기 위해서는 노선에 들어있는 역이 필요합니다.");
-        }
-        if (isExistUpStation && isExistDownStation) {
-            throw new SectionServiceException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
     }
 
@@ -86,13 +66,13 @@ public class SectionService {
     }
 
     private void validateExistStationInLine(Sections sections, Long stationId) {
-        if (!sections.hasStation(stationId)) {
+        if (!sections.hasStation(stationId)) { // sections로 이동
             throw new AccessNoneDataException("현재 라인에 존재하지 않는 역입니다.");
         }
     }
 
     private void validateRemainOneSection(Sections sections) {
-        if (sections.hasOneSection()) {
+        if (sections.hasOneSection()) { // sections로 이동
             throw new SectionServiceException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
         }
     }
