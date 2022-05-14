@@ -31,6 +31,7 @@ public class SectionService {
         sectionDao.save(section);
     }
 
+    @Transactional(readOnly = true)
     public List<Station> findStationsByLineId(Long lineId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         List<Long> stationIds = sections.getSortedStationIds();

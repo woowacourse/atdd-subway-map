@@ -44,6 +44,7 @@ public class LineService {
         return new LineResponse(line, stations);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
@@ -51,6 +52,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
         List<Station> stations = sectionService.findStationsByLineId(line.getId());
@@ -70,6 +72,7 @@ public class LineService {
         lineDao.update(id, name, request.getColor());
     }
 
+    @Transactional(readOnly = true)
     private void validateName(String name) {
         if (lineDao.isExistName(name)) {
             throw new BusinessException(DUPLICATE_LINE_NAME);

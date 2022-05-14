@@ -37,6 +37,7 @@ public class StationService {
         return new StationResponse(stationDao.save(name));
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
