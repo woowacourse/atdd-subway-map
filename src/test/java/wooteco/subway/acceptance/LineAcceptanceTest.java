@@ -18,6 +18,7 @@ import wooteco.subway.acceptance.fixture.SimpleRestAssured;
 import wooteco.subway.dto.ExceptionResponse;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.RowNotFoundException;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
@@ -65,9 +66,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         setLineAsSaved("장한평역", "군자역", "5호선");
         // when
-        Map<String, String> params2 =
-            Map.of("name", "5호선", "color", "bg-red-800");
-        final ExtractableResponse<Response> response = SimpleRestAssured.post("/lines", params2);
+        final ExtractableResponse<Response> response =
+            setLineAsSaved("다른역", "또다른역", "5호선");
         // then
         Assertions.assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
@@ -130,10 +130,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         Assertions.assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class)
-                .getMessage())
-                .contains("존재하지 않습니다")
+            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class).getException())
+                .isEqualTo(RowNotFoundException.class)
         );
+
     }
 
     @Test
@@ -157,8 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 ID값의 노선을 수정할 수 없다.")
     public void modifyLine_throwExceptionWithInvalidId() {
         // given
-        Map<String, String> params = Map.of("name", "신분당선", "color", "bg-red-600");
-        SimpleRestAssured.post("/lines", params);
+        setLineAsSaved("장한평역", "마장역", "5호선");
         // when
         final Map<String, String> modificationParam =
             Map.of("name", "구분당선", "color", "bg-red-800");
@@ -166,10 +165,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         Assertions.assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class)
-                .getMessage())
-                .contains("존재하지 않습니다")
+            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class).getException())
+                .isEqualTo(RowNotFoundException.class)
         );
+
     }
 
     @Test
@@ -190,18 +189,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 ID값의 노선을 제거할 수 없다.")
     public void deleteLine_throwExceptionWithInvalidId() {
         // given
-        Map<String, String> params = Map.of("name", "신분당선", "color", "bg-red-600");
-        SimpleRestAssured.post("/lines", params);
+        setLineAsSaved("선릉역", "선정릉역", "분당선");
         // when
 
         final ExtractableResponse<Response> response = SimpleRestAssured.delete("/lines/99");
         // then
         Assertions.assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class)
-                .getMessage())
-                .contains("존재하지 않습니다")
+            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class).getException())
+                .isEqualTo(RowNotFoundException.class)
         );
+
     }
 
     private ExtractableResponse<Response> setLineAsSaved(String upStationName, String downStationName,

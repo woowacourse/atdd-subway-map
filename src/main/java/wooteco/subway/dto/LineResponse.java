@@ -28,7 +28,7 @@ public class LineResponse {
             line.getId(),
             line.getName(),
             line.getColor(),
-            StationSeries.fromSectionsAsOrdered(line.getSections())
+            StationSeries.fromSectionsAsOrdered(line.getSectionSeries().getSections())
                 .getStations()
                 .stream()
                 .map(StationResponse::from)

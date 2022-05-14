@@ -1,13 +1,17 @@
 package wooteco.subway.repository;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Distance;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionSeries;
 import wooteco.subway.entity.SectionEntity;
 
 @Repository
@@ -19,6 +23,42 @@ public class SectionRepository {
     public SectionRepository(StationRepository stationRepository, SectionDao sectionDao) {
         this.stationRepository = stationRepository;
         this.sectionDao = sectionDao;
+    }
+
+    public void persist(Long lineId, SectionSeries sectionSeries) {
+        final List<Section> sections = sectionSeries.getSections();
+        final List<Long> persistedIds = toIds(readAllSections(lineId));
+
+        deleteSections(sections, persistedIds);
+        updateSections(lineId, sections, persistedIds);
+    }
+
+    private List<Long> toIds(List<Section> sections) {
+        return sections.stream()
+            .map(Section::getId)
+            .collect(Collectors.toList());
+    }
+
+    private void updateSections(Long lineId, List<Section> sections, List<Long> persistedIds) {
+        for (Section section : sections) {
+            if (persistedIds.contains(section.getId())) {
+                update(section);
+                continue;
+            }
+            save(lineId, section);
+        }
+    }
+
+    private void deleteSections(List<Section> sections, List<Long> persistedIds) {
+        final List<Long> ids = sections.stream()
+            .map(Section::getId)
+            .collect(Collectors.toList());
+
+        for (Long persistedId : persistedIds) {
+            if (!ids.contains(persistedId)) {
+                delete(persistedId);
+            }
+        }
     }
 
     public List<Section> readAllSections(Long lineId) {
@@ -40,25 +80,23 @@ public class SectionRepository {
         );
     }
 
-    public Section save(Long lineId, Section createSection) {
+    private Section save(Long lineId, Section createSection) {
         final Long id = sectionDao.save(SectionEntity.from(createSection, lineId));
-        return new Section(id,
-            createSection.getUpStation(),
-            createSection.getDownStation(),
-            createSection.getDistance());
+        return injectID(createSection, id);
     }
 
-    public void delete(Section deleteSection) {
-        sectionDao.deleteById(deleteSection.getId());
+    private Section injectID(Section section, Long id) {
+        final Field field = ReflectionUtils.findField(Section.class, "id");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, section, id);
+        return section;
     }
 
-    public void synchronize(Long lineId, List<Section> dirties) {
-        for (Section dirty : dirties) {
-            if (dirty.getId() != null) {
-                delete(dirty);
-            } else {
-                save(lineId, dirty);
-            }
-        }
+    private void update(Section section) {
+        sectionDao.update(SectionEntity.from(section));
+    }
+
+    private void delete(Long id) {
+        sectionDao.deleteById(id);
     }
 }

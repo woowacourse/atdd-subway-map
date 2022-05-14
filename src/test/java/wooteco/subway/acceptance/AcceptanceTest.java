@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql("classpath:schema.sql")
 public class AcceptanceTest {
     @LocalServerPort

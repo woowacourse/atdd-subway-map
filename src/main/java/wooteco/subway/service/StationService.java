@@ -22,8 +22,11 @@ public class StationService {
 
     public StationResponse save(StationRequest stationRequest) {
         StationSeries stationSeries = new StationSeries(stationRepository.findAllStations());
-        Station createdStation = stationRepository.create(stationSeries.create(stationRequest.getName()));
-        return StationResponse.from(createdStation);
+        final Station station = new Station(stationRequest.getName());
+        stationSeries.add(station);
+
+        stationRepository.persist(stationSeries);
+        return StationResponse.from(station);
     }
 
     public List<StationResponse> findAll() {
@@ -33,7 +36,13 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    public Station findOne(Long id) {
+        return stationRepository.findById(id);
+    }
+
     public void deleteOne(Long id) {
-        stationRepository.deleteById(id);
+        StationSeries stationSeries = new StationSeries(stationRepository.findAllStations());
+        stationSeries.delete(id);
+        stationRepository.persist(stationSeries);
     }
 }

@@ -20,8 +20,9 @@ class LineSeriesTest {
             new Line("second", "color2"))
         );
         // when
+        Line line = new Line("first", "color3");
         // then
         assertThatExceptionOfType(RowDuplicatedException.class)
-            .isThrownBy(() -> series.create("first", "color3"));
+            .isThrownBy(() -> series.add(line));
     }
 }

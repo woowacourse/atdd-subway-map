@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import wooteco.subway.exception.CustomException;
 import wooteco.subway.exception.RowDuplicatedException;
+import wooteco.subway.exception.RowNotFoundException;
 
 public class StationSeries {
 
@@ -14,6 +15,24 @@ public class StationSeries {
 
     public StationSeries(List<Station> stations) {
         this.stations = stations;
+    }
+
+    public void add(Station station) {
+        validateDistinct(station.getName());
+        this.stations.add(station);
+    }
+
+    private void validateDistinct(String name) {
+        if (stations.stream().anyMatch(station -> station.getName().equals(name))) {
+            throw new RowDuplicatedException(String.format("%s는 이미 존재하는 역 이름입니다.", name));
+        }
+    }
+
+    public void delete(Long id) {
+        final boolean isRemoved = stations.removeIf(station -> station.getId().equals(id));
+        if (!isRemoved) {
+            throw new RowNotFoundException(String.format("%d에 해당하는 역이 없습니다.", id));
+        }
     }
 
     public static StationSeries fromSectionsAsOrdered(List<Section> sections) {
@@ -40,17 +59,6 @@ public class StationSeries {
             cursor = sectionMap.get(cursor);
         }
         return orderedStations;
-    }
-
-    public Station create(String name) {
-        validateDistinct(name);
-        return new Station(name);
-    }
-
-    private void validateDistinct(String name) {
-        if (stations.stream().anyMatch(station -> station.getName().equals(name))) {
-            throw new RowDuplicatedException(String.format("%s는 이미 존재하는 역 이름입니다.", name));
-        }
     }
 
     public List<Station> getStations() {

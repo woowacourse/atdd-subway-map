@@ -24,12 +24,14 @@ public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
         LineSeries lineSeries = new LineSeries(lineRepository.findAllLines());
-        final Line line = lineSeries.create(lineRequest.getName(), lineRequest.getColor());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         line.addSection(sectionService.create(
             lineRequest.getUpStationId(),
             lineRequest.getDownStationId(),
             lineRequest.getDistance()));
-        return LineResponse.from(lineRepository.save(line));
+        lineSeries.add(line);
+        lineRepository.persist(lineSeries);
+        return LineResponse.from(line);
     }
 
     public List<LineResponse> findAll() {
@@ -44,10 +46,14 @@ public class LineService {
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        lineRepository.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        LineSeries lineSeries = new LineSeries(lineRepository.findAllLines());
+        lineSeries.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        lineRepository.persist(lineSeries);
     }
 
     public void delete(Long id) {
-        lineRepository.delete(id);
+        LineSeries lineSeries = new LineSeries(lineRepository.findAllLines());
+        lineSeries.delete(id);
+        lineRepository.persist(lineSeries);
     }
 }

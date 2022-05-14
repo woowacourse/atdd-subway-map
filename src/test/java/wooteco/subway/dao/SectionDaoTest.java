@@ -34,48 +34,48 @@ public class SectionDaoTest {
     private Long stationCId;
     private Long lineId;
 
-    // @BeforeEach
-    // void setUp() {
-    //     sectionDao = new JdbcSectionDao(dataSource, jdbcTemplate);
-    //
-    //     StationDao stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
-    //     stationAId = stationDao.save(StationEntity.from(StationFixture.STATION_A)).getId();
-    //     stationBId = stationDao.save(StationEntity.from(StationFixture.STATION_B)).getId();
-    //     stationCId = stationDao.save(StationEntity.from(StationFixture.STATION_C)).getId();
-    //
-    //     LineDao lineDao = new JdbcLineDao(dataSource, jdbcTemplate);
-    //     lineId = lineDao.save(LineEntity.from(LineFixture.LINE_A)).getId();
-    // }
-    //
-    // @Test
-    // @DisplayName("구간을 저장한다")
-    // public void saveNewSection() {
-    //     // given
-    //     SectionEntity entity = new SectionEntity(lineId, stationAId, stationBId, 7);
-    //     // when
-    //     final Long id = sectionDao.save(entity);
-    //     // then
-    //     assertThat(id).isNotNull();
-    // }
-    //
-    // @Test
-    // @DisplayName("노선에 저장된 구간을 읽는다.")
-    // public void readSectionsByLineId() {
-    //     // given
-    //     sectionDao.save(new SectionEntity(lineId, stationAId, stationBId, 7));
-    //     // when
-    //     final List<SectionEntity> sectionEntities = sectionDao.findSectionsByLineId(lineId);
-    //     // then
-    //     assertThat(sectionEntities.size()).isEqualTo(1);
-    // }
-    //
-    // @Test
-    // @DisplayName("구간을 삭제한다.")
-    // public void delete() {
-    //     // given & when
-    //     final Long id = sectionDao.save(new SectionEntity(lineId, stationAId, stationBId, 7));
-    //
-    //     // then
-    //     assertThatCode(() -> sectionDao.deleteById(id)).doesNotThrowAnyException();
-    // }
+    @BeforeEach
+    void setUp() {
+        sectionDao = new JdbcSectionDao(dataSource, jdbcTemplate);
+
+        StationDao stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
+        stationAId = stationDao.save(StationEntity.from(StationFixture.STATION_A));
+        stationBId = stationDao.save(StationEntity.from(StationFixture.STATION_B));
+        stationCId = stationDao.save(StationEntity.from(StationFixture.STATION_C));
+
+        LineDao lineDao = new JdbcLineDao(dataSource, jdbcTemplate);
+        lineId = lineDao.save(LineEntity.from(LineFixture.LINE_A));
+    }
+
+    @Test
+    @DisplayName("구간을 저장한다")
+    public void saveNewSection() {
+        // given
+        SectionEntity entity = new SectionEntity(lineId, stationAId, stationBId, 7);
+        // when
+        final Long id = sectionDao.save(entity);
+        // then
+        assertThat(id).isNotNull();
+    }
+
+    @Test
+    @DisplayName("노선에 저장된 구간을 읽는다.")
+    public void readSectionsByLineId() {
+        // given
+        sectionDao.save(new SectionEntity(lineId, stationAId, stationBId, 7));
+        // when
+        final List<SectionEntity> sectionEntities = sectionDao.findSectionsByLineId(lineId);
+        // then
+        assertThat(sectionEntities.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다.")
+    public void delete() {
+        // given & when
+        final Long id = sectionDao.save(new SectionEntity(lineId, stationAId, stationBId, 7));
+
+        // then
+        assertThatCode(() -> sectionDao.deleteById(id)).doesNotThrowAnyException();
+    }
 }
