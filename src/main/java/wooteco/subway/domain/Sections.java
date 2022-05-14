@@ -9,10 +9,11 @@ public class Sections {
 
     private static final int MINIMUM_SECTION_COUNT = 1;
 
-    private final List<Section> sections;
+    private List<Section> sections;
 
     public Sections(List<Section> sections) {
         this.sections = sections;
+        this.sections = sortSections(sections);
     }
 
     public List<Section> add(Section section) {
@@ -21,8 +22,8 @@ public class Sections {
         isPossibleRegistration(section);
 
         sections.add(section);
-
-        return sections;
+        sections = sortSections(sections);
+        return List.copyOf(sections);
     }
 
     private void checkContainsSameSection(Section newSection) {
@@ -92,7 +93,8 @@ public class Sections {
         findAndRemoveLastSection(stationId, laterSection);
         removeMiddleSection(previousSection, laterSection);
 
-        return sections;
+        sections = sortSections(sections);
+        return List.copyOf(sections);
     }
 
     private void validateThatHasMinimumSection() {
@@ -163,7 +165,7 @@ public class Sections {
         return List.copyOf(sections);
     }
 
-    public List<Section> getSortedSection() {
+    private List<Section> sortSections(List<Section> sections) {
         final List<Section> copySections = new ArrayList<>(List.copyOf(sections));
 
         final Section firstSection = findFirstSection(copySections);

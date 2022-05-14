@@ -99,7 +99,7 @@ public class LineService {
     }
 
     private List<StationResponse> sortedStations(Sections sections) {
-        final List<Section> sortedSections = sections.getSortedSection();
+        final List<Section> sortedSections = sections.getSections();
 
         List<StationResponse> stations = new ArrayList<>();
 

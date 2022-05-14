@@ -59,7 +59,7 @@ class SectionsTest {
         // then
         assertThat(sections.getSections().size()).isEqualTo(2);
         assertThat(sections.getSections()).extracting("distance")
-                .containsExactlyInAnyOrder(4, 3);
+                .containsExactly(3, 4);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
@@ -197,7 +197,7 @@ class SectionsTest {
         final Sections sections = new Sections(sectionList);
 
         //when
-        final List<Section> sortedSections = sections.getSortedSection();
+        final List<Section> sortedSections = sections.getSections();
 
         //then
         assertThat(sortedSections).hasSize(4)
