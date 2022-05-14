@@ -1,8 +1,8 @@
-package wooteco.subway.domain2.section;
+package wooteco.subway.domain.section;
 
 import java.util.Objects;
-import wooteco.subway.domain2.station.Station;
-import wooteco.subway.entity.SectionEntity2;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.entity.StationEntity;
 
 public class Section {
@@ -84,8 +84,8 @@ public class Section {
         return remainderDistance;
     }
 
-    public SectionEntity2 toEntity(Long lineId) {
-        return new SectionEntity2(lineId, upStation.toEntity(), downStation.toEntity(), distance);
+    public SectionEntity toEntity(Long lineId) {
+        return new SectionEntity(lineId, upStation.toEntity(), downStation.toEntity(), distance);
     }
 
     @Override

@@ -1,12 +1,12 @@
-package wooteco.subway.domain2.section;
+package wooteco.subway.domain.section;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import wooteco.subway.domain2.station.Station;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.NotFoundException;
 
-public class Sections2 {
+public class Sections {
 
     private static final String NOT_EXISTING_LINE_EXCEPTION = "존재하지 않는 노선입니다.";
     private static final String STATION_NOT_REGISTERED_EXCEPTION = "구간에 등록되지 않은 지하철역입니다.";
@@ -16,15 +16,15 @@ public class Sections2 {
 
     private final List<Section> value;
 
-    private Sections2(List<Section> value) {
+    private Sections(List<Section> value) {
         validateLineExistence(value);
         this.value = value;
     }
 
-    public static Sections2 of(List<Section> sections) {
+    public static Sections of(List<Section> sections) {
         validateLineExistence(sections);
-        List<Station> sortedStations = toSortedStationList(SectionStationMap2.of(sections));
-        return new Sections2(toSortedSections(sortedStations, sections));
+        List<Station> sortedStations = toSortedStationList(SectionStationMap.of(sections));
+        return new Sections(toSortedSections(sortedStations, sections));
     }
 
     private static void validateLineExistence(List<Section> value) {
@@ -33,7 +33,7 @@ public class Sections2 {
         }
     }
 
-    private static List<Station> toSortedStationList(SectionStationMap2 sectionMap) {
+    private static List<Station> toSortedStationList(SectionStationMap sectionMap) {
         LinkedList<Station> list = new LinkedList<>();
         Station upperEndStation = sectionMap.findUpperEndStation();
         list.add(upperEndStation);
@@ -64,14 +64,14 @@ public class Sections2 {
                 .get();
     }
 
-    public Sections2 save(Section newSection) {
+    public Sections save(Section newSection) {
         validateSingleRegisteredStation(newSection);
         List<Section> sections = new ArrayList<>(value);
         if (!isEndSection(newSection)) {
             updateOriginalSection(newSection, sections);
         }
         sections.add(newSection);
-        return new Sections2(sections);
+        return new Sections(sections);
     }
 
     private void updateOriginalSection(Section newSection, List<Section> sections) {
@@ -113,7 +113,7 @@ public class Sections2 {
         return isNewUpperEndSection || isNewLowerEndSection;
     }
 
-    public Sections2 delete(Station station) {
+    public Sections delete(Station station) {
         validateRegisteredStation(station);
         validateNotLastSection();
         List<Section> sections = new ArrayList<>(value);
@@ -121,7 +121,7 @@ public class Sections2 {
             return removeMiddleStation(station, sections);
         }
         sections.removeIf(section -> section.hasStationOf(station));
-        return new Sections2(sections);
+        return new Sections(sections);
     }
 
     private void validateRegisteredStation(Station station) {
@@ -147,7 +147,7 @@ public class Sections2 {
                 .count() == 2;
     }
 
-    private Sections2 removeMiddleStation(Station station, List<Section> sections) {
+    private Sections removeMiddleStation(Station station, List<Section> sections) {
         Section upperSection = getUpperSection(station);
         Section lowerSection = getLowerSection(station);
         Section connectedSection = new Section(upperSection.getUpStation(),
@@ -156,7 +156,7 @@ public class Sections2 {
 
         sections.removeAll(List.of(upperSection, lowerSection));
         sections.add(connectedSection);
-        return new Sections2(sections);
+        return new Sections(sections);
     }
 
     private Section getUpperSection(Station station) {
@@ -173,7 +173,7 @@ public class Sections2 {
                 .get();
     }
 
-    public List<Section> extractNewSections(Sections2 previousSections) {
+    public List<Section> extractNewSections(Sections previousSections) {
         List<Section> previous = new ArrayList<>(previousSections.value);
         List<Section> current = new ArrayList<>(value);
 
@@ -181,7 +181,7 @@ public class Sections2 {
         return current;
     }
 
-    public List<Section> extractDeletedSections(Sections2 previousSections) {
+    public List<Section> extractDeletedSections(Sections previousSections) {
         List<Section> previous = new ArrayList<>(previousSections.value);
         List<Section> current = new ArrayList<>(value);
 

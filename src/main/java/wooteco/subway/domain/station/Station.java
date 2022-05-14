@@ -1,4 +1,4 @@
-package wooteco.subway.domain2.station;
+package wooteco.subway.domain.station;
 
 import java.util.Objects;
 import wooteco.subway.entity.StationEntity;

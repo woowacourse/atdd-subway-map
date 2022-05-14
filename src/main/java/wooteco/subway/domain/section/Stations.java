@@ -1,8 +1,8 @@
-package wooteco.subway.domain2.section;
+package wooteco.subway.domain.section;
 
 import java.util.LinkedList;
 import java.util.List;
-import wooteco.subway.domain2.station.Station;
+import wooteco.subway.domain.station.Station;
 
 // TODO: Sections 구현 후 대체
 public class Stations {
@@ -14,10 +14,10 @@ public class Stations {
     }
 
     public static Stations of(List<Section> sections) {
-        return new Stations(toSortedStationList(SectionStationMap2.of(sections)));
+        return new Stations(toSortedStationList(SectionStationMap.of(sections)));
     }
 
-    private static List<Station> toSortedStationList(SectionStationMap2 sectionMap) {
+    private static List<Station> toSortedStationList(SectionStationMap sectionMap) {
         LinkedList<Station> list = new LinkedList<>();
         Station upperEndStation = sectionMap.findUpperEndStation();
         list.add(upperEndStation);

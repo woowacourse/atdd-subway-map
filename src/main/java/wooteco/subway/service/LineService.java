@@ -7,17 +7,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.RegisteredStationDao;
-import wooteco.subway.dao.SectionDao2;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain2.line.Line;
-import wooteco.subway.domain2.line.Lines;
-import wooteco.subway.domain2.section.Section;
-import wooteco.subway.domain2.section.Stations;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.line.Lines;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Stations;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.SectionEntity2;
+import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
 
@@ -31,11 +31,11 @@ public class LineService {
 
     private final LineDao lineDao;
     private final StationDao stationDao;
-    private final SectionDao2 sectionDao;
+    private final SectionDao sectionDao;
     private final RegisteredStationDao registeredStationDao;
 
     public LineService(LineDao lineDao,
-                       SectionDao2 sectionDao,
+                       SectionDao sectionDao,
                        StationDao stationDao,
                        RegisteredStationDao registeredStationDao) {
         this.lineDao = lineDao;
@@ -58,7 +58,7 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
 
         List<Section> sections = sectionDao.findAllByLineId(id).stream()
-                .map(SectionEntity2::toDomain)
+                .map(SectionEntity::toDomain)
                 .collect(Collectors.toList());
         return LineResponse.of(Line.of(lineEntity, Stations.of(sections).getValue()));
     }

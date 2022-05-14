@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionViewDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
@@ -33,7 +33,7 @@ class LineServiceTest extends ServiceTest {
     private LineDao lineDao;
 
     @Autowired
-    private SectionViewDao sectionViewDao;
+    private SectionDao dao;
 
     @BeforeEach
     void cleanseAndSetUp() throws Exception {
@@ -186,7 +186,7 @@ class LineServiceTest extends ServiceTest {
             service.delete(1L);
 
             boolean lineNotFound = lineDao.findById(1L).isEmpty();
-            List<?> sectionsConnectedToLine = sectionViewDao.findAllByLineId(1L);
+            List<?> sectionsConnectedToLine = dao.findAllByLineId(1L);
 
             assertThat(lineNotFound).isTrue();
             assertThat(sectionsConnectedToLine).isEmpty();

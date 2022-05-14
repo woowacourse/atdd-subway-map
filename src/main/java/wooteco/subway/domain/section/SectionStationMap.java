@@ -1,24 +1,24 @@
-package wooteco.subway.domain2.section;
+package wooteco.subway.domain.section;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import wooteco.subway.domain2.station.Station;
+import wooteco.subway.domain.station.Station;
 
-public class SectionStationMap2 {
+public class SectionStationMap {
 
     private final Map<Long, Station> upToDownStationMap;
     private final Map<Long, Station> downToUpStationMap;
 
-    private SectionStationMap2(Map<Long, Station> upToDownStationMap,
-                               Map<Long, Station> downToUpStationMap) {
+    private SectionStationMap(Map<Long, Station> upToDownStationMap,
+                              Map<Long, Station> downToUpStationMap) {
         this.upToDownStationMap = upToDownStationMap;
         this.downToUpStationMap = downToUpStationMap;
     }
 
-    public static SectionStationMap2 of(List<Section> sections) {
+    public static SectionStationMap of(List<Section> sections) {
         Map<Long, Station> upToDownStationMap = new HashMap<>();
         Map<Long, Station> downToUpStationMap = new HashMap<>();
 
@@ -28,7 +28,7 @@ public class SectionStationMap2 {
             upToDownStationMap.put(upStation.getId(), downStation);
             downToUpStationMap.put(downStation.getId(),upStation);
         }
-        return new SectionStationMap2(upToDownStationMap, downToUpStationMap);
+        return new SectionStationMap(upToDownStationMap, downToUpStationMap);
     }
 
     public Station findUpperEndStation() {

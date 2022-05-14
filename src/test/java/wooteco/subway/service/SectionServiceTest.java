@@ -16,10 +16,15 @@ import org.springframework.jdbc.datasource.init.ScriptUtils;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.entity.SectionEntity;
+import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
 class SectionServiceTest extends ServiceTest{
+
+    private final StationEntity STATION1 = new StationEntity(1L, "강남역");
+    private final StationEntity STATION2 = new StationEntity(2L, "선릉역");
+    private final StationEntity STATION3 = new StationEntity(3L, "잠실역");
 
     @Autowired
     private SectionService service;
@@ -40,8 +45,8 @@ class SectionServiceTest extends ServiceTest{
 
         private final Long LINE_ID = 1L;
         private final int CURRENT_SECTION_DISTANCE = 5;
-        private final SectionEntity EXISTING_SECTION_AT_LINE1 = new SectionEntity(LINE_ID, 3L, 1L,
-                CURRENT_SECTION_DISTANCE);
+        private final SectionEntity EXISTING_SECTION_AT_LINE1 = new SectionEntity(
+                LINE_ID, STATION3, STATION1, CURRENT_SECTION_DISTANCE);
 
         @Test
         void 상행_종점_등록시_그대로_저장() {
@@ -49,7 +54,7 @@ class SectionServiceTest extends ServiceTest{
 
             List<SectionEntity> actual = dao.findAllByLineId(LINE_ID);
             List<SectionEntity> expected = List.of(EXISTING_SECTION_AT_LINE1,
-                    new SectionEntity(LINE_ID, 2L, 3L, 10));
+                    new SectionEntity(LINE_ID, STATION2, STATION3, 10));
 
             assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
         }
@@ -60,7 +65,7 @@ class SectionServiceTest extends ServiceTest{
 
             List<SectionEntity> actual = dao.findAllByLineId(LINE_ID);
             List<SectionEntity> expected = List.of(EXISTING_SECTION_AT_LINE1,
-                    new SectionEntity(LINE_ID, 1L, 2L, 10));
+                    new SectionEntity(LINE_ID, STATION1, STATION2, 10));
 
             assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
         }
@@ -72,8 +77,8 @@ class SectionServiceTest extends ServiceTest{
 
             List<SectionEntity> actual = dao.findAllByLineId(LINE_ID);
             List<SectionEntity> expected = List.of(
-                    new SectionEntity(LINE_ID, 3L, 2L, newSectionDistance),
-                    new SectionEntity(LINE_ID, 2L, 1L, CURRENT_SECTION_DISTANCE - newSectionDistance));
+                    new SectionEntity(LINE_ID, STATION3, STATION2, newSectionDistance),
+                    new SectionEntity(LINE_ID, STATION2, STATION1, CURRENT_SECTION_DISTANCE - newSectionDistance));
 
             assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
         }
@@ -85,8 +90,8 @@ class SectionServiceTest extends ServiceTest{
 
             List<SectionEntity> actual = dao.findAllByLineId(LINE_ID);
             List<SectionEntity> expected = List.of(
-                    new SectionEntity(LINE_ID, 3L, 2L, CURRENT_SECTION_DISTANCE - newSectionDistance),
-                    new SectionEntity(LINE_ID, 2L, 1L, newSectionDistance));
+                    new SectionEntity(LINE_ID, STATION3, STATION2, CURRENT_SECTION_DISTANCE - newSectionDistance),
+                    new SectionEntity(LINE_ID, STATION2, STATION1, newSectionDistance));
 
             assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
         }
@@ -182,7 +187,7 @@ class SectionServiceTest extends ServiceTest{
 
             List<SectionEntity> actual = dao.findAllByLineId(2L);
             List<SectionEntity> expected = List.of(
-                    new SectionEntity(2L, 2L, 3L, 5));
+                    new SectionEntity(2L, STATION2, STATION3, 5));
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -193,7 +198,7 @@ class SectionServiceTest extends ServiceTest{
 
             List<SectionEntity> actual = dao.findAllByLineId(2L);
             List<SectionEntity> expected = List.of(
-                    new SectionEntity(2L, 1L, 3L, 10));
+                    new SectionEntity(2L, STATION1, STATION3, 10));
 
             assertThat(actual).isEqualTo(expected);
         }

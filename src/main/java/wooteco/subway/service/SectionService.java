@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.SectionDao2;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain2.section.Section;
-import wooteco.subway.domain2.section.Sections2;
-import wooteco.subway.domain2.station.Station;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Sections;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateSectionRequest;
-import wooteco.subway.entity.SectionEntity2;
+import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
@@ -18,10 +18,10 @@ public class SectionService {
 
     private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "존재하지 않는 역을 입력하였습니다.";
 
-    private final SectionDao2 sectionDao;
+    private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public SectionService(SectionDao2 sectionDao,
+    public SectionService(SectionDao sectionDao,
                           StationDao stationDao) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
@@ -30,23 +30,23 @@ public class SectionService {
 
     @Transactional
     public void save(Long lineId, CreateSectionRequest request) {
-        Sections2 sections = Sections2.of(findValidSections(lineId));
+        Sections sections = Sections.of(findValidSections(lineId));
         Station upStation = findExistingStation(request.getUpStationId());
         Station downStation = findExistingStation(request.getDownStationId());
-        Sections2 updatedSections = sections.save(new Section(upStation, downStation, request.getDistance()));
+        Sections updatedSections = sections.save(new Section(upStation, downStation, request.getDistance()));
 
         updateSectionChanges(sections, updatedSections, lineId);
     }
 
     @Transactional
     public void delete(Long lineId, Long stationId) {
-        Sections2 sections = Sections2.of(findValidSections(lineId));
-        Sections2 updatedSections = sections.delete(findExistingStation(stationId));
+        Sections sections = Sections.of(findValidSections(lineId));
+        Sections updatedSections = sections.delete(findExistingStation(stationId));
 
         updateSectionChanges(sections, updatedSections, lineId);
     }
 
-    private void updateSectionChanges(Sections2 oldSections, Sections2 updatedSections, Long lineId) {
+    private void updateSectionChanges(Sections oldSections, Sections updatedSections, Long lineId) {
         for (Section deletedSection : updatedSections.extractDeletedSections(oldSections)) {
             sectionDao.delete(deletedSection.toEntity(lineId));
         }
@@ -58,7 +58,7 @@ public class SectionService {
     private List<Section> findValidSections(Long lineId) {
         return sectionDao.findAllByLineId(lineId)
                 .stream()
-                .map(SectionEntity2::toDomain)
+                .map(SectionEntity::toDomain)
                 .collect(Collectors.toList());
     }
 

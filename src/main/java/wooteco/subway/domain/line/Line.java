@@ -1,9 +1,9 @@
-package wooteco.subway.domain2.line;
+package wooteco.subway.domain.line;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import wooteco.subway.domain2.station.Station;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.RegisteredStationEntity;
 import wooteco.subway.entity.StationEntity;
