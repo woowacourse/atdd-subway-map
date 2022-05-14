@@ -7,19 +7,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.RegisteredStationDao;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.RegisteredStationDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.SectionViewDao;
+import wooteco.subway.dao.SectionDao2;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain2.SectionViews2;
+import wooteco.subway.domain2.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
-import wooteco.subway.entity.RegisteredStationEntity;
 import wooteco.subway.entity.LineEntity;
+import wooteco.subway.entity.RegisteredStationEntity;
 import wooteco.subway.entity.SectionEntity;
-import wooteco.subway.domain.SectionViews;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
 
@@ -31,19 +32,19 @@ public class LineService {
     private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "존재하지 않는 역을 입력하였습니다.";
 
     private final LineDao lineDao;
-    private final SectionDao sectionDao;
-    private final SectionViewDao sectionViewDao;
     private final StationDao stationDao;
+    private final SectionDao sectionDao;
+    private final SectionDao2 sectionDao2;
     private final RegisteredStationDao registeredStationDao;
 
     public LineService(LineDao lineDao,
                        SectionDao sectionDao,
-                       SectionViewDao sectionViewDao,
+                       SectionDao2 sectionDao2,
                        StationDao stationDao,
                        RegisteredStationDao registeredStationDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
-        this.sectionViewDao = sectionViewDao;
+        this.sectionDao2 = sectionDao2;
         this.stationDao = stationDao;
         this.registeredStationDao = registeredStationDao;
     }
@@ -61,7 +62,7 @@ public class LineService {
 
     public LineResponse find(Long id) {
         LineEntity lineEntity = findExistingLine(id);
-        SectionViews sections = SectionViews.of(sectionViewDao.findAllByLineId(id));
+        SectionViews2 sections = SectionViews2.of(sectionDao2.findAllByLineId(id));
         return toLineResponse(lineEntity, sections.getSortedStationsList());
     }
 
@@ -110,13 +111,15 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
-    private List<StationEntity> findStations(CreateLineRequest lineRequest) {
+    private List<Station> findStations(CreateLineRequest lineRequest) {
         List<Long> stationsIds = List.of(lineRequest.getUpStationId(), lineRequest.getDownStationId());
         List<StationEntity> stations = stationDao.findAllByIds(stationsIds);
         if (stationsIds.size() != stations.size()) {
             throw new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE);
         }
-        return stations;
+        return stations.stream()
+                .map(StationEntity::toDomain)
+                .collect(Collectors.toList());
     }
 
     private SectionEntity toSection(CreateLineRequest lineRequest, LineEntity lineEntity) {
@@ -128,14 +131,15 @@ public class LineService {
 
     private LineResponse toLineResponse(List<RegisteredStationEntity> fullStations) {
         LineEntity lineEntity = fullStations.get(0).getLineEntity();
-        List<StationEntity> stations = fullStations.stream()
+        List<Station> stations = fullStations.stream()
                 .map(RegisteredStationEntity::getStationEntity)
+                .map(StationEntity::toDomain)
                 .collect(Collectors.toList());
         return toLineResponse(lineEntity, stations);
     }
 
     private LineResponse toLineResponse(LineEntity lineEntity,
-                                        List<StationEntity> stations) {
+                                        List<Station> stations) {
         List<StationResponse> stationResponses = stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toUnmodifiableList());
