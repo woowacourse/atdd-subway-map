@@ -14,7 +14,7 @@ import wooteco.subway.domain.SectionEntity;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.SectionDto;
 
-public class SectionServiceTest {
+class SectionServiceTest {
 
     private final Long line2Id = 1L;
     private final Long 선릉역Id = 1L;

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.SectionEntity;
 
-public class FakeSectionDao implements SectionDao {
+class FakeSectionDao implements SectionDao {
 
     private final List<SectionEntity> sections = new ArrayList<>();
     private Long seq = 0L;
