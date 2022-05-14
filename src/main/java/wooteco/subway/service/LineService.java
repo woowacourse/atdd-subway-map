@@ -10,14 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.dao.SectionJdbcDao;
 import wooteco.subway.dao.StationJdbcDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.*;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionsResponse;
-import wooteco.subway.exception.ClientException;
 
 @Service
 @Transactional
@@ -34,21 +30,20 @@ public class LineService {
     }
 
     public LineResponse save(LineRequest request) {
-        try {
-            Line line = lineDao.save(new Line(request.getName(), request.getColor()));
-            sectionJdbcDao.save(line.getId(), new Section(line.getId(), request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        Lines lines = lineDao.findAll();
+        lines.add(new Line(request.getName(), request.getColor()));
 
-            Station upsStation = stationDao.findById(request.getUpStationId());
-            Station downStation = stationDao.findById(request.getDownStationId());
-            return new LineResponse(line.getId(), line.getName(), line.getColor(), Set.of(upsStation, downStation));
-        } catch (DataAccessException exception) {
-            throw new ClientException("이미 등록된 지하철노선입니다.");
-        }
+        Line line = lineDao.save(new Line(request.getName(), request.getColor()));
+        sectionJdbcDao.save(line.getId(), new Section(line.getId(), request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+
+        Station upsStation = stationDao.findById(request.getUpStationId());
+        Station downStation = stationDao.findById(request.getDownStationId());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), Set.of(upsStation, downStation));
     }
 
     public List<LineResponse> findAll() {
         List<LineResponse> responses = new ArrayList<>();
-        for (Line line : lineDao.findAll()) {
+        for (Line line : lineDao.findAll().getLines()) {
             responses.add(makeLineResponseWithLinkedStations(line, sectionJdbcDao.findById(line.getId())));
         }
         return responses;
@@ -80,16 +75,14 @@ public class LineService {
                 .collect(Collectors.toMap(Station::getId, station -> station));
     }
 
-    public int update(Long id, LineRequest lineRequest) {
-        try {
-            return lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
-        } catch (DataAccessException exception) {
-            throw new ClientException("등록된 지하철노선으로 변경할 수 없습니다.");
-        }
+    public int update(Long id, LineRequest request) {
+        Lines lines = lineDao.findAll();
+        Line line = new Line(request.getName(), request.getColor());
+        lines.add(line);
+        return lineDao.update(id, new Line(line.getName(), line.getColor()));
     }
 
     public int delete(Long id) {
         return lineDao.delete(id);
     }
 }
-

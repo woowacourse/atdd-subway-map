@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
-import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,6 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Lines;
 
 @Repository
 public class LineJdbcDao {
@@ -38,9 +38,9 @@ public class LineJdbcDao {
                 line.getColor());
     }
 
-    public List<Line> findAll() {
+    public Lines findAll() {
         final String sql = "select * from line";
-        return jdbcTemplate.query(sql, lineRowMapper());
+        return new Lines(jdbcTemplate.query(sql, lineRowMapper()));
     }
 
     public Line findById(Long id) {

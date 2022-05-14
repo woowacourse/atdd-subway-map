@@ -114,7 +114,7 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.update(secondNewLine.getId(),
                 new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10)))
                 .isInstanceOf(ClientException.class)
-                .hasMessageContaining("등록된 지하철노선으로 변경할 수 없습니다.");
+                .hasMessageContaining("이미 등록된 지하철노선입니다.");
     }
 
     @Test
