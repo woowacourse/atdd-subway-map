@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.LineRequest;
 
 @JdbcTest
@@ -127,9 +129,7 @@ class LineServiceTest {
             .map(LineResponse::getId)
             .collect(Collectors.toList());
 
-        assertThat(lineIds)
-            .hasSize(0)
-            .doesNotContain(savedLine.getId());
+        assertThat(lineIds).doesNotContain(savedLine.getId());
     }
 
     @Test
@@ -159,6 +159,18 @@ class LineServiceTest {
             station2.getId(), 5);
         LineResponse savedLine = lineService.save(originLine);
 
-        lineService.findById(savedLine.getId());
+        // when
+        LineResponse lineResponse = lineService.findById(savedLine.getId());
+
+        // then
+        List<StationResponse> stations = lineResponse.getStations();
+        List<String> names = stations.stream()
+            .map(StationResponse::getName)
+            .collect(Collectors.toList());
+        assertAll(
+            () -> assertThat(lineResponse.getName()).isEqualTo("1호선"),
+            () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600"),
+            () -> assertThat(names).containsExactly("강남역", "역삼역")
+        );
     }
 }
