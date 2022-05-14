@@ -66,4 +66,28 @@ class SectionDaoTest {
         // then
         assertThat(sections).containsExactly(savedSection);
     }
+
+    @DisplayName("구간 정보를 업데이트한다.")
+    @Test
+    void update() {
+        // given
+        Line line = new Line("line", "color");
+        Line savedLine = lineDao.save(line);
+
+        Station station1 = stationDao.save(new Station("station1"));
+        Station station2 = stationDao.save(new Station("station2"));
+        Station station3 = stationDao.save(new Station("station3"));
+        Station station4 = stationDao.save(new Station("station4"));
+
+        Section section = new Section(station1, station2, 10);
+        Section savedSection = sectionDao.save(savedLine.getId(), section);
+
+        // when
+        Section updateSection = new Section(savedSection.getId(), station3, station4, 5);
+        sectionDao.batchUpdate(savedLine.getId(), List.of(updateSection));
+
+        // then
+        List<Section> sections = sectionDao.findByLineId(savedLine.getId());
+        assertThat(sections).containsExactly(updateSection);
+    }
 }

@@ -75,14 +75,15 @@ public class SectionJdbcDao implements SectionDao {
 
     @Override
     public void batchUpdate(final Long lineId, final List<Section> sections) {
-        final String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ? WHERE id = ?";
+        final String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
         jdbcTemplate.batchUpdate(sql,
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(final PreparedStatement ps, final int i) throws SQLException {
                         ps.setLong(1, sections.get(i).getUpStation().getId());
                         ps.setLong(2, sections.get(i).getDownStation().getId());
-                        ps.setLong(3, sections.get(i).getId());
+                        ps.setInt(3, sections.get(i).getDistance());
+                        ps.setLong(4, sections.get(i).getId());
                     }
 
                     @Override
