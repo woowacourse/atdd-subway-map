@@ -19,7 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionRequest;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 

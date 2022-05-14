@@ -16,6 +16,8 @@ import wooteco.subway.exception.NoSuchLineException;
 @Repository
 public class LineJdbcDao implements LineDao {
 
+    private static final int ZERO_COUNT = 0;
+
     private JdbcTemplate jdbcTemplate;
 
     public LineJdbcDao(final JdbcTemplate jdbcTemplate) {
@@ -73,17 +75,13 @@ public class LineJdbcDao implements LineDao {
 
         try {
             int affectedRow = jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
-            if (isNoUpdateOccurred(affectedRow)) {
+            if (affectedRow == ZERO_COUNT) {
                 throw new NoSuchLineException();
             }
         } catch (DuplicateKeyException exception) {
             throw new DuplicateLineException();
         }
         return id;
-    }
-
-    private boolean isNoUpdateOccurred(final int affectedRow) {
-        return affectedRow == 0;
     }
 
     @Override

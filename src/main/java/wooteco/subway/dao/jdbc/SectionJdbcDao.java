@@ -15,6 +15,8 @@ import wooteco.subway.exception.NoSuchSectionException;
 @Repository
 public class SectionJdbcDao implements SectionDao {
 
+    private static final int ZERO_COUNT = 0;
+
     private final JdbcTemplate jdbcTemplate;
 
     public SectionJdbcDao(final JdbcTemplate jdbcTemplate) {
@@ -49,7 +51,7 @@ public class SectionJdbcDao implements SectionDao {
                 section.getDownStationId(),
                 section.getDistance(),
                 id);
-        if (isNoUpdateOccurred(affectedRow)) {
+        if (affectedRow == ZERO_COUNT) {
             throw new NoSuchSectionException();
         }
         return id;
@@ -70,10 +72,6 @@ public class SectionJdbcDao implements SectionDao {
         } catch (EmptyResultDataAccessException exception) {
             throw new NoSuchSectionException();
         }
-    }
-
-    private boolean isNoUpdateOccurred(final int affectedRow) {
-        return affectedRow == 0;
     }
 
     @Override
