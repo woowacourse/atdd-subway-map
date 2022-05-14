@@ -105,14 +105,14 @@ public class Sections {
 
     private Section getPreviousSection(Long stationId) {
         return sections.stream()
-                .filter(section -> section.getDownStationId().equals(stationId))
+                .filter(section -> section.isSameDownStation(stationId))
                 .findAny()
                 .orElse(null);
     }
 
     private Section getLaterSection(Long stationId) {
         return sections.stream()
-                .filter(section -> section.getUpStationId().equals(stationId))
+                .filter(section -> section.isSameUpStation(stationId))
                 .findAny()
                 .orElse(null);
     }

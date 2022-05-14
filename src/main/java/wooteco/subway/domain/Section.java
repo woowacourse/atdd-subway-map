@@ -54,6 +54,14 @@ public class Section {
                 && (downStationId.equals(section.getUpStationId()) || downStationId.equals(section.getDownStationId()));
     }
 
+    public boolean isSameUpStation(Long stationId) {
+        return getUpStationId().equals(stationId);
+    }
+
+    public boolean isSameDownStation(Long stationId) {
+        return getDownStationId().equals(stationId);
+    }
+
     public Long getId() {
         return id;
     }
