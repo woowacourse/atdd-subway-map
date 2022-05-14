@@ -21,7 +21,7 @@ class LineTest {
                 .doesNotThrowAnyException();
     }
 
-    @DisplayName("노선의 이름이 빈 값이거나 최대범위를 초과한 경우 예외를 발생한다.")
+    @DisplayName("노선의 이름이 빈 값이거나 최대범위인 20을 초과한 경우 예외를 발생한다.")
     @ParameterizedTest(name = "{index} {displayName} name: {0}")
     @ValueSource(strings = {"", "aaaaaaaaaaaaaaaaaaaaa"})
     void throwsExceptionWithInvalidNameLength(final String name) {
@@ -30,7 +30,7 @@ class LineTest {
                 .isInstanceOf(DataLengthException.class);
     }
 
-    @DisplayName("노선의 색이 빈 값이거나 최대범위를 초과한 경우 예외를 발생한다.")
+    @DisplayName("노선의 색이 빈 값이거나 최대범위인 20을 초과한 경우 예외를 발생한다.")
     @ParameterizedTest(name = "{index} {displayName} color: {0}")
     @ValueSource(strings = {"", "yellowYellowYellowYellowYellow"})
     void throwsExceptionWithInvalidColorLength(final String color) {
@@ -38,5 +38,4 @@ class LineTest {
         assertThatThrownBy(() -> new Line("신분당선", color))
                 .isInstanceOf(DataLengthException.class);
     }
-
 }
