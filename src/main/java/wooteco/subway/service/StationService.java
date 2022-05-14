@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -16,12 +15,10 @@ import wooteco.subway.dto.StationResponse;
 public class StationService {
 
     private final StationDao stationDao;
-    private final SectionDao sectionDao;
     private final SectionService sectionService;
 
-    public StationService(StationDao stationDao, SectionDao sectionDao, SectionService sectionService) {
+    public StationService(StationDao stationDao, SectionService sectionService) {
         this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
         this.sectionService = sectionService;
     }
 
@@ -43,7 +40,7 @@ public class StationService {
 
     @Transactional
     public void deleteById(Long id) {
-        Set<Long> lineIds = sectionDao.findAllByStationId(id).stream()
+        Set<Long> lineIds = sectionService.findAllByStationId(id).stream()
                 .map(Section::getLineId)
                 .collect(Collectors.toSet());
 

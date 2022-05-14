@@ -232,7 +232,10 @@
 - [x] JdbcTest 내부에는 `@Transactional`이 포함되어있습니다. 그렇다면 DirtiesContext는 필요없지 않을까요?
   - `@Transactional`의 롤백이 auto_increment에는 적용되지 않기 때문에 자동 증가하는 특정 값에 의존하지 않는 테스트로 수정하고 제거했습니다.
   - [중복을 제거해보자](https://github.com/woowacourse/atdd-subway-map/pull/269#discussion_r871426224) 피드백의 의미가 이런 의미였던 것 같다.
-- [ ] (StationService) Section DAO와 Section Service를 모두 같이 사용하고 있다. Station의 id로 Section을 찾아오는 기능을 누가 제공하는게 적절할까요?
+- [x] (StationService) Section DAO와 Section Service를 모두 같이 사용하고 있다. Station의 id로 Section을 찾아오는 기능을 누가 제공하는게 적절할까요?
+  - Service에서 하는게 맞는 것 같습니다.
+  - 서비스가 다른 테이블에 접근하는 DAO를 가지고 직접 데이터를 가져오는게 맞나? 라는 생각이 들었기 때문입니다.
+  - (질문) LineService에서도 StationDao, SectionDao를 가지고 있는데 이것도 DAO가 아닌 서비스를 가지는게 맞을까? 
 - [x] 데이터가 있는지 확인하기 위해서는 `count` 또는 `exist` 쿼리를 사용하는 것이 어떨까?
   - LineService에서 데이터가 있는지 확인하기위해 `exist`를 사용했습니다.
   - `count`는 모든 row를 확인해야하기 때문에 데이터 유무만 판단하는 `exist`가 더 좋다고 생각했습니다. 

@@ -17,7 +17,7 @@ class StationServiceTest {
     private final SectionDao sectionDao = new MockSectionDao();
 
     private final SectionService sectionService = new SectionService(sectionDao);
-    private final StationService stationService = new StationService(stationDao, sectionDao, sectionService);
+    private final StationService stationService = new StationService(stationDao, sectionService);
 
     @DisplayName("역을 저장한다")
     @Test

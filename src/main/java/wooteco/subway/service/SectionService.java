@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +79,12 @@ public class SectionService {
         if (distance <= 0) {
             throw new IllegalArgumentException("역 사이 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
         }
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<Section> findAllByStationId(Long stationId) {
+        return sectionDao.findAllByStationId(stationId);
     }
 
     @Transactional
