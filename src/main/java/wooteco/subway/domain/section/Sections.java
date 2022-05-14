@@ -19,7 +19,7 @@ public class Sections {
 
     private void validateSectionsNotEmpty(List<Section> sections) {
         if (sections.size() == 0) {
-            throw new IllegalArgumentException("지하철구간이 필요합니다.");
+            throw new IllegalArgumentException("지하철구간은 하나 이상이어야 합니다.");
         }
     }
 
@@ -80,7 +80,7 @@ public class Sections {
                 .findAny();
         if (sectionEqualsDownStation.isPresent()) {
             Section originSection = sectionEqualsDownStation.get();
-            if (originSection.isCloserThan(section)) {
+            if (!originSection.isLongerThan(section)) {
                 throw new IllegalArgumentException("기존 구간의 길이보다 크거나 같습니다.");
             }
 
@@ -98,7 +98,7 @@ public class Sections {
                 .findAny();
         if (sectionEqualsUpStation.isPresent()) {
             Section originSection = sectionEqualsUpStation.get();
-            if (originSection.isCloserThan(section)) {
+            if (!originSection.isLongerThan(section)) {
                 throw new IllegalArgumentException("기존 구간의 길이보다 크거나 같습니다.");
             }
 
@@ -172,5 +172,12 @@ public class Sections {
         return sections.stream()
                 .map(Section::getId)
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "sections=" + sections +
+                '}';
     }
 }
