@@ -157,6 +157,9 @@ public class Sections {
     }
 
     public Section getSingleDeleteSection() {
+        if (sections.isEmpty()) {
+            throw new IllegalStateException("section이 존재하지 않습니다.");
+        }
         return sections.get(0);
     }
 

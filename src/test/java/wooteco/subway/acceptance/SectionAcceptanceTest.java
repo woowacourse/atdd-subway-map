@@ -151,11 +151,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 6);
-
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .delete("/lines/2/sections?stationId=2")
@@ -192,5 +189,37 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
         return response;
+    }
+
+    @Test
+    @DisplayName("없는 구간을 삭제할 때 예외가 발생한다.")
+    void deleteNoneExistSection() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "분당선");
+        params.put("color", "yellow");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/2/sections?stationId=3")
+                .then().log().all()
+                .extract();
+
+        String message = response.jsonPath().getObject("message", String.class);
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(message).isEqualTo("section이 존재하지 않습니다.");
     }
 }
