@@ -228,7 +228,8 @@
 - [ ] (StationService) Section DAO와 Section Service를 모두 같이 사용하고 있다. Station의 id로 Section을 찾아오는 기능을 누가 제공하는게 적절할까요?
 - [ ] 데이터가 있는지 확인하기 위해서는 `count` 또는 `exist` 쿼리를 사용하는 것이 어떨까?
 - [x] Sections.getAllStationId() 는 방어적 복사 + 리스트로 반환할 이유가 없을 것 같다.
-- [ ] SectionService.addSection에서 값을 모두 꺼내어서 사용하는 이유가 있을까?
+- [x] SectionService.addSection에서 값을 모두 꺼내어서 사용하는 이유가 있을까?
+  - SectionService, LineService 수정 
 - [ ] 서비스 테스트에서 Mock을 사용하여 테스트했을 때 장단점은 어떤게 있을까? 왜 Mock을 사용하여 테스트했는지 이유는?
 - [ ] Delete테스트를 할 때는 조건에 맞지 않는 다른 테스트는 삭제되지 않는다는 것도 검증해주면 좋을 것 같아요
 - [ ] 이상한 어노테이션 제거! (`DisplayName` -> `DeleteMapping` 등)

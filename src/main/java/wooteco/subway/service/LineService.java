@@ -33,18 +33,13 @@ public class LineService {
 
     @Transactional
     public LineResponse save(LineRequest request) {
-        String color = request.getColor();
-        String name = request.getName();
-        Long upStationId = request.getUpStationId();
-        Long downStationId = request.getDownStationId();
-        int distance = request.getDistance();
+        checkExistAllStations(request.getUpStationId(), request.getDownStationId());
 
-        checkExistAllStations(upStationId, downStationId);
+        Long lineId = lineDao.save(new Line(request.getName(), request.getColor()));
+        sectionDao.save(
+                new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
 
-        Long lineId = lineDao.save(new Line(name, color));
-        sectionDao.save(new Section(lineId, upStationId, downStationId, distance));
-
-        return new LineResponse(lineId, name, color, getStationResponsesByLineId(lineId));
+        return new LineResponse(lineId, request.getName(), request.getColor(), getStationResponsesByLineId(lineId));
     }
 
     private void checkExistAllStations(Long upStationId, Long downStationId) {

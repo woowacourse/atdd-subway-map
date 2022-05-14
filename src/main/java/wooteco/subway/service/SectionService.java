@@ -20,14 +20,11 @@ public class SectionService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest request) {
-        Long upStationId = request.getUpStationId();
-        Long downStationId = request.getDownStationId();
-        int distance = request.getDistance();
-
-        checkHasStation(lineId, upStationId, downStationId);
+        checkHasStation(lineId, request.getUpStationId(), request.getDownStationId());
         updateIfForkLine(lineId, request);
 
-        sectionDao.save(new Section(lineId, upStationId, downStationId, distance));
+        sectionDao.save(
+                new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
     }
 
     private void checkHasStation(Long lineId, Long upStationId, Long downStationId) {
