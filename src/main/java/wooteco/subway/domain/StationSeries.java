@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import wooteco.subway.exception.CustomException;
+import wooteco.subway.exception.IdMissingException;
 import wooteco.subway.exception.RowDuplicatedException;
 import wooteco.subway.exception.RowNotFoundException;
 
@@ -14,7 +15,17 @@ public class StationSeries {
     private final List<Station> stations;
 
     public StationSeries(List<Station> stations) {
-        this.stations = stations;
+        validateHasId(stations);
+        this.stations = new ArrayList<>(stations);
+    }
+
+    private void validateHasId(List<Station> stations) {
+        stations.stream()
+            .filter(station -> station.getId() == null)
+            .findAny()
+            .ifPresent(station -> {
+                throw new IdMissingException(station.getName() + "역에 ID가 없습니다.");
+            });
     }
 
     public void add(Station station) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import wooteco.subway.exception.IdMissingException;
 import wooteco.subway.exception.RowNotFoundException;
 import wooteco.subway.exception.SectionNotEnoughException;
 import wooteco.subway.util.CollectorsUtils;
@@ -13,7 +14,19 @@ public class SectionSeries {
     private final List<Section> sections;
 
     public SectionSeries(List<Section> sections) {
+        validateHasId(sections);
         this.sections = new ArrayList<>(sections);
+    }
+
+    private void validateHasId(List<Section> sections) {
+        sections.stream()
+            .filter(section -> section.getId() == null)
+            .findAny()
+            .ifPresent(section -> {
+                throw new IdMissingException(
+                    String.format("상행 %s, 하행 %s 구간에 ID가 없습니다.", section.getUpStation().getName(),
+                        section.getDownStation().getName()));
+            });
     }
 
     public void add(Section section) {

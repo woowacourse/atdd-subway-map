@@ -1,7 +1,9 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import wooteco.subway.exception.IdMissingException;
 import wooteco.subway.exception.RowDuplicatedException;
 import wooteco.subway.exception.RowNotFoundException;
 
@@ -9,7 +11,15 @@ public class LineSeries {
     private final List<Line> lines;
 
     public LineSeries(List<Line> lines) {
-        this.lines = lines;
+        validateHasId(lines);
+        this.lines = new ArrayList<>(lines);
+    }
+
+    private void validateHasId(List<Line> lines) {
+        lines.stream()
+            .filter(line -> line.getId() == null)
+            .findAny()
+            .ifPresent(line -> {throw new IdMissingException(line.getName() + " 노선에 ID가 없습니다.");});
     }
 
     public void add(Line line) {
