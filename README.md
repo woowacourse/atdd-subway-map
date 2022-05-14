@@ -226,7 +226,9 @@
 - [ ] SectionJdbcDaoTest에서는 별도로 `@Sql`를 사용하였나요? 장점이 있을까요?
 - [ ] JdbcTest 내부에는 `@Transactional`이 포함되어있습니다. 그렇다면 DirtiesContext는 필요없지 않을까요?
 - [ ] (StationService) Section DAO와 Section Service를 모두 같이 사용하고 있다. Station의 id로 Section을 찾아오는 기능을 누가 제공하는게 적절할까요?
-- [ ] 데이터가 있는지 확인하기 위해서는 `count` 또는 `exist` 쿼리를 사용하는 것이 어떨까?
+- [x] 데이터가 있는지 확인하기 위해서는 `count` 또는 `exist` 쿼리를 사용하는 것이 어떨까?
+  - LineService에서 데이터가 있는지 확인하기위해 `exist`를 사용했습니다.
+  - `count`는 모든 row를 확인해야하기 때문에 데이터 유무만 판단하는 `exist`가 더 좋다고 생각했습니다. 
 - [x] Sections.getAllStationId() 는 방어적 복사 + 리스트로 반환할 이유가 없을 것 같다.
 - [x] SectionService.addSection에서 값을 모두 꺼내어서 사용하는 이유가 있을까?
   - SectionService, LineService 수정 

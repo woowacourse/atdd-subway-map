@@ -34,4 +34,9 @@ public class MockStationDao implements StationDao {
     public void deleteById(Long id) {
         mockDb.remove(id);
     }
+
+    @Override
+    public boolean existById(Long id) {
+        return mockDb.containsKey(id);
+    }
 }

@@ -2,7 +2,6 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -43,10 +42,7 @@ public class LineService {
     }
 
     private void checkExistAllStations(Long upStationId, Long downStationId) {
-        try {
-            stationDao.findById(upStationId);
-            stationDao.findById(downStationId);
-        } catch (EmptyResultDataAccessException exception) {
+        if (!stationDao.existById(upStationId) || !stationDao.existById(downStationId)) {
             throw new NoSuchStationException();
         }
     }
