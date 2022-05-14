@@ -17,8 +17,8 @@ public class Sections {
 
     public SectionsToBeCreatedAndUpdated add(Section newSection) {
         validateExistStationInLine(newSection);
-        Long currentLastUpStationId = findLastUpStationId();
-        Long currentLastDownStationId = findLastDownStationId();
+        Long currentLastUpStationId = findLastUpSection().getUpStationId();
+        Long currentLastDownStationId = findLastDownSection().getDownStationId();
 
         if (newSection.isNewLastStation(currentLastUpStationId, currentLastDownStationId)) {
             return new SectionsToBeCreatedAndUpdated(newSection);
@@ -54,10 +54,9 @@ public class Sections {
                 .anyMatch(s -> s.getUpStationId().equals(stationId) || s.getDownStationId().equals(stationId));
     }
 
-    public Long findLastUpStationId() {
+    public Section findLastUpSection() {
         return values.stream()
                 .filter(this::isLastUpStation)
-                .map(Section::getUpStationId)
                 .findAny()
                 .orElseThrow();
     }
@@ -67,10 +66,9 @@ public class Sections {
                 .noneMatch(s -> s.getDownStationId().equals(section.getUpStationId()));
     }
 
-    public Long findLastDownStationId() {
+    public Section findLastDownSection() {
         return values.stream()
                 .filter(this::isLastDownStation)
-                .map(Section::getDownStationId)
                 .findAny()
                 .orElseThrow();
     }
@@ -91,10 +89,11 @@ public class Sections {
     public DeleteAndUpdateSectionsInfo delete(Long stationId) {
         validateExistStation(stationId);
         validateRemainOneSection();
-        Long currentLastUpStationId = findLastUpStationId();
-        Long currentLastDownStationId = findLastDownStationId();
-        if (currentLastUpStationId.equals(stationId) || currentLastDownStationId.equals(stationId)) {
-            return deleteLastSection(currentLastUpStationId, currentLastDownStationId, stationId);
+        Section currentLastUpSection = findLastUpSection();
+        Section currentLastDownSection = findLastDownSection();
+        if (stationId.equals(currentLastUpSection.getUpStationId()) ||
+                stationId.equals(currentLastDownSection.getDownStationId())) {
+            return deleteLastSection(currentLastUpSection, currentLastDownSection, stationId);
         }
 
         Section upSideStation = extractUpSideStation(stationId);
@@ -116,18 +115,12 @@ public class Sections {
         }
     }
 
-    private DeleteAndUpdateSectionsInfo deleteLastSection(Long lastUpStationId, Long lastDownStationId, Long stationId) {
-        if (lastUpStationId.equals(stationId)) {
-            Section section = values.stream()
-                    .filter(s -> s.getUpStationId().equals(stationId))
-                    .findFirst().orElseThrow();
-            return new DeleteAndUpdateSectionsInfo(section);
+    private DeleteAndUpdateSectionsInfo deleteLastSection(Section lastUpSection, Section lastDownSection, Long stationId) {
+        if (stationId.equals(lastUpSection.getUpStationId())) {
+            return new DeleteAndUpdateSectionsInfo(lastUpSection);
         }
-        if (lastDownStationId.equals(stationId)) {
-            Section section = values.stream()
-                    .filter(s -> s.getDownStationId().equals(stationId))
-                    .findFirst().orElseThrow();
-            return new DeleteAndUpdateSectionsInfo(section);
+        if (stationId.equals(lastDownSection.getDownStationId())) {
+            return new DeleteAndUpdateSectionsInfo(lastDownSection);
         }
         return null;
     }
