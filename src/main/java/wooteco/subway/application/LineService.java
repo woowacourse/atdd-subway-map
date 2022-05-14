@@ -16,7 +16,7 @@ import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.SectionRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class LineService {
 
     private final LineRepository lineRepository;
@@ -34,6 +34,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public Line save(LineRequest request) {
         if (lineRepository.existByName(request.getName())) {
             throw new DuplicateLineNameException(request.getName());
@@ -49,12 +50,12 @@ public class LineService {
         return line;
     }
 
-    @Transactional(readOnly = true)
     public Line findById(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(() -> new NotFoundLineException(id));
     }
 
+    @Transactional
     public Line update(Long id, LineRequest request) {
         Line line = findById(id);
 
@@ -69,6 +70,7 @@ public class LineService {
         return !line.isSameName(name) && lineRepository.existByName(name);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         if (!lineRepository.existById(id)) {
             throw new NotFoundLineException(id);
@@ -77,14 +79,12 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
-    public LineResponse queryById(Long id) {
+    public LineResponse getById(Long id) {
         return lineDao.queryById(id)
             .orElseThrow(() -> new NotFoundLineException(id));
     }
 
-    @Transactional(readOnly = true)
-    public List<LineResponse> queryAll() {
+    public List<LineResponse> getAll() {
         return lineDao.queryAll();
     }
 }

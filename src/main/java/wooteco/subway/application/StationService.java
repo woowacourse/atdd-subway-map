@@ -12,7 +12,7 @@ import wooteco.subway.dto.StationResponse;
 import wooteco.subway.repository.StationRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class StationService {
 
     private final StationRepository stationRepository;
@@ -24,6 +24,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public Station save(StationRequest request) {
         if (stationRepository.existByName(request.getName())) {
             throw new DuplicateStationNameException(request.getName());
@@ -31,12 +32,12 @@ public class StationService {
         return stationRepository.save(new Station(request.getName()));
     }
 
-    @Transactional(readOnly = true)
     public Station findById(Long id) {
         return stationRepository.findById(id)
             .orElseThrow(() -> new NotFoundStationException(id));
     }
 
+    @Transactional
     public void deleteById(Long id) {
         if (!stationRepository.existById(id)) {
             throw new NotFoundStationException(id);
@@ -44,14 +45,12 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
-    public StationResponse queryById(Long id) {
+    public StationResponse getById(Long id) {
         return stationDao.queryById(id)
             .orElseThrow(() -> new NotFoundStationException(id));
     }
 
-    @Transactional(readOnly = true)
-    public List<StationResponse> queryAll() {
+    public List<StationResponse> getAll() {
         return stationDao.queryAll();
     }
 }
