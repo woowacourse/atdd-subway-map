@@ -9,7 +9,7 @@ import wooteco.subway.exception.BusinessException;
 public class ExceptionController {
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<String> handelBusinessException(Exception e) {
+    public ResponseEntity<String> handelBusinessException(BusinessException e) {
         return ResponseEntity.badRequest()
                 .body(e.getMessage());
     }
