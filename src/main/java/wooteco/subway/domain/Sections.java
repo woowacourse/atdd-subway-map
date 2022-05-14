@@ -61,7 +61,7 @@ public class Sections {
     private Long findDownTerminalStationId() {
         Map<Long, Long> sectionIds = getSectionIds();
         return sectionIds.values().stream()
-            .filter(i -> !(sectionIds.containsKey(i)))
+            .filter(i -> !sectionIds.containsKey(i))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("하행점을 찾을 수 없습니다."));
     }
@@ -69,7 +69,7 @@ public class Sections {
     private Long findUpTerminalStationId() {
         Map<Long, Long> sectionIds = getSectionIds();
         return sectionIds.keySet().stream()
-            .filter(i -> !(sectionIds.containsValue(i)))
+            .filter(i -> !sectionIds.containsValue(i))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("상행점을 찾을 수 없습니다."));
     }

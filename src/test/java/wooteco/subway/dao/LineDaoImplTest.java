@@ -106,8 +106,8 @@ class LineDaoImplTest {
     @Test
     void update() {
         // given
-        Line originline = new Line("1호선", "bg-red-600");
-        Long savedId = lineDaoImpl.save(originline);
+        Line originLine = new Line("1호선", "bg-red-600");
+        Long savedId = lineDaoImpl.save(originLine);
 
         // when
         Line newline = new Line("2호선", "bg-green-600");

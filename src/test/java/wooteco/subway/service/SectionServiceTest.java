@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,12 +49,21 @@ public class SectionServiceTest {
 
         // when
         sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Section> inputSections = sectionDao.findByLineId(lineId);
+        Sections sections = new Sections(inputSections);
         List<Long> stationIds = sections.sortedStationId();
+        Long firstPointStationId = stationIds.get(0);
+
+        Section firstSection = inputSections.stream()
+            .filter(i -> i.mathUpStationId(firstPointStationId))
+            .findAny()
+            .get();
 
         // then
-        Long firstPointStationId = stationIds.get(0);
-        assertThat(firstPointStationId).isEqualTo(1L);
+        assertAll(
+            () -> assertThat(firstSection.getUpStationId()).isEqualTo(1L),
+            () -> assertThat(firstSection.getDistance()).isEqualTo(2)
+        );
     }
 
     @Test
@@ -67,50 +77,83 @@ public class SectionServiceTest {
 
         // when
         sectionService.save(new SectionRequest(4L, 5L, 2), lineId);
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Section> inputSections = sectionDao.findByLineId(lineId);
+        Sections sections = new Sections(inputSections);
+
         List<Long> stationIds = sections.sortedStationId();
+        Long lastPointStationId = stationIds.get(3);
+
+        Section lastSection = inputSections.stream()
+            .filter(i -> i.mathUpStationId(lastPointStationId))
+            .findAny()
+            .get();
 
         // then
-        Long endPointStationId = stationIds.get(4);
-        assertThat(endPointStationId).isEqualTo(5L);
+        assertAll(
+            () -> assertThat(lastSection.getDownStationId()).isEqualTo(5L),
+            () -> assertThat(lastSection.getDistance()).isEqualTo(2)
+        );
     }
 
     @Test
-    @DisplayName("중간 지점 구간을 저장한다. 정렬된 구간 : 1-2-3-4에서 2-3 구간에 6-3 구간을 추가하는 경우")
+    @DisplayName("중간 지점 구간을 저장한다. 정렬된 구간 : 1-3구간에서 1-2 구간을 추가하는 경우")
     void saveMiddleStation1() {
         // given
         Long lineId = lineDao.save(new Line("name", "color"));
-        sectionDao.save(new Section(lineId, 1L, 2L, 3));
-        sectionDao.save(new Section(lineId, 2L, 3L, 4));
-        sectionDao.save(new Section(lineId, 3L, 4L, 5));
+        sectionDao.save(new Section(lineId, 1L, 3L, 3));
 
         // when
-        sectionService.save(new SectionRequest(2L, 6L, 2), lineId);
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
+        List<Section> inputSections = sectionDao.findByLineId(lineId);
+        Sections sections = new Sections(inputSections);
         List<Long> stationIds = sections.sortedStationId();
 
+        Section section1 = inputSections.stream()
+            .filter(i -> i.mathUpStationId(stationIds.get(0)))
+            .findAny()
+            .get();
+
+        Section section2 = inputSections.stream()
+            .filter(i -> i.mathUpStationId(stationIds.get(1)))
+            .findAny()
+            .get();
+
         // then
-        Long stationId = stationIds.get(2);
-        assertThat(stationId).isEqualTo(6L);
+        assertAll(
+            () -> assertThat(section1.getDistance()).isEqualTo(2),
+            () -> assertThat(section2.getDistance()).isEqualTo(1)
+        );
     }
 
     @Test
-    @DisplayName("중간 지점 구간을 저장한다. 정렬된 구간 : 1-2-3-4에서 1-2 구간에 6-2 구간을 추가하는 경우")
+    @DisplayName("중간 지점 구간을 저장한다. 정렬된 구간 : 1-3구간에서 2-3 구간을 추가하는 경우")
     void saveMiddleStation2() {
         // given
         Long lineId = lineDao.save(new Line("name", "color"));
-        sectionDao.save(new Section(lineId, 1L, 2L, 3));
-        sectionDao.save(new Section(lineId, 2L, 3L, 4));
-        sectionDao.save(new Section(lineId, 3L, 4L, 5));
+        sectionDao.save(new Section(lineId, 1L, 3L, 4));
 
         // when
-        sectionService.save(new SectionRequest(6L, 2L, 2), lineId);
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        sectionService.save(new SectionRequest(2L, 3L, 3), lineId);
+        List<Section> inputSections = sectionDao.findByLineId(lineId);
+
+        Sections sections = new Sections(inputSections);
         List<Long> stationIds = sections.sortedStationId();
 
+        Section section1 = inputSections.stream()
+            .filter(i -> i.mathUpStationId(stationIds.get(0)))
+            .findAny()
+            .get();
+
+        Section section2 = inputSections.stream()
+            .filter(i -> i.mathUpStationId(stationIds.get(1)))
+            .findAny()
+            .get();
+
         // then
-        Long stationId = stationIds.get(1);
-        assertThat(stationId).isEqualTo(6L);
+        assertAll(
+            () -> assertThat(section1.getDistance()).isEqualTo(1),
+            () -> assertThat(section2.getDistance()).isEqualTo(3)
+        );
     }
 
     @Test
@@ -139,12 +182,21 @@ public class SectionServiceTest {
 
         // when
         sectionService.removeSection(new SectionDeleteRequest(lineId, 3L));
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Section> inputSections = sectionDao.findByLineId(lineId);
+        Sections sections = new Sections(inputSections);
         List<Long> result = sections.sortedStationId();
+
+        Section section = inputSections.stream()
+            .filter(i -> i.mathUpStationId(2L))
+            .findAny()
+            .get();
 
         // then
         List<Long> expected = List.of(1L, 2L, 4L);
-        assertThat(result).containsExactlyInAnyOrderElementsOf(expected);
+        assertAll(
+            () -> assertThat(result).containsExactlyInAnyOrderElementsOf(expected),
+            () -> assertThat(section.getDistance()).isEqualTo(9)
+        );
     }
 
     @Test
@@ -154,7 +206,7 @@ public class SectionServiceTest {
         Long lineId = lineDao.save(new Line("name", "color"));
         sectionDao.save(new Section(lineId, 2L, 3L, 3));
 
-        // when
+        // then
         assertThatThrownBy(() ->
             sectionService.removeSection(new SectionDeleteRequest(lineId, 2L)))
             .hasMessage("구간을 제거할 수 없는 상태입니다.")
