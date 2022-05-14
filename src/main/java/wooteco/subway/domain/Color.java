@@ -20,4 +20,11 @@ public class Color {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "Color{" +
+            "value='" + value + '\'' +
+            '}';
+    }
 }

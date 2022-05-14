@@ -2,7 +2,6 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Line {
 
@@ -30,8 +29,8 @@ public class Line {
         this(null, name, color);
     }
 
-    public List<Section> addSection(Section section) {
-        return sectionSeries.add(section);
+    public void addSection(Section section) {
+        sectionSeries.add(section);
     }
 
     public boolean hasSameNameWith(Line otherLine) {
@@ -50,7 +49,17 @@ public class Line {
         return color.getValue();
     }
 
-    public List<Section> getSections() {
-        return List.copyOf(sectionSeries.getSections());
+    public SectionSeries getSectionSeries() {
+        return sectionSeries;
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+            "id=" + id +
+            ", name=" + name +
+            ", color=" + color +
+            ", sectionSeries=" + sectionSeries +
+            '}';
     }
 }

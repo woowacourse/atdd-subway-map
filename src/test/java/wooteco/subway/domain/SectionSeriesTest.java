@@ -5,9 +5,7 @@ import static wooteco.subway.domain.fixture.SectionFixture.*;
 import static wooteco.subway.domain.fixture.StationFixture.*;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,11 +17,10 @@ class SectionSeriesTest {
         // given
         SectionSeries sectionSeries = new SectionSeries(List.of(SECTION_AB, SECTION_BC));
         // when
-        final List<Section> updateSections = sectionSeries.add(
-            new Section(3L, STATION_B, STATION_X, new Distance(3))
-        );
+        sectionSeries.add(new Section(3L, STATION_B, STATION_X, new Distance(3)));
         // then
-        assertThat(updateSections.size()).isEqualTo(3);
+
+        assertThat(sectionSeries.getSections()).hasSize(3);
     }
 
     @Test
@@ -32,41 +29,35 @@ class SectionSeriesTest {
         // given
         SectionSeries sectionSeries = new SectionSeries(List.of(SECTION_AB, SECTION_BC));
         // when
-        final List<Section> updateSections = sectionSeries.add(
-            new Section(3L, STATION_X, STATION_B, new Distance(3))
-        );
+        sectionSeries.add(new Section(3L, STATION_X, STATION_B, new Distance(3)));
         // then
-        assertThat(updateSections.size()).isEqualTo(3);
+        assertThat(sectionSeries.getSections()).hasSize(3);
     }
 
     @Test
-    @DisplayName("상행에 종점을 이으면 empty를 반환한다.")
+    @DisplayName("상행에 종점을 잇는다.")
     public void findUpToEndSection() {
         // given
         SectionSeries sectionSeries = new SectionSeries(List.of(SECTION_AB, SECTION_BC));
 
         // when
-        final List<Section> updateSections = sectionSeries.add(
-            new Section(3L, STATION_X, STATION_A, new Distance(3))
-        );
+        sectionSeries.add(new Section(3L, STATION_X, STATION_A, new Distance(3)));
 
         // then
-        assertThat(updateSections.size()).isEqualTo(1);
+        assertThat(sectionSeries.getSections()).hasSize(3);
     }
 
     @Test
-    @DisplayName("하행에 종점을 이으면 empty를 반환한다.")
+    @DisplayName("하행에 종점을 잇는다.")
     public void findDownToEndSection() {
         // given
         SectionSeries sectionSeries = new SectionSeries(List.of(SECTION_AB, SECTION_BC));
 
         // when
-        final List<Section> updateSections = sectionSeries.add(
-            new Section(3L, STATION_C, STATION_X, new Distance(3))
-        );
+        sectionSeries.add(new Section(3L, STATION_C, STATION_X, new Distance(3)));
 
         // then
-        assertThat(updateSections.size()).isEqualTo(1);
+        assertThat(sectionSeries.getSections()).hasSize(3);
     }
 
     @Test
