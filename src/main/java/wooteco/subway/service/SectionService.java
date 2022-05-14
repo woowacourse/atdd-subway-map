@@ -9,7 +9,6 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.StationRepository;
 import wooteco.subway.service.dto.SectionDto;
 

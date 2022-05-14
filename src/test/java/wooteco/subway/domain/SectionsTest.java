@@ -51,7 +51,7 @@ class SectionsTest {
 
     private static Stream<Arguments> provideDeleteSectionSource() {
         return Stream.of(
-                Arguments.of(SectionFactory.from("ac3"), StationFactory.from("c"),
+                Arguments.of(SectionFactory.from("ac1"), StationFactory.from("c"),
                         List.of(SectionFactory.from("ab3"))),
                 Arguments.of(SectionFactory.from ("ca3"), StationFactory.from("c"),
                         List.of(SectionFactory.from("ab3"))),
