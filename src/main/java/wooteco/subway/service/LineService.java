@@ -15,7 +15,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicateLineException;
+import wooteco.subway.exception.duplicate.DuplicateLineException;
 
 @Service
 public class LineService {

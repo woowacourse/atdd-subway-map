@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicateSectionException;
-import wooteco.subway.exception.InvalidSectionCreateRequestException;
+import wooteco.subway.exception.duplicate.DuplicateSectionException;
+import wooteco.subway.exception.invalidrequest.InvalidSectionCreateRequestException;
 
 class SectionsTest {
 

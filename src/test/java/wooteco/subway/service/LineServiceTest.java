@@ -22,7 +22,7 @@ import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicateLineException;
+import wooteco.subway.exception.duplicate.DuplicateLineException;
 
 @SpringBootTest
 @Transactional

@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicateSectionException;
-import wooteco.subway.exception.InvalidSectionCreateRequestException;
+import wooteco.subway.exception.duplicate.DuplicateSectionException;
+import wooteco.subway.exception.invalidrequest.InvalidSectionCreateRequestException;
 
 public class Sections {
 

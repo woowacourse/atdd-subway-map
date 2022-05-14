@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicateDataException;
+import wooteco.subway.exception.duplicate.DuplicateDataException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

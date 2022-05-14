@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
-import wooteco.subway.exception.InvalidSectionCreateRequestException;
+import wooteco.subway.exception.invalidrequest.InvalidSectionCreateRequestException;
 
 public class Section {
 
@@ -89,5 +89,5 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance);
     }
-    
+
 }

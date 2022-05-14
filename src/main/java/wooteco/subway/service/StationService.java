@@ -9,8 +9,8 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicateStationException;
-import wooteco.subway.exception.InvalidStationDeleteRequestException;
+import wooteco.subway.exception.duplicate.DuplicateStationException;
+import wooteco.subway.exception.invalidrequest.InvalidStationDeleteRequestException;
 
 @Service
 public class StationService {

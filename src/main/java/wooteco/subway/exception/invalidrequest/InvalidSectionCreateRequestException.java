@@ -1,4 +1,4 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.invalidrequest;
 
 public class InvalidSectionCreateRequestException extends IllegalArgumentException {
 
