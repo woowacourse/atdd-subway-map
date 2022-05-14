@@ -31,18 +31,16 @@ public class SectionService {
             request.getDownStationId(), request.getDistance());
         Section newSection = new Section(lineId, newEdge);
 
-        Optional<Section> overlapSectionOptional = findOverlapSection(lineId,
-            request.getUpStationId(),
-            request.getDownStationId());
-
-        if (overlapSectionOptional.isPresent()) {
-            Section overlapSection = overlapSectionOptional.get();
-            Section splitSection = overlapSection.split(newSection);
-            sectionRepository.save(splitSection);
-            sectionRepository.deleteById(overlapSection.getId());
-        }
+        findOverlapSection(lineId, request.getUpStationId(), request.getDownStationId())
+            .ifPresent(section -> splitSection(newSection, section));
 
         return sectionRepository.save(newSection);
+    }
+
+    private void splitSection(Section newSection, Section overlapSection) {
+        Section splitSection = overlapSection.split(newSection);
+        sectionRepository.save(splitSection);
+        sectionRepository.deleteById(overlapSection.getId());
     }
 
     private Optional<Section> findOverlapSection(Long lineId, Long upStationId,
@@ -63,26 +61,22 @@ public class SectionService {
         deleteSectionRequestValidator.validate(lineId, request);
         Optional<Section> prev = findPrevSection(lineId, request.getStationId());
         Optional<Section> next = findNextSection(lineId, request.getStationId());
-        deleteSection(prev, next);
+
+        if (prev.isPresent() && next.isPresent()) {
+            mergeSection(prev.get(), next.get());
+        }
+
+        prev.ifPresent(this::deleteSection);
+        next.ifPresent(this::deleteSection);
     }
 
-    private void deleteSection(Optional<Section> prevOptional,
-                               Optional<Section> nextOptional) {
-        if (prevOptional.isPresent() && nextOptional.isPresent()) {
-            Section prev = prevOptional.get();
-            Section next = nextOptional.get();
-            Section newSection = prev.merge(next);
-            sectionRepository.save(newSection);
-        }
-
-        if (prevOptional.isPresent()) {
-            Section section = prevOptional.get();
-            sectionRepository.deleteById(section.getId());
-        }
-
-        if (nextOptional.isPresent()) {
-            Section section = nextOptional.get();
-            sectionRepository.deleteById(section.getId());
-        }
+    private void deleteSection(Section section) {
+        sectionRepository.deleteById(section.getId());
     }
+
+    private void mergeSection(Section prev, Section next) {
+        Section newSection = prev.merge(next);
+        sectionRepository.save(newSection);
+    }
+
 }
