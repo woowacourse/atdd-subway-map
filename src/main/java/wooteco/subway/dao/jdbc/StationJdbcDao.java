@@ -2,10 +2,12 @@ package wooteco.subway.dao.jdbc;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -16,6 +18,11 @@ import wooteco.subway.exception.DuplicateStationNameException;
 
 @Repository
 public class StationJdbcDao implements StationDao {
+
+    private static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -36,7 +43,7 @@ public class StationJdbcDao implements StationDao {
             throw new DuplicateStationNameException();
         }
 
-        return new Station(keyHolder.getKey().longValue(), station.getName());
+        return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), station.getName());
     }
 
     @Override
@@ -67,12 +74,20 @@ public class StationJdbcDao implements StationDao {
     public Optional<Station> findById(final Long id) {
         final String sql = "SELECT id, name FROM STATION WHERE id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Station(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name")
-            ), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean existByName(final String name) {
+        final String sql = "SELECT id, name FROM STATION WHERE name = ?";
+        try {
+            jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, name);
+            return true;
+        } catch (EmptyResultDataAccessException exception) {
+            return false;
         }
     }
 }

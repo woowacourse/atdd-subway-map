@@ -1,4 +1,4 @@
-package wooteco.subway.dao.application;
+package wooteco.subway.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,7 +7,6 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineSaveRequest;
 import wooteco.subway.exception.NoSuchStationException;
 
 @Service

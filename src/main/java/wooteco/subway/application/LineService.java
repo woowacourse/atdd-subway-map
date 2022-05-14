@@ -1,17 +1,16 @@
-package wooteco.subway.dao.application;
+package wooteco.subway.application;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineSaveRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineSaveRequest;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.DuplicateLineException;
@@ -43,7 +42,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLine(final long id) {
+    public LineResponse findLine(final Long id) {
         Line findLine = findLineAndInitializeSections(id);
         return LineResponse.from(findLine);
     }
