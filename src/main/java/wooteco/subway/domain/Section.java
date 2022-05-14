@@ -25,6 +25,10 @@ public class Section {
         return new Section(null, upStation, downStation, distance);
     }
 
+    public boolean isResisted(final Station station) {
+        return getDownStation().equals(station) || getUpStation().equals(station);
+    }
+
     public Long getId() {
         return id;
     }

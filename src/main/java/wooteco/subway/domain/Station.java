@@ -19,10 +19,7 @@ public class Station {
 
     public boolean isResistedStation(final List<Section> sections) {
         return sections.stream()
-                .anyMatch(section ->
-                        section.getDownStation().equals(this)
-                                || section.getUpStation().equals(this)
-                );
+                .anyMatch(section -> section.isResisted(this));
     }
 
     public Long getId() {
