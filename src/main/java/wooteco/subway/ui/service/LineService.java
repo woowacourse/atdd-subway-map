@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -27,6 +28,7 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public LineResponse create(LineRequest lineRequest) {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
@@ -37,12 +39,7 @@ public class LineService {
 
         Line line = new Line(name, color, section);
         Line createdLine = lineDao.save(line);
-        try {
-            sectionDao.save(section, createdLine.getId());
-        } catch (DataAccessException e) {
-            lineDao.delete(line.getId());
-            throw e;
-        }
+        sectionDao.save(section, createdLine.getId());
 
         return LineResponse.from(createdLine);
     }

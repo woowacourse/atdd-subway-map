@@ -1,6 +1,7 @@
 package wooteco.subway.ui.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -31,6 +32,7 @@ public class SectionService {
         sectionDao.save(line.getSections(), line.getId());
     }
 
+    @Transactional
     public void delete(Long lineId, Long stationId) {
         Line line = lineDao.findById(lineId);
         Station station = stationDao.findById(stationId);

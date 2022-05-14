@@ -83,20 +83,22 @@ public class JdbcLineDao implements LineDao {
                 + "JOIN station AS us ON sec.up_station_id = us.id "
                 + "JOIN station AS ds ON sec.down_station_id = ds.id "
                 + "WHERE line_id = ? ORDER BY index_num";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            Long upStationId = resultSet.getLong("up_station_id");
-            String upStationName = resultSet.getString("up_station_name");
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> mapToSection(resultSet), id);
+    }
 
-            Long downStationId = resultSet.getLong("down_station_id");
-            String downStationName = resultSet.getString("down_station_name");
+    private Section mapToSection(ResultSet resultSet) throws SQLException {
+        Long upStationId = resultSet.getLong("up_station_id");
+        String upStationName = resultSet.getString("up_station_name");
 
-            return new Section(
-                    resultSet.getLong("id"),
-                    new Station(upStationId, upStationName),
-                    new Station(downStationId, downStationName),
-                    resultSet.getInt("distance")
-            );
-        }, id);
+        Long downStationId = resultSet.getLong("down_station_id");
+        String downStationName = resultSet.getString("down_station_name");
+
+        return new Section(
+                resultSet.getLong("id"),
+                new Station(upStationId, upStationName),
+                new Station(downStationId, downStationName),
+                resultSet.getInt("distance")
+        );
     }
 
     @Override
