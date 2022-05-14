@@ -1,10 +1,10 @@
 package wooteco.subway.exception;
 
-public class DataNotExistException extends IllegalArgumentException {
+public class DataNotFoundException extends IllegalArgumentException {
 
     private final String message;
 
-    public DataNotExistException(String message) {
+    public DataNotFoundException(String message) {
         this.message = message;
     }
 

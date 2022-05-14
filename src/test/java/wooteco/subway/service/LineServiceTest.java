@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DataDuplicationException;
-import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.service.dto.SectionDto;
 
 class LineServiceTest {
@@ -97,7 +97,7 @@ class LineServiceTest {
 
         //then
         assertThatThrownBy(() -> lineService.findById(id + 1))
-            .isInstanceOf(DataNotExistException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
@@ -154,7 +154,7 @@ class LineServiceTest {
     void deleteByIdWithIdNotExists() {
         //then
         assertThatThrownBy(() -> lineService.deleteById(1L))
-            .isInstanceOf(DataNotExistException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 }

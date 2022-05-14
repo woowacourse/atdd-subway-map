@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DataDuplicationException;
-import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.service.dto.SectionDto;
 
 @Service
@@ -40,7 +40,7 @@ public class LineService {
 
     public Line findById(Long id) {
         return lineDao.findById(id)
-            .orElseThrow(() -> new DataNotExistException("존재하지 않는 노선입니다."));
+            .orElseThrow(() -> new DataNotFoundException("존재하지 않는 노선입니다."));
     }
 
     public void update(Line line) {
@@ -53,7 +53,7 @@ public class LineService {
 
     public void deleteById(Long id) {
         if (lineDao.deleteById(id) == ROW_SIZE_WHEN_NOT_DELETED) {
-            throw new DataNotExistException("존재하지 않는 노선입니다.");
+            throw new DataNotFoundException("존재하지 않는 노선입니다.");
         }
     }
 }

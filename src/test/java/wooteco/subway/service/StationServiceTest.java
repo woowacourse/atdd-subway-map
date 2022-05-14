@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DataDuplicationException;
-import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.DataNotFoundException;
 
 class StationServiceTest {
 
@@ -90,7 +90,7 @@ class StationServiceTest {
 
         //then
         assertThatThrownBy(() -> stationService.findById(id + 1))
-            .isInstanceOf(DataNotExistException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessage("존재하지 않는 역입니다.");
     }
 
@@ -113,7 +113,7 @@ class StationServiceTest {
     void deleteByIdWithIdNotExists() {
         //then
         assertThatThrownBy(() -> stationService.deleteById(1L))
-            .isInstanceOf(DataNotExistException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessageContaining("존재하지 않는 역입니다.");
     }
 }
