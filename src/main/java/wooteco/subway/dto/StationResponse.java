@@ -15,6 +15,10 @@ public class StationResponse {
         this.name = station.getName();
     }
 
+    public Station toStation() {
+        return new Station(id, name);
+    }
+
     public Long getId() {
         return id;
     }
