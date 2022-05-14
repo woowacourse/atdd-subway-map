@@ -5,7 +5,9 @@ import wooteco.subway.dto.SectionsToBeCreatedAndUpdated;
 import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.SectionServiceException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Sections {
 
@@ -148,5 +150,27 @@ public class Sections {
                 .filter(s -> s.getUpStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(() -> new SectionServiceException("중간역 삭제중 하행역을 찾지 못하였습니다."));
+    }
+
+    public List<Long> getSortedStationIds() {
+        Section lastUpSection = findLastUpSection();
+        Long downStationId = lastUpSection.getDownStationId();
+
+        List<Long> sortedStationIds = new ArrayList<>();
+        sortedStationIds.add(lastUpSection.getUpStationId());
+        sortedStationIds.add(lastUpSection.getDownStationId());
+
+        while (values.size() >= sortedStationIds.size()) {
+            downStationId = getNextDownStationId(downStationId);
+            sortedStationIds.add(downStationId);
+        }
+        return sortedStationIds;
+    }
+
+    private Long getNextDownStationId(Long downStationId) {
+        Optional<Section> nextSection = values.stream()
+                .filter(s -> s.getUpStationId().equals(downStationId))
+                .findFirst();
+        return nextSection.map(Section::getDownStationId).orElseThrow();
     }
 }

@@ -7,13 +7,16 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.AccessNoneDataException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,9 +74,19 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponseByLineId(Long lineId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        List<Long> sortedStationIds = sections.getSortedStationIds();
         List<Station> stations = stationDao.findAllByLineId(lineId);
-        return stations.stream()
-                .distinct()
+
+        List<Station> sortedStation = new ArrayList<>();
+        for (Long stationId : sortedStationIds) {
+            Optional<Station> station = stations.stream()
+                    .filter(s -> s.getId().equals(stationId))
+                    .findFirst();
+            station.ifPresent(sortedStation::add);
+        }
+
+        return sortedStation.stream()
                 .map(s -> new StationResponse(s.getId(), s.getName()))
                 .collect(Collectors.toList());
     }

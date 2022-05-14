@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class SectionsTest {
 
     private final Long lineId = 1L;
-    private final Long lastUpStationId = 1L;
-    private final Long middleStationId = 2L;
-    private final Long lastDownStationId = 3L;
+    private final Long lastUpStationId = 3L;
+    private final Long middleStationId = 1L;
+    private final Long lastDownStationId = 2L;
     private final Long newStationId = 4L;
 
     private Section section1;
@@ -165,5 +165,14 @@ class SectionsTest {
         assertThatThrownBy(() -> sectionsThatHaveOneSection.delete(middleStationId))
                 .isInstanceOf(SectionServiceException.class)
                 .hasMessageMatching("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
+    }
+
+    @DisplayName("역의 id를 상행부터 하행 순으로 반환한다.")
+    @Test
+    void getSortedStationIds() {
+        List<Long> sortedStationIds = sections.getSortedStationIds();
+        List<Long> expected = List.of(3L, 1L, 2L);
+
+        assertThat(sortedStationIds).isEqualTo(expected);
     }
 }
