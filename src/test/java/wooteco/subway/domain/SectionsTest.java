@@ -26,7 +26,7 @@ class SectionsTest {
         assertDoesNotThrow(() -> sections.add(section));
     }
     
-    @DisplayName("하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경한다.")
+    @DisplayName("하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 상행역을 기준으로 기존 구간을 변경한다.")
     @Test
     public void forkRodeSameUpStation() {
         // given
@@ -44,7 +44,7 @@ class SectionsTest {
                 .containsExactlyInAnyOrder(4, 3);
     }
 
-    @DisplayName("하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경한다.")
+    @DisplayName("하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 하행역을 기준으로 기존 구간을 변경한다.")
     @Test
     public void forkRodeSameDownStation() {
         // given
