@@ -5,10 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,17 +40,24 @@ public class LineServiceTest {
     @Autowired
     private LineRepository lineRepository;
 
+    private Station upStation;
+    private Station downStation;
+
+    @BeforeEach
+    void setUp() {
+        upStation = stationRepository.save(new Station("강남역"));
+        downStation = stationRepository.save(new Station("역삼역"));
+    }
+
     @DisplayName("지하철 노선 저장")
     @Test
     void saveLine() {
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
         Line line = lineService.save(request);
 
-        LineResponse response = lineService.queryById(line.getId());
+        LineResponse response = lineService.getById(line.getId());
         List<Long> actualIds = response.getStations().stream()
             .map(StationResponse::getId)
             .collect(Collectors.toList());
@@ -60,9 +70,6 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveLineWithEmptyName(String name) {
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
-
         assertThatThrownBy(() -> lineService.save(
             new LineRequest(name, "bg-red-600", upStation.getId(), downStation.getId(), 10))
         ).isInstanceOf(BlankArgumentException.class);
@@ -72,9 +79,6 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveLineWithEmptyColor(String color) {
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
-
         assertThatThrownBy(() -> lineService.save(
             new LineRequest("신분당선", color, upStation.getId(), downStation.getId(), 10))
         ).isInstanceOf(BlankArgumentException.class);
@@ -85,8 +89,6 @@ public class LineServiceTest {
     void saveByDuplicateName() {
         String name = "신분당선";
         String color = "bg-red-600";
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
         Station newStation = stationRepository.save(new Station("선릉역"));
 
         lineService.save(new LineRequest(name, color, upStation.getId(), downStation.getId(), 10));
@@ -99,7 +101,8 @@ public class LineServiceTest {
     @DisplayName("존재하지 않는 역으로 노선을 등록할 수 없다.")
     @Test
     void saveWithNotExistStation() {
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        long notFoundStationId = Math.max(upStation.getId(), downStation.getId()) + 10;
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, notFoundStationId, 10);
 
         assertThatThrownBy(() -> lineService.save(request))
             .isInstanceOf(NotFoundStationException.class);
@@ -108,19 +111,17 @@ public class LineServiceTest {
     @DisplayName("존재하지 않는 지하철 노선 조회시 예외를 반환한다")
     @Test
     void showNotExistLine() {
-        assertThatThrownBy(() -> lineService.queryById(50L))
+        assertThatThrownBy(() -> lineService.getById(50L))
             .isInstanceOf(NotFoundLineException.class);
     }
 
     @DisplayName("지하철 노선 조회")
     @Test
     void queryLine() {
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
         Line line = lineService.save(
             new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
 
-        LineResponse expected = lineService.queryById(line.getId());
+        LineResponse expected = lineService.getById(line.getId());
         List<Long> expectedStationIds = expected.getStations().stream()
             .map(StationResponse::getId)
             .collect(Collectors.toList());
@@ -134,15 +135,13 @@ public class LineServiceTest {
 
     @Test
     void queryAll() {
-        Station station1 = stationRepository.save(new Station("강남역"));
-        Station station2 = stationRepository.save(new Station("역삼역"));
         Station station3 = stationRepository.save(new Station("선릉역"));
         Line line1 = lineService.save(
-            new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10));
+            new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
         Line line2 = lineService.save(
-            new LineRequest("1호선", "bg-blue-600", station1.getId(), station3.getId(), 10));
+            new LineRequest("1호선", "bg-blue-600", upStation.getId(), station3.getId(), 10));
 
-        List<Long> lineIds = lineService.queryAll().stream()
+        List<Long> lineIds = lineService.getAll().stream()
             .map(LineResponse::getId)
             .collect(Collectors.toList());
 
@@ -153,8 +152,6 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void updateLineWithEmptyName(String name) {
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
@@ -169,8 +166,6 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void updateLineWithEmptyColor(String color) {
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
@@ -184,8 +179,6 @@ public class LineServiceTest {
     @DisplayName("지하철 노선의 정보를 수정한다.")
     @Test
     void updateLine() {
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
@@ -215,8 +208,6 @@ public class LineServiceTest {
     @DisplayName("지하철 노선을 삭제 시도")
     @Test
     void deleteLine() {
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
         Line line = lineService.save(
             new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
 
