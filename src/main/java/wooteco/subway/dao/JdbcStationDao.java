@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataReferenceViolationException;
 
 @Repository
 public class JdbcStationDao implements StationDao {
@@ -80,6 +82,10 @@ public class JdbcStationDao implements StationDao {
     @Override
     public int deleteById(Long id) {
         String sql = "delete from station where id = ?";
-        return jdbcTemplate.update(sql, id);
+        try {
+            return jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataReferenceViolationException("구간에 할당된 역이 존재하여 삭제할 수 없습니다.");
+        }
     }
 }

@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DataReferenceViolationException;
 import wooteco.subway.ui.response.ErrorResponse;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
 
-    @ExceptionHandler({IllegalArgumentException.class, DataDuplicationException.class})
+    @ExceptionHandler({IllegalArgumentException.class, DataDuplicationException.class,
+        DataReferenceViolationException.class})
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(Exception exception) {
         return ResponseEntity.badRequest().body(new ErrorResponse(exception.getMessage()));
     }

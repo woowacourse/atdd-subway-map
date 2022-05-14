@@ -12,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.SectionEntity;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 class JdbcLineDaoTest {
@@ -128,5 +130,25 @@ class JdbcLineDaoTest {
 
         //then
         assertThat(actual).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("특정 노선을 삭제할 경우 그에 속한 구간이 모두 삭제되는지 확인한다.")
+    void onDeleteByLineId() {
+        //given
+        StationDao stationDao = new JdbcStationDao(jdbcTemplate);
+        JdbcSectionDao sectionDao = new JdbcSectionDao(jdbcTemplate);
+
+        Long savedLineId = new JdbcLineDao(jdbcTemplate).save(new Line("2호선", "green")).getId();
+
+        Long stationIdA = stationDao.save(new Station("강남역")).getId();
+        Long stationIdB = stationDao.save(new Station("선릉역")).getId();
+        sectionDao.save(new SectionEntity(savedLineId, stationIdA, stationIdB, 5));
+
+        //when
+        lineDao.deleteById(savedLineId);
+
+        //then
+        assertThat(sectionDao.findByLineId(savedLineId)).isEmpty();
     }
 }
