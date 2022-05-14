@@ -16,6 +16,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.SectionDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.ui.dto.SectionDeleteRequest;
 import wooteco.subway.ui.dto.SectionRequest;
 
@@ -37,7 +38,7 @@ public class SectionServiceTest {
     }
 
     @Test
-    @DisplayName("상행점 구간을 저장한다.")
+    @DisplayName("상행점 구간을 저장한다. 정렬된 구간 : 2-3-4-5 -> 1-2-3-4-5")
     void saveFirstStation() {
         // given
         Long lineId = lineDao.save(new Line("name", "color"));
@@ -47,44 +48,69 @@ public class SectionServiceTest {
 
         // when
         sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
-        List<Section> sections = sectionDao.findByLineId(lineId);
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Long> stationIds = sections.sortedStationId();
 
         // then
-        assertThat(sections).hasSize(4);
+        Long firstPointStationId = stationIds.get(0);
+        assertThat(firstPointStationId).isEqualTo(1L);
     }
 
     @Test
-    @DisplayName("하행점 구간을 저장한다.")
+    @DisplayName("하행점 구간을 저장한다. 정렬된 구간 : 1-2-3-4 -> 1-2-3-4-5")
     void saveLastStation() {
         // given
         Long lineId = lineDao.save(new Line("name", "color"));
-        sectionDao.save(new Section(lineId, 2L, 3L, 3));
-        sectionDao.save(new Section(lineId, 3L, 4L, 4));
-        sectionDao.save(new Section(lineId, 4L, 5L, 5));
+        sectionDao.save(new Section(lineId, 1L, 2L, 3));
+        sectionDao.save(new Section(lineId, 2L, 3L, 4));
+        sectionDao.save(new Section(lineId, 3L, 4L, 5));
 
         // when
-        sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
-        List<Section> sections = sectionDao.findByLineId(lineId);
+        sectionService.save(new SectionRequest(4L, 5L, 2), lineId);
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Long> stationIds = sections.sortedStationId();
 
         // then
-        assertThat(sections).hasSize(4);
+        Long endPointStationId = stationIds.get(4);
+        assertThat(endPointStationId).isEqualTo(5L);
     }
 
     @Test
-    @DisplayName("중간 지점 구간을 저장한다.")
-    void saveMiddleStation() {
+    @DisplayName("중간 지점 구간을 저장한다. 정렬된 구간 : 1-2-3-4에서 2-3 구간에 6-3 구간을 추가하는 경우")
+    void saveMiddleStation1() {
         // given
         Long lineId = lineDao.save(new Line("name", "color"));
-        sectionDao.save(new Section(lineId, 2L, 3L, 3));
-        sectionDao.save(new Section(lineId, 3L, 4L, 4));
-        sectionDao.save(new Section(lineId, 4L, 5L, 5));
+        sectionDao.save(new Section(lineId, 1L, 2L, 3));
+        sectionDao.save(new Section(lineId, 2L, 3L, 4));
+        sectionDao.save(new Section(lineId, 3L, 4L, 5));
 
         // when
-        sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
-        List<Section> sections = sectionDao.findByLineId(lineId);
+        sectionService.save(new SectionRequest(2L, 6L, 2), lineId);
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Long> stationIds = sections.sortedStationId();
 
         // then
-        assertThat(sections).hasSize(4);
+        Long stationId = stationIds.get(2);
+        assertThat(stationId).isEqualTo(6L);
+    }
+
+    @Test
+    @DisplayName("중간 지점 구간을 저장한다. 정렬된 구간 : 1-2-3-4에서 1-2 구간에 6-2 구간을 추가하는 경우")
+    void saveMiddleStation2() {
+        // given
+        Long lineId = lineDao.save(new Line("name", "color"));
+        sectionDao.save(new Section(lineId, 1L, 2L, 3));
+        sectionDao.save(new Section(lineId, 2L, 3L, 4));
+        sectionDao.save(new Section(lineId, 3L, 4L, 5));
+
+        // when
+        sectionService.save(new SectionRequest(6L, 2L, 2), lineId);
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Long> stationIds = sections.sortedStationId();
+
+        // then
+        Long stationId = stationIds.get(1);
+        assertThat(stationId).isEqualTo(6L);
     }
 
     @Test
@@ -103,19 +129,22 @@ public class SectionServiceTest {
     }
 
     @Test
-    @DisplayName("중간 지점 구간 제거")
+    @DisplayName("중간 지점 구간 제거한다. 1-2-3-4 -> 1-2-4")
     void deleteMiddleSection() {
         // given
         Long lineId = lineDao.save(new Line("name", "color"));
-        sectionDao.save(new Section(lineId, 2L, 3L, 3));
-        sectionDao.save(new Section(lineId, 3L, 4L, 4));
-        sectionDao.save(new Section(lineId, 4L, 5L, 5));
+        sectionDao.save(new Section(lineId, 1L, 2L, 3));
+        sectionDao.save(new Section(lineId, 2L, 3L, 4));
+        sectionDao.save(new Section(lineId, 3L, 4L, 5));
 
         // when
-        boolean result = sectionService.removeSection(new SectionDeleteRequest(lineId, 3L));
+        sectionService.removeSection(new SectionDeleteRequest(lineId, 3L));
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Long> result = sections.sortedStationId();
 
         // then
-        assertThat(result).isTrue();
+        List<Long> expected = List.of(1L, 2L, 4L);
+        assertThat(result).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @Test
@@ -128,7 +157,7 @@ public class SectionServiceTest {
         // when
         assertThatThrownBy(() ->
             sectionService.removeSection(new SectionDeleteRequest(lineId, 2L)))
-            .hasMessage("구간이 하나 밖에 없어서 제거할 수 없습니다.")
+            .hasMessage("구간을 제거할 수 없는 상태입니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }
 }
