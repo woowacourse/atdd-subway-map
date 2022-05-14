@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.dao.SectionJdbcDao;
 import wooteco.subway.dao.StationJdbcDao;
@@ -18,6 +19,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.ClientException;
 
 @Service
+@Transactional
 public class LineService {
 
     private final LineJdbcDao lineDao;
@@ -33,7 +35,7 @@ public class LineService {
     public LineResponse save(LineRequest request) {
         try {
             Line line = lineDao.save(request);
-            sectionJdbcDao.save(line.getId(), new Section(0L, line.getId(), request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+            sectionJdbcDao.save(line.getId(), new Section(line.getId(), request.getUpStationId(), request.getDownStationId(), request.getDistance()));
 
             Station upsStation = stationDao.findById(request.getUpStationId());
             Station downStation = stationDao.findById(request.getDownStationId());

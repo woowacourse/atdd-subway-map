@@ -31,7 +31,7 @@ public class SectionService {
                 return;
             }
         }
-        sectionJdbcDao.save(id, new Section(0L, id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()));
+        sectionJdbcDao.save(id, new Section(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()));
     }
 
     private void validateSameStation(SectionRequest sectionRequest) {
@@ -70,7 +70,7 @@ public class SectionService {
     }
 
     private void deleteMiddleSection(Long id, Optional<Section> downSection, Optional<Section> upSection) {
-        sectionJdbcDao.save(id, new Section(0L, id, upSection.get().getUpStationId(), downSection.get().getDownStationId(), upSection.get().getDistance() + downSection.get().getDistance()));
+        sectionJdbcDao.save(id, new Section(id, upSection.get().getUpStationId(), downSection.get().getDownStationId(), upSection.get().getDistance() + downSection.get().getDistance()));
         sectionJdbcDao.delete(id, downSection.get());
         sectionJdbcDao.delete(id, upSection.get());
     }

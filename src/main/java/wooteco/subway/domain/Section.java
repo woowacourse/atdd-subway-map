@@ -1,21 +1,48 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.exception.ClientException;
 
 public class Section {
 
-    private final Long id;
+    private final static int BLANK = 0;
+    private final static Long EMPTY = null;
+
+    private Long id;
     private final Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validateNull(lineId, upStationId, downStationId, distance);
+        validateMinimumRange(lineId, upStationId, downStationId, distance);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        validateNull(lineId, upStationId, downStationId, distance);
+        validateMinimumRange(lineId, upStationId, downStationId, distance);
+        this.lineId = lineId;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
+    private void validateMinimumRange(Long lineId, Long upStationId, Long downStationId, int distance) {
+        if (lineId == BLANK || upStationId == BLANK || downStationId == BLANK || distance == BLANK) {
+            throw new ClientException("지하철 노선 Id와 상행, 하행 역, 거리는 0 이상의 값이어야 합니다.");
+        }
+    }
+
+    private void validateNull(Long lineId, Long upStationId, Long downStationId, int distance) {
+        if (lineId == EMPTY || upStationId == EMPTY || downStationId == EMPTY || distance == BLANK) {
+            throw new ClientException("지하철 노선 Id와 상행, 하행 역을 입력해주세요.");
+        }
     }
     
     public boolean isSameUpStationId(SectionRequest request) {
@@ -32,9 +59,9 @@ public class Section {
 
     public Section createBySameStationId(Long id, SectionRequest request) {
         if (isSameUpStationId(request)) {
-            return new Section(0L, id, request.getDownStationId(), downStationId, distance - request.getDistance());
+            return new Section(id, request.getDownStationId(), downStationId, distance - request.getDistance());
         }
-        return new Section(0L, id, upStationId, request.getUpStationId(), distance - request.getDistance());
+        return new Section(id, upStationId, request.getUpStationId(), distance - request.getDistance());
     }
 
     public void updateSameStationId(SectionRequest request) {
