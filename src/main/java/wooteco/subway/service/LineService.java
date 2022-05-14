@@ -17,7 +17,6 @@ import wooteco.subway.domain2.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
-import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.RegisteredStationEntity;
 import wooteco.subway.entity.SectionEntity2;
@@ -61,7 +60,7 @@ public class LineService {
     public LineResponse find(Long id) {
         LineEntity lineEntity = findExistingLine(id);
         SectionViews2 sections = SectionViews2.of(sectionDao.findAllByLineId(id));
-        return toLineResponse(Line.of(lineEntity, sections.getSortedStationsList()));
+        return LineResponse.of(Line.of(lineEntity, sections.getSortedStationsList()));
     }
 
     @Transactional
@@ -72,7 +71,7 @@ public class LineService {
 
         LineEntity line = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         sectionDao.save(new SectionEntity2(line.getId(), upStation, downStation, lineRequest.getDistance()));
-        return toLineResponse(Line.of(line, upStation, downStation));
+        return LineResponse.of(Line.of(line, upStation, downStation));
     }
 
     private StationEntity findExistingStation(Long stationId) {
@@ -124,17 +123,6 @@ public class LineService {
                 .map(RegisteredStationEntity::getStationEntity)
                 .map(StationEntity::toDomain)
                 .collect(Collectors.toList());
-        return toLineResponse(Line.of(lineEntity, stations));
-    }
-
-    private LineResponse toLineResponse(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(),  toStationResponse(line));
-    }
-
-    private List<StationResponse> toStationResponse(Line line) {
-        return line.getStations()
-                .stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
-                .collect(Collectors.toUnmodifiableList());
+        return LineResponse.of((Line.of(lineEntity, stations)));
     }
 }
