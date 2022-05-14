@@ -32,16 +32,16 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse create(LineCreateRequest lineCreateRequest) {
-        Line persistLine = createLine(lineCreateRequest);
+    public LineResponse save(LineCreateRequest lineCreateRequest) {
+        Line persistLine = saveLine(lineCreateRequest);
 
-        Section section = createSectionByLineRequest(lineCreateRequest, persistLine);
+        Section section = saveSectionByLineRequest(lineCreateRequest, persistLine);
         List<Station> stations = List.of(section.getUpStation(), section.getDownStation());
 
         return new LineResponse(persistLine, stations);
     }
 
-    private Line createLine(LineCreateRequest lineCreateRequest) {
+    private Line saveLine(LineCreateRequest lineCreateRequest) {
         Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
         validateUnique(line);
         return lineDao.save(line);
@@ -56,7 +56,7 @@ public class LineService {
         }
     }
 
-    private Section createSectionByLineRequest(LineCreateRequest lineCreateRequest, Line line) {
+    private Section saveSectionByLineRequest(LineCreateRequest lineCreateRequest, Line line) {
         Section section = new Section(
                 stationService.findById(lineCreateRequest.getUpStationId()),
                 stationService.findById(lineCreateRequest.getDownStationId()),
@@ -66,7 +66,7 @@ public class LineService {
     }
 
     @Transactional
-    public void createSectionBySectionRequest(Long lineId, SectionRequest sectionRequest) {
+    public void saveSectionBySectionRequest(Long lineId, SectionRequest sectionRequest) {
         validateExist(lineId);
         Line line = lineDao.findById(lineId);
         Station upStation = stationService.findById(sectionRequest.getUpStationId());

@@ -51,7 +51,7 @@ class LineServiceTest {
     void createLineAndSection() {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
 
-        LineResponse actual = lineService.create(lineCreateRequest);
+        LineResponse actual = lineService.save(lineCreateRequest);
         List<StationResponse> actualStations = actual.getStations();
 
         assertThat(actual.getId()).isNotNull();
@@ -69,9 +69,9 @@ class LineServiceTest {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
         LineCreateRequest duplicateRequest = new LineCreateRequest("2호선", "빨간색", gangnam.getId(), yeoksam.getId(), 1);
 
-        lineService.create(lineCreateRequest);
+        lineService.save(lineCreateRequest);
 
-        assertThatThrownBy(() -> lineService.create(duplicateRequest))
+        assertThatThrownBy(() -> lineService.save(duplicateRequest))
                 .isInstanceOf(DuplicateLineException.class)
                 .hasMessage("이미 존재하는 노선 이름입니다.");
     }
@@ -82,9 +82,9 @@ class LineServiceTest {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
         LineCreateRequest duplicateRequest = new LineCreateRequest("성수지선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
 
-        lineService.create(lineCreateRequest);
+        lineService.save(lineCreateRequest);
 
-        assertThatThrownBy(() -> lineService.create(duplicateRequest))
+        assertThatThrownBy(() -> lineService.save(duplicateRequest))
                 .isInstanceOf(DuplicateLineException.class)
                 .hasMessage("이미 존재하는 노선 색상입니다.");
     }
@@ -94,8 +94,8 @@ class LineServiceTest {
     void findAll() {
         LineCreateRequest request1 = new LineCreateRequest("1호선", "군청색", gangnam.getId(), yeoksam.getId(), 1);
         LineCreateRequest request2 = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
-        lineService.create(request1);
-        lineService.create(request2);
+        lineService.save(request1);
+        lineService.save(request2);
 
         List<LineResponse> lineResponses = lineService.findAll();
 
@@ -118,7 +118,7 @@ class LineServiceTest {
     @Test
     void findById() {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
-        Long id = lineService.create(lineCreateRequest).getId();
+        Long id = lineService.save(lineCreateRequest).getId();
 
         LineResponse actual = lineService.find(id);
         LineResponse expected = new LineResponse(new Line(id, "2호선", "초록색"), List.of(gangnam, yeoksam));
@@ -139,7 +139,7 @@ class LineServiceTest {
     @Test
     void update() {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
-        Long id = lineService.create(lineCreateRequest).getId();
+        Long id = lineService.save(lineCreateRequest).getId();
 
         LineUpdateRequest updateRequest = new LineUpdateRequest("1호선", "군청색");
         lineService.update(id, updateRequest);
@@ -164,9 +164,9 @@ class LineServiceTest {
     @Test
     void updateToDuplicateName() {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
-        Long id = lineService.create(lineCreateRequest).getId();
+        Long id = lineService.save(lineCreateRequest).getId();
         lineCreateRequest = new LineCreateRequest("8호선", "분홍색", gangnam.getId(), yeoksam.getId(), 1);
-        lineService.create(lineCreateRequest);
+        lineService.save(lineCreateRequest);
 
         LineUpdateRequest updateRequest = new LineUpdateRequest("8호선", "초록색");
 
@@ -179,9 +179,9 @@ class LineServiceTest {
     @Test
     void updateToDuplicateColor() {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
-        Long id = lineService.create(lineCreateRequest).getId();
+        Long id = lineService.save(lineCreateRequest).getId();
         lineCreateRequest = new LineCreateRequest("8호선", "분홍색", gangnam.getId(), yeoksam.getId(), 1);
-        lineService.create(lineCreateRequest);
+        lineService.save(lineCreateRequest);
 
         LineUpdateRequest updateRequest = new LineUpdateRequest("2호선", "분홍색");
 
@@ -194,7 +194,7 @@ class LineServiceTest {
     @Test
     void delete() {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "초록색", gangnam.getId(), yeoksam.getId(), 1);
-        Long id = lineService.create(lineCreateRequest).getId();
+        Long id = lineService.save(lineCreateRequest).getId();
 
         lineService.delete(id);
         List<LineResponse> lineResponses = lineService.findAll();
@@ -215,10 +215,10 @@ class LineServiceTest {
     void addSection() {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "green", gangnam.getId(), seolleung.getId(),
                 2);
-        LineResponse lineResponse = lineService.create(lineCreateRequest);
+        LineResponse lineResponse = lineService.save(lineCreateRequest);
         Line line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
         SectionRequest sectionRequest = new SectionRequest(gangnam.getId(), yeoksam.getId(), 1);
-        lineService.createSectionBySectionRequest(line.getId(), sectionRequest);
+        lineService.saveSectionBySectionRequest(line.getId(), sectionRequest);
 
         List<Section> sections = sectionDao.findAllByLine(line);
 
@@ -235,10 +235,10 @@ class LineServiceTest {
     void deleteSection() {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "green", gangnam.getId(), yeoksam.getId(),
                 1);
-        LineResponse lineResponse = lineService.create(lineCreateRequest);
+        LineResponse lineResponse = lineService.save(lineCreateRequest);
         Line line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
         SectionRequest newSectionRequest = new SectionRequest(yeoksam.getId(), seolleung.getId(), 1);
-        lineService.createSectionBySectionRequest(line.getId(), newSectionRequest);
+        lineService.saveSectionBySectionRequest(line.getId(), newSectionRequest);
 
         lineService.deleteSection(line.getId(), yeoksam.getId());
 
