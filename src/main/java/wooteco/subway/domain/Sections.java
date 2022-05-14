@@ -17,32 +17,58 @@ public class Sections {
             values.add(section);
             return;
         }
-        checkAddable(section);
-        rearrangeSectionIfNeed(section);
-        values.add(section);
-    }
-
-    private void rearrangeSectionIfNeed(final Section section) {
-        for (Section each : values) {
-            rearrangeSectionIfForkRoadCase(each, section);
-        }
+        addSection(section);
     }
 
     public Long removeStation(final Station station) {
-        if (values.size() == 1) {
-            throw new IllegalArgumentException("구간이 하나인 경우 역을 제거할 수 없습니다.");
-        }
-        if (!stations().contains(station)) {
-            throw new IllegalArgumentException("해당 역이 존재하지 않습니다.");
-        }
+        checkRemovable(station);
         if (isLastStation(station)) {
             return removeLastSection(station);
         }
         return removeInterStation(station);
     }
 
+    public List<Station> sortedStations() {
+        Map<Station, Station> map = new HashMap<>();
+        List<Station> result = new ArrayList<>();
+
+        for (final Section section : values) {
+            map.put(section.getUpStation(), section.getDownStation());
+        }
+
+        Station topStation = getTopStation();
+        result.add(topStation);
+        Station nextStation = map.get(topStation);
+        while (nextStation != null) {
+            result.add(nextStation);
+            nextStation = map.get(nextStation);
+        }
+        return result;
+    }
+
     public Set<Section> values() {
         return Collections.unmodifiableSet(values);
+    }
+
+    private void addSection(final Section section) {
+        checkAddable(section);
+        rearrangeSectionIfNeed(section);
+        values.add(section);
+    }
+
+    private void checkRemovable(final Station station) {
+        if (values.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나인 경우 역을 제거할 수 없습니다.");
+        }
+        if (!stations().contains(station)) {
+            throw new IllegalArgumentException("해당 역이 존재하지 않습니다.");
+        }
+    }
+
+    private void rearrangeSectionIfNeed(final Section section) {
+        for (Section each : values) {
+            rearrangeSectionIfForkRoadCase(each, section);
+        }
     }
 
     private void checkAddable(final Section section) {
@@ -154,34 +180,12 @@ public class Sections {
         return upStations;
     }
 
-    public List<Station> sortedStations() {
-        Map<Station, Station> map = new HashMap<>();
-        List<Station> result = new ArrayList<>();
-
-        for (final Section section : values) {
-            map.put(section.getUpStation(), section.getDownStation());
-        }
-
+    private Station getTopStation() {
         ArrayList<Station> topOrLowest = new ArrayList<>(lastStations());
-        Station station = topOrLowest.get(0);
-        if (map.containsKey(station)) {
-            // 최상단역
-            result.add(station);
-            Station nextStation = map.get(station);
-            while (nextStation != null) {
-                result.add(nextStation);
-                nextStation = map.get(nextStation);
-            }
-        } else {
-            Station station1 = topOrLowest.get(1);
-            result.add(station1);
-            Station nextStation = map.get(station1);
-            while (nextStation != null) {
-                result.add(nextStation);
-                nextStation = map.get(nextStation);
-            }
+        if (upStations().contains(topOrLowest.get(0))) {
+            return topOrLowest.get(0);
         }
-        return result;
+        return topOrLowest.get(1);
     }
 
     private Set<Station> upStations() {
