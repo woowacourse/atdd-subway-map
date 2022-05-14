@@ -1,5 +1,8 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -132,13 +135,21 @@ public class Sections {
     }
 
     public List<Long> getStationsId() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<Section> sortedSections = createSortedSections();
-        List<Long> stationIds = createSortedSections().stream()
-            .map(Section::getUpStationId)
-            .collect(Collectors.toList());
+        List<Long> stationIds = upStationIdsOf(sortedSections);
         stationIds.add(sortedSections.get(sortedSections.size() - 1).getDownStationId());
 
         return stationIds;
+    }
+
+    private List<Long> upStationIdsOf(List<Section> sections) {
+        return sections.stream()
+            .map(Section::getUpStationId)
+            .collect(Collectors.toList());
     }
 
     private List<Section> createSortedSections() {
