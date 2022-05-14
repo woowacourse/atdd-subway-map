@@ -42,4 +42,12 @@ public class Section {
     public Long getLineId() {
         return lineId;
     }
+
+    public boolean matchDownStationId(Long id) {
+        return downStationId.equals(id);
+    }
+
+    public boolean mathUpStationId(Long id) {
+        return upStationId.equals(id);
+    }
 }

@@ -24,7 +24,7 @@ public class Sections {
     }
 
     private boolean isMiddlePoint(Section section, Long upStationId, Long downStationId) {
-        return !(section.getDownStationId().equals(upStationId) || section.getUpStationId().equals(downStationId));
+        return !(section.matchDownStationId(upStationId) || section.mathUpStationId(downStationId));
     }
 
     public boolean hasStationId(Long id) {
@@ -38,38 +38,38 @@ public class Sections {
 
     public Section findSectionByUpStationId(Long id) {
         return sections.stream()
-            .filter(i -> i.getUpStationId().equals(id))
+            .filter(i -> i.mathUpStationId(id))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("구간 중 해당 upStationId이 존재하지 않습니다."));
     }
 
     public Section findSectionByDownStationId(Long id) {
         return sections.stream()
-            .filter(i -> i.getDownStationId().equals(id))
+            .filter(i -> i.matchDownStationId(id))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("구간 중 해당 downStationId 존재하지 않습니다."));
     }
 
-    private Map<Long, Long> getSectionId() {
-        Map<Long, Long> sectionId = new HashMap<>();
-        for (Section sectionOfSections : sections) {
-            sectionId.put(sectionOfSections.getUpStationId(), sectionOfSections.getDownStationId());
+    private Map<Long, Long> getSectionIds() {
+        Map<Long, Long> sectionIds = new HashMap<>();
+        for (Section section : sections) {
+            sectionIds.put(section.getUpStationId(), section.getDownStationId());
         }
-        return sectionId;
+        return sectionIds;
     }
 
     private Long findDownTerminalStationId() {
-        Map<Long, Long> sectionId = getSectionId();
-        return sectionId.values().stream()
-            .filter(i -> !(sectionId.containsKey(i)))
+        Map<Long, Long> sectionIds = getSectionIds();
+        return sectionIds.values().stream()
+            .filter(i -> !(sectionIds.containsKey(i)))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("하행점을 찾을 수 없습니다."));
     }
 
     private Long findUpTerminalStationId() {
-        Map<Long, Long> sectionId = getSectionId();
-        return sectionId.keySet().stream()
-            .filter(i -> !(sectionId.containsValue(i)))
+        Map<Long, Long> sectionIds = getSectionIds();
+        return sectionIds.keySet().stream()
+            .filter(i -> !(sectionIds.containsValue(i)))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("상행점을 찾을 수 없습니다."));
     }
@@ -77,7 +77,7 @@ public class Sections {
     public List<Long> sortedStationId() {
         Long upStationId = findUpTerminalStationId();
         List<Long> sectionIds = new ArrayList<>(List.of(upStationId));
-        Map<Long, Long> sectionId = getSectionId();
+        Map<Long, Long> sectionId = getSectionIds();
 
         for (int i = 0; i < sectionId.size(); i++) {
             upStationId = sectionId.get(upStationId);
