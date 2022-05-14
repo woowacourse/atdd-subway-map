@@ -10,8 +10,8 @@ public class Line {
     private final Sections sections = new Sections();
 
     public Line(final Long id, final String name, final String color) {
-        validateNotBlank(name);
-        validateNotBlank(color);
+        validateNullOrBlank(name);
+        validateNullOrBlank(color);
         this.id = id;
         this.name = name;
         this.color = color;
@@ -22,8 +22,8 @@ public class Line {
     }
 
     public void update(final String name, final String color) {
-        validateNotBlank(name);
-        validateNotBlank(color);
+        validateNullOrBlank(name);
+        validateNullOrBlank(color);
         this.name = name;
         this.color = color;
     }
@@ -50,8 +50,8 @@ public class Line {
         return List.copyOf(sections.stations());
     }
 
-    private void validateNotBlank(final String string) {
-        if (string.isBlank()) {
+    private void validateNullOrBlank(final String string) {
+        if (string == null || string.isBlank()) {
             throw new IllegalArgumentException("빈 값이 들어올 수 없습니다.");
         }
     }
