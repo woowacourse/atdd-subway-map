@@ -19,6 +19,11 @@ public class Line {
         this.color = color;
     }
 
+    public void update(final String name, final String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public Long getId() {
         return id;
     }
@@ -29,11 +34,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public void update(final String name, final String color) {
-        this.name = name;
-        this.color = color;
     }
 
     @Override
