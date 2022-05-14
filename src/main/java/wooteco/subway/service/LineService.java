@@ -9,14 +9,14 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.RegisteredStationDao;
 import wooteco.subway.dao.SectionDao2;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain2.line.Lines;
 import wooteco.subway.domain2.line.Line;
+import wooteco.subway.domain2.line.Lines;
+import wooteco.subway.domain2.section.Section;
 import wooteco.subway.domain2.section.SectionViews2;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.SectionEntity2;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
 
@@ -66,7 +66,8 @@ public class LineService {
         StationEntity downStation = findExistingStation(lineRequest.getDownStationId());
 
         LineEntity line = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
-        sectionDao.save(new SectionEntity2(line.getId(), upStation, downStation, lineRequest.getDistance()));
+        Section newSection = Section.of(upStation, downStation, lineRequest.getDistance());
+        sectionDao.save(newSection.toEntity(line.getId()));
         return LineResponse.of(Line.of(line, upStation, downStation));
     }
 
