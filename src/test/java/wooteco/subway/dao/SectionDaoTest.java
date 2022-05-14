@@ -67,7 +67,7 @@ class SectionDaoTest {
         Section savedSection2 = new Section(savedStationId2, savedStationId3, new Distance(10));
 
         Sections sections = new Sections(List.of(savedSection1, savedSection2));
-        sectionDao.saveSections(lineId, sections);
+        saveSections(lineId, sections);
 
         // when
         Sections foundSections = sectionDao.findSectionsByLineId(lineId);
@@ -102,11 +102,19 @@ class SectionDaoTest {
         Sections sections = new Sections(List.of(section1, section2, section3, section4));
 
         // when
-        sectionDao.saveSections(lineId, sections);
+        saveSections(lineId, sections);
         List<Section> actual = sectionDao.findSectionsByLineId(lineId).getValue();
         List<Section> expected = sections.getValue();
 
         // then
         assertThat(actual).hasSameSizeAs(expected);
+    }
+
+    private void saveSections(Long lineId, Sections sections) {
+        sectionDao.removeAllSectionsByLineId(lineId);
+
+        for (Section section : sections.getValue()) {
+            sectionDao.save(lineId, section);
+        }
     }
 }

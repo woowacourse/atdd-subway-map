@@ -35,14 +35,6 @@ public class SectionDao {
         return new Sections(sections);
     }
 
-    public void saveSections(Long lineId, Sections sections) {
-        removeAllSectionsByLineId(lineId);
-
-        for (Section section : sections.getValue()) {
-            save(lineId, section);
-        }
-    }
-
     public Section save(Long lineId, Section section) {
         String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
 
@@ -60,7 +52,7 @@ public class SectionDao {
         return new Section(createdId, section);
     }
 
-    private void removeAllSectionsByLineId(Long lineId) {
+    public void removeAllSectionsByLineId(Long lineId) {
         String sql = "DELETE FROM SECTION WHERE line_id = ?";
         jdbcTemplate.update(sql, lineId);
     }
