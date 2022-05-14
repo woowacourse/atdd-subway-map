@@ -67,7 +67,7 @@ public class Sections {
 
     private long findIdByUpStationId(long stationId) {
         return sections.stream()
-            .filter(section -> section.getUpStationId() == stationId)
+            .filter(section -> section.isSameUpStationId(stationId))
             .map(Section::getId)
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다."));
@@ -75,7 +75,7 @@ public class Sections {
 
     private long findIdByDownStationId(long stationId) {
         return sections.stream()
-            .filter(section -> section.getDownStationId() == stationId)
+            .filter(section -> section.isSameDownStationId(stationId))
             .map(Section::getId)
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다."));
@@ -83,7 +83,7 @@ public class Sections {
 
     private int findDistanceById(Long id) {
         return sections.stream()
-            .filter(section -> section.getId().equals(id))
+            .filter(section -> section.isSameId(id))
             .findAny()
             .map(Section::getDistance)
             .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다."));
@@ -109,31 +109,31 @@ public class Sections {
     private List<Section> separateSectionInExistUpMatchCase(
         long upStationId, long downStationId, int distance, Section section) {
         return List.of(
-            new Section(section.getId(), section.getLineId(), upStationId, downStationId,
+            Section.createOf(section.getId(), section.getLineId(), upStationId, downStationId,
             section.getDistance() - distance, section.getLineOrder()),
-            new Section(section.getId(), section.getLineId(), downStationId, section.getDownStationId(),
+            Section.createOf(section.getId(), section.getLineId(), downStationId, section.getDownStationId(),
                 section.getDistance() - distance, section.getLineOrder() + 1));
     }
 
     private List<Section> separateSectionInExistDownMatchCase(
         long upStationId, long downStationId, int distance, Section section) {
         return List.of(
-            new Section(section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
+            Section.createOf(section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
                 section.getDistance() - distance, section.getLineOrder()),
-            new Section(section.getId(), section.getLineId(), upStationId, downStationId,
+            Section.createOf(section.getId(), section.getLineId(), upStationId, downStationId,
                 section.getDistance() - distance, section.getLineOrder() + 1));
     }
 
     private Section findById(long sectionId) {
         return sections.stream()
-            .filter(section -> section.getId() == sectionId)
+            .filter(section -> section.isSameId(sectionId))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("일치하는 Section이 존재하지 않습니다."));
     }
 
     public List<Long> getStationsId() {
-        List<Section> sortedSections = createSortedSection();
-        List<Long> stationIds = createSortedSection().stream()
+        List<Section> sortedSections = createSortedSections();
+        List<Long> stationIds = createSortedSections().stream()
             .map(Section::getUpStationId)
             .collect(Collectors.toList());
         stationIds.add(sortedSections.get(sortedSections.size() - 1).getDownStationId());
@@ -141,7 +141,7 @@ public class Sections {
         return stationIds;
     }
 
-    private List<Section> createSortedSection() {
+    private List<Section> createSortedSections() {
         return sections.stream()
             .sorted(Comparator.comparingLong(Section::getLineOrder))
             .collect(Collectors.toList());
@@ -156,11 +156,11 @@ public class Sections {
     }
 
     public Section getUpsideEndSection() {
-        return createSortedSection().get(0);
+        return createSortedSections().get(0);
     }
 
     public Section getDownsideEndSection() {
-        List<Section> sortedSection = createSortedSection();
-        return sortedSection.get(sortedSection.size() - 1);
+        List<Section> sortedSections = createSortedSections();
+        return sortedSections.get(sortedSections.size() - 1);
     }
 }
