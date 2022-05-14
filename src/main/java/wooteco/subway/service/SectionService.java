@@ -59,11 +59,6 @@ public class SectionService {
     }
 
     @Transactional(readOnly = true)
-    public List<Section> getSectionsByLine(final long lineId) {
-        return sectionDao.findAllByLineId(lineId);
-    }
-
-    @Transactional(readOnly = true)
     public List<Station> getStationsByLine(final long lineId) {
         final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
         final Sections sections = new Sections(lineSections);

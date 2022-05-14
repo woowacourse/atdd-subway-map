@@ -48,17 +48,6 @@ public class SectionDao {
         return new Section(id, section.getUpStation(), section.getDownStation(), section.getDistance(), section.getLineId());
     }
 
-    public List<Section> findAll() {
-
-        final String sql = "SELECT SC.id, SC.up_station_id, SC.down_station_id, SC.distance, SC.line_id, " +
-                "S1.name as up_name, S2.name as down_name " +
-                "FROM SECTION SC " +
-                "JOIN STATION S1 ON SC.up_station_id=S1.id " +
-                "JOIN STATION S2 ON SC.down_station_id=S2.id";
-
-        return namedParameterJdbcTemplate.query(sql, rowMapper);
-    }
-
     public List<Section> findAllByLineId(final long lineId) {
         final String sql = "SELECT SC.id, SC.up_station_id, SC.down_station_id, SC.distance, SC.line_id, " +
                 "S1.name as up_name, S2.name as down_name " +

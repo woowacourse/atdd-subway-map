@@ -92,7 +92,7 @@ class SectionServiceTest {
 
         sectionService.delete(savedLine.getId(), downStation.getId());
 
-        final List<Section> list = sectionService.getSectionsByLine(savedLine.getId());
+        final List<Section> list = sectionDao.findAllByLineId(savedLine.getId());
         // 아차산 - 마장
         Optional<Section> foundSection = list.stream()
                 .filter(section -> section.getDownStation().equals(newStation))
