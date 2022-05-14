@@ -65,33 +65,25 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("라인을 등록할 때 입력값이 올바르지 않으면 예외를 발생한다.")
     @MethodSource("thrownArguments")
     @ParameterizedTest
-    void thrown_invalidArguments(String name, String color, int distance, String message) {
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", new LineRequest(name, color, upStationId, downStationId, distance));
-        assertThat(response.jsonPath().getString("message")).isEqualTo(message);
+    void thrown_invalidArguments(LineRequest newLineRequest, String message) {
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", newLineRequest);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.jsonPath().getString("message")).isEqualTo(message)
+        );
     }
 
     private static Stream<Arguments> thrownArguments() {
         return Stream.of(
-                Arguments.of("", "bg-purple-600", 10, "노선 이름은 공백일 수 없습니다."),
-                Arguments.of(null, "bg-purple-600", 10, "노선 이름은 공백일 수 없습니다."),
-                Arguments.of("이름", "", 10, "노선 색상은 공백일 수 없습니다."),
-                Arguments.of("이름", null, 10, "노선 색상은 공백일 수 없습니다."),
-                Arguments.of("이름", "색상", 0, "거리는 양수이어야 합니다.")
+                Arguments.of(new LineRequest("", "bg-purple-600", 1L, 2L, 10), "노선 이름은 공백일 수 없습니다."),
+                Arguments.of(new LineRequest(null, "bg-purple-600", 1L, 2L, 10), "노선 이름은 공백일 수 없습니다."),
+                Arguments.of(new LineRequest("이름", "", 1L, 2L, 10), "노선 색상은 공백일 수 없습니다."),
+                Arguments.of(new LineRequest("이름", null, 1L, 2L, 10), "노선 색상은 공백일 수 없습니다."),
+                Arguments.of(new LineRequest("이름", "색상", null, 2L, 10), "상행역은 비어있을 수 없습니다."),
+                Arguments.of(new LineRequest("이름", "색상", 1L, null, 10), "하행역은 비어있을 수 없습니다."),
+                Arguments.of(new LineRequest("이름", "색상", 1L, 2L, 0), "거리는 양수이어야 합니다.")
         );
-    }
-
-    @DisplayName("라인을 등록할 때 상행역이 입력되지 않으면 예외를 발생한다.")
-    @Test
-    void thrown_upStationBlank() {
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", new LineRequest("이름", "색상", null, downStationId, 10));
-        assertThat(response.jsonPath().getString("message")).isEqualTo("상행역은 비어있을 수 없습니다.");
-    }
-
-    @DisplayName("라인을 등록할 때 하행역이 입력되지 않으면 예외를 발생한다.")
-    @Test
-    void thrown_downStationBlank() {
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/lines", new LineRequest("이름", "색상", upStationId, null, 10));
-        assertThat(response.jsonPath().getString("message")).isEqualTo("하행역은 비어있을 수 없습니다.");
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 예외를 발생한다.")
