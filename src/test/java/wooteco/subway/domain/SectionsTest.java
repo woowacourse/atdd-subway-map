@@ -31,7 +31,7 @@ class SectionsTest {
         );
     }
 
-    @DeleteMapping("파라미터로 받은 역 id가 종점인지 확인한다.")
+    @DisplayName("파라미터로 받은 역 id가 종점인지 확인한다.")
     @Test
     void isTerminal() {
         // given
