@@ -78,8 +78,8 @@ public class Sections {
         validateRemainOneSection();
         Section currentLastUpSection = findLastUpSection();
         Section currentLastDownSection = findLastDownSection();
-        if (stationId.equals(currentLastUpSection.getUpStationId()) ||
-                stationId.equals(currentLastDownSection.getDownStationId())) {
+        if (currentLastUpSection.isUpStation(stationId) ||
+                currentLastDownSection.isDownStation(stationId)) {
             return deleteLastSection(currentLastUpSection, currentLastDownSection, stationId);
         }
 

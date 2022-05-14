@@ -42,6 +42,14 @@ public class Section {
         return upStationId == currentLastDownStationId || downStationId == currentLastUpStationId;
     }
 
+    public boolean isUpStation(Long stationId) {
+        return upStationId.equals(stationId);
+    }
+
+    public boolean isDownStation(Long stationId) {
+        return downStationId.equals(stationId);
+    }
+
     public Long getId() {
         return id;
     }
