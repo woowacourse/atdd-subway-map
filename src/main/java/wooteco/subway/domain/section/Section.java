@@ -33,7 +33,7 @@ public class Section {
     }
 
     public boolean containsStation(Station station) {
-        return station.equals(upStation) || station.equals(downStation);
+        return equalsUpStation(station) || equalsDownStation(station);
     }
 
     public boolean equalsUpStation(Station station) {
@@ -48,8 +48,8 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public boolean isCloserThan(Section section) {
-        return distance.isCloserThan(section.distance);
+    public boolean isShorterThan(Section section) {
+        return distance.isLessThan(section.distance);
     }
 
     public int calculateDifferenceOfDistance(Section section) {
