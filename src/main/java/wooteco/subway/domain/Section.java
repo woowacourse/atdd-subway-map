@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Section {
@@ -53,15 +52,15 @@ public class Section {
     }
 
     public Boolean hasUpStation(Long stationId) {
-        return upStationId == stationId;
+        return upStationId.equals(stationId);
     }
 
     public Boolean hasDownStation(Long stationId) {
-        return downStationId == stationId;
+        return downStationId.equals(stationId);
     }
 
     public Boolean hasStation(Long stationId) {
-        return upStationId == stationId || downStationId == stationId;
+        return upStationId.equals(stationId) || downStationId.equals(stationId);
     }
 
     public Long getId() {
@@ -80,8 +79,8 @@ public class Section {
         return downStationId;
     }
 
-    public List<Long> getStationId() {
-        return new ArrayList<>(List.of(upStationId, downStationId));
+    public List<Long> getStationIds() {
+        return List.of(upStationId, downStationId);
     }
 
     public Integer getDistance() {

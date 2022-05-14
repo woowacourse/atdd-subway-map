@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -69,15 +68,17 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
-        List<LineResponse> lineResponses = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
-        for (Line line : lines) {
-            List<Long> lineIds = findLineIds(line);
-            List<StationResponse> stationResponses = createStationResponse(lineIds);
-            LineResponse lineResponse = LineResponse.of(line, stationResponses);
-            lineResponses.add(lineResponse);
-        }
-        return lineResponses;
+
+        return lines.stream()
+                .map(this::createLineResponse)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private LineResponse createLineResponse(Line line) {
+        List<Long> lineIds = findLineIds(line);
+        List<StationResponse> stationResponses = createStationResponse(lineIds);
+        return LineResponse.of(line, stationResponses);
     }
 
     @Transactional(readOnly = true)

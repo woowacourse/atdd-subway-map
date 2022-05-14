@@ -41,14 +41,14 @@ public class FakeSectionDao implements SectionDao {
     @Override
     public List<Section> findByLineId(Long lineId) {
         return sections.values().stream()
-                .filter(section -> section.getLineId() == lineId)
+                .filter(section -> section.getLineId().equals(lineId))
                 .collect(Collectors.toUnmodifiableList());
     }
 
     @Override
     public void deleteByLineId(Long lineId) {
         List<Long> deletingIds = sections.entrySet().stream()
-                .filter(entry -> entry.getValue().getLineId() == lineId)
+                .filter(entry -> entry.getValue().getLineId().equals(lineId))
                 .map(Entry::getKey)
                 .collect(Collectors.toList());
         for (Long deletingId : deletingIds) {

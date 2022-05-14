@@ -176,9 +176,9 @@ public class Sections {
 
     private long getDuplicateStationCounts(Long stationId) {
         return value.stream()
-                .map(Section::getStationId)
+                .map(Section::getStationIds)
                 .flatMap(Collection::stream)
-                .filter(it -> it == stationId)
+                .filter(it -> it.equals(stationId))
                 .count();
     }
 
@@ -209,7 +209,7 @@ public class Sections {
 
     public List<Long> getStationIds() {
         return value.stream()
-                .map(Section::getStationId)
+                .map(Section::getStationIds)
                 .flatMap(Collection::stream)
                 .distinct()
                 .collect(Collectors.toList());
