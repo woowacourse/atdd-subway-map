@@ -24,9 +24,8 @@ public class StationService {
         return stationDao.save(station);
     }
 
-    @Transactional(readOnly = true)
-    public List<Station> getAll() {
-        return stationDao.findAll();
+    private boolean checkExistByName(String name) {
+        return stationDao.findByName(name).isPresent();
     }
 
     @Transactional
@@ -37,12 +36,13 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
-    private boolean checkExistByName(String name) {
-        return stationDao.findByName(name).isPresent();
-    }
-
     private boolean checkExistById(Long id) {
         return stationDao.findById(id).isPresent();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Station> getAll() {
+        return stationDao.findAll();
     }
 
     @Transactional(readOnly = true)

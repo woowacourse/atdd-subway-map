@@ -50,18 +50,6 @@ public class Section {
         return this.distance >= other.distance;
     }
 
-    public Section createSectionByUpStation(final Section section) {
-        return new Section(this.id, this.upStation, section.upStation, subtractDistance(section), this.lineId);
-    }
-
-    public Section createSectionByDownStation(final Section section) {
-        return new Section(this.id, section.downStation, this.downStation, subtractDistance(section), this.lineId);
-    }
-
-    private int subtractDistance(final Section section) {
-        return this.distance - section.distance;
-    }
-
     public Section merge(final Section section) {
         return new Section(this.upStation, section.downStation, sumDistance(section), this.lineId);
     }
@@ -72,9 +60,13 @@ public class Section {
 
     public Section createSectionInBetween(Section section) {
         if (this.upStation.equals(section.upStation)) {
-            return createSectionByDownStation(section);
+            return new Section(this.id, section.downStation, this.downStation, subtractDistance(section), this.lineId);
         }
-        return createSectionByUpStation(section);
+        return new Section(this.id, this.upStation, section.upStation, subtractDistance(section), this.lineId);
+    }
+
+    private int subtractDistance(final Section section) {
+        return this.distance - section.distance;
     }
 
     @Override
