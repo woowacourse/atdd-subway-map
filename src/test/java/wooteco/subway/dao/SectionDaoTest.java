@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +34,6 @@ public class SectionDaoTest {
     @DisplayName("구간을 저장한다.")
     void save() {
         Section expectedSection = new Section(1L, new Station(1L, "강남역"), new Station(2L, "선릉역"), 5);
-
         Section actualSection = sectionDao.save(expectedSection);
 
         assertThat(actualSection).isEqualTo(expectedSection);
