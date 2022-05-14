@@ -12,6 +12,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineDto;
 
 @JdbcTest
 public class JdbcLineDaoTest {
@@ -28,11 +29,11 @@ public class JdbcLineDaoTest {
     void 노선_저장() {
         Line line = new Line("2호선", "bg-green-600");
 
-        Line savedLine = lineDao.save(line);
+        LineDto result = lineDao.save(LineDto.from(line));
 
         assertAll(
-                () -> assertThat(savedLine.getName()).isEqualTo(line.getName()),
-                () -> assertThat(savedLine.getColor()).isEqualTo(line.getColor())
+                () -> assertThat(result.getName()).isEqualTo(line.getName()),
+                () -> assertThat(result.getColor()).isEqualTo(line.getColor())
         );
     }
 
@@ -41,9 +42,9 @@ public class JdbcLineDaoTest {
     void 중복된_노선_예외발생() {
         Line line = new Line("2호선", "bg-green-600");
 
-        lineDao.save(line);
+        lineDao.save(LineDto.from(line));
 
-        assertThatThrownBy(() -> lineDao.save(line))
+        assertThatThrownBy(() -> lineDao.save(LineDto.from(line)))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
@@ -58,22 +59,22 @@ public class JdbcLineDaoTest {
     @Test
     void 노선_수정() {
         Line line = new Line("2호선", "bg-green-600");
-        Line savedLine = lineDao.save(line);
+        LineDto saved = lineDao.save(LineDto.from(line));
 
-        Line updatedLine = lineDao.update(savedLine.getId(), new Line("2호선", "bg-yellow-600"));
+        LineDto updated = lineDao.update(new LineDto(saved.getId(), "2호선", "bg-yellow-600"));
 
         assertAll(
-                () -> assertThat(updatedLine.getName()).isEqualTo("2호선"),
-                () -> assertThat(updatedLine.getColor()).isEqualTo("bg-yellow-600")
+                () -> assertThat(updated.getName()).isEqualTo("2호선"),
+                () -> assertThat(updated.getColor()).isEqualTo("bg-yellow-600")
         );
     }
 
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void 모든_노선_조회() {
-        lineDao.save(new Line("2호선", "bg-green-600"));
-        lineDao.save(new Line("1호선", "bg-darkblue-600"));
-        lineDao.save(new Line("3호선", "bg-orange-600"));
+        lineDao.save(new LineDto("2호선", "bg-green-600"));
+        lineDao.save(new LineDto("1호선", "bg-darkblue-600"));
+        lineDao.save(new LineDto("3호선", "bg-orange-600"));
 
         assertThat(lineDao.findAll().size()).isEqualTo(3);
     }
@@ -81,9 +82,9 @@ public class JdbcLineDaoTest {
     @DisplayName("노선을 삭제한다.")
     @Test
     void 노선_삭제() {
-        Line line = lineDao.save(new Line("4호선", "bg-skyblue-600"));
+        LineDto saved = lineDao.save(new LineDto("4호선", "bg-skyblue-600"));
 
-        lineDao.deleteById(line.getId());
+        lineDao.deleteById(saved.getId());
 
         assertThat(lineDao.findAll().size()).isEqualTo(0);
     }

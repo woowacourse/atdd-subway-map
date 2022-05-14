@@ -6,50 +6,56 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineDto;
 
 public class FakeLineDao implements LineDao {
 
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private static List<LineDto> lines = new ArrayList<>();
 
-    public Line save(Line line) {
+    @Override
+    public LineDto save(LineDto lineDto) {
         boolean existName = lines.stream()
-                .anyMatch(it -> isSameName(it, line));
+                .anyMatch(it -> it.getName().equals(lineDto.getName()));
         if (existName) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
         }
-        Line persistLine = createNewObject(line);
+        LineDto persistLine = createNewObject(lineDto);
         lines.add(persistLine);
         return persistLine;
     }
 
-    private Line createNewObject(Line line) {
+    private LineDto createNewObject(LineDto lineDto) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+        ReflectionUtils.setField(field, lineDto, ++seq);
+        return lineDto;
     }
 
-    public List<Line> findAll() {
+    @Override
+    public List<LineDto> findAll() {
         return lines;
     }
 
-    public Line findById(Long id) {
+    @Override
+    public LineDto findById(Long id) {
         return lines.stream()
-                .filter(line -> line.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 id입니다."));
+                    .filter(line -> line.getId().equals(id))
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("존재하지 않는 id입니다."));
     }
 
-    public Line update(Long id, Line updateLine) {
-        lines.remove(findById(id));
+    @Override
+    public LineDto update(LineDto updateLine) {
+        lines.remove(findById(updateLine.getId()));
 
-        Line line = new Line(id, updateLine.getName(), updateLine.getColor());
+        LineDto line = new LineDto(updateLine.getId(), updateLine.getName(), updateLine.getColor());
         lines.add(line);
 
         return line;
     }
 
+    @Override
     public void deleteById(Long id) {
         lines.remove(findById(id));
     }

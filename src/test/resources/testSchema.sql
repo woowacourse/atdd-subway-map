@@ -1,6 +1,6 @@
--- drop table if exists SECTION;
--- drop table if exists STATION;
--- drop table if exists LINE;
+drop table if exists SECTION;
+drop table if exists STATION;
+drop table if exists LINE;
 
 create table if not exists STATION
 (

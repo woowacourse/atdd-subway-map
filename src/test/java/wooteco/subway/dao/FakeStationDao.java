@@ -3,8 +3,10 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 
 public class FakeStationDao implements StationDao {
@@ -14,7 +16,7 @@ public class FakeStationDao implements StationDao {
 
     public Station save(Station station) {
         boolean existName = stations.stream()
-                .anyMatch(station::isSameName);
+                .anyMatch(it -> isSameName(it, station));
         if (existName) {
             throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
         }
@@ -44,10 +46,19 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
+    public List<Station> findByIdIn(List<Long> ids) {
+        return stations;
+    }
+
+    @Override
     public void deleteById(Long id) {
         if (existsById(id)) {
             stations.remove(findById(id));
         }
+    }
+
+    private boolean isSameName(Station station1, Station station2) {
+        return station1.getName().equals(station2.getName());
     }
 
     private boolean existsById(Long id) {

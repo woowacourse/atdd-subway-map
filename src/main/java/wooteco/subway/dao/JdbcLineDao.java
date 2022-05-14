@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineDto;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -26,27 +27,27 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line save(Line line) {
+    public LineDto save(LineDto lineDto) {
         Long id = insertActor.executeAndReturnKey(
-                Map.of("name", line.getName(), "color", line.getColor())).longValue();
+                Map.of("name", lineDto.getName(), "color", lineDto.getColor())).longValue();
         return findById(id);
     }
 
     @Override
-    public List<Line> findAll() {
+    public List<LineDto> findAll() {
         String sql = "select * from LINE";
         return jdbcTemplate.query(sql, generateMapper());
     }
 
     @Override
-    public Line findById(Long id) {
+    public LineDto findById(Long id) {
         String sql = "select * from LINE where id = :id";
         return jdbcTemplate.queryForObject(sql, Map.of("id", id), generateMapper());
     }
 
-    private RowMapper<Line> generateMapper() {
+    private RowMapper<LineDto> generateMapper() {
         return (resultSet, rowNum) ->
-                new Line(
+                new LineDto(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("color")
@@ -54,12 +55,12 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line update(Long id, Line updateLine) {
+    public LineDto update(LineDto lineDto) {
         String sql = "update LINE set name = :name, color = :color where id = :id";
         jdbcTemplate.update(sql,
-                Map.of("id", id, "name", updateLine.getName(), "color", updateLine.getColor()));
+                Map.of("id", lineDto.getId(), "name", lineDto.getName(), "color", lineDto.getColor()));
 
-        return findById(id);
+        return findById(lineDto.getId());
     }
 
     @Override
