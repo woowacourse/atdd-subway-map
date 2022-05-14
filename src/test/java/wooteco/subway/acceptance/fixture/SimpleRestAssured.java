@@ -1,8 +1,6 @@
 package wooteco.subway.acceptance.fixture;
 
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 import java.util.Map;
@@ -37,15 +35,5 @@ public class SimpleRestAssured {
 
     private static RequestSpecification given() {
         return RestAssured.given().log().all();
-    }
-
-    public static ExtractableResponse<Response> thenExtract(Response response) {
-        return response
-                .then().log().all()
-                .extract();
-    }
-
-    public static <T> T toObject(ExtractableResponse<Response> response, Class<T> clazz) {
-        return response.body().jsonPath().getObject(".", clazz);
     }
 }

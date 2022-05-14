@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.ui.controller;
 
 import java.net.URI;
 import java.util.List;
@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.request.StationRequest;
+import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.ui.service.StationService;
 
 @RestController
 public class StationController {

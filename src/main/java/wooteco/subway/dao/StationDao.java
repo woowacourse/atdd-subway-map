@@ -8,5 +8,7 @@ public interface StationDao {
 
     List<Station> findAll();
 
-    void deleteById(Long id);
+    Station findById(Long id);
+
+    int deleteById(Long id);
 }

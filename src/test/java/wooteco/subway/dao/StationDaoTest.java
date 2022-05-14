@@ -2,37 +2,29 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Station;
 
 @JdbcTest
+@Import(JdbcStationDao.class)
 class StationDaoTest {
     private static final String STATION_NAME = "청구역";
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private DataSource dataSource;
     private StationDao dao;
-
-    @BeforeEach
-    void setUp() {
-        dao = new JdbcStationDao(dataSource, jdbcTemplate);
-    }
 
     @Test
     @DisplayName("역을 저장한다.")
@@ -83,7 +75,7 @@ class StationDaoTest {
         // when
         final Long id = saved.getId();
         // then
-        assertThatNoException().isThrownBy(() -> dao.deleteById(id));
+        assertThat(dao.deleteById(id)).isEqualTo(1);
     }
 
     @Test
@@ -92,10 +84,5 @@ class StationDaoTest {
         assertThatThrownBy(() -> dao.deleteById(1L))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("삭제하고자 하는 역이 존재하지 않습니다.");
-    }
-
-    @AfterEach
-    void setDown() {
-        jdbcTemplate.update("DELETE FROM station");
     }
 }

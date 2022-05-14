@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
-import wooteco.subway.dto.ExceptionResponse;
+import wooteco.subway.dto.response.ExceptionResponse;
 
 public class SimpleResponse {
     private final Response response;
@@ -39,8 +39,9 @@ public class SimpleResponse {
                 .body().jsonPath();
     }
 
-    public boolean hasStatus(HttpStatus status) {
-        return response.statusCode() == status.value();
+    public void assertStatus(HttpStatus status) {
+        response.then()
+                .statusCode(status.value());
     }
 
     public Long getIdFromLocation() {
