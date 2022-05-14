@@ -62,6 +62,10 @@ public class Section {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public SectionEntity2 toEntity(Long lineId) {
         return new SectionEntity2(lineId, upStation.toEntity(), downStation.toEntity(), distance);
     }

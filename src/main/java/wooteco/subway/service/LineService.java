@@ -61,7 +61,7 @@ public class LineService {
                 .map(SectionEntity2::toDomain)
                 .collect(Collectors.toList());
         SectionViews2 sectionViews = SectionViews2.of(sections);
-        return LineResponse.of(Line.of(lineEntity, sectionViews.getSortedStationsList()));
+        return LineResponse.of(Line.of(lineEntity, sectionViews.getValue()));
     }
 
     @Transactional

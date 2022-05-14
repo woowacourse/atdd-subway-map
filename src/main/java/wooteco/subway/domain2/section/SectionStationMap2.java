@@ -1,8 +1,10 @@
 package wooteco.subway.domain2.section;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import wooteco.subway.domain2.station.Station;
 
 public class SectionStationMap2 {
@@ -29,23 +31,21 @@ public class SectionStationMap2 {
         return new SectionStationMap2(upToDownStationMap, downToUpStationMap);
     }
 
-    public Long findAnyStationId() {
-        return (Long) upToDownStationMap.keySet().toArray()[0];
-    }
+    public Station findUpperEndStation() {
+        Set<Station> upStations = new HashSet<>(downToUpStationMap.values());
+        Set<Station> downStations = new HashSet<>(upToDownStationMap.values());
 
-    public boolean hasUpStation(Long downStationId) {
-        return downToUpStationMap.containsKey(downStationId);
+        upStations.removeAll(downStations);
+        return upStations.stream()
+                .findFirst()
+                .get();
     }
 
     public boolean hasDownStation(Long upStationId) {
         return upToDownStationMap.containsKey(upStationId);
     }
 
-    public Long getDownStationIdOf(Long upStationId) {
-        return upToDownStationMap.get(upStationId).getId();
-    }
-
-    public Long getUpStationIdOf(Long downStationId) {
-        return downToUpStationMap.get(downStationId).getId();
+    public Station getDownStationIdOf(Long upStationId) {
+        return upToDownStationMap.get(upStationId);
     }
 }
