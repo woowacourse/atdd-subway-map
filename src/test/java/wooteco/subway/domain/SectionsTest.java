@@ -166,21 +166,6 @@ class SectionsTest {
                 .hasMessageContaining("불가능한 구간의 길이입니다.");
     }
 
-//    @DisplayName("노선 전체에서 종점 역 아이디를 찾아낸다.")
-//    @Test
-//    void findLastStopId() {
-//        Section section1 = new Section(10, 2L, 1L, 3L);
-//        Section section2 = new Section(10, 2L, 3L, 2L);
-//        Section section3 = new Section(10, 2L, 2L, 4L);
-//
-//        Sections sections = new Sections(List.of(section1, section2, section3));
-//
-//        List<Long> lastStopStationIds = sections.getLastStationIds();
-//
-//        assertThat(lastStopStationIds.size()).isEqualTo(2);
-//        assertThat(lastStopStationIds).isEqualTo(List.of(1L, 4L));
-//    }
-
     @DisplayName("노선 전체에서 상행 역 아이디가 존재하는 구간을 찾는다.")
     @Test
     void getExistedUpStationSection() {
