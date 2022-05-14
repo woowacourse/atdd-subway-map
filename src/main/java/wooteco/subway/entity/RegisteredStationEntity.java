@@ -12,7 +12,7 @@ public class RegisteredStationEntity {
         this.lineEntity = lineEntity;
     }
 
-    public Long getId() {
+    public Long getLineId() {
         return lineEntity.getId();
     }
 

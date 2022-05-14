@@ -1,7 +1,5 @@
 package wooteco.subway.service;
 
-import static java.util.stream.Collectors.groupingBy;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,14 +9,13 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.RegisteredStationDao;
 import wooteco.subway.dao.SectionDao2;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain2.Lines;
 import wooteco.subway.domain2.Line;
 import wooteco.subway.domain2.SectionViews2;
-import wooteco.subway.domain2.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.RegisteredStationEntity;
 import wooteco.subway.entity.SectionEntity2;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
@@ -47,18 +44,17 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        return registeredStationDao.findAll()
+        Lines lines = Lines.of(registeredStationDao.findAll());
+        return lines.toLine()
                 .stream()
-                .collect(groupingBy(RegisteredStationEntity::getId))
-                .values()
-                .stream()
-                .map(this::toLineResponse)
+                .map(LineResponse::of)
                 .sorted(Comparator.comparingLong(LineResponse::getId))
                 .collect(Collectors.toUnmodifiableList());
     }
 
     public LineResponse find(Long id) {
-        LineEntity lineEntity = findExistingLine(id);
+        LineEntity lineEntity = lineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
         SectionViews2 sections = SectionViews2.of(sectionDao.findAllByLineId(id));
         return LineResponse.of(Line.of(lineEntity, sections.getSortedStationsList()));
     }
@@ -75,6 +71,7 @@ public class LineService {
     }
 
     private StationEntity findExistingStation(Long stationId) {
+        // TODO: add @Validated at controllers
         if (stationId == null) {
             throw new IllegalArgumentException(NULL_STATION_EXCEPTION_MESSAGE);
         }
@@ -87,8 +84,7 @@ public class LineService {
         validateExistingLine(id);
         validateUniqueLineName(lineRequest.getName());
 
-        LineEntity lineEntity = new LineEntity(id, lineRequest.getName(), lineRequest.getColor());
-        lineDao.update(lineEntity);
+        lineDao.update(new LineEntity(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
     @Transactional
@@ -110,19 +106,5 @@ public class LineService {
         if (isDuplicateName) {
             throw new IllegalArgumentException(DUPLICATE_LINE_NAME_EXCEPTION_MESSAGE);
         }
-    }
-
-    private LineEntity findExistingLine(Long id) {
-        return lineDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
-    }
-
-    private LineResponse toLineResponse(List<RegisteredStationEntity> fullStations) {
-        LineEntity lineEntity = fullStations.get(0).getLineEntity();
-        List<Station> stations = fullStations.stream()
-                .map(RegisteredStationEntity::getStationEntity)
-                .map(StationEntity::toDomain)
-                .collect(Collectors.toList());
-        return LineResponse.of((Line.of(lineEntity, stations)));
     }
 }
