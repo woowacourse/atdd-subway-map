@@ -14,7 +14,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -217,10 +219,19 @@ class SectionJdbcDaoTest {
         Section section2 = new Section(lineId, upStationId2, downStationId2, distance2);
         Long savedId2 = sectionDao.save(section2);
 
+        LineDao lineDao = new LineJdbcDao(jdbcTemplate);
+        Long lineId2 = lineDao.save(new Line("name",  "color"));
+        Long upStationId3 = 1L;
+        Long downStationId3 = 2L;
+        int distance3 = 10;
+        Section section3 = new Section(lineId2, upStationId3, downStationId3, distance3);
+        Long savedId3 = sectionDao.save(section3);
+
         // when
         sectionDao.deleteAllByLineId(lineId);
 
         // then
         assertThat(sectionDao.findAllByLineId(lineId)).isEmpty();
+        assertThat(sectionDao.findAllByLineId(lineId2)).hasSize(1);
     }
 }

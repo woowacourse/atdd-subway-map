@@ -173,12 +173,13 @@ class LineJdbcDaoTest {
     @Test
     void deleteById() {
         // given
-        Long savedId = dao.save(new Line("line", "color"));
+        Long savedId1 = dao.save(new Line("line1", "color1"));
+        Long savedId2 = dao.save(new Line("line2", "color2"));
 
         // when
-        dao.deleteById(savedId);
+        dao.deleteById(savedId1);
 
         // then
-        assertThat(dao.findAll()).isEmpty();
+        assertThat(dao.findAll()).hasSize(1);
     }
 }

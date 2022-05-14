@@ -52,13 +52,13 @@ class StationServiceTest {
     @Test
     void deleteById() {
         // given
-        long id = 1L;
-        stationDao.save(new Station(id, "name"));
+        Long id1 = stationDao.save(new Station("name1"));
+        Long id2 = stationDao.save(new Station("name2"));
 
         // when
-        stationService.deleteById(id);
+        stationService.deleteById(id1);
 
         // then
-        assertThat(stationService.findAll()).isEmpty();
+        assertThat(stationService.findAll()).hasSize(1);
     }
 }

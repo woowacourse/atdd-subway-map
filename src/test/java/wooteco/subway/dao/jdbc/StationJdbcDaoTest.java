@@ -73,12 +73,13 @@ class StationJdbcDaoTest {
     @Test
     void deleteById() {
         // given
-        Long savedId = dao.save(new Station("station"));
+        Long savedId1 = dao.save(new Station("station1"));
+        Long savedId2 = dao.save(new Station("station2"));
 
         // when
-        dao.deleteById(savedId);
+        dao.deleteById(savedId1);
 
         // then
-        assertThat(dao.findAll()).isEmpty();
+        assertThat(dao.findAll()).hasSize(1);
     }
 }

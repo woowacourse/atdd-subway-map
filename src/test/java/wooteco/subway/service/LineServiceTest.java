@@ -110,14 +110,17 @@ class LineServiceTest {
         // given
         stationDao.save(new Station(1L, "name1"));
         stationDao.save(new Station(2L, "name2"));
-        LineRequest request = new LineRequest("name", "color", 1L, 2L, 10);
-        Long id = lineService.save(request).getId();
+        LineRequest request1 = new LineRequest("name1", "color2", 1L, 2L, 10);
+        Long id1 = lineService.save(request1).getId();
+
+        LineRequest request2 = new LineRequest("name2", "color2", 1L, 2L, 10);
+        Long id2 = lineService.save(request2).getId();
 
         // when
-        lineService.deleteById(id);
+        lineService.deleteById(id1);
 
         // then
         List<Line> lines = lineDao.findAll();
-        assertThat(lines).isEmpty();
+        assertThat(lines).hasSize(1);
     }
 }

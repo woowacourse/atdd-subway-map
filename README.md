@@ -233,7 +233,8 @@
 - [x] SectionService.addSection에서 값을 모두 꺼내어서 사용하는 이유가 있을까?
   - SectionService, LineService 수정 
 - [ ] 서비스 테스트에서 Mock을 사용하여 테스트했을 때 장단점은 어떤게 있을까? 왜 Mock을 사용하여 테스트했는지 이유는?
-- [ ] Delete테스트를 할 때는 조건에 맞지 않는 다른 테스트는 삭제되지 않는다는 것도 검증해주면 좋을 것 같아요
+- [x] Delete테스트를 할 때는 조건에 맞지 않는 다른 테스트는 삭제되지 않는다는 것도 검증해주면 좋을 것 같아요
+  - AcceptanceTest에서는 정상적으로 응답하는지 API 응답 결과만 확인하고 Service, DAO에서 검증했습니다.
 - [x] 이상한 어노테이션 제거! (`DisplayName` -> `DeleteMapping` 등)
 
 <br>
