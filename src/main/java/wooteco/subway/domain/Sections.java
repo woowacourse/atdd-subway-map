@@ -26,18 +26,6 @@ public class Sections {
         return addMiddleSection(newSection);
     }
 
-    private SectionsToBeCreatedAndUpdated addMiddleSection(Section newSection) {
-        Section existNearSection = findNearSection(newSection);
-        if (newSection.getDistance() >= existNearSection.getDistance()) {
-            throw new SectionServiceException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
-        }
-        Section sectionThatNeedToBeUpdated = new Section(existNearSection.getId(), existNearSection.getLineId(),
-                newSection.getUpStationId(), existNearSection.getDownStationId(),
-                existNearSection.getDistance() - newSection.getDistance());
-
-        return new SectionsToBeCreatedAndUpdated(newSection, sectionThatNeedToBeUpdated);
-    }
-
     private void validateExistStationInLine(Section section) {
         boolean isExistUpStation = hasStation(section.getUpStationId());
         boolean isExistDownStation = hasStation(section.getDownStationId());
@@ -52,6 +40,66 @@ public class Sections {
     private boolean hasStation(Long stationId) {
         return values.stream()
                 .anyMatch(s -> s.getUpStationId().equals(stationId) || s.getDownStationId().equals(stationId));
+    }
+
+    private SectionsToBeCreatedAndUpdated addMiddleSection(Section newSection) {
+        Section existNearSection = findNearSection(newSection);
+        validateNewSectionDistance(newSection, existNearSection);
+        Section sectionThatNeedToBeUpdated = null;
+        if (newSection.getUpStationId().equals(existNearSection.getUpStationId())) {
+            sectionThatNeedToBeUpdated = new Section(existNearSection.getId(), existNearSection.getLineId(),
+                    newSection.getDownStationId(), existNearSection.getDownStationId(),
+                    existNearSection.getDistance() - newSection.getDistance());
+        }
+        if (newSection.getDownStationId().equals(existNearSection.getDownStationId())) {
+            sectionThatNeedToBeUpdated = new Section(existNearSection.getId(), existNearSection.getLineId(),
+                    existNearSection.getUpStationId(), newSection.getUpStationId(),
+                    existNearSection.getDistance() - newSection.getDistance());
+        }
+        return new SectionsToBeCreatedAndUpdated(newSection, sectionThatNeedToBeUpdated);
+    }
+
+    private void validateNewSectionDistance(Section newSection, Section existNearSection) {
+        if (newSection.getDistance() >= existNearSection.getDistance()) {
+            throw new SectionServiceException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
+        }
+    }
+
+    private Section findNearSection(Section newSection) {
+        return values.stream()
+                .filter(s -> s.getUpStationId().equals(newSection.getUpStationId()) ||
+                        s.getDownStationId().equals(newSection.getDownStationId()))
+                .findFirst()
+                .orElseThrow(() -> new SectionServiceException("중간역 생성중 기존역을 찾지 못하였습니다."));
+    }
+
+    public SectionsToBeDeletedAndUpdated delete(Long stationId) {
+        validateExistStation(stationId);
+        validateRemainOneSection();
+        Section currentLastUpSection = findLastUpSection();
+        Section currentLastDownSection = findLastDownSection();
+        if (stationId.equals(currentLastUpSection.getUpStationId()) ||
+                stationId.equals(currentLastDownSection.getDownStationId())) {
+            return deleteLastSection(currentLastUpSection, currentLastDownSection, stationId);
+        }
+
+        Section upSideStation = extractUpSideStation(stationId);
+        Section downSideStation = extractDownSideStation(stationId);
+        Section sectionToBeUpdated = new Section(upSideStation.getId(), upSideStation.getLineId(), upSideStation.getUpStationId(),
+                downSideStation.getDownStationId(), upSideStation.getDistance() + downSideStation.getDistance());
+        return new SectionsToBeDeletedAndUpdated(downSideStation, sectionToBeUpdated);
+    }
+
+    private void validateExistStation(Long stationId) {
+        if (!hasStation(stationId)) {
+            throw new AccessNoneDataException("현재 라인에 존재하지 않는 역입니다.");
+        }
+    }
+
+    private void validateRemainOneSection() {
+        if (values.size() == 1) {
+            throw new SectionServiceException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
+        }
     }
 
     private Section findLastUpSection() {
@@ -76,43 +124,6 @@ public class Sections {
     private boolean isLastDownStation(Section section) {
         return values.stream()
                 .noneMatch(s -> s.getUpStationId().equals(section.getDownStationId()));
-    }
-
-    private Section findNearSection(Section newSection) {
-        return values.stream()
-                .filter(s -> s.getUpStationId().equals(newSection.getUpStationId()) ||
-                        s.getDownStationId().equals(newSection.getDownStationId()))
-                .findFirst()
-                .orElseThrow(() -> new SectionServiceException("중간역 생성중 기존역을 찾지 못하였습니다."));
-    }
-
-    public SectionsToBeDeletedAndUpdated delete(Long stationId) {
-        validateExistStation(stationId);
-        validateRemainOneSection();
-        Section currentLastUpSection = findLastUpSection();
-        Section currentLastDownSection = findLastDownSection();
-        if (stationId.equals(currentLastUpSection.getUpStationId()) ||
-                stationId.equals(currentLastDownSection.getDownStationId())) {
-            return deleteLastSection(currentLastUpSection, currentLastDownSection, stationId);
-        }
-
-        Section upSideStation = extractUpSideStation(stationId);
-        Section downSideStation = extractDownSideStation(stationId);
-        Section sectionToBeUpdated = new Section(upSideStation.getId(), upSideStation.getUpStationId(),
-                downSideStation.getDownStationId(), upSideStation.getDistance() + downSideStation.getDistance());
-        return new SectionsToBeDeletedAndUpdated(downSideStation, sectionToBeUpdated);
-    }
-
-    private void validateExistStation(Long stationId) {
-        if (!hasStation(stationId)) {
-            throw new AccessNoneDataException("현재 라인에 존재하지 않는 역입니다.");
-        }
-    }
-
-    private void validateRemainOneSection() {
-        if (values.size() == 1) {
-            throw new SectionServiceException("구간이 하나인 노선에서는 구간 삭제가 불가합니다.");
-        }
     }
 
     private SectionsToBeDeletedAndUpdated deleteLastSection(Section lastUpSection, Section lastDownSection, Long stationId) {
