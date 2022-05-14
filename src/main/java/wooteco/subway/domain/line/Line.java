@@ -53,4 +53,14 @@ public class Line {
     public String getColor() {
         return color.getColor();
     }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", sections=" + sections +
+                ", name=" + name +
+                ", color=" + color +
+                '}';
+    }
 }
