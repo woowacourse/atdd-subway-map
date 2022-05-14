@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import wooteco.subway.ui.request.LineRequest;
 import wooteco.subway.ui.request.StationRequest;
 import wooteco.subway.ui.response.StationResponse;
 
@@ -101,6 +102,26 @@ class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("특정 구간에 속한 역을 삭제하려 할 경우 400 응답을 던진다.")
+    void deleteStationWithReferenceViolation() {
+        // given
+        List<Long> ids = postStations("강남", "역삼");
+        long stationIdA = ids.get(0);
+        long stationIdB = ids.get(1);
+
+        LineRequest lineRequest = new LineRequest("2호선", "green", stationIdA, stationIdB, 10);
+        getExtractablePostResponse(lineRequest, "/lines");
+
+        // when
+        ExtractableResponse<Response> response = getExtractableDeleteResponse(defaultUri + "/" + stationIdA);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message"))
+            .isEqualTo("구간에 할당된 역이 존재하여 삭제할 수 없습니다.");
     }
 
     @Test

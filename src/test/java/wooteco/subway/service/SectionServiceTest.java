@@ -90,7 +90,7 @@ class SectionServiceTest {
         sectionService.createSection(new SectionDto(line2Id, 강남역Id, 서초역Id, 5));
 
         //when
-        sectionService.deleteStation(line2Id, 선릉역Id);
+        sectionService.deleteSectionByStationId(line2Id, 선릉역Id);
         List<Station> actual = sectionService.findStationsByLineId(line2Id);
         List<Station> expected = List.of(강남역, 서초역);
 

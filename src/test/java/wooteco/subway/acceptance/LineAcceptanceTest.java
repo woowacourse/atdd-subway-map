@@ -3,7 +3,6 @@ package wooteco.subway.acceptance;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +20,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.ui.request.LineRequest;
 import wooteco.subway.ui.request.SectionRequest;
-import wooteco.subway.ui.request.StationRequest;
 import wooteco.subway.ui.response.LineResponse;
 import wooteco.subway.ui.response.StationResponse;
 
@@ -40,16 +38,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         List<Long> ids = postStations("강남", "역삼");
         stationIdA = ids.get(0);
         stationIdB = ids.get(1);
-    }
-
-    private List<Long> postStations(String... StationNames) {
-        return Arrays.stream(StationNames)
-            .map(name -> getIdFrom(getExtractablePostResponse(new StationRequest(name), "/stations")))
-            .collect(Collectors.toList());
-    }
-
-    private long getIdFrom(ExtractableResponse<Response> response) {
-        return Long.parseLong(response.header("Location").split("/")[2]);
     }
 
     @Test
@@ -555,5 +543,30 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(actualResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("특정 노선을 삭제할 경우 그에 속한 모든 구간이 삭제되는지 검증한다.")
+    void onDeleteByLineId() {
+        //given
+        LineRequest lineRequest = new LineRequest("7호선", "khaki", stationIdA, stationIdB, 10);
+        long lineId = getIdFrom(getExtractablePostResponse(lineRequest, defaultUri));
+
+        //when
+        getExtractableDeleteResponse(defaultUri + "/" + lineId);
+
+        ExtractableResponse<Response> responseA = getExtractableDeleteResponse(
+            defaultUri + "/" + lineId + "/sections?stationId=" + stationIdA);
+
+        ExtractableResponse<Response> responseB = getExtractableDeleteResponse(
+            defaultUri + "/" + lineId + "/sections?stationId=" + stationIdB);
+
+        //then
+        assertAll(
+            () -> assertThat(responseA.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+            () -> assertThat(responseB.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+            () -> assertThat(responseB.body().jsonPath().getString("message"))
+                .isEqualTo("해당 역이 속한 구간이 존재하지 않습니다.")
+        );
     }
 }

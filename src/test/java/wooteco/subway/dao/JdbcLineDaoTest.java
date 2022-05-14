@@ -133,7 +133,7 @@ class JdbcLineDaoTest {
     }
 
     @Test
-    @DisplayName("특정 노선을 삭제할 경우 그에 속한 구간이 모두 삭제되는지 확인한다.")
+    @DisplayName("특정 Line 을 삭제할 경우 그에 속한 구간이 모두 삭제되는지 확인한다.")
     void onDeleteByLineId() {
         //given
         StationDao stationDao = new JdbcStationDao(jdbcTemplate);

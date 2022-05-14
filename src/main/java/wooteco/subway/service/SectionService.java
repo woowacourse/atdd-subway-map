@@ -11,6 +11,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionEntity;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.service.dto.SectionDto;
 
 @Service
@@ -70,12 +71,21 @@ public class SectionService {
     }
 
     @Transactional
-    public void deleteStation(Long lineId, Long stationId) {
+    public void deleteSectionByStationId(Long lineId, Long stationId) {
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(lineId);
+        if (!isStationFound(stationId, sectionEntities)) {
+            throw new DataNotFoundException("해당 역이 속한 구간이 존재하지 않습니다.");
+        }
         List<Section> originalSections = convertSectionEntitiesToSections(sectionEntities);
         Sections sections = new Sections(originalSections);
 
         sectionDao.deleteById(sections.delete(getStationById(stationId)).getId());
         updateModifiedSections(lineId, sections.getDifference(originalSections));
+    }
+
+    private boolean isStationFound(Long stationId, List<SectionEntity> sectionEntities) {
+        return sectionEntities.stream()
+            .anyMatch(sectionEntity -> sectionEntity.getUpStationId().equals(stationId) ||
+                sectionEntity.getDownStationId().equals(stationId));
     }
 }
