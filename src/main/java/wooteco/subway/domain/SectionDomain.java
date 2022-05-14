@@ -95,8 +95,16 @@ public class SectionDomain {
         return upStation.getId();
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
     public Long getDownStationId() {
         return downStation.getId();
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {
