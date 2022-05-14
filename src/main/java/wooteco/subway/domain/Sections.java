@@ -87,11 +87,11 @@ public class Sections {
         return sectionIds;
     }
 
-    public boolean isSingleSection() {
+    private boolean isSingleSection() {
         return sections.size() == MINIMUM_SIZE;
     }
 
     public boolean canRemoveSection() {
-        return !(isSingleSection() && sections.isEmpty());
+        return !(isSingleSection() || sections.isEmpty());
     }
 }
