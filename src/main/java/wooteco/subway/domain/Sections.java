@@ -16,10 +16,6 @@ public class Sections {
         this.sections = sections;
     }
 
-    public static Sections of(Section section) {
-        return new Sections(new LinkedList<>(List.of(section)));
-    }
-
     public static Sections of(List<Section> sections) {
         Map<Station, Station> stations = sections.stream()
             .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
@@ -71,18 +67,18 @@ public class Sections {
         throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
     }
 
-    private boolean insertSection(Section section, LinkedList<Section> flexibleSections, int i, Section sectionInLine) {
+    private boolean insertSection(Section section, LinkedList<Section> flexibleSections, int index, Section sectionInLine) {
         if (canInsertUpStation(section, sectionInLine) && !canInsertDownStation(section, sectionInLine)) {
+            addSection(flexibleSections, index, section);
             sectionInLine.updateUpStation(section.getDownStation(),
                 sectionInLine.getDistance() - section.getDistance());
-            flexibleSections.add(i, section);
             sections = flexibleSections;
             return true;
         }
         if (canInsertDownStation(section, sectionInLine) && !canInsertUpStation(section, sectionInLine)) {
+            addSection(flexibleSections, index + 1, section);
             sectionInLine.updateDownStation(section.getUpStation(),
                 sectionInLine.getDistance() - section.getDistance());
-            flexibleSections.add(i + 1, section);
             sections = flexibleSections;
             return true;
         }
@@ -90,17 +86,29 @@ public class Sections {
         return false;
     }
 
+    private void addSection(LinkedList<Section> sections, int index, Section section) {
+        checkContainsStation(section);
+        sections.add(index, section);
+    }
+
+    private void checkContainsStation(Section section) {
+        List<Station> stations = getStations();
+        if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
+            throw new IllegalArgumentException("이미 존재하는 상행선과 하행선은 구간에 추가할 수 없습니다.");
+        }
+    }
+
     private void insertSectionSide(Section section, LinkedList<Section> flexibleSections) {
         Section lastSection = sections.get(sections.size() - 1);
         if (lastSection.hasDownStation(section.getUpStation())) {
-            flexibleSections.addLast(section);
+            addSection(flexibleSections, flexibleSections.size(), section);
             sections = flexibleSections;
             return;
         }
 
         Section firstSection = sections.get(0);
         if (firstSection.hasUpStation(section.getDownStation())) {
-            flexibleSections.addFirst(section);
+            addSection(flexibleSections, 0, section);
             sections = flexibleSections;
             return;
         }
