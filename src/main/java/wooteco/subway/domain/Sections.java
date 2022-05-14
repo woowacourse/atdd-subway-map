@@ -42,19 +42,19 @@ public class Sections {
     }
 
     public void checkHasStation(Long upStationId, Long downStationId) {
-        List<Long> allStationId = getAllStationId();
+        Set<Long> allStationId = getAllStationId();
         if (!allStationId.contains(upStationId) && !allStationId.contains(downStationId)) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
         }
     }
 
-    private List<Long> getAllStationId() {
+    private Set<Long> getAllStationId() {
         Set<Long> ids = new HashSet<>();
         sections.forEach(section -> {
             ids.add(section.getUpStationId());
             ids.add(section.getDownStationId());
         });
-        return new ArrayList<>(ids);
+        return ids;
     }
 
     public boolean isTerminal(Long stationId) {
