@@ -3,15 +3,19 @@ package wooteco.subway.service;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.SectionDaoV2;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionV2;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -25,11 +29,14 @@ public class LineService {
     private final StationDao stationDao;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
+    private final SectionDaoV2 sectionDaoV2;
 
-    public LineService(StationDao stationDao, LineDao lineDao, SectionDao sectionDao) {
+    public LineService(StationDao stationDao, LineDao lineDao, SectionDao sectionDao,
+                       SectionDaoV2 sectionDaoV2) {
         this.stationDao = stationDao;
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
+        this.sectionDaoV2 = sectionDaoV2;
     }
 
     @Transactional
@@ -39,9 +46,11 @@ public class LineService {
         final Line line = new Line(request.getName(), request.getColor());
         final Long lineId = lineDao.save(line);
 
-        final Section section = new Section(
-                lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance());
-        sectionDao.save(section);
+        final Station upStation = stationDao.findById(request.getUpStationId());
+        final Station downStation = stationDao.findById(request.getDownStationId());
+
+        final SectionV2 section = new SectionV2(lineId, upStation, downStation, request.getDistance());
+        sectionDaoV2.save(section);
 
         return lineId;
     }
@@ -73,8 +82,6 @@ public class LineService {
         final List<Station> stations = findStationBySections(sections);
 
         final List<StationResponse> stationsResponses = createStationResponseByStation(stations);
-        stationsResponses.stream()
-                .sorted(((o1, o2) -> Long.valueOf(o1.getId() - o2.getId()).intValue()));
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationsResponses);
     }
