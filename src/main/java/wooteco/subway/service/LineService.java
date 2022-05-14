@@ -9,6 +9,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.SectionDto;
 
 @Service
@@ -18,20 +19,26 @@ public class LineService {
 
     private final LineDao lineDao;
     private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineService(LineDao lineDao, SectionService sectionService) {
+    public LineService(LineDao lineDao, SectionService sectionService,
+        StationService stationService) {
         this.lineDao = lineDao;
         this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
-    public Line createLine(Line line, SectionDto sectionDto) {
-        Optional<Line> foundLine = lineDao.findByName(line.getName());
+    public Line createLine(LineDto lineDto) {
+        Optional<Line> foundLine = lineDao.findByName(lineDto.getName());
         if (foundLine.isPresent()) {
             throw new DataDuplicationException("이미 등록된 노선입니다.");
         }
-        Line newLine = lineDao.save(line);
-        sectionService.createSection(sectionDto.withLineId(newLine.getId()));
-        return newLine;
+        Line newLine = lineDao.save(lineDto.toLine());
+        sectionService.createSection(SectionDto.of(newLine.getId(), lineDto));
+
+        return new Line(newLine,
+            List.of(stationService.findById(lineDto.getUpStationId()),
+                stationService.findById(lineDto.getDownStationId())));
     }
 
     public List<Line> findAll() {

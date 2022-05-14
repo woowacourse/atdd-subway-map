@@ -19,7 +19,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
-import wooteco.subway.service.StationService;
+import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.SectionDto;
 import wooteco.subway.ui.request.LineRequest;
 import wooteco.subway.ui.request.SectionRequest;
@@ -30,28 +30,22 @@ import wooteco.subway.ui.response.LineResponse;
 public class LineController {
 
     private final LineService lineService;
-    private final StationService stationService;
     private final SectionService sectionService;
 
-    public LineController(LineService lineService, StationService stationService,
-        SectionService sectionService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
-        this.stationService = stationService;
         this.sectionService = sectionService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Station upStationEntity = stationService.findById(lineRequest.getUpStationId());
-        Station downStationEntity = stationService.findById(lineRequest.getDownStationId());
-        Line newLine = lineService.createLine(lineRequest.toLine(), lineRequest.toSectionDto());
-        LineResponse lineResponse = new LineResponse(newLine, List.of(upStationEntity, downStationEntity));
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        Line line = lineService.createLine(LineDto.from(lineRequest));
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(LineResponse.from(line));
     }
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<Void> createSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        sectionService.addSectionInLine(SectionDto.from(id, sectionRequest));
+        sectionService.addSectionInLine(SectionDto.of(id, sectionRequest));
         return ResponseEntity.ok().build();
     }
 
@@ -59,14 +53,14 @@ public class LineController {
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
         List<Station> stations = sectionService.findStationsByLineId(id);
-        return ResponseEntity.ok().body(new LineResponse(line, stations));
+        return ResponseEntity.ok().body(LineResponse.of(line, stations));
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> findLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-            .map(line -> new LineResponse(line, sectionService.findStationsByLineId(line.getId())))
+            .map(line -> LineResponse.of(line, sectionService.findStationsByLineId(line.getId())))
             .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }

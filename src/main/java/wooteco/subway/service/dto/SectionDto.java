@@ -23,13 +23,14 @@ public class SectionDto {
         this(lineId, null, upStationId, downDestinationId, distance);
     }
 
-    public static SectionDto from(Long lineId, SectionRequest sectionRequest) {
+    public static SectionDto of(Long lineId, SectionRequest sectionRequest) {
         return new SectionDto(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
             sectionRequest.getDistance());
     }
 
-    public SectionDto withLineId(Long lineId) {
-        return new SectionDto(lineId, sectionId, upStationId, downStationId, distance);
+    public static SectionDto of(Long lineId, LineDto lineDto) {
+        return new SectionDto(lineId, lineDto.getUpStationId(), lineDto.getDownStationId(),
+            lineDto.getDistance());
     }
 
     public Long getLineId() {
