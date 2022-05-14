@@ -31,9 +31,11 @@ public class SectionService {
         final Line line = lineRepository.findById(lineId);
         final List<Section> previousSections = new ArrayList<>(line.getSections());
         final Section newSection = makeSection(request);
+
         line.addSection(newSection);
         final List<Section> addSections = line.getAddSections(previousSections);
         final List<Section> deletedSections = line.getDeletedSections(previousSections);
+
         deleteSections(lineId, deletedSections);
         addSections(lineId, addSections);
     }
@@ -48,9 +50,11 @@ public class SectionService {
         final Line line = lineRepository.findById(lineId);
         final Station target = stationRepository.findById(stationId);
         final List<Section> previousSections = new ArrayList<>(line.getSections());
+
         line.deleteSection(target);
         final List<Section> addSections = line.getAddSections(previousSections);
         final List<Section> deletedSections = line.getDeletedSections(previousSections);
+
         deleteSections(lineId, deletedSections);
         addSections(lineId, addSections);
     }
