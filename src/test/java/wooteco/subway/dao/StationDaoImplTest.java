@@ -50,14 +50,14 @@ class StationDaoImplTest {
     @Test
     void findAll() {
         // given
-        stationDao.save(new Station("범고래"));
-        stationDao.save(new Station("애쉬"));
+        Station station1 = stationDao.save(new Station("범고래"));
+        Station station2 = stationDao.save(new Station("애쉬"));
 
         // when
         List<Station> stations = stationDao.findAll();
 
         // then
-        assertThat(stations).hasSize(2);
+        assertThat(stations).containsExactly(station1, station2);
     }
 
     @Test
@@ -84,8 +84,6 @@ class StationDaoImplTest {
         List<Station> stationEntities = stationDao.findAll();
 
         // then
-        assertThat(stationEntities)
-            .hasSize(0)
-            .doesNotContain(Station);
+        assertThat(stationEntities).doesNotContain(Station);
     }
 }
