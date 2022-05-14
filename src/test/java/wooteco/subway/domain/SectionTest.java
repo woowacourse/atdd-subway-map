@@ -16,7 +16,11 @@ class SectionTest {
     @Test
     @DisplayName("상행종점과 하행종점이 동일한 경우")
     void sameUpDown() {
-        assertThatThrownBy(() -> Section.of(1L, new SectionRequest(1L, 1L, 5))).isInstanceOf(BusinessException.class).hasMessageContaining("상행종점과 하행종점은 같은 지하철역일 수 없습니다.");
+        assertThatThrownBy(
+                () -> Section.of(1L,
+                        new SectionRequest(1L, 1L, 5))
+        ).isInstanceOf(BusinessException.class)
+                .hasMessageContaining("상행종점과 하행종점은 같은 지하철역일 수 없습니다.");
     }
 
     @Test
@@ -50,7 +54,7 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("upStationId와 다르다면 false 반환")
+    @DisplayName("downStationId와 다르다면 false 반환")
     void isSameDownStationWhenFalse() {
         Section section = new Section(1L, 1L, 1L, 2L, 5);
 
@@ -77,7 +81,7 @@ class SectionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {3, 4, 5})
+    @ValueSource(ints = {1, 3, 5})
     @DisplayName("추가하려는 구간보다 거리가 짧거나 같다면 true 반환")
     void isShorterDistanceWhenTrue(int distance) {
         Section source = new Section(1L, 1L, 1L, 2L, distance);
@@ -86,10 +90,12 @@ class SectionTest {
         assertThat(source.isShorterDistance(target)).isTrue();
     }
 
-    @Test
+
+    @ParameterizedTest
+    @ValueSource(ints = {6, 10, 20})
     @DisplayName("추가하려는 구간보다 거리가 길다면 false 반환")
-    void isShorterDistanceWhenFalse() {
-        Section source = new Section(1L, 1L, 1L, 2L, 10);
+    void isShorterDistanceWhenFalse(int distance) {
+        Section source = new Section(1L, 1L, 1L, 2L, distance);
         Section target = new Section(1L, 1L, 1L, 2L, 5);
 
         assertThat(source.isShorterDistance(target)).isFalse();
