@@ -9,8 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 import java.util.List;
 
@@ -39,17 +40,16 @@ class LineServiceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void lineCreateTest() {
-        final Line line = new Line("5호선", "bg-purple-600");
         final Station upStation = stationDao.save(new Station("아차산역"));
         final Station downStation = stationDao.save(new Station("군자역"));
-        final Section section = new Section(upStation, downStation, 3);
 
-        final Line savedLine = lineService.create(line, section);
+        final LineRequest lineRequest = new LineRequest("5호선", "bg-purple-600", upStation.getId(), downStation.getId(), 3);
+        final LineResponse savedLine = lineService.create(lineRequest);
 
         assertAll(
                 () -> assertThat(savedLine.getId()).isNotNull(),
-                () -> assertThat(savedLine.getName()).isEqualTo(line.getName()),
-                () -> assertThat(savedLine.getColor()).isEqualTo(line.getColor())
+                () -> assertThat(savedLine.getName()).isEqualTo(lineRequest.getName()),
+                () -> assertThat(savedLine.getColor()).isEqualTo(lineRequest.getColor())
         );
     }
 
@@ -58,7 +58,7 @@ class LineServiceTest {
     void queryAllTest() {
         lineDao.save(new Line("5호선", "bg-purple-600"));
 
-        final List<Line> lines = lineService.getAll();
+        final List<LineResponse> lines = lineService.getAll();
 
         assertThat(lines.size()).isEqualTo(2);
     }
@@ -66,25 +66,33 @@ class LineServiceTest {
     @DisplayName("특정 노선을 조회한다.")
     @Test
     void queryByIdTest() {
-        final Line foundLine = lineService.getById(line.getId());
+        final LineResponse foundLine = lineService.getById(line.getId());
 
-        assertThat(line).isEqualTo(foundLine);
+        assertAll(
+                () -> assertThat(line.getId()).isEqualTo(foundLine.getId()),
+                () -> assertThat(line.getName()).isEqualTo(foundLine.getName()),
+                () -> assertThat(line.getColor()).isEqualTo(foundLine.getColor())
+        );
     }
 
     @DisplayName("특정 노선을 수정한다.")
     @Test
     void modifyTest() {
-        lineService.modify(line.getId(), new Line("5호선", "bg-green-600"));
+        lineService.modify(line.getId(), new LineRequest("5호선", "bg-green-600"));
 
-        final Line foundLine = lineService.getById(line.getId());
+        final LineResponse foundLine = lineService.getById(line.getId());
 
-        assertThat(foundLine).isEqualTo(new Line(line.getId(), "5호선", "bg-green-600"));
+        assertAll(
+                () -> assertThat(foundLine.getId()).isEqualTo(line.getId()),
+                () -> assertThat(foundLine.getName()).isEqualTo("5호선"),
+                () -> assertThat(foundLine.getColor()).isEqualTo("bg-green-600")
+        );
     }
 
     @DisplayName("존재하지 않는 노선을 수정하려고 하면 예외가 발생한다.")
     @Test
     void modifyWithExceptionTest() {
-        assertThatThrownBy(() -> lineService.modify(100L, new Line("5호선", "bg-purple-600")))
+        assertThatThrownBy(() -> lineService.modify(100L, new LineRequest("5호선", "bg-purple-600")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 노선이 존재하지 않습니다.");
     }
