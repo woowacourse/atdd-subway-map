@@ -9,9 +9,8 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.LineDto;
+import wooteco.subway.dto.StationDto;
 import wooteco.subway.exception.line.DuplicatedLineNameException;
 import wooteco.subway.exception.line.InvalidLineIdException;
 
@@ -29,16 +28,15 @@ public class LineService {
         this.sectionService = sectionService;
     }
 
-    public LineResponse save(LineRequest lineRequest) {
-        Line savedLine = saveLine(lineRequest);
-        saveSection(lineRequest, savedLine.getId());
-        List<StationResponse> stations =
-                findStations(lineRequest.getUpStationId(), lineRequest.getDownStationId());
-        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), stations);
+    public LineDto save(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Line savedLine = saveLine(name, color);
+        sectionService.saveInitSection(new Section(savedLine.getId(), upStationId, downStationId, distance));
+        List<StationDto> stations = findStations(upStationId, downStationId);
+        return new LineDto(savedLine, stations);
     }
 
-    private Line saveLine(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+    private Line saveLine(String name, String color) {
+        Line line = new Line(name, color);
         validateLineName(line);
         return lineDao.save(line);
     }
@@ -49,17 +47,11 @@ public class LineService {
         }
     }
 
-    private void saveSection(LineRequest lineRequest, Long lineId) {
-        Section section = new Section(lineId, lineRequest.getUpStationId(),
-                lineRequest.getDownStationId(), lineRequest.getDistance());
-        sectionService.saveInitSection(section);
-    }
-
-    private List<StationResponse> findStations(Long upStationId, Long downStationId) {
+    private List<StationDto> findStations(Long upStationId, Long downStationId) {
         return stationService.findByIds(Arrays.asList(upStationId, downStationId));
     }
 
-    public List<LineResponse> findAll() {
+    public List<LineDto> findAll() {
         return lineDao.findAll()
                 .stream()
                 .map(it -> findLineById(it.getId()))
@@ -71,18 +63,18 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    public LineResponse findLineById(Long id) {
+    public LineDto findLineById(Long id) {
         validateId(id);
         Line line = lineDao.findById(id);
         Sections sections = new Sections(sectionService.findByLineId(id));
         List<Long> stationIds = sections.getAllStationIds();
-        List<StationResponse> stations = stationService.findByIds(stationIds);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+        List<StationDto> stations = stationService.findByIds(stationIds);
+        return new LineDto(line, stations);
     }
 
-    public void update(Long id, LineRequest lineRequest) {
+    public void update(Long id, String name, String color) {
         validateId(id);
-        Line updatingLine = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line updatingLine = new Line(name, color);
         lineDao.update(id, updatingLine);
     }
 

@@ -15,9 +15,8 @@ import wooteco.subway.dao.FakeSectionDao;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.LineDto;
+import wooteco.subway.dto.StationDto;
 import wooteco.subway.exception.line.DuplicatedLineNameException;
 import wooteco.subway.exception.line.InvalidLineIdException;
 
@@ -35,21 +34,20 @@ class LineServiceTest {
         StationService stationService = new StationService(stationDao);
         SectionService sectionService = new SectionService(new FakeSectionDao());
         lineService = new LineService(new FakeLineDao(), stationService, sectionService);
-        lineService.save(new LineRequest("신분당선", "red", 1L, 2L, 3));
+        lineService.save("신분당선", "red", 1L, 2L, 3);
     }
 
     @Test
     @DisplayName("노선을 추가할 수 있다.")
     void createLine_success() {
-        final LineResponse lineResponse = lineService.save(
-                new LineRequest("2호선", "green", 3L, 4L, 3));
-        StationResponse upStation = lineResponse.getStations().get(0);
-        StationResponse downStation = lineResponse.getStations().get(1);
+        LineDto lineDto = lineService.save("2호선", "green", 3L, 4L, 3);
+        StationDto upStation = lineDto.getStations().get(0);
+        StationDto downStation = lineDto.getStations().get(1);
 
         assertAll(
-                () -> assertThat(lineResponse.getId()).isEqualTo(2L),
-                () -> assertThat(lineResponse.getName()).isEqualTo("2호선"),
-                () -> assertThat(lineResponse.getColor()).isEqualTo("green"),
+                () -> assertThat(lineDto.getId()).isEqualTo(2L),
+                () -> assertThat(lineDto.getName()).isEqualTo("2호선"),
+                () -> assertThat(lineDto.getColor()).isEqualTo("green"),
                 () -> assertThat(upStation.getName()).isEqualTo("서울대입구역"),
                 () -> assertThat(upStation.getId()).isEqualTo(3L),
                 () -> assertThat(downStation.getName()).isEqualTo("사당역"),
@@ -61,22 +59,21 @@ class LineServiceTest {
     @ParameterizedTest
     @CsvSource({"2호선, red", "신분당선, blue", "신분당선, red"})
     void createLine_exception(String name, String color) {
-        LineRequest lineRequest = new LineRequest(name, color, 1L, 2L, 3);
-        assertThatThrownBy(() -> lineService.save(lineRequest))
+        assertThatThrownBy(() -> lineService.save(name, color, 1L, 2L, 3))
                 .isInstanceOf(DuplicatedLineNameException.class);
     }
 
     @DisplayName("Id에 해당하는 노선을 반환한다.")
     @Test
     void findLineById() {
-        LineResponse lineResponse = lineService.findLineById(1L);
-        StationResponse upStation = lineResponse.getStations().get(0);
-        StationResponse downStation = lineResponse.getStations().get(1);
+        LineDto lineDto = lineService.findLineById(1L);
+        StationDto upStation = lineDto.getStations().get(0);
+        StationDto downStation = lineDto.getStations().get(1);
 
         assertAll(
-                () -> assertThat(lineResponse.getId()).isEqualTo(1L),
-                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
-                () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
+                () -> assertThat(lineDto.getId()).isEqualTo(1L),
+                () -> assertThat(lineDto.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineDto.getColor()).isEqualTo("red"),
                 () -> assertThat(upStation.getName()).isEqualTo("강남역"),
                 () -> assertThat(upStation.getId()).isEqualTo(1L),
                 () -> assertThat(downStation.getName()).isEqualTo("판교역"),
@@ -87,12 +84,12 @@ class LineServiceTest {
     @Test
     @DisplayName("모든 노선을 반환한다.")
     void findAll() {
-        lineService.save(new LineRequest("2호선", "green", 3L, 4L, 3));
-        final List<LineResponse> lines = lineService.findAll();
-        LineResponse firstLine = lines.get(0);
-        LineResponse secondLine = lines.get(1);
-        List<StationResponse> firstLineStations = firstLine.getStations();
-        List<StationResponse> secondLineStations = secondLine.getStations();
+        lineService.save("2호선", "green", 3L, 4L, 3);
+        final List<LineDto> lines = lineService.findAll();
+        LineDto firstLine = lines.get(0);
+        LineDto secondLine = lines.get(1);
+        List<StationDto> firstLineStations = firstLine.getStations();
+        List<StationDto> secondLineStations = secondLine.getStations();
 
         assertAll(
                 () -> assertThat(firstLine.getId()).isEqualTo(1L),
@@ -123,9 +120,12 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정보를 수정할 수 있다.")
     void update_success() {
-        LineRequest lineRequest = new LineRequest("6호선", "brown", null, null, 0);
-        lineService.update(1L, lineRequest);
-        lineService.findLineById(1L);
+        lineService.update(1L, "6호선", "brown");
+        LineDto lineDto = lineService.findLineById(1L);
+        assertAll(
+                () -> assertThat(lineDto.getName()).isEqualTo("6호선"),
+                () -> assertThat(lineDto.getColor()).isEqualTo("brown")
+        );
     }
 
     @DisplayName("존재하지 않는 노선을 삭제하려하면 예외를 발생시킨다.")
@@ -145,8 +145,7 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 노선을 수정하려하면 예외를 발생시킨다.")
     @Test
     void updateLineById_exception() {
-        LineRequest lineRequest = new LineRequest("6호선", "brown", null, null, 0);
-        assertThatThrownBy(() -> lineService.update(2L, lineRequest))
+        assertThatThrownBy(() -> lineService.update(2L, "6호선", "brown"))
                 .isInstanceOf(InvalidLineIdException.class);
     }
 }

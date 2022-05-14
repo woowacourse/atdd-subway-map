@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.dao.FakeSectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
-import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.section.NonExistenceSectionDeletion;
 
 class SectionServiceTest {
@@ -37,8 +36,7 @@ class SectionServiceTest {
     @CsvSource({"4, 5", "1, 2"})
     void saveBackOrForth(Long upStationId, Long downStationId) {
         int distance = 2;
-        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
-        sectionService.connectNewSection(1L, sectionRequest);
+        sectionService.connectNewSection(1L, upStationId, downStationId, distance);
         Section newSection = new Section(3L, 1L, upStationId, downStationId, distance);
 
         List<Section> sections = sectionDao.findByLineId(1L);
@@ -51,8 +49,7 @@ class SectionServiceTest {
         Long upStationId = 2L;
         Long downStationId = 5L;
         int distance = 2;
-        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
-        sectionService.connectNewSection(1L, sectionRequest);
+        sectionService.connectNewSection(1L, upStationId, downStationId, distance);
         Section newSection = new Section(3L, 1L, upStationId, downStationId, distance);
         Section changedSection = new Section(1L, 1L, 5L, 3L, 6);
 
@@ -66,8 +63,7 @@ class SectionServiceTest {
         Long upStationId = 5L;
         Long downStationId = 4L;
         int distance = 2;
-        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
-        sectionService.connectNewSection(1L, sectionRequest);
+        sectionService.connectNewSection(1L, upStationId, downStationId, distance);
         Section newSection = new Section(3L, 1L, upStationId, downStationId, distance);
         Section changedSection = new Section(2L, 1L, 3L, 5L, 6);
 

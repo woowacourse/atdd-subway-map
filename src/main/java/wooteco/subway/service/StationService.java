@@ -6,8 +6,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.Stations;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.StationDto;
 import wooteco.subway.exception.station.DuplicatedStationNameException;
 import wooteco.subway.exception.station.InvalidStationIdException;
 
@@ -20,21 +19,20 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse save(StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
+    public StationDto save(String name) {
+        Station station = new Station(name);
         validateStationName(station);
-        Station savedStation = stationDao.save(station);
-        return new StationResponse(savedStation);
+        return new StationDto(stationDao.save(station));
     }
 
-    public List<StationResponse> findByIds(List<Long> ids) {
+    public List<StationDto> findByIds(List<Long> ids) {
         for (Long id : ids) {
             validateId(id);
         }
         Stations stations = new Stations(stationDao.findByIds(ids));
         return stations.sortByOrder(ids)
                 .stream()
-                .map(StationResponse::new)
+                .map(StationDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -55,10 +53,10 @@ public class StationService {
         }
     }
 
-    public List<StationResponse> findAll() {
+    public List<StationDto> findAll() {
         return stationDao.findAll()
                 .stream()
-                .map(StationResponse::new)
+                .map(StationDto::new)
                 .collect(Collectors.toUnmodifiableList());
     }
 }

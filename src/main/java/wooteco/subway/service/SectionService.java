@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.section.NonExistenceSectionDeletion;
 
 @Service
@@ -26,9 +25,8 @@ public class SectionService {
         return sectionDao.findByLineId(lineId);
     }
 
-    public void connectNewSection(Long lineId, SectionRequest sectionRequest) {
-        Section section = new Section(lineId, sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(), sectionRequest.getDistance());
+    public void connectNewSection(Long lineId, Long upStationId, Long downStationId, int distance) {
+        Section section = new Section(lineId, upStationId, downStationId, distance);
         Sections previousSections = new Sections(sectionDao.findByLineId(lineId));
         Sections updatedSections = previousSections.connect(section);
         save(updatedSections.findDifferentSections(previousSections));
