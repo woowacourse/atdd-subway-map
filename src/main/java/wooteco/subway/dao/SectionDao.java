@@ -42,7 +42,7 @@ public class SectionDao {
         params.put("distance", section.getDistance());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
+        jdbcTemplate. update(sql, new MapSqlParameterSource(params), keyHolder);
         long sectionId = keyHolder.getKey().longValue();
 
         return new Section(sectionId, section.getDistance(), section.getLineId(), section.getUpStationId(), section.getDownStationId());

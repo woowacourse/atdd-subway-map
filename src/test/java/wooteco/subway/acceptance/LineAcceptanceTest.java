@@ -81,6 +81,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("구간 생성 요청이 올바른지 검증한다.")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestsFromValidation() {
+        return Stream.of(
+                dynamicTest("[구간 생성 검증] 노선 색상 이름이 빈 값이면 구간 생성에 실패한다.", () -> {
+                    // when
+                    ExtractableResponse<Response> response = createLine("2호선", " ", station1.getId(), station2.getId(), 10);
+
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("[구간 생성 검증] 상행 역 id가 null이면 이름이 빈 값이면 구간 생성에 실패한다.", () -> {
+                    // when
+                    ExtractableResponse<Response> response = createLine("2호선", " ", null, station2.getId(), 10);
+
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("[구간 생성 검증] 하행 역 id가 null이면 이름이 빈 값이면 구간 생성에 실패한다.", () -> {
+                    // when
+                    ExtractableResponse<Response> response = createLine("2호선", " ", station1.getId(), null, 10);
+
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
+
+                dynamicTest("[구간 생성 검증] 노선 색상 이름이 빈 값이면 구간 생성에 실패한다.", () -> {
+                    // when
+                    ExtractableResponse<Response> response = createLine("2호선", " ", station1.getId(), station2.getId(), 10);
+
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                })
+        );
+    }
+
+
     @DisplayName("구간 생성을 관리한다")
     @TestFactory
     Stream<DynamicTest> dynamicTestsFromSection() {
@@ -185,6 +224,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     // then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                     assertThat(response.header("Location")).isNotBlank();
+                }),
+
+                dynamicTest("[2호선 구간 생성 실패] 노선 이름이 빈 값이면 구간 생성에 실패한다.", () -> {
+                    // when
+                    ExtractableResponse<Response> response = createLine("", "green", station1.getId(), station2.getId(), 10);
+
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 }),
 
                 dynamicTest("[2호선 구간 삭제] 상행 종점을 삭제한다.", () -> {
