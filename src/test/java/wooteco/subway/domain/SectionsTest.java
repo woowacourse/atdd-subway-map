@@ -1,6 +1,15 @@
 package wooteco.subway.domain;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static wooteco.subway.domain.factory.SectionFactory.AB3;
+import static wooteco.subway.domain.factory.SectionFactory.AC1;
+import static wooteco.subway.domain.factory.SectionFactory.AC2;
+import static wooteco.subway.domain.factory.SectionFactory.BC3;
+import static wooteco.subway.domain.factory.SectionFactory.CA3;
+import static wooteco.subway.domain.factory.SectionFactory.CB1;
+import static wooteco.subway.domain.factory.SectionFactory.CB2;
+import static wooteco.subway.domain.factory.SectionFactory.CD3;
+import static wooteco.subway.domain.factory.StationFactory.C;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import wooteco.subway.domain.factory.SectionFactory;
+import wooteco.subway.domain.factory.StationFactory;
 
 @DisplayName("Sections 는")
 class SectionsTest {
@@ -19,21 +30,21 @@ class SectionsTest {
     @MethodSource("provideAddSectionSource")
     void add_Section(final Section section, final List<Section> expectedResult) {
         final Sections sections = new Sections(new ArrayList<>());
-        sections.addIfPossible(SectionFactory.from("ab3"));
+        sections.addIfPossible(SectionFactory.from(AB3));
         sections.addIfPossible(section);
         assertThat(sections).extracting("value").isEqualTo(expectedResult);
     }
 
     private static Stream<Arguments> provideAddSectionSource() {
         return Stream.of(
-                Arguments.of(SectionFactory.from("ac2"), List.of(SectionFactory.from("ac2"),
-                        SectionFactory.from("cb1"))),
-                Arguments.of(SectionFactory.from ("cb2"), List.of(
-                        SectionFactory.from("ac1"),SectionFactory.from("cb2"))),
-                Arguments.of(SectionFactory.from("bc3"), List.of(
-                        SectionFactory.from("ab3"), SectionFactory.from("bc3"))),
-                Arguments.of(SectionFactory.from("ca3"), List.of(
-                        SectionFactory.from("ca3"), SectionFactory.from("ab3")))
+                Arguments.of(SectionFactory.from(AC2), List.of(SectionFactory.from(AC2),
+                        SectionFactory.from(CB1))),
+                Arguments.of(SectionFactory.from (CB2), List.of(
+                        SectionFactory.from(AC1),SectionFactory.from(CB2))),
+                Arguments.of(SectionFactory.from(BC3), List.of(
+                        SectionFactory.from(AB3), SectionFactory.from(BC3))),
+                Arguments.of(SectionFactory.from(CA3), List.of(
+                        SectionFactory.from(CA3), SectionFactory.from(AB3)))
         );
     }
 
@@ -42,7 +53,7 @@ class SectionsTest {
     @MethodSource("provideDeleteSectionSource")
     void delete_Section(final Section section, final Station targetStation, final List<Section> expectedResult) {
         final Sections sections = new Sections(new ArrayList<>());
-        sections.addIfPossible(SectionFactory.from("ab3"));
+        sections.addIfPossible(SectionFactory.from(AB3));
         sections.addIfPossible(section);
         sections.deleteIfPossible(targetStation);
         assertThat(sections).extracting("value").isEqualTo(expectedResult);
@@ -50,12 +61,12 @@ class SectionsTest {
 
     private static Stream<Arguments> provideDeleteSectionSource() {
         return Stream.of(
-                Arguments.of(SectionFactory.from("ac1"), StationFactory.from("c"),
-                        List.of(SectionFactory.from("ab3"))),
-                Arguments.of(SectionFactory.from ("ca3"), StationFactory.from("c"),
-                        List.of(SectionFactory.from("ab3"))),
-                Arguments.of(SectionFactory.from("bc3"), StationFactory.from("c"),
-                        List.of(SectionFactory.from("ab3")))
+                Arguments.of(SectionFactory.from(AC1), StationFactory.from(C),
+                        List.of(SectionFactory.from(AB3))),
+                Arguments.of(SectionFactory.from (CA3), StationFactory.from(C),
+                        List.of(SectionFactory.from(AB3))),
+                Arguments.of(SectionFactory.from(BC3), StationFactory.from(C),
+                        List.of(SectionFactory.from(AB3)))
         );
     }
 
@@ -63,8 +74,8 @@ class SectionsTest {
     @Test
     void getDeletedSections() {
         final Sections sections = new Sections(new ArrayList<>());
-        final Section ab3 = SectionFactory.from("ab3");
-        final Section bc3 = SectionFactory.from("bc3");
+        final Section ab3 = SectionFactory.from(AB3);
+        final Section bc3 = SectionFactory.from(BC3);
         sections.addIfPossible(ab3);
         sections.addIfPossible(bc3);
         sections.deleteIfPossible(new Station(1L, "b"));
@@ -78,9 +89,9 @@ class SectionsTest {
     @Test
     void getAddSections() {
         final Sections sections = new Sections(new ArrayList<>());
-        final Section ab3 = SectionFactory.from("ab3");
-        final Section bc3 = SectionFactory.from("bc3");
-        final Section cd3 = SectionFactory.from("cd3");
+        final Section ab3 = SectionFactory.from(AB3);
+        final Section bc3 = SectionFactory.from(BC3);
+        final Section cd3 = SectionFactory.from(CD3);
         sections.addIfPossible(ab3);
         sections.addIfPossible(bc3);
         sections.addIfPossible(cd3);
