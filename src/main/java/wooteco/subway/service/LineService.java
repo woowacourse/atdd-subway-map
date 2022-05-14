@@ -16,6 +16,7 @@ import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.service.dto.StationResponse;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
 
     private final LineDao lineDao;

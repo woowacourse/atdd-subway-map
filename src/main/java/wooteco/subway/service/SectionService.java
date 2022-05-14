@@ -9,6 +9,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.service.dto.SectionRequest;
 
 @Service
+@Transactional(readOnly = true)
 public class SectionService {
 
     private final SectionDao sectionDao;
