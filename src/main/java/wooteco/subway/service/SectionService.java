@@ -1,87 +1,70 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.SectionDao2;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
+import wooteco.subway.domain2.section.Section;
+import wooteco.subway.domain2.section.Sections2;
+import wooteco.subway.domain2.station.Station;
 import wooteco.subway.dto.request.CreateSectionRequest;
-import wooteco.subway.entity.SectionEntity;
-import wooteco.subway.entity.StationEntity;
+import wooteco.subway.entity.SectionEntity2;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class SectionService {
 
-    private static final String LINE_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 노선은 존재하지 않습니다.";
-    private static final String LAST_SECTION_EXCEPTION = "노선의 마지막 구간은 제거할 수 없습니다.";
     private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "존재하지 않는 역을 입력하였습니다.";
 
-    private final SectionDao sectionDao;
+    private final SectionDao2 sectionDao;
     private final StationDao stationDao;
 
-    public SectionService(SectionDao sectionDao, StationDao stationDao) {
+    public SectionService(SectionDao2 sectionDao,
+                          StationDao stationDao) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
 
+
     @Transactional
-    public void save(Long lineId, CreateSectionRequest sectionRequest) {
-        Section newSection = sectionRequest.toSection();
-        Sections sections = Sections.of(findValidSections(lineId));
-        validateExistingStations(newSection);
-        sections.validateSingleRegisteredStation(newSection);
+    public void save(Long lineId, CreateSectionRequest request) {
+        Sections2 sections = Sections2.of(findValidSections(lineId));
+        Station upStation = findExistingStation(request.getUpStationId());
+        Station downStation = findExistingStation(request.getDownStationId());
+        Sections2 updatedSections = sections.save(new Section(upStation, downStation, request.getDistance()));
 
-        if (!sections.isEndSection(newSection)) {
-            SectionEntity updatedPreviousSection = sections.toUpdatedSection(lineId, newSection);
-            boolean containsRegisteredUpStation = sections.hasRegisteredUpStation(newSection);
-            updatePreviousSection(updatedPreviousSection, containsRegisteredUpStation);
-        }
-        sectionDao.save(newSection.toEntityOf(lineId));
-    }
-
-    private void updatePreviousSection(SectionEntity updatedPreviousSection,
-                                       boolean containsRegisteredUpStation) {
-        if (containsRegisteredUpStation) {
-            sectionDao.updateUpStationIdAndDistance(updatedPreviousSection);
-            return;
-        }
-        sectionDao.updateDownStationIdAndDistance(updatedPreviousSection);
-    }
-
-    private void validateExistingStations(Section section) {
-        List<Long> stationIds = section.getStationIds();
-        List<StationEntity> stations = stationDao.findAllByIds(stationIds);
-        if (stations.size() != stationIds.size()) {
-            throw new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE);
-        }
+        updateSectionChanges(sections, updatedSections, lineId);
     }
 
     @Transactional
     public void delete(Long lineId, Long stationId) {
-        Sections sections = Sections.of(findValidSections(lineId));
-        sections.validateRegisteredStation(stationId);
-        validateNotLastSection(sections);
+        Sections2 sections = Sections2.of(findValidSections(lineId));
+        Sections2 updatedSections = sections.delete(findExistingStation(stationId));
 
-        sectionDao.deleteAllByLineIdAndStationId(lineId, stationId);
-        if (sections.isMiddleStation(stationId)) {
-            sectionDao.save(sections.toConnectedSectionBetween(lineId, stationId));
+        updateSectionChanges(sections, updatedSections, lineId);
+    }
+
+    private void updateSectionChanges(Sections2 oldSections, Sections2 updatedSections, Long lineId) {
+        for (Section deletedSection : updatedSections.extractDeletedSections(oldSections)) {
+            sectionDao.delete(deletedSection.toEntity(lineId));
+        }
+        for (Section deletedSection : updatedSections.extractNewSections(oldSections)) {
+            sectionDao.save(deletedSection.toEntity(lineId));
         }
     }
 
-    private List<SectionEntity> findValidSections(Long lineId) {
-        List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(lineId);
-        if (sectionEntities.isEmpty()) {
-            throw new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE);
-        }
-        return sectionEntities;
+    private List<Section> findValidSections(Long lineId) {
+        return sectionDao.findAllByLineId(lineId)
+                .stream()
+                .map(SectionEntity2::toDomain)
+                .collect(Collectors.toList());
     }
 
-    private void validateNotLastSection(Sections sections) {
-        if (sections.hasSingleSection()) {
-            throw new IllegalArgumentException(LAST_SECTION_EXCEPTION);
-        }
+    private Station findExistingStation(Long stationId) {
+        return stationDao.findById(stationId)
+                .orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE))
+                .toDomain();
     }
 }
