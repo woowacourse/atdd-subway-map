@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
+import wooteco.subway.domain.Stations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,9 +46,9 @@ class StationJdbcDaoTest {
     @DisplayName("역 정보들을 가져온다.")
     @Test
     void findAll() {
-        List<Station> stations = stationJdbcDao.findAll();
+        Stations stations = stationJdbcDao.findAll();
 
-        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations.getStations().size()).isEqualTo(3);
     }
 
     @DisplayName("역 정보를 삭제한다.")

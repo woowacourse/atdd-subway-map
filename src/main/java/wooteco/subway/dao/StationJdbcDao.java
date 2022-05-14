@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
-import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Stations;
 
 @Repository
 public class StationJdbcDao {
@@ -30,10 +30,10 @@ public class StationJdbcDao {
         return new Station(keyHolder.getKey().longValue(), station.getName());
     }
 
-    public List<Station> findAll() {
+    public Stations findAll() {
         final String sql = "select * from station";
-        return jdbcTemplate.query(sql, (rs, rowNum) ->
-                new Station(rs.getLong("id"), rs.getString("name")));
+        return new Stations(jdbcTemplate.query(sql, (rs, rowNum) ->
+                new Station(rs.getLong("id"), rs.getString("name"))));
     }
 
     public Station findById(long id) {

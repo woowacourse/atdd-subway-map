@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +70,7 @@ public class LineService {
 
     private Map<Long, Station> toMapStations() {
         return stationDao.findAll()
+                .getStations()
                 .stream()
                 .collect(Collectors.toMap(Station::getId, station -> station));
     }

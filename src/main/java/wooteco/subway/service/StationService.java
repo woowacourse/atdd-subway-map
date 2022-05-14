@@ -3,12 +3,12 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.TransactionSystemException;
+
 import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ClientException;
@@ -23,17 +23,18 @@ public class StationService {
     }
 
     public StationResponse save(StationRequest request) {
-        try {
-            Station station = stationDao.save(new Station(request.getName()));
-            return new StationResponse(station.getId(), station.getName());
-        } catch (DataAccessException exception) {
-            throw new ClientException("이미 등록된 지하철역입니다.");
-        }
+        Stations stations = stationDao.findAll();
+        Station station = new Station(request.getName());
+        stations.add(station);
+
+        Station newStation = stationDao.save(station);
+        return new StationResponse(newStation.getId(), newStation.getName());
     }
 
     public List<StationResponse> findAll() {
-        List<Station> stations = stationDao.findAll();
-        return stations.stream()
+        Stations stations = stationDao.findAll();
+        return stations.getStations()
+                .stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
     }

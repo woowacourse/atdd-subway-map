@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.ClientException;
 
 public class Line {
