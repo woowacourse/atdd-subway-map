@@ -3,6 +3,8 @@ package wooteco.subway.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.Fixture.createLineRequest;
+import static wooteco.subway.Fixture.createSectionRequest;
+import static wooteco.subway.Fixture.deleteSectionRequest;
 import static wooteco.subway.Fixture.save2StationsRequest;
 
 import io.restassured.RestAssured;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.Fixture;
 import wooteco.subway.dto.response.LineResponseDto;
 
 @DisplayName("노선 관련 기능")
@@ -191,31 +194,23 @@ class LineAcceptanceTest extends AcceptanceTest {
     void addSection() {
         // given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
-        Map<String, String> lineParams = new HashMap<>();
+        final Map<String, String> lineParams = new HashMap<>();
         lineParams.put("name", "2호선");
         lineParams.put("color", "bg-green-600");
         lineParams.put("upStationId", stationIds.get(0).toString());
         lineParams.put("downStationId", stationIds.get(1).toString());
         lineParams.put("distance", "10");
-        ExtractableResponse<Response> lineCreateResponse = createLineRequest(lineParams);
+        final ExtractableResponse<Response> lineCreateResponse = createLineRequest(lineParams);
         final LineResponseDto createdLine = lineCreateResponse.jsonPath()
                 .getObject(".", LineResponseDto.class);
-
         final List<Long> newStationIds = save2StationsRequest("삼성역", "봉은사역");
 
-        Map<String, String> sectionParams = new HashMap<>();
+        // when
+        final Map<String, String> sectionParams = new HashMap<>();
         sectionParams.put("upStationId", stationIds.get(0).toString());
         sectionParams.put("downStationId", newStationIds.get(0).toString());
         sectionParams.put("distance", "5");
-
-        // when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .body(sectionParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .post("/lines/" + createdLine.getId() + "/sections")
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> response = createSectionRequest(createdLine.getId(), sectionParams);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -242,23 +237,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         sectionParams.put("upStationId", stationIds.get(0).toString());
         sectionParams.put("downStationId", newStationId.toString());
         sectionParams.put("distance", "5");
-
-        RestAssured.given().log().all()
-                .when()
-                .body(sectionParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .post("/lines/" + createdLine.getId() + "/sections")
-                .then().log().all()
-                .extract();
+        createSectionRequest(createdLine.getId(), sectionParams);
 
         // when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .body(sectionParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .delete("/lines/" + createdLine.getId() + "/sections?stationId=" + newStationId)
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> response = deleteSectionRequest(
+                createdLine.getId(),
+                newStationId,
+                sectionParams
+        );
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

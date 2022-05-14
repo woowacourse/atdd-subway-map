@@ -55,4 +55,27 @@ public class Fixture {
 
         return List.of(station1.getId(), station2.getId());
     }
+
+    public static ExtractableResponse<Response> createSectionRequest(final Long lineId,
+                                                               final Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .when()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> deleteSectionRequest(final Long lineId,
+                                                               final Long newStationId,
+                                                               final Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .when()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("/lines/" + lineId + "/sections?stationId=" + newStationId)
+                .then().log().all()
+                .extract();
+    }
 }
