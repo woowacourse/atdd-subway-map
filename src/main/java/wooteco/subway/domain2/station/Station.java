@@ -1,6 +1,7 @@
 package wooteco.subway.domain2.station;
 
 import java.util.Objects;
+import wooteco.subway.entity.StationEntity;
 
 public class Station {
 
@@ -18,6 +19,10 @@ public class Station {
 
     public String getName() {
         return name;
+    }
+
+    public StationEntity toEntity() {
+        return new StationEntity(id, name);
     }
 
     @Override
