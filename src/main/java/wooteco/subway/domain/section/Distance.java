@@ -17,7 +17,7 @@ public class Distance {
         }
     }
 
-    public boolean isCloserThan(Distance other) {
+    public boolean isLessThan(Distance other) {
         return this.distance < other.distance;
     }
 
@@ -48,5 +48,10 @@ public class Distance {
     @Override
     public int hashCode() {
         return Objects.hash(distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Distance{" + distance + '}';
     }
 }
