@@ -14,7 +14,7 @@ import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.exception.ResisterSectionException;
 
 class SectionsTest {
-    
+
     @Test
     @DisplayName("비어있는 구간 리스트로 Sections 객체 생성시 예외가 발생한다.")
     void emptyListSections() {
@@ -231,7 +231,7 @@ class SectionsTest {
                 () -> assertThat(sectionsUpdateResult.getAddedSections().get(0)).isEqualTo(section2)
         );
     }
-    
+
     @Test
     @DisplayName("구간 일급 컬렉션에서 지하철역 삭제시 지하철역이 노선에 존재하지 않으면 예외가 발생한다.")
     void removeNotExistStation() {

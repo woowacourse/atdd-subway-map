@@ -1,13 +1,13 @@
 package wooteco.subway.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.MaxNameLengthException;
 
 class NameTest {
-    
+
     @Test
     @DisplayName("255자를 초과한 이름을 생성하면 예외가 발생한다.")
     void createOverLengthName() {

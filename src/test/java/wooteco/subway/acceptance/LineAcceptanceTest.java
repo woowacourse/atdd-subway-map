@@ -184,7 +184,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
         final Map<String, String> createParams1 = makeLineTwoCreationParams(stationIds.get(0), stationIds.get(1));
-        final Map<String, String> createParams2 = makeLineSinBunDangCreationParams(stationIds.get(0), stationIds.get(1));
+        final Map<String, String> createParams2 = makeLineSinBunDangCreationParams(stationIds.get(0),
+                stationIds.get(1));
         final ExtractableResponse<Response> createResponse1 = createLineRequest(createParams1);
         final ExtractableResponse<Response> createResponse2 = createLineRequest(createParams2);
         final LineResponseDto sinBunDang = createResponse2.jsonPath().getObject(".", LineResponseDto.class);

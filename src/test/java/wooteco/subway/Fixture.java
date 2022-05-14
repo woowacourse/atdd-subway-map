@@ -57,7 +57,7 @@ public class Fixture {
     }
 
     public static ExtractableResponse<Response> createSectionRequest(final Long lineId,
-                                                               final Map<String, String> params) {
+                                                                     final Map<String, String> params) {
         return RestAssured.given().log().all()
                 .when()
                 .body(params)
@@ -86,7 +86,8 @@ public class Fixture {
         return lineParams1;
     }
 
-    public static Map<String, String> makeLineSinBunDangCreationParams(final Long upStationId, final Long downStationId) {
+    public static Map<String, String> makeLineSinBunDangCreationParams(final Long upStationId,
+                                                                       final Long downStationId) {
         final Map<String, String> lineParams2 = new HashMap<>();
         lineParams2.put("name", "신분당선");
         lineParams2.put("color", "bg-red-600");

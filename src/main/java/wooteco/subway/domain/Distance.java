@@ -21,7 +21,6 @@ public class Distance {
     }
 
 
-
     public int getValue() {
         return value;
     }
