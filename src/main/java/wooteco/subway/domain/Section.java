@@ -10,7 +10,7 @@ public class Section {
     private final static int BLANK = 0;
     private final static Long EMPTY = null;
 
-    private Long id;
+    private final Long id;
     private final Long lineId;
     private Long upStationId;
     private Long downStationId;

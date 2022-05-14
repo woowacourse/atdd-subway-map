@@ -45,11 +45,14 @@ public class Station {
 
         Station station = (Station) o;
 
-        return name != null ? name.equals(station.name) : station.name == null;
+        if (getId() != null ? !getId().equals(station.getId()) : station.getId() != null) return false;
+        return getName() != null ? getName().equals(station.getName()) : station.getName() == null;
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        return result;
     }
 }
