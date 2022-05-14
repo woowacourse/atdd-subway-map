@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,8 +61,9 @@ public class Sections {
         final Section downLineSection = getDownLineSection(section.getDownStation());
         validateDistance(section, downLineSection);
         sections.remove(downLineSection);
-        sections.add(Section.createWithoutId(downLineSection.getUpStation(), section.getUpStation(), downLineSection.getDistance() - section
-                .getDistance()));
+        sections.add(Section.createWithoutId(downLineSection.getUpStation(), section.getUpStation(),
+                downLineSection.getDistance() - section
+                        .getDistance()));
         sections.add(section);
     }
 
@@ -184,9 +186,52 @@ public class Sections {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         }
-        return stations.stream()
+        final LinkedList<Station> sortedStations = sortStation(stations.stream()
                 .distinct()
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+
+        return new ArrayList<>(sortedStations);
+    }
+
+    private LinkedList<Station> sortStation(List<Station> stations) {
+        final List<Section> tempSections = new ArrayList<>(new ArrayList<>(sections));
+        final LinkedList<Station> sortedStations = new LinkedList<>();
+
+        Section section = findFirstSection(stations, tempSections);
+        sortedStations.add(section.getUpStation());
+        sortedStations.add(section.getDownStation());
+        tempSections.remove(section);
+
+        while (existNextSection(tempSections, section)) {
+            section = findNextSection(tempSections, section);
+            sortedStations.add(section.getDownStation());
+        }
+        return sortedStations;
+    }
+
+    private Section findFirstSection(List<Station> stations, List<Section> sections) {
+        return sections.stream()
+                .filter(it -> it.isEqualToUpStation(findUpTerminalStation(stations)))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private Station findUpTerminalStation(List<Station> stations) {
+        return stations.stream()
+                .filter(this::isUpLineTerminalStation)
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private boolean existNextSection(List<Section> tempSections, Section section) {
+        return tempSections.stream().anyMatch(it -> it.isEqualToUpStation(section.getDownStation()));
+    }
+
+    private Section findNextSection(List<Section> tempSections, Section section) {
+        return tempSections.stream()
+                .filter(it -> it.isEqualToUpStation(section.getDownStation()))
+                .findFirst()
+                .orElseThrow();
     }
 
     public List<Section> getSections() {

@@ -256,5 +256,26 @@ public class SectionsTest {
         assertThatThrownBy(() -> line.deleteSection(upStation))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("구간 정렬")
+    void sortSections() {
+        //given
+        final Station 판교역 = new Station("판교역");
+        final Station 신강남역 = new Station("신강남역");
+        final Section section1 = Section.createWithoutId(판교역, upStation, 5);
+        final Section section2 = Section.createWithoutId(판교역, 신강남역, 3);
+        line.addSection(section1);
+        line.addSection(section2);
+        //when
+        final List<Station> stations = line.getStations();
+        //then
+        assertAll(
+                () -> assertThat(stations.get(0)).isEqualTo(판교역),
+                () -> assertThat(stations.get(1)).isEqualTo(신강남역),
+                () -> assertThat(stations.get(2)).isEqualTo(upStation),
+                () -> assertThat(stations.get(3)).isEqualTo(downStation)
+        );
+    }
 }
 
