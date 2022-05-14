@@ -20,8 +20,16 @@ class SectionTest {
     @Test
     @DisplayName("구간 예외 - 0이 입력된 경우")
     void checkZero() {
-        assertThatThrownBy(() -> new Section(1L, 0L, 0L, 1))
+        assertThatThrownBy(() -> new Section(1L, 0L, 2L, 1))
                 .isInstanceOf(ClientException.class)
                 .hasMessageContaining("지하철 노선 Id와 상행, 하행 역, 거리는 0 이상의 값이어야 합니다.");
+    }
+
+    @Test
+    @DisplayName("구간 예외 - 상행역과 하행역이 같은 경우")
+    void checkSameUpDownStation() {
+        assertThatThrownBy(() -> new Section(1L, 1L, 1L, 1))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("상행역과 하행역이 같을 수 없습니다.");
     }
 }

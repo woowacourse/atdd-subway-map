@@ -39,6 +39,21 @@ class SectionServiceTest {
                 thirdStation.getId(), 10), lineService.findSections(saveLine.getId()), lineService.findById(saveLine.getId())));
     }
 
+    @DisplayName("지하철 구간 저장 예외 - 상행역과 하행역이 같은 경우")
+    @Test
+    void checkSameUpDownStation() {
+        StationResponse firstStation = stationService.save(new StationRequest("역삼역"));
+        StationResponse secondStation = stationService.save(new StationRequest("삼성역"));
+
+        LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);;
+        LineResponse saveLine = lineService.save(line);
+
+        assertThatThrownBy(() ->sectionService.save(saveLine.getId(), new SectionRequest(firstStation.getId(),
+                firstStation.getId(), 10), lineService.findSections(saveLine.getId()), lineService.findById(saveLine.getId())))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("상행역과 하행역이 같을 수 없습니다.");
+    }
+
     @DisplayName("지하철 구간 저장 예외 - 존재하지 않는 노선")
     @Test
     void checkNotExistLine() {

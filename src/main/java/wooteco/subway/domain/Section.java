@@ -3,6 +3,8 @@ package wooteco.subway.domain;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.ClientException;
 
+import java.util.Objects;
+
 public class Section {
 
     private final static int BLANK = 0;
@@ -17,6 +19,7 @@ public class Section {
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         validateNull(lineId, upStationId, downStationId, distance);
         validateMinimumRange(lineId, upStationId, downStationId, distance);
+        validateUpAndDownSameStation(upStationId, downStationId);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -37,6 +40,12 @@ public class Section {
     private void validateNull(Long lineId, Long upStationId, Long downStationId, int distance) {
         if (lineId == EMPTY || upStationId == EMPTY || downStationId == EMPTY || distance == BLANK) {
             throw new ClientException("지하철 노선 Id와 상행, 하행 역을 입력해주세요.");
+        }
+    }
+
+    private void validateUpAndDownSameStation(Long upStationId, Long downStationId) {
+        if (Objects.equals(upStationId, downStationId)) {
+            throw new ClientException("상행역과 하행역이 같을 수 없습니다.");
         }
     }
     
