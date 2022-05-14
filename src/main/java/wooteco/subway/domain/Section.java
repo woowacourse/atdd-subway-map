@@ -53,6 +53,10 @@ public class Section {
         return downStationId.equals(request.getDownStationId());
     }
 
+    public boolean hasSameStationId(SectionRequest request) {
+        return isSameUpStationId(request) || isSameDownStationId(request);
+    }
+
     public boolean isPossibleDistanceCondition(SectionRequest sectionRequest) {
         return distance > sectionRequest.getDistance();
     }
@@ -77,10 +81,6 @@ public class Section {
 
     public Long getId() {
         return id;
-    }
-
-    public Long getLineId() {
-        return lineId;
     }
 
     public Long getUpStationId() {
