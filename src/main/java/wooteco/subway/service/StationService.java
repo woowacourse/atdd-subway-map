@@ -48,11 +48,9 @@ public class StationService {
 
     public void deleteById(Long id) {
         validateId(id);
-        stationDao.deleteById(id);
-        List<Long> totalLineIds = lineDao.findAll().stream()
-                .map(Line::getId).collect(Collectors.toList());
-        for (Long lineId : totalLineIds) {
-            sectionDao.deleteByLineId(lineId);
+        if (sectionDao.isAnySectionWithStationId(id)) {
+            throw new SubwayException("[ERROR] 구간을 구성하는 역은 삭제할 수 없습니다.");
         }
+        stationDao.deleteById(id);
     }
 }

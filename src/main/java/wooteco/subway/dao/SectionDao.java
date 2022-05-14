@@ -51,6 +51,14 @@ public class SectionDao {
         return jdbcTemplate.queryForObject(sql, sectionRowMapper, id);
     }
 
+    public boolean isAnySectionWithStationId(Long stationId) {
+        String upSql = "select count(*) from section where up_station_id = (?)";
+        String downSql = "select count(*) from section where down_station_id = (?)";
+        int upCount = jdbcTemplate.queryForObject(upSql, Integer.class, stationId);
+        int downCount = jdbcTemplate.queryForObject(downSql, Integer.class, stationId);
+        return upCount > 0 || downCount > 0;
+    }
+
     public void deleteById(Long id) {
         String sql = "delete from section where id = ?";
         jdbcTemplate.update(sql, id);

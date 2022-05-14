@@ -50,4 +50,13 @@ public class SectionDaoTest {
         assertThatThrownBy(() -> sectionDao.findById(-1L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
+
+    @DisplayName("특정 역의 id로 이루어진 구간이 있는지 테스트")
+    @Test
+    void exist_by_station_id() {
+        Section section1 = sectionDao.save(new Section(2L,1L, 2L, 10L), 2L);
+        Section section2 = sectionDao.save(new Section(1L, 2L, 3L, 1L), 1L);
+        Section section3 = sectionDao.save(new Section(1L, 7L, 8L, 10L), 1L);
+        assertThat(sectionDao.isAnySectionWithStationId(2L)).isTrue();
+    }
 }

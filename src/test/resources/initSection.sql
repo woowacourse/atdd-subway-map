@@ -1,0 +1,8 @@
+insert into station (name) values ('강남역')
+insert into station (name) values ('선릉역')
+insert into station (name) values ('역삼역')
+insert into station (name) values ('삼성역')
+insert into station (name) values ('교대역')
+insert into section (line_id, up_station_id, down_station_id, distance) values (1, 2, 3, 10)
+insert into section (line_id, up_station_id, down_station_id, distance) values (1, 1, 2, 10)
+insert into section (line_id, up_station_id, down_station_id, distance) values (2, 4, 5, 10)
