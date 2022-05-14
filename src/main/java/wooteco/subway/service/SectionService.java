@@ -29,13 +29,12 @@ public class SectionService {
     }
 
     @Transactional
-    public void addSection(SectionRequest sectionRequest, long lineId) {
+    public Section addSection(SectionRequest sectionRequest, long lineId) {
         Section newSection = new Section(sectionRequest, lineId);
         if (isStartOrEndOfSection(newSection, lineId)) {
-            sectionDao.save(newSection);
-            return;
+            return sectionDao.save(newSection);
         }
-        insertToBetweenSections(newSection);
+        return insertToBetweenSections(newSection);
     }
 
     private boolean isStartOrEndOfSection(Section section, long id) {
@@ -50,16 +49,16 @@ public class SectionService {
         return false;
     }
 
-    private void insertToBetweenSections(Section newSection) {
+    private Section insertToBetweenSections(Section newSection) {
         Section findSection = sectionDao.findBySameUpOrDownStation(newSection)
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.NO_SECTION));
         validateDistance(findSection, newSection);
         updateExistSection(newSection, findSection);
-        sectionDao.save(newSection);
+        return sectionDao.save(newSection);
     }
 
     private void validateDistance(Section findSection, Section newSection) {
-        if (findSection.getDistance() < newSection.getDistance()) {
+        if (findSection.getDistance() <= newSection.getDistance()) {
             throw new IllegalArgumentException("추가하려는 구간의 길이는 기존 구간길이보다 길 수 없습니다.");
         }
     }

@@ -44,33 +44,65 @@ class SectionServiceTest {
         Station station1 = stationDao.save("강남역");
         Station station2 = stationDao.save("선릉역");
         Station station3 = stationDao.save("잠실역");
-        LineRequest lineRequest = new LineRequest("2호선", "green", station1.getId(), station2.getId(), 10);
+        LineRequest lineRequest = new LineRequest("2호선", "green", station2.getId(), station3.getId(), 10);
         Line line = lineDao.save(lineRequest);
         sectionDao.saveInitialSection(lineRequest, line.getId());
-        SectionRequest sectionRequest = new SectionRequest(station3.getId(), station1.getId(), 5);
+        SectionRequest sectionRequest = new SectionRequest(station1.getId(), station2.getId(), 5);
 
         sectionService.addSection(sectionRequest, line.getId());
 
-        assertThat(sectionDao.findByLine(line.getId()).get()).hasSize(2);
-
+        List<Section> actual = sectionDao.findByLine(line.getId()).get();
+        assertThat(actual).hasSize(2);
+        assertThat(actual.get(0).getUpStationId()).isEqualTo(station2.getId());
+        assertThat(actual.get(0).getDownStationId()).isEqualTo(station3.getId());
+        assertThat(actual.get(1).getUpStationId()).isEqualTo(station1.getId());
+        assertThat(actual.get(1).getDownStationId()).isEqualTo(station2.getId());
+        assertThat(actual.get(0).getDistance()).isEqualTo(10);
     }
 
 
     @Test
-    @DisplayName("구간을 추가한다(중간)")
-    void addSection_Between() {
+    @DisplayName("구간을 추가한다(중간 - 1-2 추가)")
+    void addSection_BetweenFromFront() {
         Station station1 = stationDao.save("강남역");
         Station station2 = stationDao.save("선릉역");
         Station station3 = stationDao.save("잠실역");
-        LineRequest lineRequest = new LineRequest("2호선", "green", station1.getId(), station2.getId(), 10);
+        LineRequest lineRequest = new LineRequest("2호선", "green", station1.getId(), station3.getId(), 10);
         Line line = lineDao.save(lineRequest);
         sectionDao.saveInitialSection(lineRequest, line.getId());
-        SectionRequest sectionRequest = new SectionRequest(station1.getId(), station3.getId(), 5);
+        SectionRequest sectionRequest = new SectionRequest(station1.getId(), station2.getId(), 4);
 
         sectionService.addSection(sectionRequest, line.getId());
 
-        assertThat(sectionDao.findByLine(line.getId()).get()).hasSize(2);
+        List<Section> actual = sectionDao.findByLine(line.getId()).get();
+        assertThat(actual).hasSize(2);
+        assertThat(actual.get(0).getUpStationId()).isEqualTo(station2.getId());
+        assertThat(actual.get(0).getDownStationId()).isEqualTo(station3.getId());
+        assertThat(actual.get(1).getUpStationId()).isEqualTo(station1.getId());
+        assertThat(actual.get(1).getDownStationId()).isEqualTo(station2.getId());
+        assertThat(actual.get(0).getDistance()).isEqualTo(6);
+    }
 
+    @Test
+    @DisplayName("구간을 추가한다(중간 - 2-3 추가)")
+    void addSection_BetweenFromBack() {
+        Station station1 = stationDao.save("강남역");
+        Station station2 = stationDao.save("선릉역");
+        Station station3 = stationDao.save("잠실역");
+        LineRequest lineRequest = new LineRequest("2호선", "green", station1.getId(), station3.getId(), 10);
+        Line line = lineDao.save(lineRequest);
+        sectionDao.saveInitialSection(lineRequest, line.getId());
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 4);
+
+        sectionService.addSection(sectionRequest, line.getId());
+
+        List<Section> actual = sectionDao.findByLine(line.getId()).get();
+        assertThat(actual).hasSize(2);
+        assertThat(actual.get(0).getUpStationId()).isEqualTo(station1.getId());
+        assertThat(actual.get(0).getDownStationId()).isEqualTo(station2.getId());
+        assertThat(actual.get(1).getUpStationId()).isEqualTo(station2.getId());
+        assertThat(actual.get(1).getDownStationId()).isEqualTo(station3.getId());
+        assertThat(actual.get(0).getDistance()).isEqualTo(6);
     }
 
     @Test
@@ -82,12 +114,17 @@ class SectionServiceTest {
         LineRequest lineRequest = new LineRequest("2호선", "green", station1.getId(), station2.getId(), 10);
         Line line = lineDao.save(lineRequest);
         sectionDao.saveInitialSection(lineRequest, line.getId());
-        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 5);
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), 4);
 
         sectionService.addSection(sectionRequest, line.getId());
 
-        assertThat(sectionDao.findByLine(line.getId()).get()).hasSize(2);
-
+        List<Section> actual = sectionDao.findByLine(line.getId()).get();
+        assertThat(actual).hasSize(2);
+        assertThat(actual.get(0).getUpStationId()).isEqualTo(station1.getId());
+        assertThat(actual.get(0).getDownStationId()).isEqualTo(station2.getId());
+        assertThat(actual.get(1).getUpStationId()).isEqualTo(station2.getId());
+        assertThat(actual.get(1).getDownStationId()).isEqualTo(station3.getId());
+        assertThat(actual.get(0).getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -161,6 +198,7 @@ class SectionServiceTest {
         assertThat(actual).hasSize(1);
         assertThat(actual.get(0).getUpStationId()).isEqualTo(station1.getId());
         assertThat(actual.get(0).getDownStationId()).isEqualTo(station3.getId());
+        assertThat(actual.get(0).getDistance()).isEqualTo(10);
     }
 
     @Test
