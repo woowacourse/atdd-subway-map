@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -43,10 +42,6 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
-        List<StationResponse> stations = lineService.showLine(id).getStations();
-        for (StationResponse station : stations) {
-            System.out.println(station.getName());
-        }
         return ResponseEntity.ok().body(lineService.showLine(id));
     }
 
