@@ -8,7 +8,7 @@ import wooteco.subway.SubwayException;
 import wooteco.subway.dto.ExceptionResponse;
 
 @RestControllerAdvice
-public class Handlers {
+public class ExceptionManager {
 
     @ExceptionHandler(SubwayException.class)
     public ResponseEntity<ExceptionResponse> handleDuplicatedName(SubwayException subwayException) {
