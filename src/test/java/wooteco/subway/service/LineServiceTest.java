@@ -103,7 +103,6 @@ class LineServiceTest {
         assertThat(sectionDao.findByLineId(createdLine.getId())).isEmpty();
     }
 
-    // TODO: 2022/05/14 인수테스트와 함께 돌리면 실패하는 문제
     @DisplayName("노선 목록을 조회한다.")
     @Test
     void findLines() {
