@@ -120,9 +120,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Nested
     class ShowLineTest {
 
-        // TODO: 순서대로 정렬하여 조회
         @Test
-        void 성공시_200_OK() {
+        void 모든_구간은_상행종점부터_하행종점까지_순서대로_나열되며_성공시_200_OK() {
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines/1");
             LineResponse actualBody = extractSingleLineResponseBody(response);
             LineResponse expectedBody = new LineResponse(1L, "1호선", "노란색", STATION_RESPONSE_3_1);

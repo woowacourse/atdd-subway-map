@@ -39,7 +39,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
             Map<String, String> params = jsonStationOf("강남역");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", params);
-            StationResponse actualBody = extractSingleLineResponseBody(response);
+            StationResponse actualBody = extractSingleStationResponseBody(response);
             StationResponse expectedBody = new StationResponse(1L, "강남역");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -114,12 +114,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
-        @DisplayName("존재하지 않는 id로 지하철역을 제거하려는 경우 404 NOT FOUND")
         @Test
-        void deleteNonExistingStation() {
+        void 존재하지_않는_id로_지하철역을_제거하려는_경우_404_NOT_FOUND() {
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/999");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
+        void 등록된_지하철역을_제거하려는_경우_400_BAD_REQUEST() {
+            postStations("강남역", "선릉역");
+            postLine("신분당선", "노란색", 1L, 2L, 10);
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/1");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -139,7 +148,18 @@ public class StationAcceptanceTest extends AcceptanceTest {
         HttpUtils.send(HttpMethod.POST, "/stations", params);
     }
 
-    private StationResponse extractSingleLineResponseBody(ExtractableResponse<Response> response) {
+    private void postLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>() {{
+            put("name", name);
+            put("color", color);
+            put("upStationId", upStationId);
+            put("downStationId", downStationId);
+            put("distance", distance);
+        }};
+        HttpUtils.send(HttpMethod.POST, "/lines", params);
+    }
+
+    private StationResponse extractSingleStationResponseBody(ExtractableResponse<Response> response) {
         return response.jsonPath().getObject(".", StationResponse.class);
     }
 }
