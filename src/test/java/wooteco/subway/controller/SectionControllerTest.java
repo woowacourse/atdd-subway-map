@@ -41,10 +41,15 @@ class SectionControllerTest {
     int port;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
-
+    StationDao stationDao;
+    @Autowired
     SectionDao sectionDao;
+    @Autowired
+    LineDao lineDao;
+
+    @Autowired
     SectionService sectionService;
+    @Autowired
     LineService lineService;
 
     Station testStation1;
@@ -57,11 +62,6 @@ class SectionControllerTest {
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
-        StationDao stationDao = new StationDao(jdbcTemplate);
-        SectionDao sectionDao = new SectionDao(jdbcTemplate);
-        LineDao lineDao = new LineDao(jdbcTemplate);
-        sectionService = new SectionService(sectionDao, stationDao, lineDao);
-        lineService = new LineService(lineDao, sectionDao, stationDao);
 
         testStation1 = stationDao.save(new Station("testStation1"));
         testStation2 = stationDao.save(new Station("testStation2"));

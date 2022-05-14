@@ -39,7 +39,7 @@ class LineControllerTest {
     int port;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    StationDao stationDao;
 
     Station testStation1;
     Station testStation2;
@@ -51,7 +51,7 @@ class LineControllerTest {
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
-        StationDao stationDao = new StationDao(jdbcTemplate);
+
         testStation1 = stationDao.save(new Station("testStation1"));
         testStation2 = stationDao.save(new Station("testStation2"));
         testStation3 = stationDao.save(new Station("testStation3"));
@@ -198,7 +198,6 @@ class LineControllerTest {
     @Test
     void deleteStation() {
         // given
-        StationDao stationDao = new StationDao(jdbcTemplate);
         ExtractableResponse<Response> createResponse = RestAssured.
                 given().log().all().
                     body(testLine1).
