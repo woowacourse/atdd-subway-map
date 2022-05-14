@@ -147,13 +147,17 @@ public class Sections {
 
     public void removeSectionByStation(Station station) {
         validateContainsTargetStation(station);
-        List<Station> sortedStations = getSortedStations();
-        int index = sortedStations.indexOf(station);
-        if (index == 0 || index == sortedStations.size() - 1) {
+        if (isEndSection(station)) {
             removeEndSection(station);
             return;
         }
         removeMiddleSection(station);
+    }
+
+    private boolean isEndSection(Station station) {
+        List<Station> sortedStations = getSortedStations();
+        int index = sortedStations.indexOf(station);
+        return index == 0 || index == sortedStations.size() - 1;
     }
 
     private void validateContainsTargetStation(Station station) {
