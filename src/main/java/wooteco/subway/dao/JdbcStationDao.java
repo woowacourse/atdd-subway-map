@@ -1,8 +1,6 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
@@ -13,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.station.NoSuchStationException;
 
@@ -39,17 +36,10 @@ public class JdbcStationDao implements StationDao {
         try {
             final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
             final long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-            return Optional.of(setId(station, id));
+            return Optional.of(new Station(id, station.getName()));
         } catch (final DuplicateKeyException e) {
             return Optional.empty();
         }
-    }
-
-    private Station setId(final Station station, final long id) {
-        final Field field = ReflectionUtils.findField(Station.class, "id");
-        Objects.requireNonNull(field).setAccessible(true);
-        ReflectionUtils.setField(field, station, id);
-        return station;
     }
 
     @Override
@@ -71,7 +61,12 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public List<Station> findAllByLineId(final Long lineId) {
-        final String sql = "SELECT * FROM station WHERE id IN(SELECT st.id FROM section AS se INNER JOIN station AS st ON se.up_station_id = st.id WHERE se.line_id = ?) OR id IN(SELECT st.id FROM section AS se INNER JOIN station AS st ON se.down_station_id = st.id WHERE se.line_id = ?)";
+        final String sql = "SELECT * "
+                + "FROM station "
+                + "WHERE id IN"
+                + "(SELECT st.id FROM section AS se INNER JOIN station AS st ON se.up_station_id = st.id WHERE se.line_id = ?) "
+                + "OR id IN"
+                + "(SELECT st.id FROM section AS se INNER JOIN station AS st ON se.down_station_id = st.id WHERE se.line_id = ?)";
         return jdbcTemplate.query(sql, rowMapper, lineId, lineId);
     }
 

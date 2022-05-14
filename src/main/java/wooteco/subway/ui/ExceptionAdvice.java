@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -29,7 +30,7 @@ public class ExceptionAdvice {
                 .stream()
                 .collect(Collectors.toMap(
                         it -> ((FieldError) it).getField(),
-                        it -> it.getDefaultMessage()
+                        DefaultMessageSourceResolvable::getDefaultMessage
                 ));
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
