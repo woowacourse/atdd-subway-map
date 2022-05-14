@@ -8,11 +8,11 @@ public class Section {
     private static final String SAME_UP_DOWN = "상행종점과 하행종점은 같은 지하철역일 수 없습니다.";
     private static final String WRONG_DISTANCE = "거리는 1이상의 정수만 허용됩니다.";
 
-    private Long id;
-    private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+    private final Long id;
+    private final Long lineId;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         this.id = id;
