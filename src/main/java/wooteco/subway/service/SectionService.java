@@ -77,7 +77,7 @@ public class SectionService {
     }
 
     private Station getStationById(Long stationId) {
-        return new Station(stationId, stationService.findById(stationId).getName());
+        return stationService.findById(stationId);
     }
 
     public List<Station> findStationsByLineId(Long lineId) {
