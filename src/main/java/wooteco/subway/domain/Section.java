@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import wooteco.subway.exception.EqualsUpStationAndDownStationSectionException;
 
 public class Section {
 
@@ -13,10 +14,17 @@ public class Section {
                    final Station upStation,
                    final Station downStation,
                    final Integer distance) {
+        validateStations(upStation, downStation);
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
+    }
+
+    private void validateStations(final Station upStation, final Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new EqualsUpStationAndDownStationSectionException();
+        }
     }
 
     public static Section createWithoutId(final Station upStation,
