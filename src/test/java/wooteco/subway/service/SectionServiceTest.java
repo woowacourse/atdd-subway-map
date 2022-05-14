@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.SectionDto;
+import wooteco.subway.dao.dto.SectionDto;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.SectionRequest;
 

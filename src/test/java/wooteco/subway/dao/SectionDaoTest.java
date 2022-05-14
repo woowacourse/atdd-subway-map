@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 
+import wooteco.subway.dao.dto.SectionDto;
+
 @SpringBootTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class SectionDaoTest {
@@ -69,27 +71,5 @@ public class SectionDaoTest {
         List<SectionDto> sections = sectionDao.findAll();
 
         assertThat(sections.size()).isEqualTo(3);
-    }
-
-    @Test
-    @DisplayName("하행역을 수정한다.")
-    void update_downStation() {
-        SectionDto sectionDto = sectionDao.save(1L, 2L, 3L, 5);
-
-        sectionDao.updateDownStation(sectionDto.getId(), 5L);
-
-        assertThat(sectionDao.findById(1L).get(0).getDownStationId()).isEqualTo(5L);
-    }
-
-    @Test
-    @DisplayName("거리를 수정한다.")
-    void update_distance() {
-        SectionDto sectionDto = sectionDao.save(1L, 2L, 3L, 5);
-
-        int expectedDistance = 8;
-        sectionDao.updateDistance(sectionDto.getId(), expectedDistance);
-
-        int actualDistance = sectionDao.findDistanceById(1L).orElse(0);
-        assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 }

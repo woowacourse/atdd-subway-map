@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.dto.LineAndStationRequest;
+import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 
@@ -23,7 +23,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         StationAcceptanceTest.postStations(upStationRequest);
         StationRequest downStationRequest = new StationRequest("선릉역");
         StationAcceptanceTest.postStations(downStationRequest);
-        LineAndStationRequest lineRequest = new LineAndStationRequest("2호선", "green", 1L, 2L, 5);
+        LineCreateRequest lineRequest = new LineCreateRequest("2호선", "green", 1L, 2L, 5);
         LineAcceptanceTest.postLines(lineRequest);
     }
 
@@ -39,7 +39,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("구간을 추가한다.")
-    void create_section() {
+    void createSection() {
         // given
         StationRequest downStationRequest = new StationRequest("잠실역");
         StationAcceptanceTest.postStations(downStationRequest);
@@ -50,5 +50,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다.")
+    void deleteSection() {
+        // given
+        StationRequest downStationRequest = new StationRequest("잠실역");
+        StationAcceptanceTest.postStations(downStationRequest);
+        SectionRequest request = new SectionRequest(2L, 3L, 3);
+        postSections(request);
+
+        // when
+        RestAssured.given().log().all()
+                .when()
+                .queryParam("stationId", 2L)
+                .delete("/lines/1/sections")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
     }
 }

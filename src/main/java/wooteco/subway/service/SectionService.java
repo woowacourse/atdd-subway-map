@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.SectionDto;
+import wooteco.subway.dao.dto.SectionDto;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -76,5 +76,12 @@ public class SectionService {
         }
         sectionDao.deleteByLineId(sections.getLineId());
         sectionDao.update(sectionDtos);
+    }
+
+    public void delete(long lineId, long stationId) {
+        Sections sections = loadSections(lineId);
+        Station station = stationDao.findById(stationId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+        sections.deleteSection(station);
+        updateSections(sections);
     }
 }

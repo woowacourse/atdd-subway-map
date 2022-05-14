@@ -14,6 +14,9 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import wooteco.subway.dao.dto.SectionDto;
+import wooteco.subway.domain.Section;
+
 @Repository
 public class SectionDao {
 
@@ -39,6 +42,14 @@ public class SectionDao {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(section);
         long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return new SectionDto(id, lineId, upStationId, downStationId, distance);
+    }
+
+    public Section save(Section section) {
+        SectionDto sectionDto = new SectionDto(section);
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(sectionDto);
+        long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return new Section(id, sectionDto.getLineId(), section.getUpStation(), section.getDownStation(),
+                sectionDto.getDistance());
     }
 
     public void update(List<SectionDto> sections) {
@@ -67,27 +78,6 @@ public class SectionDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    public void updateUpStation(long id, long upStationId) {
-        String sql = "UPDATE section SET up_station_id = :upStationId WHERE id = :id";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("upStationId", upStationId)
-                .addValue("id", id);
-        namedParameterJdbcTemplate.update(sql, parameterSource);
-    }
-
-    public void updateDownStation(long id, long downStationId) {
-        String sql = "UPDATE section SET down_station_id = :downStationId WHERE id = :id";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("downStationId", downStationId)
-                .addValue("id", id);
-        namedParameterJdbcTemplate.update(sql, parameterSource);
-    }
-
-    public void updateDistance(long id, int distance) {
-        String sql = "UPDATE section SET distance = :distance WHERE id = :id";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("distance", distance)
-                .addValue("id", id);
-        namedParameterJdbcTemplate.update(sql, parameterSource);
     }
 
     public void deleteByLineId(long lineId) {

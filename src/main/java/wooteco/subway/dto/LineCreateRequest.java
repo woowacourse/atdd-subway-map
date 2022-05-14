@@ -1,17 +1,17 @@
 package wooteco.subway.dto;
 
-public class LineAndStationRequest {
+public class LineCreateRequest {
     private final String name;
     private final String color;
     private final Long upStationId;
     private final Long downStationId;
     private final int distance;
 
-    private LineAndStationRequest() {
+    private LineCreateRequest() {
         this(null, null, null, null, 0);
     }
 
-    public LineAndStationRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineCreateRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;

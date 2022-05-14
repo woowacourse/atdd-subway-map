@@ -45,6 +45,25 @@ public class Section {
         }
     }
 
+    public List<Section> splitSectionIfSameUpStation(Station downStation, int distance) {
+        List<Section> sections = new ArrayList<>();
+        sections.add(new Section(this.lineId, this.upStation, downStation, distance));
+        sections.add(new Section(this.lineId, downStation, this.downStation, this.distance - distance));
+        return sections;
+    }
+
+    public List<Section> splitSectionIfSameDownStation(Station upStation, int distance) {
+        List<Section> sections = new ArrayList<>();
+        sections.add(new Section(this.lineId, upStation, this.downStation, distance));
+        sections.add(new Section(this.lineId, this.upStation, upStation, this.distance - distance));
+        return sections;
+    }
+
+    public Section concatSections(Section downSection) {
+        return new Section(this.getLineId(), this.getUpStation(), downSection.getDownStation(),
+                this.distance + downSection.distance);
+    }
+
     public long getId() {
         return id;
     }
@@ -79,19 +98,5 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(lineId, upStation, downStation, distance);
-    }
-
-    public List<Section> splitSectionIfSameUpStation(Station downStation, int distance) {
-        List<Section> sections = new ArrayList<>();
-        sections.add(new Section(this.lineId, this.upStation, downStation, distance));
-        sections.add(new Section(this.lineId, downStation, this.downStation, this.distance - distance));
-        return sections;
-    }
-
-    public List<Section> splitSectionIfSameDownStation(Station upStation, int distance) {
-        List<Section> sections = new ArrayList<>();
-        sections.add(new Section(this.lineId, upStation, this.downStation, distance));
-        sections.add(new Section(this.lineId, this.upStation, upStation, this.distance - distance));
-        return sections;
     }
 }

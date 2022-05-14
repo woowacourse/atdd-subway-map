@@ -49,6 +49,25 @@ public class Sections {
         }
     }
 
+    public void deleteSection(Station station) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
+        }
+        Optional<Section> sameUpStation = findSameUpStation(station);
+        Optional<Section> sameDownStation = findSameDownStation(station);
+        if (sameUpStation.isPresent() && sameDownStation.isPresent()) {
+            Section upSection = sameDownStation.get();
+            Section downSection = sameUpStation.get();
+
+            Section concatSection = upSection.concatSections(downSection);
+            sections.remove(upSection);
+            sections.remove(downSection);
+            sections.add(concatSection);
+            return;
+        }
+        throw new IllegalArgumentException("해당 역이 포함된 구간이 존재하지 않습니다.");
+    }
+
     public void updateSection(Station upStation, Station downStation, int distance) {
         Optional<Section> sameUpStation = findSameUpStation(upStation);
         if (sameUpStation.isPresent()) {

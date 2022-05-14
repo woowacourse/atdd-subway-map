@@ -15,7 +15,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.dto.LineAndStationRequest;
+import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 
@@ -29,7 +29,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         StationAcceptanceTest.postStations(downStationRequest);
     }
 
-    public static ExtractableResponse<Response> postLines(LineAndStationRequest request) {
+    public static ExtractableResponse<Response> postLines(LineCreateRequest request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +43,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성한다.")
     void createLine() {
         // given
-        LineAndStationRequest request = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
+        LineCreateRequest request = new LineCreateRequest("신분당선", "bg-red-600", 1L, 2L, 5);
 
         // when
         ExtractableResponse<Response> response = postLines(request);
@@ -57,10 +57,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("모든 노선을 조회한다.")
     void findAllLine() {
         //given
-        LineAndStationRequest request1 = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
+        LineCreateRequest request1 = new LineCreateRequest("신분당선", "bg-red-600", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse1 = postLines(request1);
 
-        LineAndStationRequest request2 = new LineAndStationRequest("분당선", "bg-green-600", 1L, 2L, 5);
+        LineCreateRequest request2 = new LineCreateRequest("분당선", "bg-green-600", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse2 = postLines(request2);
 
         //when
@@ -85,7 +85,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("id별 노선을 조회한다.")
     void findLindById() {
         //given
-        LineAndStationRequest request = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
+        LineCreateRequest request = new LineCreateRequest("신분당선", "bg-red-600", 1L, 2L, 5);
 
         postLines(request);
 
@@ -102,12 +102,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 수정한다.")
     void update() {
         //given
-        LineAndStationRequest request = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
+        LineCreateRequest request = new LineCreateRequest("신분당선", "bg-red-600", 1L, 2L, 5);
 
         postLines(request);
 
         //when, then
-        LineAndStationRequest changeRequest = new LineAndStationRequest("1호선", "bg-red-600", 1L, 2L, 5);
+        LineCreateRequest changeRequest = new LineCreateRequest("1호선", "bg-red-600", 1L, 2L, 5);
 
         RestAssured.given().log().all()
                 .body(changeRequest)
@@ -122,7 +122,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 삭제한다.")
     void delete() {
         //given
-        LineAndStationRequest request = new LineAndStationRequest("신분당선", "bg-red-600", 1L, 2L, 5);
+        LineCreateRequest request = new LineCreateRequest("신분당선", "bg-red-600", 1L, 2L, 5);
 
         postLines(request);
 

@@ -102,3 +102,31 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
   - [ ] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
 
 </details>
+
+<details>
+<summary>루피와 작성한 기능 요구사항</summary>
+
+## 용어 정리
+Station - 의 집합은 Section
+Name - name
+Line - color, name, id
+Section - which line, section => upStation + downStation, distance = upStation - downStation
+Sections - Section 의 집합, 같은 Line 에 있는 Section 들, enroll section validation
+
+## 기능 요구 사항
+### 지하철 노선(Line) 추가 API 수정
+- [ ] 노선 추가 시 3가지 정보를 추가로 입력 받음
+  - [ ] upStationId: 상행 종점
+  - [ ] downStationId: 하행 종점
+  - [ ] distance: 두 종점간의 거리
+- [ ] 두 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
+- [ ] 변경된 API 스펙은 API 문서v2 참고
+
+### 구간 관리 API 구현
+- [ ] 구간 관리 기능
+  - [ ] 노선에 구간을 추가
+  - [ ] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
+  - [ ] 구간 제거
+- [ ] 구간 관리 API 스펙은 API 문서v2 참고
+
+</details>

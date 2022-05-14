@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import wooteco.subway.dao.dto.LineDto;
 import wooteco.subway.domain.Line;
 
 @Repository
@@ -32,6 +33,13 @@ public class LineDao {
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("line")
                 .usingGeneratedKeyColumns("id");
+    }
+
+    public Line save(Line line) {
+        LineDto lineDto = new LineDto(line);
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(lineDto);
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return new Line(id, lineDto.getName(), lineDto.getColor());
     }
 
     public Line save(String name, String color) {
