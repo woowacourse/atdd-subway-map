@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.dao.SectionJdbcDao;
 import wooteco.subway.dao.StationJdbcDao;
@@ -26,6 +27,7 @@ public class SectionService {
         this.stationJdbcDao = stationJdbcDao;
     }
 
+    @Transactional
     public void save(Long id, SectionRequest request, SectionsResponse response, LineResponse line) {
         lineDao.findAll().validateExist(id);
         Sections sections = new Sections(response.getSections());
@@ -56,6 +58,7 @@ public class SectionService {
         sectionJdbcDao.save(id, section);
     }
 
+    @Transactional
     public void delete(Long id, Long stationId) {
         lineDao.findAll().validateExist(id);
         stationJdbcDao.findAll().validateExist(id);

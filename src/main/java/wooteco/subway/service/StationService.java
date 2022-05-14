@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.domain.Station;
@@ -23,6 +24,7 @@ public class StationService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public StationResponse save(StationRequest request) {
         Stations stations = stationDao.findAll();
         Station station = new Station(request.getName());
@@ -32,6 +34,7 @@ public class StationService {
         return new StationResponse(newStation.getId(), newStation.getName());
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         Stations stations = stationDao.findAll();
         return stations.getStations()
@@ -40,6 +43,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public int delete(Long id) {
         lineDao.findAll().validateCanDelete(id);
         stationDao.findAll().validateExist(id);

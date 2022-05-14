@@ -15,7 +15,6 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionsResponse;
 
 @Service
-@Transactional
 public class LineService {
 
     private final LineJdbcDao lineDao;
@@ -28,6 +27,7 @@ public class LineService {
         this.sectionJdbcDao = sectionJdbcDao;
     }
 
+    @Transactional
     public LineResponse save(LineRequest request) {
         Lines lines = lineDao.findAll();
         lines.add(new Line(request.getName(), request.getColor()));
@@ -40,6 +40,7 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), Set.of(upsStation, downStation));
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<LineResponse> responses = new ArrayList<>();
         for (Line line : lineDao.findAll().getLines()) {
@@ -48,6 +49,7 @@ public class LineService {
         return responses;
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         lineDao.findAll().validateExist(id);
 
@@ -65,6 +67,7 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
+    @Transactional(readOnly = true)
     public SectionsResponse findSections(Long id) {
         lineDao.findAll().validateExist(id);
 
@@ -79,6 +82,7 @@ public class LineService {
                 .collect(Collectors.toMap(Station::getId, station -> station));
     }
 
+    @Transactional
     public int update(Long id, LineRequest request) {
         Lines lines = lineDao.findAll();
         lines.validateExist(id);
@@ -87,6 +91,7 @@ public class LineService {
         return lineDao.update(id, new Line(line.getName(), line.getColor()));
     }
 
+    @Transactional
     public int delete(Long id) {
         lineDao.findAll().validateExist(id);
         return lineDao.delete(id);
