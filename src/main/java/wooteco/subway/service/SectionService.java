@@ -25,10 +25,6 @@ public class SectionService {
         Long downStationId = sectionRequest.getDownStationId();
         int distance = sectionRequest.getDistance();
 
-        if (jdbcSectionDao.isExistByUpStationIdAndDownStationId(upStationId, downStationId)) {
-            throw new IllegalArgumentException("이미 존재하기 때문에 구간을 등록할 수 없습니다.");
-        }
-
         checkAddingBranch(upStationId, downStationId, distance, lineId);
         return saveSection(sectionRequest, lineId);
     }
@@ -37,6 +33,9 @@ public class SectionService {
         Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, upStationId, downStationId);
         if (sections.isBlank()) {
             throw new IllegalArgumentException("연결된 역이 없기 때문에 구간을 등록할 수 없습니다.");
+        }
+        if (sections.isContain(new Section(upStationId, downStationId))) {
+            throw new IllegalArgumentException("구간이 이미 존재하기 때문에 구간을 등록할 수 없습니다.");
         }
 
         Section section = sections.getSectionForCombine(upStationId, downStationId);

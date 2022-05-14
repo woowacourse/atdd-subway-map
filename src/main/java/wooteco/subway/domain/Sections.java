@@ -62,6 +62,10 @@ public class Sections {
         return sections.size() == 0;
     }
 
+    public boolean isContain(Section section) {
+        return sections.contains(section);
+    }
+
     public List<Section> getSections() {
         return sections;
     }
