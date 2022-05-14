@@ -49,12 +49,12 @@ public class Sections {
         }
     }
 
-    public boolean hasStation(Long stationId) {
+    private boolean hasStation(Long stationId) {
         return values.stream()
                 .anyMatch(s -> s.getUpStationId().equals(stationId) || s.getDownStationId().equals(stationId));
     }
 
-    public Section findLastUpSection() {
+    private Section findLastUpSection() {
         return values.stream()
                 .filter(this::isLastUpStation)
                 .findAny()
@@ -66,7 +66,7 @@ public class Sections {
                 .noneMatch(s -> s.getDownStationId().equals(section.getUpStationId()));
     }
 
-    public Section findLastDownSection() {
+    private Section findLastDownSection() {
         return values.stream()
                 .filter(this::isLastDownStation)
                 .findAny()
@@ -125,14 +125,14 @@ public class Sections {
         return null;
     }
 
-    public Section extractUpSideStation(Long stationId) {
+    private Section extractUpSideStation(Long stationId) {
         return values.stream()
                 .filter(s -> s.getDownStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(() -> new SectionServiceException("중간역 삭제중 상행역을 찾지 못하였습니다."));
     }
 
-    public Section extractDownSideStation(Long stationId) {
+    private Section extractDownSideStation(Long stationId) {
         return values.stream()
                 .filter(s -> s.getUpStationId().equals(stationId))
                 .findFirst()
