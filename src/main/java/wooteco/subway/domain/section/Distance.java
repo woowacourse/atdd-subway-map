@@ -17,8 +17,8 @@ public class Distance {
         }
     }
 
-    public boolean isLessThan(Distance other) {
-        return this.distance < other.distance;
+    public boolean isLongerThan(Distance other) {
+        return this.distance > other.distance;
     }
 
     public int calculateDifferenceBetween(Distance other) {

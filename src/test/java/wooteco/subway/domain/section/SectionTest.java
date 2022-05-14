@@ -94,15 +94,15 @@ class SectionTest {
     @ParameterizedTest
     @MethodSource("provideForIsShorterThan")
     void isShorterThan(int distance, boolean expected) {
-        boolean actual = section.isShorterThan(new Section(2L, UP_STATION, DOWN_STATION, distance));
+        boolean actual = section.isLongerThan(new Section(2L, UP_STATION, DOWN_STATION, distance));
         assertThat(actual).isEqualTo(expected);
     }
 
     private static Stream<Arguments> provideForIsShorterThan() {
         return Stream.of(
-                Arguments.of(DEFAULT_DISTANCE - 1, false),
+                Arguments.of(DEFAULT_DISTANCE - 1, true),
                 Arguments.of(DEFAULT_DISTANCE, false),
-                Arguments.of(DEFAULT_DISTANCE + 1, true));
+                Arguments.of(DEFAULT_DISTANCE + 1, false));
     }
 
     @DisplayName("거리의 차를 계산한다.")

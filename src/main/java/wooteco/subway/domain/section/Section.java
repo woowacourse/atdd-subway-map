@@ -48,8 +48,8 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public boolean isShorterThan(Section section) {
-        return distance.isLessThan(section.distance);
+    public boolean isLongerThan(Section section) {
+        return distance.isLongerThan(section.distance);
     }
 
     public int calculateDifferenceOfDistance(Section section) {
@@ -74,5 +74,15 @@ public class Section {
 
     public int getDistance() {
         return distance.getDistance();
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }

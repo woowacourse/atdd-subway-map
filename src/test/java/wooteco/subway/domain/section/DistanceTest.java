@@ -38,15 +38,15 @@ class DistanceTest {
     @ParameterizedTest
     @MethodSource("provideForIsCloserThan")
     void isLessThan(Distance other, boolean expected) {
-        boolean actual = distance.isLessThan(other);
+        boolean actual = distance.isLongerThan(other);
         assertThat(actual).isEqualTo(expected);
     }
 
     private static Stream<Arguments> provideForIsCloserThan() {
         return Stream.of(
-                Arguments.of(new Distance(DEFAULT_DISTANCE - 1), false),
+                Arguments.of(new Distance(DEFAULT_DISTANCE - 1), true),
                 Arguments.of(new Distance(DEFAULT_DISTANCE), false),
-                Arguments.of(new Distance(DEFAULT_DISTANCE + 1), true));
+                Arguments.of(new Distance(DEFAULT_DISTANCE + 1), false));
     }
 
     @DisplayName("거리의 차를 계산한다.")
