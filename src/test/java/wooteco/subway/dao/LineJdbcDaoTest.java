@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,8 +34,7 @@ public class LineJdbcDaoTest {
     @DisplayName("노선정보 저장")
     @Test
     void save() {
-        LineRequest lineRequest = new LineRequest("분당선", "bg-red-600", 1L, 2L, 10);
-        Line line = lineDao.save(lineRequest);
+        Line line = lineDao.save(new Line("분당선", "bg-red-600"));
 
         assertThat(line.getName()).isEqualTo("분당선");
     }
@@ -52,8 +50,7 @@ public class LineJdbcDaoTest {
     @DisplayName("노선 정보를 삭제한다.")
     @Test
     void delete() {
-        LineRequest line = new LineRequest("4호선", "blue", 1L, 2L, 10);
-        Line lineResponse = lineDao.save(line);
+        Line lineResponse = lineDao.save(new Line("4호선", "blue"));
 
         assertThat(lineDao.delete(lineResponse.getId())).isOne();
     }
@@ -61,8 +58,7 @@ public class LineJdbcDaoTest {
     @DisplayName("노선 정보를 조회한다.")
     @Test
     void find() {
-        LineRequest line = new LineRequest("5호선", "blue", 1L, 2L, 10);
-        Line lineResponse = lineDao.save(line);
+        Line lineResponse = lineDao.save(new Line("5호선", "blue"));
 
         assertThat(lineDao.findById(lineResponse.getId()).getName()).isEqualTo("5호선");
     }
@@ -70,9 +66,8 @@ public class LineJdbcDaoTest {
     @DisplayName("노선 정보를 변경한다.")
     @Test
     void update() {
-        LineRequest line = new LineRequest("7호선", "blue", 1L, 2L, 10);
-        Line lineResponse = lineDao.save(line);
+        Line lineResponse = lineDao.save(new Line("7호선", "blue"));
 
-        assertThat(lineDao.update(lineResponse.getId(), line)).isOne();
+        assertThat(lineDao.update(lineResponse.getId(), new Line("7호선", "red"))).isOne();
     }
 }

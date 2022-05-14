@@ -11,6 +11,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.SectionsResponse;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
 
@@ -59,7 +60,7 @@ public class LineController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<Section> saveSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         LineResponse line = lineService.findById(id);
-        Sections sections = lineService.findSections(id);
+        SectionsResponse sections = lineService.findSections(id);
 
         sectionService.save(id, sectionRequest, sections, line);
         return ResponseEntity.created(URI.create("/lines/" + id + "/sections")).build();

@@ -32,8 +32,8 @@ class LineServiceTest {
     @DisplayName("노선 저장")
     @Test
     void save() {
-        Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
-        Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
+        Station firstStation = stationJdbcDao.save(new Station("역삼역"));
+        Station secondStation = stationJdbcDao.save(new Station("삼성역"));
 
         LineRequest line = new LineRequest("4호선", "green", firstStation.getId(), secondStation.getId(), 10);
         LineResponse newLine = lineService.save(line);
@@ -44,8 +44,8 @@ class LineServiceTest {
     @DisplayName("중복된 노선 저장시 예외")
     @Test
     void duplicateLine() {
-        Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
-        Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
+        Station firstStation = stationJdbcDao.save(new Station("역삼역"));
+        Station secondStation = stationJdbcDao.save(new Station("삼성역"));
 
         LineRequest line = new LineRequest("3호선", "red", firstStation.getId(), secondStation.getId(), 10);
         LineRequest dupLine = new LineRequest("3호선", "red", firstStation.getId(), secondStation.getId(), 10);
@@ -60,8 +60,8 @@ class LineServiceTest {
     @DisplayName("노선 정보 전체 조회")
     @Test
     void findAll() {
-        Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
-        Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
+        Station firstStation = stationJdbcDao.save(new Station("역삼역"));
+        Station secondStation = stationJdbcDao.save(new Station("삼성역"));
 
         lineService.save(new LineRequest("5호선", "red", firstStation.getId(), secondStation.getId(), 10));
         lineService.save(new LineRequest("7호선", "red", firstStation.getId(), secondStation.getId(), 10));
@@ -76,8 +76,8 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정보 삭제")
     void delete() {
-        Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
-        Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
+        Station firstStation = stationJdbcDao.save(new Station("역삼역"));
+        Station secondStation = stationJdbcDao.save(new Station("삼성역"));
 
         LineRequest line = new LineRequest("4호선", "red", firstStation.getId(),
                 secondStation.getId(), 10);
@@ -89,8 +89,8 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정보 업데이트")
     void update() {
-        Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
-        Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
+        Station firstStation = stationJdbcDao.save(new Station("역삼역"));
+        Station secondStation = stationJdbcDao.save(new Station("삼성역"));
 
         LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);
         LineResponse newLine = lineService.save(line);
@@ -102,8 +102,8 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정보 업데이트 예외 - 이미 존재하는 노선으로 업데이트")
     void updateDuplicateLine() {
-        Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
-        Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
+        Station firstStation = stationJdbcDao.save(new Station("역삼역"));
+        Station secondStation = stationJdbcDao.save(new Station("삼성역"));
 
         LineRequest line = new LineRequest("9호선", "red", firstStation.getId(), secondStation.getId(), 10);;
         lineService.save(line);
@@ -120,8 +120,8 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정보 조회")
     void find() {
-        Station firstStation = stationJdbcDao.save(new StationRequest("역삼역"));
-        Station secondStation = stationJdbcDao.save(new StationRequest("삼성역"));
+        Station firstStation = stationJdbcDao.save(new Station("역삼역"));
+        Station secondStation = stationJdbcDao.save(new Station("삼성역"));
 
         LineRequest line = new LineRequest("4호선", "red", firstStation.getId(), secondStation.getId(), 10);
         LineResponse newLine = lineService.save(line);

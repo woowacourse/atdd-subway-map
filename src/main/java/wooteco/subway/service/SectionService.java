@@ -9,6 +9,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.SectionsResponse;
 
 @Service
 public class SectionService {
@@ -19,7 +20,8 @@ public class SectionService {
         this.sectionJdbcDao = sectionJdbcDao;
     }
 
-    public void save(Long id, SectionRequest request, Sections sections, LineResponse line) {
+    public void save(Long id, SectionRequest request, SectionsResponse response, LineResponse line) {
+        Sections sections = new Sections(response.getSections());
         sections.validateUpAndDownSameStation(request);
         sections.validateSaveCondition(request, line);
 

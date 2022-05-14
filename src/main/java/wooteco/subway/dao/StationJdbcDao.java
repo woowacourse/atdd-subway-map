@@ -9,7 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
 
 @Repository
 public class StationJdbcDao {
@@ -20,15 +19,15 @@ public class StationJdbcDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station save(StationRequest stationRequest) {
+    public Station save(Station station) {
         final String sql = "insert into station (name) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, stationRequest.getName());
+            ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
-        return new Station(keyHolder.getKey().longValue(), stationRequest.getName());
+        return new Station(keyHolder.getKey().longValue(), station.getName());
     }
 
     public List<Station> findAll() {

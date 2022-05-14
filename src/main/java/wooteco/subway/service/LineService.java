@@ -16,6 +16,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionsResponse;
 import wooteco.subway.exception.ClientException;
 
 @Service
@@ -34,7 +35,7 @@ public class LineService {
 
     public LineResponse save(LineRequest request) {
         try {
-            Line line = lineDao.save(request);
+            Line line = lineDao.save(new Line(request.getName(), request.getColor()));
             sectionJdbcDao.save(line.getId(), new Section(line.getId(), request.getUpStationId(), request.getDownStationId(), request.getDistance()));
 
             Station upsStation = stationDao.findById(request.getUpStationId());
@@ -68,9 +69,9 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
-    public Sections findSections(Long id) {
+    public SectionsResponse findSections(Long id) {
         Sections sections = sectionJdbcDao.findById(id);
-        return new Sections(sections.linkSections());
+        return new SectionsResponse(sections.linkSections());
     }
 
     private Map<Long, Station> toMapStations() {
@@ -81,7 +82,7 @@ public class LineService {
 
     public int update(Long id, LineRequest lineRequest) {
         try {
-            return lineDao.update(id, lineRequest);
+            return lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
         } catch (DataAccessException exception) {
             throw new ClientException("등록된 지하철노선으로 변경할 수 없습니다.");
         }

@@ -38,8 +38,7 @@ class StationJdbcDaoTest {
     @DisplayName("역 정보를 저장한다.")
     @Test
     void save() {
-        StationRequest station = new StationRequest("역삼역");
-        Station newStation = stationJdbcDao.save(station);
+        Station newStation = stationJdbcDao.save(new Station("역삼역"));
 
         assertThat(newStation.getName()).isEqualTo("역삼역");
     }
@@ -55,8 +54,7 @@ class StationJdbcDaoTest {
     @DisplayName("역 정보를 삭제한다.")
     @Test
     void delete() {
-        StationRequest station = new StationRequest("역삼역");
-        Station newStation = stationJdbcDao.save(station);
+        Station newStation = stationJdbcDao.save(new Station("역삼역"));
 
         assertThat(stationJdbcDao.delete(newStation.getId())).isEqualTo(1);
     }

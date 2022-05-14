@@ -16,6 +16,10 @@ public class Station {
         this.name = name;
     }
 
+    public Station(String name) {
+        this(0L, name);
+    }
+
     private void validateNull(String name) {
         if (name.isBlank()) {
             throw new ClientException("지하철 역의 이름을 입력해주세요.");

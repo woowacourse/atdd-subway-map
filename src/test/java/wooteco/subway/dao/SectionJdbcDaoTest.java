@@ -35,11 +35,10 @@ class SectionJdbcDaoTest {
     @DisplayName("구간 정보 저장")
     @Test
     void save() {
-        Station station = stationJdbcDao.save(new StationRequest("강남역"));
-        Station secondStation = stationJdbcDao.save(new StationRequest("서초역"));
+        Station station = stationJdbcDao.save(new Station("강남역"));
+        Station secondStation = stationJdbcDao.save(new Station("서초역"));
 
-        LineRequest line = new LineRequest("분당선", "bg-red-600", station.getId(), secondStation.getId(), 10);
-        Line lineResponse = lineJdbcDao.save(line);
+        Line lineResponse = lineJdbcDao.save(new Line("분당선", "bg-red-600"));
         Section section = sectionJdbcDao.save(lineResponse.getId(), new Section(0L, 1L, station.getId(), secondStation.getId(), 10));
 
         assertThat(section.getUpStationId()).isEqualTo(station.getId());
@@ -49,18 +48,16 @@ class SectionJdbcDaoTest {
     @DisplayName("구간 정보 삭제")
     @Test
     void delete() {
-        stationJdbcDao.save(new StationRequest("강남역"));
-        stationJdbcDao.save(new StationRequest("서초역"));
-        stationJdbcDao.save(new StationRequest("잠실역"));
+        Station gangnam = stationJdbcDao.save(new Station("강남역"));
+        Station seocho = stationJdbcDao.save(new Station("서초역"));
+        Station jamsil = stationJdbcDao.save(new Station("잠실역"));
 
-        LineRequest line = new LineRequest("분당선", "bg-red-600",
-                1L, 2L, 10);
-        lineJdbcDao.save(line);
-        sectionJdbcDao.save(1L, new Section(0L, 1L, 1L, 2L, 10));
-        sectionJdbcDao.save(1L, new Section(0L, 1L, 2L, 3L, 10));
+        Line line = lineJdbcDao.save(new Line("분당선", "bg-red-600"));
+        sectionJdbcDao.save(line.getId(), new Section(line.getId(), gangnam.getId(), seocho.getId(), 10));
+        sectionJdbcDao.save(line.getId(), new Section(line.getId(), seocho.getId(), jamsil.getId(), 10));
 
-        sectionJdbcDao.delete(1L, new Section(1L, 1L, 1L, 2L, 10));
+        sectionJdbcDao.delete(line.getId(), new Section(line.getId(), gangnam.getId(), seocho.getId(), 10));
 
-        assertThat(sectionJdbcDao.findById(1L).getSections().size()).isOne();
+        assertThat(sectionJdbcDao.findById(line.getId()).getSections().size()).isOne();
     }
 }

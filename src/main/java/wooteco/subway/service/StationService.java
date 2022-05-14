@@ -22,10 +22,10 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse save(StationRequest stationRequest) {
+    public StationResponse save(StationRequest request) {
         try {
-            Station newStation = stationDao.save(stationRequest);
-            return new StationResponse(newStation.getId(), newStation.getName());
+            Station station = stationDao.save(new Station(request.getName()));
+            return new StationResponse(station.getId(), station.getName());
         } catch (DataAccessException exception) {
             throw new ClientException("이미 등록된 지하철역입니다.");
         }

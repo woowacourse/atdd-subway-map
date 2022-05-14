@@ -2,7 +2,6 @@ package wooteco.subway.dto;
 
 import wooteco.subway.domain.Station;
 
-import java.util.List;
 import java.util.Set;
 
 public class LineResponse {

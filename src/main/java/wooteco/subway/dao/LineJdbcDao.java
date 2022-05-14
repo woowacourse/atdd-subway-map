@@ -10,7 +10,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
 
 @Repository
 public class LineJdbcDao {
@@ -26,7 +25,7 @@ public class LineJdbcDao {
                 rs.getString("name"), rs.getNString("color"));
     }
 
-    public Line save(LineRequest line) {
+    public Line save(Line line) {
         final String sql = "insert into Line (name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -49,7 +48,7 @@ public class LineJdbcDao {
         return jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
     }
 
-    public int update(Long id, LineRequest line) {
+    public int update(Long id, Line line) {
         final String sql = "update line set (name, color) = (?, ?) where id = ?";
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }

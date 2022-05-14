@@ -25,12 +25,7 @@ public class Section {
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        validateNull(lineId, upStationId, downStationId, distance);
-        validateMinimumRange(lineId, upStationId, downStationId, distance);
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this(0L, lineId, upStationId, downStationId, distance);
     }
 
     private void validateMinimumRange(Long lineId, Long upStationId, Long downStationId, int distance) {
