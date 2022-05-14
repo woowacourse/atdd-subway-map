@@ -8,7 +8,6 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

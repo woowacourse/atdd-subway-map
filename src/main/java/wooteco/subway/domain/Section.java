@@ -1,15 +1,12 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.SectionRequest;
-
 public class Section {
 
-    private Long id;
     private final int distance;
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
+    private Long id;
 
     public Section(int distance, Long lineId, Long upStationId, Long downStationId) {
         this.distance = distance;
@@ -32,7 +29,7 @@ public class Section {
     }
 
     public boolean canAddAsLastStation(Long upLastStationId, Long downLastStationId) {
-        return upLastStationId.equals(downStationId) != downLastStationId.equals(upStationId) ;
+        return upLastStationId.equals(downStationId) != downLastStationId.equals(upStationId);
     }
 
     public boolean isEqualDownStationId(Long stationId) {

@@ -4,9 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.DuplicateNameException;
-import wooteco.subway.exception.SubwayException;
-import wooteco.subway.exception.line.DuplicateLineNameException;
 import wooteco.subway.exception.NoSuchContentException;
+import wooteco.subway.exception.SubwayException;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {
