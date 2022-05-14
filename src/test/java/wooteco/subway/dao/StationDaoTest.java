@@ -25,7 +25,7 @@ class StationDaoTest {
     @DisplayName("중복되는 역 이름이 없을 때 성공적으로 저장되는지 테스트")
     @Test
     void save_success() {
-        Station station = stationDao.save(new Station("testName"));
+        stationDao.save(new Station("testName"));
 
         assertThat(stationDao.findAll().size()).isEqualTo(1);
     }
@@ -33,7 +33,7 @@ class StationDaoTest {
     @DisplayName("중복되는 역 이름이 있을 때 예외 반환 테스트")
     @Test
     void save_fail() {
-        Station station = stationDao.save(new Station("testName"));
+        stationDao.save(new Station("testName"));
         assertThatThrownBy(() -> stationDao.save(new Station("testName")))
                 .isInstanceOf(SubwayException.class);
     }
@@ -49,7 +49,7 @@ class StationDaoTest {
     @DisplayName("존재하는 역 id가 없으면 삭제되지 않는지 테스트")
     @Test
     void deleteById_not_exist() {
-        Station station = stationDao.save(new Station("testName"));
+        stationDao.save(new Station("testName"));
         stationDao.deleteById(-1L);
         assertThat(stationDao.findAll().size()).isEqualTo(1);
     }
@@ -65,7 +65,7 @@ class StationDaoTest {
     @DisplayName("존재하는 역 id가 없으면 예외가 발생하는지 테스트")
     @Test
     void findById_not_exist() {
-        Station station = stationDao.save(new Station("testName"));
+        stationDao.save(new Station("testName"));
         assertThatThrownBy(() -> stationDao.findById(-1L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }

@@ -24,7 +24,7 @@ import wooteco.subway.dto.StationRequest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionControllerTest {
 
-    private Map<String, Long> stationIds = new HashMap<>();
+    private final Map<String, Long> stationIds = new HashMap<>();
     private Long lineId;
 
     @LocalServerPort
@@ -172,7 +172,7 @@ public class SectionControllerTest {
     void cannot_createSection_already_exist() {
         // given
         SectionRequest sectionRequest = new SectionRequest(stationIds.get("역삼역"), stationIds.get("선릉역"), 3L);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -230,7 +230,7 @@ public class SectionControllerTest {
     void deleteSection() {
         // given
         SectionRequest sectionRequest = new SectionRequest(stationIds.get("역삼역"), stationIds.get("선릉역"), 3L);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -253,7 +253,7 @@ public class SectionControllerTest {
     void deleteSection_cycle_size_one() {
         // given
         SectionRequest sectionRequest = new SectionRequest(stationIds.get("선릉역"), stationIds.get("역삼역"), 10L);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -262,7 +262,7 @@ public class SectionControllerTest {
                 .extract();
 
         SectionRequest sectionRequest2 = new SectionRequest(stationIds.get("역삼역"), stationIds.get("강남역"), 10L);
-        ExtractableResponse<Response> response2 = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(sectionRequest2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

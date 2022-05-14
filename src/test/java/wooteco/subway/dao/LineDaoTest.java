@@ -23,14 +23,14 @@ class LineDaoTest {
     @DisplayName("중복되는 노선 이름이 없을 때 성공적으로 저장되는지 테스트")
     @Test
     void save_success() {
-        Line line = lineDao.save(new Line("testName", "black"));
+        lineDao.save(new Line("testName", "black"));
         assertThat(lineDao.findAll().size()).isEqualTo(1);
     }
 
     @DisplayName("중복되는 노선 이름이 있을 때 예외 반환 테스트")
     @Test
     void save_fail() {
-        Line line = lineDao.save(new Line("testName", "black"));
+        lineDao.save(new Line("testName", "black"));
         assertThatThrownBy(() -> lineDao.save(new Line("testName", "white")))
                 .isInstanceOf(SubwayException.class);
     }
@@ -46,7 +46,7 @@ class LineDaoTest {
     @DisplayName("존재하는 노선 id가 없으면 삭제되지 않는지 테스트")
     @Test
     void deleteById_not_exist() {
-        Line line = lineDao.save(new Line("testName", "black"));
+        lineDao.save(new Line("testName", "black"));
         lineDao.deleteById(-1L);
         assertThat(lineDao.findAll().size()).isEqualTo(1);
     }
@@ -62,7 +62,7 @@ class LineDaoTest {
     @DisplayName("존재하는 노선 id가 없으면 예외가 발생하는지 테스트")
     @Test
     void findById_not_exist() {
-        Line line = lineDao.save(new Line("testName", "black"));
+        lineDao.save(new Line("testName", "black"));
         assertThatThrownBy(() -> lineDao.findById(-1L))
                 .isInstanceOf(SubwayException.class);
     }
@@ -71,7 +71,7 @@ class LineDaoTest {
     @Test
     void changeLineName_duplicate() {
         Line line = lineDao.save(new Line("testName", "black"));
-        Line line2 = lineDao.save(new Line("testName2", "black"));
+        lineDao.save(new Line("testName2", "black"));
         assertThatThrownBy(() -> lineDao.changeLineName(line.getId(), "testName2"))
                 .isInstanceOf(SubwayException.class);
     }
@@ -80,7 +80,7 @@ class LineDaoTest {
     @Test
     void changeLineName_success() {
         Line line = lineDao.save(new Line("testName", "black"));
-        Line line2 = lineDao.save(new Line("testName2", "black"));
+        lineDao.save(new Line("testName2", "black"));
 
         lineDao.changeLineName(line.getId(), "testName3");
 
@@ -91,7 +91,7 @@ class LineDaoTest {
     @Test
     void changeLineName_self_loop() {
         Line line = lineDao.save(new Line("testName", "black"));
-        Line line2 = lineDao.save(new Line("testName2", "black"));
+        lineDao.save(new Line("testName2", "black"));
         lineDao.changeLineName(line.getId(), "testName");
         assertThat(line.getName()).isEqualTo("testName");
     }

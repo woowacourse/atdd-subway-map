@@ -1,18 +1,16 @@
 package wooteco.subway.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.setRemoveAssertJRelatedElementsFromStackTrace;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.response.ValidatableResponse;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +29,7 @@ import wooteco.subway.dto.StationRequest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineControllerTest {
 
-    private Map<String, Long> stationIds = new HashMap<>();
+    private final Map<String, Long> stationIds = new HashMap<>();
 
     @LocalServerPort
     int port;
@@ -59,7 +57,7 @@ class LineControllerTest {
     void createLine() {
         // given
         ExtractableResponse<Response> response = initializeLine("2호선", "green", stationIds.get("강남역"),
-                stationIds.get("역삼역"), 10L);
+                stationIds.get("역삼역"), 5L);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -82,7 +80,7 @@ class LineControllerTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        ExtractableResponse<Response> response = initializeLine("2호선", "green", stationIds.get("강남역"),
+        initializeLine("2호선", "green", stationIds.get("강남역"),
                 stationIds.get("역삼역"), 10L);
 
         // when
@@ -355,7 +353,7 @@ class LineControllerTest {
         /// given
         ExtractableResponse<Response> responseExtractableResponse = initializeLine("2호선", "green",
                 stationIds.get("강남역"), stationIds.get("역삼역"), 10L);
-        Long id = responseExtractableResponse.jsonPath().getLong("id");
+        long id = responseExtractableResponse.jsonPath().getLong("id");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -389,11 +387,11 @@ class LineControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(initResponse1, initResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(initResponse1, initResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -404,7 +402,7 @@ class LineControllerTest {
         // given
         ExtractableResponse<Response> responseExtractableResponse = initializeLine("2호선", "green",
                 stationIds.get("강남역"), stationIds.get("역삼역"), 10L);
-        Long id = responseExtractableResponse.jsonPath().getLong("id");
+        long id = responseExtractableResponse.jsonPath().getLong("id");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -423,7 +421,7 @@ class LineControllerTest {
         /// given
         ExtractableResponse<Response> responseExtractableResponse = initializeLine("2호선", "green",
                 stationIds.get("강남역"), stationIds.get("역삼역"), 10L);
-        Long id = responseExtractableResponse.jsonPath().getLong("id");
+        responseExtractableResponse.jsonPath().getLong("id");
 
         ExtractableResponse<Response> initResponse2 = initializeLine("3호선", "yellow",
                 stationIds.get("선릉역"), stationIds.get("삼성역"), 10L);
@@ -449,11 +447,10 @@ class LineControllerTest {
     @Test
     void change_name_no_id() {
         /// given
-        ExtractableResponse<Response> responseExtractableResponse = initializeLine("2호선", "green",
+        initializeLine("2호선", "green",
                 stationIds.get("강남역"), stationIds.get("역삼역"), 10L);
-        Long id = responseExtractableResponse.jsonPath().getLong("id");
 
-        ExtractableResponse<Response> initResponse2 = initializeLine("3호선", "yellow",
+        initializeLine("3호선", "yellow",
                 stationIds.get("선릉역"), stationIds.get("삼성역"), 10L);
 
         // when
@@ -477,9 +474,8 @@ class LineControllerTest {
     @Test
     void change_name_name_duplicate() {
         /// given
-        ExtractableResponse<Response> responseExtractableResponse = initializeLine("2호선", "green",
+        initializeLine("2호선", "green",
                 stationIds.get("강남역"), stationIds.get("역삼역"), 10L);
-        Long id = responseExtractableResponse.jsonPath().getLong("id");
 
         ExtractableResponse<Response> initResponse2 = initializeLine("3호선", "yellow",
                 stationIds.get("선릉역"), stationIds.get("삼성역"), 10L);
@@ -499,10 +495,5 @@ class LineControllerTest {
 
         // then
         assertThat(response.jsonPath().getString("message")).isEqualTo("[ERROR] 중복된 이름으로 바꿀 수 없습니다.");
-    }
-
-    @Test
-    void temp() {
-        ValidatableResponse qwe = RestAssured.given().log().all().get("qwe").then();
     }
 }

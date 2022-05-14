@@ -23,16 +23,16 @@ public class SectionDaoTest {
     @DisplayName("구간이 성공적으로 저장되는지 테스트")
     @Test
     void save_success() {
-        Section section = sectionDao.save(new Section(1L, 2L, 10L), 1L);
+        sectionDao.save(new Section(1L, 2L, 10L), 1L);
         assertThat(sectionDao.findAllByLineId(1L).size()).isEqualTo(1);
     }
 
     @DisplayName("특정 호선의 모든 구간 갯수가 일치하는지 테스트")
     @Test
     void findAll_same_line_id() {
-        Section section1 = sectionDao.save(new Section(1L, 2L, 10L), 1L);
-        Section section2 = sectionDao.save(new Section(2L, 3L, 10L), 1L);
-        Section section3 = sectionDao.save(new Section(1L, 2L, 10L), 3L);
+        sectionDao.save(new Section(1L, 2L, 10L), 1L);
+        sectionDao.save(new Section(2L, 3L, 10L), 1L);
+        sectionDao.save(new Section(1L, 2L, 10L), 3L);
         assertThat(sectionDao.findAllByLineId(3L).size()).isEqualTo(1);
     }
 
@@ -46,7 +46,7 @@ public class SectionDaoTest {
     @DisplayName("존재하는 구간 id가 없으면 예외가 발생하는지 테스트")
     @Test
     void findById_not_exist() {
-        Section section = sectionDao.save(new Section(1L, 2L, 10L), 1L);
+        sectionDao.save(new Section(1L, 2L, 10L), 1L);
         assertThatThrownBy(() -> sectionDao.findById(-1L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
@@ -54,9 +54,9 @@ public class SectionDaoTest {
     @DisplayName("특정 역의 id로 이루어진 구간이 있는지 테스트")
     @Test
     void exist_by_station_id() {
-        Section section1 = sectionDao.save(new Section(2L,1L, 2L, 10L), 2L);
-        Section section2 = sectionDao.save(new Section(1L, 2L, 3L, 1L), 1L);
-        Section section3 = sectionDao.save(new Section(1L, 7L, 8L, 10L), 1L);
+        sectionDao.save(new Section(2L,1L, 2L, 10L), 2L);
+        sectionDao.save(new Section(1L, 2L, 3L, 1L), 1L);
+        sectionDao.save(new Section(1L, 7L, 8L, 10L), 1L);
         assertThat(sectionDao.isAnySectionWithStationId(2L)).isTrue();
     }
 }

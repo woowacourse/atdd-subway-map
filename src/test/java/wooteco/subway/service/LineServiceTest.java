@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,8 +52,8 @@ public class LineServiceTest {
     void findAll() {
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("선릉역"));
-        LineResponse lineResponse1 = lineService.save(new LineRequest("신분당선", "yellow", station1.getId(), station2.getId(), 10L));
-        LineResponse lineResponse2 = lineService.save(new LineRequest("2호선", "yellow", station1.getId(), station2.getId(), 10L));
+        lineService.save(new LineRequest("신분당선", "yellow", station1.getId(), station2.getId(), 10L));
+        lineService.save(new LineRequest("2호선", "yellow", station1.getId(), station2.getId(), 10L));
         List<LineResponse> result = lineService.findAll();
         assertAll(() -> assertThat(result.size()).isEqualTo(2),
                 () -> assertThat(result.get(0).getStations().size()).isEqualTo(2),
@@ -66,7 +65,7 @@ public class LineServiceTest {
     void save_duplicate() {
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("선릉역"));
-        LineResponse lineResponse = lineService.save(new LineRequest("신분당선", "green", station1.getId(), station2.getId(), 10L));
+        lineService.save(new LineRequest("신분당선", "green", station1.getId(), station2.getId(), 10L));
         assertThatThrownBy(() -> lineService.save(new LineRequest("신분당선", "green", station1.getId(), station2.getId(), 10L)))
                 .isInstanceOf(SubwayException.class);
     }
