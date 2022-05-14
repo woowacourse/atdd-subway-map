@@ -12,14 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @JdbcTest
 class SectionJdbcDaoTest {
 
@@ -27,21 +26,38 @@ class SectionJdbcDaoTest {
     private JdbcTemplate jdbcTemplate;
 
     private SectionDao sectionDao;
+    private StationDao stationDao;
+    private LineDao lineDao;
+
+    private Long lineId1;
+    private Long stationId1;
+    private Long stationId2;
+    private Long stationId3;
+    private Long stationId4;
+    private int distance;
 
     @BeforeEach
     void setUp() {
         sectionDao = new SectionJdbcDao(jdbcTemplate);
+        stationDao = new StationJdbcDao(jdbcTemplate);
+        lineDao = new LineJdbcDao(jdbcTemplate);
+
+        lineId1 = lineDao.save(new Line("name", "color"));
+        stationId1 = stationDao.save(new Station(lineId1, "name1"));
+        stationId2 = stationDao.save(new Station(lineId1, "name2"));
+        stationId3 = stationDao.save(new Station(lineId1, "name3"));
+        stationId4 = stationDao.save(new Station(lineId1, "name4"));
+        distance = 10;
     }
 
-    @Sql(value = "/sql/InsertTwoStationAndOneLine.sql")
     @DisplayName("새로운 구간을 저장한다.")
     @Test
     void save() {
         // given
-        Long lineId = 1L;
-        Long upStationId = 1L;
-        Long downStationId = 2L;
-        int distance = 10;
+        Long lineId = lineId1;
+        Long upStationId = stationId1;
+        Long downStationId = stationId2;
+
         Section section = new Section(lineId, upStationId, downStationId, distance);
 
         // when
@@ -58,15 +74,14 @@ class SectionJdbcDaoTest {
         );
     }
 
-    @Sql(value = "/sql/InsertOneLine.sql")
     @DisplayName("상하행 역이 없으면 새로운 구간을 저장할 수 없다.")
     @Test
     void saveNotHasStation() {
         // given
-        Long lineId = 1L;
-        Long upStationId = 1L;
-        Long downStationId = 2L;
-        int distance = 10;
+        Long lineId = lineId1;
+        Long upStationId = 100L;
+        Long downStationId = 200L;
+
         Section section = new Section(lineId, upStationId, downStationId, distance);
 
         // when
@@ -75,15 +90,14 @@ class SectionJdbcDaoTest {
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
-    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("상하행 노선이 없으면 새로운 구간을 저장할 수 없다.")
     @Test
     void saveNotHasLine() {
         // given
-        Long lineId = 1L;
-        Long upStationId = 1L;
-        Long downStationId = 2L;
-        int distance = 10;
+        Long lineId = 300L;
+        Long upStationId = stationId1;
+        Long downStationId = stationId2;
+
         Section section = new Section(lineId, upStationId, downStationId, distance);
 
         // when
@@ -92,47 +106,44 @@ class SectionJdbcDaoTest {
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
-    @Sql(value = "/sql/InsertTwoStationAndOneLine.sql")
     @DisplayName("구간 정보를 수정한다.")
     @Test
     void update() {
         // given
-        Long lineId = 1L;
-        Long upStationId = 1L;
-        Long downStationId = 2L;
-        int distance = 10;
+        Long lineId = lineId1;
+        Long upStationId = stationId1;
+        Long downStationId = stationId2;
+
         Section section = new Section(lineId, upStationId, downStationId, distance);
         Long savedId = sectionDao.save(section);
 
-        Long lineId2 = 1L;
-        Long upStationId2 = 1L;
-        Long downStationId2 = 2L;
-        int distance2 = 10;
-        Section sectio2 = new Section(lineId2, upStationId2, downStationId2, distance2);
+        Long upStationId2 = stationId3;
+        Long downStationId2 = stationId4;
+        int distance2 = distance;
+        Section section2 = new Section(lineId1, upStationId2, downStationId2, distance2);
 
         // when
-        Long updatedId = sectionDao.update(savedId, sectio2);
+        Long updatedId = sectionDao.update(savedId, section2);
 
         // then
         Section actual = sectionDao.findById(updatedId);
         assertAll(
                 () -> assertThat(actual.getId()).isEqualTo(savedId),
-                () -> assertThat(actual.getLineId()).isEqualTo(lineId2),
+                () -> assertThat(actual.getLineId()).isEqualTo(lineId),
                 () -> assertThat(actual.getUpStationId()).isEqualTo(upStationId2),
                 () -> assertThat(actual.getDownStationId()).isEqualTo(downStationId2),
                 () -> assertThat(actual.getDistance()).isEqualTo(distance2)
         );
     }
 
-    @Sql(value = "/sql/InsertTwoStationAndOneLine.sql")
     @DisplayName("특정 id를 가지는 구간을 조회한다.")
     @Test
     void findById() {
         // given
-        Long lineId = 1L;
-        Long upStationId = 1L;
-        Long downStationId = 2L;
-        int distance = 10;
+        Long lineId = lineId1;
+        Long upStationId = stationId1;
+        Long downStationId = stationId2;
+
         Section section = new Section(lineId, upStationId, downStationId, distance);
         Long savedId = sectionDao.save(section);
 
@@ -149,21 +160,20 @@ class SectionJdbcDaoTest {
         );
     }
 
-    @Sql(value = "/sql/InsertTwoStationAndOneLine.sql")
     @DisplayName("특정 Line id를 가지는 모든 구간을 조회한다.")
     @Test
     void findAllByLineId() {
         // given
-        Long lineId = 1L;
-        Long upStationId1 = 1L;
-        Long downStationId1 = 2L;
-        int distance1 = 10;
+        Long lineId = lineId1;
+        Long upStationId1 = stationId1;
+        Long downStationId1 = stationId2;
+        int distance1 = distance;
         Section section1 = new Section(lineId, upStationId1, downStationId1, distance1);
         Long savedId1 = sectionDao.save(section1);
 
-        Long upStationId2 = 1L;
-        Long downStationId2 = 2L;
-        int distance2 = 10;
+        Long upStationId2 = stationId3;
+        Long downStationId2 = stationId4;
+        int distance2 = distance;
         Section section2 = new Section(lineId, upStationId2, downStationId2, distance2);
         Long savedId2 = sectionDao.save(section2);
 
@@ -178,52 +188,46 @@ class SectionJdbcDaoTest {
         );
     }
 
-    @Sql(value = "/sql/InsertTwoSections.sql")
     @DisplayName("모든 구간에서 역 id를 찾는다")
     @Test
     void findAllByStationId() {
-        /*
-        이미 등록된 노선 아이디 : 1
-        이미 등록된 역 아이디 : 1, 2, 3, 4
-        구간 등록된 역 아이디 : (1, 2), (2, 3)
-        역 사이 거리 : 10, 10
-         */
         // given
+        Long save1 = sectionDao.save(new Section(lineId1, stationId1, stationId2, distance));
+        Long save2 = sectionDao.save(new Section(lineId1, stationId2, stationId3, distance));
 
         // when
-        List<Section> actual = sectionDao.findAllByStationId(2L);
+        List<Section> actual = sectionDao.findAllByStationId(stationId2);
 
         // then
         assertAll(
                 () -> assertThat(actual).hasSize(2),
-                () -> assertThat(actual.get(0).getUpStationId()).isEqualTo(1L),
-                () -> assertThat(actual.get(1).getDownStationId()).isEqualTo(3L)
+                () -> assertThat(actual.get(0).getUpStationId()).isEqualTo(stationId1),
+                () -> assertThat(actual.get(1).getDownStationId()).isEqualTo(stationId3)
         );
     }
 
-    @Sql(value = "/sql/InsertTwoStationAndOneLine.sql")
     @DisplayName("특정 Line id를 가지는 모든 구간을 제거한다.")
     @Test
     void deleteAllByLineId() {
         // given
-        Long lineId = 1L;
-        Long upStationId1 = 1L;
-        Long downStationId1 = 2L;
-        int distance1 = 10;
+        Long lineId = lineId1;
+        Long upStationId1 = stationId1;
+        Long downStationId1 = stationId2;
+        int distance1 = distance;
         Section section1 = new Section(lineId, upStationId1, downStationId1, distance1);
         Long savedId1 = sectionDao.save(section1);
 
-        Long upStationId2 = 1L;
-        Long downStationId2 = 2L;
-        int distance2 = 10;
+        Long upStationId2 = stationId3;
+        Long downStationId2 = stationId4;
+        int distance2 = distance;
         Section section2 = new Section(lineId, upStationId2, downStationId2, distance2);
         Long savedId2 = sectionDao.save(section2);
 
         LineDao lineDao = new LineJdbcDao(jdbcTemplate);
-        Long lineId2 = lineDao.save(new Line("name",  "color"));
-        Long upStationId3 = 1L;
-        Long downStationId3 = 2L;
-        int distance3 = 10;
+        Long lineId2 = lineDao.save(new Line("name2", "color2"));
+        Long upStationId3 = stationId1;
+        Long downStationId3 = stationId2;
+        int distance3 = distance;
         Section section3 = new Section(lineId2, upStationId3, downStationId3, distance3);
         Long savedId3 = sectionDao.save(section3);
 

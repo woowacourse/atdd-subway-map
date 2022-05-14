@@ -223,8 +223,15 @@
   - 서로 엮여있는 관계를 생각하다보니 구간의 line_id, up_station_id, down_station_id를 외래키로 설정했습니다.
   - 컨트롤러를 통해서 요청이 온 경우 서비스의 로직에 의해서 정상적으로 저장되어있는 id들인지 확인하고 저장하게 되지만 만약 API Controller가 아닌 직접 DB에서 값을 저장하거나 수정한다면 정상적인 값인지 검증할 방법이 없다고 생각했습니다.
   - 없는 노선에 구간을 추가하거나 없는 역을 구간으로 설정할 수 없기 때문입니다.
-- [ ] SectionJdbcDaoTest에서는 별도로 `@Sql`를 사용하였나요? 장점이 있을까요?
-- [ ] JdbcTest 내부에는 `@Transactional`이 포함되어있습니다. 그렇다면 DirtiesContext는 필요없지 않을까요?
+- [x] SectionJdbcDaoTest에서는 별도로 `@Sql`를 사용하였나요? 장점이 있을까요?
+  - 구간을 만들기 위해 공통적으로 최소 한개의 노선과 2개의 역이 필요했습니다. 반복 작업을 하기위해 `@BaforeEach`와 `@Sql` 중 고민하다가 `@Sql`를 사용했습니다.
+  - 하지만 적어도 DaoTest에서는 장점보다 단점이 더 크다고 느껴졌습니다.
+  - `@Sql`를 사용하면서 `@DirtiesContext`를 사용해야 했습니다. 왜냐하면 `@Transactional`은 auto_increment가 롤백되지 않기 때문입니다. 
+  - 그래서 어쩔 수 없이 `@DirtiesContext`를 사용하고 테스트가 매우 느려졌습니다.
+  - 페어인 어썸오는 이것은 특정 값에 의존적인 테스트이고 피해야한다고 하여 테스트가 조금 길어지더라도 특정 값에 의존적이지 않은 테스트로 수정했습니다.
+- [x] JdbcTest 내부에는 `@Transactional`이 포함되어있습니다. 그렇다면 DirtiesContext는 필요없지 않을까요?
+  - `@Transactional`의 롤백이 auto_increment에는 적용되지 않기 때문에 자동 증가하는 특정 값에 의존하지 않는 테스트로 수정하고 제거했습니다.
+  - [중복을 제거해보자](https://github.com/woowacourse/atdd-subway-map/pull/269#discussion_r871426224) 피드백의 의미가 이런 의미였던 것 같다.
 - [ ] (StationService) Section DAO와 Section Service를 모두 같이 사용하고 있다. Station의 id로 Section을 찾아오는 기능을 누가 제공하는게 적절할까요?
 - [x] 데이터가 있는지 확인하기 위해서는 `count` 또는 `exist` 쿼리를 사용하는 것이 어떨까?
   - LineService에서 데이터가 있는지 확인하기위해 `exist`를 사용했습니다.
