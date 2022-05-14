@@ -19,7 +19,7 @@ public class Sections {
     public List<Section> add(Section section) {
         checkContainsSameSection(section);
         preventFork(section);
-        isPossibleRegistration(section);
+        validateRegistration(section);
 
         sections.add(section);
         sections = sortSections(sections);
@@ -27,10 +27,10 @@ public class Sections {
     }
 
     private void checkContainsSameSection(Section newSection) {
-        final boolean isContains = sections.stream()
+        final boolean contains = sections.stream()
                 .anyMatch(section -> section.isSameSection(newSection));
 
-        if (isContains) {
+        if (contains) {
             throw new IllegalSectionException("이미 동일한 구간이 등록되어 있습니다.");
         }
     }
@@ -76,7 +76,7 @@ public class Sections {
                 newSection.getUpStationId(), existingSection.getDistance() - newSection.getDistance());
     }
 
-    private void isPossibleRegistration(Section section) {
+    private void validateRegistration(Section section) {
         sections.stream()
                 .filter(s -> s.containsStation(section))
                 .findAny()
