@@ -107,4 +107,7 @@ public class Sections {
 
         return new Section(lineId, upStationId, downStationId, distance);
     }
+
+    public void validate(SectionRequest sectionRequest) {
+    }
 }

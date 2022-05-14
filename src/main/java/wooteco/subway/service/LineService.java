@@ -36,13 +36,12 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest lineRequest) {
         validDuplicatedLine(lineRequest.getName(), lineRequest.getColor());
-        Long id = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Long id = lineDao.save(lineRequest.toLine());
+
         Section section = new Section(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
                 lineRequest.getDistance());
-
         sectionDao.save(section);
-        List<StationResponse> responses = findStationsBySection(section);
-        return new LineResponse(id, lineRequest.getName(), lineRequest.getColor(), responses);
+        return new LineResponse(id, lineRequest.getName(), lineRequest.getColor(), findStationsBySection(section));
     }
 
     private void validDuplicatedLine(String name, String color) {
@@ -65,7 +64,7 @@ public class LineService {
         if (sections.countLinkedSection(sectionRequest) == MID_POINT_COUNT) {
             processBiDirectionSection(sectionRequest, sections);
         }
-        sectionDao.save(new Section(lineId, sectionRequest));
+        sectionDao.save(sectionRequest.toSection(lineId));
     }
 
     private void validSections(Sections sections, SectionRequest sectionRequest) {
