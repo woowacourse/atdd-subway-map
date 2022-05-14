@@ -70,6 +70,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("이미 존재하는 역 이름입니다.");
     }
 
     @DisplayName("지하철역을 조회한다.")
