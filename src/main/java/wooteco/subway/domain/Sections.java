@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.dto.SectionsToBeDeletedAndUpdated;
 import wooteco.subway.dto.SectionsToBeCreatedAndUpdated;
+import wooteco.subway.dto.SectionsToBeDeletedAndUpdated;
 import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.SectionServiceException;
 
