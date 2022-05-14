@@ -54,7 +54,7 @@ public class LineController {
 
     @PostMapping("/lines/{id}/sections")
     public void addSection(@PathVariable final Long id, @RequestBody @Valid final SectionRequest sectionRequest) {
-        sectionService.create(id, SectionRequest.toEntity(sectionRequest));
+        sectionService.create(id, sectionRequest);
     }
 
     @DeleteMapping("/lines/{id}/sections")

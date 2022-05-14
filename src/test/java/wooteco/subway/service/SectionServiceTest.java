@@ -15,6 +15,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.SectionRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,31 +56,35 @@ class SectionServiceTest {
     @Test
     void addNotBranchedSection() {
         final Station newStation = stationDao.save(new Station("마장역"));
-        final Section section = new Section(downStation, newStation, 10, savedLine.getId());
-        final Section savedSection = sectionService.create(savedLine.getId(), section);
+        final SectionRequest sectionRequest = new SectionRequest(downStation.getId(), newStation.getId(), 10);
+        final Section savedSection = sectionService.create(savedLine.getId(), sectionRequest);
 
-        assertThat(savedSection).usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(section);
+        assertAll(
+                () -> assertThat(savedSection.getId()).isNotNull(),
+                () -> assertThat(savedSection.getUpStation()).isEqualTo(downStation),
+                () -> assertThat(savedSection.getDownStation()).isEqualTo(newStation),
+                () -> assertThat(savedSection.getDistance()).isEqualTo(sectionRequest.getDistance())
+        );
     }
 
     @DisplayName("(갈래길인 경우) 특정 노선에 구간을 추가한다.")
     @Test
     void addBranchedSection() {
         final Station newStation = stationDao.save(new Station("마장역"));
-        final Section newSection = new Section(newStation, downStation, 9, savedLine.getId());
-        final Section savedSection = sectionService.create(savedLine.getId(), newSection);
+        final SectionRequest sectionRequest = new SectionRequest(newStation.getId(), downStation.getId(), 9);
+        final Section savedSection = sectionService.create(savedLine.getId(), sectionRequest);
 
         final Optional<Section> foundSection = sectionDao.findAllByLineId(savedLine.getId())
                 .stream()
                 .filter(it -> it.getId().equals(section.getId()))
                 .findAny();
+
         assert (foundSection.isPresent());
 
         assertAll(
-                () -> assertThat(savedSection).usingRecursiveComparison()
-                        .ignoringFields("id")
-                        .isEqualTo(newSection),
+                () -> assertThat(savedSection.getUpStation()).isEqualTo(newStation),
+                () -> assertThat(savedSection.getDownStation()).isEqualTo(downStation),
+                () -> assertThat(savedSection.getDistance()).isEqualTo(sectionRequest.getDistance()),
                 () -> assertThat(foundSection.get()).usingRecursiveComparison()
                         .isEqualTo(new Section(section.getId(), upStation, newStation, 1, savedLine.getId()))
         );

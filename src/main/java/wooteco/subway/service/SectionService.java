@@ -7,6 +7,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.SectionRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,8 @@ public class SectionService {
     }
 
     @Transactional
-    public Section create(long lineId, Section section) {
+    public Section create(long lineId, SectionRequest sectionRequest) {
+        final Section section = sectionRequest.toEntity();
         final Section newSection = new Section(findUpStation(section), findDownStation(section), section.getDistance(), lineId);
 
         final List<Section> lineSections = sectionDao.findAllByLineId(lineId);

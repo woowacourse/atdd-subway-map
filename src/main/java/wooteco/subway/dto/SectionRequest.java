@@ -27,11 +27,11 @@ public class SectionRequest {
         this.distance = distance;
     }
 
-    public static Section toEntity(final SectionRequest sectionRequest) {
+    public Section toEntity() {
         return new Section(
-                new Station(sectionRequest.getUpStationId(), ""),
-                new Station(sectionRequest.getDownStationId(), ""),
-                sectionRequest.getDistance()
+                new Station(this.upStationId, ""),
+                new Station(this.downStationId, ""),
+                this.distance
         );
     }
 
