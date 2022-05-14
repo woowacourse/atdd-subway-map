@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -121,7 +122,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList(".", LineResponse.class)).hasSize(2);
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        assertThat(lineResponses).hasSize(2);
+        assertThat(lineResponses).extracting("id", "name", "color")
+                .containsExactly(tuple(1L, "신분당선", "bg-red-600"), tuple(2L, "분당선", "yellow"));
     }
 
     @Test
