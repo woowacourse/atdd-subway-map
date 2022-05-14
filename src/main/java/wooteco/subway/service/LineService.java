@@ -40,7 +40,7 @@ public class LineService {
 
         sectionDao.save(new Section(lineId, upStation, downStation, request.getDistance()));
 
-        return LineResponse.of(line, List.of(upStation, downStation));
+        return LineResponse.of(new Line(lineId, line.getName(), line.getColor()), List.of(upStation, downStation));
     }
 
     public void createSection(final Long lineId, final SectionRequest sectionRequest) {
