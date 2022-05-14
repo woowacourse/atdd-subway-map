@@ -54,7 +54,8 @@ public class Sections {
     private void validateDistance(long upStationId, long downStationId, int distance) {
         if (isInvalidDistanceWithDownStationOverlap(downStationId, distance)
             || isInvalidDistanceWithUpStationOverlap(upStationId, distance)) {
-            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우, 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
+            throw new IllegalArgumentException(
+                "역 사이에 새로운 역을 등록할 경우, 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
         }
     }
 
@@ -99,13 +100,14 @@ public class Sections {
         }
         if (existByDownStationId(downStationId)) {
             Section section = findById(findIdByDownStationId(downStationId));
-            return separateSectionInExistDownMatchCase(upStationId, downStationId, distance, section);
+            return separateSectionInExistDownMatchCase(upStationId, downStationId, distance,
+                section);
         }
         if (existByUpStationId(downStationId)) {
             Section section = findById(findIdByUpStationId(downStationId));
             return separateSectionInExistUpMatchCase(upStationId, downStationId, distance, section);
         }
-        Section section =  findById(findIdByDownStationId(upStationId));
+        Section section = findById(findIdByDownStationId(upStationId));
         return separateSectionInExistDownMatchCase(upStationId, downStationId, distance, section);
     }
 
@@ -113,15 +115,17 @@ public class Sections {
         long upStationId, long downStationId, int distance, Section section) {
         return List.of(
             Section.createOf(section.getId(), section.getLineId(), upStationId, downStationId,
-            section.getDistance() - distance, section.getLineOrder()),
-            Section.createOf(section.getId(), section.getLineId(), downStationId, section.getDownStationId(),
+                section.getDistance() - distance, section.getLineOrder()),
+            Section.createOf(section.getId(), section.getLineId(), downStationId,
+                section.getDownStationId(),
                 section.getDistance() - distance, section.getLineOrder() + 1));
     }
 
     private List<Section> separateSectionInExistDownMatchCase(
         long upStationId, long downStationId, int distance, Section section) {
         return List.of(
-            Section.createOf(section.getId(), section.getLineId(), section.getUpStationId(), upStationId,
+            Section.createOf(section.getId(), section.getLineId(), section.getUpStationId(),
+                upStationId,
                 section.getDistance() - distance, section.getLineOrder()),
             Section.createOf(section.getId(), section.getLineId(), upStationId, downStationId,
                 section.getDistance() - distance, section.getLineOrder() + 1));

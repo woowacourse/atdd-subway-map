@@ -49,6 +49,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             requestHttpDelete(sectionRequest, "/lines/2/sections?stationId=2");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

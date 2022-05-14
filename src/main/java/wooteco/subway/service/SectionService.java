@@ -21,10 +21,10 @@ public class SectionService {
     public void firstSave(Long lineId, SectionRequest sectionRequest) {
         sectionDao.save(new Section(
             null, lineId,
-                sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(),
-                sectionRequest.getDistance(),
-                1L));
+            sectionRequest.getUpStationId(),
+            sectionRequest.getDownStationId(),
+            sectionRequest.getDistance(),
+            1L));
     }
 
     public void save(Long lineId, SectionRequest sectionReq) {
@@ -35,7 +35,8 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         sections.validateSection(upStationId, downStationId, distance);
 
-        List<Section> targetSections = sections.findOverlapSection(upStationId, downStationId, distance);
+        List<Section> targetSections = sections.findOverlapSection(upStationId, downStationId,
+            distance);
         updateSections(targetSections);
     }
 
@@ -71,7 +72,8 @@ public class SectionService {
         deleteSingleSection(lineId, sections);
     }
 
-    private void deleteAndUnionTwoSection(long lineId, Section upsideSection, Section downsideSection) {
+    private void deleteAndUnionTwoSection(long lineId, Section upsideSection,
+                                          Section downsideSection) {
         sectionDao.deleteById(upsideSection.getId());
         sectionDao.deleteById(downsideSection.getId());
         sectionDao.save(new Section(null, lineId,

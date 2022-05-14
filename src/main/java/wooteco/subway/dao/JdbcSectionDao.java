@@ -15,14 +15,6 @@ public class JdbcSectionDao implements SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
-
-    public JdbcSectionDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
-        insertActor = new SimpleJdbcInsert(dataSource)
-            .withTableName("SECTION")
-            .usingGeneratedKeyColumns("id");
-    }
-
     private final RowMapper<Section> sectionRowMapper = (rs, rowNum) -> new Section(
         rs.getLong("id"),
         rs.getLong("line_id"),
@@ -31,6 +23,13 @@ public class JdbcSectionDao implements SectionDao {
         rs.getInt("distance"),
         rs.getLong("line_order")
     );
+
+    public JdbcSectionDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+        this.jdbcTemplate = jdbcTemplate;
+        insertActor = new SimpleJdbcInsert(dataSource)
+            .withTableName("SECTION")
+            .usingGeneratedKeyColumns("id");
+    }
 
     @Override
     public Long save(Section section) {
