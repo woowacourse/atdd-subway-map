@@ -83,6 +83,57 @@ public class SectionsTest {
         );
     }
 
+    @Test
+    @DisplayName("Sections 생성시 정렬된 구간 목록을 검증한다{(A -> B), (B -> C), (C -> D)}")
+    void sortedSections() {
+        //given
+        Station stationA = new Station(1L, "강남");
+        Station stationB = new Station(3L, "선릉");
+        Station stationC = new Station(4L, "삼성");
+        Station stationD = new Station(2L, "역삼");
+
+        Section sectionAB = new Section(stationA, stationB, 4);
+        Section sectionBC = new Section(stationB, stationC, 2);
+        Section sectionCD = new Section(stationC, stationD, 4);
+
+        List<Section> values = List.of(sectionCD, sectionBC, sectionAB);
+
+        Sections sections = new Sections(values);
+
+        //when
+        List<Section> actual = sections.getValues();
+        List<Section> expected = List.of(sectionAB, sectionBC, sectionCD);
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+
+    }
+
+    @Test
+    @DisplayName("정렬된 역 목록을 반환한다(A -> B -> C -> D).")
+    void getStations() {
+        //given
+        Station stationA = new Station(1L, "강남");
+        Station stationB = new Station(3L, "선릉");
+        Station stationC = new Station(4L, "삼성");
+        Station stationD = new Station(2L, "역삼");
+
+        List<Section> values = List.of(
+            new Section(stationC, stationD, 4),
+            new Section(stationB, stationC, 2),
+            new Section(stationA, stationB, 4)
+        );
+
+        Sections sections = new Sections(values);
+
+        //when
+        List<Station> actual = sections.getStations();
+        List<Station> expected = List.of(stationA, stationB, stationC, stationD);
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {5, 6})
     @DisplayName("추가하려는 구간 길이가 추가할 구간 사이 길이보다 크거나 같으면 예외를 던진다.")
@@ -238,5 +289,24 @@ public class SectionsTest {
         //when, then
         assertThatThrownBy(() -> sections.delete(new Station("서초")))
             .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("전달된 구간 목록에서 다른 구간을 반환한다.")
+    void getDifference() {
+        //given
+        Section sectionA = new Section(new Station(1L, "역삼"), new Station(2L, "강남"), 5);
+        Section sectionB = new Section(new Station(2L, "강남"), new Station(3L, "서초"), 5);
+        Section sectionC = new Section(new Station(3L, "서초"), new Station(4L, "선릉"), 5);
+        Section sectionD = new Section(new Station(4L, "선릉"), new Station(5L, "양재"), 5);
+        List<Section> testSections = List.of(sectionA, sectionB, sectionD);
+
+        Sections sections = new Sections(List.of(sectionA, sectionB, sectionC));
+
+        //when
+        Section actual = sections.getDifference(testSections).get(0);
+
+        //then
+        assertThat(actual).isEqualTo(sectionC);
     }
 }

@@ -3,59 +3,104 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Sections {
 
-    private final List<Section> values = new LinkedList<>();
+    private final List<Section> values;
 
     public Sections(Section section) {
+        values = new LinkedList<>();
         values.add(section);
     }
 
     public Sections(List<Section> sections) {
-        values.addAll(sections);
+        values = new LinkedList<>(sortedSections(sections));
     }
 
-    public void add(Section newSection) {
+    private List<Section> sortedSections(List<Section> sections) {
+        if (sections.size() <= 1) {
+            return sections;
+        }
+        Long upDestinationId = findUpDestinationId(sections);
+        Map<Long, Section> sectionsByIds = sections.stream()
+            .collect(Collectors.toMap(Section::getUpStationId, section -> section, (a, b) -> b));
+
+        return getSortedValuesBy(upDestinationId, (key) -> sectionsByIds.get(key).getDownStationId(), sectionsByIds);
+    }
+
+    private Long findUpDestinationId(List<Section> sections) {
+        List<Long> upStations = collectValuesBy(Section::getUpStationId, sections);
+        List<Long> downStations = collectValuesBy(Section::getDownStationId, sections);
+
+        upStations.removeAll(downStations);
+        if (upStations.size() != 1) {
+            throw new IllegalStateException("저장된 구간들 값이 올바르지 않습니다.");
+        }
+        return upStations.get(0);
+    }
+
+    private <T, E> List<T> collectValuesBy(Function<E, T> mapper, List<E> collection) {
+        return collection.stream()
+            .map(mapper)
+            .collect(Collectors.toList());
+    }
+
+    private <T> List<T> getSortedValuesBy(Long firstKey, Function<Long, Long> newKeyMapper, Map<Long, T> values) {
+        List<T> result = new ArrayList<>();
+        Long key = firstKey;
+
+        while (values.containsKey(key)) {
+            result.add(values.get(key));
+            key = newKeyMapper.apply(key);
+        }
+
+        return result;
+    }
+
+    public Section add(Section newSection) {
         validateAddable(newSection);
 
         if (getUpDestination().equals(newSection.getDownStation())) {
             values.add(0, newSection);
-            return;
+            return newSection;
         }
 
         if (getDownDestination().equals(newSection.getUpStation())) {
             values.add(newSection);
-            return;
+            return newSection;
         }
 
         for (Section section : values) {
             if (section.hasSameUpStation(newSection)) {
-                insertAfterUpStation(newSection, section);
-                return;
+                return insertAfterUpStation(newSection, section);
             }
 
             if (section.hasSameDownStation(newSection)) {
-                insertBeforeDownStation(newSection, section);
-                return;
+                return insertBeforeDownStation(newSection, section);
             }
         }
+        throw new IllegalStateException("추가할 수 있는 상태가 아닙니다.");
     }
 
-    private void insertAfterUpStation(Section newSection, Section section) {
+    private Section insertAfterUpStation(Section newSection, Section section) {
         int index = values.indexOf(section);
+        Section sectionToModify = new Section(section.getId(), newSection.getDownStation(), section.getDownStation(),
+            section.getDistance() - newSection.getDistance());
         values.set(index, newSection);
-        values.add(index + 1,
-            new Section(section.getId(), newSection.getDownStation(), section.getDownStation(),
-                section.getDistance() - newSection.getDistance()));
+        values.add(index + 1, sectionToModify);
+        return sectionToModify;
     }
 
-    private void insertBeforeDownStation(Section newSection, Section section) {
+    private Section insertBeforeDownStation(Section newSection, Section section) {
         int index = values.indexOf(section);
-        values.set(index, new Section(section.getId(), section.getUpStation(), newSection.getUpStation(),
-            section.getDistance() - newSection.getDistance()));
+        Section sectionToModify = new Section(section.getId(), section.getUpStation(), newSection.getUpStation(),
+            section.getDistance() - newSection.getDistance());
+        values.set(index, sectionToModify);
         values.add(index + 1, newSection);
+        return sectionToModify;
     }
 
     private void validateAddable(Section section) {
@@ -104,20 +149,18 @@ public class Sections {
         return List.copyOf(values);
     }
 
-    public void delete(Station station) {
+    public Section delete(Station station) {
         validateDeletable();
 
         if (station.equals(getUpDestination())) {
-            values.remove(0);
-            return;
+            return values.remove(0);
         }
 
         if (station.equals(getDownDestination())) {
-            values.remove(values.size() - 1);
-            return;
+            return values.remove(values.size() - 1);
         }
 
-        mergeTwoSections(findSectionToDelete(station));
+        return mergeTwoSections(findSectionToDelete(station));
     }
 
     private void validateDeletable() {
@@ -133,12 +176,14 @@ public class Sections {
             .orElseThrow(() -> new IllegalArgumentException("삭제할 역이 존재하지 않습니다."));
     }
 
-    private void mergeTwoSections(Section section) {
+    private Section mergeTwoSections(Section section) {
         int index = values.indexOf(section);
         Section nextSection = findNextSection(section);
-        values.set(index, new Section(nextSection.getId(), section.getUpStation(), nextSection.getDownStation(),
-            section.getDistance() + nextSection.getDistance()));
+        Section modifiedSection = values.set(index,
+            new Section(nextSection.getId(), section.getUpStation(), nextSection.getDownStation(),
+                section.getDistance() + nextSection.getDistance()));
         values.remove(index + 1);
+        return modifiedSection;
     }
 
     private Section findNextSection(Section section) {
@@ -149,5 +194,14 @@ public class Sections {
         List<Section> result = new ArrayList<>(values);
         result.removeAll(sections);
         return result;
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        stations.add(getUpDestination());
+        for (Section section : values) {
+            stations.add(section.getDownStation());
+        }
+        return stations;
     }
 }
