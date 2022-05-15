@@ -28,6 +28,8 @@ import wooteco.subway.repository.exception.NoSuchStationException;
 @Repository
 public class SubwayRepository implements LineRepository, StationRepository {
 
+    private static final Long TEMPORARY_ID = 0L;
+
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -166,7 +168,7 @@ public class SubwayRepository implements LineRepository, StationRepository {
 
     private void appendSections(Long lineId, List<Section> updatedSections) {
         updatedSections.stream()
-                .filter(section -> section.getId() == 0)
+                .filter(section -> TEMPORARY_ID.equals(section.getId()))
                 .forEach(section -> sectionDao.save(EntityAssembler.sectionEntity(lineId, section)));
     }
 
