@@ -18,7 +18,7 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    public void save(final Long lineId, final SectionRequest request) {
+    public void saveSection(final Long lineId, final SectionRequest request) {
         final Line line = sectionRepository.findLineById(lineId);
         final List<Section> previousSections = new ArrayList<>(line.getSections());
         final Section newSection = makeSection(request);
@@ -37,7 +37,7 @@ public class SectionService {
         return new Section(upStation, downStation, request.getDistance());
     }
 
-    public void delete(final Long lineId, final Long stationId) {
+    public void deleteSection(final Long lineId, final Long stationId) {
         final Line line = sectionRepository.findLineById(lineId);
         final Station target = sectionRepository.findStationById(stationId);
         final List<Section> previousSections = new ArrayList<>(line.getSections());

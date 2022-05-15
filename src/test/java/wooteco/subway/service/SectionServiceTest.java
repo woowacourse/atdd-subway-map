@@ -30,7 +30,7 @@ public class SectionServiceTest {
         final Station station2 = stationRepository.save(new Station("b"));
         final Station station3 = stationRepository.save(new Station("c"));
         final Line line = lineRepository.save(new LineDto("line", "c", station1.getId(), station2.getId(), 10));
-        sectionService.save(line.getId(), new SectionRequest(station2.getId(), station3.getId(), 3));
+        sectionService.saveSection(line.getId(), new SectionRequest(station2.getId(), station3.getId(), 3));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class SectionServiceTest {
         final Station station2 = stationRepository.save(new Station("b"));
         final Station station3 = stationRepository.save(new Station("c"));
         final Line line = lineRepository.save(new LineDto("line", "c", station1.getId(), station2.getId(), 10));
-        sectionService.save(line.getId(), new SectionRequest(station2.getId(), station3.getId(), 3));
-        sectionService.delete(line.getId(), station2.getId());
+        sectionService.saveSection(line.getId(), new SectionRequest(station2.getId(), station3.getId(), 3));
+        sectionService.deleteSection(line.getId(), station2.getId());
     }
 }
