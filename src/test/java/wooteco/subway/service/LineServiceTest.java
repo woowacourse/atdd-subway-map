@@ -166,7 +166,7 @@ class LineServiceTest {
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
         lineService.createSection(신분당선.getId(), sectionRequest);
 
-        lineService.delete(신분당선.getId(), 양재.getId());
+        lineService.deleteSection(신분당선.getId(), 양재.getId());
 
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(신분당선.getId());
         assertThat(sectionEntities).hasSize(1);
@@ -186,7 +186,7 @@ class LineServiceTest {
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
         lineService.createSection(신분당선.getId(), sectionRequest);
 
-        lineService.delete(신분당선.getId(), 강남.getId());
+        lineService.deleteSection(신분당선.getId(), 강남.getId());
 
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(신분당선.getId());
         assertThat(sectionEntities).hasSize(1);
@@ -204,7 +204,7 @@ class LineServiceTest {
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
         lineService.createSection(신분당선.getId(), sectionRequest);
 
-        lineService.delete(신분당선.getId(), 광교.getId());
+        lineService.deleteSection(신분당선.getId(), 광교.getId());
 
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(신분당선.getId());
         assertThat(sectionEntities).hasSize(1);

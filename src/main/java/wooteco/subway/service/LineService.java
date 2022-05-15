@@ -66,8 +66,8 @@ public class LineService {
 
     public void createSection(Long lineId, SectionRequest request) {
         Line line = findLine(lineId);
-        Station upStation = stationDao.findById(request.getUpStationId()).orElseThrow();
-        Station downStation = stationDao.findById(request.getDownStationId()).orElseThrow();
+        Station upStation = findStation(request.getUpStationId());
+        Station downStation = findStation(request.getDownStationId());
         int distance = request.getDistance();
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
         Section newSection = new Section(line, upStation, downStation, distance);
@@ -77,9 +77,9 @@ public class LineService {
         }
     }
 
-    public void delete(Long lineId, Long stationId) {
+    public void deleteSection(Long lineId, Long stationId) {
         Line line = findLine(lineId);
-        Station station = stationDao.findById(stationId).orElseThrow();
+        Station station = findStation(stationId);
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
 
         List<Section> removedSections = sections.findDeleteSections(line, station);
@@ -93,19 +93,15 @@ public class LineService {
         }
     }
 
-    private Station findStation(Long stationId) {
-        return stationDao.findById(stationId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 역입니다. id : " + stationId));
-    }
-
-    private Line findLine(Long lineId) {
-        return lineDao.findById(lineId)
-            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
-    }
-
-    private List<Station> getStations(Long lineId) {
-        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
-        return sections.getStations();
+    private List<Section> toSections(List<SectionEntity> entities) {
+        return entities.stream()
+            .map(entity -> new Section(
+                entity.getId(),
+                findLine(entity.getLineId()),
+                findStation(entity.getUpStationId()),
+                findStation(entity.getDownStationId()),
+                entity.getDistance()))
+            .collect(Collectors.toList());
     }
 
     private void validateDuplicateNameAndColor(String name, String color) {
@@ -114,15 +110,19 @@ public class LineService {
         }
     }
 
-    private List<Section> toSections(List<SectionEntity> entities) {
-        return entities.stream()
-            .map(entity -> new Section(
-                entity.getId(),
-                findLine(entity.getLineId()),
-                stationDao.findById(entity.getUpStationId()).orElseThrow(),
-                stationDao.findById(entity.getDownStationId()).orElseThrow(),
-                entity.getDistance()))
-            .collect(Collectors.toList());
+    private Station findStation(Long stationId) {
+        return stationDao.findById(stationId)
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 역입니다. id : " + stationId));
+    }
+
+    private Line findLine(Long lineId) {
+        return lineDao.findById(lineId)
+            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다. id : " + lineId));
+    }
+
+    private List<Station> getStations(Long lineId) {
+        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        return sections.getStations();
     }
 }
 
