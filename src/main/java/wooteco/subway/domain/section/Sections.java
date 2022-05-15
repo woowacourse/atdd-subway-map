@@ -2,6 +2,7 @@ package wooteco.subway.domain.section;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import wooteco.subway.domain.station.Station;
 
@@ -174,5 +175,27 @@ public class Sections {
 
     private Station toUpperEndStation() {
         return value.get(0).getUpStation();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Sections sections = (Sections) o;
+        return Objects.equals(value, sections.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" + "value=" + value + '}';
     }
 }

@@ -12,6 +12,8 @@ import wooteco.subway.exception.ExceptionType;
 
 public class SectionsFactory {
 
+    private static final String SECTIONS_NOT_CONNECTED_EXCEPTION = "구간들이 서로 이어지지 않습니다.";
+
     private SectionsFactory() {
     }
 
@@ -19,7 +21,9 @@ public class SectionsFactory {
         validateLineExistence(sections);
         Station upperEndStation = toUpperEndStation(sections);
         Map<Station, Section> sectionMap = toSectionMap(sections);
-        return new Sections(toSortedSectionList(upperEndStation, sectionMap));
+        List<Section> sortedSections = toSortedSectionList(upperEndStation, sectionMap);
+        validateConnection(sections, sortedSections);
+        return new Sections(sortedSections);
     }
 
     private static void validateLineExistence(List<Section> value) {
@@ -62,5 +66,11 @@ public class SectionsFactory {
             current = section.getDownStation();
         }
         return list;
+    }
+
+    private static void validateConnection(List<Section> sections, List<Section> sortedSections) {
+        if (sections.size() != sortedSections.size()) {
+            throw new IllegalArgumentException(SECTIONS_NOT_CONNECTED_EXCEPTION);
+        }
     }
 }
