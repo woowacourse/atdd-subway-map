@@ -58,7 +58,7 @@ public class LineDaoTest {
     @DisplayName("노선 수정")
     void modifyById() {
         LineEntity savedLine = lineDao.save(new LineEntity("1호선", "blue"));
-        lineDao.modifyById(new Line(savedLine.getId(), "2호선", "red"));
+        lineDao.modifyById(new LineEntity(savedLine.getId(), "2호선", "red"));
         LineEntity updateLine = lineDao.findById(savedLine.getId()).get();
         assertThat(updateLine.getName()).isEqualTo("2호선");
         assertThat(updateLine.getColor()).isEqualTo("red");

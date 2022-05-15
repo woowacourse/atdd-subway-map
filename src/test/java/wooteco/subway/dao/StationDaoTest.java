@@ -20,8 +20,8 @@ public class StationDaoTest {
     @Test
     @DisplayName("지하철 역 저장")
     void save() {
-        Station station = new Station("호호역");
-        Station savedStation = stationDao.save(station);
+        StationEntity station = new StationEntity("호호역");
+        StationEntity savedStation = stationDao.save(station);
 
         assertThat(savedStation.getId()).isNotNull();
         assertThat(savedStation.getName()).isEqualTo(station.getName());
@@ -30,7 +30,7 @@ public class StationDaoTest {
     @Test
     @DisplayName("지하철 역 이름 중복 여부 조회")
     void duplicateName() {
-        Station station = new Station("호호역");
+        StationEntity station = new StationEntity("호호역");
         stationDao.save(station);
         assertThat(stationDao.existByName("호호역")).isTrue();
     }
@@ -38,8 +38,8 @@ public class StationDaoTest {
     @Test
     @DisplayName("지하철 역 전체 조회")
     void findAll() {
-        Station station1 = new Station("호호역");
-        Station station2 = new Station("수달역");
+        StationEntity station1 = new StationEntity("호호역");
+        StationEntity station2 = new StationEntity("수달역");
         stationDao.save(station1);
         stationDao.save(station2);
 
@@ -51,8 +51,8 @@ public class StationDaoTest {
     @Test
     @DisplayName("id로 지하철 역을 삭제")
     void deleteById() {
-        Station station1 = new Station("호호역");
-        Station savedStation = stationDao.save(station1);
+        StationEntity station1 = new StationEntity("호호역");
+        StationEntity savedStation = stationDao.save(station1);
 
         stationDao.deleteById(savedStation.getId());
 

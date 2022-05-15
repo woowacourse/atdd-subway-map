@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.entity.SectionEntity;
-import wooteco.subway.domain.Section;
 
 @Repository
 public class SectionDao {
@@ -30,12 +29,20 @@ public class SectionDao {
             .usingGeneratedKeyColumns("id");
     }
 
-    public void save(Section section) {
-        if (isUpdate(section)) {
-            update(section);
-            return;
-        }
-        insert(section);
+    public SectionEntity save(SectionEntity section) {
+        SqlParameterSource params = insertParam(section);
+        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        return toSectionEntity(id, section);
+    }
+
+    public void update(SectionEntity section) {
+        String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
+        Long upStationId = section.getUpStationId();
+        Long downStationId = section.getDownStationId();
+        int distance = section.getDistance();
+        Long sectionId = section.getId();
+
+        jdbcTemplate.update(sql, upStationId, downStationId, distance, sectionId);
     }
 
     public List<SectionEntity> findByLineId(Long lineId) {
@@ -48,27 +55,22 @@ public class SectionDao {
         jdbcTemplate.update(sql, id);
     }
 
-    private boolean isUpdate(Section section) {
-        return section.getId() != null;
+    private SectionEntity toSectionEntity(long id, SectionEntity section) {
+        return new SectionEntity(
+            id,
+            section.getLineId(),
+            section.getUpStationId(),
+            section.getDownStationId(),
+            section.getDistance()
+        );
     }
 
-    private void insert(Section section) {
-        SqlParameterSource params = new MapSqlParameterSource()
+    private MapSqlParameterSource insertParam(SectionEntity section) {
+        return new MapSqlParameterSource()
             .addValue("id", section.getId())
-            .addValue("line_id", section.getLine().getId())
-            .addValue("up_station_id", section.getUpStation().getId())
-            .addValue("down_station_id", section.getDownStation().getId())
+            .addValue("line_id", section.getLineId())
+            .addValue("up_station_id", section.getUpStationId())
+            .addValue("down_station_id", section.getDownStationId())
             .addValue("distance", section.getDistance());
-        jdbcInsert.executeAndReturnKey(params).longValue();
-    }
-
-    private void update(Section section) {
-        String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
-        Long id = section.getUpStation().getId();
-        Long downStationId = section.getDownStation().getId();
-        int distance = section.getDistance();
-        Long sectionId = section.getId();
-
-        jdbcTemplate.update(sql, id, downStationId, distance, sectionId);
     }
 }

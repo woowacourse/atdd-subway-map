@@ -21,7 +21,8 @@ public class LineRepository {
         if (line.getId() == null) {
             return toLine(lineDao.save(new LineEntity(line.getName(), line.getColor())));
         }
-        return lineDao.modifyById(line);
+        lineDao.modifyById(new LineEntity(line.getId(), line.getName(), line.getColor()));
+        return line;
     }
 
     public Line findById(Long id) {

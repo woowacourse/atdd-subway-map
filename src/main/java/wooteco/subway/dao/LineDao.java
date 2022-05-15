@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.entity.LineEntity;
-import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
@@ -50,10 +49,9 @@ public class LineDao {
         return jdbcTemplate.query(sql, mapper);
     }
 
-    public Line modifyById(Line line) {
+    public void modifyById(LineEntity line) {
         String sql = "update line set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
-        return line;
     }
 
     public void deleteById(Long id) {

@@ -3,14 +3,13 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.BadRequestException;
 import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.StationRepository;
 import wooteco.subway.service.dto.request.LineRequest;
 import wooteco.subway.service.dto.request.LineUpdateRequest;
@@ -20,14 +19,18 @@ import wooteco.subway.service.dto.response.LineResponse;
 @Service
 public class LineService {
 
-    private final SectionDao sectionDao;
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public LineService(SectionDao sectionDao, LineRepository lineRepository, StationRepository stationRepository) {
-        this.sectionDao = sectionDao;
+    public LineService(
+        LineRepository lineRepository,
+        StationRepository stationRepository,
+        SectionRepository sectionRepository
+    ) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse create(LineRequest lineRequest) {
@@ -37,7 +40,7 @@ public class LineService {
         Station downStation = findStation(lineRequest.getDownStationId());
 
         Line savedLine = lineRepository.save(line);
-        sectionDao.save(new Section(savedLine, upStation, downStation, lineRequest.getDistance()));
+        sectionRepository.save(new Section(savedLine, upStation, downStation, lineRequest.getDistance()));
 
         return LineResponse.of(savedLine, List.of(upStation, downStation));
     }
@@ -69,39 +72,28 @@ public class LineService {
         Station upStation = findStation(request.getUpStationId());
         Station downStation = findStation(request.getDownStationId());
         int distance = request.getDistance();
-        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        Sections sections = new Sections(sectionRepository.findSectionByLine(line));
         Section newSection = new Section(line, upStation, downStation, distance);
 
         for (Section updateSection : sections.findUpdateSections(newSection)) {
-            sectionDao.save(updateSection);
+            sectionRepository.save(updateSection);
         }
     }
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLine(lineId);
         Station station = findStation(stationId);
-        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        Sections sections = new Sections(sectionRepository.findSectionByLine(line));
 
         List<Section> removedSections = sections.findDeleteSections(line, station);
         for (Section removedSection : removedSections) {
-            sectionDao.deleteById(removedSection.getId());
+            sectionRepository.deleteById(removedSection.getId());
         }
 
         if (removedSections.size() == Sections.COMBINE_SIZE) {
             Section combineSection = sections.combine(line, removedSections);
-            sectionDao.save(combineSection);
+            sectionRepository.save(combineSection);
         }
-    }
-
-    private List<Section> toSections(List<SectionEntity> entities) {
-        return entities.stream()
-            .map(entity -> new Section(
-                entity.getId(),
-                findLine(entity.getLineId()),
-                findStation(entity.getUpStationId()),
-                findStation(entity.getDownStationId()),
-                entity.getDistance()))
-            .collect(Collectors.toList());
     }
 
     private void validateDuplicateNameAndColor(String name, String color) {
@@ -119,7 +111,8 @@ public class LineService {
     }
 
     private List<Station> getStations(Long lineId) {
-        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        Line line = lineRepository.findById(lineId);
+        Sections sections = new Sections(sectionRepository.findSectionByLine(line));
         return sections.getStations();
     }
 }

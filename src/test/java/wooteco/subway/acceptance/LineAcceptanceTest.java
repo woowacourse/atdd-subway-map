@@ -264,7 +264,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", addStationId);
-        params.put("distance", 5);
+        params.put("distance", 3);
 
         RestAssured.given().log().all()
             .body(params)

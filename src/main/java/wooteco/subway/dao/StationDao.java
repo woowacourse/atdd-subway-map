@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.entity.StationEntity;
-import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
@@ -29,12 +28,6 @@ public class StationDao {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
             .withTableName("station")
             .usingGeneratedKeyColumns("id");
-    }
-
-    public Station save(Station station) {
-        SqlParameterSource parameters = new MapSqlParameterSource("name", station.getName());
-        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Station(id, station.getName());
     }
 
     public StationEntity save(StationEntity stationEntity) {
