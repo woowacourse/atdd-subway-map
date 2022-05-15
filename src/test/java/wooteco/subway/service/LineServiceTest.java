@@ -244,7 +244,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("기존 구간보다 긴 거리의 구간으로 추가시 예외를 발생한다.")
+    @DisplayName("기존 구간보다 같거나 긴 거리의 구간으로 추가시 예외를 발생한다.")
     void addSectionOverDistance() {
         Station 강남 = stationDao.save(new Station("강남"));
         Station 양재 = stationDao.save(new Station("양재"));
@@ -252,7 +252,7 @@ class LineServiceTest {
         Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
 
-        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 11);
+        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 10);
 
         assertThatThrownBy(() -> lineService.createSection(신분당선.getId(), sectionRequest))
             .isInstanceOf(IllegalArgumentException.class)

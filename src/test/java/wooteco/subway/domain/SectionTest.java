@@ -82,14 +82,23 @@ public class SectionTest {
         assertThat(기존_구간.isEqualToDownStation(성수)).isTrue();
     }
 
+    @Test
+    @DisplayName("구간의 라인이 같은지 확인한다.")
+    void isEqualToLine() {
+        Line line = new Line(1L, "2호선", "green");
+
+        Section 첫번째_구간 = new Section(1L, line, 삼성, 성수, 10);
+
+        assertThat(첫번째_구간.isEqualToLine(line)).isTrue();
+    }
 
     @Test
-    @DisplayName("기존 구간보다 거리가 큰 경우 예외를 발생한다.")
+    @DisplayName("기존 구간보다 같거나 큰 경우 예외를 발생한다.")
     void throwExceptionIsLongDistance() {
         Line line = new Line(1L, "2호선", "green");
 
         Section 기존_구간 = new Section(1L, line, 삼성, 성수, 10);
-        Section 추가할_구간 = new Section(line, 강남, 성수, 11);
+        Section 추가할_구간 = new Section(line, 강남, 성수, 10);
 
         assertThatThrownBy(() -> 기존_구간.split(추가할_구간))
             .isInstanceOf(IllegalArgumentException.class)
