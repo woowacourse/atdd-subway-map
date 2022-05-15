@@ -26,9 +26,9 @@ import wooteco.subway.ui.dto.SectionRequest;
 @Transactional
 public class LineService {
 
-    private static final String DUPLICATED_NAME_ERROR_MESSAGE = "중복된 이름이 존재합니다.";
-    private static final String NONE_LINE_ERROR_MESSAGE = "해당 ID의 노선은 존재하지 않습니다.";
-    private static final String NONE_SECTION_ERROR_MESSAGE = "존재하지 않는 역입니다.";
+    private static final String DUPLICATED_NAME_ERROR_MESSAGE = "중복된 이름이 존재합니다.\n-> {name : %s}";
+    private static final String NONE_LINE_ERROR_MESSAGE = "해당 ID의 노선은 존재하지 않습니다.\n-> {id : %d}";
+    private static final String NONE_SECTION_ERROR_MESSAGE = "존재하지 않는 역입니다.\n-> {id : %d}";
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -55,7 +55,7 @@ public class LineService {
 
     private void validDuplicatedName(String name) {
         if (lineDao.existsByName(name)) {
-            throw new IllegalArgumentException(DUPLICATED_NAME_ERROR_MESSAGE);
+            throw new IllegalArgumentException(String.format(DUPLICATED_NAME_ERROR_MESSAGE, name));
         }
     }
 
@@ -67,7 +67,7 @@ public class LineService {
 
     private void validStation(Long id) {
         if (!stationDao.existsById(id)) {
-            throw new IllegalArgumentException(NONE_SECTION_ERROR_MESSAGE);
+            throw new IllegalArgumentException(String.format(NONE_SECTION_ERROR_MESSAGE, id));
         }
     }
 
@@ -78,13 +78,13 @@ public class LineService {
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        validDuplicatedNameExceptMySelf(lineRequest.getName(), id);
+        validDuplicatedNameWithoutId(lineRequest.getName(), id);
         lineDao.update(id, lineRequest);
     }
 
-    private void validDuplicatedNameExceptMySelf(String name, Long id) {
+    private void validDuplicatedNameWithoutId(String name, Long id) {
         if (lineDao.existsByNameExceptWithId(name, id)) {
-            throw new IllegalArgumentException(DUPLICATED_NAME_ERROR_MESSAGE);
+            throw new IllegalArgumentException(String.format(DUPLICATED_NAME_ERROR_MESSAGE, name));
         }
     }
 
@@ -92,7 +92,7 @@ public class LineService {
     public LineResponse findById(Long id) {
         Optional<Line> line = lineDao.findById(id);
         if (line.isEmpty()) {
-            throw new IllegalArgumentException(NONE_LINE_ERROR_MESSAGE);
+            throw new IllegalArgumentException(String.format(NONE_LINE_ERROR_MESSAGE, id));
         }
         Sections sections = new Sections(sectionDao.findByLineId(id));
         return LineResponse.from(line.get(), findStations(sections, id));
@@ -100,16 +100,19 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
-        Map<Long, List<Section>> sectionsMap = initSectionMap(sectionDao.findAll());
+        Map<Long, List<Section>> sectionsMap = initSectionsMap(sectionDao.findAll());
 
         return lineDao.findAll()
                 .stream()
-                .map(line -> LineResponse.from(line,
-                        findStations(new Sections(sectionsMap.get(line.getId())), line.getId())))
+                .map(line -> {
+                    Long lineId = line.getId();
+                    Sections sections = new Sections(sectionsMap.get(lineId));
+                    return LineResponse.from(line, findStations(sections, lineId));
+                })
                 .collect(Collectors.toList());
     }
 
-    private Map<Long, List<Section>> initSectionMap(List<Section> sections) {
+    private Map<Long, List<Section>> initSectionsMap(List<Section> sections) {
         Map<Long, List<Section>> map = new HashMap<>();
         for (Section section : sections) {
             Long lineId = section.getLineId();
@@ -130,12 +133,9 @@ public class LineService {
     }
 
     private Map<Long, String> initNameMap(Long id) {
-        List<Station> stations = stationDao.findByLineId(id);
-        Map<Long, String> map = new HashMap<>();
-        for (Station station : stations) {
-            map.put(station.getId(), station.getName());
-        }
-        return map;
+        return stationDao.findByLineId(id)
+                .stream()
+                .collect(Collectors.toMap(Station::getId, Station::getName));
     }
 
     public void deleteById(Long id) {
