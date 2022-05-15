@@ -84,6 +84,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("없는 지하철역을 제거한다.")
+    @Test
+    void deleteNonStation() {
+        // given
+        // when
+        ExtractableResponse<Response> response = createDeleteStationResponseById("-1");
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> createPostStationResponse(StationRequest stationRequest) {
         return RestAssured.given().log().all()
                 .body(stationRequest)
