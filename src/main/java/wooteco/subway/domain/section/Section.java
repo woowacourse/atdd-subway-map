@@ -37,11 +37,7 @@ public class Section {
     }
 
     public boolean equalsUpStation(Station station) {
-        return equalsUpStation(station.getId());
-    }
-
-    public boolean equalsUpStation(Long stationId) {
-        return stationId.equals(upStation.getId());
+        return upStation.equals(station);
     }
 
     public boolean equalsDownStation(Station station) {

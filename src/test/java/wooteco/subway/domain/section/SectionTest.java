@@ -64,7 +64,7 @@ class SectionTest {
     @ParameterizedTest
     @MethodSource("provideForEqualsUpStation")
     void equalsUpStationById(Station upStation, boolean expected) {
-        boolean actual = section.equalsUpStation(upStation.getId());
+        boolean actual = section.equalsUpStation(upStation);
         assertThat(actual).isEqualTo(expected);
     }
 
