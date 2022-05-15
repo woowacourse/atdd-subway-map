@@ -114,4 +114,20 @@ public class SectionDaoTest {
         // then
         assertThat(affectedRows).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("해당 역 id를 갖는 구간 찾기")
+    void findByStationId() {
+        // given
+        SectionEntity entity1 = new SectionEntity(null, 1L, 1L, 2L, 1);
+        SectionEntity entity2 = new SectionEntity(null, 1L, 2L, 3L, 1);
+        List<SectionEntity> entities = List.of(entity1, entity2);
+        sectionDao.saveAll(entities);
+
+        // when
+        List<SectionEntity> sections = sectionDao.findByStationId(1L, 2L);
+
+        // then
+        assertThat(sections).hasSize(2);
+    }
 }

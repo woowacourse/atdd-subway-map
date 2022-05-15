@@ -1,49 +1,63 @@
 package wooteco.subway.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.DeletableSections;
-import wooteco.subway.domain.Line;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionDeleteRequest;
 import wooteco.subway.dto.SectionSaveRequest;
-import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.SectionRepository;
+import wooteco.subway.entity.SectionEntity;
 
 @Service
 @Transactional
 public class SectionService {
 
-    private final LineRepository lines;
-    private final SectionRepository sections;
+    private final SectionDao sectionDao;
 
-    public SectionService(LineRepository lines, SectionRepository sections) {
-        this.lines = lines;
-        this.sections = sections;
+    public SectionService(SectionDao sectionDao) {
+        this.sectionDao = sectionDao;
     }
 
-    public Section save(SectionSaveRequest request) {
+    public void save(SectionSaveRequest request) {
         Section sectionForSave = new Section(request.getLineId(), request.getUpStationId(),
                 request.getDownStationId(), request.getDistance());
-        Line line = lines.findById(request.getLineId());
-        line.getDividedSectionsFrom(new Section(sectionForSave.getId(), sectionForSave.getLine_id(),
-                        sectionForSave.getUpStationId(), sectionForSave.getDownStationId(), sectionForSave.getDistance()))
-                .ifPresent(sections::update);
-        return sections.save(sectionForSave);
+        Sections sections = new Sections(findByLineId(request.getLineId()));
+        sections.add(sectionForSave);
+
+        sectionDao.deleteByLineId(request.getLineId());
+        sectionDao.saveAll(toEntities(sections));
+    }
+
+    private List<SectionEntity> toEntities(Sections sections) {
+        return sections.getValue().stream()
+                .map(SectionEntity::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Section> findByLineId(Long lineId) {
+        return sectionDao.findByLineId(lineId)
+                .stream().map(this::toSection)
+                .collect(Collectors.toList());
+    }
+
+    private Section toSection(SectionEntity entity) {
+        return new Section(entity.getId(), entity.getLine_id(), entity.getUpStationId(), entity.getDownStationId(),
+                entity.getDistance());
     }
 
     public void delete(SectionDeleteRequest request) {
-        Line line = lines.findById(request.getLineId());
-        DeletableSections deletableSections = new DeletableSections(
-                line.findDeletableByStationId(request.getStationId()));
-        deleteNearSections(deletableSections);
-        deletableSections.mergeSections()
-                .ifPresent(sections::save);
+        List<Section> sectionList = findByLineId(request.getLineId());
+        Sections sections = new Sections(sectionList);
+        sections.deleteSectionsByStationId(request.getStationId());
+        sectionDao.deleteByLineId(request.getLineId());
+        sectionDao.saveAll(toEntities(sections));
     }
 
-    private void deleteNearSections(DeletableSections deletableSections) {
-        for (Long id : deletableSections.getSectionIds()) {
-            sections.deleteById(id);
-        }
+    public int deleteByLineId(Long lineId) {
+        return sectionDao.deleteByLineId(lineId);
     }
 }

@@ -5,71 +5,84 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionSaveRequest;
+import wooteco.subway.entity.LineEntity;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.NotFoundException;
-import wooteco.subway.repository.LineRepository;
 
 @Service
 @Transactional
 public class LineService {
 
-    private final StationDao stationDao;
-    private final LineRepository lines;
+    private final LineDao lineDao;
+    private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineService(StationDao stationDao, LineRepository lines) {
-        this.stationDao = stationDao;
-        this.lines = lines;
+    public LineService(LineDao lineDao, SectionService sectionService, StationService stationService) {
+        this.lineDao = lineDao;
+        this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     public LineResponse save(final LineRequest request) {
         try {
-            Line savedLine = saveLine(request);
-            List<Station> stations = getStationsByLine(savedLine);
-            return LineResponse.of(savedLine, stations);
+            LineEntity saved = lineDao.save(new LineEntity(null, request.getName(), request.getColor()));
+            sectionService.save(
+                    new SectionSaveRequest(saved.getId(), request.getUpStationId(), request.getDownStationId(),
+                            request.getDistance()));
+            List<Section> sections = sectionService.findByLineId(saved.getId());
+            Line line = new Line(saved.getId(), saved.getName(), saved.getColor(), sections);
+            return LineResponse.of(line, getStationsByLine(line));
         } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
         }
     }
 
-    private Line saveLine(LineRequest request) {
-        Section section = new Section(null, request.getUpStationId(), request.getDownStationId(),
-                request.getDistance());
-        Line requestLine = new Line(request.getName(), request.getColor(), List.of(section));
-        return lines.save(requestLine);
-    }
-
     private List<Station> getStationsByLine(Line line) {
-        List<Long> sortedStationIds = line.getSortedStationId();
-        return new Stations(stationDao.findByIds(sortedStationIds))
-                .sortBy(sortedStationIds);
+        List<Section> sections = sectionService.findByLineId(line.getId());
+        return stationService.getSortedStations(new Sections(sections));
     }
 
     public List<LineResponse> findAll() {
-        return lines.findAll().stream()
+        return lineDao.findAll().stream()
+                .map(lineEntity -> new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(),
+                        sectionService.findByLineId(lineEntity.getId())))
                 .map(line -> LineResponse.of(line, getStationsByLine(line)))
                 .collect(Collectors.toList());
     }
 
+    private Line toLine(LineEntity entity) {
+        return new Line(entity.getId(), entity.getName(), entity.getColor(),
+                sectionService.findByLineId(entity.getId()));
+    }
+
     public LineResponse findById(Long id) {
-        Line line = lines.findById(id);
+        Line line = getLine(id);
         return LineResponse.of(line, getStationsByLine(line));
     }
 
+    private Line getLine(Long id) {
+        return lineDao.findById(id)
+                .map(this::toLine)
+                .orElseThrow(NotFoundException::new);
+    }
+
     public void updateById(final Long id, final LineRequest request) {
-        Line line = lines.findById(id);
+        Line line = getLine(id);
         line.updateName(request.getName());
         line.updateColor(request.getColor());
-        lines.update(line);
+        lineDao.update(LineEntity.from(line));
     }
 
     public void deleteById(final Long id) {
-        lines.deleteById(id);
+        sectionService.deleteByLineId(id);
+        lineDao.deleteById(id);
     }
 }

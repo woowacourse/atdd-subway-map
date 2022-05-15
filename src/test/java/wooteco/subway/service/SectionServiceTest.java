@@ -4,41 +4,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionDeleteRequest;
 import wooteco.subway.dto.SectionSaveRequest;
-import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.SectionRepository;
+import wooteco.subway.entity.LineEntity;
+import wooteco.subway.entity.SectionEntity;
 
 @SpringBootTest
 @Transactional
 class SectionServiceTest {
 
     @Autowired
-    private SectionRepository sections;
-
-    @Autowired
-    private LineRepository lines;
-
-    @Autowired
     private SectionService sectionService;
+
+    @Autowired
+    private SectionDao sectionDao;
+
+    @Autowired
+    private LineDao lineDao;
 
     private Long lineId;
 
     @BeforeEach
     void setUp() {
-        Line firstLine = lines.save(new Line("1호선", "red", null));
+        LineEntity firstLine = lineDao.save(new LineEntity(null, "1호선", "red"));
         lineId = firstLine.getId();
-        sections.save(new Section(lineId, 1L, 2L, 3));
-        sections.save(new Section(lineId, 2L, 3L, 4));
-        sections.save(new Section(lineId, 3L, 4L, 5));
+        sectionDao.save(new SectionEntity(null, lineId, 1L, 2L, 3));
+        sectionDao.save(new SectionEntity(null, lineId, 2L, 3L, 4));
+        sectionDao.save(new SectionEntity(null, lineId, 3L, 4L, 5));
     }
 
     @Test
@@ -47,11 +50,8 @@ class SectionServiceTest {
         // given
         SectionSaveRequest request = new SectionSaveRequest(lineId, 2L, 10L, 1);
 
-        Section savedSection = sectionService.save(request);
-        assertAll(() -> {
-            assertThat(savedSection.getUpStationId()).isEqualTo(request.getUpStationId());
-            assertThat(savedSection.getDownStationId()).isEqualTo(request.getDownStationId());
-        });
+        assertThatCode(() -> sectionService.save(request))
+                .doesNotThrowAnyException();
     }
 
     @Test

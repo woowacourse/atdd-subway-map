@@ -6,7 +6,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ExceptionMessage;
@@ -32,6 +34,7 @@ public class StationService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
 
@@ -42,5 +45,12 @@ public class StationService {
 
     public void delete(Long id) {
         stationDao.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Station> getSortedStations(Sections sections) {
+        List<Long> sortedStationId = sections.getSortedStationId();
+        List<Station> stations = stationDao.findByIds(sortedStationId);
+        return new Stations(stations).sortBy(sortedStationId);
     }
 }

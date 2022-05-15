@@ -96,4 +96,10 @@ public class JdbcSectionDao implements SectionDao {
                 return entities.size();
             }};
     }
+
+    @Override
+    public List<SectionEntity> findByStationId(Long lineId, Long stationId) {
+        final String sql = "SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
+        return jdbcTemplate.query(sql, getRowMapper(), lineId, stationId, stationId);
+    }
 }

@@ -16,9 +16,12 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.SectionRepository;
+import wooteco.subway.dto.SectionSaveRequest;
+import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 
 class SectionAcceptanceTest extends AcceptanceTest {
 
@@ -26,16 +29,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private StationDao stationDao;
 
     @Autowired
-    private LineRepository lines;
+    private LineService lineService;
 
     @Autowired
-    private SectionRepository sections;
+    private SectionService sectionService;
 
     private Station gangnam;
     private Station nowon;
     private Station jamsil;
 
-    private Line line1;
+    private LineResponse line1;
 
     @Override
     @BeforeEach
@@ -44,8 +47,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         gangnam = stationDao.save(new Station("강남"));
         nowon = stationDao.save(new Station("노원"));
         jamsil = stationDao.save(new Station("잠실"));
-        line1 = lines.save(new Line("1호선", "red", Collections.emptyList()));
-        sections.save(new Section(line1.getId(), gangnam.getId(), nowon.getId(), 10));
+        line1 = lineService.save(new LineRequest("1호선", "red", gangnam.getId(), nowon.getId(), 10));
     }
 
     @Test
@@ -66,7 +68,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 삭제하기")
     void delete() {
         //given
-        sections.save(new Section(line1.getId(), jamsil.getId(), gangnam.getId(), 5));
+        sectionService.save(new SectionSaveRequest(line1.getId(), jamsil.getId(), nowon.getId(), 5));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

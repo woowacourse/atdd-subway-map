@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +28,7 @@ class LineTest {
     @DisplayName("노선 이름이 공백이면 예외가 발생한다")
     @ValueSource(strings = {"", " ", "    "})
     void newLine_blankName(String name) {
-        assertThatThrownBy(() -> new Line(name, "bg-red-600", null))
+        assertThatThrownBy(() -> new Line(name, "bg-red-600", new ArrayList<>()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("노선의 이름이 공백이 되어서는 안됩니다.");
     }
@@ -36,7 +37,7 @@ class LineTest {
     @DisplayName("노선 객체 생성에 성공한다.")
     void newLine() {
         // when
-        Line line = new Line("7호선", "bg-red-600", null);
+        Line line = new Line("7호선", "bg-red-600", new ArrayList<>());
 
         // then
         assertThat(line).isNotNull();
@@ -53,13 +54,13 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("구간들에서 특정역에 따라 삭제할 구간 찾기")
+    @DisplayName("구간들에서 특정역에 따라 구간 삭제")
     void findNearByStationId() {
         // when
-        List<Section> nearBySections = line.findDeletableByStationId(2L);
+        line.deleteSectionsByStationId(2L);
 
         // then
-        assertThat(nearBySections).hasSize(2);
+        assertThat(line.getSections()).hasSize(1);
     }
 
     @Test
@@ -69,7 +70,7 @@ class LineTest {
         Line onlyOneLine = new Line("onlyOne", "red", List.of(new Section(1L, 1L, 2L, 10)));
 
         // then
-        assertThatThrownBy(() -> onlyOneLine.findDeletableByStationId(1L))
+        assertThatThrownBy(() -> onlyOneLine.deleteSectionsByStationId(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(ExceptionMessage.SECTIONS_NOT_DELETABLE.getContent());
     }
