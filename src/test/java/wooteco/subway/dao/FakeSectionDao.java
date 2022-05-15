@@ -36,9 +36,9 @@ public class FakeSectionDao implements SectionDao {
         Long id = section.getId();
         if (sections.containsKey(id)) {
             sections.put(id, section);
-            return 1;
+            return EXECUTED_COLUMN_COUNT_ONE;
         }
-        return 0;
+        return EXECUTED_COLUMN_COUNT_NONE;
     }
 
     @Override

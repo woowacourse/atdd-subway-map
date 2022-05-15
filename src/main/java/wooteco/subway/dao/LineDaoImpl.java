@@ -44,13 +44,6 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public int deleteById(Long id) {
-        String sql = "delete from line where id = :id";
-        SqlParameterSource namedParameter = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.update(sql, namedParameter);
-    }
-
-    @Override
     public Line findById(Long id) {
         String sql = "select * from line where id = :id";
         SqlParameterSource namedParameter = new MapSqlParameterSource("id", id);
@@ -58,16 +51,23 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public boolean existsByNameOrColor(Line line) {
-        String sql = "select exists (select name from line where name = :name or color = :color)";
-        SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(line);
-        return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, namedParameters, Boolean.class));
-    }
-
-    @Override
     public int update(Line updatingLine) {
         String sql = "update line set name = :name, color = :color where id = :id";
         SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(updatingLine);
         return namedParameterJdbcTemplate.update(sql, namedParameters);
+    }
+
+    @Override
+    public int deleteById(Long id) {
+        String sql = "delete from line where id = :id";
+        SqlParameterSource namedParameter = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.update(sql, namedParameter);
+    }
+
+    @Override
+    public boolean existsByNameOrColor(Line line) {
+        String sql = "select exists (select name from line where name = :name or color = :color)";
+        SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(line);
+        return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, namedParameters, Boolean.class));
     }
 }

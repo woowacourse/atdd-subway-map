@@ -9,11 +9,11 @@ public interface LineDao {
 
     List<Line> findAll();
 
-    int deleteById(Long id);
-
     Line findById(Long id);
 
-    boolean existsByNameOrColor(Line line);
-
     int update(Line updatingLine);
+
+    int deleteById(Long id);
+
+    boolean existsByNameOrColor(Line line);
 }

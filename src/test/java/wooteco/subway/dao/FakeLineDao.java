@@ -29,6 +29,24 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
+    public Line findById(Long id) {
+        if (!lines.containsKey(id)) {
+            throw new EmptyResultDataAccessException(1);
+        }
+        return lines.get(id);
+    }
+
+    @Override
+    public int update(Line updatingLine) {
+        Long id = updatingLine.getId();
+        if (lines.containsKey(id)) {
+            lines.put(id, updatingLine);
+            return EXECUTED_COLUMN_COUNT_ONE;
+        }
+        return EXECUTED_COLUMN_COUNT_NONE;
+    }
+
+    @Override
     public int deleteById(Long id) {
         if (lines.containsKey(id)) {
             lines.remove(id);
@@ -38,27 +56,9 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
-        if (!lines.containsKey(id)) {
-            throw new EmptyResultDataAccessException(1);
-        }
-        return lines.get(id);
-    }
-
-    @Override
     public boolean existsByNameOrColor(Line line) {
         return lines.values()
                 .stream()
                 .anyMatch(it -> it.getName().equals(line.getName()) || it.getColor().equals(line.getColor()));
-    }
-
-    @Override
-    public int update(Line updatingLine) {
-        Long id = updatingLine.getId();
-        if (lines.containsKey(id)) {
-            lines.put(id, updatingLine);
-            return 1;
-        }
-        return 0;
     }
 }
