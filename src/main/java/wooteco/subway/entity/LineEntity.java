@@ -1,5 +1,7 @@
 package wooteco.subway.entity;
 
+import wooteco.subway.domain.Line;
+
 public class LineEntity {
 
     private final Long id;
@@ -10,6 +12,10 @@ public class LineEntity {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public static LineEntity from(Line line) {
+        return new LineEntity(line.getId(), line.getName(), line.getColor());
     }
 
     public Long getId() {

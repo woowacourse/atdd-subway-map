@@ -23,16 +23,22 @@ public class LineRepository {
     }
 
     public Line save(Line line) {
-        LineEntity toSave = new LineEntity(null, line.getName(), line.getColor());
+        LineEntity toSave = LineEntity.from(line);
         LineEntity savedLine = lineDao.save(toSave);
-        List<SectionEntity> savedSections = getSavedSections(line, savedLine);
-        return convertToLine(savedLine, savedSections);
+        saveSections(savedLine.getId(), line.getSections());
+        return findById(savedLine.getId());
     }
 
-    private List<SectionEntity> getSavedSections(Line line, LineEntity saved) {
-        return line.getSections().stream()
-                .map(section -> sectionDao.save(new SectionEntity(null, saved.getId(), section.getUpStationId(),
-                        section.getDownStationId(), section.getDistance())))
+    private void saveSections(Long lineId, List<Section> sections) {
+        for (Section section : sections) {
+            SectionEntity entity = SectionEntity.of(lineId, section);
+            sectionDao.save(entity);
+        }
+    }
+
+    public List<Line> findAll() {
+        return lineDao.findAll().stream()
+                .map(entity -> convertToLine(entity, getSectionsFrom(entity)))
                 .collect(Collectors.toList());
     }
 
@@ -42,12 +48,6 @@ public class LineRepository {
                         entity.getDownStationId(), entity.getDistance()))
                 .collect(Collectors.toList());
         return new Line(line.getId(), line.getName(), line.getColor(), sections);
-    }
-
-    public List<Line> findAll() {
-        return lineDao.findAll().stream()
-                .map(entity -> convertToLine(entity, getSectionsFrom(entity)))
-                .collect(Collectors.toList());
     }
 
     private List<SectionEntity> getSectionsFrom(LineEntity lineEntity) {
@@ -61,13 +61,14 @@ public class LineRepository {
     }
 
     public Line update(Line line) {
-        LineEntity forUpdate = new LineEntity(line.getId(), line.getName(), line.getColor());
+        LineEntity forUpdate = LineEntity.from(line);
         LineEntity updatedEntity = lineDao.update(forUpdate);
-        return convertToLine(updatedEntity, getSectionsFrom(updatedEntity));
+        sectionDao.deleteByLineId(line.getId());
+        return findById(updatedEntity.getId());
     }
 
     public Integer deleteById(Long id) {
-        //DELETE SECTIONS
+        sectionDao.deleteByLineId(id);
         return lineDao.deleteById(id);
     }
 }

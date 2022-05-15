@@ -1,5 +1,7 @@
 package wooteco.subway.entity;
 
+import wooteco.subway.domain.Section;
+
 public class SectionEntity {
 
     private final Long id;
@@ -14,6 +16,11 @@ public class SectionEntity {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public static SectionEntity of(Long lineId, Section section) {
+        return new SectionEntity(section.getId(), lineId, section.getUpStationId(), section.getDownStationId(),
+                section.getDistance());
     }
 
     public Long getId() {
