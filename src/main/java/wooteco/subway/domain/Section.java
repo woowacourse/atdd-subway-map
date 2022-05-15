@@ -4,11 +4,15 @@ import java.util.Objects;
 
 public class Section {
 
+    public static final Section NOTHING_SECTION = new Section();
     private Long id;
     private Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;
+
+    private Section() {
+    }
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         this.id = id;
@@ -58,6 +62,10 @@ public class Section {
         return downStationId;
     }
 
+    public boolean isEmpty() {
+        return this.equals(NOTHING_SECTION);
+    }
+
     public int getDistance() {
         return distance;
     }
@@ -78,5 +86,16 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(upStationId, downStationId);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
     }
 }
