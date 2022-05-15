@@ -1,12 +1,10 @@
 package wooteco.subway.service.dto;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class LineResponse {
     private Long id;
@@ -17,26 +15,11 @@ public class LineResponse {
     private LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
+    public LineResponse(OnlyLineResponse lineResponse, List<StationResponse> stations) {
+        this.id = lineResponse.getId();
+        this.name = lineResponse.getName();
+        this.color = lineResponse.getColor();
         this.stations = stations;
-    }
-
-    public LineResponse(Line line) {
-        this.id = line.getId();
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
-
-    public LineResponse(Line line, Section section) {
-        this.id = line.getId();
-        this.name = line.getName();
-        this.color = line.getColor();
-        this.stations = Stream.of(section.getUpStation(), section.getDownStation())
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
     }
 
     public LineResponse(Line line, List<Station> stations) {

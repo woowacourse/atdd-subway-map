@@ -6,9 +6,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
-import wooteco.subway.service.dto.LineRequest;
-import wooteco.subway.service.dto.LineResponse;
-import wooteco.subway.service.dto.SectionRequest;
+import wooteco.subway.service.dto.*;
 
 import java.net.URI;
 import java.util.List;
@@ -27,9 +25,9 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineService.create(lineRequest);
-        Section section = sectionService.init(line.getId(), SectionRequest.from(lineRequest));
-        LineResponse lineResponse = new LineResponse(line, section);
+        OnlyLineResponse onlyLineResponse = lineService.create(lineRequest);
+        List<StationResponse> responses = sectionService.init(onlyLineResponse.getId(), SectionRequest.from(lineRequest));
+        LineResponse lineResponse = new LineResponse(onlyLineResponse, responses);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 

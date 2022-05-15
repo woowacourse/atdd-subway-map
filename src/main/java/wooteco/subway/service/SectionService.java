@@ -10,17 +10,19 @@ import wooteco.subway.domain.repository.LineRepository;
 import wooteco.subway.domain.repository.SectionRepository;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.service.dto.SectionRequest;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
 public class SectionService {
     private static final String NOT_FOUND_STATION_MESSAGE = "[ERROR] %d 식별자에 해당하는 역을 찾을수 없습니다.";
-    private static final int DELETE_BETWEEN_STATION_STANDARD = 2;
 
     private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
@@ -87,9 +89,11 @@ public class SectionService {
         }
     }
 
-    public Section init(Long lineId, SectionRequest sectionRequest) {
-        Section section = createMemorySection(sectionRequest, lineId);
-        return sectionRepository.save(section);
+    public List<StationResponse> init(Long lineId, SectionRequest sectionRequest) {
+        Section section = sectionRepository.save(createMemorySection(sectionRequest, lineId));
+        return Stream.of(section.getUpStation(), section.getDownStation())
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
     }
 
     private Section createMemorySection(SectionRequest sectionRequest, Long lineId) {

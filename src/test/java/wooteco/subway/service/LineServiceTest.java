@@ -11,6 +11,7 @@ import wooteco.subway.domain.repository.LineRepositoryImpl;
 import wooteco.subway.domain.repository.SectionRepositoryImpl;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.OnlyLineResponse;
 import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 
@@ -43,10 +44,11 @@ public class LineServiceTest {
     @Test
     void create() {
         LineRequest lineRequest = new LineRequest("분당선", "bg-red-600");
-        Line line = lineService.create(lineRequest);
 
-        assertThat(line.getId()).isNotNull();
-        assertThat(line).extracting(Line::getName, Line::getColor)
+        OnlyLineResponse onlyLineResponse = lineService.create(lineRequest);
+
+        assertThat(onlyLineResponse.getId()).isNotNull();
+        assertThat(onlyLineResponse).extracting(OnlyLineResponse::getName, OnlyLineResponse::getColor)
                 .containsExactly(lineRequest.getName(), lineRequest.getColor());
     }
 

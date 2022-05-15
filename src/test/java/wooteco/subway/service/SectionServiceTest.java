@@ -12,6 +12,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.*;
 import wooteco.subway.service.dto.SectionRequest;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NotDeleteException;
 import wooteco.subway.utils.exception.NotFoundException;
@@ -65,9 +66,11 @@ class SectionServiceTest {
     void init() {
         Station newStation = stationRepository.save(new Station("신림역"));
         SectionRequest sectionRequest = new SectionRequest(newStation.getId(), MIDDLE_STATION_ID, 2);
-        Section section = sectionService.init(LINE_ID, sectionRequest);
+        List<StationResponse> stationResponses = sectionService.init(LINE_ID, sectionRequest);
 
-        assertThat(section.getId()).isNotNull();
+        assertThat(stationResponses)
+                .extracting(StationResponse::getId)
+                .contains(newStation.getId(), MIDDLE_STATION_ID);
     }
 
     @DisplayName("구간이 2개있을 때 구간을 추가한다.")

@@ -8,6 +8,7 @@ import wooteco.subway.domain.repository.LineRepository;
 import wooteco.subway.domain.repository.SectionRepository;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.OnlyLineResponse;
 import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 
@@ -26,10 +27,10 @@ public class LineService {
         this.sectionRepository = sectionRepository;
     }
 
-    public Line create(final LineRequest lineRequest) {
+    public OnlyLineResponse create(final LineRequest lineRequest) {
         validateDuplicatedName(lineRequest);
         Line line = Line.create(lineRequest.getName(), lineRequest.getColor());
-        return lineRepository.save(line);
+        return new OnlyLineResponse(lineRepository.save(line));
     }
 
     private void validateDuplicatedName(LineRequest lineRequest) {
