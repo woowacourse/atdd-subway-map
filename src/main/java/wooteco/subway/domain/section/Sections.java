@@ -14,6 +14,7 @@ import wooteco.subway.domain.station.Station;
 public class Sections {
 
     private static final int FIRST_INDEX = 0;
+    private static final int ALLOWED_MINIMUM_SECTION_COUNT = 1;
 
     private final List<Section> orderedSections;
 
@@ -135,7 +136,7 @@ public class Sections {
     }
 
     private void validateSectionsSizeEnough() {
-        if (orderedSections.size() == 1) {
+        if (orderedSections.size() == ALLOWED_MINIMUM_SECTION_COUNT) {
             throw new IllegalStateException("노선의 구간이 하나이므로 구간을 삭제할 수 없습니다.");
         }
     }
