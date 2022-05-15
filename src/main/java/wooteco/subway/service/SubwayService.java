@@ -34,8 +34,7 @@ public class SubwayService {
     }
 
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = new Station.Builder(stationRequest.getName())
-                .build();
+        Station station = stationRequest.toStation();
         subway.checkAbleToAdd(stationDao.findAll(), station);
         Station newStation = stationDao.save(station);
         return new StationResponse(newStation);

@@ -2,6 +2,7 @@ package wooteco.subway.dto;
 
 import javax.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
+import wooteco.subway.domain.Station;
 
 public class StationRequest {
 
@@ -18,5 +19,10 @@ public class StationRequest {
 
     public String getName() {
         return name;
+    }
+
+    public Station toStation() {
+        return new Station.Builder(name)
+                .build();
     }
 }
