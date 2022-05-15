@@ -40,11 +40,11 @@ class JdbcStationDaoTest {
     void findAll() {
         Station station1 = stationDao.create(new Station("선릉역"));
         Station station2 = stationDao.create(new Station("잠실역"));
-
+        List<Station> stations = stationDao.findAll();
         assertAll(
-                () -> assertThat(stationDao.findAll()).hasSize(2),
-                () -> assertThat(stationDao.findAll()).contains(station1),
-                () -> assertThat(stationDao.findAll()).contains(station2)
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations.get(0)).isEqualTo(station1),
+                () -> assertThat(stations.get(1)).isEqualTo(station2)
         );
     }
 
