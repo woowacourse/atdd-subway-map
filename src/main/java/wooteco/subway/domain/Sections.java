@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
+    private static final int OVERLAP_COUNT_ADD_DESTINATION = 1;
+    private static final int OVERLAP_COUNT_ADD_MIDDLE = 2;
+
     private final List<Section> values;
 
     public Sections(List<Section> sections) {
@@ -133,7 +136,7 @@ public class Sections {
 
     private boolean isInvalidCountInMiddle(List<Section> foundSections) {
         int count = foundSections.size();
-        return count < 1 || count > 2;
+        return count != OVERLAP_COUNT_ADD_DESTINATION && count != OVERLAP_COUNT_ADD_MIDDLE;
     }
 
     private boolean isSameWithDestinations(List<Section> foundSections) {
