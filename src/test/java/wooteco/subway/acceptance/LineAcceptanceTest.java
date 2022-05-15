@@ -81,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("구간 생성 요청이 올바른지 검증한다.")
+    @DisplayName("노선 생성 요청이 올바른지 검증한다.")
     @TestFactory
     Stream<DynamicTest> dynamicTestsFromValidation() {
         return Stream.of(
@@ -118,7 +118,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 })
         );
     }
-
 
     @DisplayName("구간 생성을 관리한다")
     @TestFactory
