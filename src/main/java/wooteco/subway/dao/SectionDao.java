@@ -14,4 +14,6 @@ public interface SectionDao {
     int deleteByLineId(Long lineId);
 
     int update(SectionEntity sections);
+
+    int saveAll(List<SectionEntity> entities);
 }

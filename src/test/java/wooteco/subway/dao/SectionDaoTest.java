@@ -99,4 +99,19 @@ public class SectionDaoTest {
         // then
         assertThat(updated).isOne();
     }
+
+    @Test
+    @DisplayName("구간들을 한번에 저장하기")
+    void saveAll() {
+        // given
+        SectionEntity entity1 = new SectionEntity(null, 1L, 1L, 2L, 1);
+        SectionEntity entity2 = new SectionEntity(null, 1L, 2L, 3L, 1);
+        List<SectionEntity> entities = List.of(entity1, entity2);
+
+        // when
+        int affectedRows = sectionDao.saveAll(entities);
+
+        // then
+        assertThat(affectedRows).isEqualTo(2);
+    }
 }

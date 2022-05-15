@@ -1,7 +1,11 @@
 package wooteco.subway.dao;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -67,5 +71,29 @@ public class JdbcSectionDao implements SectionDao {
         final String sql = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
         return jdbcTemplate.update(sql, sections.getUpStationId(), sections.getDownStationId(),
                 sections.getDistance(), sections.getId());
+    }
+
+    @Override
+    public int saveAll(List<SectionEntity> entities) {
+        final String sql = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
+        int[] affectedRows = jdbcTemplate.batchUpdate(sql, getBatchStatementSetter(entities));
+        return Arrays.stream(affectedRows).sum();
+    }
+
+    private BatchPreparedStatementSetter getBatchStatementSetter(List<SectionEntity> entities) {
+        return new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                SectionEntity entity = entities.get(i);
+                ps.setLong(1, entity.getLine_id());
+                ps.setLong(2, entity.getUpStationId());
+                ps.setLong(3, entity.getDownStationId());
+                ps.setInt(4, entity.getDistance());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return entities.size();
+            }};
     }
 }
