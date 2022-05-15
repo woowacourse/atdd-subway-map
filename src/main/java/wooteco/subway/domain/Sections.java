@@ -117,13 +117,12 @@ public class Sections {
             throw new IllegalArgumentException(ExceptionMessage.SECTIONS_NOT_DELETABLE.getContent());
         }
 
-        removeNearSections(stationId);
-        mergeSections().ifPresent(sections::add);
+        List<Section> nearSections = findNearSections(stationId);
+        removeNearSections(nearSections);
+        mergeSections(nearSections).ifPresent(sections::add);
     }
 
-    private void removeNearSections(Long stationId) {
-        List<Section> nearSections = findNearSections(stationId);
-
+    private void removeNearSections(List<Section> nearSections) {
         for (Section section : nearSections) {
             sections.remove(section);
         }
@@ -135,12 +134,12 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private Optional<Section> mergeSections() {
-        if (sections.size() < MERGEABLE_SECTION_COUNT) {
+    private Optional<Section> mergeSections(List<Section> nearSections) {
+        if (nearSections.size() < MERGEABLE_SECTION_COUNT) {
             return Optional.empty();
         }
-        Section from = sections.get(0);
-        Section to = sections.get(1);
+        Section from = nearSections.get(0);
+        Section to = nearSections.get(1);
         return Optional.of(from.merge(to));
     }
 

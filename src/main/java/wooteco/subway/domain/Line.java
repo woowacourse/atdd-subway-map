@@ -6,9 +6,9 @@ import wooteco.subway.exception.ExceptionMessage;
 public class Line {
 
     private final Long id;
-    private String name;
-    private String color;
-    private Sections sections;
+    private final String name;
+    private final String color;
+    private final Sections sections;
 
     public Line(Long id, String name, String color, List<Section> sections) {
         if (name.isBlank()) {
@@ -34,14 +34,6 @@ public class Line {
 
     public void deleteSectionsByStationId(Long stationId) {
         sections.deleteSectionsByStationId(stationId);
-    }
-
-    public void updateName(String name) {
-        this.name = name;
-    }
-
-    public void updateColor(String color) {
-        this.color = color;
     }
 
     public Long getId() {

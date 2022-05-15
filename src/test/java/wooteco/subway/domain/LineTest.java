@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,5 +74,38 @@ class LineTest {
         assertThatThrownBy(() -> onlyOneLine.deleteSectionsByStationId(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(ExceptionMessage.SECTIONS_NOT_DELETABLE.getContent());
+    }
+
+    @Test
+    @DisplayName("인접한 구간이 2개이면 구간을 합쳐서 반환")
+    void mergeSections() {
+        // given
+        Line line = provideLineForDelete();
+
+        // when
+        line.deleteSectionsByStationId(3L);
+
+        // then
+        assertThat(line.getSections()).hasSize(2);
+    }
+
+    private Line provideLineForDelete() {
+        List<Section> sections = List.of(new Section(1L, 2L, 3L, 4),
+                new Section(1L, 3L, 4L, 5),
+                new Section(1L, 4L, 5L, 6));
+        return new Line("line", "red", sections);
+    }
+
+    @Test
+    @DisplayName("삭제될 구간이 2개이면 그 구간만 제거")
+    void deleteSections() {
+        // given
+        Line line = provideLineForDelete();
+
+        // when
+        line.deleteSectionsByStationId(2L);
+
+        // then
+        assertThat(line.getSections()).hasSize(2);
     }
 }

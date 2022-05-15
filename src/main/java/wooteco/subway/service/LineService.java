@@ -75,10 +75,7 @@ public class LineService {
     }
 
     public void updateById(final Long id, final LineRequest request) {
-        Line line = getLine(id);
-        line.updateName(request.getName());
-        line.updateColor(request.getColor());
-        lineDao.update(LineEntity.from(line));
+        lineDao.update(new LineEntity(id, request.getName(), request.getColor()));
     }
 
     public void deleteById(final Long id) {
