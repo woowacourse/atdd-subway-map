@@ -6,7 +6,7 @@ import java.util.Objects;
 public class Section {
 
     public static final String DISTANCE_NEGATIVE_ERROR_MESSAGE = "거리는 1이상이어야 합니다.";
-    public static final String DISTANCE_OVER_ERROR_MESSAGE = "거리가 큽니다.";
+    public static final String DISTANCE_OVER_ERROR_MESSAGE = "추가하려는 구간의 거리가 현재 구간의 거리리보다 큽니다.";
     private static final int MIN_DISTANCE = 1;
 
 
