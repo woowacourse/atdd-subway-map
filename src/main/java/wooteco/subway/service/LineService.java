@@ -15,6 +15,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
@@ -39,7 +40,7 @@ public class LineService {
                             lineRequest.getDistance()));
             return new LineResponse(line.getId(), line.getName(), line.getColor(), toStationsResponse(lineRequest));
         } catch (DuplicateKeyException e) {
-            throw new DuplicateKeyException("이미 존재하는 이름 또는 색깔이 있습니다.");
+            throw new DuplicateNameException(lineRequest.getName() + "은 존재하는 노선입니다.");
         }
     }
 
@@ -82,7 +83,7 @@ public class LineService {
         try {
             lineDao.update(new Line(lineId, name, color));
         } catch (DuplicateKeyException e) {
-            throw new DuplicateKeyException("이미 존재하는 노선 이름 또는 색깔이 있습니다.");
+            throw new DuplicateNameException(name + "은 존재하는 노선입니다.");
         }
     }
 

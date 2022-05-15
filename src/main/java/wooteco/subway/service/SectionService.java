@@ -37,7 +37,7 @@ public class SectionService {
     }
 
     private Line findByLineId(Long lineId) {
-        return lineDao.findById(lineId).orElseThrow(() -> new NotFoundException("노선을 찾을 수 없습니다."));
+        return lineDao.findById(lineId).orElseThrow(() -> new NotFoundException(lineId + "에 해당하는 노선을 찾을 수 없습니다."));
     }
 
     @Transactional

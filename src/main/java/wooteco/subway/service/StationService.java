@@ -9,6 +9,7 @@ import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.DuplicateNameException;
 
 @Service
 public class StationService {
@@ -25,7 +26,7 @@ public class StationService {
             Station newStation = stationDao.save(new Station(name));
             return new StationResponse(newStation.getId(), newStation.getName());
         } catch (DuplicateKeyException e) {
-            throw new DuplicateKeyException("이미 존재하는 역 이름이 있습니다.");
+            throw new DuplicateNameException(name + "은 존재하는 역입니다.");
         }
     }
 
