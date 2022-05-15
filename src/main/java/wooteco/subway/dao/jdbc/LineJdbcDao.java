@@ -92,24 +92,14 @@ public class LineJdbcDao implements LineDao {
 
     @Override
     public boolean existByName(final String name) {
-        final String sql = "SELECT id, name, color FROM LINE WHERE name = (?)";
-        try {
-            jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, name);
-            return true;
-        } catch (EmptyResultDataAccessException exception) {
-            return false;
-        }
+        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE name = (?))";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     @Override
     public boolean existByColor(final String color) {
-        final String sql = "SELECT id, name, color FROM LINE WHERE color = (?)";
-        try {
-            jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, color);
-            return true;
-        } catch (EmptyResultDataAccessException exception) {
-            return false;
-        }
+        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE color = (?))";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, color));
     }
 
     private void checkUpdated(final int affectedRow, final Long id) {
