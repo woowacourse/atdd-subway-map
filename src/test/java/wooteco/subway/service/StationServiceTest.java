@@ -3,15 +3,11 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.sql.Connection;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
@@ -26,22 +22,15 @@ class StationServiceTest extends ServiceTest {
     @Autowired
     private StationDao stationDao;
 
-    @BeforeEach
-    void cleanseAndSetUp() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("service_test_fixture.sql"));
-        }
-    }
-
     @Test
     void findAll_메서드는_모든_데이터를_id_순서대로_조회() {
-        List<StationResponse> actual = service.findAll();
+        testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
 
+        List<StationResponse> actual = service.findAll();
         List<StationResponse> expected = List.of(
-                new StationResponse(1L, "이미 존재하는 역 이름"),
+                new StationResponse(1L, "강남역"),
                 new StationResponse(2L, "선릉역"),
-                new StationResponse(3L, "잠실역"),
-                new StationResponse(4L, "미등록역"));
+                new StationResponse(3L, "잠실역"));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -54,14 +43,16 @@ class StationServiceTest extends ServiceTest {
         void 중복되지_않는_이름인_경우_성공() {
             StationResponse actual = service.save(new StationRequest("새로운 지하철역"));
 
-            StationResponse expected = new StationResponse(5L, "새로운 지하철역");
+            StationResponse expected = new StationResponse(1L, "새로운 지하철역");
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 중복되는_이름을_입력한_경우_예외발생() {
-            assertThatThrownBy(() -> service.save(new StationRequest("이미 존재하는 역 이름")))
+            testFixtureManager.saveStations("존재하는 역 이름");
+
+            assertThatThrownBy(() -> service.save(new StationRequest("존재하는 역 이름")))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
@@ -72,9 +63,10 @@ class StationServiceTest extends ServiceTest {
 
         @Test
         void 유효한_데이터의_id가_입력된_경우_삭제성공() {
-            service.delete(4L);
+            testFixtureManager.saveStations("존재하는 역");
 
-            boolean notFound = stationDao.findById(4L).isEmpty();
+            service.delete(1L);
+            boolean notFound = stationDao.findById(1L).isEmpty();
 
             assertThat(notFound).isTrue();
         }
@@ -87,6 +79,10 @@ class StationServiceTest extends ServiceTest {
 
         @Test
         void 노선에_등록된_지하철역의_id가_입력된_경우_예외발생() {
+            testFixtureManager.saveStations("등록된 역", "등록된 역2");
+            testFixtureManager.saveLine("노선명", "색상");
+            testFixtureManager.saveSection(1L, 1L, 2L);
+
             assertThatThrownBy(() -> service.delete(1L))
                     .isInstanceOf(IllegalArgumentException.class);
         }

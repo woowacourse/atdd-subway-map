@@ -3,15 +3,12 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.sql.Connection;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dto.request.CreateLineRequest;
@@ -22,10 +19,6 @@ import wooteco.subway.exception.NotFoundException;
 @SuppressWarnings("NonAsciiCharacters")
 class LineServiceTest extends ServiceTest {
 
-    private static final StationResponse STATION_RESPONSE_1 = new StationResponse(1L, "이미 존재하는 역 이름");
-    private static final StationResponse STATION_RESPONSE_2 = new StationResponse(2L, "선릉역");
-    private static final StationResponse STATION_RESPONSE_3 = new StationResponse(3L, "잠실역");
-
     @Autowired
     private LineService service;
 
@@ -33,46 +26,51 @@ class LineServiceTest extends ServiceTest {
     private LineDao lineDao;
 
     @Autowired
-    private SectionDao dao;
+    private SectionDao sectionDao;
 
-    @BeforeEach
-    void cleanseAndSetUp() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("service_test_fixture.sql"));
-        }
-    }
-
-    @Test
-    void findAll_메서드는_모든_데이터를_노선의_id_순서대로_조회() {
-        List<LineResponse> actual = service.findAll();
-
-        List<LineResponse> expected = List.of(
-                new LineResponse(1L, "이미 존재하는 노선 이름", "노란색",
-                        List.of(STATION_RESPONSE_1, STATION_RESPONSE_3)),
-                new LineResponse(2L, "신분당선", "빨간색",
-                        List.of(STATION_RESPONSE_1, STATION_RESPONSE_2, STATION_RESPONSE_3)),
-                new LineResponse(3L, "2호선", "초록색",
-                        List.of(STATION_RESPONSE_1, STATION_RESPONSE_3)));
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @DisplayName("find 메서드는 특정 id에 해당되는 데이터를 조회한다")
+    @DisplayName("findAll 및 find 메서드는 데이터를 조회한다")
     @Nested
-    class FindTest {
+    class FindMethodsTest {
+
+        private final StationResponse STATION_RESPONSE_1 = new StationResponse(1L, "강남역");
+        private final StationResponse STATION_RESPONSE_2 = new StationResponse(2L, "선릉역");
+        private final StationResponse STATION_RESPONSE_3 = new StationResponse(3L, "잠실역");
+
+        @BeforeEach
+        void setup() {
+            testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
+            testFixtureManager.saveLine("1호선", "색깔");
+            testFixtureManager.saveLine("2호선", "색깔2");
+            testFixtureManager.saveSection(2L, 3L, 1L);
+            testFixtureManager.saveSection(2L, 1L, 2L);
+            testFixtureManager.saveSection(1L, 1L, 3L);
+        }
 
         @Test
-        void 구간_정보를_포함한_노선의_모든_지하철역_정보를_정렬하여_조회() {
+        void findAll_메서드는_모든_데이터를_노선_id_순서대로_조회() {
+            List<LineResponse> actual = service.findAll();
+
+            LineResponse expectedLine1 = new LineResponse(1L, "1호선", "색깔",
+                    List.of(STATION_RESPONSE_1, STATION_RESPONSE_3));
+            LineResponse expectedLine2 = new LineResponse(2L, "2호선", "색깔2",
+                    List.of(STATION_RESPONSE_1, STATION_RESPONSE_2, STATION_RESPONSE_3));
+            List<LineResponse> expected = List.of(expectedLine1, expectedLine2);
+
+            assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+        }
+
+        @Test
+        void find_메서드는_구간_정보를_포함하여_특정_노선의_모든_지하철역_정보를_정렬하여_조회() {
             LineResponse actual = service.find(2L);
 
-            LineResponse expected = new LineResponse(2L, "신분당선", "빨간색",
-                    List.of(STATION_RESPONSE_1, STATION_RESPONSE_2, STATION_RESPONSE_3));
+            LineResponse expected = new LineResponse(2L, "2호선", "색깔2",
+                    List.of(STATION_RESPONSE_3, STATION_RESPONSE_1, STATION_RESPONSE_2));
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        void 존재하지_않는_노선인_경우_예외_발생() {
+        void find_메서드는_존재하지_않는_노선을_조회하려는_경우_예외_발생() {
             assertThatThrownBy(() -> service.find(99999L))
                     .isInstanceOf(NotFoundException.class);
         }
@@ -82,53 +80,61 @@ class LineServiceTest extends ServiceTest {
     @Nested
     class SaveTest {
 
-        private static final String VALID_LINE_NAME = "새로운 노선";
-        private static final String COLOR = "노란색";
-        private static final long VALID_UP_STATION_ID = 1L;
-        private static final long VALID_DOWN_STATION_ID = 2L;
-        private static final int DISTANCE = 10;
-        private static final long INVALID_ID = 999999L;
-
         @Test
         void 유효한_입력인_경우_성공() {
-            LineResponse actual = service.save(new CreateLineRequest(
-                    VALID_LINE_NAME, COLOR, 1L, 2L, DISTANCE));
+            testFixtureManager.saveStations("강남역", "선릉역");
 
-            LineResponse expected = new LineResponse(4L, VALID_LINE_NAME, COLOR,
-                    List.of(STATION_RESPONSE_1, STATION_RESPONSE_2));
+            LineResponse actual = service.save(new CreateLineRequest(
+                    "새로운 노선명", "색깔", 1L, 2L, 10));
+            LineResponse expected = new LineResponse(1L, "새로운 노선명", "색깔",
+                    List.of(new StationResponse(1L, "강남역"), new StationResponse(2L, "선릉역")));
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 중복되는_노선명인_경우_예외발생() {
+            testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
+            testFixtureManager.saveLine("존재하는 노선명", "색깔");
+            testFixtureManager.saveSection(1L, 1L, 2L);
+
             CreateLineRequest duplicateLineNameRequest = new CreateLineRequest(
-                    "이미 존재하는 노선 이름", COLOR, VALID_UP_STATION_ID, VALID_DOWN_STATION_ID, DISTANCE);
+                    "존재하는 노선명", "색깔", 1L, 3L, 10);
             assertThatThrownBy(() -> service.save(duplicateLineNameRequest))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
         void 존재하지_않는_상행역을_입력한_경우_예외발생() {
+            testFixtureManager.saveStations("강남역", "선릉역");
+            testFixtureManager.saveLine("노선1", "색깔");
+            testFixtureManager.saveSection(1L, 1L, 2L);
+
             CreateLineRequest noneExistingUpStationRequest = new CreateLineRequest(
-                    VALID_LINE_NAME, COLOR, INVALID_ID, VALID_DOWN_STATION_ID, DISTANCE);
+                    "유효 노선명", "유효한 색", 999L, 1L, 10);
             assertThatThrownBy(() -> service.save(noneExistingUpStationRequest))
                     .isInstanceOf(NotFoundException.class);
         }
 
         @Test
         void 존재하지_않는_하행역을_입력한_경우_예외발생() {
-            CreateLineRequest noneExistingUpStationRequest = new CreateLineRequest(
-                    VALID_LINE_NAME, COLOR, VALID_UP_STATION_ID, INVALID_ID, DISTANCE);
-            assertThatThrownBy(() -> service.save(noneExistingUpStationRequest))
+            testFixtureManager.saveStations("강남역", "선릉역");
+            testFixtureManager.saveLine("노선1", "색깔");
+            testFixtureManager.saveSection(1L, 1L, 2L);
+
+            CreateLineRequest noneExistingDownStationRequest = new CreateLineRequest(
+                    "유효한 노선명", "유효한 색상", 1L, 999L, 10);
+            assertThatThrownBy(() -> service.save(noneExistingDownStationRequest))
                     .isInstanceOf(NotFoundException.class);
         }
 
         @Test
-        void 거리가_0인_경우_예외발생() {
-            CreateLineRequest nullDistanceRequest = new CreateLineRequest(
-                    VALID_LINE_NAME, COLOR, VALID_UP_STATION_ID, VALID_DOWN_STATION_ID, 0);
-            assertThatThrownBy(() -> service.save(nullDistanceRequest))
+        void 거리가_1이하인_경우_예외발생() {
+            testFixtureManager.saveStations("강남역", "선릉역");
+
+            CreateLineRequest zeroDistanceRequest = new CreateLineRequest(
+                    "유효한 노선명", "색깔", 1L, 2L, 0);
+            assertThatThrownBy(() -> service.save(zeroDistanceRequest))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
@@ -139,10 +145,14 @@ class LineServiceTest extends ServiceTest {
 
         @Test
         void 존재하는_데이터의_id가_입력된_경우_삭제성공() {
-            service.delete(1L);
+            testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
+            testFixtureManager.saveLine("존재하는 노선", "색깔");
+            testFixtureManager.saveSection(1L, 1L, 2L);
+            testFixtureManager.saveSection(1L, 2L, 3L);
 
+            service.delete(1L);
             boolean lineNotFound = lineDao.findById(1L).isEmpty();
-            List<?> sectionsConnectedToLine = dao.findAllByLineId(1L);
+            List<?> sectionsConnectedToLine = sectionDao.findAllByLineId(1L);
 
             assertThat(lineNotFound).isTrue();
             assertThat(sectionsConnectedToLine).isEmpty();

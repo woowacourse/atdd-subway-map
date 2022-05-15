@@ -30,7 +30,6 @@ public class LineService {
     private static final String DUPLICATE_LINE_NAME_EXCEPTION_MESSAGE = "중복되는 이름의 지하철 노선이 존재합니다.";
     private static final String LINE_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 노선은 존재하지 않습니다.";
     private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "존재하지 않는 역을 입력하였습니다.";
-    private static final String NULL_STATION_EXCEPTION_MESSAGE = "지하철역 정보가 입력되지 않았습니다.";
 
     private final LineDao lineDao;
     private final StationDao stationDao;
