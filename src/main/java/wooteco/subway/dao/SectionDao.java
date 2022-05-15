@@ -35,7 +35,7 @@ public class SectionDao {
     public SectionEntity save(SectionEntity sectionEntity) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(sectionEntity);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return SectionEntity.of(id, sectionEntity);
+        return sectionEntity.addId(id);
     }
 
     public void saveAll(List<SectionEntity> sectionEntities) {

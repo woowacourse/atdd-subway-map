@@ -45,6 +45,11 @@ public class SectionEntity {
                 .collect(Collectors.toList());
     }
 
+    public SectionEntity addId(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public Long getId() {
         return id;
     }
