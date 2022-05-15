@@ -9,13 +9,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dao.Entity.StationEntity;
 
 @Repository
 public class StationDao {
 
-    private static final RowMapper<Station> mapper = (rs, rowNum) ->
-            new Station(
+    private static final RowMapper<StationEntity> mapper = (rs, rowNum) ->
+            new StationEntity(
                     rs.getLong("id"),
                     rs.getString("name")
             );
@@ -30,18 +30,17 @@ public class StationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(Station station) {
+    public Long save(StationEntity station) {
         SqlParameterSource parameters = new MapSqlParameterSource("name", station.getName());
-        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Station(id, station.getName());
+        return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
-    public Optional<Station> findById(Long id) {
+    public Optional<StationEntity> findById(Long id) {
         String sql = "select * from station where id = ?";
         return Optional.ofNullable(DataAccessUtils.singleResult(jdbcTemplate.query(sql, mapper, id)));
     }
 
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         String sql = "select * from station";
         return jdbcTemplate.query(sql, mapper);
     }

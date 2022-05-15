@@ -11,20 +11,19 @@ import org.springframework.context.annotation.Import;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-@Import(StationDao.class)
+@Import({StationRepository.class, StationDao.class})
 public class StationDaoTest {
 
     @Autowired
-    private StationDao stationDao;
+    private StationRepository stationDao;
 
     @Test
     @DisplayName("지하철 역 저장")
     void save() {
         Station station = new Station("호호역");
-        Station savedStation = stationDao.save(station);
+        Long id = stationDao.save(station);
 
-        assertThat(savedStation.getId()).isNotNull();
-        assertThat(savedStation.getName()).isEqualTo(station.getName());
+        assertThat(id).isNotNull();
     }
 
     @Test
@@ -52,9 +51,9 @@ public class StationDaoTest {
     @DisplayName("id로 지하철 역을 삭제")
     void deleteById() {
         Station station1 = new Station("호호역");
-        Station savedStation = stationDao.save(station1);
+        Long id = stationDao.save(station1);
 
-        stationDao.deleteById(savedStation.getId());
+        stationDao.deleteById(id);
 
         assertThat(stationDao.findAll()).hasSize(0);
     }

@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Section;
+import wooteco.subway.dao.Entity.SectionEntity;
 
 @Repository
 public class SectionDao {
@@ -29,22 +29,15 @@ public class SectionDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Section save(Section section) {
+    public Long save(SectionEntity section) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", section.getId())
-                .addValue("line_id", section.getLine().getId())
-                .addValue("up_station_id", section.getUpStation().getId())
-                .addValue("down_station_id", section.getDownStation().getId())
+                .addValue("line_id", section.getLineId())
+                .addValue("up_station_id", section.getUpStationId())
+                .addValue("down_station_id", section.getDownStationId())
                 .addValue("distance", section.getDistance());
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Section(
-                id,
-                section.getLine(),
-                section.getUpStation(),
-                section.getDownStation(),
-                section.getDistance()
-        );
+        return jdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     public List<SectionEntity> findByLineId(Long lineId) {
@@ -52,10 +45,10 @@ public class SectionDao {
         return jdbcTemplate.query(sql, mapper, lineId);
     }
 
-    public void update(Section section) {
+    public void update(SectionEntity section) {
         String sql = "update section set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
-        Long id = section.getUpStation().getId();
-        Long downStationId = section.getDownStation().getId();
+        Long id = section.getUpStationId();
+        Long downStationId = section.getDownStationId();
         int distance = section.getDistance();
         Long sectionId = section.getId();
 

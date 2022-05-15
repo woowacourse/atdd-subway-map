@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,8 +50,8 @@ class LineTest {
     @DisplayName("id로 노선 정보를 수정한다.")
     void modify() {
         Line line = new Line("2호선", "bg-red-600");
-        line.update("3호선", "blue");
-        assertThat(line.getName()).isEqualTo("3호선");
+
+        assertThatNoException().isThrownBy(() -> line.validateUpdate("3호선", "blue"));
     }
 
     @ParameterizedTest
@@ -59,7 +60,7 @@ class LineTest {
     void modifyEmpty(String value) {
         Line line = new Line("2호선", "red");
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> line.update(value, value))
+                .isThrownBy(() -> line.validateUpdate(value, value))
                 .withMessage("이름과 색깔은 공백일 수 없습니다.");
     }
 
@@ -69,7 +70,7 @@ class LineTest {
     void invalidUpdateName(String value, String message) {
         Line line = new Line("2호선", "blue");
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> line.update(value, "blue"))
+                .isThrownBy(() -> line.validateUpdate(value, "blue"))
                 .withMessage(message);
     }
 
@@ -79,7 +80,7 @@ class LineTest {
     void invalidUpdateName(String name) {
         Line line = new Line("2호선", "blue");
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> line.update(name, "blue"))
+                .isThrownBy(() -> line.validateUpdate(name, "blue"))
                 .withMessage("노선 이름은 한글과 숫자이어야 합니다.");
     }
 

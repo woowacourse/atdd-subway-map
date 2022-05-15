@@ -24,7 +24,7 @@ public class Line {
         this(null, name, color);
     }
 
-    public void update(String name, String color) {
+    public void validateUpdate(String name, String color) {
         validate(name, color);
         this.name = name;
         this.color = color;

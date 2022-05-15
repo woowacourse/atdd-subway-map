@@ -94,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .log().all().extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(404);
+        assertThat(response.statusCode()).isEqualTo(400);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .log().all().extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(404);
+        assertThat(response.statusCode()).isEqualTo(400);
     }
 
     @Test

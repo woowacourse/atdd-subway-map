@@ -8,16 +8,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import wooteco.subway.dao.Entity.SectionEntity;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-@Import(SectionDao.class)
+@Import({SectionRepository.class, SectionDao.class})
 public class SectionDaoTest {
 
     @Autowired
-    private SectionDao jdbcSectionDao;
+    private SectionRepository sectionRepository;
 
     @DisplayName("구간을 생성한다")
     @Test
@@ -29,12 +30,10 @@ public class SectionDaoTest {
         Section saveSection = new Section(일호선, 그린론역, 토미역, 10);
 
         // when
-        Section save = jdbcSectionDao.save(saveSection);
+        Long id = sectionRepository.save(saveSection);
 
         //then
-        assertThat(save.getId()).isNotNull();
-        assertThat(save.getUpStation()).isEqualTo(그린론역);
-        assertThat(save.getDownStation()).isEqualTo(토미역);
+        assertThat(id).isNotNull();
     }
 
     @DisplayName("라인 Id로 구간들을 찾아온다.")
@@ -46,10 +45,10 @@ public class SectionDaoTest {
         Station 수달역 = new Station(2L, "수달역");
 
         // when
-        jdbcSectionDao.save(new Section(일호선, 그린론역, 토미역, 10));
-        jdbcSectionDao.save(new Section(일호선, 토미역, 수달역, 10));
+        sectionRepository.save(new Section(일호선, 그린론역, 토미역, 10));
+        sectionRepository.save(new Section(일호선, 토미역, 수달역, 10));
 
-        List<SectionEntity> sections = jdbcSectionDao.findByLineId(1L);
+        List<SectionEntity> sections = sectionRepository.findByLineId(1L);
         // then
 
         assertThat(sections).hasSize(2);
@@ -64,10 +63,10 @@ public class SectionDaoTest {
         Station 수달역 = new Station(2L, "수달역");
 
         // when
-        jdbcSectionDao.save(new Section(일호선, 그린론역, 토미역, 10));
-        jdbcSectionDao.update(new Section(일호선, 그린론역, 수달역, 10));
+        sectionRepository.save(new Section(일호선, 그린론역, 토미역, 10));
+        sectionRepository.update(new Section(일호선, 그린론역, 수달역, 10));
 
-        List<SectionEntity> sections = jdbcSectionDao.findByLineId(1L);
+        List<SectionEntity> sections = sectionRepository.findByLineId(1L);
         // then
         assertThat(sections.get(0).getDownStationId()).isEqualTo(수달역.getId());
     }
@@ -81,12 +80,12 @@ public class SectionDaoTest {
         Station 수달역 = new Station(2L, "수달역");
 
         // when
-        jdbcSectionDao.save(new Section(일호선, 그린론역, 토미역, 10));
-        jdbcSectionDao.save(new Section(일호선, 토미역, 수달역, 10));
+        sectionRepository.save(new Section(일호선, 그린론역, 토미역, 10));
+        sectionRepository.save(new Section(일호선, 토미역, 수달역, 10));
 
-        jdbcSectionDao.deleteById(1L);
+        sectionRepository.deleteById(1L);
 
-        List<SectionEntity> sections = jdbcSectionDao.findByLineId(1L);
+        List<SectionEntity> sections = sectionRepository.findByLineId(1L);
         // then
         assertThat(sections.get(0).getDownStationId()).isEqualTo(수달역.getId());
     }

@@ -9,36 +9,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import wooteco.subway.domain.Line;
+import wooteco.subway.service.LineService;
 
 @JdbcTest
-@Import(LineDao.class)
+@Import({LineRepository.class, LineDao.class})
 public class LineDaoTest {
 
     @Autowired
-    private LineDao lineDao;
+    private LineRepository lineRepository;
 
     @Test
     @DisplayName("노선 저장")
     void save() {
         Line line = new Line("1호선", "blue");
-        Line savedLine = lineDao.save(line);
-        assertThat(savedLine.getId()).isNotNull();
-        assertThat(savedLine.getName()).isEqualTo("1호선");
+        Long id = lineRepository.save(line);
+        assertThat(id).isNotNull();
     }
 
     @Test
     @DisplayName("지하철 역 이름 중복 여부 조회")
     void duplicateName() {
         Line line = new Line("1호선", "blue");
-        lineDao.save(line);
-        assertThat(lineDao.existByNameAndColor("1호선", "blue")).isTrue();
+        lineRepository.save(line);
+        assertThat(lineRepository.existByNameAndColor("1호선", "blue")).isTrue();
     }
 
     @Test
     @DisplayName("id로 노선 조회")
     void findById() {
-        Line line = lineDao.save(new Line("1호선", "blue"));
-        Line findLine = lineDao.findById(line.getId()).get();
+        Long lineId = lineRepository.save(new Line("1호선", "blue"));
+        Line findLine = lineRepository.findById(lineId, LineService.NOT_FOUNT_ID_ERROR_MESSAGE);
         assertThat(findLine.getId()).isNotNull();
         assertThat(findLine.getName()).isEqualTo("1호선");
     }
@@ -48,18 +48,18 @@ public class LineDaoTest {
     void findAll() {
         Line line1 = new Line("1호선", "blue");
         Line line2 = new Line("2호선", "red");
-        lineDao.save(line1);
-        lineDao.save(line2);
-        List<Line> liens = lineDao.findAll();
+        lineRepository.save(line1);
+        lineRepository.save(line2);
+        List<Line> liens = lineRepository.findAll();
         assertThat(liens).hasSize(2);
     }
 
     @Test
     @DisplayName("id로 노선 수정")
     void modifyById() {
-        Line savedLine = lineDao.save(new Line("1호선", "blue"));
-        lineDao.modifyById(savedLine.getId(), new Line("2호선", "red"));
-        Line updateLine = lineDao.findById(savedLine.getId()).get();
+        Long id = lineRepository.save(new Line("1호선", "blue"));
+        lineRepository.modifyById(id, new Line("2호선", "red"));
+        Line updateLine = lineRepository.findById(id, LineService.NOT_FOUNT_ID_ERROR_MESSAGE);
         assertThat(updateLine.getName()).isEqualTo("2호선");
         assertThat(updateLine.getColor()).isEqualTo("red");
     }
@@ -67,9 +67,9 @@ public class LineDaoTest {
     @Test
     @DisplayName("id로 노선 삭제")
     void deleteById() {
-        Line savedLine = lineDao.save(new Line("1호선", "blue"));
-        lineDao.deleteById(savedLine.getId());
-        assertThat(lineDao.findAll()).hasSize(0);
+        Long id = lineRepository.save(new Line("1호선", "blue"));
+        lineRepository.deleteById(id);
+        assertThat(lineRepository.findAll()).hasSize(0);
     }
 
 }
