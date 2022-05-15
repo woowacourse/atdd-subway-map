@@ -8,6 +8,7 @@ public class Section {
 
     private static final String SAME_STATION_INPUT_EXCEPTION = "서로 다른 두 개의 역을 입력해야 합니다.";
     private static final String INVALID_DISTANCE_EXCEPTION = "구간의 길이는 1이상이어야 합니다.";
+    private static final String NON_ADJACENT_SECTIONS_EXCEPTION = "서로 겹치는 구간이 아닙니다.";
     private static final int MIN_DISTANCE = 1;
 
     private final Station upStation;
@@ -28,6 +29,10 @@ public class Section {
         }
     }
 
+    public List<Station> toStations() {
+        return List.of(upStation, downStation);
+    }
+
     public boolean hasUpStationOf(Station station) {
         return upStation.equals(station);
     }
@@ -40,18 +45,24 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
-    public List<Station> toStations() {
-        return List.of(upStation, downStation);
-    }
-
     public int toConnectedDistance(Section adjacentSection) {
+        validateAdjacentSections(adjacentSection);
         return distance + adjacentSection.distance;
     }
 
     public int toRemainderDistance(Section coveringSection) {
+        validateAdjacentSections(coveringSection);
         int remainderDistance = distance - coveringSection.distance;
         validateDistance(remainderDistance);
         return remainderDistance;
+    }
+
+    private void validateAdjacentSections(Section target) {
+        boolean isAdjacent = hasStationOf(target.upStation)
+                || hasStationOf(target.downStation);
+        if (!isAdjacent) {
+            throw new IllegalArgumentException(NON_ADJACENT_SECTIONS_EXCEPTION);
+        }
     }
 
     private void validateDistance(int distance) {
