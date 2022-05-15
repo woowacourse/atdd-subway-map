@@ -62,7 +62,7 @@ public class Sections {
     }
 
     private boolean checkDistance(int distance, Section section) {
-        if (section.isBetweenDistance(distance)) {
+        if (section.isShorterThanOriginDistance(distance)) {
             return true;
         }
         throw new IllegalArgumentException(
@@ -87,5 +87,9 @@ public class Sections {
         return values.stream()
                 .mapToInt(Section::getDistance)
                 .sum();
+    }
+
+    public boolean canAddBranchSection(Station upStation, Station downStation, int distance) {
+        return checkAddSectionInUpStation(upStation, distance) || checkAddSectionInDownStation(downStation, distance);
     }
 }

@@ -41,33 +41,36 @@ public class SectionService {
             throw new IllegalArgumentException(
                     String.format("기존에 있는 두 역은 구간을 추가할 수 없습니다. %s, %s", upStation.getName(), downStation.getName()));
         }
-        if (addBranchSection(lineId, distance, sections, upStation, downStation)) {
+        if (sections.canAddBranchSection(upStation, downStation, distance)) {
+            addBranchToUpStation(lineId, distance, sections, upStation, downStation);
+            addBranchToDownStation(lineId, distance, sections, upStation, downStation);
             return sectionDao.save(new Section(lineDao.findById(lineId), upStation, downStation, distance));
         }
         return addEndOfTheLine(lineId, distance, sections, upStation, downStation);
+    }
+
+    private void addBranchToDownStation(Long lineId, int distance, Sections sections, Station upStation,
+                                        Station downStation) {
+        if (sections.checkAddSectionInDownStation(downStation, distance)) {
+            Section originSection = sections.getOriginDownStationSection(downStation.getId());
+            sectionDao.updateDownStationSection(lineId, originSection.getDownStation().getId(), upStation.getId(),
+                    originSection.getDistance() - distance);
+        }
+    }
+
+    private void addBranchToUpStation(Long lineId, int distance, Sections sections, Station upStation,
+                                      Station downStation) {
+        if (sections.checkAddSectionInUpStation(upStation, distance)) {
+            Section originSection = sections.getOriginUpStationSection(upStation.getId());
+            sectionDao.updateUpStationSection(lineId, originSection.getUpStation().getId(), downStation.getId(),
+                    originSection.getDistance() - distance);
+        }
     }
 
     private void checkExistsLineId(Long lineId) {
         if (lineDao.notExistsById(lineId)) {
             throw new IllegalArgumentException("존재하지 않는 id입니다.");
         }
-    }
-
-    private boolean addBranchSection(Long lineId, int distance, Sections sections, Station upStation,
-                                     Station downStation) {
-        if (sections.checkAddSectionInUpStation(upStation, distance)) {
-            Section originSection = sections.getOriginUpStationSection(upStation.getId());
-            sectionDao.updateUpStationSection(lineId, originSection.getUpStation().getId(), downStation.getId(),
-                    originSection.getDistance() - distance);
-            return true;
-        }
-        if (sections.checkAddSectionInDownStation(downStation, distance)) {
-            Section originSection = sections.getOriginDownStationSection(downStation.getId());
-            sectionDao.updateDownStationSection(lineId, originSection.getDownStation().getId(), upStation.getId(),
-                    originSection.getDistance() - distance);
-            return true;
-        }
-        return false;
     }
 
     private Section addEndOfTheLine(Long lineId, int distance, Sections sections, Station upStation,
@@ -86,17 +89,17 @@ public class SectionService {
         if (sections.isZeroSize()) {
             throw new IllegalArgumentException("일치하는 구간이 없습니다.");
         }
-        checkBetweenStation(lineId, stationId, sections);
+        if (sections.isTwoSections()) {
+            mergeTwoSections(lineId, stationId, sections);
+        }
         return sectionDao.deleteSectionById(sections.getSectionIds());
     }
 
-    private void checkBetweenStation(Long lineId, Long stationId, Sections sections) {
-        if (sections.isUpAndDownStation()) {
-            Section upStationSection = sections.getOriginUpStationSection(stationId);
-            Section downStationSection = sections.getOriginDownStationSection(stationId);
-            sectionDao.save(new Section(lineDao.findById(lineId), downStationSection.getUpStation(),
-                    upStationSection.getDownStation(), sections.getSumDistance()));
-        }
+    private void mergeTwoSections(Long lineId, Long stationId, Sections sections) {
+        Section upStationSection = sections.getOriginUpStationSection(stationId);
+        Section downStationSection = sections.getOriginDownStationSection(stationId);
+        sectionDao.save(new Section(lineDao.findById(lineId), downStationSection.getUpStation(),
+                upStationSection.getDownStation(), sections.getSumDistance()));
     }
 
     private void checkMinSectionCount(Long lineId) {

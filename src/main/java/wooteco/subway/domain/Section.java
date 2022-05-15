@@ -43,7 +43,7 @@ public class Section {
         return distance;
     }
 
-    public boolean isBetweenDistance(int distance) {
+    public boolean isShorterThanOriginDistance(int distance) {
         return this.distance > distance;
     }
 
