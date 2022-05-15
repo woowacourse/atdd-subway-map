@@ -5,12 +5,14 @@ import java.util.Objects;
 public class Section {
     private static final String ERROR_MESSAGE_SAME_UP_AND_DOWN_STATION = "구간의 상행역과 하행역은 달라야합니다.";
     private static final String ERROR_MESSAGE_DISTANCE_MUST_PLUS = "구간 사이의 거리는 양수여야합니다.";
+    private static final int MINIMUM_DISTANCE_VALUE = 1;
+    
     private Long id;
     private Station upStation;
     private Station downStation;
-    private Integer distance;
+    private int distance;
 
-    public Section(Long id, Station upStation, Station downStation, Integer distance) {
+    public Section(Long id, Station upStation, Station downStation, int distance) {
         validateUpAndDownAreDifferent(upStation, downStation);
         validateDistance(distance);
         this.id = id;
@@ -19,7 +21,7 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Station upStation, Station downStation, Integer distance) {
+    public Section(Station upStation, Station downStation, int distance) {
         validateUpAndDownAreDifferent(upStation, downStation);
         validateDistance(distance);
         this.upStation = upStation;
@@ -34,7 +36,7 @@ public class Section {
     }
 
     private void validateDistance(Integer distance) {
-        if (distance.intValue() <= 0) {
+        if (distance < MINIMUM_DISTANCE_VALUE) {
             throw new IllegalArgumentException(ERROR_MESSAGE_DISTANCE_MUST_PLUS);
         }
     }
@@ -98,16 +100,16 @@ public class Section {
         return downStation;
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
-
     public Long getUpStationId() {
         return upStation.getId();
     }
 
     public Long getDownStationId() {
         return downStation.getId();
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override
@@ -119,7 +121,7 @@ public class Section {
         Section section = (Section)o;
         return Objects.equals(getId(), section.getId()) && Objects.equals(getUpStation(),
             section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation())
-            && Objects.equals(getDistance(), section.getDistance());
+            && getDistance() == section.getDistance();
     }
 
     @Override
