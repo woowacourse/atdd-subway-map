@@ -111,7 +111,6 @@ public class SectionEntity {
 
     private static void extendToUp(List<SectionEntity> orderedSectionEntities, List<SectionEntity> sectionEntities) {
         SectionEntity upTerminalSectionEntity = orderedSectionEntities.get(UP_TERMINAL_STATION_INDEX);
-        System.out.println(upTerminalSectionEntity.getUpStationId());
 
         Optional<SectionEntity> newUpTerminalSection = sectionEntities.stream()
                 .filter(it -> it.isAbleToLinkOnDown(upTerminalSectionEntity))
