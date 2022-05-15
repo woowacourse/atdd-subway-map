@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -116,8 +117,9 @@ public class StationControllerTest {
     @Test
     void deleteStation_noExistStation_exception() throws Exception {
         // given
-        given(stationService.delete(anyLong()))
-                .willThrow(new IllegalArgumentException("1 : 해당 ID의 지하철역이 존재하지 않습니다."));
+        doThrow(new IllegalArgumentException("1 : 해당 ID의 지하철역이 존재하지 않습니다."))
+                .when(stationService)
+                .delete(anyLong());
         // when
         ResultActions perform = mockMvc.perform(delete("/stations/1"));
         // then

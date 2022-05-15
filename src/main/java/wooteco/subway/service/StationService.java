@@ -35,11 +35,10 @@ public class StationService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public Void delete(Long id) {
+    public void delete(Long id) {
         Station station = stationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
                         StringFormat.errorMessage(id, "해당 ID의 지하철역이 존재하지 않습니다.")));
         stationDao.delete(station);
-        return null;
     }
 }

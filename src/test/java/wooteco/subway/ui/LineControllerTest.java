@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -178,8 +179,9 @@ public class LineControllerTest {
     @Test
     void deleteLine_noExistLine_exception() throws Exception {
         // given
-        given(lineService.delete(1L))
-                .willThrow(new IllegalArgumentException("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
+        doThrow(new IllegalArgumentException("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."))
+                .when(lineService)
+                .delete(1L);
         // when
         ResultActions perform = mockMvc.perform(delete("/lines/1"));
         // then
@@ -210,8 +212,9 @@ public class LineControllerTest {
     void updateLine_noExistLine_Exception() throws Exception {
         // given
         LineRequest updateRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
-        given(lineService.update(anyLong(), any(LineRequest.class)))
-                .willThrow(new IllegalArgumentException("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
+        doThrow(new IllegalArgumentException("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."))
+                .when(lineService)
+                .update(anyLong(), any(LineRequest.class));
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -228,8 +231,9 @@ public class LineControllerTest {
     void updateLine_duplicateName_Exception() throws Exception {
         // given
         LineRequest updateRequest = new LineRequest("2호선", "GREEN", 1L, 2L, 5);
-        given(lineService.update(anyLong(), any(LineRequest.class)))
-                .willThrow(new IllegalArgumentException("2호선 : 이름이 중복되는 지하철 노선이 존재합니다."));
+        doThrow(new IllegalArgumentException("2호선 : 이름이 중복되는 지하철 노선이 존재합니다."))
+                .when(lineService)
+                .update(anyLong(), any(LineRequest.class));
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
                 .contentType(MediaType.APPLICATION_JSON)

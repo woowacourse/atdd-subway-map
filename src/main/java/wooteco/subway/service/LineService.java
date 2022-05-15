@@ -67,14 +67,13 @@ public class LineService {
         return LineResponse.of(findLine, sortedStations);
     }
 
-    public Void update(Long id, LineRequest lineRequest) {
+    public void update(Long id, LineRequest lineRequest) {
         Line findLine = findExistLineById(id);
         if (isDuplicateName(lineRequest.getName()) && !findLine.isSameName(lineRequest.getName())) {
             throw new IllegalArgumentException(
                     StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
         lineDao.update(findLine.getId(), lineRequest.toEntity());
-        return null;
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
@@ -106,9 +105,8 @@ public class LineService {
         }
     }
 
-    public Void delete(Long id) {
+    public void delete(Long id) {
         lineDao.delete(findExistLineById(id));
-        return null;
     }
 
     public void deleteSection(Long lineId, Long stationId) {
