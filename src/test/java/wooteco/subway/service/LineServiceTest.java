@@ -3,6 +3,8 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +75,12 @@ class LineServiceTest {
         lineService.save(lineRequest);
         lineService.save(lineRequest2);
 
-        assertThat(lineService.findAll().size()).isEqualTo(2);
+        List<String> lineNames = lineService.findAll()
+                .stream()
+                .map(LineResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(lineNames).containsExactly("2호선", "3호선");
     }
 
     @DisplayName("지하철 노선을 조회한다.")

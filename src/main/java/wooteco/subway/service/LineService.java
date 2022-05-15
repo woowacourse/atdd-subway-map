@@ -44,7 +44,7 @@ public class LineService {
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(line -> LineResponse.of(line, stationDao.findAll()))
+                .map(line -> LineResponse.of(line, stationDao.findAllByLineId(line.getId())))
                 .collect(Collectors.toList());
     }
 
