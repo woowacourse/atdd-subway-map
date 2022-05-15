@@ -20,106 +20,66 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addUpSection() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(3L, 1L, 10);
+        SectionRequest 구간_param = new SectionRequest(3L, 1L, 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 구간_response = httpPost("/lines/1/sections", 구간_param);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(구간_response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("하행 종점 구간을 생성한다.")
     void addDownSection() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
+        SectionRequest 구간_param = new SectionRequest(2L, 3L, 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 구간_response = httpPost("/lines/1/sections", 구간_param);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(구간_response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("중간에 구간을 생성한다.")
     void addUpMiddleSection() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 4);
+        SectionRequest 구간_param = new SectionRequest(2L, 3L, 4);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> 구간_응답 = httpPost("/lines/1/sections", 구간_param);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(구간_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("종점의 구간을 제거한다.")
     void deleteFinalSection() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
-
-        RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+        SectionRequest 구간_param = new SectionRequest(2L, 3L, 10);
+        httpPost("/lines/1/sections", 구간_param);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/1/sections?stationId=1")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 삭제_응답 = httpDelete("/lines/1/sections?stationId=1");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(삭제_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("중간의 구간을 제거한다.")
     void deleteMiddleSection() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
-
-        RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+        SectionRequest 구간_param = new SectionRequest(2L, 3L, 10);
+        httpPost("/lines/1/sections", 구간_param);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/1/sections?stationId=2")
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> 삭제_응답 = httpDelete("/lines/1/sections?stationId=2");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(삭제_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
