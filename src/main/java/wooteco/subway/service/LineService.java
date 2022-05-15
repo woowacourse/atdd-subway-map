@@ -5,19 +5,19 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.SectionEntity;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.LineUpdateRequest;
-import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.BadRequestException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.repository.StationRepository;
+import wooteco.subway.service.dto.request.LineRequest;
+import wooteco.subway.service.dto.request.LineUpdateRequest;
+import wooteco.subway.service.dto.request.SectionRequest;
+import wooteco.subway.service.dto.response.LineResponse;
 
 @Service
 public class LineService {

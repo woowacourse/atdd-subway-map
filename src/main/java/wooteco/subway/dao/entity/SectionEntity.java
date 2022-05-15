@@ -1,15 +1,26 @@
-package wooteco.subway.dto;
+package wooteco.subway.dao.entity;
 
-public class SectionRequest {
-
+public class SectionEntity {
+    private Long id;
+    private Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public SectionRequest(Long upStationId, Long downStationId, int distance) {
+    public SectionEntity(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        this.id = id;
+        this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getLineId() {
+        return lineId;
     }
 
     public Long getUpStationId() {

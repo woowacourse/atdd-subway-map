@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.dao.StationEntity;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.NotFoundException;
 

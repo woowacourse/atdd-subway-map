@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.BadRequestException;
 import wooteco.subway.repository.StationRepository;
+import wooteco.subway.service.dto.request.StationRequest;
+import wooteco.subway.service.dto.response.StationResponse;
 
 @Service
 public class StationService {
