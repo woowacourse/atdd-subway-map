@@ -11,12 +11,24 @@ class SectionEntityTest {
     @DisplayName("id를 up에서 down으로 정렬된 순서로 뽑는다.")
     @Test
     void extractStationIds() {
-        SectionEntity sectionEntity1 = SectionEntity.of(1L, 1L, 3L, 4L, 1);
-        SectionEntity sectionEntity2 = SectionEntity.of(1L, 1L, 1L, 2L, 1);
-        SectionEntity sectionEntity3 = SectionEntity.of(1L, 1L, 5L, 6L, 1);
-        SectionEntity sectionEntity4 = SectionEntity.of(1L, 1L, 2L, 3L, 1);
-        SectionEntity sectionEntity5 = SectionEntity.of(1L, 1L, 4L, 5L, 1);
-        SectionEntity sectionEntity6 = SectionEntity.of(1L, 1L, 10L, 1L, 1);
+        SectionEntity sectionEntity1 = new SectionEntity.Builder(1L, 3L, 4L, 1)
+                .id(1L)
+                .build();
+        SectionEntity sectionEntity2 = new SectionEntity.Builder(1L, 1L, 2L, 1)
+                .id(1L)
+                .build();
+        SectionEntity sectionEntity3 = new SectionEntity.Builder(1L, 5L, 6L, 1)
+                .id(1L)
+                .build();
+        SectionEntity sectionEntity4 = new SectionEntity.Builder(1L, 2L, 3L, 1)
+                .id(1L)
+                .build();
+        SectionEntity sectionEntity5 = new SectionEntity.Builder(1L, 4L, 5L, 1)
+                .id(1L)
+                .build();
+        SectionEntity sectionEntity6 = new SectionEntity.Builder(1L, 10L, 1L, 1)
+                .id(1L)
+                .build();
 
         List<SectionEntity> sectionEntities = List.of(sectionEntity1, sectionEntity2, sectionEntity3, sectionEntity4, sectionEntity5, sectionEntity6);
 

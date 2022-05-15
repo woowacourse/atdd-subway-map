@@ -14,35 +14,51 @@ public class SectionEntity {
     private Long downStationId;
     private Integer distance;
 
-    private SectionEntity(Long id, Long lineId, Long upStationId, Long downStationId, Integer distance) {
-        this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    public static class Builder {
+
+        private final Long lineId;
+        private final Long upStationId;
+        private final Long downStationId;
+        private final Integer distance;
+
+        private Long id;
+
+        public Builder(Long lineId, Long upStationId, Long downStationId, Integer distance) {
+            this.lineId = lineId;
+            this.upStationId = upStationId;
+            this.downStationId = downStationId;
+            this.distance = distance;
+        }
+
+        public Builder(Section section) {
+            lineId = section.getLineId();
+            upStationId = section.getUpStationId();
+            downStationId = section.getDownStationId();
+            distance = section.getDistance();
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public SectionEntity build() {
+            return new SectionEntity(this);
+        }
+
+        public static List<SectionEntity> buildMany(List<Section> sections) {
+            return sections.stream()
+                    .map(it -> new Builder(it).id(it.getId()).build())
+                    .collect(Collectors.toList());
+        }
     }
 
-    public static SectionEntity of(Long id, Long lineId, Long upStationId, Long downStationId, Integer distance) {
-        return new SectionEntity(id, lineId, upStationId, downStationId, distance);
-    }
-
-    public static SectionEntity of(Long id, SectionEntity other) {
-        return of(id, other.lineId, other.upStationId, other.getDownStationId(), other.distance);
-    }
-
-    public static SectionEntity of(Long lineId, Long upStationId, Long downStationId, Integer distance) {
-        return of(null, lineId, upStationId, downStationId, distance);
-    }
-
-    public static SectionEntity of(Section section) {
-        return new SectionEntity(section.getId(), section.getLineId(), section.getUpStationId(), section.getDownStationId(),
-                section.getDistance());
-    }
-
-    public static List<SectionEntity> of(List<Section> sections) {
-        return sections.stream()
-                .map(SectionEntity::of)
-                .collect(Collectors.toList());
+    private SectionEntity(Builder builder) {
+        id = builder.id;
+        lineId = builder.lineId;
+        upStationId = builder.upStationId;
+        downStationId = builder.downStationId;
+        distance = builder.distance;
     }
 
     public SectionEntity addId(Long id) {

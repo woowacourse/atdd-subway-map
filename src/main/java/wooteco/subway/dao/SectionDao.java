@@ -14,13 +14,13 @@ import wooteco.subway.domain.entity.SectionEntity;
 @Repository
 public class SectionDao {
 
-    private static final RowMapper<SectionEntity> SECTION_ENTITY_MAPPER = (resultSet, rowNum) -> SectionEntity.of(
-            resultSet.getLong("id"),
+    private static final RowMapper<SectionEntity> SECTION_ENTITY_MAPPER = (resultSet, rowNum) -> new SectionEntity.Builder(
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),
             resultSet.getLong("down_station_id"),
-            resultSet.getInt("distance")
-    );
+            resultSet.getInt("distance"))
+            .id(resultSet.getLong("id"))
+            .build();
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;

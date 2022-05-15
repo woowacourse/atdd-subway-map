@@ -37,7 +37,8 @@ public class SectionDaoTest {
     @Test
     @DisplayName("section을 저장하고 id가 추가된 section을 반환한다.")
     void saveSection() {
-        SectionEntity section = SectionEntity.of(lineId, 1L, 2L, 3);
+        SectionEntity section = new SectionEntity.Builder(lineId, 1L, 2L, 3)
+                .build();
 
         SectionEntity persistSection = sectionDao.save(section);
 
@@ -50,9 +51,12 @@ public class SectionDaoTest {
     @Test
     @DisplayName("lineId에 해당되는 모든 section을 반환한다.")
     void findByLineId() {
-        SectionEntity section1 = SectionEntity.of(lineId, 1L, 2L, 3);
-        SectionEntity section2 = SectionEntity.of(lineId, 2L, 3L, 3);
-        SectionEntity section3 = SectionEntity.of(lineId, 3L, 4L, 3);
+        SectionEntity section1 = new SectionEntity.Builder(lineId, 1L, 2L, 3)
+                .build();
+        SectionEntity section2 = new SectionEntity.Builder(lineId, 2L, 3L, 3)
+                .build();
+        SectionEntity section3 = new SectionEntity.Builder(lineId, 3L, 4L, 3)
+                .build();
         sectionDao.save(section1);
         sectionDao.save(section2);
         sectionDao.save(section3);
@@ -65,9 +69,15 @@ public class SectionDaoTest {
     @Test
     @DisplayName("section을 삭제한다.")
     void delete() {
-        SectionEntity section1 = SectionEntity.of(1L, lineId, 1L, 2L, 3);
-        SectionEntity section2 = SectionEntity.of(2L, lineId, 2L, 3L, 3);
-        SectionEntity section3 = SectionEntity.of(3L, lineId, 3L, 4L, 3);
+        SectionEntity section1 = new SectionEntity.Builder(lineId, 1L, 2L, 3)
+                .id(1L)
+                .build();
+        SectionEntity section2 = new SectionEntity.Builder(lineId, 2L, 3L, 3)
+                .id(2L)
+                .build();
+        SectionEntity section3 = new SectionEntity.Builder(lineId, 3L, 4L, 3)
+                .id(3L)
+                .build();
         sectionDao.save(section1);
         sectionDao.save(section2);
         sectionDao.save(section3);
@@ -80,9 +90,15 @@ public class SectionDaoTest {
     @Test
     @DisplayName("section들을 삭제한다.")
     void deleteAll() {
-        SectionEntity section1 = SectionEntity.of(1L, lineId, 1L, 2L, 3);
-        SectionEntity section2 = SectionEntity.of(2L, lineId, 2L, 3L, 3);
-        SectionEntity section3 = SectionEntity.of(3L, lineId, 3L, 4L, 3);
+        SectionEntity section1 = new SectionEntity.Builder(lineId, 1L, 2L, 3)
+                .id(1L)
+                .build();
+        SectionEntity section2 = new SectionEntity.Builder(lineId, 2L, 3L, 3)
+                .id(2L)
+                .build();
+        SectionEntity section3 = new SectionEntity.Builder(lineId, 3L, 4L, 3)
+                .id(3L)
+                .build();
         sectionDao.save(section1);
         sectionDao.save(section2);
         sectionDao.save(section3);

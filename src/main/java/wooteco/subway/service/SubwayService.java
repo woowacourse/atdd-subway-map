@@ -90,16 +90,16 @@ public class SubwayService {
         Section newSection = new Section.Builder(line, upStation, downStation, sectionRequest.getDistance())
                 .build();
         SectionBuffer buffer = subway.addSection(presentSections, newSection);
-        sectionDao.deleteALl(SectionEntity.of(buffer.getDeleteBuffer()));
-        sectionDao.saveAll(SectionEntity.of(buffer.getAddBuffer()));
+        sectionDao.deleteALl(SectionEntity.Builder.buildMany(buffer.getDeleteBuffer()));
+        sectionDao.saveAll(SectionEntity.Builder.buildMany(buffer.getAddBuffer()));
     }
 
     public void deleteSection(Long lineId, Long stationId) {
         List<Section> presentSections = toSections(sectionDao.findByLineId(lineId));
         Station deleteStation = stationDao.findById(stationId);
         SectionBuffer buffer = subway.deleteSection(presentSections, deleteStation);
-        sectionDao.deleteALl(SectionEntity.of(buffer.getDeleteBuffer()));
-        sectionDao.saveAll(SectionEntity.of(buffer.getAddBuffer()));
+        sectionDao.deleteALl(SectionEntity.Builder.buildMany(buffer.getDeleteBuffer()));
+        sectionDao.saveAll(SectionEntity.Builder.buildMany(buffer.getAddBuffer()));
     }
 
     private void saveSection(Long lineId, LineRequest lineRequest) {

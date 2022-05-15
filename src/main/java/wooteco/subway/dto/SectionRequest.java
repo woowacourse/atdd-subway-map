@@ -36,6 +36,7 @@ public class SectionRequest {
     }
 
     public SectionEntity toEntity(Long lineId) {
-        return SectionEntity.of(null, lineId, upStationId, downStationId, distance);
+        return new SectionEntity.Builder(lineId, upStationId, downStationId, distance)
+                .build();
     }
 }
