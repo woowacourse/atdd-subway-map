@@ -11,8 +11,10 @@ public class Sections implements Iterable<Section> {
 
     public static final String TOO_LARGE_DISTANCE_EXCEPTION = "추가하려는 section의 역 간 거리는 존재하는 section의 역 간 거리보다 작아야 합니다.";
     public static final String UNVALID_STATION_FOR_SECTION_ADD_EXCEPTION = "추가하려는 section의 역 중 하나는 기존 section에 포함되어 있어야 합니다.";
-    public static final int DOWN_TERMINAL_STATION_INDEX = 0;
     public static final String UNABLE_TO_DELETE_SECTION_EXCEPTION = "해당 역을 삭제할 수 없습니다. 노선에 역은 최소 2개는 존재해야 합니다.";
+    public static final int DOWN_TERMINAL_STATION_INDEX = 0;
+    public static final int RANDOM_INDEX = 0;
+    public static final int MINIMUM_SECTION_NUMBER = 1;
 
     private List<Section> sections;
 
@@ -34,7 +36,7 @@ public class Sections implements Iterable<Section> {
 
     private void sortDownToUp() {
         List<Section> orderedSections = new ArrayList<>();
-        orderedSections.add(sections.get(0));
+        orderedSections.add(sections.get(RANDOM_INDEX));
 
         extendToDown(orderedSections, sections);
         extendToUp(orderedSections, sections);
@@ -56,7 +58,7 @@ public class Sections implements Iterable<Section> {
     }
 
     private void extendToDown(List<Section> orderedSections, List<Section> sections) {
-        Section downTerminalSection = orderedSections.get(0);
+        Section downTerminalSection = orderedSections.get(DOWN_TERMINAL_STATION_INDEX);
 
         Optional<Section> newDownTerminalSection = sections.stream()
                 .filter(it -> it.isAbleToLinkOnUpStation(downTerminalSection))
@@ -157,7 +159,7 @@ public class Sections implements Iterable<Section> {
     }
 
     private void validateAbleToDelete() {
-        if (sections.size() == 1) {
+        if (sections.size() == MINIMUM_SECTION_NUMBER) {
             throw new IllegalArgumentException(UNABLE_TO_DELETE_SECTION_EXCEPTION);
         }
     }
