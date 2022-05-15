@@ -92,7 +92,7 @@ public class LineDaoTest {
 
         // when
         final LineEntity lineForUpdate = new LineEntity(persistLine.getId(), "5호선", "bg-green-600");
-        final LineEntity updatedLine = lineDao.update(lineForUpdate).get();
+        final LineEntity updatedLine = lineDao.update(lineForUpdate);
 
         // then
         assertAll(() -> {
