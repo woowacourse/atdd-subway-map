@@ -30,7 +30,7 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + response.getId())).body(response);
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
         final List<StationResponse> response = stationService.findAll();
 

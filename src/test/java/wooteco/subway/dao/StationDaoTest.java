@@ -4,19 +4,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
-@SpringBootTest
-@Transactional
+@JdbcTest
 class StationDaoTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
     private StationDao stationDao;
+
+    @BeforeEach
+    void beforeEach() {
+        stationDao = new StationDao(jdbcTemplate);
+    }
 
     @Test
     @DisplayName("지하철역을 등록할 수 있다.")
@@ -29,7 +35,7 @@ class StationDaoTest {
 
         // then
         final Station saveStation = stationDao.findById(savedId);
-        assertThat(station).isEqualTo(saveStation);
+        assertThat(savedId).isEqualTo(saveStation.getId());
     }
 
     @Test
