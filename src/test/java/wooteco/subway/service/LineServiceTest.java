@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.repository.LineRepository;
 import wooteco.subway.service.dto.request.SectionRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,7 +25,7 @@ class LineServiceTest {
     private LineService lineService;
 
     @Autowired
-    private LineDao lineDao;
+    private LineRepository lineRepository;
 
     @Autowired
     private StationDao stationDao;
@@ -49,7 +49,7 @@ class LineServiceTest {
         Station 강남 = stationDao.save(new Station("강남"));
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
 
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
@@ -71,7 +71,7 @@ class LineServiceTest {
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
         Station 판교 = stationDao.save(new Station("판교"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
         SectionRequest sectionRequest1 = new SectionRequest(강남.getId(), 양재.getId(), 4);
         lineService.createSection(신분당선.getId(), sectionRequest1);
@@ -95,7 +95,7 @@ class LineServiceTest {
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
         Station 판교 = stationDao.save(new Station("판교"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
         SectionRequest sectionRequest1 = new SectionRequest(강남.getId(), 양재.getId(), 4);
         lineService.createSection(신분당선.getId(), sectionRequest1);
@@ -118,7 +118,7 @@ class LineServiceTest {
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
         Station 강남 = stationDao.save(new Station("강남"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 양재, 광교, 10));
 
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 5);
@@ -140,7 +140,7 @@ class LineServiceTest {
         Station 강남 = stationDao.save(new Station("강남"));
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 양재, 10));
 
         SectionRequest sectionRequest = new SectionRequest(양재.getId(), 광교.getId(), 5);
@@ -161,7 +161,7 @@ class LineServiceTest {
         Station 강남 = stationDao.save(new Station("강남"));
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
         lineService.createSection(신분당선.getId(), sectionRequest);
@@ -181,7 +181,7 @@ class LineServiceTest {
         Station 강남 = stationDao.save(new Station("강남"));
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
         lineService.createSection(신분당선.getId(), sectionRequest);
@@ -199,7 +199,7 @@ class LineServiceTest {
         Station 강남 = stationDao.save(new Station("강남"));
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
         lineService.createSection(신분당선.getId(), sectionRequest);
@@ -218,7 +218,7 @@ class LineServiceTest {
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
         Station 창동 = stationDao.save(new Station("창동"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
 
         SectionRequest sectionRequest = new SectionRequest(양재.getId(), 창동.getId(), 4);
@@ -233,7 +233,7 @@ class LineServiceTest {
     void addSectionDuplicateStation() {
         Station 강남 = stationDao.save(new Station("강남"));
         Station 광교 = stationDao.save(new Station("광교"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
 
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 광교.getId(), 4);
@@ -249,7 +249,7 @@ class LineServiceTest {
         Station 강남 = stationDao.save(new Station("강남"));
         Station 양재 = stationDao.save(new Station("양재"));
         Station 광교 = stationDao.save(new Station("광교"));
-        Line 신분당선 = lineDao.save(new Line("신분당선", "red"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
         sectionDao.save(new Section(신분당선, 강남, 광교, 10));
 
         SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 10);

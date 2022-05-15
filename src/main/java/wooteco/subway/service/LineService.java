@@ -3,16 +3,14 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.BadRequestException;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.StationRepository;
 import wooteco.subway.service.dto.request.LineRequest;
 import wooteco.subway.service.dto.request.LineUpdateRequest;
@@ -22,16 +20,13 @@ import wooteco.subway.service.dto.response.LineResponse;
 @Service
 public class LineService {
 
-    private final LineDao lineDao;
-    private final StationDao stationDao;
     private final SectionDao sectionDao;
+    private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao,
-        StationRepository stationRepository) {
-        this.lineDao = lineDao;
-        this.stationDao = stationDao;
+    public LineService(SectionDao sectionDao, LineRepository lineRepository, StationRepository stationRepository) {
         this.sectionDao = sectionDao;
+        this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -41,7 +36,7 @@ public class LineService {
         Station upStation = findStation(lineRequest.getUpStationId());
         Station downStation = findStation(lineRequest.getDownStationId());
 
-        Line savedLine = lineDao.save(line);
+        Line savedLine = lineRepository.save(line);
         sectionDao.save(new Section(savedLine, upStation, downStation, lineRequest.getDistance()));
 
         return LineResponse.of(savedLine, List.of(upStation, downStation));
@@ -52,7 +47,8 @@ public class LineService {
     }
 
     public List<LineResponse> showAll() {
-        return lineDao.findAll().stream()
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
             .map(line -> LineResponse.of(line, getStations(line.getId())))
             .collect(Collectors.toList());
     }
@@ -61,11 +57,11 @@ public class LineService {
         validateDuplicateNameAndColor(request.getName(), request.getColor());
         Line line = findLine(id);
         line.update(request.getName(), request.getColor());
-        lineDao.modifyById(id, line);
+        lineRepository.save(line);
     }
 
     public void removeById(Long id) {
-        lineDao.deleteById(id);
+        lineRepository.deleteById(id);
     }
 
     public void createSection(Long lineId, SectionRequest request) {
@@ -109,7 +105,7 @@ public class LineService {
     }
 
     private void validateDuplicateNameAndColor(String name, String color) {
-        if (lineDao.existByNameAndColor(name, color)) {
+        if (lineRepository.existByNameAndColor(name, color)) {
             throw new BadRequestException("노선이 이름과 색상은 중복될 수 없습니다.");
         }
     }
@@ -119,8 +115,7 @@ public class LineService {
     }
 
     private Line findLine(Long lineId) {
-        return lineDao.findById(lineId)
-            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다. id : " + lineId));
+        return lineRepository.findById(lineId);
     }
 
     private List<Station> getStations(Long lineId) {
