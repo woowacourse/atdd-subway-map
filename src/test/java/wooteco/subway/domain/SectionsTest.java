@@ -16,7 +16,8 @@ public class SectionsTest {
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
         Station station4 = Station.of("4");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station1, station2, 3);
         Section section2 = Section.of(line, station2, station3, 3);
@@ -41,7 +42,8 @@ public class SectionsTest {
         Station station5 = Station.of("5");
         Station station6 = Station.of("6");
         Station station7 = Station.of("7");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station2, station3, 5);
         Section section2 = Section.of(line, station6, station7, 5);
@@ -67,7 +69,8 @@ public class SectionsTest {
         Station station1 = Station.of("1");
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station2, station3, 5);
         Section section2 = Section.of(line, station1, station2, 5);
@@ -88,7 +91,8 @@ public class SectionsTest {
         Station station3 = Station.of("3");
         Station station4 = Station.of("4");
         Station station5 = Station.of("5");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station2, station3, 5);
         Section section2 = Section.of(line, station1, station2, 5);
@@ -108,7 +112,8 @@ public class SectionsTest {
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
         Station station5 = Station.of("5");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station1, station2, 5);
         Section section2 = Section.of(line, station2, station3, 5);
@@ -128,7 +133,8 @@ public class SectionsTest {
         Station station1 = Station.of("1");
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station1, station2, 5);
         Section section2 = Section.of(line, station2, station3, 5);
@@ -146,7 +152,8 @@ public class SectionsTest {
         Station station1 = Station.of("1");
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station1, station3, 5);
         Sections sections = new Sections(List.of(section1));
@@ -161,7 +168,8 @@ public class SectionsTest {
         Station station0 = Station.of("0");
         Station station1 = Station.of("1");
         Station station2 = Station.of("2");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station1, station2, 10);
         Sections sections = new Sections(List.of(section1));
@@ -179,7 +187,8 @@ public class SectionsTest {
         Station station1 = Station.of("1");
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station1, station2, 10);
         Sections sections = new Sections(List.of(section1));
@@ -196,7 +205,8 @@ public class SectionsTest {
     void deleteFail() {
         Station station1 = Station.of("1");
         Station station2 = Station.of("2");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
         Section section1 = Section.of(line, station1, station2, 10);
         Sections sections = new Sections(List.of(section1));
 
@@ -212,7 +222,8 @@ public class SectionsTest {
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
         Station station4 = Station.of("4");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
         Section section1 = Section.of(line, station1, station2, 10);
         Section section2 = Section.of(line, station2, station3, 10);
         Section section3 = Section.of(line, station3, station4, 10);
@@ -240,7 +251,8 @@ public class SectionsTest {
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
         Station station4 = Station.of("4");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station1, station2, 10);
         Section section2 = Section.of(line, station2, station3, 10);
@@ -263,7 +275,8 @@ public class SectionsTest {
         Station station2 = Station.of("2");
         Station station3 = Station.of("3");
         Station station4 = Station.of("4");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Section section1 = Section.of(line, station1, station2, 10);
         Section section2 = Section.of(line, station2, station3, 10);

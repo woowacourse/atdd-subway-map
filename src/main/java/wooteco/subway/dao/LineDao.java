@@ -14,11 +14,11 @@ import wooteco.subway.domain.Line;
 @Repository
 public class LineDao {
 
-    private static final RowMapper<Line> LINE_MAPPER = (resultSet, rowNum) -> Line.of(
-            resultSet.getLong("id"),
+    private static final RowMapper<Line> LINE_MAPPER = (resultSet, rowNum) -> new Line.Builder(
             resultSet.getString("name"),
-            resultSet.getString("color")
-    );
+            resultSet.getString("color"))
+            .id(resultSet.getLong("id"))
+            .build();
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
@@ -33,7 +33,9 @@ public class LineDao {
     public Line save(Line line) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return Line.of(id, line);
+        return new Line.Builder(line.getName(), line.getColor())
+                .id(id)
+                .build();
     }
 
     public List<Line> findAll() {

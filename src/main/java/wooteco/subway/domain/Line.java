@@ -6,25 +6,32 @@ public class Line {
     private String name;
     private String color;
 
-    public Line() {
+    public static class Builder {
+
+        private final String name;
+        private final String color;
+
+        private Long id = null;
+
+        public Builder(String name, String color) {
+            this.name = name;
+            this.color = color;
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Line build() {
+            return new Line(this);
+        }
     }
 
-    private Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
-    public static Line of(Long id, String name, String color) {
-        return new Line(id, name, color);
-    }
-
-    public static Line of(Long id, Line other) {
-        return of(id, other.name, other.color);
-    }
-
-    public static Line of(String name, String color) {
-        return of(null, name, color);
+    private Line(Builder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.color = builder.color;
     }
 
     public Long getId() {

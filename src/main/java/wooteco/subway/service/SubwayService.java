@@ -52,7 +52,8 @@ public class SubwayService {
     }
 
     public LineResponse addLine(LineRequest lineRequest) {
-        Line line = Line.of(lineRequest.getName(), lineRequest.getColor());
+        Line line = new Line.Builder(lineRequest.getName(), lineRequest.getColor())
+                .build();
         subway.checkAbleToAdd(lineDao.findAll(), line);
         Line newLine = lineDao.save(line);
         saveSection(newLine.getId(), lineRequest);
@@ -60,7 +61,9 @@ public class SubwayService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = Line.of(id, lineRequest.getName(), lineRequest.getColor());
+        Line line = new Line.Builder(lineRequest.getName(), lineRequest.getColor())
+                .id(id)
+                .build();
         subway.checkAbleToAdd(lineDao.findAll(), line);
         lineDao.update(line);
     }

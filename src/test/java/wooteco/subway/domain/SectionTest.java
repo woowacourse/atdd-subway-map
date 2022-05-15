@@ -10,7 +10,8 @@ public class SectionTest {
     @Test
     void sameUpStationAndDownStation() {
         Station station1 = Station.of("1");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();;
 
         Assertions.assertThatThrownBy(() -> Section.of(line, station1, station1, 3))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -20,7 +21,8 @@ public class SectionTest {
     @Test
     void unvalidDistanceValue() {Station station1 = Station.of("1");
         Station station2 = Station.of("2");
-        Line line = Line.of("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();;
 
         Assertions.assertThatThrownBy(() -> Section.of(line, station1, station2, -3))
                 .isInstanceOf(IllegalArgumentException.class);
