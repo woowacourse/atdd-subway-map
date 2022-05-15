@@ -10,14 +10,16 @@ import wooteco.subway.dao.RegisteredStationDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.Lines;
+import wooteco.subway.domain.line.SubwayMaps;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.SectionsFactory;
+import wooteco.subway.domain.station.RegisteredStation;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
+import wooteco.subway.entity.RegisteredStationEntity;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
@@ -46,8 +48,12 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        Lines lines = Lines.of(registeredStationDao.findAll());
-        return lines.toList()
+        List<RegisteredStation> registeredStations = registeredStationDao.findAll()
+                .stream()
+                .map(RegisteredStationEntity::toDomain)
+                .collect(Collectors.toList());
+        return SubwayMaps.of(registeredStations)
+                .toList()
                 .stream()
                 .map(LineResponse::of)
                 .sorted(Comparator.comparingLong(LineResponse::getId))
@@ -55,14 +61,19 @@ public class LineService {
     }
 
     public LineResponse find(Long id) {
-        LineEntity lineEntity = lineDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
-
-        List<Section> sections = sectionDao.findAllByLineId(id).stream()
+        Line line = findExistingLine(id);
+        List<Section> sections = sectionDao.findAllByLineId(id)
+                .stream()
                 .map(SectionEntity::toDomain)
                 .collect(Collectors.toList());
         List<Station> stations = SectionsFactory.generate(sections).toSortedStations();
-        return LineResponse.of(Line.of(lineEntity, stations));
+        return LineResponse.of(line, stations);
+    }
+
+    private Line findExistingLine(Long id) {
+        return lineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE))
+                .toDomain();
     }
 
     @Transactional
@@ -70,11 +81,12 @@ public class LineService {
         validateUniqueLineName(lineRequest.getName());
         StationEntity upStation = findExistingStation(lineRequest.getUpStationId());
         StationEntity downStation = findExistingStation(lineRequest.getDownStationId());
-
-        LineEntity line = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         Section newSection = Section.of(upStation, downStation, lineRequest.getDistance());
+
+        LineEntity lineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
+        Line line = lineEntity.toDomain();
         sectionDao.save(newSection.toEntity(line.getId()));
-        return LineResponse.of(Line.of(line, upStation, downStation));
+        return LineResponse.of(line, newSection.toStations());
     }
 
     private StationEntity findExistingStation(Long stationId) {
@@ -89,9 +101,12 @@ public class LineService {
     @Transactional
     public void update(Long id, UpdateLineRequest lineRequest) {
         validateExistingLine(id);
-        validateUniqueLineName(lineRequest.getName());
+        String name = lineRequest.getName();
+        String color = lineRequest.getColor();
+        validateUniqueLineName(name);
 
-        lineDao.update(new LineEntity(id, lineRequest.getName(), lineRequest.getColor()));
+        Line updatedLine = new Line(id, name, color);
+        lineDao.update(updatedLine.toEntity());
     }
 
     @Transactional

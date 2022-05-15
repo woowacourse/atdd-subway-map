@@ -3,7 +3,9 @@ package wooteco.subway.dto.response;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import wooteco.subway.domain.line.SubwayMap;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.station.Station;
 
 public class LineResponse {
 
@@ -22,13 +24,23 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse of(SubwayMap line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(),  toStationResponse(line));
     }
 
-    private static List<StationResponse> toStationResponse(Line line) {
+    private static List<StationResponse> toStationResponse(SubwayMap line) {
         return line.getStations()
                 .stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public static LineResponse of(Line line, List<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),  toStationResponse(stations));
+    }
+
+    private static List<StationResponse> toStationResponse(List<Station> stations) {
+        return stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toUnmodifiableList());
     }

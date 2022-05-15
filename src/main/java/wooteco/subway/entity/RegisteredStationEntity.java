@@ -1,6 +1,7 @@
 package wooteco.subway.entity;
 
 import java.util.Objects;
+import wooteco.subway.domain.station.RegisteredStation;
 
 public class RegisteredStationEntity {
 
@@ -12,16 +13,8 @@ public class RegisteredStationEntity {
         this.lineEntity = lineEntity;
     }
 
-    public Long getLineId() {
-        return lineEntity.getId();
-    }
-
-    public StationEntity getStationEntity() {
-        return stationEntity;
-    }
-
-    public LineEntity getLineEntity() {
-        return lineEntity;
+    public RegisteredStation toDomain() {
+        return new RegisteredStation(lineEntity.toDomain(), stationEntity.toDomain());
     }
 
     @Override

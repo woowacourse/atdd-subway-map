@@ -24,14 +24,6 @@ public class SectionEntity {
         return lineId;
     }
 
-    public StationEntity getUpStation() {
-        return upStation;
-    }
-
-    public StationEntity getDownStation() {
-        return downStation;
-    }
-
     public Long getUpStationId() {
         return upStation.getId();
     }

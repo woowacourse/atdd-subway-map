@@ -5,12 +5,21 @@ import wooteco.subway.entity.StationEntity;
 
 public class Station {
 
+    private static final String INVALID_NAME_EXCEPTION = "역의 이름 정보가 입력되지 않았습니다.";
+
     private final Long id;
     private final String name;
 
     public Station(Long id, String name) {
+        validateName(name);
         this.id = id;
         this.name = name;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException(INVALID_NAME_EXCEPTION);
+        }
     }
 
     public Long getId() {

@@ -9,19 +9,12 @@ public class StationEntity {
     private final String name;
 
     public StationEntity(Long id, String name) {
-        validateName(name);
         this.id = id;
         this.name = name;
     }
 
     public StationEntity(String name) {
         this(null, name);
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("역의 이름 정보가 입력되지 않았습니다.");
-        }
     }
 
     public Long getId() {

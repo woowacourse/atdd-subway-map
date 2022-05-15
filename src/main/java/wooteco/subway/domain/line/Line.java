@@ -1,46 +1,28 @@
 package wooteco.subway.domain.line;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.RegisteredStationEntity;
-import wooteco.subway.entity.StationEntity;
 
 public class Line {
+
+    private static final String BLANK_OR_NULL_EXCEPTION = "노선 정보가 입력되지 않았습니다.";
 
     private final Long id;
     private final String name;
     private final String color;
-    private final List<Station> stations;
 
-    private Line(Long id,
-                 String name,
-                 String color,
-                 List<Station> stations) {
+    public Line(Long id, String name, String color) {
+        validateNotBlank(name);
+        validateNotBlank(color);
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
     }
 
-    public static Line of(LineEntity entity, List<Station> stations) {
-        return new Line(entity.getId(), entity.getName(), entity.getColor(), stations);
-    }
-
-    public static Line of(LineEntity entity, StationEntity upStation, StationEntity downStation) {
-        List<Station> stations = List.of(upStation.toDomain(), downStation.toDomain());
-        return new Line(entity.getId(), entity.getName(), entity.getColor(), stations);
-    }
-
-    public static Line of(List<RegisteredStationEntity> entities) {
-        LineEntity line = entities.get(0).getLineEntity();
-        List<Station> stations = entities.stream()
-                .map(RegisteredStationEntity::getStationEntity)
-                .map(StationEntity::toDomain)
-                .collect(Collectors.toList());
-        return new Line(line.getId(), line.getName(), line.getColor(), stations);
+    private void validateNotBlank(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException(BLANK_OR_NULL_EXCEPTION);
+        }
     }
 
     public Long getId() {
@@ -55,8 +37,8 @@ public class Line {
         return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public LineEntity toEntity() {
+        return new LineEntity(id, name, color);
     }
 
     @Override
@@ -67,16 +49,15 @@ public class Line {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Line line = (Line) o;
-        return Objects.equals(id, line.id)
-                && Objects.equals(name, line.name)
-                && Objects.equals(color, line.color)
-                && Objects.equals(stations, line.stations);
+        Line line2 = (Line) o;
+        return Objects.equals(id, line2.id)
+                && Objects.equals(name, line2.name)
+                && Objects.equals(color, line2.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, stations);
+        return Objects.hash(id, name, color);
     }
 
     @Override
@@ -85,7 +66,6 @@ public class Line {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", stations=" + stations +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package wooteco.subway.domain.section;
 
+import java.util.List;
 import java.util.Objects;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.entity.SectionEntity;
@@ -8,6 +9,8 @@ import wooteco.subway.entity.StationEntity;
 public class Section {
 
     private static final String SAME_STATION_INPUT_EXCEPTION = "서로 다른 두 개의 역을 입력해야 합니다.";
+    private static final String INVALID_DISTANCE_EXCEPTION = "구간의 길이는 1이상이어야 합니다.";
+    private static final String INVALID_VALUE_EXCEPTION = "필요한 정보가 입력되지 않았습니다.";
     private static final int MIN_DISTANCE = 1;
 
     private final Station upStation;
@@ -44,13 +47,13 @@ public class Section {
 
     private void validateNotNull(Object value) {
         if (value == null) {
-            throw new IllegalArgumentException("필요한 정보가 입력되지 않았습니다.");
+            throw new IllegalArgumentException(INVALID_VALUE_EXCEPTION);
         }
     }
 
     private void validateDistance(int distance) {
         if (distance < MIN_DISTANCE) {
-            throw new IllegalArgumentException("구간의 길이는 1이상이어야 합니다.");
+            throw new IllegalArgumentException(INVALID_DISTANCE_EXCEPTION);
         }
     }
 
@@ -72,6 +75,10 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public List<Station> toStations() {
+        return List.of(upStation, downStation);
     }
 
     public int toConnectedDistance(Section adjacentSection) {

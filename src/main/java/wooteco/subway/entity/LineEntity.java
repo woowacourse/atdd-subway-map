@@ -1,6 +1,7 @@
 package wooteco.subway.entity;
 
 import java.util.Objects;
+import wooteco.subway.domain.line.Line;
 
 public class LineEntity {
 
@@ -9,8 +10,6 @@ public class LineEntity {
     private final String color;
 
     public LineEntity(Long id, String name, String color) {
-        validateName(name);
-        validateColor(color);
         this.id = id;
         this.name = name;
         this.color = color;
@@ -18,18 +17,6 @@ public class LineEntity {
 
     public LineEntity(String name, String color) {
         this(null, name, color);
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("노선의 이름 정보가 입력되지 않았습니다.");
-        }
-    }
-
-    private void validateColor(String color) {
-        if (color == null || color.isBlank()) {
-            throw new IllegalArgumentException("노선의 색상 정보가 입력되지 않았습니다.");
-        }
     }
 
     public Long getId() {
@@ -42,6 +29,10 @@ public class LineEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public Line toDomain() {
+        return new Line(id, name, color);
     }
 
     @Override
