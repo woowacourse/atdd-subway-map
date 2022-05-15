@@ -2,47 +2,48 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.DeletableSections;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionDeleteRequest;
 import wooteco.subway.dto.SectionSaveRequest;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.SectionRepository;
 
 @Service
 @Transactional
 public class SectionService {
 
-    private final SectionDao sectionDao;
+    private final LineRepository lines;
+    private final SectionRepository sections;
 
-    public SectionService(SectionDao sectionDao) {
-        this.sectionDao = sectionDao;
+    public SectionService(LineRepository lines, SectionRepository sections) {
+        this.lines = lines;
+        this.sections = sections;
     }
 
     public Section save(SectionSaveRequest request) {
         Section sectionForSave = new Section(request.getLineId(), request.getUpStationId(),
                 request.getDownStationId(), request.getDistance());
-        updateDividedSection(sectionForSave);
-        return sectionDao.save(sectionForSave);
-    }
-
-    private void updateDividedSection(Section sectionForSave) {
-        Sections sections = new Sections(sectionDao.findByLineId(sectionForSave.getLine_id()));
-        sections.getDividedSectionsFrom(sectionForSave).ifPresent(sectionDao::update);
+        Line line = lines.findById(request.getLineId());
+        line.getDividedSectionsFrom(new Section(sectionForSave.getId(), sectionForSave.getLine_id(),
+                        sectionForSave.getUpStationId(), sectionForSave.getDownStationId(), sectionForSave.getDistance()))
+                .ifPresent(sections::update);
+        return sections.save(sectionForSave);
     }
 
     public void delete(SectionDeleteRequest request) {
-        Sections sections = new Sections(sectionDao.findByLineId(request.getLineId()));
+        Line line = lines.findById(request.getLineId());
         DeletableSections deletableSections = new DeletableSections(
-                sections.findDeletableByStationId(request.getStationId()));
+                line.findDeletableByStationId(request.getStationId()));
         deleteNearSections(deletableSections);
         deletableSections.mergeSections()
-                .ifPresent(sectionDao::save);
+                .ifPresent(sections::save);
     }
 
     private void deleteNearSections(DeletableSections deletableSections) {
         for (Long id : deletableSections.getSectionIds()) {
-            sectionDao.deleteById(id);
+            sections.deleteById(id);
         }
     }
 }

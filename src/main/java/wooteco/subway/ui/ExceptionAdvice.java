@@ -10,14 +10,14 @@ import wooteco.subway.exception.NotFoundException;
 @RestControllerAdvice
 public class ExceptionAdvice {
 
-    @ExceptionHandler(value = {IllegalArgumentException.class})
-    public ResponseEntity<ErrorResponse> handleException(Exception exception) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(exception.getMessage()));
-    }
-
     @ExceptionHandler(value = {NotFoundException.class})
     public ResponseEntity<ErrorResponse> handleNotFoundException(Exception exception) {
         return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {RuntimeException.class})
+    public ResponseEntity<ErrorResponse> handleException(Exception exception) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(exception.getMessage()));
     }
 
     @ExceptionHandler(value = {Exception.class})

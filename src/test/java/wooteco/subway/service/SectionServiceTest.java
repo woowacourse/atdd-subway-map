@@ -3,57 +3,49 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.anyLong;
-import static org.mockito.BDDMockito.given;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.SectionDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionDeleteRequest;
 import wooteco.subway.dto.SectionSaveRequest;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.SectionRepository;
 
 @SpringBootTest
 @Transactional
 class SectionServiceTest {
 
-    @Mock
-    private SectionDao sectionDao;
+    @Autowired
+    private SectionRepository sections;
 
-    @InjectMocks
+    @Autowired
+    private LineRepository lines;
+
+    @Autowired
     private SectionService sectionService;
 
-    private List<Section> sections;
+    private Long lineId;
 
     @BeforeEach
     void setUp() {
-        sections = List.of(
-                new Section(1L, 1L, 2L, 3),
-                new Section(1L, 2L, 3L, 4),
-                new Section(1L, 3L, 4L, 5));
+        Line firstLine = lines.save(new Line("1호선", "red", null));
+        lineId = firstLine.getId();
+        sections.save(new Section(lineId, 1L, 2L, 3));
+        sections.save(new Section(lineId, 2L, 3L, 4));
+        sections.save(new Section(lineId, 3L, 4L, 5));
     }
 
     @Test
     @DisplayName("구간 등록하기")
     void saveSection() {
         // given
-        SectionSaveRequest request = new SectionSaveRequest(1L, 2L, 10L, 1);
-        Section section = new Section(request.getLineId(),
-                request.getUpStationId(), request.getDownStationId(), request.getDistance());
-
-        given(sectionDao.findByLineId(request.getLineId()))
-                .willReturn(sections);
-        given(sectionDao.update(any(Section.class)))
-                .willReturn(1);
-        given(sectionDao.save(any(Section.class)))
-                .willReturn(section);
+        SectionSaveRequest request = new SectionSaveRequest(lineId, 2L, 10L, 1);
 
         Section savedSection = sectionService.save(request);
         assertAll(() -> {
@@ -66,15 +58,7 @@ class SectionServiceTest {
     @DisplayName("구간 삭제하기")
     void deleteSection() {
         // given
-        SectionDeleteRequest request = new SectionDeleteRequest(1L, 1L);
-
-        given(sectionDao.findByLineId(request.getLineId()))
-                .willReturn(sections);
-        given(sectionDao.deleteById(anyLong()))
-                .willReturn(1);
-        given(sectionDao.update(any(Section.class)))
-                .willReturn(1);
-
+        SectionDeleteRequest request = new SectionDeleteRequest(lineId, 1L);
         // then
         assertThatCode(() -> sectionService.delete(request))
                 .doesNotThrowAnyException();

@@ -5,19 +5,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.JdbcSectionDao;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.entity.LineEntity;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.SectionRepository;
 
 class SectionAcceptanceTest extends AcceptanceTest {
 
@@ -25,16 +26,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private StationDao stationDao;
 
     @Autowired
-    private LineDao lineDao;
+    private LineRepository lines;
 
     @Autowired
-    private JdbcSectionDao sectionDao;
+    private SectionRepository sections;
 
     private Station gangnam;
     private Station nowon;
     private Station jamsil;
 
-    private LineEntity line1;
+    private Line line1;
 
     @Override
     @BeforeEach
@@ -43,8 +44,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         gangnam = stationDao.save(new Station("강남"));
         nowon = stationDao.save(new Station("노원"));
         jamsil = stationDao.save(new Station("잠실"));
-        line1 = lineDao.save(new LineEntity(null, "1호선", "red"));
-        Section section1 = sectionDao.save(new Section(line1.getId(), gangnam.getId(), nowon.getId(), 10));
+        line1 = lines.save(new Line("1호선", "red", Collections.emptyList()));
+        sections.save(new Section(line1.getId(), gangnam.getId(), nowon.getId(), 10));
     }
 
     @Test
@@ -65,7 +66,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 삭제하기")
     void delete() {
         //given
-        sectionDao.save(new Section(line1.getId(), jamsil.getId(), gangnam.getId(), 5));
+        sections.save(new Section(line1.getId(), jamsil.getId(), gangnam.getId(), 5));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
