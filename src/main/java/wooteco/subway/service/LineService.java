@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -9,12 +8,10 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.RegisteredSectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.line.LineInfo;
+import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.Lines;
 import wooteco.subway.domain.section.RegisteredSection;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Sections;
-import wooteco.subway.domain.section.SectionsFactory;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
@@ -50,15 +47,11 @@ public class LineService {
                 .toSortedList()
                 .stream()
                 .map(LineResponse::of)
-                .sorted(Comparator.comparingLong(LineResponse::getId))
                 .collect(Collectors.toUnmodifiableList());
     }
 
     public LineResponse find(Long id) {
-        LineInfo line = findExistingLine(id);
-        Sections sections = SectionsFactory.generate(findAllStationsRegisteredToLine(id));
-        List<Station> stations = sections.toSortedStations();
-        return LineResponse.of(line, stations);
+        return LineResponse.of(Line.of(findRegisteredSections(id)));
     }
 
     @Transactional
@@ -98,23 +91,17 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    private LineInfo findExistingLine(Long id) {
-        return lineDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionType.LINE_NOT_FOUND))
-                .toDomain();
+    private List<RegisteredSection> findRegisteredSections(Long lineId) {
+        return registeredSectionDao.findAllByLineId(lineId)
+                .stream()
+                .map(RegisteredSectionEntity::toDomain)
+                .collect(Collectors.toList());
     }
 
     private Station findExistingStation(Long stationId) {
         return stationDao.findById(stationId)
                 .orElseThrow(() -> new NotFoundException(ExceptionType.STATION_NOT_FOUND))
                 .toDomain();
-    }
-
-    private List<Section> findAllStationsRegisteredToLine(Long id) {
-        return sectionDao.findAllByLineId(id)
-                .stream()
-                .map(SectionEntity::toDomain)
-                .collect(Collectors.toList());
     }
 
     private void validateExistingLine(Long id) {
