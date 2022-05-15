@@ -2,11 +2,13 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Sections {
 
+    private final static int FIRST_INDEX = 0;
+    private static final int BLANK_LENGTH = 0;
     private static final int POSSIBLE_DELETION_LENGTH = 2;
+    private static final long NOTING = -1L;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -15,16 +17,35 @@ public class Sections {
 
     public List<Long> getStationIds() {
         List<Long> stationIds = new ArrayList<>();
-
-        for (Section section : sections) {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
+        Section firstSection = getFirstSection();
+        stationIds.add(firstSection.getUpStationId());
+        Long nextStation = firstSection.getDownStationId();
+        while (nextStation != NOTING) {
+            stationIds.add(nextStation);
+            nextStation = getNextStation(nextStation);
         }
+        return stationIds;
+    }
 
-        return stationIds.stream()
-                .distinct()
-                .sorted()
-                .collect(Collectors.toUnmodifiableList());
+    private Section getFirstSection() {
+        return sections.stream()
+                .filter(section -> getStationCountForFirstStation(section.getUpStationId()) == 0)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("구간 등록이 잘못됐으니 프로그램을 리팩토링하세요."));
+    }
+
+    private int getStationCountForFirstStation(Long stationId) {
+        return (int) sections.stream()
+                .filter(section -> section.getDownStationId().equals(stationId))
+                .count();
+    }
+
+    private Long getNextStation(Long downStationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(downStationId))
+                .map(Section::getDownStationId)
+                .findFirst()
+                .orElse(NOTING);
     }
 
     public void validateLengthToDeletion() {
@@ -54,12 +75,11 @@ public class Sections {
                 return section;
             }
         }
-
-        return sections.get(0);
+        return sections.get(FIRST_INDEX);
     }
 
     public boolean isBlank() {
-        return sections.size() == 0;
+        return sections.size() == BLANK_LENGTH;
     }
 
     public boolean isContain(Section section) {
