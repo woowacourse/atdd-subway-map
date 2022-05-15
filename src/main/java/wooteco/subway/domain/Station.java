@@ -32,6 +32,11 @@ public class Station {
         name = builder.name;
     }
 
+    public Station addId(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public Long getId() {
         return id;
     }
