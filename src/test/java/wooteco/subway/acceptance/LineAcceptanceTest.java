@@ -25,13 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = lineParam("신분당선", "bg-red-600", 잠실역, 강남역);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = createLine(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(201);
@@ -70,11 +64,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long id = saveLineAndGetId("1호선", "blue", 창동역, 도봉역);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/{id}", id)
-                .then()
-                .log().all().extract();
+        ExtractableResponse<Response> response = findLine(id);
 
         // then
         assertThat(response.statusCode()).isEqualTo(200);
@@ -87,12 +77,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("없는 노선을 조회시 에러")
     void notFindLine() {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/{id}", 1)
-                .then()
-                .log().all().extract();
-
+        ExtractableResponse<Response> response = findLine(1);
         // then
         assertThat(response.statusCode()).isEqualTo(400);
     }
@@ -129,13 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("name", "2호선");
         params2.put("color", "green");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params2)
-                .when()
-                .put("/lines/{id}", id)
-                .then()
-                .log().all().extract();
+        ExtractableResponse<Response> response = modifyLine(id, params2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(200);
@@ -177,13 +156,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("name", "");
         params2.put("color", "");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params2)
-                .when()
-                .put("/lines/{id}", id)
-                .then()
-                .log().all().extract();
+        ExtractableResponse<Response> response = modifyLine(id, params2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(400);
@@ -421,5 +394,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
         return savedResponse.body().jsonPath().getLong("id");
+    }
+
+    private ExtractableResponse<Response> createLine(Map<String, Object> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> findLine(long id) {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/{id}", id)
+                .then()
+                .log().all().extract();
+    }
+
+    private ExtractableResponse<Response> modifyLine(long id, Map<String, String> params2) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params2)
+                .when()
+                .put("/lines/{id}", id)
+                .then()
+                .log().all().extract();
     }
 }
