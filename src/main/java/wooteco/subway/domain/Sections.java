@@ -73,7 +73,7 @@ public class Sections {
         validateMinSize();
         long count = countMatchSection(station);
         validateNoneMatch(count);
-        if(isBetweenSection(count)){
+        if (isBetweenSection(count)) {
             Section leftSection = sections.stream()
                     .filter(section -> section.isSameDownStation(station))
                     .findFirst()

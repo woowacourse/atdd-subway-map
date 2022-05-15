@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionsTest {
 
+    private static final long LINE_ID = 1L;
     private Sections sections;
-
     private Station upStation;
     private Station middleStation;
     private Station downStation;
@@ -24,8 +24,8 @@ class SectionsTest {
         downStation = new Station(3L, "이대역");
 
         sections = new Sections(List.of(
-                new Section(1L, upStation, middleStation, 5),
-                new Section(1L, middleStation, downStation, 5)
+                new Section(LINE_ID, upStation, middleStation, 5),
+                new Section(LINE_ID, middleStation, downStation, 5)
         ));
     }
 
@@ -44,9 +44,9 @@ class SectionsTest {
     void getOrderStations() {
         Station newStation = new Station(4L, "하행종점역");
         Sections sections = new Sections(List.of(
-                new Section(1L, downStation, newStation, 4),
-                new Section(1L, upStation, middleStation, 5),
-                new Section(1L, middleStation, downStation, 5)
+                new Section(LINE_ID, downStation, newStation, 4),
+                new Section(LINE_ID, upStation, middleStation, 5),
+                new Section(LINE_ID, middleStation, downStation, 5)
         ));
         List<Station> stations = sections.getStations();
 
@@ -79,6 +79,29 @@ class SectionsTest {
                 () -> assertThat(section.getUpStation()).isEqualTo(upStation),
                 () -> assertThat(section.getDownStation()).isEqualTo(middleStation)
         );
+    }
+
+    @DisplayName("상행 종점역이 포함된 구간을 제거하면 남은 구간들중 제거한 역은 존재하지 않는다.")
+    @Test
+    void deleteUpStationSection() {
+        Sections deleteSection = sections.delete(LINE_ID, upStation);
+        assertThat(deleteSection.getStations().contains(upStation)).isFalse();
+    }
+
+    @DisplayName("하행 종점역이 포함된 구간을 제거하면 남은 구간들중 제거한 역은 존재하지 않는다.")
+    @Test
+    void deleteDownStationSection() {
+        Sections deleteSection = sections.delete(LINE_ID, downStation);
+        assertThat(deleteSection.getStations().contains(downStation)).isFalse();
+    }
+
+    @DisplayName("사이에 구간을 제거하면 2개의 구간이 제거되고 하나의 새로운 구간이 만들어진다.")
+    @Test
+    void delete() {
+        int 전체_구간_개수 = 2;
+        Sections deleteSection = sections.delete(LINE_ID, middleStation);
+        assertThat(deleteSection.getStations().contains(middleStation)).isFalse();
+        assertThat(deleteSection.getSections().size()).isEqualTo(전체_구간_개수 - 1);
     }
 
 }

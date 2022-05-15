@@ -87,7 +87,7 @@ class StationServiceTest {
 
         long 없는_역_ID = 999L;
         assertThatThrownBy(
-                () ->        stationService.deleteById(없는_역_ID)
+                () -> stationService.deleteById(없는_역_ID)
         ).isInstanceOf(NotFoundException.class).hasMessage("[ERROR] 식별자에 해당하는 역을 찾을수 없습니다.");
     }
 
