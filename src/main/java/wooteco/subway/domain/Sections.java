@@ -110,8 +110,8 @@ public class Sections {
     private void extendMiddleStationWithUpStation(List<Section> newSections, Section section, Section eachSection) {
         if (isExtensionWithUpStation(section, eachSection)) {
             newSections.add(section);
-            Long newUpStationId = section.getDownStationId();
-            Long newDownStationId = eachSection.getDownStationId();
+            long newUpStationId = section.getDownStationId();
+            long newDownStationId = eachSection.getDownStationId();
             int newDistance = eachSection.getDistance() - section.getDistance();
             newSections.remove(eachSection);
             Section newSection = new Section(section.getLineId(), newUpStationId, newDownStationId, newDistance);
@@ -126,8 +126,8 @@ public class Sections {
     private void extendMiddleStationWithDownStation(List<Section> newSections, Section section, Section eachSection) {
         if (isExtensionWithDownStation(section, eachSection)) {
             newSections.add(section);
-            Long newUpStationId = eachSection.getUpStationId();
-            Long newDownStationId = section.getUpStationId();
+            long newUpStationId = eachSection.getUpStationId();
+            long newDownStationId = section.getUpStationId();
             int newDistance = eachSection.getDistance() - section.getDistance();
             newSections.remove(eachSection);
             Section newSection = new Section(section.getLineId(), newUpStationId, newDownStationId, newDistance);
