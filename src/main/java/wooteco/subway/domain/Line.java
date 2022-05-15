@@ -32,7 +32,7 @@ public class Line {
         this.color = color;
     }
 
-    public int insertSection(Section section) {
+    public boolean insertSection(Section section) {
         return sections.insert(section);
     }
 

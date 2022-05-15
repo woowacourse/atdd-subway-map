@@ -124,13 +124,11 @@ class SectionsTest {
 
     @ParameterizedTest(name = "{index}: {1}")
     @MethodSource("invalidParameters")
-    @DisplayName("구간이 삽입될 수 없으면 예외를 반환해야 한다.")
+    @DisplayName("구간이 삽입될 수 없으면 false를 반환해야 한다.")
     void insertInvalidParameters(Section section, String testName) {
         Sections sections1 = Sections.of(sections);
 
-        assertThatThrownBy(
-            () -> sections1.insert(section)
-        ).isInstanceOf(IllegalArgumentException.class);
+        assertThat(sections1.insert(section)).isFalse();
     }
 
     private static Stream<Arguments> invalidParameters() {
@@ -138,7 +136,22 @@ class SectionsTest {
             Arguments.of(new Section(new Station("11"), new Station("12"), 100),
                 "아무 역과도 연결되지 않을 때"),
             Arguments.of(new Section(new Station("2"), new Station("3"), 100),
-                "역과는 연결되었지만 길이가 길때"),
+                "역과는 연결되었지만 길이가 길때")
+        );
+    }
+
+    @ParameterizedTest(name = "{index}: {1}")
+    @MethodSource("exceptionParameters")
+    @DisplayName("상행선과 하행선이 이미 있는 구간이면 예외를 반환해야 한다.")
+    void insertExceptionParameters(Section section, String testName) {
+        Sections sections1 = Sections.of(sections);
+        assertThatThrownBy(() -> sections1.insert(section))
+            .hasMessage("이미 존재하는 상행선과 하행선은 구간에 추가할 수 없습니다.")
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private static Stream<Arguments> exceptionParameters() {
+        return Stream.of(
             Arguments.of(new Section(new Station("2"), new Station("4"), 3),
                 "상행선과 하행선이 이미 있는 구간일 때"),
             Arguments.of(new Section(new Station("2"), new Station("6"), 3),

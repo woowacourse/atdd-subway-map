@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Sections {
     private static final int MIN_SIZE = 1;
@@ -49,21 +51,20 @@ public class Sections {
             .orElseThrow(() -> new IllegalArgumentException("해당 구간을 찾을 수 없습니다."));
     }
 
-    public int insert(Section section) {
+    public boolean insert(Section section) {
+        checkContainsStation(section);
+
+        boolean success;
         LinkedList<Section> flexibleSections = new LinkedList<>(this.sections);
-        for (int i = 0; i < flexibleSections.size(); i++) {
-            Section sectionInLine = flexibleSections.get(i);
-            if (insertSection(section, flexibleSections, i, sectionInLine)) {
-                return 2;
-            }
+        OptionalInt findIndex = IntStream.range(0, flexibleSections.size())
+            .filter(index -> insertSection(section, flexibleSections, index, flexibleSections.get(index)))
+            .findFirst();
+        if (findIndex.isPresent()) {
+            return true;
         }
 
-        if (flexibleSections.size() == sections.size()) {
-            insertSectionSide(section, flexibleSections);
-            return 1;
-        }
-
-        throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
+        success = insertSectionSide(section, flexibleSections);
+        return success;
     }
 
     private boolean insertSection(Section section, LinkedList<Section> flexibleSections, int index, Section sectionInLine) {
@@ -97,22 +98,22 @@ public class Sections {
         }
     }
 
-    private void insertSectionSide(Section section, LinkedList<Section> flexibleSections) {
+    private boolean insertSectionSide(Section section, LinkedList<Section> flexibleSections) {
         Section lastSection = sections.get(sections.size() - 1);
         if (lastSection.hasDownStation(section.getUpStation())) {
             addSection(flexibleSections, flexibleSections.size(), section);
             sections = flexibleSections;
-            return;
+            return true;
         }
 
         Section firstSection = sections.get(0);
         if (firstSection.hasUpStation(section.getDownStation())) {
             addSection(flexibleSections, 0, section);
             sections = flexibleSections;
-            return;
+            return true;
         }
 
-        throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
+        return false;
     }
 
     private boolean canInsertUpStation(Section section, Section sectionInLine) {
@@ -163,11 +164,12 @@ public class Sections {
 
     private Long deleteMiddleSection(Station station,
         LinkedList<Section> flexibleSections, int lastIndex) {
-        for (int i = 0; i < lastIndex; i++) {
-            Section leftSection = sections.get(i);
-            if (leftSection.hasDownStation(station)) {
-                return removeMiddleStation(flexibleSections, i, leftSection);
-            }
+        OptionalInt index = IntStream.range(0, lastIndex)
+            .filter(i -> sections.get(i).hasDownStation(station))
+            .findFirst();
+        if (index.isPresent()) {
+            int indexAsInt = index.getAsInt();
+            return removeMiddleStation(flexibleSections, indexAsInt, sections.get(indexAsInt));
         }
         return -1L;
     }
