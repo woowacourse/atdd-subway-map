@@ -37,7 +37,7 @@ public class SectionService {
 
     private void updateUpStationId(Sections sections, Section newSection) {
         Section upStationIdSection = sections.getSectionByUpStationId(newSection.getUpStationId());
-        validateDistance(upStationIdSection, newSection);
+        upStationIdSection.validateDistance(newSection);
         int calculateDistance = upStationIdSection.minusDistance(newSection);
         sectionDao.updateUpStationId(
                 upStationIdSection.getId(),
@@ -48,19 +48,13 @@ public class SectionService {
 
     private void updateDownStationId(Sections sections, Section newSection) {
         Section downStationIdSection = sections.getSectionByDownStationId(newSection.getDownStationId());
-        validateDistance(downStationIdSection, newSection);
+        downStationIdSection.validateDistance(newSection);
         int calculateDistance = downStationIdSection.minusDistance(newSection);
         sectionDao.updateDownStationId(
                 downStationIdSection.getId(),
                 newSection.getUpStationId(),
                 calculateDistance
         );
-    }
-
-    private void validateDistance(Section baseSection, Section newSection) {
-        if (baseSection.checkNotUnderDistance(newSection)) {
-            throw new IllegalArgumentException("[ERROR] 기존 구간 거리보다 작아야합니다.");
-        }
     }
 
     public void delete(Long lineId, Long stationId) {

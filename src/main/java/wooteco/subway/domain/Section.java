@@ -40,12 +40,14 @@ public class Section {
         return distance;
     }
 
-    public boolean checkNotUnderDistance(Section newSection) {
-        return this.distance <= newSection.getDistance();
-    }
-
     public int minusDistance(Section newSection) {
         return this.distance - newSection.getDistance();
+    }
+
+    public void validateDistance(Section section) {
+        if (this.distance <= section.getDistance()) {
+            throw new IllegalArgumentException("[ERROR] 기존 구간 거리보다 작아야합니다.");
+        }
     }
 
     @Override
