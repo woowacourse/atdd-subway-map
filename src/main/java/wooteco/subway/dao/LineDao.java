@@ -24,7 +24,8 @@ public class LineDao {
                 + "JOIN STATION AS up ON up.id = sec.up_station_id "
                 + "JOIN STATION AS down ON down.id = sec.down_station_id "
                 + "WHERE l.id = ?";
-        List<LineResponse> responses = jdbcTemplate.query(sql, new LineResponsesExtractor(sorter), id);
+        List<LineResponse> responses = jdbcTemplate
+            .query(sql, new LineResponsesExtractor(sorter), id);
 
         if (responses.size() == 1) {
             return Optional.of(responses.get(0));

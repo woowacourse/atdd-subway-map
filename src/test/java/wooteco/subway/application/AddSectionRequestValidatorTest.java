@@ -1,6 +1,5 @@
 package wooteco.subway.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.stream.Stream;
@@ -63,7 +62,7 @@ class AddSectionRequestValidatorTest {
     void validateSameStationId() {
         assertThatThrownBy(() -> validator.validate(line.getId(),
             new AddSectionRequest(station1.getId(), station1.getId(), 10)))
-        .isInstanceOf(UnaddableSectionException.class);
+            .isInstanceOf(UnaddableSectionException.class);
     }
 
     @Test

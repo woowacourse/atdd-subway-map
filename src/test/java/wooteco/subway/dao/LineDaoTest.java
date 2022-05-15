@@ -69,7 +69,8 @@ public class LineDaoTest {
 
     @Test
     void getById() {
-        LineResponse lineResponse = lineDao.queryById(line1.getId(), new UpwardSorter()).orElseThrow();
+        LineResponse lineResponse = lineDao.queryById(line1.getId(), new UpwardSorter())
+            .orElseThrow();
 
         assertThat(lineResponse.getId()).isEqualTo(line1.getId());
         assertThat(lineResponse.getName()).isEqualTo(line1.getName());
