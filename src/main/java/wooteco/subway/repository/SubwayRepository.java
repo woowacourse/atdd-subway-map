@@ -150,20 +150,23 @@ public class SubwayRepository implements LineRepository, SectionRepository, Stat
 
     @Override
     public void updateSections(Long lineId, Sections sections) {
-        List<Long> actualSectionIds = sectionDao.findAllIdByLineId(lineId);
-        List<Long> expectedSectionIds = sections.getSectionIds();
+        List<Long> originalSectionIds = sectionDao.findAllIdByLineId(lineId);
+        List<Long> updatedSectionIds = sections.getSectionIds();
 
-        List<Long> sectionIdsForRemove = actualSectionIds.stream()
-                .filter(sectionId -> !expectedSectionIds.contains(sectionId))
-                .collect(Collectors.toUnmodifiableList());
+        removeSections(originalSectionIds, updatedSectionIds);
+        appendSections(lineId, sections.getSections());
+    }
 
-        List<Section> sectionsForAppend = sections.getSections()
-                .stream()
+    private void removeSections(List<Long> originalSectionIds, List<Long> updatedSectionIds) {
+        originalSectionIds.stream()
+                .filter(sectionId -> !updatedSectionIds.contains(sectionId))
+                .forEach(sectionDao::remove);
+    }
+
+    private void appendSections(Long lineId, List<Section> sections) {
+        sections.stream()
                 .filter(section -> section.getId() == 0)
-                .collect(Collectors.toUnmodifiableList());
-
-        sectionIdsForRemove.forEach(sectionDao::remove);
-        sectionsForAppend.forEach(section -> sectionDao.save(EntityAssembler.sectionEntity(lineId, section)));
+                .forEach(section -> sectionDao.save(EntityAssembler.sectionEntity(lineId, section)));
     }
 
     @Override
