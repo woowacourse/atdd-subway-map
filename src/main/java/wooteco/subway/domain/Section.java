@@ -25,7 +25,7 @@ public class Section {
 
     private void validateDistance(int distance) {
         if (distance <= MIN_DISTANCE) {
-            throw new IllegalArgumentException("거리는 0보다 작을 수 없습니다.");
+            throw new IllegalArgumentException("거리는 0보다 커야합니다.");
         }
     }
 
