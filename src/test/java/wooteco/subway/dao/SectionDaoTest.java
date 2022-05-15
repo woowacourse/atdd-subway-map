@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ import wooteco.subway.domain.Station;
 class SectionDaoTest {
 
     @Autowired
+    private DataSource dataSource;
+    @Autowired
     private JdbcTemplate jdbcTemplate;
     private SectionDao sectionDao;
     private LineDao lineDao;
@@ -25,7 +28,7 @@ class SectionDaoTest {
     @BeforeEach
     void beforeEach() {
         sectionDao = new SectionDao(jdbcTemplate);
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new LineDao(dataSource);
         stationDao = new StationDao(jdbcTemplate);
     }
 

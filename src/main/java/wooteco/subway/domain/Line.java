@@ -64,4 +64,14 @@ public class Line {
     public int hashCode() {
         return Objects.hash(name, color);
     }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                '}';
+    }
 }

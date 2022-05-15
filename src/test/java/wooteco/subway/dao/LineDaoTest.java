@@ -46,7 +46,7 @@ class LineDaoTest {
         final Long savedId = lineDao.save(line);
 
         // then
-        final Line findLine = lineDao.findById(savedId);
+        final Line findLine = lineDao.findOnlyLineById(savedId);
         assertThat(findLine).extracting("name", "color")
                 .contains("신분당선", "bg-red-600");
     }
@@ -92,6 +92,7 @@ class LineDaoTest {
 
         Line 신분당선 = new Line("신분당선", "bg-red-600");
         Long 신분당선_id = lineDao.save(신분당선);
+        sectionDao.save(new SectionV2(신분당선_id, 강남역, 역삼역, 10));
 
         // when
         Line findLine = lineDao.findById(신분당선_id);
@@ -105,11 +106,6 @@ class LineDaoTest {
     @DisplayName("기존 노선의 이름과 색상을 변경할 수 있다.")
     void updateById() {
         // given
-        Long 강남역_id = stationDao.save(강남역);
-        Long 역삼역_id = stationDao.save(역삼역);
-        Station 강남역 = stationDao.findById(강남역_id);
-        Station 역삼역 = stationDao.findById(역삼역_id);
-
         Line 신분당선 = new Line("신분당선", "bg-red-600");
         Long 신분당선_id = lineDao.save(신분당선);
 
@@ -118,7 +114,7 @@ class LineDaoTest {
         lineDao.updateByLine(updateLine);
 
         // then
-        final Line findLine = lineDao.findById(신분당선_id);
+        final Line findLine = lineDao.findOnlyLineById(신분당선_id);
         assertThat(findLine).extracting("name", "color")
                 .contains("다른분당선", "bg-red-600");
     }

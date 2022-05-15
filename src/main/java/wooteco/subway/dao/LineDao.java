@@ -37,12 +37,33 @@ public class LineDao {
         return simpleJdbcInsert.executeAndReturnKey(sqlParameter).longValue();
     }
 
-    public Line findById(Long id) {
+    public Line findOnlyLineById(Long id) {
         String sql = "SELECT * FROM line WHERE id = :id";
 
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
 
         return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
+    }
+
+    public Line findById(Long id) {
+        String sql = "SELECT l.id AS line_id, l.name, l.color,"
+                + " s.id AS section_id,"
+                + " s.up_station_id, us.name AS up_station_name,"
+                + " s.down_station_id, ds.name AS down_station_name, s.distance"
+                + " FROM line AS l"
+                + " LEFT JOIN section AS s ON s.line_id = l.id"
+                + " LEFT JOIN station AS us ON us.id = s.up_station_id"
+                + " LEFT JOIN station AS ds ON ds.id = s.down_station_id"
+                + " WHERE l.id = :id";
+
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        LineSection lineSection = namedParameterJdbcTemplate.queryForObject(sql, parameters, lineAndSectionRowMapper());
+
+        return new Line(
+                lineSection.getLine().getId(),
+                lineSection.getLine().getName(),
+                lineSection.getLine().getColor(),
+                new SectionsV2(List.of(lineSection.getSectionV2())));
     }
 
     public List<Line> findAll() {
@@ -62,6 +83,37 @@ public class LineDao {
                 .stream()
                 .map(key -> new Line(key.getId(), key.getName(), key.getColor(), toSections(groupByLine.get(key))))
                 .collect(Collectors.toList());
+    }
+
+    private SectionsV2 toSections(List<LineSection> lineSections) {
+        return new SectionsV2(lineSections.stream()
+                .map(LineSection::getSectionV2)
+                .collect(Collectors.toList()));
+    }
+
+    public Long updateByLine(final Line line) {
+        String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
+        SqlParameterSource nameParameters = new BeanPropertySqlParameterSource(line);
+
+        namedParameterJdbcTemplate.update(sql, nameParameters);
+
+        return line.getId();
+    }
+
+    public int deleteById(final Long id) {
+        String sql = "DELETE FROM line WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+
+        return namedParameterJdbcTemplate.update(sql, parameters);
+    }
+
+    private RowMapper<Line> rowMapper() {
+        return (resultSet, rowNum) -> {
+            Long lineId = resultSet.getLong("id");
+            String name = resultSet.getString("name");
+            String color = resultSet.getString("color");
+            return new Line(lineId, name, color);
+        };
     }
 
     private RowMapper<LineSection> lineAndSectionRowMapper() {
@@ -102,36 +154,5 @@ public class LineDao {
         public SectionV2 getSectionV2() {
             return sectionV2;
         }
-    }
-
-    private SectionsV2 toSections(List<LineSection> lineSections) {
-        return new SectionsV2(lineSections.stream()
-                .map(LineSection::getSectionV2)
-                .collect(Collectors.toList()));
-    }
-
-    private RowMapper<Line> rowMapper() {
-        return (resultSet, rowNum) -> {
-            Long lineId = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            String color = resultSet.getString("color");
-            return new Line(lineId, name, color);
-        };
-    }
-
-    public Long updateByLine(final Line line) {
-        String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
-        SqlParameterSource nameParameters = new BeanPropertySqlParameterSource(line);
-
-        namedParameterJdbcTemplate.update(sql, nameParameters);
-
-        return line.getId();
-    }
-
-    public int deleteById(final Long id) {
-        String sql = "DELETE FROM line WHERE id = :id";
-        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-
-        return namedParameterJdbcTemplate.update(sql, parameters);
     }
 }
