@@ -2,8 +2,6 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.Fixtures.강남역;
-import static wooteco.subway.Fixtures.역삼역;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +15,7 @@ class SectionV2Test {
     @DisplayName("구간을 라인 아이디, 상행역, 하행역, 거리를 가지고 생성할 수 있다.")
     void create() {
         // given & when
-        SectionV2 section = new SectionV2(1L, 강남역, 역삼역, 10);
+        SectionV2 section = new SectionV2(1L, new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
 
         // then
         assertThat(section).isInstanceOf(SectionV2.class);
@@ -33,16 +31,16 @@ class SectionV2Test {
 
     private static Stream<Arguments> invalidSectionCreate() {
         return Stream.of(
-                Arguments.of(null, 강남역, 역삼역, 1),
-                Arguments.of(1L, null, 역삼역, 1),
-                Arguments.of(1L, 강남역, null, 1)
+                Arguments.of(null, new Station(1L, "강남역"), new Station(2L, "역삼역"), 1),
+                Arguments.of(1L, null, new Station(2L, "역삼역"), 1),
+                Arguments.of(1L, new Station(1L, "강남역"), null, 1)
         );
     }
 
     @Test
     @DisplayName("구간 생성시 거리가 0이하일 경우 예외가 발생한다.")
     void invalidSectionOfLessThanZeroDistance() {
-        assertThatThrownBy(() -> new SectionV2(1L, 강남역, 역삼역, 0))
+        assertThatThrownBy(() -> new SectionV2(1L, new Station(1L, "강남역"), new Station(2L, "역삼역"), 0))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간의 거리는 0이하로 등록할 수 없습니다.");
     }
