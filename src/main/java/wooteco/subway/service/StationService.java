@@ -58,13 +58,13 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
-    private void deleteStationInSections(Long id) {
-        List<Section> sections = sectionDao.findByStationId(id);
+    private void deleteStationInSections(Long stationId) {
+        List<Section> sections = sectionDao.findByStationId(stationId);
         Map<Long, List<Section>> sectionsMap = initSectionsMap(sections);
 
         for (Entry<Long, List<Section>> sectionsInfo : sectionsMap.entrySet()) {
             Sections lineIdSections = new Sections(sectionsInfo.getValue());
-            sectionService.delete(lineIdSections, sectionsInfo.getKey());
+            sectionService.delete(lineIdSections, stationId);
         }
     }
 
@@ -73,6 +73,7 @@ public class StationService {
         for (Section section : sections) {
             Long lineId = section.getLineId();
             List<Section> sectionList = map.getOrDefault(lineId, new LinkedList<>());
+            sectionList.add(section);
             map.put(lineId, sectionList);
         }
         return map;

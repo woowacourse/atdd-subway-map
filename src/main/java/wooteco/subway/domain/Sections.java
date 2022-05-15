@@ -12,7 +12,6 @@ import org.springframework.util.CollectionUtils;
 public class Sections {
 
     private static final String NO_DOWN_STATION_ID_ERROR = "해당 stationId를 하행역으로 둔 구간은 존재하지 않습니다.";
-    private static final String NO_SECTION_LIST_ERROR = "section 목록이 존재하지 않습니다.";
     private static final String DUPLICATED_SECTION_LIST_ERROR = "해당 구간은 이미 등록되어 있습니다.";
     private static final String CREATE_CROSSROADS_LIST_ERROR = "갈림길을 생성할 수 없습니다.";
 
@@ -108,7 +107,6 @@ public class Sections {
      * @return 삭제로 인해 변경 사항이 있는 Section
      */
     public Optional<Section> findUpdateWhenRemove(Long stationId) {
-        validSize();
         Section removedSection = findByDownStationId(stationId);
 
         for (Section section : value) {
@@ -128,12 +126,6 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException(NO_DOWN_STATION_ID_ERROR));
     }
 
-    private void validSize() {
-        if (CollectionUtils.isEmpty(value)) {
-            throw new IllegalArgumentException(NO_SECTION_LIST_ERROR);
-        }
-    }
-    
     @Override
     public String toString() {
         return "Sections{" +
