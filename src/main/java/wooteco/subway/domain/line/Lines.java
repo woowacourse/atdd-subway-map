@@ -30,7 +30,7 @@ public class Lines {
                 .collect(groupingBy(RegisteredStationEntity::getLineId));
     }
 
-    public List<Line> toLine() {
+    public List<Line> toList() {
         return new ArrayList<>(value.values());
     }
 

@@ -12,7 +12,8 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.Lines;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Stations;
+import wooteco.subway.domain.section.SectionsFactory;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
@@ -46,7 +47,7 @@ public class LineService {
 
     public List<LineResponse> findAll() {
         Lines lines = Lines.of(registeredStationDao.findAll());
-        return lines.toLine()
+        return lines.toList()
                 .stream()
                 .map(LineResponse::of)
                 .sorted(Comparator.comparingLong(LineResponse::getId))
@@ -60,7 +61,8 @@ public class LineService {
         List<Section> sections = sectionDao.findAllByLineId(id).stream()
                 .map(SectionEntity::toDomain)
                 .collect(Collectors.toList());
-        return LineResponse.of(Line.of(lineEntity, Stations.of(sections).getValue()));
+        List<Station> stations = SectionsFactory.generate(sections).toSortedStations();
+        return LineResponse.of(Line.of(lineEntity, stations));
     }
 
     @Transactional

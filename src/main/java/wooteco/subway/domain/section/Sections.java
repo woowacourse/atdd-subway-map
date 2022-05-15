@@ -1,14 +1,12 @@
 package wooteco.subway.domain.section;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exception.NotFoundException;
 
 public class Sections {
 
-    private static final String NOT_EXISTING_LINE_EXCEPTION = "존재하지 않는 노선입니다.";
     private static final String STATION_NOT_REGISTERED_EXCEPTION = "구간에 등록되지 않은 지하철역입니다.";
     private static final String LAST_SECTION_EXCEPTION = "노선의 마지막 구간은 제거할 수 없습니다.";
     private static final String ALL_STATIONS_REGISTERED_EXCEPTION = "이미 노선에 등록된 지하철역들입니다.";
@@ -16,52 +14,8 @@ public class Sections {
 
     private final List<Section> value;
 
-    private Sections(List<Section> value) {
-        validateLineExistence(value);
+    Sections(List<Section> value) {
         this.value = value;
-    }
-
-    public static Sections of(List<Section> sections) {
-        validateLineExistence(sections);
-        List<Station> sortedStations = toSortedStationList(SectionStationMap.of(sections));
-        return new Sections(toSortedSections(sortedStations, sections));
-    }
-
-    private static void validateLineExistence(List<Section> value) {
-        if (value.isEmpty()) {
-            throw new NotFoundException(NOT_EXISTING_LINE_EXCEPTION);
-        }
-    }
-
-    private static List<Station> toSortedStationList(SectionStationMap sectionMap) {
-        LinkedList<Station> list = new LinkedList<>();
-        Station upperEndStation = sectionMap.findUpperEndStation();
-        list.add(upperEndStation);
-
-        Long current = upperEndStation.getId();
-        while (sectionMap.hasDownStation(current)) {
-            Station nextStation = sectionMap.getDownStationIdOf(current);
-            list.add(nextStation);
-            current = nextStation.getId();
-        }
-        return list;
-    }
-
-    private static List<Section> toSortedSections(List<Station> sortedStations,
-                                                  List<Section> sections) {
-        List<Section> sortedSections = new ArrayList<>();
-        for (int i = 0; i < sections.size(); i++) {
-            sortedSections.add(findSectionByUpStation(sortedStations.get(i), sections));
-        }
-        return sortedSections;
-    }
-
-    private static Section findSectionByUpStation(Station upStation,
-                                                  List<Section> sections) {
-        return sections.stream()
-                .filter(section -> section.hasUpStationOf(upStation))
-                .findFirst()
-                .get();
     }
 
     public Sections save(Section newSection) {
@@ -77,18 +31,26 @@ public class Sections {
     private void updateOriginalSection(Section newSection, List<Section> sections) {
         boolean isRegisteredUpStation = isRegistered(newSection.getUpStation());
         if (isRegisteredUpStation) {
-            Section oldSection = getLowerSection(newSection.getUpStation());
-            sections.remove(oldSection);
-            Section updatedSection = new Section(newSection.getDownStation(),
-                    oldSection.getDownStation(),
-                    oldSection.toRemainderDistance(newSection));
-            sections.add(updatedSection);
+            updateLowerSection(newSection, sections);
             return;
         }
+        updateUpperSection(newSection, sections);
+    }
+
+    private void updateUpperSection(Section newSection, List<Section> sections) {
         Section oldSection = getUpperSection(newSection.getDownStation());
         sections.remove(oldSection);
         Section updatedSection = new Section(oldSection.getUpStation(),
                 newSection.getUpStation(),
+                oldSection.toRemainderDistance(newSection));
+        sections.add(updatedSection);
+    }
+
+    private void updateLowerSection(Section newSection, List<Section> sections) {
+        Section oldSection = getLowerSection(newSection.getUpStation());
+        sections.remove(oldSection);
+        Section updatedSection = new Section(newSection.getDownStation(),
+                oldSection.getDownStation(),
                 oldSection.toRemainderDistance(newSection));
         sections.add(updatedSection);
     }
@@ -105,12 +67,17 @@ public class Sections {
     }
 
     private boolean isEndSection(Section section) {
-        boolean isNewUpperEndSection = value.get(0)
-                .hasUpStationOf(section.getDownStation());
-        boolean isNewLowerEndSection = value.get(value.size() - 1)
-                .hasDownStationOf(section.getUpStation());
+        return isNewUpperEndSection(section) || isNewLowerEndSection(section);
+    }
+    
+    private boolean isNewUpperEndSection(Section section) {
+        Section currentUpperEndSection = value.get(0);
+        return currentUpperEndSection.hasUpStationOf(section.getDownStation());
+    }
 
-        return isNewUpperEndSection || isNewLowerEndSection;
+    private boolean isNewLowerEndSection(Section section) {
+        Section currentLowerEndSection = value.get(value.size() - 1);
+        return currentLowerEndSection.hasDownStationOf(section.getUpStation());
     }
 
     public Sections delete(Station station) {
@@ -150,12 +117,9 @@ public class Sections {
     private Sections removeMiddleStation(Station station, List<Section> sections) {
         Section upperSection = getUpperSection(station);
         Section lowerSection = getLowerSection(station);
-        Section connectedSection = new Section(upperSection.getUpStation(),
-                lowerSection.getDownStation(),
-                upperSection.toConnectedDistance(lowerSection));
 
         sections.removeAll(List.of(upperSection, lowerSection));
-        sections.add(connectedSection);
+        sections.add(toConnectedSection(upperSection, lowerSection));
         return new Sections(sections);
     }
 
@@ -173,6 +137,12 @@ public class Sections {
                 .get();
     }
 
+    private Section toConnectedSection(Section upperSection, Section lowerSection) {
+        return new Section(upperSection.getUpStation(),
+                lowerSection.getDownStation(),
+                upperSection.toConnectedDistance(lowerSection));
+    }
+
     public List<Section> extractNewSections(Sections previousSections) {
         List<Section> previous = new ArrayList<>(previousSections.value);
         List<Section> current = new ArrayList<>(value);
@@ -187,5 +157,22 @@ public class Sections {
 
         previous.removeAll(current);
         return previous;
+    }
+
+    public List<Station> toSortedStations() {
+        return new ArrayList<>(){{
+            add(toUpperEndStation());
+            addAll(toDownStations());
+        }};
+    }
+
+    private List<Station> toDownStations() {
+        return value.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+    }
+
+    private Station toUpperEndStation() {
+        return value.get(0).getUpStation();
     }
 }

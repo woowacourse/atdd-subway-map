@@ -8,6 +8,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
+import wooteco.subway.domain.section.SectionsFactory;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.entity.SectionEntity;
@@ -30,7 +31,7 @@ public class SectionService {
 
     @Transactional
     public void save(Long lineId, CreateSectionRequest request) {
-        Sections sections = Sections.of(findValidSections(lineId));
+        Sections sections = SectionsFactory.generate(findValidSections(lineId));
         Station upStation = findExistingStation(request.getUpStationId());
         Station downStation = findExistingStation(request.getDownStationId());
         Sections updatedSections = sections.save(new Section(upStation, downStation, request.getDistance()));
@@ -40,7 +41,7 @@ public class SectionService {
 
     @Transactional
     public void delete(Long lineId, Long stationId) {
-        Sections sections = Sections.of(findValidSections(lineId));
+        Sections sections = SectionsFactory.generate(findValidSections(lineId));
         Sections updatedSections = sections.delete(findExistingStation(stationId));
 
         updateSectionChanges(sections, updatedSections, lineId);

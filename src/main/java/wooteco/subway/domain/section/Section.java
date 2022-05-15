@@ -15,8 +15,8 @@ public class Section {
     private final int distance;
 
     public Section(Station upStation,
-                    Station downStation,
-                    int distance) {
+                   Station downStation,
+                   int distance) {
         validateSection(upStation, downStation, distance);
         this.upStation = upStation;
         this.downStation = downStation;
@@ -63,7 +63,7 @@ public class Section {
     }
 
     public boolean hasStationOf(Station station) {
-        return upStation.equals(station) || downStation.equals(station) ;
+        return upStation.equals(station) || downStation.equals(station);
     }
 
     public Station getUpStation() {
