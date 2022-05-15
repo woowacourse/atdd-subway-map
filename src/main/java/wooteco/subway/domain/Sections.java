@@ -110,22 +110,26 @@ public class Sections {
         }
     }
 
-    public List<Section> delete(Long stationId) {
+    public Section delete(Long stationId) {
         validateDeletion();
         Section section = findDeleteSection(stationId);
 
         if (isEnd(section, stationId)) {
             value.remove(section);
-            return List.of(section);
+            return section;
         }
 
+        deleteBetweenSection(section);
+        return section;
+    }
+
+    private void deleteBetweenSection(Section section) {
         Section nextSection = findNext(section, value);
         int index = value.indexOf(section);
-        value.add(index, section.merge(nextSection));
 
+        value.add(index, section.merge(nextSection));
         value.remove(section);
         value.remove(nextSection);
-        return List.of(section, nextSection);
     }
 
     private Section findNext(Section section, List<Section> value) {

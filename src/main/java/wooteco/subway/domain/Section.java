@@ -66,7 +66,7 @@ public class Section {
     }
 
     public Section merge(Section nextSection) {
-        return new Section(lineId, upStationId, nextSection.downStationId,
+        return new Section(nextSection.getId(), lineId, upStationId, nextSection.downStationId,
                 distance + nextSection.distance);
     }
 
