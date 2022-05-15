@@ -26,18 +26,6 @@ public class Sections {
         return sections;
     }
 
-    private Section findTopSection(List<Section> value) {
-        return value.stream()
-                .filter(it -> isTopSection(it, value))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("올바르지 않은 구간들 입니다."));
-    }
-
-    private boolean isTopSection(Section section, List<Section> value) {
-        return value.stream()
-                .noneMatch(it -> it.matchDownStationWithUpStationOf(section));
-    }
-
     public void add(Section newSection) {
         checkStationExist(newSection);
         checkDuplicateSection(newSection);
@@ -50,6 +38,31 @@ public class Sections {
             addWhenContainingDownStationOf(newSection);
             return;
         }
+    }
+
+    public Section delete(Long stationId) {
+        validateDeletion();
+        Section section = findDeleteSection(stationId);
+
+        if (isEnd(section, stationId)) {
+            value.remove(section);
+            return section;
+        }
+
+        deleteBetweenSection(section);
+        return section;
+    }
+
+    private Section findTopSection(List<Section> value) {
+        return value.stream()
+                .filter(it -> isTopSection(it, value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("올바르지 않은 구간들 입니다."));
+    }
+
+    private boolean isTopSection(Section section, List<Section> value) {
+        return value.stream()
+                .noneMatch(it -> it.matchDownStationWithUpStationOf(section));
     }
 
     private void addWhenContainingUpStationOf(Section newSection) {
@@ -108,19 +121,6 @@ public class Sections {
         if (isContainingUpStationOf(newSection) && isContainingDownStationOf(newSection)) {
             throw new IllegalArgumentException("해당 경로가 이미 존재합니다.");
         }
-    }
-
-    public Section delete(Long stationId) {
-        validateDeletion();
-        Section section = findDeleteSection(stationId);
-
-        if (isEnd(section, stationId)) {
-            value.remove(section);
-            return section;
-        }
-
-        deleteBetweenSection(section);
-        return section;
     }
 
     private void deleteBetweenSection(Section section) {

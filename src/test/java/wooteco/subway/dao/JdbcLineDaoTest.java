@@ -50,8 +50,6 @@ class JdbcLineDaoTest {
         assertThat(lines).hasSize(1)
                 .extracting("name", "color")
                 .containsExactly(tuple("신분당선", "red"));
-
-        jdbcLineDao.deleteById(lineId);
     }
 
     @Test
@@ -66,7 +64,5 @@ class JdbcLineDaoTest {
         assertThat(newLine)
                 .extracting("name", "color")
                 .containsExactly("분당선", "yellow");
-
-        jdbcLineDao.deleteById(lineId);
     }
 }
