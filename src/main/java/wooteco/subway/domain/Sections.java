@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Sections implements Iterable<Section> {
 
@@ -16,13 +15,6 @@ public class Sections implements Iterable<Section> {
 
     public Sections(List<Section> sections) {
         this.sections = sections;
-    }
-
-    public List<Station> extractStations() {
-        return sections.stream()
-                .flatMap(it -> Stream.of(it.getUpStation(), it.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     public SectionBuffer add(Section newSection) {

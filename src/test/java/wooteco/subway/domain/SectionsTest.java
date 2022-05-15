@@ -9,36 +9,6 @@ import org.junit.jupiter.api.Test;
 
 public class SectionsTest {
 
-    @DisplayName("section 리스트에서 station id를 추출한다")
-    @Test
-    void extractStationIds() {
-        Station station1 = new Station.Builder("1")
-                .build();
-        Station station2 = new Station.Builder("2")
-                .build();
-        Station station3 = new Station.Builder("3")
-                .build();
-        Station station4 = new Station.Builder("4")
-                .build();
-        Line line = new Line.Builder("2호선", "초록색")
-                .build();
-
-        Section section1 = new Section.Builder(line, station1, station2, 3)
-                .build();
-        Section section2 = new Section.Builder(line, station2, station3, 3)
-                .build();
-        Section section3 = new Section.Builder(line, station3, station4, 3)
-                .build();
-        Sections sections = new Sections(List.of(section1, section2, section3));
-        List<Station> stations = sections.extractStations();
-
-        assertThat(stations.size()).isEqualTo(4);
-        assertThat(stations.contains(station1)).isTrue();
-        assertThat(stations.contains(station2)).isTrue();
-        assertThat(stations.contains(station3)).isTrue();
-        assertThat(stations.contains(station4)).isTrue();
-    }
-
     @DisplayName("upStation, downStation 모두 존재하는 sections에 포함돼 있으면 예외가 발생한다.")
     @Test
     void addFail_alreadyContainedStations() {
