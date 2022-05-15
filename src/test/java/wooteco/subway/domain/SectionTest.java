@@ -105,4 +105,14 @@ public class SectionTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("거리는 1이상이어야 합니다.");
     }
+
+    @Test
+    @DisplayName("첫번째구간의 하행역과 두번째구간의 상행역이 같으면 연결이 가능하다.")
+    void connect() {
+        Line line = new Line(1L, "2호선", "green");
+        Section 첫번째_구간 = new Section(1L, line, 삼성, 성수, 10);
+        Section 두번째_구간 = new Section(line, 성수, 강남, 11);
+
+        assertThat(첫번째_구간.isConnect(두번째_구간)).isTrue();
+    }
 }

@@ -113,11 +113,113 @@ class SectionsTest {
             .hasMessage("생성할 수 없는 구간입니다.");
     }
 
+    @Test
+    @DisplayName("삭제된 구간을 반환한다.")
+    void deleteSectionByStation() {
+        Line line = new Line("2호선", "green");
+        Sections 기존_구간 = new Sections(getSavedSections(line));
+
+        List<Section> sections = 기존_구간.findDeleteSections(line, 잠실);
+
+        assertThat(sections.get(0).getId()).isNotNull();
+        assertThat(sections.get(0).getUpStation().getName()).isEqualTo("강남");
+        assertThat(sections.get(0).getDownStation().getName()).isEqualTo("잠실");
+
+        assertThat(sections.get(1).getId()).isNotNull();
+        assertThat(sections.get(1).getUpStation().getName()).isEqualTo("잠실");
+        assertThat(sections.get(1).getDownStation().getName()).isEqualTo("성수");
+    }
+
+    @Test
+    @DisplayName("상행 종점을 삭제시 상행 종점을 반환한다.")
+    void deleteSectionByUpStation() {
+        Line line = new Line("2호선", "green");
+        Sections 기존_구간 = new Sections(getSavedSections(line));
+
+        List<Section> sections = 기존_구간.findDeleteSections(line, 강남);
+
+        assertThat(sections.get(0).getId()).isNotNull();
+        assertThat(sections.get(0).getUpStation().getName()).isEqualTo("강남");
+        assertThat(sections.get(0).getDownStation().getName()).isEqualTo("잠실");
+        assertThat(sections.get(0).getDistance()).isEqualTo(12);
+    }
+
+    @Test
+    @DisplayName("하행 종점을 삭제시 상행 종점을 반환한다.")
+    void deleteSectionByDownStation() {
+        Line line = new Line("2호선", "green");
+        Sections 기존_구간 = new Sections(getSavedSections(line));
+
+        List<Section> sections = 기존_구간.findDeleteSections(line, 왕십리);
+
+        assertThat(sections.get(0).getId()).isNotNull();
+        assertThat(sections.get(0).getUpStation().getName()).isEqualTo("성수");
+        assertThat(sections.get(0).getDownStation().getName()).isEqualTo("왕십리");
+        assertThat(sections.get(0).getDistance()).isEqualTo(12);
+    }
+
+    @Test
+    @DisplayName("2개의 구간을 합친다.")
+    void combineSection() {
+        Line line = new Line("2호선", "green");
+        Sections 기존_구간 = new Sections(getSavedSections(line));
+        List<Section> 합칠_구간 = List.of(
+            new Section(1L, line, 강남, 잠실, 12),
+            new Section(2L, line, 잠실, 성수, 12)
+        );
+
+        Section sections = 기존_구간.combine(line, 합칠_구간);
+
+        assertThat(sections.getId()).isNull();
+        assertThat(sections.getUpStation().getName()).isEqualTo("강남");
+        assertThat(sections.getDownStation().getName()).isEqualTo("성수");
+        assertThat(sections.getDistance()).isEqualTo(24);
+    }
+
+    @Test
+    @DisplayName("3개의 구간을 합칠 경우 예외를 발생한다.")
+    void combineSectionInvalidSize() {
+        Line line = new Line("2호선", "green");
+        Sections 기존_구간 = new Sections(getSavedSections(line));
+        List<Section> 합칠_구간 = List.of(
+            new Section(1L, line, 강남, 잠실, 12),
+            new Section(2L, line, 잠실, 성수, 12),
+            new Section(3L, line, 성수, 왕십리, 12)
+        );
+
+        assertThatThrownBy(() -> 기존_구간.combine(line, 합칠_구간))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("2개의 구간을 합칠 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("연결할 수 없는 구간을 합칠 경우 예외를 발생한다.")
+    void combineSectionNotConnected() {
+        Line line = new Line("2호선", "green");
+        Sections 기존_구간 = new Sections(getSavedSections(line));
+        List<Section> 합칠_구간 = List.of(
+            new Section(1L, line, 강남, 잠실, 12),
+            new Section(3L, line, 성수, 왕십리, 12)
+        );
+
+        assertThatThrownBy(() -> 기존_구간.combine(line, 합칠_구간))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("연결할 수 없는 구간입니다.");
+    }
+
     private List<Section> getSections(Line line) {
         return List.of(
             new Section(line, 강남, 잠실, 12),
             new Section(line, 잠실, 성수, 12),
             new Section(line, 성수, 왕십리, 12)
+        );
+    }
+
+    private List<Section> getSavedSections(Line line) {
+        return List.of(
+            new Section(1L, line, 강남, 잠실, 12),
+            new Section(2L, line, 잠실, 성수, 12),
+            new Section(3L, line, 성수, 왕십리, 12)
         );
     }
 }

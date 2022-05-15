@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
+    public static final int COMBINE_SIZE = 2;
+    private static final int UP_SECTION = 0;
+    private static final int DOWN_SECTION = 1;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -19,24 +23,19 @@ public class Sections {
         return findAddedSection(section).split(section);
     }
 
-    public List<Section> findDeleteSections(Station station) {
+    public List<Section> findDeleteSections(Line line, Station station) {
         return sections.stream()
+            .filter(value -> value.isEqualToLine(line))
             .filter(value -> value.isEqualToUpOrDownStation(station))
             .collect(Collectors.toList());
     }
 
-    public Section findSectionByUpStation(Station station) {
-        return sections.stream()
-            .filter(value -> value.isEqualToUpStation(station))
-            .findFirst()
-            .orElseThrow();
-    }
-
-    public Section findSectionByDownStation(Station station) {
-        return sections.stream()
-            .filter(value -> value.isEqualToDownStation(station))
-            .findFirst()
-            .orElseThrow();
+    public Section combine(Line line, List<Section> sections) {
+        validateCombineSize(sections);
+        Section upSection = sections.get(UP_SECTION);
+        Section downSection = sections.get(DOWN_SECTION);
+        validateAvailableConnect(upSection, downSection);
+        return combineSection(line, upSection, downSection);
     }
 
     private List<Section> sort(List<Section> sections) {
@@ -90,6 +89,32 @@ public class Sections {
             .orElseThrow(() ->  new IllegalArgumentException("첫번째 역이 존재하지 않습니다."));
     }
 
+    private boolean containsSection(Section section) {
+        return sections.stream()
+            .anyMatch(value -> value.equals(section));
+    }
+
+    private Section combineSection(Line line, Section upSection, Section downSection) {
+        return new Section(
+            line,
+            upSection.getUpStation(),
+            downSection.getDownStation(),
+            upSection.getDistance() + downSection.getDistance()
+        );
+    }
+
+    private void validateCombineSize(List<Section> sections) {
+        if (sections.size() != COMBINE_SIZE) {
+            throw new IllegalArgumentException("2개의 구간을 합칠 수 있습니다.");
+        }
+    }
+
+    private void validateAvailableConnect(Section upSection, Section downSection) {
+        if (!upSection.isConnect(downSection)) {
+            throw new IllegalArgumentException("연결할 수 없는 구간입니다.");
+        }
+    }
+
     private List<Station> getAllUpStations(List<Section> sections) {
         return sections.stream()
             .map(Section::getUpStation)
@@ -100,11 +125,6 @@ public class Sections {
         return sections.stream()
             .map(Section::getDownStation)
             .collect(Collectors.toList());
-    }
-
-    private boolean containsSection(Section section) {
-        return sections.stream()
-            .anyMatch(value -> value.equals(section));
     }
 
     public List<Station> getStations() {

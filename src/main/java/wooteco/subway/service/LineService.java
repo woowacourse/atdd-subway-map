@@ -78,25 +78,18 @@ public class LineService {
     }
 
     public void delete(Long lineId, Long stationId) {
+        Line line = findLine(lineId);
         Station station = stationDao.findById(stationId).orElseThrow();
         Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
-        List<Section> removedSections = sections.findDeleteSections(station);
-        if (removedSections.size() == 2) {
-            Section upSection = sections.findSectionByDownStation(station);
-            Section downSection = sections.findSectionByUpStation(station);
-            sectionDao.save(new Section(
-                findLine(lineId),
-                upSection.getUpStation(),
-                downSection.getDownStation(),
-                upSection.getDistance() + downSection.getDistance())
-            );
-            sectionDao.deleteById(upSection.getId());
-            sectionDao.deleteById(downSection.getId());
-            return;
-        }
 
+        List<Section> removedSections = sections.findDeleteSections(line, station);
         for (Section removedSection : removedSections) {
             sectionDao.deleteById(removedSection.getId());
+        }
+
+        if (removedSections.size() == Sections.COMBINE_SIZE) {
+            Section combineSection = sections.combine(line, removedSections);
+            sectionDao.save(combineSection);
         }
     }
 

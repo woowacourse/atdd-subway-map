@@ -41,6 +41,10 @@ public class Section {
         return List.of(other);
     }
 
+    public boolean isEqualToLine(Line line) {
+        return this.line.equals(line);
+    }
+
     public boolean isEqualToUpOrDownStation(Station station) {
         return isEqualToUpStation(station) || isEqualToDownStation(station);
     }
@@ -51,6 +55,10 @@ public class Section {
 
     public boolean isEqualToDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public boolean isConnect(Section other) {
+        return this.downStation.equals(other.upStation);
     }
 
     private void validate(int distance) {
