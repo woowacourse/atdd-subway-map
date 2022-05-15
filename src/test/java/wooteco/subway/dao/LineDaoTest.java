@@ -91,7 +91,7 @@ public class LineDaoTest {
         final LineEntity persistLine = saveLine("7호선", "bg-red-600");
 
         // when
-        final Line lineForUpdate = new Line(persistLine.getId(), "5호선", "bg-green-600");
+        final LineEntity lineForUpdate = new LineEntity(persistLine.getId(), "5호선", "bg-green-600");
         final LineEntity updatedLine = lineDao.update(lineForUpdate).get();
 
         // then

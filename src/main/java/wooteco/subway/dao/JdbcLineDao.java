@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
 import wooteco.subway.entity.LineEntity;
 
 @Repository
@@ -57,7 +56,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<LineEntity> update(Line line) {
+    public Optional<LineEntity> update(LineEntity line) {
         String sql = "UPDATE line set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
         return findById(line.getId());

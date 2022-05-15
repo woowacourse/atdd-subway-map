@@ -18,19 +18,20 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.repository.LineRepository;
 
 @Service
 @Transactional
 public class LineService {
 
-    private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
+    private final LineRepository lines;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
-        this.lineDao = lineDao;
+    public LineService(SectionDao sectionDao, StationDao stationDao, LineRepository lines) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
+        this.lines = lines;
     }
 
     public LineResponse save(final LineRequest request) {
@@ -45,8 +46,8 @@ public class LineService {
     }
 
     private Line saveLine(LineRequest request) {
-        LineEntity saved = lineDao.save(new LineEntity(null, request.getName(), request.getColor()));
-        return new Line(saved.getId(), saved.getName(), saved.getColor());
+        Line requestLine = new Line(request.getName(), request.getColor());
+        return lines.save(requestLine);
     }
 
     private void saveSection(Long lineId, LineRequest request) {
@@ -67,9 +68,7 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        List<LineEntity> lines = lineDao.findAll();
-        return lines.stream()
-                .map(entity -> new Line(entity.getId(), entity.getName(), entity.getColor()))
+        return lines.findAll().stream()
                 .map(line -> LineResponse.of(line, getStationsByLine(line)))
                 .collect(Collectors.toList());
     }
@@ -80,18 +79,17 @@ public class LineService {
     }
 
     private Line getLineFromDao(Long id) {
-        return lineDao.findById(id)
+        return lines.findById(id)
                 .map(lineEntity -> new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor()))
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.NOT_FOUND_LINE_BY_ID.getContent()));
     }
 
     public void updateById(final Long id, final LineRequest request) {
-        final Line foundLine = getLineFromDao(id);
-        final Line updateLine = new Line(foundLine.getId(), request.getName(), request.getColor());
-        lineDao.update(updateLine);
+        final Line updateLine = new Line(request.getName(), request.getColor());
+        lines.update(id, updateLine);
     }
 
     public void deleteById(final Long id) {
-        lineDao.deleteById(id);
+        lines.deleteById(id);
     }
 }
