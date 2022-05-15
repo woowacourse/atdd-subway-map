@@ -193,14 +193,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         long lineId = createLineResponse();
         SectionRequest sectionRequest1 = new SectionRequest(thirdStation.getId(), upStation.getId(), 10);
-        SectionRequest sectionRequest2 = new SectionRequest(upStation.getId(), downStation.getId(), 10);
         createSection(sectionRequest1, lineId);
-        createSection(sectionRequest2, lineId);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete("/lines/1/sections?stationId=2")
+                .delete("/lines/" + lineId + "/sections?stationId=" + upStation.getId())
                 .then().log().all()
                 .extract();
 
