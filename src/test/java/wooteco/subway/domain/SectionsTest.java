@@ -15,6 +15,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class SectionsTest {
 
     @Test
+    @DisplayName("같은 노선의 Station이 아니라면 예외 발생")
+    void notSameLine() {
+        assertThatThrownBy(() -> new Sections(List.of(
+                new Section(1L, 1L, 2L, 3L, 5),
+                new Section(2L, 2L, 1L, 2L, 5))
+        )).isInstanceOf(BusinessException.class)
+                .hasMessageContaining("같은 노선에 존재하는 지하철 역이 아닙니다.");
+    }
+
+    @Test
     @DisplayName("정렬된 Station id 반환")
     void getSortedStationIds() {
         Sections sections = new Sections(List.of(
@@ -52,7 +62,6 @@ class SectionsTest {
 
         assertThat(result).isTrue();
     }
-
 
     @Test
     @DisplayName("종점이 아니라면 false 반환")

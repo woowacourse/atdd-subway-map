@@ -90,7 +90,7 @@ public class Sections {
         boolean isSameLine = sections.stream()
                 .allMatch(s -> s.isSameLine(section));
 
-        if (isSameLine) {
+        if (!isSameLine) {
             throw new BusinessException(NOT_SAME_LINE);
         }
     }
