@@ -43,12 +43,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // when
         ExtractableResponse<Response> response = createPostLineResponse(이호선);
+        LineResponse lineResponse = response.body().jsonPath().getObject(".", LineResponse.class);
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank(),
-                () -> assertThat(response.body().jsonPath().get("name").toString()).isEqualTo(이호선.getName()),
-                () -> assertThat(response.body().jsonPath().get("color").toString()).isEqualTo(이호선.getColor())
+                () -> assertThat(lineResponse.getName()).isEqualTo(이호선.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(이호선.getColor())
         );
     }
 
@@ -71,11 +72,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String id = createResponse.header("Location").split("/")[2];
         // when
         ExtractableResponse<Response> response = createGetLineResponseById(id);
+        LineResponse lineResponse = response.body().jsonPath().getObject(".", LineResponse.class);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().get("id").toString()).isEqualTo(id);
-        assertThat(response.body().jsonPath().get("name").toString()).isEqualTo(이호선.getName());
-        assertThat(response.body().jsonPath().get("color").toString()).isEqualTo(이호선.getColor());
+        assertThat(lineResponse.getId()).isEqualTo(Long.valueOf(id));
+        assertThat(lineResponse.getName()).isEqualTo(이호선.getName());
+        assertThat(lineResponse.getColor()).isEqualTo(이호선.getColor());
     }
 
     @DisplayName("노선을 조회한다.")
