@@ -22,7 +22,7 @@ public class StationService {
         try {
             return stationDao.save(station);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
+            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE, e);
         }
     }
 

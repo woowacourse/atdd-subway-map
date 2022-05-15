@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.dao.StationDao;
@@ -49,12 +51,20 @@ public class MemoryStationDao implements StationDao {
     }
 
     @Override
-    public boolean existByName(String name) {
-        return stations.values().stream()
-                .anyMatch(station -> station.isSameName(name));
+    public List<Station> findByIds(List<Long> ids) {
+        return stations.entrySet().stream()
+                .filter(ids::contains)
+                .map(Entry::getValue)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Station findById(Long id) {
+        return stations.get(id);
     }
 
     public void clear() {
         stations.clear();
+        seq = 0L;
     }
 }

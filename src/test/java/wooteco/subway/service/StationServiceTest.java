@@ -9,12 +9,12 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.mock.MemoryStationDao;
 
 class StationServiceTest {
-    private MemoryStationDao memoryStationDao = new MemoryStationDao();
-    private StationService stationService = new StationService(memoryStationDao);
+    private MemoryStationDao stationDao = new MemoryStationDao();
+    private StationService stationService = new StationService(stationDao);
 
     @BeforeEach
     void beforeEach() {
-        memoryStationDao.clear();
+        stationDao.clear();
     }
 
     @Test

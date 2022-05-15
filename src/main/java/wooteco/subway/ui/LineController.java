@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
@@ -29,17 +30,19 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        Line line = lineService.create(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Line line = lineService.create(new Line(lineRequest.getName(), lineRequest.getColor()),
+                new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
 
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations());
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.showAll();
+
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), it.getStations()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lineResponses);
     }
@@ -47,7 +50,7 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.show(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations());
         return ResponseEntity.ok(lineResponse);
     }
 
