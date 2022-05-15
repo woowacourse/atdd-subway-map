@@ -3,8 +3,6 @@ package wooteco.subway.domain.section;
 import java.util.List;
 import java.util.Objects;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.entity.SectionEntity;
-import wooteco.subway.entity.StationEntity;
 
 public class Section {
 
@@ -16,20 +14,12 @@ public class Section {
     private final Station downStation;
     private final int distance;
 
-    public Section(Station upStation,
-                   Station downStation,
-                   int distance) {
+    public Section(Station upStation, Station downStation, int distance) {
         validateDifferentStations(upStation, downStation);
         validateDistance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public static Section of(StationEntity upStation,
-                             StationEntity downStation,
-                             int distance) {
-        return new Section(upStation.toDomain(), downStation.toDomain(), distance);
     }
 
     private void validateDifferentStations(Station upStation, Station downStation) {
@@ -50,14 +40,6 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public List<Station> toStations() {
         return List.of(upStation, downStation);
     }
@@ -72,14 +54,22 @@ public class Section {
         return remainderDistance;
     }
 
-    public SectionEntity toEntity(Long lineId) {
-        return new SectionEntity(lineId, upStation.toEntity(), downStation.toEntity(), distance);
-    }
-
     private void validateDistance(int distance) {
         if (distance < MIN_DISTANCE) {
             throw new IllegalArgumentException(INVALID_DISTANCE_EXCEPTION);
         }
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override

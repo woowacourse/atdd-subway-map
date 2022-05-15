@@ -17,7 +17,7 @@ public class RegisteredStation {
         return line.getId();
     }
 
-    public Line getRegisteredLine() {
+    public Line getLine() {
         return line;
     }
 
@@ -45,9 +45,6 @@ public class RegisteredStation {
 
     @Override
     public String toString() {
-        return "RegisteredStation{" +
-                "line=" + line +
-                ", station=" + station +
-                '}';
+        return "RegisteredStation{" + "line=" + line + ", station=" + station + '}';
     }
 }

@@ -13,13 +13,7 @@ import wooteco.subway.entity.RegisteredStationEntity;
 @Repository
 public class RegisteredStationDao {
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-
-    public RegisteredStationDao(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    private static final RowMapper<RegisteredStationEntity> FULL_ROW_MAPPER = (resultSet, rowNum) -> {
+    private static final RowMapper<RegisteredStationEntity> ROW_MAPPER = (resultSet, rowNum) -> {
         StationEntity stationEntity = new StationEntity(
                 resultSet.getLong("station_id"),
                 resultSet.getString("station_name"));
@@ -30,6 +24,12 @@ public class RegisteredStationDao {
         return new RegisteredStationEntity(stationEntity, lineEntity);
     };
 
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    public RegisteredStationDao(NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     public List<RegisteredStationEntity> findAll() {
         final String sql = "SELECT DISTINCT A.id AS line_id, A.name, A.color, "
                 + "C.id AS station_id, C.name AS station_name "
@@ -37,7 +37,7 @@ public class RegisteredStationDao {
                 + "WHERE A.id = B.line_id "
                 + "AND (B.up_station_id = C.id OR B.down_station_id = C.id)";
 
-        return jdbcTemplate.query(sql, new EmptySqlParameterSource(), FULL_ROW_MAPPER);
+        return jdbcTemplate.query(sql, new EmptySqlParameterSource(), ROW_MAPPER);
     }
 
     public List<RegisteredStationEntity> findAllByStationId(Long stationId) {
@@ -49,6 +49,6 @@ public class RegisteredStationDao {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("stationId", stationId);
 
-        return jdbcTemplate.query(sql, paramSource, FULL_ROW_MAPPER);
+        return jdbcTemplate.query(sql, paramSource, ROW_MAPPER);
     }
 }

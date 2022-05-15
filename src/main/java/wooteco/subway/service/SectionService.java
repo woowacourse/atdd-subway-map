@@ -47,10 +47,10 @@ public class SectionService {
 
     private void updateSectionChanges(Sections oldSections, Sections updatedSections, Long lineId) {
         for (Section deletedSection : updatedSections.extractDeletedSections(oldSections)) {
-            sectionDao.delete(deletedSection.toEntity(lineId));
+            sectionDao.delete(SectionEntity.of(lineId, deletedSection));
         }
-        for (Section deletedSection : updatedSections.extractNewSections(oldSections)) {
-            sectionDao.save(deletedSection.toEntity(lineId));
+        for (Section updatedSection : updatedSections.extractNewSections(oldSections)) {
+            sectionDao.save(SectionEntity.of(lineId, updatedSection));
         }
     }
 

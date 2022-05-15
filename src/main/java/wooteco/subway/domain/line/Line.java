@@ -1,7 +1,6 @@
 package wooteco.subway.domain.line;
 
 import java.util.Objects;
-import wooteco.subway.entity.LineEntity;
 
 public class Line {
 
@@ -27,10 +26,6 @@ public class Line {
         return color;
     }
 
-    public LineEntity toEntity() {
-        return new LineEntity(id, name, color);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -39,10 +34,10 @@ public class Line {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Line line2 = (Line) o;
-        return Objects.equals(id, line2.id)
-                && Objects.equals(name, line2.name)
-                && Objects.equals(color, line2.color);
+        Line line = (Line) o;
+        return Objects.equals(id, line.id)
+                && Objects.equals(name, line.name)
+                && Objects.equals(color, line.color);
     }
 
     @Override

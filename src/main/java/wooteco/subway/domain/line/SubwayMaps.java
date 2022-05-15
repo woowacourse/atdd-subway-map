@@ -36,7 +36,7 @@ public class SubwayMaps {
     }
 
     private static Line toLine(List<RegisteredStation> registeredStations) {
-        return registeredStations.get(0).getRegisteredLine();
+        return registeredStations.get(0).getLine();
     }
 
     private static List<Station> toStations(List<RegisteredStation> registeredStations) {
