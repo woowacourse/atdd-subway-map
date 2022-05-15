@@ -15,7 +15,8 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionSaveRequest;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.exception.ExceptionMessage;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.domain.LineException;
+import wooteco.subway.exception.notfound.NotFoundException;
 
 @Service
 @Transactional
@@ -41,7 +42,7 @@ public class LineService {
             Line line = new Line(saved.getId(), saved.getName(), saved.getColor(), sections);
             return LineResponse.of(line, getStationsByLine(line));
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
+            throw new LineException(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
         }
     }
 

@@ -2,7 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import wooteco.subway.exception.ExceptionMessage;
+import wooteco.subway.exception.notfound.StationNotFoundException;
 
 public class Stations {
 
@@ -22,6 +22,6 @@ public class Stations {
         return stations.stream()
                 .filter(station -> station.isSameId(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.STATION_ID_NOT_FOUND.getContent()));
+                .orElseThrow(StationNotFoundException::new);
     }
 }

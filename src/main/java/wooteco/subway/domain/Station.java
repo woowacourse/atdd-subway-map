@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.exception.ExceptionMessage;
+import wooteco.subway.exception.domain.StationException;
 
 public class Station {
 
@@ -21,10 +22,10 @@ public class Station {
 
     private void validateName(final String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException(ExceptionMessage.BLANK_STATION_NAME.getContent());
+            throw new StationException(ExceptionMessage.BLANK_STATION_NAME.getContent());
         }
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException(
+            throw new StationException(
                     String.format(ExceptionMessage.OVER_MAX_LENGTH_STATION_NAME.getContent(), MAX_NAME_LENGTH));
         }
     }

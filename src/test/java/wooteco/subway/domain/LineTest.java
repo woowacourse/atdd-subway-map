@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.exception.ExceptionMessage;
+import wooteco.subway.exception.domain.LineException;
+import wooteco.subway.exception.domain.SectionException;
 
 class LineTest {
 
@@ -30,7 +32,7 @@ class LineTest {
     @ValueSource(strings = {"", " ", "    "})
     void newLine_blankName(String name) {
         assertThatThrownBy(() -> new Line(name, "bg-red-600", new ArrayList<>()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(LineException.class)
                 .hasMessage("노선의 이름이 공백이 되어서는 안됩니다.");
     }
 
@@ -61,7 +63,7 @@ class LineTest {
         line.deleteSectionsByStationId(2L);
 
         // then
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getSections()).hasSize(2);
     }
 
     @Test
@@ -72,7 +74,7 @@ class LineTest {
 
         // then
         assertThatThrownBy(() -> onlyOneLine.deleteSectionsByStationId(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage(ExceptionMessage.SECTIONS_NOT_DELETABLE.getContent());
     }
 

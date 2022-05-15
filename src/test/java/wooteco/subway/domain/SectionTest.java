@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import wooteco.subway.exception.ExceptionMessage;
+import wooteco.subway.exception.domain.SectionException;
 
 class SectionTest {
 
@@ -64,7 +65,7 @@ class SectionTest {
 
         // when
         assertThatThrownBy(() -> section.divideFrom(sectionForAdd))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage(ExceptionMessage.INVALID_DIVIDE_SECTION.getContent());
     }
 
@@ -77,7 +78,7 @@ class SectionTest {
 
         // when
         assertThatThrownBy(() -> section.divideFrom(sectionForAdd))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage(ExceptionMessage.INVALID_INSERT_SECTION_DISTANCE.getContent());
     }
 
@@ -90,7 +91,7 @@ class SectionTest {
 
         // when
         assertThatThrownBy(() -> section.divideFrom(sectionForAdd))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage(ExceptionMessage.SAME_STATIONS_SECTION.getContent());
     }
 
@@ -118,7 +119,7 @@ class SectionTest {
 
         // then
         assertThatThrownBy(() -> section.merge(sectionForAdd))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage(ExceptionMessage.SAME_STATIONS_SECTION.getContent());
     }
 
@@ -131,7 +132,7 @@ class SectionTest {
 
         // then
         assertThatThrownBy(() -> section.merge(sectionForAdd))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage(ExceptionMessage.NOT_CONNECTED_SECTIONS.getContent());
     }
 }

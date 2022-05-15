@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.exception.ExceptionMessage;
+import wooteco.subway.exception.domain.SectionException;
 
 public class Section {
 
@@ -44,18 +45,18 @@ public class Section {
         if (isDownDivide(other)) {
             return new Section(id, line_id, upStationId, other.upStationId, distanceGap);
         }
-        throw new IllegalArgumentException(ExceptionMessage.INVALID_DIVIDE_SECTION.getContent());
+        throw new SectionException(ExceptionMessage.INVALID_DIVIDE_SECTION.getContent());
     }
 
     private void checkStationsNotSame(Section other) {
         if (upStationId.equals(other.upStationId) && downStationId.equals(other.downStationId)) {
-            throw new IllegalArgumentException(ExceptionMessage.SAME_STATIONS_SECTION.getContent());
+            throw new SectionException(ExceptionMessage.SAME_STATIONS_SECTION.getContent());
         }
     }
 
     private void checkDistance(Section other) {
         if (distance <= other.distance) {
-            throw new IllegalArgumentException(ExceptionMessage.INVALID_INSERT_SECTION_DISTANCE.getContent());
+            throw new SectionException(ExceptionMessage.INVALID_INSERT_SECTION_DISTANCE.getContent());
         }
     }
 
@@ -73,7 +74,7 @@ public class Section {
         if (downStationId.equals(other.upStationId)) {
             return new Section(id, line_id, upStationId, other.downStationId, mergedDistance);
         }
-        throw new IllegalArgumentException(ExceptionMessage.NOT_CONNECTED_SECTIONS.getContent());
+        throw new SectionException(ExceptionMessage.NOT_CONNECTED_SECTIONS.getContent());
     }
 
     public boolean isUpperThan(Section other) {

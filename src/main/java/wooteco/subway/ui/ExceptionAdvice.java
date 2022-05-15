@@ -5,7 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.dto.ErrorResponse;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.domain.DomainException;
+import wooteco.subway.exception.notfound.NotFoundException;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
@@ -15,7 +16,7 @@ public class ExceptionAdvice {
         return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {RuntimeException.class})
+    @ExceptionHandler(value = {DomainException.class})
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
         return ResponseEntity.badRequest().body(new ErrorResponse(exception.getMessage()));
     }

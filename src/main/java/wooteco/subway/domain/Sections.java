@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.ExceptionMessage;
+import wooteco.subway.exception.notfound.SectionNotFoundException;
+import wooteco.subway.exception.domain.SectionException;
 
 public class Sections {
 
@@ -45,10 +47,10 @@ public class Sections {
 
     private void checkInsertSectionsStations(Section section) {
         if (!sections.isEmpty() && isAlreadyConnected(section)) {
-            throw new IllegalArgumentException(ExceptionMessage.INSERT_DUPLICATED_SECTION.getContent());
+            throw new SectionException(ExceptionMessage.INSERT_DUPLICATED_SECTION.getContent());
         }
         if (!sections.isEmpty() && unableConnect(section)) {
-            throw new IllegalArgumentException(ExceptionMessage.INSERT_SECTION_NOT_MATCH.getContent());
+            throw new SectionException(ExceptionMessage.INSERT_SECTION_NOT_MATCH.getContent());
         }
     }
 
@@ -100,7 +102,7 @@ public class Sections {
         return sections.stream()
                 .filter(it -> it.isDownerThan(section))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("다음 구간을 찾지 못했습니다."));
+                .orElseThrow(SectionNotFoundException::new);
     }
 
     private List<Long> getSortedStationId(List<Section> sections) {
@@ -114,7 +116,7 @@ public class Sections {
 
     public void deleteSectionsByStationId(Long stationId) {
         if (sections.size() < MINIMUM_SECTIONS_FOR_DELETE) {
-            throw new IllegalArgumentException(ExceptionMessage.SECTIONS_NOT_DELETABLE.getContent());
+            throw new SectionException(ExceptionMessage.SECTIONS_NOT_DELETABLE.getContent());
         }
 
         List<Section> nearSections = findNearSections(stationId);

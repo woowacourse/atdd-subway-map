@@ -12,6 +12,7 @@ import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ExceptionMessage;
+import wooteco.subway.exception.domain.StationException;
 
 @Service
 @Transactional
@@ -30,7 +31,7 @@ public class StationService {
             Station savedStation = stationDao.save(station);
             return StationResponse.of(savedStation);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException(ExceptionMessage.DUPLICATED_STATION_NAME.getContent());
+            throw new StationException(ExceptionMessage.DUPLICATED_STATION_NAME.getContent());
         }
     }
 
