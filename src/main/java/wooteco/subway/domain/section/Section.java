@@ -10,7 +10,6 @@ public class Section {
 
     private static final String SAME_STATION_INPUT_EXCEPTION = "서로 다른 두 개의 역을 입력해야 합니다.";
     private static final String INVALID_DISTANCE_EXCEPTION = "구간의 길이는 1이상이어야 합니다.";
-    private static final String INVALID_VALUE_EXCEPTION = "필요한 정보가 입력되지 않았습니다.";
     private static final int MIN_DISTANCE = 1;
 
     private final Station upStation;
@@ -20,7 +19,8 @@ public class Section {
     public Section(Station upStation,
                    Station downStation,
                    int distance) {
-        validateSection(upStation, downStation, distance);
+        validateDifferentStations(upStation, downStation);
+        validateDistance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -32,28 +32,9 @@ public class Section {
         return new Section(upStation.toDomain(), downStation.toDomain(), distance);
     }
 
-    private void validateSection(Station upStation, Station downStation, int distance) {
-        validateStations(upStation, downStation);
-        validateDistance(distance);
-    }
-
-    private void validateStations(Station upStation, Station downStation) {
-        validateNotNull(upStation);
-        validateNotNull(downStation);
+    private void validateDifferentStations(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException(SAME_STATION_INPUT_EXCEPTION);
-        }
-    }
-
-    private void validateNotNull(Object value) {
-        if (value == null) {
-            throw new IllegalArgumentException(INVALID_VALUE_EXCEPTION);
-        }
-    }
-
-    private void validateDistance(int distance) {
-        if (distance < MIN_DISTANCE) {
-            throw new IllegalArgumentException(INVALID_DISTANCE_EXCEPTION);
         }
     }
 
@@ -93,6 +74,12 @@ public class Section {
 
     public SectionEntity toEntity(Long lineId) {
         return new SectionEntity(lineId, upStation.toEntity(), downStation.toEntity(), distance);
+    }
+
+    private void validateDistance(int distance) {
+        if (distance < MIN_DISTANCE) {
+            throw new IllegalArgumentException(INVALID_DISTANCE_EXCEPTION);
+        }
     }
 
     @Override

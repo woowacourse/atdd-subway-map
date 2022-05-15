@@ -6,6 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,6 +39,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                     HttpMethod.POST, toPath(1L), validParams);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        }
+
+        @Test
+        void 정보가_담기지_않은_경우_400_BAD_REQUEST() {
+            Map<String, Object> emptyParams = new HashMap<>();
+
+            ExtractableResponse<Response> response = HttpUtils.send(
+                    HttpMethod.POST, toPath(1L), emptyParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        void 이름_혹은_색상_정보가_공백으로_구성된_경우_400_BAD_REQUEST() {
+            Map<String, Object> zeroDistanceParams = jsonSectionOf(1L, 2L, 0);
+
+            ExtractableResponse<Response> response = HttpUtils.send(
+                    HttpMethod.POST, toPath(1L), zeroDistanceParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
         @Test

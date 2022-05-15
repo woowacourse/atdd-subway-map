@@ -90,10 +90,6 @@ public class LineService {
     }
 
     private StationEntity findExistingStation(Long stationId) {
-        // TODO: add @Validated at controllers
-        if (stationId == null) {
-            throw new IllegalArgumentException(NULL_STATION_EXCEPTION_MESSAGE);
-        }
         return stationDao.findById(stationId)
                 .orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE));
     }

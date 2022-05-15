@@ -1,8 +1,13 @@
 package wooteco.subway.dto.request;
 
+import javax.validation.constraints.NotBlank;
+
 public class UpdateLineRequest {
 
+    @NotBlank(message = "노선의 이름이 입력되지 않았습니다.")
     private String name;
+
+    @NotBlank(message = "노선의 색상이 입력되지 않았습니다.")
     private String color;
 
     public UpdateLineRequest() {

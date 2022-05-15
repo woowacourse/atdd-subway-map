@@ -5,24 +5,14 @@ import wooteco.subway.entity.LineEntity;
 
 public class Line {
 
-    private static final String BLANK_OR_NULL_EXCEPTION = "노선 정보가 입력되지 않았습니다.";
-
     private final Long id;
     private final String name;
     private final String color;
 
     public Line(Long id, String name, String color) {
-        validateNotBlank(name);
-        validateNotBlank(color);
         this.id = id;
         this.name = name;
         this.color = color;
-    }
-
-    private void validateNotBlank(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException(BLANK_OR_NULL_EXCEPTION);
-        }
     }
 
     public Long getId() {

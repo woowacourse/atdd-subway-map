@@ -1,9 +1,17 @@
 package wooteco.subway.dto.request;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 public class CreateSectionRequest {
 
+    @NotNull(message = "상행역 정보가 입력되지 않았습니다.")
     private Long upStationId;
+
+    @NotNull(message = "하행역 정보가 입력되지 않았습니다.")
     private Long downStationId;
+
+    @Min(value = 1, message = "구간 간 거리는 최소 1이어야합니다.")
     private int distance;
 
     public CreateSectionRequest() {
