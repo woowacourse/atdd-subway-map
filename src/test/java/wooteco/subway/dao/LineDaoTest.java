@@ -7,34 +7,29 @@ import static wooteco.subway.Fixtures.강남역;
 import static wooteco.subway.Fixtures.역삼역;
 
 import java.util.List;
-import javax.sql.DataSource;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.SectionV2;
 import wooteco.subway.domain.Station;
 
+@Import({
+        LineDao.class,
+        StationDao.class,
+        SectionDaoV2.class
+})
 @JdbcTest
 class LineDaoTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private DataSource dataSource;
     private LineDao lineDao;
+    @Autowired
     private StationDao stationDao;
+    @Autowired
     private SectionDaoV2 sectionDao;
-
-    @BeforeEach
-    void beforeEach() {
-        lineDao = new LineDao(dataSource);
-        stationDao = new StationDao(jdbcTemplate);
-        sectionDao = new SectionDaoV2(dataSource);
-    }
 
     @Test
     @DisplayName("노선을 등록할 수 있다.")

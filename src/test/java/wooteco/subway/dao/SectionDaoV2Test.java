@@ -4,35 +4,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import java.util.List;
-import javax.sql.DataSource;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.SectionV2;
 import wooteco.subway.domain.Station;
 
+@Import({
+        LineDao.class,
+        StationDao.class,
+        SectionDaoV2.class
+})
 @JdbcTest
 public class SectionDaoV2Test {
 
+    @Autowired
     private SectionDaoV2 sectionDao;
+    @Autowired
     private StationDao stationDao;
+    @Autowired
     private LineDao lineDao;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private DataSource dataSource;
-
-    @BeforeEach
-    void setUp() {
-        this.sectionDao = new SectionDaoV2(dataSource);
-        this.stationDao = new StationDao(jdbcTemplate);
-        this.lineDao = new LineDao(dataSource);
-    }
 
     @Test
     @DisplayName("구간을 저장할 수 있다.")
@@ -71,7 +65,7 @@ public class SectionDaoV2Test {
         // then
         assertThat(findSection)
                 .extracting(SectionV2::getLineId, SectionV2::getUpStation, SectionV2::getDownStation, SectionV2::getDistance)
-                .contains(강남_역삼_id, 강남역, 역삼역, 10);
+                .contains(이호선.getId(), 강남역, 역삼역, 10);
     }
 
     @Test
@@ -81,18 +75,17 @@ public class SectionDaoV2Test {
         Station 강남역 = stationDao.findById(stationDao.save(new Station("강남역")));
         Station 역삼역 = stationDao.findById(stationDao.save(new Station("역삼역")));
         Line 이호선 = lineDao.findById(lineDao.save(new Line("2호선", "초록색")));
-
         SectionV2 section = new SectionV2(이호선.getId(), 강남역, 역삼역, 10);
         Long 강남_역삼_id = sectionDao.save(section);
 
         // when
-        List<SectionV2> findSections = sectionDao.findByLineId(강남_역삼_id);
+        List<SectionV2> findSections = sectionDao.findByLineId(이호선.getId());
 
         // then
         assertThat(findSections).hasSize(1)
                 .extracting(SectionV2::getLineId, SectionV2::getUpStation, SectionV2::getDownStation, SectionV2::getDistance)
                 .contains(
-                        tuple(강남_역삼_id, 강남역, 역삼역, 10));
+                        tuple(이호선.getId(), 강남역, 역삼역, 10));
     }
 
     @Test
@@ -116,7 +109,7 @@ public class SectionDaoV2Test {
         SectionV2 findSection = sectionDao.findById(강남_역삼_id);
         assertThat(findSection)
                 .extracting(SectionV2::getLineId, SectionV2::getUpStation, SectionV2::getDownStation, SectionV2::getDistance)
-                .contains(강남_역삼_id, 강남역, 선릉역, 5);
+                .contains(이호선.getId(), 강남역, 선릉역, 5);
     }
 
     @Test

@@ -60,7 +60,6 @@ public class SectionDaoV2 {
     }
 
     public void update(SectionV2 section) {
-        System.out.println(section.toString());
         String sql = "UPDATE section SET "
                 + " up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance"
                 + " WHERE id = :id";
