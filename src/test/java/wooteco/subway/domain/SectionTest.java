@@ -13,6 +13,6 @@ class SectionTest {
         //when, then
         assertThatThrownBy(() -> new Section(new Station("역삼"), new Station("강남"), 0))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("거리는 0보다 작을 수 없습니다.");
+            .hasMessageContaining("거리는 0보다 커야합니다.");
     }
 }

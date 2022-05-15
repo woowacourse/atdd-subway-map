@@ -11,11 +11,6 @@ public class Sections {
 
     private final List<Section> values;
 
-    public Sections(Section section) {
-        values = new LinkedList<>();
-        values.add(section);
-    }
-
     public Sections(List<Section> sections) {
         values = new LinkedList<>(sortedSections(sections));
     }

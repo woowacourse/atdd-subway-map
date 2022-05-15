@@ -18,7 +18,7 @@ class SectionsTest {
     void addUpDestination() {
         //given
         Section section = new Section(new Station("역삼"), new Station("강남"), 5);
-        Sections sections = new Sections(section);
+        Sections sections = new Sections(List.of(section));
 
         //when
         Section newSection = new Section(new Station("선릉"), new Station("역삼"), 5);
@@ -33,7 +33,7 @@ class SectionsTest {
     void addDownDestination() {
         //given
         Section section = new Section(new Station("역삼"), new Station("강남"), 5);
-        Sections sections = new Sections(section);
+        Sections sections = new Sections(List.of(section));
 
         //when
         Section newSection = new Section(new Station("강남"), new Station("서초"), 6);
@@ -48,7 +48,7 @@ class SectionsTest {
     void addSectionAfterUpDestination() {
         //given
         Section section = new Section(new Station("역삼"), new Station("강남"), 5);
-        Sections sections = new Sections(section);
+        Sections sections = new Sections(List.of(section));
 
         //when
         Section newSection = new Section(new Station("역삼"), new Station("서초"), 3);
@@ -68,7 +68,7 @@ class SectionsTest {
     void addSectionBeforeDownDestination() {
         //given
         Section section = new Section(new Station("역삼"), new Station("강남"), 5);
-        Sections sections = new Sections(section);
+        Sections sections = new Sections(List.of(section));
 
         //when
         Section newSection = new Section(new Station("서초"), new Station("강남"), 3);
@@ -140,7 +140,7 @@ class SectionsTest {
     void addSectionWithOverDistanceException(int distance) {
         //given
         Section section = new Section(new Station("역삼"), new Station("강남"), 5);
-        Sections sections = new Sections(section);
+        Sections sections = new Sections(List.of(section));
 
         //when
         Section newSection = new Section(new Station("역삼"), new Station("서초"), distance);
@@ -160,7 +160,7 @@ class SectionsTest {
         Section sectionB = new Section(new Station("강남"), new Station("서초"), 5);
         Section sectionC = new Section(new Station("서초"), new Station("선릉"), 5);
 
-        Sections sections = new Sections(sectionA);
+        Sections sections = new Sections(List.of(sectionA));
         sections.add(sectionB);
         sections.add(sectionC);
 
@@ -179,7 +179,7 @@ class SectionsTest {
         Section sectionC = new Section(new Station("서초"), new Station("선릉"), 5);
         Section sectionD = new Section(new Station("선릉"), new Station("삼성"), 5);
 
-        Sections sections = new Sections(sectionA);
+        Sections sections = new Sections(List.of(sectionA));
         sections.add(sectionB);
         sections.add(sectionC);
         sections.add(sectionD);
@@ -198,7 +198,7 @@ class SectionsTest {
         Section sectionB = new Section(new Station("강남"), new Station("서초"), 5);
         Section sectionC = new Section(new Station("서초"), new Station("선릉"), 5);
 
-        Sections sections = new Sections(sectionA);
+        Sections sections = new Sections(List.of(sectionA));
         sections.add(sectionB);
         sections.add(sectionC);
 
@@ -212,7 +212,7 @@ class SectionsTest {
     void deleteWithOneSection() {
         //given
         Section section = new Section(new Station("역삼"), new Station("강남"), 5);
-        Sections sections = new Sections(section);
+        Sections sections = new Sections(List.of(section));
 
         //when, then
         assertThatThrownBy(() -> sections.delete(new Station("역삼")))
@@ -228,7 +228,7 @@ class SectionsTest {
         Section sectionB = new Section(new Station("강남"), new Station("서초"), 5);
         Section sectionC = new Section(new Station("서초"), new Station("선릉"), 5);
 
-        Sections sections = new Sections(sectionA);
+        Sections sections = new Sections(List.of(sectionA));
         sections.add(sectionB);
         sections.add(sectionC);
 
@@ -247,7 +247,7 @@ class SectionsTest {
         Section sectionB = new Section(new Station("강남"), new Station("서초"), 5);
         Section sectionC = new Section(new Station("서초"), new Station("선릉"), 5);
 
-        Sections sections = new Sections(sectionA);
+        Sections sections = new Sections(List.of(sectionA));
         sections.add(sectionB);
         sections.add(sectionC);
 
@@ -266,7 +266,7 @@ class SectionsTest {
         Section sectionB = new Section(new Station("강남"), new Station("서초"), 5);
         Section sectionC = new Section(new Station("서초"), new Station("선릉"), 5);
 
-        Sections sections = new Sections(sectionA);
+        Sections sections = new Sections(List.of(sectionA));
         sections.add(sectionB);
         sections.add(sectionC);
 
@@ -284,7 +284,7 @@ class SectionsTest {
     void deleteWithStationNotExists() {
         //given
         Section section = new Section(new Station("역삼"), new Station("강남"), 5);
-        Sections sections = new Sections(section);
+        Sections sections = new Sections(List.of(section));
 
         //when, then
         assertThatThrownBy(() -> sections.delete(new Station("서초")))

@@ -9,7 +9,7 @@ public class Line {
     private static final int MIN__NAME_LENGTH = 1;
     private static final int MIN__COLOR_LENGTH = 1;
     private static final int MAX_NAME_LENGTH = 30;
-    private static final int MAX_COLOR_LENGTH = 30;
+    private static final int MAX_COLOR_LENGTH = 20;
 
     private final Long id;
     private final String name;
