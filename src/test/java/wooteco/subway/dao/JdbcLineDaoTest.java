@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineEntity;
 
 @JdbcTest
 public class JdbcLineDaoTest {
@@ -27,11 +28,11 @@ public class JdbcLineDaoTest {
     @Test
     void save() {
         Line line = new Line("2호선", "green");
-        Line createdLine = lineDao.save(line);
+        LineEntity createdLineEntity = lineDao.save(line);
 
-        assertThat(createdLine.getId()).isGreaterThan(0);
-        assertThat(createdLine.getName()).isEqualTo(line.getName());
-        assertThat(createdLine.getColor()).isEqualTo(line.getColor());
+        assertThat(createdLineEntity.getId()).isGreaterThan(0);
+        assertThat(createdLineEntity.getName()).isEqualTo(line.getName());
+        assertThat(createdLineEntity.getColor()).isEqualTo(line.getColor());
     }
 
     @DisplayName("해당 이름을 가진 지하철 노선이 있는지 확인한다.")
@@ -58,8 +59,8 @@ public class JdbcLineDaoTest {
     @Test
     void find() {
         Line line = new Line("2호선", "green");
-        Line createdLine = lineDao.save(line);
-        Line foundLine = lineDao.find(createdLine.getId());
+        LineEntity createdLine = lineDao.save(line);
+        LineEntity foundLine = lineDao.find(createdLine.getId());
 
         assertThat(foundLine.getId()).isEqualTo(createdLine.getId());
         assertThat(foundLine.getName()).isEqualTo(createdLine.getName());
@@ -70,7 +71,7 @@ public class JdbcLineDaoTest {
     @Test
     void update() {
         Line line = new Line("2호선", "green");
-        Line createdLine = lineDao.save(line);
+        LineEntity createdLine = lineDao.save(line);
         Long createdId = createdLine.getId();
 
         Line lineForUpdateInfo = new Line(createdId, "3호선", "green");
@@ -83,7 +84,7 @@ public class JdbcLineDaoTest {
     @Test
     void existById() {
         Line line = new Line("2호선", "green");
-        Line createdLine = lineDao.save(line);
+        LineEntity createdLine = lineDao.save(line);
         Long createdId = createdLine.getId();
 
         assertThat(lineDao.existById(createdId)).isTrue();
@@ -93,7 +94,7 @@ public class JdbcLineDaoTest {
     @Test
     void delete() {
         Line line = new Line("2호선", "green");
-        Line createdLine = lineDao.save(line);
+        LineEntity createdLine = lineDao.save(line);
         Long createdId = createdLine.getId();
 
         lineDao.delete(createdId);

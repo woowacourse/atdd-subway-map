@@ -22,6 +22,11 @@ public class FakeStationDao implements StationDao {
         return persistStation;
     }
 
+    @Override
+    public Station getStation(Long id) {
+        return stations.get(id);
+    }
+
     private Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
@@ -50,4 +55,5 @@ public class FakeStationDao implements StationDao {
     public boolean existById(Long id) {
         return stations.containsKey(id);
     }
+
 }

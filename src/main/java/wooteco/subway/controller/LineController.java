@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.dto.info.LineInfo;
+import wooteco.subway.dto.info.RequestForLineService;
+import wooteco.subway.dto.info.RequestToUpdateLine;
+import wooteco.subway.dto.info.ResponseToLineService;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.service.LineService;
@@ -29,23 +30,23 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineInfo lineInfo = LineConverter.toInfo(lineRequest);
+        RequestForLineService lineInfo = LineConverter.toInfo(lineRequest);
         LineResponse lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineInfo> lineInfos = lineService.findAll();
+        List<ResponseToLineService> lineInfos = lineService.findAll();
         List<LineResponse> lineResponses = lineInfos.stream()
-            .map(info -> LineConverter.toResponse(info))
+            .map(LineConverter::toResponse)
             .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         LineResponse lineResponse = LineConverter.toResponse(lineService.find(id));
         return ResponseEntity.ok().body(lineResponse);
@@ -53,8 +54,8 @@ public class LineController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        LineInfo lineInfo = LineConverter.toInfo(id, lineRequest);
-        lineService.update(lineInfo);
+        RequestToUpdateLine requestToUpdateLine = LineConverter.toInfo(id, lineRequest);
+        lineService.update(requestToUpdateLine);
         return ResponseEntity.ok().build();
     }
 

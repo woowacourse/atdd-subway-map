@@ -1,19 +1,19 @@
-package wooteco.subway.dto.response;
+package wooteco.subway.dto.info;
 
 import java.util.List;
 
-public class LineResponse {
+public class ResponseToLineService {
     private final Long id;
     private final String name;
     private final String color;
-    private final List<StationResponse> stations;
+    private final List<StationDto> stationDtos;
 
-    public LineResponse(Long id, String name, String color,
-        List<StationResponse> stations) {
+    public ResponseToLineService(Long id, String name, String color,
+        List<StationDto> stationDtos) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.stationDtos = stationDtos;
     }
 
     public Long getId() {
@@ -28,7 +28,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
-        return stations;
+    public List<StationDto> getStationInfos() {
+        return stationDtos;
     }
 }

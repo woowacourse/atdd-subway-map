@@ -27,7 +27,7 @@ public class JdbcStationDao implements StationDao {
     public Station save(Station station) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO STATION(name) VALUES(?)";
-        
+
         jdbcTemplate.update((Connection conn) -> {
             PreparedStatement pstmt = conn.prepareStatement(sql, new String[] {"id"});
             pstmt.setString(1, station.getName());
@@ -38,7 +38,7 @@ public class JdbcStationDao implements StationDao {
         return getStation(id);
     }
 
-    private Station getStation(Long id) {
+    public Station getStation(Long id) {
         String sql = "SELECT * FROM STATION WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
     }
