@@ -10,7 +10,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Sections implements Iterable<Section> {
-    private static final int LIMIT_LOW_SIZE = 1;
+    private static final String ERROR_MESSAGE_MINIMUM_SIZE = "구간은 최소 %d개가 있어야 합니다.";
+    private static final String ERROR_MESSAGE_NO_CONNECTION = "해당 구간은 연결 지점이 없습니다";
+    private static final String ERROR_MESSAGE_ALREADY_CONNECT = "해당 구간은 이미 이동 가능합니다.";
+    private static final String ERROR_MESSAGE_CANT_ADD_SECTION = "해당 구간은 추가될 수 없습니다.";
+    private static final String ERROR_MESSAGE_CANT_GO_STATION = "해당 역을 지나지 않습니다.";
+    private static final int MINIMUM_SIZE = 1;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -19,8 +25,8 @@ public class Sections implements Iterable<Section> {
     }
 
     private void validateSize(List<Section> sections) {
-        if (sections.size() < LIMIT_LOW_SIZE) {
-            throw new IllegalArgumentException("구간은 최소 한 개가 있어야 합니다.");
+        if (sections.size() < MINIMUM_SIZE) {
+            throw new IllegalArgumentException(String.format(ERROR_MESSAGE_MINIMUM_SIZE, MINIMUM_SIZE));
         }
     }
 
@@ -35,7 +41,7 @@ public class Sections implements Iterable<Section> {
             .anyMatch(section::canConnect);
 
         if (!canConnect) {
-            throw new IllegalArgumentException("해당 구간은 연결 지점이 없습니다");
+            throw new IllegalArgumentException(ERROR_MESSAGE_NO_CONNECTION);
         }
     }
 
@@ -46,7 +52,7 @@ public class Sections implements Iterable<Section> {
             .anyMatch(section::isSameDownStation);
 
         if (isExistUpStation && isExistDownStation) {
-            throw new IllegalArgumentException("해당 구간은 이미 이동 가능합니다.");
+            throw new IllegalArgumentException(ERROR_MESSAGE_ALREADY_CONNECT);
         }
     }
 
@@ -66,7 +72,7 @@ public class Sections implements Iterable<Section> {
 
     private void checkCanInsert(Section sectionHavingSameStation, Section section) {
         if (!sectionHavingSameStation.canInsert(section)) {
-            throw new IllegalArgumentException("해당 구간은 추가될 수 없습니다.");
+            throw new IllegalArgumentException(ERROR_MESSAGE_CANT_ADD_SECTION);
         }
     }
 
@@ -98,7 +104,7 @@ public class Sections implements Iterable<Section> {
             .count();
 
         if (count == 0) {
-            throw new IllegalArgumentException("해당 역을 지나지 않습니다.");
+            throw new IllegalArgumentException(ERROR_MESSAGE_CANT_GO_STATION);
         }
 
         if (count == 1) {

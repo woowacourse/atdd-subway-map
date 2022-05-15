@@ -3,6 +3,8 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Section {
+    private static final String ERROR_MESSAGE_SAME_UP_AND_DOWN_STATION = "구간의 상행역과 하행역은 달라야합니다.";
+    private static final String ERROR_MESSAGE_DISTANCE_MUST_PLUS = "구간 사이의 거리는 양수여야합니다.";
     private Long id;
     private Station upStation;
     private Station downStation;
@@ -27,13 +29,13 @@ public class Section {
 
     private void validateUpAndDownAreDifferent(Station up, Station down) {
         if (up.equals(down)) {
-            throw new IllegalArgumentException("구간의 상행역과 하행역은 달라야합니다.");
+            throw new IllegalArgumentException(ERROR_MESSAGE_SAME_UP_AND_DOWN_STATION);
         }
     }
 
     private void validateDistance(Integer distance) {
         if (distance.intValue() <= 0) {
-            throw new IllegalArgumentException("구간 사이의 거리는 양수여야합니다.");
+            throw new IllegalArgumentException(ERROR_MESSAGE_DISTANCE_MUST_PLUS);
         }
     }
 

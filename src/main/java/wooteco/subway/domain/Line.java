@@ -5,6 +5,8 @@ import java.util.List;
 public class Line {
     private static final String ERROR_MESSAGE_NAME_SIZE = "존재할 수 없는 이름입니다.";
     private static final String ERROR_MESSAGE_COLOR_SIZE = "존재할 수 없는 색상입니다.";
+    private static final String ERROR_MESSAGE_SECTIONS_SIZE = "구간이 %d개 밖에 없으므로 삭제할 수 없습니다.";
+    private static final int MINIMUM_SECTIONS_SIZE = 1;
     private final int NAME_SIZE_LIMIT = 255;
     private final int COLOR_SIZE_LIMIT = 20;
 
@@ -54,8 +56,8 @@ public class Line {
     }
 
     public Section delete(Station station) {
-        if (sections.size() <= 1) {
-            throw new IllegalArgumentException("구간이 1개 밖에 없으므로 삭제할 수 없습니다.");
+        if (sections.size() <= MINIMUM_SECTIONS_SIZE) {
+            throw new IllegalArgumentException(String.format(ERROR_MESSAGE_SECTIONS_SIZE, MINIMUM_SECTIONS_SIZE));
         }
 
         return sections.removeAndUpdate(station);
