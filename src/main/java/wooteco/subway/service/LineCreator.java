@@ -16,6 +16,8 @@ import wooteco.subway.dto.SectionEntity;
 
 @Service
 public class LineCreator {
+    private static final String ERROR_MESSAGE_NOT_EXISTS_ID = "존재하지 않는 지하철 노선 id입니다.";
+
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -27,6 +29,7 @@ public class LineCreator {
     }
 
     Line createLine(Long lineId) {
+        validateNotExists(lineId);
         LineEntity lineEntity = lineDao.find(lineId);
         return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(),
             new Sections(findSections(lineEntity.getId())));
@@ -42,5 +45,11 @@ public class LineCreator {
     private Section findSection(SectionEntity sectionEntity) {
         return new Section(sectionEntity.getId(), stationDao.getStation(sectionEntity.getUpStationId())
             , stationDao.getStation(sectionEntity.getDownStationId()), sectionEntity.getDistance());
+    }
+
+    private void validateNotExists(Long id) {
+        if (!lineDao.existById(id)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_EXISTS_ID);
+        }
     }
 }
