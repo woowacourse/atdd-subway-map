@@ -4,78 +4,88 @@ import java.util.List;
 
 public class Section {
 
+    static final String DUPLICATE_STATION_EXCEPTION_MESSAGE = "상행역과 하행역은 같을 수 없습니다.";
+    static final String STATION_DISTANCE_EXCEPTION_MESSAGE = "두 역간의 거리는 0보다 커야합니다.";
+
+    private static final int MINIMUM_DISTANCE = 0;
+
     private Long id;
-    private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
-    private Integer distance;
+    private long lineId;
+    private long upStationId;
+    private long downStationId;
+    private int distance;
 
-    public Section(Long lineId, Long upStationId, Long downStationId, Integer distance) {
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
-    }
-
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, Integer distance) {
+    public Section(Long id, long lineId, long upStationId, long downStationId, int distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+        validateDuplicateStation();
+        validateDistance();
     }
 
-    public Section(Long upStationId, Long downStationId, int distance) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    public Section(long lineId, long upStationId, long downStationId, int distance) {
+        this(null, lineId, upStationId, downStationId, distance);
+    }
+
+    public void validateDuplicateStation() {
+        if (upStationId == downStationId) {
+            throw new IllegalArgumentException(DUPLICATE_STATION_EXCEPTION_MESSAGE);
+        }
+    }
+
+    public void validateDistance() {
+        if (distance <= MINIMUM_DISTANCE) {
+            throw new IllegalArgumentException(STATION_DISTANCE_EXCEPTION_MESSAGE);
+        }
     }
 
     public boolean canLinkWithUpStation(Section other) {
-        return upStationId.equals(other.downStationId);
+        return upStationId == other.downStationId;
     }
 
     public boolean canLinkWithDownStation(Section other) {
-        return downStationId.equals(other.upStationId);
+        return downStationId == other.upStationId;
     }
 
-    public Boolean isSameUpStation(Section other) {
-        return other.upStationId.equals(this.upStationId);
+    public boolean isSameUpStation(Section other) {
+        return other.upStationId == this.upStationId;
     }
 
-    public Boolean isSameDownStation(Section other) {
-        return other.downStationId.equals(this.downStationId);
+    public boolean isSameDownStation(Section other) {
+        return other.downStationId == this.downStationId;
     }
 
-    public Boolean isLessThanDistance(Section other) {
-        return other.distance < this.distance;
+    public boolean isLessThanDistance(Section other) {
+        return this.distance < other.distance;
     }
 
-    public Boolean hasUpStation(Long stationId) {
-        return upStationId.equals(stationId);
+    public boolean hasUpStation(long stationId) {
+        return upStationId == stationId;
     }
 
-    public Boolean hasDownStation(Long stationId) {
-        return downStationId.equals(stationId);
+    public boolean hasDownStation(long stationId) {
+        return downStationId == stationId;
     }
 
-    public Boolean hasStation(Long stationId) {
-        return upStationId.equals(stationId) || downStationId.equals(stationId);
+    public boolean hasStation(long stationId) {
+        return upStationId == stationId || downStationId == stationId;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getLineId() {
+    public long getLineId() {
         return lineId;
     }
 
-    public Long getUpStationId() {
+    public long getUpStationId() {
         return upStationId;
     }
 
-    public Long getDownStationId() {
+    public long getDownStationId() {
         return downStationId;
     }
 
@@ -83,7 +93,7 @@ public class Section {
         return List.of(upStationId, downStationId);
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return distance;
     }
 
