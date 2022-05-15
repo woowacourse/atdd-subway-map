@@ -71,7 +71,7 @@ public class AddSectionRequestValidator {
             isNotFoundStationOnLine(lineId, downStationId);
     }
 
-    private boolean isNotFoundStationOnLine(Long lineId, Long upStationId) {
-        return !sectionRepository.existByLineIdAndStationId(lineId, upStationId);
+    private boolean isNotFoundStationOnLine(Long lineId, Long stationId) {
+        return !sectionRepository.existByLineIdAndStationId(lineId, stationId);
     }
 }

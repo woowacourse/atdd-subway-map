@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.application.LineService;
 import wooteco.subway.application.SectionService;
 import wooteco.subway.application.StationService;
+import wooteco.subway.application.UpwardSorter;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.AddSectionRequest;
@@ -68,7 +69,7 @@ public class LineDaoTest {
 
     @Test
     void getById() {
-        LineResponse lineResponse = lineDao.queryById(line1.getId()).orElseThrow();
+        LineResponse lineResponse = lineDao.queryById(line1.getId(), new UpwardSorter()).orElseThrow();
 
         assertThat(lineResponse.getId()).isEqualTo(line1.getId());
         assertThat(lineResponse.getName()).isEqualTo(line1.getName());
@@ -79,7 +80,7 @@ public class LineDaoTest {
 
     @Test
     void getAll() {
-        List<LineResponse> lineResponses = lineDao.queryAll();
+        List<LineResponse> lineResponses = lineDao.queryAll(new UpwardSorter());
 
         assertThat(lineResponses)
             .hasSize(2)

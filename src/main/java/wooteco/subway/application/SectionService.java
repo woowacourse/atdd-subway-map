@@ -37,12 +37,6 @@ public class SectionService {
         return sectionRepository.save(newSection);
     }
 
-    private void splitSection(Section newSection, Section overlapSection) {
-        Section splitSection = overlapSection.split(newSection);
-        sectionRepository.save(splitSection);
-        sectionRepository.deleteById(overlapSection.getId());
-    }
-
     private Optional<Section> findOverlapSection(Long lineId, Long upStationId,
                                                  Long downStationId) {
         return findNextSection(lineId, upStationId)
@@ -55,6 +49,12 @@ public class SectionService {
 
     private Optional<Section> findPrevSection(Long lineId, Long stationId) {
         return sectionRepository.findByLineIdAndDownStationId(lineId, stationId);
+    }
+
+    private void splitSection(Section newSection, Section overlapSection) {
+        Section splitSection = overlapSection.split(newSection);
+        sectionRepository.save(splitSection);
+        sectionRepository.deleteById(overlapSection.getId());
     }
 
     public void deleteSection(Long lineId, DeleteSectionRequest request) {

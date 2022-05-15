@@ -80,11 +80,11 @@ public class LineService {
     }
 
     public LineResponse getById(Long id) {
-        return lineDao.queryById(id)
+        return lineDao.queryById(id, new UpwardSorter())
             .orElseThrow(() -> new NotFoundLineException(id));
     }
 
     public List<LineResponse> getAll() {
-        return lineDao.queryAll();
+        return lineDao.queryAll(new UpwardSorter());
     }
 }

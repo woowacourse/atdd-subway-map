@@ -15,7 +15,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<LineResponse> queryById(Long id) {
+    public Optional<LineResponse> queryById(Long id, StationResponseSorter sorter) {
         String sql =
             "SELECT l.id AS line_id, l.name AS line_name, l.color AS line_color, "
                 + "up.id AS up_station_id, up.name AS up_station_name, "
@@ -24,7 +24,7 @@ public class LineDao {
                 + "JOIN STATION AS up ON up.id = sec.up_station_id "
                 + "JOIN STATION AS down ON down.id = sec.down_station_id "
                 + "WHERE l.id = ?";
-        List<LineResponse> responses = jdbcTemplate.query(sql, new LineResponsesExtractor(), id);
+        List<LineResponse> responses = jdbcTemplate.query(sql, new LineResponsesExtractor(sorter), id);
 
         if (responses.size() == 1) {
             return Optional.of(responses.get(0));
@@ -32,7 +32,7 @@ public class LineDao {
         return Optional.empty();
     }
 
-    public List<LineResponse> queryAll() {
+    public List<LineResponse> queryAll(StationResponseSorter sorter) {
         String sql =
             "SELECT l.id AS line_id, l.name AS line_name, l.color AS line_color, "
                 + "up.id AS up_station_id, up.name AS up_station_name, "
@@ -40,7 +40,7 @@ public class LineDao {
                 + "FROM LINE AS l JOIN SECTION AS sec ON l.id = sec.line_id "
                 + "JOIN STATION AS up ON up.id = sec.up_station_id "
                 + "JOIN STATION AS down ON down.id = sec.down_station_id ";
-        return jdbcTemplate.query(sql, new LineResponsesExtractor());
+        return jdbcTemplate.query(sql, new LineResponsesExtractor(sorter));
     }
 
 }
