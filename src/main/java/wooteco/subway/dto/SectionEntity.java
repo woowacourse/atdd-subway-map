@@ -34,4 +34,15 @@ public class SectionEntity {
     public Integer getDistance() {
         return distance;
     }
+
+    @Override
+    public String toString() {
+        return "SectionEntity{" +
+            "id=" + id +
+            ", lineId=" + lineId +
+            ", upStationId=" + upStationId +
+            ", downStationId=" + downStationId +
+            ", distance=" + distance +
+            '}';
+    }
 }
