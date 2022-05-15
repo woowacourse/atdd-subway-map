@@ -126,4 +126,9 @@ public class JdbcSectionDao {
         String sql = "select EXISTS (select * from section where line_id = ? and down_station_id = ?) as success";
         return jdbcTemplate.queryForObject(sql, Integer.class, lineId, downStationId) == FUNCTION_SUCCESS;
     }
+
+    public boolean isExistByStationId(Long id) {
+        String sql = "select EXISTS (select * from section where up_station_id = ? or down_station_id = ?) as success";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id, id) == FUNCTION_SUCCESS;
+    }
 }

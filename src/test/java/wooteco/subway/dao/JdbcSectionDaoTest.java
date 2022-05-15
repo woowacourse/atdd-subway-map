@@ -199,4 +199,22 @@ class JdbcSectionDaoTest {
                 () -> assertThat(section.getDownStationId()).isEqualTo(5L)
         );
     }
+
+    @DisplayName("자하철 역을 기준으로 상행역과 하행역이 구간에 등록되어 있는지 확인한다.")
+    @Test
+    void isExistByStationId_true() {
+        Long stationId = 3L;
+        Section newSection = new Section(lineId, stationId, 4L, 5);
+        jdbcSectionDao.save(newSection);
+
+        boolean isExist = jdbcSectionDao.isExistByStationId(stationId);
+        assertThat(isExist).isTrue();
+    }
+
+    @DisplayName("자하철 역을 기준으로 상행역과 하행역이 구간에 등록되어 있는지 확인한다.")
+    @Test
+    void isExistByStationId_false() {
+        boolean isExist = jdbcSectionDao.isExistByStationId(6L);
+        assertThat(isExist).isFalse();
+    }
 }
