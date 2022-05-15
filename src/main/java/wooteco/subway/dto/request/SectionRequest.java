@@ -1,6 +1,7 @@
 package wooteco.subway.dto.request;
 
 public class SectionRequest {
+
     private Long upStationId;
     private Long downStationId;
     private int distance;

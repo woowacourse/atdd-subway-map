@@ -1,11 +1,8 @@
 package wooteco.subway.repository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.CommonLineDao;
 import wooteco.subway.dao.CommonSectionDao;
 import wooteco.subway.dao.CommonStationDao;
 import wooteco.subway.domain.Line;

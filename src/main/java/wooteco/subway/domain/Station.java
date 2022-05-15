@@ -23,10 +23,6 @@ public class Station {
         this(EMPTY_ID, name);
     }
 
-    public boolean isSameId(final long id) {
-        return this.id.equals(id);
-    }
-
     public boolean isSameName(final Station target) {
         return this.name.equals(target.name);
     }

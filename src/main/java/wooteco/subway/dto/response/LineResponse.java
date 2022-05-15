@@ -6,6 +6,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.util.Converter;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;

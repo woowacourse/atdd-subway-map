@@ -69,10 +69,6 @@ public class Section {
         return upStation.getId();
     }
 
-    public Long getDownStationId() {
-        return downStation.getId();
-    }
-
     public Station getUpStation() {
         return upStation;
     }
