@@ -12,7 +12,7 @@ public class Lines {
 
     private final List<Line> value;
 
-    private Lines(List<Line> value) {
+    Lines(List<Line> value) {
         this.value = value;
     }
 
