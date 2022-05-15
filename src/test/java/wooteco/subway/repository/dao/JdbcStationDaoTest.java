@@ -34,6 +34,17 @@ class JdbcStationDaoTest {
         assertThat(stationEntity.getName()).isEqualTo("잠실역");
     }
 
+    @DisplayName("없는 id로 지하철역을 조회시 빈 옵셔널이 반환된다.")
+    @Test
+    void findByNotExistId() {
+        Station station = Station.createWithoutId("잠실역");
+        StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
+
+        stationDao.deleteById(savedStationEntity.getId());
+
+        assertThat(stationDao.findById(savedStationEntity.getId()).isEmpty()).isTrue();
+    }
+
     @DisplayName("모든 지하철역을 조회한다.")
     @Test
     void findAll() {
@@ -55,6 +66,7 @@ class JdbcStationDaoTest {
 
         assertThat(stationEntity.getName()).isEqualTo(station.getName());
     }
+
 
     @DisplayName("id 로 노선을 삭제한다.")
     @Test

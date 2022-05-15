@@ -1,8 +1,10 @@
 package wooteco.subway.exception;
 
-public class DuplicateNameException extends IllegalArgumentException {
+import org.springframework.http.HttpStatus;
+
+public class DuplicateNameException extends SubwayException {
 
     public DuplicateNameException(final String errorMessage) {
-        super(errorMessage);
+        super(HttpStatus.BAD_REQUEST, errorMessage);
     }
 }

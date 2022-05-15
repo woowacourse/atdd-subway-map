@@ -5,28 +5,41 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.Fixture;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.mockDao.MockLineDao;
+import wooteco.subway.mockDao.MockSectionDao;
+import wooteco.subway.mockDao.MockStationDao;
 
 class LineServiceTest {
 
-    private final LineService service = new LineService(new MockLineDao());
+    private final MockLineDao lineDao = new MockLineDao();
+    private final MockStationDao stationDao = new MockStationDao();
+    private final MockSectionDao sectionDao = new MockSectionDao();
+    private final StationService stationService = new StationService(stationDao);
+    private final SectionService sectionService = new SectionService(sectionDao, stationService);
+    private final LineService lineService = new LineService(lineDao, stationService, sectionService);
+
 
     @BeforeEach
     void initStore() {
         MockLineDao.removeAll();
+        MockStationDao.removeAll();
+        MockSectionDao.removeAll();
     }
 
-    @DisplayName("노선 이름과 색깔을 입력받아서 해당 이름과 색깔을 가진 노선을 등록한다.")
+    @DisplayName("노선 이름과 색깔, 초기 구간정보를 입력받아서 해당 이름과 색깔을 가진 노선을 등록한다.")
     @Test
     void register() {
-        Line created = service.register("2호선", "bg-green-600");
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        final Line created = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
         assertAll(
                 () -> assertThat(created.getName()).isEqualTo("2호선"),
@@ -37,9 +50,11 @@ class LineServiceTest {
     @DisplayName("이미 존재하는 노선이름으로 등록하려할 시 예외가 발생한다.")
     @Test
     void registerDuplicateName() {
-        service.register("2호선", "bg-green-600");
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
-        assertThatThrownBy(() -> service.register("2호선", "bg-green-600"))
+        assertThatThrownBy(() -> lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10))
                 .isInstanceOf(DuplicateNameException.class)
                 .hasMessage("[ERROR] 이미 존재하는 노선 이름입니다.");
     }
@@ -47,11 +62,13 @@ class LineServiceTest {
     @DisplayName("등록된 모든 노선 리스트를 조회한다.")
     @Test
     void searchAll() {
-        service.register("2호선", "bg-green-600");
-        service.register("신분당선", "bg-red-600");
-        service.register("분당선", "bg-yellow-600");
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        lineService.register("신분당선", "bg-red-600", station1Id, station2Id, 10);
+        lineService.register("분당선", "bg-yellow-600", station1Id, station2Id, 10);
 
-        List<Line> lines = service.searchAll();
+        List<Line> lines = lineService.searchAll();
         List<String> names = lines.stream()
                 .map(Line::getName)
                 .collect(Collectors.toList());
@@ -60,17 +77,19 @@ class LineServiceTest {
                 .collect(Collectors.toList());
 
         assertAll(
-                () -> assertThat(names).isEqualTo(List.of("2호선", "신분당선", "분당선")),
-                () -> assertThat(colors).isEqualTo(List.of("bg-green-600", "bg-red-600", "bg-yellow-600"))
+                () -> assertThat(names.containsAll(List.of("2호선", "신분당선", "분당선"))).isTrue(),
+                () -> assertThat(colors.containsAll(List.of("bg-green-600", "bg-red-600", "bg-yellow-600"))).isTrue()
         );
     }
 
     @DisplayName("id 로 노선을 조회한다.")
     @Test
     void searchById() {
-        Line savedLine = service.register("2호선", "bg-green-600");
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        final Line savedLine = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
-        Line searchedLine = service.searchById(savedLine.getId());
+        Line searchedLine = lineService.searchById(savedLine.getId());
 
         assertAll(
                 () -> assertThat(searchedLine.getName()).isEqualTo(savedLine.getName()),
@@ -78,13 +97,29 @@ class LineServiceTest {
         );
     }
 
+    @DisplayName("없는 id로 노선을 조회시에 예외가 발생한다.")
+    @Test
+    void searchByNotExistId() {
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        final Line savedLine = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+
+        lineService.remove(savedLine.getId());
+
+        assertThatThrownBy(() -> lineService.searchById(savedLine.getId()))
+                .isInstanceOf(NotFoundLineException.class)
+                .hasMessage("[ERROR] 노선이 존재하지 않습니다");
+    }
+
     @DisplayName("노선을 수정한다.")
     @Test
     void modify() {
-        Line savedLine = service.register("2호선", "bg-green-600");
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        final Line savedLine = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
-        service.modify(savedLine.getId(), "신분당선", "bg-red-600");
-        Line searchedLine = service.searchById(savedLine.getId());
+        lineService.modify(savedLine.getId(), "신분당선", "bg-red-600");
+        Line searchedLine = lineService.searchById(savedLine.getId());
 
         assertAll(
                 () -> assertThat(searchedLine.getName()).isEqualTo("신분당선"),
@@ -95,22 +130,39 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 노선을 수정한다.")
     @Test
     void modifyMissingLine() {
-        Line savedLine = service.register("2호선", "bg-green-600");
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        final Line savedLine = lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
 
-        service.remove(savedLine.getId());
-        assertThatThrownBy(() -> service.modify(savedLine.getId(), "신분당선", "bg-red-600"))
-                .isInstanceOf(NoSuchElementException.class)
+        lineService.remove(savedLine.getId());
+        assertThatThrownBy(() -> lineService.modify(savedLine.getId(), "신분당선", "bg-red-600"))
+                .isInstanceOf(NotFoundLineException.class)
                 .hasMessage("[ERROR] 노선이 존재하지 않습니다");
+    }
+
+    @DisplayName("이미 존재하는 이름으로 노선을 수정한다.")
+    @Test
+    void modifyDuplicateName() {
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        final Line savedLine2 = lineService.register("테스트선", "bg-yellow-600", station1Id, station2Id, 10);
+
+        assertThatThrownBy(() -> lineService.modify(savedLine2.getId(), "2호선", "bg-red-600"))
+                .isInstanceOf(DuplicateNameException.class)
+                .hasMessage("[ERROR] 이름이 중복되어 데이터를 수정할 수 없습니다.");
     }
 
     @DisplayName("id 로 노선을 삭제한다.")
     @Test
     void removeById() {
-        service.register("2호선", "bg-green-600");
-        Line line = service.register("신분당선", "bg-red-600");
+        final Long station1Id = Fixture.saveStation("선릉역");
+        final Long station2Id = Fixture.saveStation("잠실역");
+        lineService.register("2호선", "bg-green-600", station1Id, station2Id, 10);
+        Line line = lineService.register("신분당선", "bg-red-600", station1Id, station2Id, 10);
 
-        service.remove(line.getId());
+        lineService.remove(line.getId());
 
-        assertThat(service.searchAll().size()).isEqualTo(1);
+        assertThat(lineService.searchAll().size()).isEqualTo(1);
     }
 }

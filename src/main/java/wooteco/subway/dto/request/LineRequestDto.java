@@ -11,13 +11,11 @@ public class LineRequestDto {
     public LineRequestDto() {
     }
 
-    public LineRequestDto(
-            final String name,
-            final String color,
-            final Long upStationId,
-            final Long downStationId,
-            final int distance
-    ) {
+    public LineRequestDto(final String name,
+                          final String color,
+                          final Long upStationId,
+                          final Long downStationId,
+                          final int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
