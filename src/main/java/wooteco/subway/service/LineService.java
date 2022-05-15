@@ -72,7 +72,6 @@ public class LineService {
         lineDao.update(id, name, request.getColor());
     }
 
-    @Transactional(readOnly = true)
     private void validateName(String name) {
         if (lineDao.isExistName(name)) {
             throw new BusinessException(DUPLICATE_LINE_NAME);
