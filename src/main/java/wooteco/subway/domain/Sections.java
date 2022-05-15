@@ -9,7 +9,7 @@ public class Sections {
     private static final int BLANK_LENGTH = 0;
     private static final int POSSIBLE_DELETION_LENGTH = 2;
     private static final long NOTING = -1L;
-    private static final int ADDING_BRANCH_LENGTH = 2;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -79,16 +79,33 @@ public class Sections {
         return sections.get(FIRST_INDEX);
     }
 
+    public Section getBranchSection(Long lineId, Long upStationId, Long downStationId, int distance) {
+        for (Section section : sections) {
+            if (section.isSameAsDownStation(downStationId)) {
+                return new Section(section.getId(), lineId, section.getUpStationId(), upStationId,
+                        getNewDistance(section, distance));
+            }
+            if (section.isSameAsUpStation(upStationId)) {
+                return new Section(section.getId(), lineId, downStationId, section.getDownStationId(),
+                        getNewDistance(section, distance));
+            }
+        }
+        return Section.NOTHING_SECTION;
+    }
+
+    private int getNewDistance(Section section, int distance) {
+        if (!section.isPossibleDistance(distance)) {
+            throw new IllegalArgumentException("거리문제로 구간을 등록할 수 없습니다.");
+        }
+        return section.getDistance() - distance;
+    }
+
     public boolean isBlank() {
         return sections.size() == BLANK_LENGTH;
     }
 
     public boolean isContain(Section section) {
         return sections.contains(section);
-    }
-
-    public boolean isAddingBranch() {
-        return sections.size() == ADDING_BRANCH_LENGTH;
     }
 
     public List<Section> getSections() {

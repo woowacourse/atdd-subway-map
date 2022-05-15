@@ -27,9 +27,7 @@ public class SectionService {
 
         Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, upStationId, downStationId);
         validateNewSection(sections, upStationId, downStationId);
-        if (sections.isAddingBranch()) {
-            addBranch(sections, upStationId, downStationId, distance, lineId);
-        }
+        addBranch(sections, lineId, upStationId, downStationId, distance);
         return saveSection(sectionRequest, lineId);
     }
 
@@ -42,23 +40,11 @@ public class SectionService {
         }
     }
 
-    private void addBranch(Sections sections, Long upStationId, Long downStationId, int distance, Long lineId) {
-        Section section = sections.getSectionForCombine(upStationId, downStationId);
-        validateDistance(section, distance);
-        int newDistance = section.getDistance() - distance;
-        if (section.isSameAsDownStation(downStationId)) {
-            jdbcSectionDao.updateDownStationIdAndDistanceByLineIdAndUpStationId(lineId, section.getUpStationId(),
-                    upStationId, newDistance);
-        }
-        if (section.isSameAsUpStation(upStationId)) {
-            jdbcSectionDao.updateUpStationIdAndDistanceByLineIdAndDownStationId(lineId, section.getDownStationId(),
-                    downStationId, newDistance);
-        }
-    }
-
-    private void validateDistance(Section section, int distance) {
-        if (!section.isPossibleDistance(distance)) {
-            throw new IllegalArgumentException("거리문제로 구간을 등록할 수 없습니다.");
+    private void addBranch(Sections sections, Long lineId, Long upStationId, Long downStationId, int distance) {
+        Section section = sections.getBranchSection(lineId, upStationId, downStationId, distance);
+        if (!section.isEmpty()) {
+            jdbcSectionDao.deleteById(section.getId());
+            jdbcSectionDao.save(section);
         }
     }
 
