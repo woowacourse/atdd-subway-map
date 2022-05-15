@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Section;
+import wooteco.subway.entity.SectionEntity;
 
 @JdbcTest
 public class SectionDaoTest {
@@ -29,10 +30,10 @@ public class SectionDaoTest {
     @DisplayName("Section 객체를 저장하기")
     void save() {
         // given
-        Section section = new Section(1L, 1L, 2L, 1);
+        SectionEntity section = new SectionEntity(null, 1L, 1L, 2L, 1);
 
         // when
-        Section savedSection = sectionDao.save(section);
+        SectionEntity savedSection = sectionDao.save(section);
 
         // then
         assertAll(() -> {
@@ -47,11 +48,11 @@ public class SectionDaoTest {
     @DisplayName("특정 노선의 구간 반환하기")
     void findByLineId() {
         // given
-        Section savedSection1 = sectionDao.save(new Section(1L, 1L, 2L, 1));
-        Section savedSection2 = sectionDao.save(new Section(1L, 2L, 3L, 2));
+        SectionEntity savedSection1 = sectionDao.save(new SectionEntity(null, 1L, 1L, 2L, 1));
+        SectionEntity savedSection2 = sectionDao.save(new SectionEntity(null, 1L, 2L, 3L, 2));
 
         // when
-        List<Section> sections = sectionDao.findByLineId(1L);
+        List<SectionEntity> sections = sectionDao.findByLineId(1L);
 
         // then
         assertThat(sections).hasSize(2);
@@ -61,7 +62,7 @@ public class SectionDaoTest {
     @DisplayName("특정 노선 삭제하기")
     void delete() {
         // given
-        Section savedSection = sectionDao.save(new Section(null, 1L, 1L, 2L, 1));
+        SectionEntity savedSection = sectionDao.save(new SectionEntity(null, 1L, 1L, 2L, 1));
 
         // when
         int deletedSections = sectionDao.deleteById(savedSection.getId());
@@ -71,11 +72,26 @@ public class SectionDaoTest {
     }
 
     @Test
+    @DisplayName("특정 노선에 해당하는 구간 삭제하기")
+    void deleteByLineId() {
+        // given
+        long lineId = 1L;
+        sectionDao.save(new SectionEntity(null, lineId, 1L, 2L, 1));
+        sectionDao.save(new SectionEntity(null, lineId, 2L, 3L, 1));
+
+        // when
+        int affectedRows = sectionDao.deleteByLineId(lineId);
+
+        // then
+        assertThat(affectedRows).isEqualTo(2);
+    }
+
+    @Test
     @DisplayName("구간 정보를 수정하기")
     void update() {
         // given
-        Section section = sectionDao.save(new Section(null, 1L, 1L, 2L, 1));
-        Section sectionForUpdate = new Section(section.getId(), 1L, 1L, 3L, 3);
+        SectionEntity section = sectionDao.save(new SectionEntity(null, 1L, 1L, 2L, 1));
+        SectionEntity sectionForUpdate = new SectionEntity(section.getId(), 1L, 1L, 3L, 3);
 
         // when
         int updated = sectionDao.update(sectionForUpdate);
