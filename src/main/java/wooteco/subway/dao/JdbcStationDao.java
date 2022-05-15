@@ -54,7 +54,7 @@ public class JdbcStationDao implements StationDao {
         return (resultSet, rowNumber) -> {
             String name = resultSet.getString("name");
             long id = resultSet.getLong("id");
-            return setId(new Station(name), id);
+            return new Station(id, name);
         };
     }
 

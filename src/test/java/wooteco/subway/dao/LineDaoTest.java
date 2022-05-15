@@ -92,13 +92,10 @@ public class LineDaoTest {
 
         // when
         final LineEntity lineForUpdate = new LineEntity(persistLine.getId(), "5호선", "bg-green-600");
-        final LineEntity updatedLine = lineDao.update(lineForUpdate);
+        int affectedRows = lineDao.update(lineForUpdate);
 
         // then
-        assertAll(() -> {
-            assertThat(lineForUpdate.getName()).isEqualTo(updatedLine.getName());
-            assertThat(lineForUpdate.getColor()).isEqualTo(updatedLine.getColor());
-        });
+        assertThat(affectedRows).isOne();
     }
 
     @Test
