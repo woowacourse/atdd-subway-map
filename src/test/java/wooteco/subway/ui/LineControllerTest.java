@@ -1,7 +1,6 @@
 package wooteco.subway.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.ClassAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
 
 import java.util.List;
@@ -28,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcTest(LineController.class)
-class LineControllerTest {
+class LineControllerTest extends ControllerTest{
 
     @Autowired
     private MockMvc mockMvc;
@@ -70,7 +66,7 @@ class LineControllerTest {
                 post("/lines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(lineRequest)))
-                .andExpect(this::checkException)
+                .andExpect(this::checkValidException)
                 .andReturn();
     }
 
@@ -84,7 +80,7 @@ class LineControllerTest {
                 post("/lines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(lineRequest)))
-                .andExpect(this::checkException)
+                .andExpect(this::checkValidException)
                 .andReturn();
     }
 
@@ -172,9 +168,5 @@ class LineControllerTest {
                 .getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ClassAssert checkException(MvcResult exception) {
-        return assertThat(exception.getResolvedException().getClass()).isAssignableFrom(MethodArgumentNotValidException.class);
     }
 }

@@ -5,6 +5,7 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.SectionService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 
 @RestController
 @RequestMapping("/lines")
@@ -22,7 +23,7 @@ public class SectionController {
     }
 
     @DeleteMapping("{id}/sections")
-    public void deleteSection(@PathVariable long id, @RequestParam long stationId) {
+    public void deleteSection(@PathVariable long id, @NotEmpty @RequestParam long stationId) {
         sectionService.deleteSection(stationId, id);
     }
 
