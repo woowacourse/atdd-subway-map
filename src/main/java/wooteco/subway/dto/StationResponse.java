@@ -7,9 +7,9 @@ public class StationResponse {
     public StationResponse() {
     }
 
-    public StationResponse(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    public StationResponse(StationDto stationDto) {
+        this.id = stationDto.getId();
+        this.name = stationDto.getName();
     }
 
     public Long getId() {

@@ -19,6 +19,10 @@ public class Station {
         this.name = name;
     }
 
+    public boolean hasId(Long id) {
+        return this.id.equals(id);
+    }
+
     public Long getId() {
         return id;
     }
@@ -42,5 +46,13 @@ public class Station {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
