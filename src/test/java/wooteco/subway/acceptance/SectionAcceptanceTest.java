@@ -191,7 +191,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("삭제")
+    @DisplayName("역을 기준으로 구간을 삭제한다.")
     void deleteSection() {
         postMethodRequest(왕십리역_인자, STATION_URL);
         SectionRequest sectionRequest = new SectionRequest(
@@ -206,7 +206,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("삭제")
+    @DisplayName("삭제하려는 구간이 해당 노선의 마지막 구간이면 예외를 반환한다.")
     void deleteSectionWithLastSection() {
         String url = LINE_URL + "/" + lineId + SECTION_URL;
         ExtractableResponse<Response> response = deleteSectionMethodRequest(url, 2);
