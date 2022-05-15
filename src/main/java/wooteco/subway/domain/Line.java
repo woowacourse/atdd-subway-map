@@ -17,20 +17,12 @@ public class Line {
         this.sections = sections;
     }
 
-    public static Line initialCreateWithId(Long id, String name, String color, Station upStation, Station downStation, int distance) {
-        return new Line(id, name, color, new Sections(upStation, downStation, distance));
-    }
-
     public static Line initialCreateWithoutId(String name, String color, Station upStation, Station downStation, int distance) {
         return new Line(null, name, color, new Sections(upStation, downStation, distance));
     }
 
     public static Line createWithoutSection(Long id, String name, String color) {
         return new Line(id, name, color,null);
-    }
-
-    public static Line createWithoutId(String name, String color, List<Section> sections) {
-        return new Line(null, name, color, new Sections(sections));
     }
 
     public static Line createWithId(Long id, String name, String color, List<Section> sections) {

@@ -40,7 +40,7 @@ class LineServiceTest {
         //given
         final String name = "신분당선";
         final String color = "빨강이";
-        final Line line = Line.initialCreateWithId(1L, name, color, 강남역, 청계산입구역, 1);
+        final Line line = Line.initialCreateWithoutId(name, color, 강남역, 청계산입구역, 1);
         given(lineDao.existsByName(name)).willReturn(false);
         given(lineDao.save(any())).willReturn(line);
         doReturn(강남역).when(stationService).findStationById(1L);
@@ -50,7 +50,7 @@ class LineServiceTest {
         final LineResponse lineResponse = lineService.save(name, color, 1L, 2L, 1);
 
         //then
-        assertThat(lineResponse.getId()).isEqualTo(1L);
+        assertThat(lineResponse.getName()).isEqualTo(name);
     }
 
     @Test
@@ -68,8 +68,8 @@ class LineServiceTest {
     @Test
     void showLines() {
         //given
-        final List<Line> lines = List.of(Line.initialCreateWithId(1L, "신분당선", "빨강이", 강남역, 청계산입구역, 1),
-                Line.initialCreateWithId(2L, "2호선", "초록이", 강남역, 청계산입구역,2));
+        final List<Line> lines = List.of(Line.initialCreateWithoutId("신분당선", "빨강이", 강남역, 청계산입구역, 1),
+                Line.initialCreateWithoutId("2호선", "초록이", 강남역, 청계산입구역,2));
         given(lineDao.findAll()).willReturn(lines);
         //when
         final List<LineResponse> lineResponses = lineService.showLines();
