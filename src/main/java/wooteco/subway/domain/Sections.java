@@ -8,6 +8,13 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
+    public static final String NOTING_UP_STATION_ERROR_MESSAGE = "구간에 등록된 출발역이 없습니다.";
+    public static final String NOTING_DOWN_STATION_ERROR_MESSAGE = "구간에 등록된 도착역이 없습니다.";
+    private static final String EXIST_STATION_ERROR_MESSAGE = "기존에 존재하는 구간입니다.";
+    private static final String NO_CREATE_RANGE_SECTION_ERROR_MESSAGE = "생성할 수 없는 구간입니다.";
+    private static final String NOT_FOUND_NEXT_STATION_ERROR_MESSAGE = "다음 역을 찾을 수 없습니다.";
+    private static final String NOT_FOUNT_START_STATION_ERROR_MESSAGE = "시작 구간을 찾을 수 없습니다.";
+
     private final List<Section> values;
 
     public Sections(List<Section> sections) {
@@ -28,14 +35,14 @@ public class Sections {
         return values.stream()
                 .filter(value -> value.hasSameUpStation(station))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("구간에 등록된 출발역이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOTING_UP_STATION_ERROR_MESSAGE));
     }
 
     public Section findContainsDownStation(Station station) {
         return values.stream()
                 .filter(value -> value.hasSameDownStation(station))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("구간에 등록된 도착역이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOTING_DOWN_STATION_ERROR_MESSAGE));
     }
 
     private Station findNext(List<Section> sections, List<Section> values, Station next) {
@@ -45,7 +52,7 @@ public class Sections {
                 return section.getDownStation();
             }
         }
-        throw new IllegalArgumentException("다음 역을 찾을 수 없습니다.");
+        throw new IllegalArgumentException(NOT_FOUND_NEXT_STATION_ERROR_MESSAGE);
     }
 
     public List<Section> splitSection(Station upStation, Station downStation, Section target) {
@@ -74,7 +81,7 @@ public class Sections {
 
     public void validateHasSameSection(Station upStation, Station downStation) {
         if (existUpStation(upStation) && existDownStation(downStation)) {
-            throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
+            throw new IllegalArgumentException(EXIST_STATION_ERROR_MESSAGE);
         }
     }
 
@@ -94,9 +101,10 @@ public class Sections {
     public void validateContainsStation(Station upStation, Station downStation) {
         if (!hasStationFrontOrBack(upStation, downStation)
                 && !existUpStation(upStation) && !existDownStation(downStation)) {
-            throw new IllegalArgumentException("생성할 수 없는 구간입니다.");
+            throw new IllegalArgumentException(NO_CREATE_RANGE_SECTION_ERROR_MESSAGE);
         }
     }
+
 
     public boolean hasStationFrontOrBack(Station upStation, Station downStation) {
         return existUpStation(downStation) || existDownStation(upStation);
@@ -118,7 +126,7 @@ public class Sections {
         return upStations.stream()
                 .filter(upStation -> !downStations.contains(upStation))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("시작 구간을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUNT_START_STATION_ERROR_MESSAGE));
     }
 
     private List<Section> marge(Station target, Line line) {

@@ -5,7 +5,10 @@ import java.util.Objects;
 
 public class Section {
 
+    public static final String DISTANCE_NEGATIVE_ERROR_MESSAGE = "거리는 1이상이어야 합니다.";
+    public static final String DISTANCE_OVER_ERROR_MESSAGE = "거리가 큽니다.";
     private static final int MIN_DISTANCE = 1;
+
 
     private Long id;
     private Line line;
@@ -50,13 +53,13 @@ public class Section {
 
     private void validate(int distance) {
         if (distance < MIN_DISTANCE) {
-            throw new IllegalArgumentException("거리는 1이상이어야 합니다.");
+            throw new IllegalArgumentException(DISTANCE_NEGATIVE_ERROR_MESSAGE);
         }
     }
 
     private void validateShortDistance(int distance) {
         if (this.distance <= distance) {
-            throw new IllegalArgumentException("거리가 큽니다.");
+            throw new IllegalArgumentException(DISTANCE_OVER_ERROR_MESSAGE);
         }
     }
 
