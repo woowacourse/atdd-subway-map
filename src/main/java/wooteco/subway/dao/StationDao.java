@@ -56,7 +56,7 @@ public class StationDao {
         return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
     }
 
-    public List<Station> findByLineId(Long lineId) {
+    public List<Station> findAllByLineId(Long lineId) {
         String sql = "SELECT DISTINCT s.id, s.name FROM station s, section sec "
                 + "WHERE (sec.up_station_id=s.id or sec.down_station_id=s.id) and sec.line_id=? ";
         List<Station> query = jdbcTemplate.query(sql, stationRowMapper, lineId);

@@ -49,7 +49,7 @@ public class LineService {
     }
 
     private List<Station> getStations(Long lineId) {
-        return stationDao.findByLineId(lineId);
+        return stationDao.findAllByLineId(lineId);
     }
 
     @Transactional(readOnly = true)

@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +47,7 @@ class StationDaoTest {
 
     @Test
     void findByLineId() {
-        List<Station> stations = stationDao.findByLineId(분당선.getId());
+        List<Station> stations = stationDao.findAllByLineId(분당선.getId());
         assertThat(stations.size()).isEqualTo(3);
     }
 }

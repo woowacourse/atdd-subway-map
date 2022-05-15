@@ -27,7 +27,7 @@ public class SectionService {
     @Transactional
     public Section addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
         checkExistsLineId(lineId);
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         checkExistsStationId(upStationId);
         checkExistsStationId(downStationId);
         Station upStation = stationDao.findById(upStationId);
@@ -82,7 +82,7 @@ public class SectionService {
     public int deleteSection(Long lineId, Long stationId) {
         checkMinSectionCount(lineId);
         checkExistsLineId(lineId);
-        Sections sections = new Sections(sectionDao.findByLineIdAndStationId(lineId, stationId));
+        Sections sections = new Sections(sectionDao.findAllByLineIdAndStationId(lineId, stationId));
         if (sections.isZeroSize()) {
             throw new IllegalArgumentException("일치하는 구간이 없습니다.");
         }

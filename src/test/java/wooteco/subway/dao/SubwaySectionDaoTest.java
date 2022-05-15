@@ -45,7 +45,7 @@ class SubwaySectionDaoTest {
         sectionDao.save(new Section(분당선, 역삼역, 잠실역, 5));
 
         //when
-        List<Section> sections = sectionDao.findByLineId(분당선.getId());
+        List<Section> sections = sectionDao.findAllByLineId(분당선.getId());
 
         //then
         assertThat(sections.size()).isEqualTo(2);
@@ -59,8 +59,8 @@ class SubwaySectionDaoTest {
         sectionDao.save(new Section(분당선, 역삼역, 잠실역, 5));
 
         //when
-        List<Section> sectionsWithYeoksam = sectionDao.findByLineIdAndStationId(분당선.getId(), 역삼역.getId());
-        List<Section> sectionsWithJamsil = sectionDao.findByLineIdAndStationId(분당선.getId(), 잠실역.getId());
+        List<Section> sectionsWithYeoksam = sectionDao.findAllByLineIdAndStationId(분당선.getId(), 역삼역.getId());
+        List<Section> sectionsWithJamsil = sectionDao.findAllByLineIdAndStationId(분당선.getId(), 잠실역.getId());
 
         //then
         assertThat(sectionsWithYeoksam.size()).isEqualTo(2);

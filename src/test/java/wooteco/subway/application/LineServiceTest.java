@@ -70,7 +70,7 @@ class LineServiceTest {
     void showLines() {
         //when
         given(lineDao.findAll()).willReturn(List.of(분당선));
-        given(stationDao.findByLineId(분당선.getId())).willReturn(List.of(강남역, 역삼역));
+        given(stationDao.findAllByLineId(분당선.getId())).willReturn(List.of(강남역, 역삼역));
         List<LineResponse> lines = lineService.showLines();
         //then
         assertThat(lines.get(0).getStations().size()).isEqualTo(2);
@@ -81,7 +81,7 @@ class LineServiceTest {
     void showLine() {
         //when
         given(lineDao.findById(any(Long.class))).willReturn(분당선);
-        given(stationDao.findByLineId(분당선.getId())).willReturn(List.of(강남역, 역삼역));
+        given(stationDao.findAllByLineId(분당선.getId())).willReturn(List.of(강남역, 역삼역));
         LineResponse lineResponse = lineService.showLine(1L);
         //then
         assertAll(

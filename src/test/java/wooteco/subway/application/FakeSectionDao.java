@@ -20,7 +20,7 @@ public class FakeSectionDao implements SectionDao<Section> {
     }
 
     @Override
-    public List<Section> findByLineId(Long lineId) {
+    public List<Section> findAllByLineId(Long lineId) {
         return List.of(new Section(new Line(), 강남역, 역삼역, 5));
     }
 
@@ -35,7 +35,7 @@ public class FakeSectionDao implements SectionDao<Section> {
     }
 
     @Override
-    public List<Section> findByLineIdAndStationId(Long lineId, Long stationId) {
+    public List<Section> findAllByLineIdAndStationId(Long lineId, Long stationId) {
         return List.of(new Section(2L, new Line(), 강남역, 역삼역, 5));
     }
 

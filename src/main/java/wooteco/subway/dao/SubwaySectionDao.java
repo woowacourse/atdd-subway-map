@@ -58,7 +58,7 @@ public class SubwaySectionDao implements SectionDao<Section> {
     }
 
     @Override
-    public List<Section> findByLineId(Long lineId) {
+    public List<Section> findAllByLineId(Long lineId) {
         String sql =
                 "SELECT s.id sid, us.id usid, us.name usname, ds.id dsid, ds.name dsname, s.distance sdis FROM section s "
                         + "JOIN station us ON us.id=s.up_station_id "
@@ -86,7 +86,7 @@ public class SubwaySectionDao implements SectionDao<Section> {
     }
 
     @Override
-    public List<Section> findByLineIdAndStationId(Long lineId, Long stationId) {
+    public List<Section> findAllByLineIdAndStationId(Long lineId, Long stationId) {
         String sql =
                 "SELECT s.id sid, us.id usid, us.name usname, ds.id dsid, ds.name dsname, s.distance sdis FROM section s "
                         + "JOIN station us ON us.id=s.up_station_id "
