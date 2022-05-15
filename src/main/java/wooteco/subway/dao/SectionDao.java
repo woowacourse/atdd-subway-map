@@ -8,11 +8,11 @@ public interface SectionDao {
 
     Section save(Section section);
 
-    int update(Section section);
-
     Sections findByLineId(Long lineId);
 
-    int delete(Long sectionId);
+    int update(Section section);
 
-    int deleteByIds(List<Long> sectionIds);
+    int deleteById(Long id);
+
+    int deleteByIds(List<Long> ids);
 }

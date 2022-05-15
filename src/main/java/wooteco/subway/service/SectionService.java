@@ -48,7 +48,7 @@ public class SectionService {
         sections.validateRemovable(stationId);
         if (sections.isEndStation(stationId)) {
             Long sectionId = sections.findEndSectionIdToRemove(stationId);
-            sectionDao.delete(sectionId);
+            sectionDao.deleteById(sectionId);
             return;
         }
         List<Long> sectionIds = sections.findSectionIdsToRemove(stationId);

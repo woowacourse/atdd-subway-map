@@ -46,13 +46,6 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public int update(Section section) {
-        String sql = "update section set up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance where id = :id";
-        SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(section);
-        return namedParameterJdbcTemplate.update(sql, namedParameters);
-    }
-
-    @Override
     public Sections findByLineId(Long lineId) {
         String sql = "select * from section where line_id = :lineId";
         SqlParameterSource namedParameter = new MapSqlParameterSource("lineId", lineId);
@@ -60,7 +53,14 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public int delete(Long id) {
+    public int update(Section section) {
+        String sql = "update section set up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance where id = :id";
+        SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(section);
+        return namedParameterJdbcTemplate.update(sql, namedParameters);
+    }
+
+    @Override
+    public int deleteById(Long id) {
         String sql = "delete from section where id = :id";
         SqlParameterSource namedParameter = new MapSqlParameterSource("id", id);
         return namedParameterJdbcTemplate.update(sql, namedParameter);

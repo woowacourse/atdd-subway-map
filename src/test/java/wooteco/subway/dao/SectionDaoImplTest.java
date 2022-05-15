@@ -82,7 +82,7 @@ public class SectionDaoImplTest {
     void delete() {
         section = sectionDao.save(new Section(1L, 2L, 3L, 5));
 
-        sectionDao.delete(section.getId());
+        sectionDao.deleteById(section.getId());
         Sections sections = sectionDao.findByLineId(1L);
 
         assertThat(sections.getSections()).hasSize(1);

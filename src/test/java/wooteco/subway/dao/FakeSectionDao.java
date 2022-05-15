@@ -32,7 +32,17 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
-    public int delete(Long id) {
+    public int update(Section section) {
+        Long id = section.getId();
+        if (sections.containsKey(id)) {
+            sections.put(id, section);
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
+    public int deleteById(Long id) {
         if (sections.containsKey(id)) {
             sections.remove(id);
             return EXECUTED_COLUMN_COUNT_ONE;
@@ -46,15 +56,5 @@ public class FakeSectionDao implements SectionDao {
             sections.remove(id);
         }
         return ids.size();
-    }
-
-    @Override
-    public int update(Section section) {
-        Long id = section.getId();
-        if (sections.containsKey(id)) {
-            sections.put(id, section);
-            return 1;
-        }
-        return 0;
     }
 }
