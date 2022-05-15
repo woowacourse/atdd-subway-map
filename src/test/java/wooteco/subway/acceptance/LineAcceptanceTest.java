@@ -235,7 +235,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행 종점 좌우측에 구간을 추가한다(C -> D -> A -> B).")
     void addUpDestination() {
         //given
-
         List<Long> ids = postStations("선릉", "삼성");
         long stationIdC = ids.get(0);
         long stationIdD = ids.get(1);

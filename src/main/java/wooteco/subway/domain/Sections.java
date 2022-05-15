@@ -173,7 +173,6 @@ public class Sections {
     private void validateDeletable() {
         checkEmptySections();
         checkOnlyOneSectionExist();
-
     }
 
     private void checkEmptySections() {
