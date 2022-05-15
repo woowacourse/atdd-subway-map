@@ -4,8 +4,9 @@ import java.util.Objects;
 
 public class Station {
 
+    private final String name;
+
     private Long id;
-    private String name;
 
     public static class Builder {
 

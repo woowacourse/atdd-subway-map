@@ -21,10 +21,10 @@ import wooteco.subway.dto.StationResponse;
 @Service
 public class SubwayService {
 
-    private Subway subway;
-    private LineDao lineDao;
-    private StationDao stationDao;
-    private SectionDao sectionDao;
+    private final Subway subway;
+    private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
     public SubwayService(Subway subway, LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.subway = subway;

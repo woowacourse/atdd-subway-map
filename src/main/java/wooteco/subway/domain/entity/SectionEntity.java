@@ -8,11 +8,12 @@ import wooteco.subway.domain.Section;
 
 public class SectionEntity {
 
+    private final Long lineId;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final Integer distance;
+
     private Long id;
-    private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
-    private Integer distance;
 
     public static class Builder {
 

@@ -7,7 +7,7 @@ public class Lines {
     public static final String DUPLICATED_NAME_EXCEPTION = "노선의 이름은 중복될 수 없습니다.";
     public static final String DUPLICATED_COLOR_EXCEPTION = "노선의 색은 중복될 수 없습니다.";
 
-    private List<Line> lines;
+    private final List<Line> lines;
 
     public Lines(List<Line> lines) {
         this.lines = lines;

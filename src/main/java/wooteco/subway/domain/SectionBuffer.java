@@ -5,8 +5,8 @@ import java.util.List;
 
 public class SectionBuffer {
 
-    private List<Section> addBuffer;
-    private List<Section> deleteBuffer;
+    private final List<Section> addBuffer;
+    private final List<Section> deleteBuffer;
 
     public SectionBuffer() {
         addBuffer = new ArrayList<>();

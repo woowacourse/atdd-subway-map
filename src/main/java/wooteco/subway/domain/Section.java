@@ -10,11 +10,12 @@ public class Section {
     public static final String UNVALID_STATION_EXCEPTION = "상행 종점과 하행 종점은 같을 수 없습니다.";
     public static final String UNABLE_TO_MERGE_EXCEPTION = "합칠 수 없는 section입니다.";
 
+    private final Line line;
+    private final Station upStation;
+    private final Station downStation;
+    private final Integer distance;
+
     private Long id;
-    private Line line;
-    private Station upStation;
-    private Station downStation;
-    private Integer distance;
 
     public static class Builder {
 
