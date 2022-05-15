@@ -36,6 +36,7 @@ public class StationDao {
     public Optional<Station> findById(Long id) {
         String sql = "select id, name from station where id = :id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+
         try {
             Station station = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(station);
@@ -47,6 +48,7 @@ public class StationDao {
     public Optional<Station> findByName(String name) {
         String sql = "select id, name from station where name = :name";
         SqlParameterSource namedParameters = new MapSqlParameterSource("name", name);
+
         try {
             Station station = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(station);
@@ -63,6 +65,7 @@ public class StationDao {
     public void delete(Station station) {
         String sql = "delete from station where id = :id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", station.getId());
+
         jdbcTemplate.update(sql, namedParameters);
     }
 

@@ -23,13 +23,16 @@ public class StationService {
             throw new IllegalArgumentException(
                     StringFormat.errorMessage(stationRequest.getName(), "중복되는 지하철역이 존재합니다."));
         }
+
         Station station = stationRequest.toEntity();
         Station newStation = stationDao.save(station);
+
         return new StationResponse(newStation);
     }
 
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
+
         return stations.stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
@@ -39,6 +42,7 @@ public class StationService {
         Station station = stationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
                         StringFormat.errorMessage(id, "해당 ID의 지하철역이 존재하지 않습니다.")));
+
         stationDao.delete(station);
     }
 }

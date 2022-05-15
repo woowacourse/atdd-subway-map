@@ -42,6 +42,7 @@ public class SectionDao {
                         + "join station as down "
                         + "on s.down_station_id = down.id "
                         + "where s.line_id = :line_id";
+
         return jdbcTemplate.query(sql, Map.of("line_id", id), sectionRowMapper());
     }
 

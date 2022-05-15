@@ -30,6 +30,7 @@ public class LineResponse {
     public static LineResponse of(Line line, List<Station> stations) {
         List<StationResponse> stationResponses = stations.stream().map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
+
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 

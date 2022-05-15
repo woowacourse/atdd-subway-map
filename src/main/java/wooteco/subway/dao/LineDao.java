@@ -36,6 +36,7 @@ public class LineDao {
     public Optional<Line> findById(Long id) {
         String sql = "select id, name, color from line where id = :id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+
         try {
             Line line = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(line);
@@ -47,6 +48,7 @@ public class LineDao {
     public Optional<Line> findByName(String name) {
         String sql = "select id, name, color from line where name = :name";
         SqlParameterSource namedParameters = new MapSqlParameterSource("name", name);
+
         try {
             Line line = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(line);
@@ -73,6 +75,7 @@ public class LineDao {
     public void delete(Line line) {
         String sql = "delete from line where id = :id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", line.getId());
+
         jdbcTemplate.update(sql, namedParameters);
     }
 

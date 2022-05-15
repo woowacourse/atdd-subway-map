@@ -34,13 +34,15 @@ public class LineService {
     }
 
     public LineResponse save(LineRequest lineRequest) {
-        if (isDuplicateName(lineRequest.getName())) {
+        if (isDuplicateName(lineRequest)) {
             throw new IllegalArgumentException(
                     StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
+
         Line newLine = lineDao.save(lineRequest.toEntity());
         Station up = findExistStationById(lineRequest.getUpStationId());
         Station down = findExistStationById(lineRequest.getDownStationId());
+
         sectionDao.save(newLine.getId(), new Section(up, down, lineRequest.getDistance()));
         return LineResponse.of(newLine, List.of(up, down));
     }
@@ -49,11 +51,13 @@ public class LineService {
     public List<LineResponse> findAll() {
         List<LineResponse> lineResponses = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
+
         for (Line line : lines) {
             List<Section> findSections = sectionDao.findAllByLineId(line.getId());
             Sections sections = new Sections(findSections);
             lineResponses.add(LineResponse.of(line, sections.getSortedStations()));
         }
+
         return lineResponses;
     }
 
@@ -69,27 +73,30 @@ public class LineService {
 
     public void update(Long id, LineRequest lineRequest) {
         Line findLine = findExistLineById(id);
-        if (isDuplicateName(lineRequest.getName()) && !findLine.isSameName(lineRequest.getName())) {
+        if (isDuplicateName(lineRequest) && !findLine.isSameName(lineRequest.getName())) {
             throw new IllegalArgumentException(
                     StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
+
         lineDao.update(findLine.getId(), lineRequest.toEntity());
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findExistLineById(lineId);
         List<Section> findSections = sectionDao.findAllByLineId(line.getId());
-        Sections origin = new Sections(findSections);
 
+        Sections origin = new Sections(findSections);
         Section newSection = getSectionByRequest(sectionRequest);
         Sections resultSections = new Sections(findSections);
         resultSections.insert(newSection);
+
         deleteAndSaveSections(lineId, origin, resultSections);
     }
 
     private Section getSectionByRequest(SectionRequest sectionRequest) {
         Station up = findExistStationById(sectionRequest.getUpStationId());
         Station down = findExistStationById(sectionRequest.getDownStationId());
+
         return new Section(up, down, sectionRequest.getDistance());
     }
 
@@ -133,7 +140,7 @@ public class LineService {
                         StringFormat.errorMessage(id, "해당 ID의 지하철역이 존재하지 않습니다.")));
     }
 
-    private boolean isDuplicateName(String name) {
-        return lineDao.findByName(name).isPresent();
+    private boolean isDuplicateName(LineRequest request) {
+        return lineDao.findByName(request.getName()).isPresent();
     }
 }

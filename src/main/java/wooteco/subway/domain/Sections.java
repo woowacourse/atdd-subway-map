@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
+    private static final int MIDDLE_REMOVE_SIZE = 2;
+    private static final int ONE_SECTION_SIZE = 1;
+
     private final List<Section> sections;
 
     public Sections(Section section) {
@@ -26,11 +29,13 @@ public class Sections {
     }
 
     public void insert(Section section) {
-        List<Section> connectableSections = findConnectableSections(section); // A-B를 삽입할 경우 A 혹은 B가 포함된 모든 Section을 가져옴
-        validateIncludingStations(section, connectableSections); // A-B를 삽입하려는데 A -> B 로 가는 구간이 이미 존재할 경우 예외 발생
+        List<Section> connectableSections = findConnectableSections(section);
+        validateIncludingStations(section, connectableSections);
+
         Optional<Section> optionalSameUpOrDownStationSection = connectableSections.stream()
                 .filter(sec -> sec.isSameUpOrDownStation(section))
                 .findFirst();
+
         if (optionalSameUpOrDownStationSection.isPresent()) {
             Section originSection = optionalSameUpOrDownStationSection.get();
             validateDistance(originSection, section);
@@ -53,8 +58,11 @@ public class Sections {
     }
 
     private void validateIncludingStations(Section section, List<Section> connectableSections) {
-        boolean haveSameUpStation = connectableSections.stream().anyMatch(sec -> sec.haveUpStation(section));
-        boolean haveSameDownStation = connectableSections.stream().anyMatch(sec -> sec.haveDownStation(section));
+        boolean haveSameUpStation = connectableSections.stream()
+                .anyMatch(sec -> sec.haveUpStation(section));
+        boolean haveSameDownStation = connectableSections.stream()
+                .anyMatch(sec -> sec.haveDownStation(section));
+
         if (haveSameUpStation && haveSameDownStation) {
             throw new IllegalArgumentException("해당 구간은 기존 노선에 이미 등록되어있습니다.");
         }
@@ -65,6 +73,7 @@ public class Sections {
                 .filter(sec -> sec.haveAnyStation(section))
                 .collect(Collectors.toList());
         validateNoSameStationsInSection(connectableSections);
+
         return connectableSections;
     }
 
@@ -79,21 +88,23 @@ public class Sections {
         validateIncludingStation(removableSection);
         validateSectionSize();
 
-        if (removableSection.size() == 2) {
+        if (removableSection.size() == MIDDLE_REMOVE_SIZE) {
             removeInMiddle(station, removableSection);
         }
+
         sections.remove(removableSection.get(0));
     }
 
     public List<Section> getDifferentList(Sections otherSections) {
         List<Section> thisSections = new ArrayList<>(this.sections);
         thisSections.removeAll(otherSections.sections);
+
         return thisSections;
     }
 
     private List<Section> findRemovableSections(Station station) {
         return sections.stream()
-                .filter(sec -> sec.haveStation(station))
+                .filter(section -> section.haveStation(station))
                 .collect(Collectors.toList());
     }
 
@@ -113,7 +124,7 @@ public class Sections {
     }
 
     private void validateSectionSize() {
-        if (sections.size() == 1) {
+        if (sections.size() == ONE_SECTION_SIZE) {
             throw new IllegalStateException("구간이 오직 하나인 노선에서 역을 제거할 수 없습니다.");
         }
     }
@@ -136,39 +147,46 @@ public class Sections {
         List<Station> results = new ArrayList<>();
         results.add(firstStation);
         Section target = findSectionIncludingUpStation(firstStation);
+
         while (!target.isDownStation(endStation)) {
             Station targetDownStation = target.getDownStation();
             results.add(targetDownStation);
             target = findSectionIncludingUpStation(targetDownStation);
         }
         results.add(endStation);
+
         return results;
     }
 
     private Section findSectionIncludingUpStation(Station firstStation) {
         return sections.stream()
-                .filter(sec -> sec.isUpStation(firstStation))
+                .filter(section -> section.isUpStation(firstStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("찾으려는 구간이 존재하지 않습니다."));
     }
 
     private Station findEndStation(List<Station> upStations, List<Station> downStations) {
         downStations.removeAll(upStations);
+
         return downStations.get(0);
     }
 
     private Station findFirstStation(List<Station> upStations, List<Station> downStations) {
         return upStations.stream()
-                .filter(it -> !downStations.contains(it))
+                .filter(station -> !downStations.contains(station))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("상행 종점이 존재하지 않습니다."));
     }
 
     private List<Station> getDownStations() {
-        return sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
     }
 
     private List<Station> getUpStations() {
-        return sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
     }
 }

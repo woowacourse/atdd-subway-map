@@ -17,6 +17,7 @@ public class Section {
         Objects.requireNonNull(upStation);
         Objects.requireNonNull(downStation);
         validateDistanceOverZero(distance);
+
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -27,6 +28,7 @@ public class Section {
         if (isDownStation(insertSection.downStation)) {
             return new Section(upStation, insertSection.upStation, distance - insertSection.distance);
         }
+
         return new Section(insertSection.downStation, downStation, distance - insertSection.distance);
     }
 
@@ -35,6 +37,7 @@ public class Section {
         if (this.isDownStation(connectStation)) {
             return new Section(upStation, target.downStation, distance + target.distance);
         }
+
         return new Section(target.upStation, downStation, distance + target.distance);
     }
 

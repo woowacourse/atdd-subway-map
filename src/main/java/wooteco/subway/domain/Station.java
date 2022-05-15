@@ -13,6 +13,7 @@ public class Station {
 
     public Station(Long id, String name) {
         validateName(name);
+
         this.id = id;
         this.name = name;
     }

@@ -30,7 +30,7 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(newStation);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         return ResponseEntity.ok().body(stationService.findAll());
     }
