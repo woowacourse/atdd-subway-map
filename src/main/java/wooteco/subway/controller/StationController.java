@@ -28,8 +28,8 @@ public class StationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> stationResponses = stationService.showStations().stream()
+    public ResponseEntity<List<StationResponse>> findStations() {
+        List<StationResponse> stationResponses = stationService.findStations().stream()
                 .map(ControllerDtoAssembler::stationResponseByDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(stationResponses);

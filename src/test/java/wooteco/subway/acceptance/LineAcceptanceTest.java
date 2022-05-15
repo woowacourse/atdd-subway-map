@@ -61,7 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("특정 노선을 조회한다.")
     @Test
-    void showLine() {
+    void findLine() {
         // given
         ExtractableResponse<Response> createResponse = createPostLineResponse(이호선);
         String id = createResponse.header("Location").split("/")[2];

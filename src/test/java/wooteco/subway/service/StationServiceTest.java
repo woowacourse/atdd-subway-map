@@ -56,7 +56,7 @@ class StationServiceTest {
         //when
         stationService.delete(id);
         //then
-        List<Long> ids = stationService.showStations()
+        List<Long> ids = stationService.findStations()
                 .stream()
                 .map(StationResponseDto::getId)
                 .collect(Collectors.toList());

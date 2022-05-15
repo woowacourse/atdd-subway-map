@@ -31,7 +31,7 @@ public class StationService {
         }
     }
 
-    public List<StationResponseDto> showStations() {
+    public List<StationResponseDto> findStations() {
         return stationDao.findAll().stream()
                 .map(StationResponseDto::new)
                 .collect(Collectors.toList());

@@ -29,14 +29,14 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         LineResponse lineResponse = ControllerDtoAssembler.lineResponseByDto(lineService.findById(id));
 
         return ResponseEntity.ok(lineResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<LineResponse>> showLines() {
+    public ResponseEntity<List<LineResponse>> findLines() {
         List<LineResponse> lineResponses = lineService.findAll().stream()
                 .map(ControllerDtoAssembler::lineResponseByDto)
                 .collect(Collectors.toList());
