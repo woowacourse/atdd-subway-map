@@ -27,7 +27,9 @@ public class SectionService {
 
         Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, upStationId, downStationId);
         validateNewSection(sections, upStationId, downStationId);
-        addBranch(sections.getSectionForCombine(upStationId, downStationId), upStationId, downStationId, distance, lineId);
+        if (sections.isAddingBranch()) {
+            addBranch(sections, upStationId, downStationId, distance, lineId);
+        }
         return saveSection(sectionRequest, lineId);
     }
 
@@ -40,7 +42,8 @@ public class SectionService {
         }
     }
 
-    private void addBranch(Section section, Long upStationId, Long downStationId, int distance, Long lineId) {
+    private void addBranch(Sections sections, Long upStationId, Long downStationId, int distance, Long lineId) {
+        Section section = sections.getSectionForCombine(upStationId, downStationId);
         validateDistance(section, distance);
         int newDistance = section.getDistance() - distance;
         if (section.isSameAsDownStation(downStationId)) {

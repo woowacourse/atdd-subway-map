@@ -9,6 +9,7 @@ public class Sections {
     private static final int BLANK_LENGTH = 0;
     private static final int POSSIBLE_DELETION_LENGTH = 2;
     private static final long NOTING = -1L;
+    private static final int ADDING_BRANCH_LENGTH = 2;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -84,6 +85,10 @@ public class Sections {
 
     public boolean isContain(Section section) {
         return sections.contains(section);
+    }
+
+    public boolean isAddingBranch() {
+        return sections.size() == ADDING_BRANCH_LENGTH;
     }
 
     public List<Section> getSections() {
