@@ -5,9 +5,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.StationResponse;
 
@@ -19,15 +23,17 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
-    
-    private static final long 강남역_ID = 1L;
-    private static final long 역삼역_ID = 2L;
-    private static final long 선릉역_ID = 3L;
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DisplayName("구간 관련 Api")
+public class SectionAcceptanceTest {
+
+    @LocalServerPort
+    int port;
 
     @BeforeEach
-    void setUpData() {
+    public void setUp() {
+        RestAssured.port = port;
+
         createStation("강남역");
         createStation("역삼역");
         createStation("선릉역");
@@ -35,86 +41,191 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createLine("2호선", "bg-red-600",  강남역_ID, 역삼역_ID, 10);
     }
 
-    @Test
-    @DisplayName("하행에 정상적으로 구간을 연결하는 경우를 테스트한다")
-    void createSectionTest() {
-        ExtractableResponse<Response> response = createSection(역삼역_ID, 선릉역_ID, 5);
+    private static final long 강남역_ID = 1L;
+    private static final long 역삼역_ID = 2L;
+    private static final long 선릉역_ID = 3L;
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    @Nested
+    @DisplayName("구간 생성 Api는")
+    class Describe_section_create_api {
+
+        @Nested
+        @DisplayName("정상적으로 구간을 연결한다면")
+        class Context_add_section_down_station {
+
+            @Test
+            @DisplayName("성공적으로 구간이 생성된다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_create_new_section() {
+                List<Section> beforeSection = getSections();
+                ExtractableResponse<Response> response = createSection(역삼역_ID, 선릉역_ID, 5);
+                List<Section> afterSection = getSections();
+
+                assertThat(afterSection.size()).isEqualTo(beforeSection.size() + 1);
+            }
+
+            @Test
+            @DisplayName("200 응답 코드를 반환한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_return_ok_status_code() {
+                ExtractableResponse<Response> response = createSection(역삼역_ID, 선릉역_ID, 5);
+
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            }
+        }
+
+        @Nested
+        @DisplayName("이미 등록된 상행과 하행을 연결하는 구간을 추가한다면")
+        class Context_add_duplicate {
+            @Test
+            @DisplayName("400 응답 코드를 반환한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_return_bad_status_code() {
+                ExtractableResponse<Response> response = createSection(강남역_ID, 역삼역_ID, 5);
+
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+        }
+
+        @Nested
+        @DisplayName("존재하지 않는 상행과 하행을 연결하는 구간을 추가한다면")
+        class Context_add_no_exist {
+            @Test
+            @DisplayName("400 응답 코드를 반환한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_return_bad_status_code() {
+                ExtractableResponse<Response> response = createSection(10L, 11L, 5);
+
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+        }
+
+        @Nested
+        @DisplayName("갈래길을 추가한다면")
+        class Context_add_with_fork {
+            @Test
+            @DisplayName("200 응답 코드를 반환한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_return_ok_status_code() {
+                ExtractableResponse<Response> response = createSection(강남역_ID, 선릉역_ID, 5);
+
+                Section section = getSections().get(1);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("기존 구간에 해당 구간을 넣는다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_insert_section() {
+                ExtractableResponse<Response> response = createSection(강남역_ID, 선릉역_ID, 5);
+
+                Section section = getSections().get(1);
+                assertAll(
+                        () -> assertThat(section.getUpStationId()).isEqualTo(선릉역_ID),
+                        () -> assertThat(section.getDownStationId()).isEqualTo(역삼역_ID)
+                );
+            }
+        }
+
+        @Nested
+        @DisplayName("길이가 더 긴 갈래길이 추가된다면")
+        class Context_add_with_fork_exceed_distance {
+            @Test
+            @DisplayName("400 응답 코드를 반환한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_return_bad_request_status_code() {
+                ExtractableResponse<Response> response = createSection(강남역_ID, 선릉역_ID, 1000);
+
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+        }
     }
 
-    @Test
-    @DisplayName("이미 등록된 상행과 하행을 연결하는 구간을 추가하는 경우 예외를 발생시킨다.")
-    void createSectionDuplicateTest() {
-        ExtractableResponse<Response> response = createSection(강남역_ID, 역삼역_ID, 5);
+    @Nested
+    @DisplayName("구간 제거 Api는")
+    class Describe_Section_Delete_Api {
+        @Nested
+        @DisplayName("종점인 역을 제거하는 경우")
+        class Context_delete_no_endPoint {
+            @Test
+            @DisplayName("200 응답 코드를 반환한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_return_ok_status_code() {
+                createSection(역삼역_ID, 선릉역_ID, 1);
+                ExtractableResponse<Response> response = deleteSection(강남역_ID);
+                Section section = getSections().get(0);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            }
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
+            @Test
+            @DisplayName("해당 역을 제거한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_delete_stations() {
+                createSection(역삼역_ID, 선릉역_ID, 1);
+                ExtractableResponse<Response> response = deleteSection(강남역_ID);
+                Section section = getSections().get(0);
+                assertAll(
+                        () -> assertThat(getSections().size()).isEqualTo(1),
+                        () -> assertThat(section.getUpStationId()).isEqualTo(2),
+                        () -> assertThat(section.getDownStationId()).isEqualTo(3)
+                );
+            }
+        }
 
-    @Test
-    @DisplayName("존재하지 않는 상행과 하행을 연결하는 구간을 추가하는 경우 예외를 발생시킨다.")
-    void createSectionNoExistTest() {
-        ExtractableResponse<Response> response = createSection(강남역_ID, 역삼역_ID, 5);
+        @Nested
+        @DisplayName("단 2개의 역만 있는 경우 삭제한다면")
+        class Context_delete_only_two_stations {
+            @Test
+            @DisplayName("400 응답 코드를 반환한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_return_bad_request_status_code() {
+                ExtractableResponse<Response> response = deleteSection(강남역_ID);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+        }
 
-    @Test
-    @DisplayName("갈래길로 인해 하나의 길로 통합되는 경우를 테스트한다.")
-    void createSectionForkTest() {
-        ExtractableResponse<Response> response = createSection(강남역_ID, 선릉역_ID, 5);
+        @Nested
+        @DisplayName("존재하지 않는 역을 삭제한다면")
+        class Context_delete_not_exist_stations {
+            @Test
+            @DisplayName("400 응답 코드를 반환한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_return_bad_request_status_code() {
+                ExtractableResponse<Response> response = deleteSection(강남역_ID);
 
-        Section section = getSections().get(1);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(section.getUpStationId()).isEqualTo(선릉역_ID),
-                () -> assertThat(section.getDownStationId()).isEqualTo(역삼역_ID),
-                () -> assertThat(section.getDistance()).isEqualTo(5)
-        );
-    }
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+        }
 
-    @Test
-    @DisplayName("단 2개의 역만 있는 경우는 구간 제거 시 예외를 발생시킨다.")
-    void deleteSectionOnlyTwoStationTest() {
-        ExtractableResponse<Response> response = deleteSection(강남역_ID);
+        @Nested
+        @DisplayName("상행과 하행에 모두 걸쳐있는 역을 삭제한다면")
+        class Context_delete_Overlap_up_and_down {
+            @Test
+            @DisplayName("200 응답 코드를 반환한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_return_ok_status_code() {
+                createSection(역삼역_ID, 선릉역_ID, 5);
+                ExtractableResponse<Response> response = deleteSection(역삼역_ID);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            }
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
+            @Test
+            @DisplayName("삭제된 역을 기준으로 두 구간을 통합한다.")
+            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            void it_combine_sections() {
+                createSection(역삼역_ID, 선릉역_ID, 5);
+                ExtractableResponse<Response> response = deleteSection(역삼역_ID);
+                Section section = getSections().get(0);
+                assertAll(
+                        () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                        () -> assertThat(section.getUpStationId()).isEqualTo(강남역_ID),
+                        () -> assertThat(section.getDownStationId()).isEqualTo(선릉역_ID)
+                );
+            }
+        }
 
-    @Test
-    @DisplayName("상행과 하행에 모두 걸쳐있는 역의 경우 제거 시 양옆의 구간을 통합시킨다")
-    void deleteSectionOverlapTest() {
-        createSection(역삼역_ID, 선릉역_ID, 5);
-        ExtractableResponse<Response> response = deleteSection(역삼역_ID);
-        Section section = getSections().get(0);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(section.getUpStationId()).isEqualTo(강남역_ID),
-                () -> assertThat(section.getDownStationId()).isEqualTo(선릉역_ID)
-        );
-    }
 
-    @Test
-    @DisplayName("상행 종점이나 하행 종점인 경우 그냥 제거된다.")
-    void deleteSectionFirstOrEndTest() {
-        createSection(역삼역_ID, 선릉역_ID, 1);
-        ExtractableResponse<Response> response = deleteSection(강남역_ID);
-        Section section = getSections().get(0);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(getSections().size()).isEqualTo(1),
-                () -> assertThat(section.getUpStationId()).isEqualTo(2),
-                () -> assertThat(section.getDownStationId()).isEqualTo(3)
-        );
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 역을 제거하는 경우 예외를 발생시킨다.")
-    void deleteSectionNotExistTest() {
-
-        ExtractableResponse<Response> response = deleteSection(9999L);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private List<Section> getSections() {
@@ -126,9 +237,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
-        for (StationResponse station : stations) {
-            System.out.println(station.getId());
-        }
 
         List<Section> sections = new ArrayList<>();
 
