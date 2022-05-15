@@ -1,11 +1,13 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -32,12 +37,17 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.jsonPath().getLong("id")).isEqualTo(1L);
-        assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
-        assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600");
+        assertThat(lineResponse.getId()).isNotNull();
+        assertThat(lineResponse.getName()).isEqualTo("신분당선");
+        assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
+        assertThat(lineResponse.getStations())
+                .extracting("id", "name")
+                .containsExactly(tuple(1L, "신도림역"), tuple(2L, "왕십리역"));
     }
 
     @Test
@@ -47,12 +57,16 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then().log().all();
+                .then().log().all()
+                .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -65,25 +79,33 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("이미 존재하는 노선 이름입니다.");
     }
 
     @Test
     @DisplayName("전체 노선 목록을 조회한다.")
     void findAllLines() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "bg-red-600");
+        params1.put("upStationId", "1");
+        params1.put("downStationId", "2");
+        params1.put("distance", "10");
         RestAssured.given().log().all()
-                .body(params)
+                .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then().log().all();
+                .then().log().all()
+                .extract();
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "분당선");
-        params2.put("color", "bg-green-600");
+        params2.put("color", "yellow");
+        params2.put("upStationId", "3");
+        params2.put("downStationId", "4");
+        params2.put("distance", "10");
         RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -100,7 +122,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList(".", LineResponse.class)).hasSize(2);
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        assertThat(lineResponses).hasSize(2);
+        assertThat(lineResponses).extracting("id", "name", "color")
+                .containsExactly(tuple(1L, "신분당선", "bg-red-600"), tuple(2L, "분당선", "yellow"));
     }
 
     @Test
@@ -110,6 +135,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         String location = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -139,6 +167,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         String location = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -152,6 +183,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "분당선");
         params2.put("color", "bg-green-600");
+        params2.put("upStationId", "1");
+        params2.put("downStationId", "2");
+        params2.put("distance", "10");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -160,8 +194,18 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .when()
+                .get(location)
+                .then().log().all()
+                .extract();
+
+        LineResponse lineResponse = getResponse.jsonPath().getObject(".", LineResponse.class);
+
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse).extracting("id", "name", "color")
+                .containsExactly(1L, "분당선", "bg-green-600");
     }
 
     @Test
@@ -171,6 +215,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         String location = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

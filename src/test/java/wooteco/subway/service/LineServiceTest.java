@@ -1,17 +1,21 @@
 package wooteco.subway.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import wooteco.subway.domain.Line;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql("/lineTestSchema.sql")
 class LineServiceTest {
 
     @Autowired
@@ -20,17 +24,67 @@ class LineServiceTest {
     @Test
     @DisplayName("이미 존재하는 노선의 이름이 있을 때 예외가 발생한다.")
     void saveExceptionByExistName() {
-        lineService.save(new Line("신분당선", "bg-red-600"));
-        assertThatThrownBy(() -> lineService.save(new Line("신분당선", "bg-green-600")))
+        LineRequest 분당선 = new LineRequest("분당선", "bg-red-600", 1L, 2L, 10);
+        lineService.save(분당선);
+        assertThatThrownBy(() -> lineService.save(분당선))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("이미 존재하는 노선 이름입니다.");
     }
 
     @Test
+    @DisplayName("노선 저장 시 결과를 확인한다.")
+    void checkSaveResult() {
+        // given
+        LineRequest 분당선 = new LineRequest("분당선", "bg-red-600", 1L, 2L, 10);
+
+        //when
+        LineResponse response = lineService.save(분당선);
+
+        //then
+        assertThat(response).extracting("id", "name", "color")
+                .containsExactly(1L, "분당선", "bg-red-600");
+    }
+
+    @Test
+    @DisplayName("노선 단건 조회 테스트 ")
+    void findById() {
+        // given
+        LineRequest 분당선 = new LineRequest("분당선", "bg-red-600", 1L, 2L, 10);
+        lineService.save(분당선);
+
+        //when
+        LineResponse response = lineService.findById(1L);
+
+        //then
+        assertThat(response).extracting("id", "name", "color")
+                .containsExactly(1L, "분당선", "bg-red-600");
+
+        assertThat(response.getStations()).extracting("id", "name")
+                .containsExactly(tuple(1L, "신도림역"), tuple(2L, "왕십리역"));
+    }
+
+    @Test
+    @DisplayName("노선 전체 조회 테스트 ")
+    void findAll() {
+        // given
+        LineRequest 신분당선 = new LineRequest("신분당선", "yellow", 1L, 2L, 10);
+        LineRequest 분당선 = new LineRequest("분당선", "bg-red-600", 1L, 2L, 10);
+        lineService.save(신분당선);
+        lineService.save(분당선);
+
+        //when
+        List<LineResponse> response = lineService.findAll();
+
+        //then
+        assertThat(response).extracting("id", "name", "color")
+                .containsExactly(tuple(1L, "신분당선", "yellow"), tuple(2L, "분당선", "bg-red-600"));
+    }
+
+    @Test
     @DisplayName("없는 id의 Line을 삭제할 수 없다.")
     void deleteByInvalidId() {
-        Line line = lineService.save(new Line("신분당선", "bg-red-600"));
-        Long lineId = line.getId() + 1;
+        LineResponse response = lineService.save(new LineRequest("신분당선", "yellow", 1, 2, 3));
+        Long lineId = response.getId() + 1;
 
         assertThatThrownBy(() -> lineService.delete(lineId))
                 .isInstanceOf(NoSuchElementException.class)
@@ -40,8 +94,8 @@ class LineServiceTest {
     @Test
     @DisplayName("이미 삭제한 id의 Line을 또 삭제할 수 없다.")
     void deleteByDuplicatedId() {
-        Line line = lineService.save(new Line("신분당선", "bg-red-600"));
-        Long lineId = line.getId();
+        LineResponse response = lineService.save(new LineRequest("신분당선", "yellow", 1, 2, 3));
+        Long lineId = response.getId();
         lineService.delete(lineId);
 
         assertThatThrownBy(() -> lineService.delete(lineId))

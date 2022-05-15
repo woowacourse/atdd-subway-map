@@ -35,11 +35,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        StationResponse stationResponse = response.jsonPath().getObject(".", StationResponse.class);
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.jsonPath().getLong("id")).isEqualTo(1L);
-        assertThat(response.jsonPath().getString("name")).isEqualTo("강남역");
+        assertThat(stationResponse.getId()).isNotNull();
+        assertThat(stationResponse.getName()).isEqualTo("강남역");
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -68,6 +70,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("이미 존재하는 역 이름입니다.");
     }
 
     @DisplayName("지하철역을 조회한다.")

@@ -1,4 +1,8 @@
-CREATE TABLE if not exists STATION
+drop table "SECTION" if exists;
+drop table LINE if exists;
+drop table STATION if exists;
+
+CREATE TABLE IF NOT EXISTS STATION
 (
     id
     bigint
@@ -16,7 +20,7 @@ CREATE TABLE if not exists STATION
 )
     );
 
-CREATE TABLE if not exists LINE
+CREATE TABLE IF NOT EXISTS LINE
 (
     id
     bigint
@@ -93,3 +97,11 @@ CREATE TABLE IF NOT EXISTS "SECTION"
 )
     );
 
+INSERT INTO STATION (name)
+VALUES ('신도림역');
+INSERT INTO STATION (name)
+VALUES ('왕십리역');
+INSERT INTO STATION (name)
+VALUES ('용산역');
+INSERT INTO STATION (name)
+VALUES ('역곡역');
