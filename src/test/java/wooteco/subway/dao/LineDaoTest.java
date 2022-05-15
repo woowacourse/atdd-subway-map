@@ -63,7 +63,7 @@ public class LineDaoTest {
     void findById() {
         Line saveLine = dao.save("선릉역", "green");
 
-        Line response = dao.findById(saveLine.getId());
+        Line response = dao.getById(saveLine.getId());
 
         assertThat(response.getName()).isEqualTo("선릉역");
         assertThat(response.getColor()).isEqualTo("green");
@@ -72,7 +72,7 @@ public class LineDaoTest {
     @Test
     @DisplayName("지하철 노선이 존재하지 않는 경우 조회 불가능")
     void findByIdEmpty() {
-        assertThatThrownBy(() -> dao.findById(1L))
+        assertThatThrownBy(() -> dao.getById(1L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
@@ -100,7 +100,7 @@ public class LineDaoTest {
         Line saveLine = dao.save("선릉역", "yellow");
 
         dao.update(saveLine.getId(), "구의역", "green");
-        Line findLine = dao.findById(saveLine.getId());
+        Line findLine = dao.getById(saveLine.getId());
 
         assertThat(findLine.getName()).isEqualTo("구의역");
         assertThat(findLine.getColor()).isEqualTo("green");

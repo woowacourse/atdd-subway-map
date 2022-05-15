@@ -38,8 +38,8 @@ public class LineService {
         sectionService.save(line.getId(), new SectionRequest(request));
 
         List<Station> stations = List.of(
-                stationDao.findById(request.getUpStationId()),
-                stationDao.findById(request.getDownStationId())
+                stationDao.getById(request.getUpStationId()),
+                stationDao.getById(request.getDownStationId())
         );
         return new LineResponse(line, stations);
     }
@@ -54,7 +54,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        Line line = lineDao.findById(id);
+        Line line = lineDao.getById(id);
         List<Station> stations = sectionService.findStationsByLineId(line.getId());
         return new LineResponse(line, stations);
     }

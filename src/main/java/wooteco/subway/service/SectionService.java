@@ -42,7 +42,7 @@ public class SectionService {
 
         List<Station> stations = new LinkedList<>();
         for (Long id : stationIds) {
-            stations.add(stationDao.findById(id));
+            stations.add(stationDao.getById(id));
         }
 
         return stations;
@@ -93,7 +93,7 @@ public class SectionService {
     }
 
     private void validateSectionRequest(SectionRequest request) {
-        stationDao.findById(request.getUpStationId());
-        stationDao.findById(request.getDownStationId());
+        stationDao.getById(request.getUpStationId());
+        stationDao.getById(request.getDownStationId());
     }
 }

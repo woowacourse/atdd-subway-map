@@ -47,7 +47,7 @@ public class StationDaoTest {
     void findById() {
         Station expected = dao.save("선릉역");
 
-        Station result = dao.findById(expected.getId());
+        Station result = dao.getById(expected.getId());
 
         assertThat(result.getName()).isEqualTo("선릉역");
     }
@@ -55,7 +55,7 @@ public class StationDaoTest {
     @Test
     @DisplayName("존재하지 않는 지하철 역 조회")
     void findByWrongId() {
-        assertThatThrownBy(() -> dao.findById(1L))
+        assertThatThrownBy(() -> dao.getById(1L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 지하철역입니다.");
     }

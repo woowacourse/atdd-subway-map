@@ -42,8 +42,8 @@ class LineServiceTest {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("name", "red", 1L, 2L, 3);
         given(lineDao.isExistName("name")).willReturn(false);
         given(lineDao.save("name", "red")).willReturn(new Line(1L, "name", "red"));
-        given(stationDao.findById(1L)).willReturn(new Station(1L, "name1"));
-        given(stationDao.findById(2L)).willReturn(new Station(1L, "name2"));
+        given(stationDao.getById(1L)).willReturn(new Station(1L, "name1"));
+        given(stationDao.getById(2L)).willReturn(new Station(1L, "name2"));
 
         assertThat(lineService.save(lineCreateRequest)).isNotNull();
     }
@@ -102,7 +102,7 @@ class LineServiceTest {
     @Test
     @DisplayName("지하철 노선을 조회할 수 있다.")
     void findById() {
-        given(lineDao.findById(1L)).willReturn(new Line(1L, "name", "red"));
+        given(lineDao.getById(1L)).willReturn(new Line(1L, "name", "red"));
         given(sectionService.findStationsByLineId(1L)).willReturn(List.of(new Station(1L, "name1"), new Station(2L, "name2")));
 
         LineResponse response = lineService.findById(1L);

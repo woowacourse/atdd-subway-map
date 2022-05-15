@@ -45,9 +45,9 @@ class SectionServiceTest {
                 new Section(2L, 1L, 2L, 3L, 5)
         ));
 
-        given(stationDao.findById(1L)).willReturn(new Station(3L, "name"));
-        given(stationDao.findById(2L)).willReturn(new Station(2L, "name"));
-        given(stationDao.findById(3L)).willReturn(new Station(1L, "name"));
+        given(stationDao.getById(1L)).willReturn(new Station(3L, "name"));
+        given(stationDao.getById(2L)).willReturn(new Station(2L, "name"));
+        given(stationDao.getById(3L)).willReturn(new Station(1L, "name"));
 
         List<Station> stations = sectionService.findStationsByLineId(1L);
 
