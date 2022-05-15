@@ -34,6 +34,14 @@ public class StationService {
             .orElseThrow(() -> new DataNotFoundException("존재하지 않는 역입니다."));
     }
 
+    public List<Station> findBothStationsByIds(Long idA, Long idB) {
+        List<Station> stations = stationDao.findStationsByIds(idA, idB);
+        if (stations.size() != 2) {
+            throw new DataNotFoundException("존재하지 않는 역이 포함되어 있습니다.");
+        }
+        return stations;
+    }
+
     public List<Station> findAll() {
         return stationDao.findAll();
     }

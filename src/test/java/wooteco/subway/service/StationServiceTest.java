@@ -68,7 +68,7 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("id 로 노선을 조회한다.")
+    @DisplayName("id 로 역을 조회한다.")
     void findById() {
         //given
         Station station = new Station("lala");
@@ -92,6 +92,25 @@ class StationServiceTest {
         assertThatThrownBy(() -> stationService.findById(id + 1))
             .isInstanceOf(DataNotFoundException.class)
             .hasMessage("존재하지 않는 역입니다.");
+    }
+
+    @Test
+    @DisplayName("두 id 로 두 역을 조회한다.")
+    void findBothStationsByIds() {
+        //given
+        Station stationA = new Station("lala");
+        Station stationB = new Station("sojukang");
+        Long idA = stationService.createStation(stationA).getId();
+        Long idB = stationService.createStation(stationB).getId();
+
+        //when
+        List<Station> actual = stationService.findBothStationsByIds(idA, idB);
+
+        //then
+        assertAll(
+            () -> assertThat(actual.get(0).getName()).isEqualTo(stationA.getName()),
+            () -> assertThat(actual.get(1).getName()).isEqualTo(stationB.getName())
+        );
     }
 
     @Test

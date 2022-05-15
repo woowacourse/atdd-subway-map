@@ -74,6 +74,13 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
+    public List<Station> findStationsByIds(Long idA, Long idB) {
+        String sql = "select * from station where id = ? or id = ?";
+        return jdbcTemplate.query(sql,
+            (rs, rowNum) -> createStation(rs), idA, idB);
+    }
+
+    @Override
     public List<Station> findAll() {
         String sql = "select * from station";
         return jdbcTemplate.query(sql, (rs, rowNum) -> createStation(rs));

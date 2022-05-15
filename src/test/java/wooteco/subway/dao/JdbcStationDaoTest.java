@@ -91,7 +91,7 @@ class JdbcStationDaoTest {
     }
 
     @Test
-    @DisplayName("id로 station 을 조회한다.")
+    @DisplayName("id 로 station 을 조회한다.")
     void findById() {
         //given
         Station station = stationDao.save(new Station("lala"));
@@ -101,6 +101,23 @@ class JdbcStationDaoTest {
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
+    }
+
+    @Test
+    @DisplayName("두 id 로 두 station 을 조회한다.")
+    void findStationsByIds() {
+        //given
+        Station stationA = stationDao.save(new Station("lala"));
+        Station stationB = stationDao.save(new Station("sojukang"));
+
+        //when
+        List<Station> actual = stationDao.findStationsByIds(stationA.getId(), stationB.getId());
+
+        //then
+        assertAll(
+            () -> assertThat(actual.get(0).getName()).isEqualTo(stationA.getName()),
+            () -> assertThat(actual.get(1).getName()).isEqualTo(stationB.getName())
+        );
     }
 
     @Test

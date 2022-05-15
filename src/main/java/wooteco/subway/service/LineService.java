@@ -22,8 +22,7 @@ public class LineService {
     private final SectionService sectionService;
     private final StationService stationService;
 
-    public LineService(LineDao lineDao, SectionService sectionService,
-        StationService stationService) {
+    public LineService(LineDao lineDao, SectionService sectionService, StationService stationService) {
         this.lineDao = lineDao;
         this.sectionService = sectionService;
         this.stationService = stationService;
@@ -39,8 +38,7 @@ public class LineService {
         sectionService.createSection(SectionDto.of(newLine.getId(), lineDto));
 
         return new Line(newLine,
-            List.of(stationService.findById(lineDto.getUpStationId()),
-                stationService.findById(lineDto.getDownStationId())));
+            stationService.findBothStationsByIds(lineDto.getUpStationId(), lineDto.getDownStationId()));
     }
 
     public List<Line> findAll() {

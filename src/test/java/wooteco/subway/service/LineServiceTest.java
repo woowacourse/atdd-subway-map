@@ -51,7 +51,7 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.createLine(
             new LineDto("7호선", "khaki", upStationId, downStationId, 5)))
             .isInstanceOf(DataNotFoundException.class)
-            .hasMessageContaining("존재하지 않는 역입니다.");
+            .hasMessageContaining("존재하지 않는 역이 포함되어 있습니다.");
     }
 
     private boolean isSameNameAndColor(Line lineA, Line lineB) {
