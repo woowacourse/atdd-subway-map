@@ -77,10 +77,11 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
+        SectionsV2 sections = new SectionsV2(sectionDaoV2.findByLineId(id));
         return new LineResponse(line.getId(),
                 line.getName(),
                 line.getColor(),
-                sortSections(line.getSections()));
+                sortSections(sections));
     }
 
     private List<StationResponse> sortSections(SectionsV2 sections) {

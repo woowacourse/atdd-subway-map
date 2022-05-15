@@ -46,7 +46,7 @@ class LineDaoTest {
         final Long savedId = lineDao.save(line);
 
         // then
-        final Line findLine = lineDao.findOnlyLineById(savedId);
+        final Line findLine = lineDao.findById(savedId);
         assertThat(findLine).extracting("name", "color")
                 .contains("신분당선", "bg-red-600");
     }
@@ -114,7 +114,7 @@ class LineDaoTest {
         lineDao.updateByLine(updateLine);
 
         // then
-        final Line findLine = lineDao.findOnlyLineById(신분당선_id);
+        final Line findLine = lineDao.findById(신분당선_id);
         assertThat(findLine).extracting("name", "color")
                 .contains("다른분당선", "bg-red-600");
     }
