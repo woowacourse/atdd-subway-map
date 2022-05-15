@@ -15,10 +15,14 @@ class SectionBufferTest {
     void setUp() {
         Station station1 = Station.of("1");
         Station station2 = Station.of("2");
-        Section section1 = Section.of(null, station1, station2, 3);
-        Section section2 = Section.of(null, station1, station2, 3);
-        Section section3 = Section.of(null, station1, station2, 3);
-        Section section4 = Section.of(null, station1, station2, 3);
+        Section section1 = new Section.Builder(null, station1, station2, 3)
+                .build();
+        Section section2 = new Section.Builder(null, station1, station2, 3)
+                .build();
+        Section section3 = new Section.Builder(null, station1, station2, 3)
+                .build();
+        Section section4 = new Section.Builder(null, station1, station2, 3)
+                .build();
 
         sectionBuffer = new SectionBuffer();
         sectionBuffer.addToAddBuffer(section1);

@@ -87,7 +87,8 @@ public class SubwayService {
         Station downStation = stationDao.findById(sectionRequest.getDownStationId());
 
         List<Section> presentSections = toSections(sectionDao.findByLineId(lineId));
-        Section newSection = Section.of(line, upStation, downStation, sectionRequest.getDistance());
+        Section newSection = new Section.Builder(line, upStation, downStation, sectionRequest.getDistance())
+                .build();
         SectionBuffer buffer = subway.addSection(presentSections, newSection);
         sectionDao.deleteALl(SectionEntity.of(buffer.getDeleteBuffer()));
         sectionDao.saveAll(SectionEntity.of(buffer.getAddBuffer()));
@@ -119,7 +120,9 @@ public class SubwayService {
         Line line = lineDao.findById(sectionEntity.getLineId());
         Station upStation = stationDao.findById(sectionEntity.getUpStationId());
         Station downStation = stationDao.findById(sectionEntity.getDownStationId());
-        return new Section(sectionEntity.getId(), line, upStation, downStation, sectionEntity.getDistance());
+        return new Section.Builder(line, upStation, downStation, sectionEntity.getDistance())
+                .id(sectionEntity.getId())
+                .build();
     }
 
     private List<Section> toSections(List<SectionEntity> sectionEntities) {

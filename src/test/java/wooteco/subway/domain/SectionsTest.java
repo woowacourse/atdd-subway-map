@@ -19,9 +19,12 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station1, station2, 3);
-        Section section2 = Section.of(line, station2, station3, 3);
-        Section section3 = Section.of(line, station3, station4, 3);
+        Section section1 = new Section.Builder(line, station1, station2, 3)
+                .build();
+        Section section2 = new Section.Builder(line, station2, station3, 3)
+                .build();
+        Section section3 = new Section.Builder(line, station3, station4, 3)
+                .build();
         Sections sections = new Sections(List.of(section1, section2, section3));
         List<Station> stations = sections.extractStations();
 
@@ -45,12 +48,18 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station2, station3, 5);
-        Section section2 = Section.of(line, station6, station7, 5);
-        Section section3 = Section.of(line, station4, station5, 5);
-        Section section4 = Section.of(line, station1, station2, 5);
-        Section section5 = Section.of(line, station3, station4, 5);
-        Section section6 = Section.of(line, station5, station6, 5);
+        Section section1 = new Section.Builder(line, station2, station3, 5)
+                .build();
+        Section section2 = new Section.Builder(line, station6, station7, 5)
+                .build();
+        Section section3 = new Section.Builder(line, station4, station5, 5)
+                .build();
+        Section section4 = new Section.Builder(line, station1, station2, 5)
+                .build();
+        Section section5 = new Section.Builder(line, station3, station4, 5)
+                .build();
+        Section section6 = new Section.Builder(line, station5, station6, 5)
+                .build();
 
         Sections sections = new Sections(List.of(section1, section2, section3, section4, section5, section6));
         List<Section> ordered = sections.getSections();
@@ -72,11 +81,14 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station2, station3, 5);
-        Section section2 = Section.of(line, station1, station2, 5);
+        Section section1 = new Section.Builder(line, station2, station3, 5)
+                .build();
+        Section section2 = new Section.Builder(line, station1, station2, 5)
+                .build();
 
         Sections sections = new Sections(List.of(section1, section2));
-        Section section = Section.of(line, station1, station3, 3);
+        Section section = new Section.Builder(line, station1, station3, 3)
+                .build();
 
         assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -94,11 +106,14 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station2, station3, 5);
-        Section section2 = Section.of(line, station1, station2, 5);
+        Section section1 = new Section.Builder(line, station2, station3, 5)
+                .build();
+        Section section2 = new Section.Builder(line, station1, station2, 5)
+                .build();
 
         Sections sections = new Sections(List.of(section1, section2));
-        Section section = Section.of(line, station4, station5, 3);
+        Section section = new Section.Builder(line, station4, station5, 3)
+                .build();
 
         assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -115,11 +130,14 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station1, station2, 5);
-        Section section2 = Section.of(line, station2, station3, 5);
+        Section section1 = new Section.Builder(line, station1, station2, 5)
+                .build();
+        Section section2 = new Section.Builder(line, station2, station3, 5)
+                .build();
 
         Sections sections = new Sections(List.of(section1, section2));
-        Section section = Section.of(line, station1, station5, 7);
+        Section section = new Section.Builder(line, station1, station5, 7)
+                .build();
 
         assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -136,11 +154,14 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station1, station2, 5);
-        Section section2 = Section.of(line, station2, station3, 5);
+        Section section1 = new Section.Builder(line, station1, station2, 5)
+                .build();
+        Section section2 = new Section.Builder(line, station2, station3, 5)
+                .build();
 
         Sections sections = new Sections(List.of(section1, section2));
-        Section section = Section.of(line, station0, station2, 7);
+        Section section = new Section.Builder(line, station0, station2, 7)
+                .build();
 
         assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -155,9 +176,11 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station1, station3, 5);
+        Section section1 = new Section.Builder(line, station1, station3, 5)
+                .build();
         Sections sections = new Sections(List.of(section1));
-        Section section2 = Section.of(line, station1, station2, 8);
+        Section section2 = new Section.Builder(line, station1, station2, 8)
+                .build();
         assertThatThrownBy(() -> sections.add(section2))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -171,10 +194,12 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station1, station2, 10);
+        Section section1 = new Section.Builder(line, station1, station2, 10)
+                .build();
         Sections sections = new Sections(List.of(section1));
 
-        Section section = Section.of(line, station0, station1, 5);
+        Section section = new Section.Builder(line, station0, station1, 5)
+                .build();
         SectionBuffer sectionBuffer = sections.add(section);
 
         assertThat(sectionBuffer.getAddBuffer().size()).isEqualTo(1);
@@ -190,10 +215,12 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station1, station2, 10);
+        Section section1 = new Section.Builder(line, station1, station2, 10)
+                .build();
         Sections sections = new Sections(List.of(section1));
 
-        Section section = Section.of(line, station2, station3, 5);
+        Section section = new Section.Builder(line, station2, station3, 5)
+                .build();
         SectionBuffer sectionBuffer = sections.add(section);
 
         assertThat(sectionBuffer.getAddBuffer().size()).isEqualTo(1);
@@ -207,7 +234,8 @@ public class SectionsTest {
         Station station2 = Station.of("2");
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
-        Section section1 = Section.of(line, station1, station2, 10);
+        Section section1 = new Section.Builder(line, station1, station2, 10)
+                .build();
         Sections sections = new Sections(List.of(section1));
 
         assertThatThrownBy(() -> sections.delete(station1))
@@ -224,9 +252,12 @@ public class SectionsTest {
         Station station4 = Station.of("4");
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
-        Section section1 = Section.of(line, station1, station2, 10);
-        Section section2 = Section.of(line, station2, station3, 10);
-        Section section3 = Section.of(line, station3, station4, 10);
+        Section section1 = new Section.Builder(line, station1, station2, 10)
+                .build();
+        Section section2 = new Section.Builder(line, station2, station3, 10)
+                .build();
+        Section section3 = new Section.Builder(line, station3, station4, 10)
+                .build();
         Sections sections = new Sections(List.of(section1, section2, section3));
 
         SectionBuffer sectionBuffer = sections.delete(station2);
@@ -254,9 +285,12 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station1, station2, 10);
-        Section section2 = Section.of(line, station2, station3, 10);
-        Section section3 = Section.of(line, station3, station4, 10);
+        Section section1 = new Section.Builder(line, station1, station2, 10)
+                .build();
+        Section section2 = new Section.Builder(line, station2, station3, 10)
+                .build();
+        Section section3 = new Section.Builder(line, station3, station4, 10)
+                .build();
         Sections sections = new Sections(List.of(section1, section2, section3));
 
         SectionBuffer sectionBuffer = sections.delete(station1);
@@ -278,9 +312,12 @@ public class SectionsTest {
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
-        Section section1 = Section.of(line, station1, station2, 10);
-        Section section2 = Section.of(line, station2, station3, 10);
-        Section section3 = Section.of(line, station3, station4, 10);
+        Section section1 = new Section.Builder(line, station1, station2, 10)
+                .build();
+        Section section2 = new Section.Builder(line, station2, station3, 10)
+                .build();
+        Section section3 = new Section.Builder(line, station3, station4, 10)
+                .build();
         Sections sections = new Sections(List.of(section1, section2, section3));
 
         SectionBuffer sectionBuffer = sections.delete(station4);

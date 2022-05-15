@@ -16,42 +16,56 @@ public class Section {
     private Station downStation;
     private Integer distance;
 
-    public Section(Long id, Line line, Station upStation, Station downStation, Integer distance) {
-        this.id = id;
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
+    public static class Builder {
 
-    public static Section of(Long id, Line line, Station upStation, Station downStation, Integer distance) {
-        return new Section(id, line, upStation, downStation, distance);
-    }
+        private final Line line;
+        private final Station upStation;
+        private final Station downStation;
+        private final Integer distance;
 
-    public static Section of(Long id, Section other) {
-        return Section.of(id, other.line, other.upStation, other.downStation, other.distance);
-    }
+        private Long id = null;
 
-    public static Section of(Line line, Station upStation, Station downStation, Integer distance) {
-        validate(upStation, downStation, distance);
-        return Section.of(null, line, upStation, downStation, distance);
-    }
+        public Builder(Line line, Station upStation, Station downStation, Integer distance) {
+            this.line = line;
+            this.upStation = upStation;
+            this.downStation = downStation;
+            this.distance = distance;
+        }
 
-    private static void validate(Station upStation, Station downStation, Integer distance) {
-        checkUpStationAndDownStationIsDifferent(upStation, downStation);
-        checkDistanceValueIsValid(distance);
-    }
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
 
-    private static void checkDistanceValueIsValid(Integer distance) {
-        if (distance < MINIMUM_DISTANCE) {
-            throw new IllegalArgumentException(UNVALID_DISTANCE_EXCEPTION);
+        public Section build() {
+            validate(this);
+            return new Section(this);
+        }
+
+        private void validate(Builder builder) {
+            checkUpStationAndDownStationIsDifferent(builder);
+            checkDistanceValueIsValid(builder);
+        }
+
+        private void checkDistanceValueIsValid(Builder builder) {
+            if (builder.distance < MINIMUM_DISTANCE) {
+                throw new IllegalArgumentException(UNVALID_DISTANCE_EXCEPTION);
+            }
+        }
+
+        private void checkUpStationAndDownStationIsDifferent(Builder builder) {
+            if (builder.upStation.equals(downStation)) {
+                throw new IllegalArgumentException(UNVALID_STATION_EXCEPTION);
+            }
         }
     }
 
-    private static void checkUpStationAndDownStationIsDifferent(Station upStation, Station downStation) {
-        if (upStation.equals(downStation)) {
-            throw new IllegalArgumentException(UNVALID_STATION_EXCEPTION);
-        }
+    private Section(Builder builder) {
+        id = builder.id;
+        line = builder.line;
+        upStation = builder.upStation;
+        downStation = builder.downStation;
+        distance = builder.distance;;
     }
 
     public Long getId() {
@@ -101,21 +115,27 @@ public class Section {
     public List<Section> divide(Section newSection) {
         List<Section> parts = new ArrayList<>();
         if (isSameUpStation(newSection)) {
-            parts.add(Section.of(line, upStation, newSection.downStation, newSection.distance));
-            parts.add(Section.of(line, newSection.downStation, downStation, distance - newSection.distance));
+            parts.add(new Section.Builder(line, upStation, newSection.downStation, newSection.distance)
+                    .build());
+            parts.add(new Section.Builder(line, newSection.downStation, downStation, distance - newSection.distance)
+                    .build());
             return parts;
         }
-        parts.add(Section.of(line, upStation, newSection.upStation, newSection.distance));
-        parts.add(Section.of(line, newSection.upStation, downStation, distance - newSection.distance));
+        parts.add(new Section.Builder(line, upStation, newSection.upStation, newSection.distance)
+                .build());
+        parts.add(new Section.Builder(line, newSection.upStation, downStation, distance - newSection.distance)
+                .build());
         return parts;
     }
 
     public Section merge(Section other) {
         checkAbleToMerge(other);
         if (isAbleToLinkOnDownStation(other)) {
-            return new Section(null, line, upStation, other.downStation, distance + other.distance);
+            return new Section.Builder(line, upStation, other.downStation, distance + other.distance)
+                    .build();
         }
-        return new Section(null, line, other.upStation, downStation, distance + other.distance);
+        return new Section.Builder(line, other.upStation, downStation, distance + other.distance)
+                .build();
     }
 
     private void checkAbleToMerge(Section other) {

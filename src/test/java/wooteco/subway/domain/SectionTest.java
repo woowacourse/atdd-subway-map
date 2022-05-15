@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,20 +12,25 @@ public class SectionTest {
     void sameUpStationAndDownStation() {
         Station station1 = Station.of("1");
         Line line = new Line.Builder("2호선", "초록색")
-                .build();;
+                .build();
+        ;
 
-        Assertions.assertThatThrownBy(() -> Section.of(line, station1, station1, 3))
+        assertThatThrownBy(() -> new Section.Builder(line, station1, station1, 3)
+                        .build())
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("거리가 양의 정수가 아니면 예외가 발생한다")
     @Test
-    void unvalidDistanceValue() {Station station1 = Station.of("1");
+    void unvalidDistanceValue() {
+        Station station1 = Station.of("1");
         Station station2 = Station.of("2");
         Line line = new Line.Builder("2호선", "초록색")
-                .build();;
+                .build();
+        ;
 
-        Assertions.assertThatThrownBy(() -> Section.of(line, station1, station2, -3))
+        assertThatThrownBy(() -> new Section.Builder(line, station1, station2, -3)
+                        .build())
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
