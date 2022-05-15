@@ -57,8 +57,8 @@ public class AddSectionRequestValidator {
         return !lineRepository.existById(lineId);
     }
 
-    private boolean isNotFoundStation(Long upStationId) {
-        return !stationRepository.existById(upStationId);
+    private boolean isNotFoundStation(Long stationId) {
+        return !stationRepository.existById(stationId);
     }
 
     private boolean isDuplicateSection(Long lineId, Long upStationId, Long downStationId) {

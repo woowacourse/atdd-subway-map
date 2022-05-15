@@ -13,15 +13,15 @@ import wooteco.subway.repository.StationRepository;
 public class DeleteSectionRequestValidator {
 
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
     public DeleteSectionRequestValidator(LineRepository lineRepository,
-                                         SectionRepository sectionRepository,
-                                         StationRepository stationRepository) {
+                                         StationRepository stationRepository,
+                                         SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public void validate(Long lineId, DeleteSectionRequest request) {
