@@ -16,6 +16,9 @@ import wooteco.subway.dto.SectionRequest;
 @Service
 public class SectionService {
 
+    private static final int MATCHING_STATION_SIZE = 1;
+    private static final int DELETABLE_SECTION_SIZE = 2;
+
     private final StationDao stationDao;
     private final SectionDao sectionDao;
 
@@ -49,7 +52,7 @@ public class SectionService {
                 .filter(stationIds::contains)
                 .count();
 
-        if (matchingStations != 1) {
+        if (matchingStations != MATCHING_STATION_SIZE) {
             throw new IllegalArgumentException("상행 종점과 하행 종점 중 하나의 종점만 포함되어야 합니다.");
         }
     }
@@ -79,7 +82,7 @@ public class SectionService {
     }
 
     private void mergeSectionsIfNecessary(Sections sectionsToDelete) {
-        if (sectionsToDelete.size() == 2) {
+        if (sectionsToDelete.size() == DELETABLE_SECTION_SIZE) {
             Section mergedSection = sectionsToDelete.merge();
             sectionDao.save(mergedSection);
         }

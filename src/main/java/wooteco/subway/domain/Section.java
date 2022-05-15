@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Section {
 
-    public static final int MIN_DISTANCE = 1;
+    private static final int MIN_DISTANCE = 1;
 
     private final Long id;
     private final Long lineId;

@@ -7,6 +7,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 public class Sections {
 
+    private static final int UP_STATION_SIZE = 1;
+    private static final int UP_STATION_INDEX = 0;
+    private static final int MINIMUM_SECTION_SIZE = 1;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -19,7 +23,7 @@ public class Sections {
         Long upStationId = getUpStationId(sections);
         stationIds.add(upStationId);
 
-        while (stationIds.size() != sections.size() + 1) {
+        while (stationIds.size() != sections.size() + UP_STATION_SIZE) {
             Long downStationId = getDownStationId(sections, upStationId);
             stationIds.add(downStationId);
             upStationId = downStationId;
@@ -38,7 +42,7 @@ public class Sections {
                 .collect(Collectors.toList());
 
         upStationIds.removeAll(downStationIds);
-        return upStationIds.get(0);
+        return upStationIds.get(UP_STATION_INDEX);
     }
 
     private Long getDownStationId(List<Section> sections, Long upStationId) {
@@ -59,7 +63,7 @@ public class Sections {
     }
 
     private void validateSectionSize(List<Section> sections) {
-        if (sections.size() == 1) {
+        if (sections.size() == MINIMUM_SECTION_SIZE) {
             throw new IllegalArgumentException("구간을 삭제할 수 없습니다.");
         }
     }
