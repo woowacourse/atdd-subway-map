@@ -125,16 +125,14 @@ public class Sections {
 
     public boolean isEndStation(Long stationId) {
         long matchedCount = sections.stream()
-                .filter(it -> it.isSameUpStationId(stationId)
-                        || it.isSameDownStationId(stationId))
+                .filter(it -> it.hasAnySameStationId(stationId))
                 .count();
         return matchedCount == ONE;
     }
 
     public Long findEndSectionIdToRemove(Long stationId) {
         return sections.stream()
-                .filter(it -> it.isSameUpStationId(stationId)
-                        || it.isSameDownStationId(stationId))
+                .filter(it -> it.hasAnySameStationId(stationId))
                 .map(Section::getId)
                 .findFirst()
                 .orElseThrow(IllegalStateException::new);
@@ -159,8 +157,7 @@ public class Sections {
 
     public List<Long> findSectionIdsToRemove(Long stationId) {
         return sections.stream()
-                .filter(it -> it.isSameUpStationId(stationId)
-                        || it.isSameDownStationId(stationId))
+                .filter(it -> it.hasAnySameStationId(stationId))
                 .map(Section::getId)
                 .collect(Collectors.toList());
     }
@@ -220,7 +217,6 @@ public class Sections {
                     .findFirst();
             nextStationId.ifPresent(stationIds::add);
         }
-
         return stationIds;
     }
 

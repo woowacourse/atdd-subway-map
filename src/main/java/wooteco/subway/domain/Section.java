@@ -44,6 +44,11 @@ public class Section {
         return this.downStationId.equals(section.downStationId);
     }
 
+    public boolean hasAnySameStationId(Long stationId) {
+        return this.upStationId.equals(stationId)
+                || this.downStationId.equals(stationId);
+    }
+
     public boolean isSameUpStationId(Long upStationId) {
         return this.upStationId.equals(upStationId);
     }
