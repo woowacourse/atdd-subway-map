@@ -9,6 +9,7 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import wooteco.subway.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private LineRequest 신분당선;
 
     private ValidatableResponse getLineById(int lineId) {
         return RestAssured.given().log().all()
@@ -43,14 +46,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    @BeforeEach
+    void beforeEach() {
+        신분당선 = new LineRequest("신분당선", "bg-red-600", postStationId(대흥역), postStationId(공덕역), 10);
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given & when
-        LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", postStationId(대흥역), postStationId(공덕역), 10);
-
-        // when
         ExtractableResponse<Response> response = postLineResponse(신분당선);
 
         // then
@@ -62,8 +66,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", postStationId(대흥역), postStationId(공덕역), 10);
         postLineResponse(신분당선);
 
         // when
@@ -78,8 +80,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", postStationId(대흥역), postStationId(공덕역), 10);
         postLineResponse(신분당선);
 
         // when
@@ -94,8 +94,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", postStationId(대흥역), postStationId(공덕역), 10);
         ExtractableResponse<Response> createResponse1 = postLineResponse(신분당선);
 
         StationRequest 광흥창역 = new StationRequest("광흥창역");
@@ -122,8 +120,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", postStationId(대흥역), postStationId(공덕역), 10);
         int expectedLineId = Integer.parseInt(postLineResponse(신분당선).header("Location").split("/")[2]);
 
         // when & then
@@ -135,8 +131,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", postStationId(대흥역), postStationId(공덕역), 10);
         int expectedLineId = Integer.parseInt(postLineResponse(신분당선).header("Location").split("/")[2]);
 
         // when
@@ -158,8 +152,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", postStationId(대흥역), postStationId(공덕역), 10);
         ExtractableResponse<Response> createResponse = postLineResponse(신분당선);
 
         // when
