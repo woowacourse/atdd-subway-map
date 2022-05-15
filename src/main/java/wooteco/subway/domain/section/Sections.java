@@ -78,8 +78,8 @@ public class Sections {
         return value.size() == 1;
     }
 
-    public boolean isEndSection(Section section) {
-        return isNewUpperEndSection(section) || isNewLowerEndSection(section);
+    public boolean isNewEndSection(Section newSection) {
+        return isNewUpperEndSection(newSection) || isNewLowerEndSection(newSection);
     }
 
     private boolean isNewUpperEndSection(Section section) {
@@ -109,14 +109,6 @@ public class Sections {
     public boolean isRegistered(Station station) {
         return value.stream()
                 .anyMatch(section -> section.hasStationOf(station));
-    }
-
-    public boolean isRegisteredAsUpStation(Section section) {
-        return isRegistered(section.getUpStation());
-    }
-
-    public boolean isRegisteredAsDownStation(Section section) {
-        return isRegistered(section.getDownStation());
     }
 
     public boolean checkMiddleStation(Station station) {

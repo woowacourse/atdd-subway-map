@@ -24,7 +24,7 @@ public class SectionsManager {
     public Sections save(Section newSection) {
         validateSingleRegisteredStation(newSection);
         List<Section> sections = this.sections.toSortedList();
-        if (!this.sections.isEndSection(newSection)) {
+        if (!this.sections.isNewEndSection(newSection)) {
             updateOriginalSection(newSection, sections);
         }
         sections.add(newSection);
@@ -32,7 +32,7 @@ public class SectionsManager {
     }
 
     private void updateOriginalSection(Section newSection, List<Section> sections) {
-        boolean isRegisteredUpStation = this.sections.isRegisteredAsUpStation(newSection);
+        boolean isRegisteredUpStation = this.sections.isRegistered(newSection.getUpStation());
         if (isRegisteredUpStation) {
             updateLowerSection(newSection, sections);
             return;
@@ -59,8 +59,8 @@ public class SectionsManager {
     }
 
     private void validateSingleRegisteredStation(Section section) {
-        boolean isRegisteredUpStation = sections.isRegisteredAsUpStation(section);
-        boolean isRegisteredDownStation = sections.isRegisteredAsDownStation(section);
+        boolean isRegisteredUpStation = sections.isRegistered(section.getUpStation());
+        boolean isRegisteredDownStation = sections.isRegistered(section.getDownStation());
         if (isRegisteredUpStation && isRegisteredDownStation) {
             throw new IllegalArgumentException(ALL_STATIONS_REGISTERED_EXCEPTION);
         }
