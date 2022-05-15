@@ -8,6 +8,7 @@ import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotExistException;
 
 @Service
 public class SectionService {
@@ -53,7 +54,7 @@ public class SectionService {
         return stations.stream()
                 .filter(station -> station.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("지하철역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new DataNotExistException("지하철역을 찾을 수 없습니다."));
     }
 
     public List<Section> findAllByLineId(Long lineId) {

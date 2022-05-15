@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.SubwayException;
 
 public class SectionsTest {
 
@@ -35,7 +37,7 @@ public class SectionsTest {
     @Test
     void createEmptySections() {
         assertThatThrownBy(() -> new Sections(new ArrayList<>()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotExistException.class)
                 .hasMessage("구간이 존재하지 않습니다.");
     }
 
@@ -52,7 +54,7 @@ public class SectionsTest {
         Section newSection = new Section(1L, 4L, 5L, 5);
 
         assertThatThrownBy(() -> SECTIONS.validateSectionInLine(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("상행역과 하행역이 모두 노선에 포함되어있지 않습니다.");
     }
 
@@ -62,7 +64,7 @@ public class SectionsTest {
         Section newSection = new Section(1L, 1L, 2L, 5);
 
         assertThatThrownBy(() -> SECTIONS.validateSectionInLine(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("상행역과 하행역이 이미 모두 노선에 포함되어 있습니다.");
     }
 
@@ -79,7 +81,7 @@ public class SectionsTest {
         Section newSection = new Section(1L, 1L, 4L, 4);
 
         assertThatThrownBy(() -> SECTIONS.validateSectionDistance(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("구간의 길이는 기존 역 사이의 길이보다 작아야합니다.");
     }
 
@@ -111,7 +113,7 @@ public class SectionsTest {
     @Test
     void validateDeleteForNotExistStation() {
         assertThatThrownBy(() -> SECTIONS.validateDelete(4L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotExistException.class)
                 .hasMessage("해당 노선에 등록되지 않은 역입니다.");
     }
 
@@ -123,7 +125,7 @@ public class SectionsTest {
         ));
 
         assertThatThrownBy(() -> sections.validateDelete(2L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("구간이 하나인 노선에서 마지막 구간을 삭제할 수 없습니다.");
     }
 

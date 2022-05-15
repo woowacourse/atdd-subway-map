@@ -9,6 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.station.StationMockDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.SubwayException;
 
 class StationServiceTest {
 
@@ -36,7 +38,7 @@ class StationServiceTest {
         stationService.save(STATION);
 
         assertThatThrownBy(() -> stationService.save(STATION))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("지하철역 이름이 중복됩니다.");
     }
 
@@ -53,7 +55,7 @@ class StationServiceTest {
     @Test
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotExistException.class)
                 .hasMessage("존재하지 않는 지하철역입니다.");
     }
 }

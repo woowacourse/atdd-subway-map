@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.SubwayException;
 
 public class Sections {
 
@@ -17,7 +19,7 @@ public class Sections {
 
     private void validateEmpty(List<Section> sections) {
         if (sections.isEmpty()) {
-            throw new IllegalArgumentException("구간이 존재하지 않습니다.");
+            throw new DataNotExistException("구간이 존재하지 않습니다.");
         }
     }
 
@@ -40,7 +42,7 @@ public class Sections {
                 .map(Section::getUpStationId)
                 .filter(sectionId -> !downStationIds.contains(sectionId))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("상행종점을 찾을 수 없습니다."));
+                .orElseThrow(() -> new DataNotExistException("상행종점을 찾을 수 없습니다."));
     }
 
     private Set<Long> getDownStationIds(List<Section> sections) {
@@ -53,7 +55,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(topStationId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("다음 역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new DataNotExistException("다음 역을 찾을 수 없습니다."));
     }
 
     public void validateSectionInLine(Section newSection) {
@@ -67,19 +69,19 @@ public class Sections {
 
     private void validateBothStationsIncludeInLine(boolean existUpStation, boolean existDownStation) {
         if (!(existUpStation || existDownStation)) {
-            throw new IllegalArgumentException("상행역과 하행역이 모두 노선에 포함되어있지 않습니다.");
+            throw new SubwayException("상행역과 하행역이 모두 노선에 포함되어있지 않습니다.");
         }
     }
 
     private void validateBothStationsExcludeInLine(boolean existUpStation, boolean existDownStation) {
         if (existUpStation && existDownStation) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 모두 노선에 포함되어 있습니다.");
+            throw new SubwayException("상행역과 하행역이 이미 모두 노선에 포함되어 있습니다.");
         }
     }
 
     public void validateSectionDistance(Section newSection) {
         if (newSection.getDistance() >= getExistSection(newSection).getDistance()) {
-            throw new IllegalArgumentException("구간의 길이는 기존 역 사이의 길이보다 작아야합니다.");
+            throw new SubwayException("구간의 길이는 기존 역 사이의 길이보다 작아야합니다.");
         }
     }
 
@@ -88,7 +90,7 @@ public class Sections {
                 .filter(section -> section.getUpStationId().equals(newSection.getUpStationId())
                         || section.getDownStationId().equals(newSection.getDownStationId()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구간입니다."));
+                .orElseThrow(() -> new DataNotExistException("존재하지 않는 구간입니다."));
     }
 
     public Section getUpdatedSectionForSave(Section newSection) {
@@ -134,13 +136,13 @@ public class Sections {
 
     private void validateNotExistStation(Long stationId) {
         if (!findStationIds().contains(stationId)) {
-            throw new IllegalArgumentException("해당 노선에 등록되지 않은 역입니다.");
+            throw new DataNotExistException("해당 노선에 등록되지 않은 역입니다.");
         }
     }
 
     private void validateLastSection() {
         if (sections.size() == 1) {
-            throw new IllegalArgumentException("구간이 하나인 노선에서 마지막 구간을 삭제할 수 없습니다.");
+            throw new SubwayException("구간이 하나인 노선에서 마지막 구간을 삭제할 수 없습니다.");
         }
     }
 
@@ -169,7 +171,7 @@ public class Sections {
         return sections.stream()
                 .filter(sectionPredicate)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("역이 포함된 구간을 찾을 수 없습니다."));
+                .orElseThrow(() -> new DataNotExistException("역이 포함된 구간을 찾을 수 없습니다."));
     }
 
     public List<Long> findStationIds() {

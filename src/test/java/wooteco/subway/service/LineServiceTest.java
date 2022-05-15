@@ -11,6 +11,8 @@ import wooteco.subway.dao.line.LineMockDao;
 import wooteco.subway.dao.section.SectionMockDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.SubwayException;
 
 class LineServiceTest {
 
@@ -42,7 +44,7 @@ class LineServiceTest {
 
         LineRequest sameNameLine = new LineRequest("신분당선", "bg-green-600", 1L, 2L, 10);
         assertThatThrownBy(() -> lineService.save(sameNameLine))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("지하철 노선 이름이 중복됩니다.");
     }
 
@@ -53,7 +55,7 @@ class LineServiceTest {
 
         LineRequest sameColorLine = new LineRequest("다른분당선", "bg-red-600", 1L, 2L, 10);
         assertThatThrownBy(() -> lineService.save(sameColorLine))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("지하철 노선 색상이 중복됩니다.");
     }
 
@@ -70,7 +72,7 @@ class LineServiceTest {
     @Test
     void findByIdNotExistLine() {
         assertThatThrownBy(() -> lineService.findById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotExistException.class)
                 .hasMessage("존재하지 않는 지하철 노선입니다.");
     }
 
@@ -87,7 +89,7 @@ class LineServiceTest {
     @Test
     void updateNotExistLine() {
         assertThatThrownBy(() -> lineService.update(new Line(1L, "다른분당선", "bg-green-600")))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotExistException.class)
                 .hasMessage("존재하지 않는 지하철 노선입니다.");
     }
 
@@ -98,7 +100,7 @@ class LineServiceTest {
         lineService.save(new LineRequest("다른분당선", "bg-green-600", 1L, 2L, 10));
 
         assertThatThrownBy(() -> lineService.update(new Line(lineId, "다른분당선", "bg-green-600")))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("지하철 노선 이름이 중복됩니다.");
     }
 
@@ -109,7 +111,7 @@ class LineServiceTest {
         lineService.save(new LineRequest("다른분당선", "bg-green-600", 1L, 2L, 10));
 
         assertThatThrownBy(() -> lineService.update(new Line(lineId, "신분당선", "bg-green-600")))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("지하철 노선 색상이 중복됩니다.");
     }
 
@@ -126,7 +128,7 @@ class LineServiceTest {
     @Test
     void deleteNotExistLine() {
         assertThatThrownBy(() -> lineService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotExistException.class)
                 .hasMessage("존재하지 않는 지하철 노선입니다.");
     }
 }

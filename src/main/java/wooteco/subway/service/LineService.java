@@ -7,6 +7,8 @@ import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.SubwayException;
 
 @Service
 public class LineService {
@@ -35,13 +37,13 @@ public class LineService {
 
     private void validateNameForSave(Line line) {
         if (lineDao.existLineByName(line.getName())) {
-            throw new IllegalArgumentException("지하철 노선 이름이 중복됩니다.");
+            throw new SubwayException("지하철 노선 이름이 중복됩니다.");
         }
     }
 
     private void validateColorForSave(Line line) {
         if (lineDao.existLineByColor(line.getColor())) {
-            throw new IllegalArgumentException("지하철 노선 색상이 중복됩니다.");
+            throw new SubwayException("지하철 노선 색상이 중복됩니다.");
         }
     }
 
@@ -56,7 +58,7 @@ public class LineService {
 
     private void validateExistLine(Long id) {
         if (!lineDao.existLineById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
+            throw new DataNotExistException("존재하지 않는 지하철 노선입니다.");
         }
     }
 
@@ -73,7 +75,7 @@ public class LineService {
                 .filter(it -> !it.getId().equals(line.getId()))
                 .findAny()
                 .ifPresent(ignored -> {
-                    throw new IllegalArgumentException("지하철 노선 이름이 중복됩니다.");
+                    throw new SubwayException("지하철 노선 이름이 중복됩니다.");
                 });
     }
 
@@ -83,7 +85,7 @@ public class LineService {
                 .filter(it -> !it.getId().equals(line.getId()))
                 .findAny()
                 .ifPresent(ignored -> {
-                    throw new IllegalArgumentException("지하철 노선 색상이 중복됩니다.");
+                    throw new SubwayException("지하철 노선 색상이 중복됩니다.");
                 });
     }
 

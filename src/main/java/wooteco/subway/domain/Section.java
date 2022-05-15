@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.SubwayException;
+
 public class Section {
 
     private final Long id;
@@ -24,13 +26,13 @@ public class Section {
 
     private void validateSameStation(Long upStationId, Long downStationId) {
         if (upStationId.equals(downStationId)) {
-            throw new IllegalArgumentException("상행역과 하행역은 같을 수 없습니다.");
+            throw new SubwayException("상행역과 하행역은 같을 수 없습니다.");
         }
     }
 
     private void validateDistance(int distance) {
         if (distance <= 0) {
-            throw new IllegalArgumentException("구간의 길이는 양수여야 합니다.");
+            throw new SubwayException("구간의 길이는 양수여야 합니다.");
         }
     }
 
