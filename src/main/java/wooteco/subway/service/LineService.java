@@ -44,7 +44,7 @@ public class LineService {
         Line createdLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         sectionDao.save(new Section(createdLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
             lineRequest.getDistance()));
-        List<StationResponse> stationResponses = generateStationResponsesByLineRequest(lineRequest);
+        List<StationResponse> stationResponses = generateStationResponses(lineRequest);
         return new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(), stationResponses);
     }
 
@@ -76,7 +76,7 @@ public class LineService {
         lineDao.delete(line);
     }
 
-    private List<StationResponse> generateStationResponsesByLineRequest(LineRequest lineRequest) {
+    private List<StationResponse> generateStationResponses(LineRequest lineRequest) {
         Optional<Station> upStation = stationDao.findById(lineRequest.getUpStationId());
         Optional<Station> downStation = stationDao.findById(lineRequest.getDownStationId());
         if (upStation.isEmpty() || downStation.isEmpty()) {
