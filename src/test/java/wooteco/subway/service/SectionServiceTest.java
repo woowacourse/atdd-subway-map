@@ -137,4 +137,76 @@ public class SectionServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("[ERROR] 상,하행 역이 구간에 모두 포함된 경우 추가할 수 없습니다.");
     }
+
+    @DisplayName("기존에 존재하는 노선 구간에 하행 종점 지하철 역을 삭제한다.")
+    @Test
+    void deleteSectionInLine_downStation() {
+        // given
+        given(sectionDao.findByLineId(1L))
+            .willReturn(new Sections(
+                List.of(new Section(1L,1L,1L, 2L, 10),
+                    new Section(2L,1L,2L, 3L, 10)))
+            );
+        sectionService.deleteSection(1L, 3L);
+        // then
+        verify(sectionDao).delete(2L);
+    }
+
+    @DisplayName("기존에 존재하는 노선 구간에 상행 종점 지하철 역을 삭제한다.")
+    @Test
+    void deleteSectionInLine_upStation() {
+        // given
+        given(sectionDao.findByLineId(1L))
+            .willReturn(new Sections(
+                List.of(new Section(1L,1L,1L, 2L, 10),
+                    new Section(2L,1L,2L, 3L, 10)))
+            );
+        sectionService.deleteSection(1L, 1L);
+        // then
+        verify(sectionDao).delete(1L);
+    }
+
+    @DisplayName("기존에 존재하는 노선 구간에 중간에 있는 역을 삭제할 경우 재배치된다.")
+    @Test
+    void deleteSectionInLine_wayPoint() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
+        given(sectionDao.findByLineId(1L))
+            .willReturn(new Sections(
+                List.of(new Section(1L,1L,1L, 2L, 10),
+                    new Section(2L,1L,2L, 3L, 10)))
+            );
+        sectionService.deleteSection(1L, 2L);
+        // then
+        verify(sectionDao).delete(1L);
+        verify(sectionDao).delete(2L);
+        verify(sectionDao).save(new Section(1L, 1L, 3L, 20));
+    }
+
+    @DisplayName("노선에 등록된 구간이 하나일 때 노선을 삭제한다면 예외를 발생한다.")
+    @Test
+    void deleteSectionInLine_sectionMinimumSize_exception() {
+        // given
+        given(sectionDao.findByLineId(1L))
+            .willReturn(new Sections(
+                List.of(new Section(1L,1L,1L, 2L, 10)))
+            );
+        assertThatThrownBy(() -> sectionService.deleteSection(1L, 2L))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("[ERROR] 최소 하나 이상의 구간이 존재하여야합니다.");
+    }
+
+    @DisplayName("노선에 등록된 구간에 등록되지 않은 지하철 역을 삭제한다면 예외를 발생한다.")
+    @Test
+    void deleteSectionInLine_noExistStationId_exception() {
+        // given
+        given(sectionDao.findByLineId(1L))
+            .willReturn(new Sections(
+                List.of(new Section(1L,1L,1L, 2L, 10),
+                    new Section(2L,1L,2L, 3L, 10)))
+            );
+        assertThatThrownBy(() -> sectionService.deleteSection(1L, 5L))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("[ERROR] 구간으로 등록되지 않은 지하철역 정보입니다.");
+    }
 }
