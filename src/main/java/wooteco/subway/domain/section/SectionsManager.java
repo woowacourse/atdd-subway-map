@@ -11,28 +11,28 @@ public class SectionsManager {
     private static final String ALL_STATIONS_REGISTERED_EXCEPTION = "이미 노선에 등록된 지하철역들입니다.";
     private static final String NO_STATION_REGISTERED_EXCEPTION = "적어도 하나의 지하철역은 이미 노선에 등록되어 있어야 합니다.";
 
-    private final Sections2 value;
+    private final Sections sections;
 
-    private SectionsManager(Sections2 value) {
-        this.value = value;
+    private SectionsManager(Sections sections) {
+        this.sections = sections;
     }
 
     public SectionsManager(List<Section> value) {
-        this(new Sections2(value));
+        this(new Sections(value));
     }
 
-    public Sections2 save(Section newSection) {
+    public Sections save(Section newSection) {
         validateSingleRegisteredStation(newSection);
-        List<Section> sections = value.toSortedList();
+        List<Section> sections = this.sections.toSortedList();
         if (!isEndSection(newSection)) {
             updateOriginalSection(newSection, sections);
         }
         sections.add(newSection);
-        return new Sections2(sections);
+        return new Sections(sections);
     }
 
     private void updateOriginalSection(Section newSection, List<Section> sections) {
-        boolean isRegisteredUpStation = value.isRegisteredAsUpStation(newSection);
+        boolean isRegisteredUpStation = this.sections.isRegisteredAsUpStation(newSection);
         if (isRegisteredUpStation) {
             updateLowerSection(newSection, sections);
             return;
@@ -41,7 +41,7 @@ public class SectionsManager {
     }
 
     private void updateUpperSection(Section newSection, List<Section> sections) {
-        Section oldSection = value.findUpperSectionOfStation(newSection.getDownStation());
+        Section oldSection = this.sections.findUpperSectionOfStation(newSection.getDownStation());
         sections.remove(oldSection);
         Section updatedSection = new Section(oldSection.getUpStation(),
                 newSection.getUpStation(),
@@ -50,7 +50,7 @@ public class SectionsManager {
     }
 
     private void updateLowerSection(Section newSection, List<Section> sections) {
-        Section oldSection = value.findLowerSectionOfStation(newSection.getUpStation());
+        Section oldSection = this.sections.findLowerSectionOfStation(newSection.getUpStation());
         sections.remove(oldSection);
         Section updatedSection = new Section(newSection.getDownStation(),
                 oldSection.getDownStation(),
@@ -59,8 +59,8 @@ public class SectionsManager {
     }
 
     private void validateSingleRegisteredStation(Section section) {
-        boolean isRegisteredUpStation = value.isRegisteredAsUpStation(section);
-        boolean isRegisteredDownStation = value.isRegisteredAsDownStation(section);
+        boolean isRegisteredUpStation = sections.isRegisteredAsUpStation(section);
+        boolean isRegisteredDownStation = sections.isRegisteredAsDownStation(section);
         if (isRegisteredUpStation && isRegisteredDownStation) {
             throw new IllegalArgumentException(ALL_STATIONS_REGISTERED_EXCEPTION);
         }
@@ -74,44 +74,44 @@ public class SectionsManager {
     }
 
     private boolean isNewUpperEndSection(Section section) {
-        Section currentUpperEndSection = value.getUpperEndSection();
+        Section currentUpperEndSection = sections.getUpperEndSection();
         return currentUpperEndSection.hasUpStationOf(section.getDownStation());
     }
 
     private boolean isNewLowerEndSection(Section section) {
-        Section currentLowerEndSection = value.getLowerEndSection();
+        Section currentLowerEndSection = sections.getLowerEndSection();
         return currentLowerEndSection.hasDownStationOf(section.getUpStation());
     }
 
-    public Sections2 delete(Station station) {
+    public Sections delete(Station station) {
         validateRegisteredStation(station);
         validateNotLastSection();
-        if (value.checkMiddleStation(station)) {
+        if (sections.checkMiddleStation(station)) {
             return removeMiddleStation(station);
         }
         return removeEndStation(station);
     }
 
     private void validateRegisteredStation(Station station) {
-        if (!value.isRegistered(station)) {
+        if (!sections.isRegistered(station)) {
             throw new IllegalArgumentException(STATION_NOT_REGISTERED_EXCEPTION);
         }
     }
 
     private void validateNotLastSection() {
-        if (value.hasSingleSection()) {
+        if (sections.hasSingleSection()) {
             throw new IllegalArgumentException(LAST_SECTION_EXCEPTION);
         }
     }
 
-    private Sections2 removeMiddleStation(Station station) {
-        List<Section> sections = value.toSortedList();
-        Section upperSection = value.findUpperSectionOfStation(station);
-        Section lowerSection = value.findLowerSectionOfStation(station);
+    private Sections removeMiddleStation(Station station) {
+        List<Section> sections = this.sections.toSortedList();
+        Section upperSection = this.sections.findUpperSectionOfStation(station);
+        Section lowerSection = this.sections.findLowerSectionOfStation(station);
 
         sections.removeAll(List.of(upperSection, lowerSection));
         sections.add(toConnectedSection(upperSection, lowerSection));
-        return new Sections2(sections);
+        return new Sections(sections);
     }
 
     private Section toConnectedSection(Section upperSection, Section lowerSection) {
@@ -120,28 +120,27 @@ public class SectionsManager {
                 upperSection.toConnectedDistance(lowerSection));
     }
 
-    private Sections2 removeEndStation(Station station) {
-        List<Section> sections = value.toSortedList();
+    private Sections removeEndStation(Station station) {
+        List<Section> sections = this.sections.toSortedList();
         sections.removeIf(section -> section.hasStationOf(station));
-        return new Sections2(sections);
+        return new Sections(sections);
     }
 
-    public List<Section> extractNewSections(Sections2 updatedSections) {
-        List<Section> previous = value.toSortedList();
+    public List<Section> extractNewSections(Sections updatedSections) {
+        List<Section> previous = sections.toSortedList();
         List<Section> current = updatedSections.toSortedList();
 
         current.removeAll(previous);
         return current;
     }
 
-    public List<Section> extractDeletedSections(Sections2 updatedSections) {
-        List<Section> previous = value.toSortedList();
+    public List<Section> extractDeletedSections(Sections updatedSections) {
+        List<Section> previous = sections.toSortedList();
         List<Section> current = updatedSections.toSortedList();
 
         previous.removeAll(current);
         return previous;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -152,16 +151,16 @@ public class SectionsManager {
             return false;
         }
         SectionsManager sectionsManager = (SectionsManager) o;
-        return Objects.equals(value, sectionsManager.value);
+        return Objects.equals(sections, sectionsManager.sections);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(sections);
     }
 
     @Override
     public String toString() {
-        return "Sections{" + "value=" + value + '}';
+        return "Sections{" + "value=" + sections + '}';
     }
 }

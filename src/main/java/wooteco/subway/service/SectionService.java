@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Sections2;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.section.SectionsManager;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateSectionRequest;
@@ -32,8 +32,8 @@ public class SectionService {
         SectionsManager sectionsManager = new SectionsManager(findValidSections(lineId));
         Station upStation = findExistingStation(request.getUpStationId());
         Station downStation = findExistingStation(request.getDownStationId());
-        Sections2 updatedSections = sectionsManager.save(
-                new Section(upStation, downStation, request.getDistance()));
+        Section newSection = new Section(upStation, downStation, request.getDistance());
+        Sections updatedSections = sectionsManager.save(newSection);
 
         updateSectionChanges(sectionsManager, updatedSections, lineId);
     }
@@ -41,12 +41,12 @@ public class SectionService {
     @Transactional
     public void delete(Long lineId, Long stationId) {
         SectionsManager sectionsManager = new SectionsManager((findValidSections(lineId)));
-        Sections2 updatedSections = sectionsManager.delete(findExistingStation(stationId));
+        Sections updatedSections = sectionsManager.delete(findExistingStation(stationId));
 
         updateSectionChanges(sectionsManager, updatedSections, lineId);
     }
 
-    private void updateSectionChanges(SectionsManager oldSectionsManager, Sections2 updatedSections, Long lineId) {
+    private void updateSectionChanges(SectionsManager oldSectionsManager, Sections updatedSections, Long lineId) {
         for (Section deletedSection : oldSectionsManager.extractDeletedSections(updatedSections)) {
             sectionDao.delete(SectionEntity.of(lineId, deletedSection));
         }

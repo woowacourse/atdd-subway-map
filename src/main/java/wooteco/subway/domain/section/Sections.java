@@ -12,13 +12,13 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionType;
 import wooteco.subway.exception.NotFoundException;
 
-public class Sections2 {
+public class Sections {
 
     private static final String SECTIONS_NOT_CONNECTED_EXCEPTION = "구간들이 서로 이어지지 않습니다.";
 
     private final List<Section> value;
 
-    public Sections2(List<Section> value) {
+    public Sections(List<Section> value) {
         validateLineExistence(value);
         List<Section> sortedSections = toSortedSections(value);
         validateConnection(value, sortedSections);
@@ -124,10 +124,6 @@ public class Sections2 {
         return registeredSectionCount == 2;
     }
 
-    public List<Section> toSortedList() {
-        return new ArrayList<>(value);
-    }
-
     public List<Station> toSortedStations() {
         return new ArrayList<>() {{
             add(getUpperEndStation());
@@ -141,6 +137,9 @@ public class Sections2 {
                 .collect(Collectors.toList());
     }
 
+    public List<Section> toSortedList() {
+        return new ArrayList<>(value);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -150,7 +149,7 @@ public class Sections2 {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Sections2 sections = (Sections2) o;
+        Sections sections = (Sections) o;
         return Objects.equals(value, sections.value);
     }
 
