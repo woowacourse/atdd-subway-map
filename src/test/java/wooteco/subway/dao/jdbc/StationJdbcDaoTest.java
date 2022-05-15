@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,12 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.jdbc.StationJdbcDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateStationNameException;
 
-@Transactional
 @JdbcTest
 class StationJdbcDaoTest {
 
@@ -74,12 +71,13 @@ class StationJdbcDaoTest {
     @Test
     void deleteById() {
         // given
-        Long savedId = dao.save(new Station("station"));
+        Long savedId1 = dao.save(new Station("station1"));
+        Long savedId2 = dao.save(new Station("station2"));
 
         // when
-        dao.deleteById(savedId);
+        dao.deleteById(savedId1);
 
         // then
-        assertThat(dao.findAll()).isEmpty();
+        assertThat(dao.findAll()).hasSize(1);
     }
 }

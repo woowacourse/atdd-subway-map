@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -12,8 +13,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
@@ -38,6 +43,53 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @ParameterizedTest(name = "{displayName} : {arguments}")
+    @ValueSource(ints = {1, 255})
+    @DisplayName("지하철 역 이름의 길이를 1 이상 255 이하로 생성할 수 있다.")
+    void createStationWithValidName(int count) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "a".repeat(count));
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @ParameterizedTest(name = "{displayName} : {arguments}")
+    @ValueSource(ints = {0, 256})
+    @DisplayName("지하철 역 이름의 길이가 1 이상 255 이하가 아니면 생성할 수 없다.")
+    void createStationWithNonValidName(int count) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "a".repeat(count));
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("역 이름의 길이는 1 이상 255 이하여야 합니다.")
+        );
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -65,8 +117,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("같은 이름을 가진 역이 이미 있습니다")
+        );
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -135,5 +190,37 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Sql(value = "/sql/InsertTwoSections.sql")
+    @DisplayName("구간 등록된 지하철역을 제거하면 구간에서도 제거한다")
+    @Test
+    void deleteStationWithSection() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3, 4
+        구간 등록된 역 아이디 : (1, 2), (2, 3)
+        역 사이 거리 : 10, 10
+         */
+        // given
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/2")
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> findLineResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+        List<Station> stations = findLineResponse.body().jsonPath().getList("stations", Station.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(stations).hasSize(2)
+        );
     }
 }

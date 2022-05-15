@@ -41,6 +41,7 @@ public class StationJdbcDao implements StationDao {
     @Override
     public List<Station> findAll() {
         final String sql = "SELECT id, name FROM STATION";
+
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Station(
                 resultSet.getLong("id"),
                 resultSet.getString("name")
@@ -48,8 +49,25 @@ public class StationJdbcDao implements StationDao {
     }
 
     @Override
+    public Station findById(Long id) {
+        final String sql = "SELECT id, name FROM STATION WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+        ), id);
+    }
+
+    @Override
     public void deleteById(final Long id) {
         final String sql = "DELETE FROM STATION WHERE id = (?)";
+
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public boolean existById(Long id) {
+        final String sql = "select exists (select * from STATION where id = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 }

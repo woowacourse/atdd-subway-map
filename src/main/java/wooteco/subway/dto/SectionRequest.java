@@ -1,7 +1,11 @@
 package wooteco.subway.dto;
 
+import javax.validation.constraints.NotNull;
+
 public class SectionRequest {
+    @NotNull(message = "상행 종점 id 값이 누락되었습니다.")
     private Long upStationId;
+    @NotNull(message = "하행 종점 id 값이 누락되었습니다.")
     private Long downStationId;
     private int distance;
 
