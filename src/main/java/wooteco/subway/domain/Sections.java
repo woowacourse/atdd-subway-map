@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
+    private static final int BETWEEN_SECTION_COUNT = 2;
     private static final int MINIMUM_SIZE = 1;
     private final List<Section> sections;
 
@@ -68,21 +69,52 @@ public class Sections {
                 .noneMatch(section -> section.haveStationId(upStationId, downStationId));
     }
 
-    public List<Section> delete(Station station) {
+    public Sections delete(Long lineId, Station station) {
         validateMinSize();
-        List<Section> bucket = new LinkedList<>();
-        sections.stream()
-                .filter(section -> section.isSameDownStation(station))
-                .findFirst()
-                .ifPresent(bucket::add);
-        sections.stream()
-                .filter(section -> section.isSameUpStation(station))
-                .findFirst()
-                .ifPresent(bucket::add);
+        long count = countMatchSection(station);
+        validateNoneMatch(count);
+        if(isBetweenSection(count)){
+            Section leftSection = sections.stream()
+                    .filter(section -> section.isSameDownStation(station))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("[ERROR] 하행 역과 일치하는 해당 구간을 찾을수 없습니다."));
+            Section rightSection = sections.stream()
+                    .filter(section -> section.isSameUpStation(station))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("[ERROR] 상행 역과 일치하는 해당 구간을 찾을수 없습니다."));
 
-        validateNoneStation(bucket);
-        return new LinkedList<>(bucket);
+            sections.add(Section.merge(lineId, leftSection, rightSection));
+            sections.remove(leftSection);
+            sections.remove(rightSection);
+            return new Sections(sections);
+        }
+        deleteTerminalSection(station);
 
+        return new Sections(sections);
+
+    }
+
+    private void deleteTerminalSection(Station station) {
+        sections.stream()
+                .filter(section -> section.isSameDownStation(station) || section.isSameUpStation(station))
+                .findFirst()
+                .ifPresent(sections::remove);
+    }
+
+    private boolean isBetweenSection(long count) {
+        return count == BETWEEN_SECTION_COUNT;
+    }
+
+    private long countMatchSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(station) || section.isSameDownStation(station))
+                .count();
+    }
+
+    private void validateNoneMatch(long count) {
+        if (count == 0) {
+            throw new NotFoundException("[ERROR] 구간들중에 해당 역을 찾을수 없습니다.");
+        }
     }
 
     private void validateMinSize() {
@@ -91,15 +123,20 @@ public class Sections {
         }
     }
 
-    private void validateNoneStation(List<Section> bucket) {
-        if (bucket.isEmpty()) {
-            throw new NotFoundException("[ERROR] 구간들중에 해당 역을 찾을수 없습니다.");
-        }
-    }
+//    private void validateNoneStation(List<Section> bucket) {
+//        if (bucket.isEmpty()) {
+//            throw new NotFoundException("[ERROR] 구간들중에 해당 역을 찾을수 없습니다.");
+//        }
+//    }
 
     public Optional<Section> findTargetWithNotTerminal(Station upStation, Station downStation) {
         return sections.stream()
                 .filter(section -> section.isSameUpStation(upStation) || section.isSameDownStation(downStation))
                 .findFirst();
+    }
+
+    public List<Section> getSections() {
+        return sections;
+
     }
 }

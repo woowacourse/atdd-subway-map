@@ -105,18 +105,17 @@ public class SectionService {
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, stationId)));
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 노선을 찾을수 없습니다."));
-        Sections sections = new Sections(sectionRepository.findAllByLineId(line.getId()));
+        List<Section> findSections = sectionRepository.findAllByLineId(line.getId());
 
-        List<Section> deleteSections = sections.delete(station);
-        Section leftSection = deleteSections.get(0);
-        sectionRepository.deleteById(leftSection.getId());
+        Sections sections = new Sections(findSections);
+        Sections newSections = sections.delete(line.getId(), station);
 
-        if (deleteSections.size() == DELETE_BETWEEN_STATION_STANDARD) {
-            Section rightSection = deleteSections.get(1);
-            Section section = Section.merge(line.getId(), leftSection, rightSection);
-            sectionRepository.deleteById(rightSection.getId());
-            sectionRepository.save(section);
-        }
+        newSections.getSections().stream()
+                .filter(section -> !findSections.contains(section))
+                .forEach(sectionRepository::save);
+        findSections.stream()
+                .filter(section -> !newSections.getSections().contains(section))
+                .forEach(section -> sectionRepository.deleteById(section.getId()));
     }
 
 
