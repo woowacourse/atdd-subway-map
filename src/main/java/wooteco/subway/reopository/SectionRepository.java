@@ -1,9 +1,10 @@
-package wooteco.subway.dao;
+package wooteco.subway.reopository;
 
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.Entity.SectionEntity;
+import wooteco.subway.reopository.Entity.SectionEntity;
 import wooteco.subway.domain.Section;
+import wooteco.subway.reopository.dao.SectionDao;
 
 @Repository
 public class SectionRepository {

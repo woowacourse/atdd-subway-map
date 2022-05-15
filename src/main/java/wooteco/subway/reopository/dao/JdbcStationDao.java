@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.reopository.dao;
 
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.reopository.dao;
 
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.Entity.SectionEntity;
+import wooteco.subway.reopository.Entity.SectionEntity;
 
 @Repository
 public class SectionDao {

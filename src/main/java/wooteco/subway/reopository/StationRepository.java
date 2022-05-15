@@ -1,12 +1,13 @@
-package wooteco.subway.dao;
+package wooteco.subway.reopository;
 
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.Entity.StationEntity;
+import wooteco.subway.reopository.Entity.StationEntity;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.reopository.dao.StationDao;
 
 @Repository
 public class StationRepository {
