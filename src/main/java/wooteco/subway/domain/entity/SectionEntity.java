@@ -9,6 +9,9 @@ import wooteco.subway.domain.Section;
 
 public class SectionEntity {
 
+    private static final int RANDOM_INDEX = 0;
+    private static final int UP_TERMINAL_STATION_INDEX = 0;
+
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
@@ -98,7 +101,7 @@ public class SectionEntity {
 
     private static List<SectionEntity> sortUpToDown(List<SectionEntity> sectionEntities) {
         List<SectionEntity> orderedSectionEntities = new ArrayList<>();
-        orderedSectionEntities.add(sectionEntities.get(0));
+        orderedSectionEntities.add(sectionEntities.get(RANDOM_INDEX));
 
         extendToUp(orderedSectionEntities, sectionEntities);
         extendToDown(orderedSectionEntities, sectionEntities);
@@ -107,7 +110,7 @@ public class SectionEntity {
     }
 
     private static void extendToUp(List<SectionEntity> orderedSectionEntities, List<SectionEntity> sectionEntities) {
-        SectionEntity upTerminalSectionEntity = orderedSectionEntities.get(0);
+        SectionEntity upTerminalSectionEntity = orderedSectionEntities.get(UP_TERMINAL_STATION_INDEX);
         System.out.println(upTerminalSectionEntity.getUpStationId());
 
         Optional<SectionEntity> newUpTerminalSection = sectionEntities.stream()
@@ -115,7 +118,7 @@ public class SectionEntity {
                 .findAny();
 
         if (newUpTerminalSection.isPresent()) {
-            orderedSectionEntities.add(0, newUpTerminalSection.get());
+            orderedSectionEntities.add(UP_TERMINAL_STATION_INDEX, newUpTerminalSection.get());
             extendToUp(orderedSectionEntities, sectionEntities);
         }
     }
