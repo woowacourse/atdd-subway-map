@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
-@Transactional
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
