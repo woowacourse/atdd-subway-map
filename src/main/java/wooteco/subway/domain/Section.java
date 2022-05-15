@@ -1,14 +1,12 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Section {
 
     private static final int MINIMUM_DISTANCE = 1;
     private static final String UNVALID_DISTANCE_EXCEPTION = "종점 사이 거리는 양의 정수여야 합니다.";
     private static final String UNVALID_STATION_EXCEPTION = "상행 종점과 하행 종점은 같을 수 없습니다.";
     private static final String UNABLE_TO_MERGE_EXCEPTION = "합칠 수 없는 section입니다.";
+    private static final String TOO_LARGE_DISTANCE_EXCEPTION = "추가하려는 section의 역 간 거리는 존재하는 section의 역 간 거리보다 작아야 합니다.";
 
     private final Line line;
     private final Station upStation;
@@ -109,24 +107,18 @@ public class Section {
         return downStation.equals(other.downStation);
     }
 
-    public boolean ableToDivide(Section newSection) {
-        return (isSameUpStation(newSection) != isSameDownStation(newSection)) && (distance > newSection.distance);
-    }
-
-    public List<Section> divide(Section newSection) {
-        List<Section> parts = new ArrayList<>();
-        if (isSameUpStation(newSection)) {
-            parts.add(new Section.Builder(line, upStation, newSection.downStation, newSection.distance)
-                    .build());
-            parts.add(new Section.Builder(line, newSection.downStation, downStation, distance - newSection.distance)
-                    .build());
-            return parts;
+    public Section subtractSection(Section newSection) {
+        if (distance <= newSection.distance) {
+            throw new IllegalArgumentException(TOO_LARGE_DISTANCE_EXCEPTION);
         }
-        parts.add(new Section.Builder(line, upStation, newSection.upStation, newSection.distance)
-                .build());
-        parts.add(new Section.Builder(line, newSection.upStation, downStation, distance - newSection.distance)
-                .build());
-        return parts;
+
+        if (isSameUpStation(newSection)) {
+            return new Section.Builder(line, newSection.downStation, downStation, distance - newSection.distance)
+                    .build();
+        }
+        return new Section.Builder(line, upStation, newSection.upStation, distance - newSection.distance)
+                .build();
+
     }
 
     public Section merge(Section other) {

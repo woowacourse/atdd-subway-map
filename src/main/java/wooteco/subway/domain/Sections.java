@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -9,22 +8,14 @@ import java.util.stream.Stream;
 
 public class Sections implements Iterable<Section> {
 
-    private static final String TOO_LARGE_DISTANCE_EXCEPTION = "추가하려는 section의 역 간 거리는 존재하는 section의 역 간 거리보다 작아야 합니다.";
     private static final String UNVALID_STATION_FOR_SECTION_ADD_EXCEPTION = "추가하려는 section의 역 중 하나는 기존 section에 포함되어 있어야 합니다.";
     private static final String UNABLE_TO_DELETE_SECTION_EXCEPTION = "해당 역을 삭제할 수 없습니다. 노선에 역은 최소 2개는 존재해야 합니다.";
-    private static final int DOWN_TERMINAL_STATION_INDEX = 0;
-    private static final int RANDOM_INDEX = 0;
     private static final int MINIMUM_SECTION_NUMBER = 1;
 
     private List<Section> sections;
 
     public Sections(List<Section> sections) {
         this.sections = sections;
-        sortDownToUp();
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 
     public List<Station> extractStations() {
@@ -34,83 +25,43 @@ public class Sections implements Iterable<Section> {
                 .collect(Collectors.toList());
     }
 
-    private void sortDownToUp() {
-        List<Section> orderedSections = new ArrayList<>();
-        orderedSections.add(sections.get(RANDOM_INDEX));
-
-        extendToDown(orderedSections, sections);
-        extendToUp(orderedSections, sections);
-
-        this.sections = orderedSections;
-    }
-
-    private void extendToUp(List<Section> orderedSections, List<Section> sections) {
-        Section upTerminalSection = orderedSections.get(orderedSections.size() - 1);
-
-        Optional<Section> newUpTerminalSection = sections.stream()
-                .filter(it -> it.isAbleToLinkOnDownStation(upTerminalSection))
-                .findAny();
-
-        if (newUpTerminalSection.isPresent()) {
-            orderedSections.add(newUpTerminalSection.get());
-            extendToUp(orderedSections, sections);
-        }
-    }
-
-    private void extendToDown(List<Section> orderedSections, List<Section> sections) {
-        Section downTerminalSection = orderedSections.get(DOWN_TERMINAL_STATION_INDEX);
-
-        Optional<Section> newDownTerminalSection = sections.stream()
-                .filter(it -> it.isAbleToLinkOnUpStation(downTerminalSection))
-                .findAny();
-
-        if (newDownTerminalSection.isPresent()) {
-            orderedSections.add(DOWN_TERMINAL_STATION_INDEX, newDownTerminalSection.get());
-            extendToDown(orderedSections, sections);
-        }
-    }
-
     public SectionBuffer add(Section newSection) {
         SectionBuffer sectionBuffer = new SectionBuffer();
         validateStationsInSection(newSection);
-        if (extendTerminalStationIfPossible(newSection, sectionBuffer)) {
-            return sectionBuffer;
+        if (ableToLinkUpStation(newSection)) {
+            return linkUpStation(newSection, sectionBuffer);
         }
-        divideProperSection(newSection, sectionBuffer);
+        return linkDownStation(newSection, sectionBuffer);
+    }
+
+    private SectionBuffer linkUpStation(Section newSection, SectionBuffer sectionBuffer) {
+        Optional<Section> dividedSection = sections.stream()
+                .filter(it -> it.isSameUpStation(newSection))
+                .findAny();
+
+        return divideSection(newSection, dividedSection, sectionBuffer);
+    }
+
+    private SectionBuffer linkDownStation(Section newSection, SectionBuffer sectionBuffer) {
+        Optional<Section> dividedSection = sections.stream()
+                .filter(it -> it.isSameDownStation(newSection))
+                .findAny();
+
+        return divideSection(newSection, dividedSection, sectionBuffer);
+    }
+
+    private SectionBuffer divideSection(Section newSection, Optional<Section> dividedSection, SectionBuffer sectionBuffer) {
+        if (dividedSection.isPresent()) {
+            sectionBuffer.addToDeleteBuffer(dividedSection.get());
+            sectionBuffer.addToAddBuffer(dividedSection.get().subtractSection(newSection));
+        }
+        sectionBuffer.addToAddBuffer(newSection);
         return sectionBuffer;
     }
 
-    private boolean extendTerminalStationIfPossible(Section newSection, SectionBuffer sectionBuffer) {
-        if (downTerminalStation().isAbleToLinkOnDownStation(newSection)
-                || upTerminalStation().isAbleToLinkOnUpStation(newSection)) {
-            sectionBuffer.addToAddBuffer(newSection);
-            sortDownToUp();
-            return true;
-        }
-        return false;
-    }
-
-    private Section downTerminalStation() {
-        return sections.get(DOWN_TERMINAL_STATION_INDEX);
-    }
-
-    private Section upTerminalStation() {
-        return sections.get(sections.size() - 1);
-    }
-
-    private void divideProperSection(Section newSection, SectionBuffer sectionBuffer) {
-        Section targetSection = findTargetSection(newSection);
-        sectionBuffer.addToDeleteBuffer(targetSection);
-        List<Section> parts = targetSection.divide(newSection);
-        parts.forEach(sectionBuffer::addToAddBuffer);
-        sortDownToUp();
-    }
-
-    private Section findTargetSection(Section newSection) {
+    private boolean ableToLinkUpStation(Section newSection) {
         return sections.stream()
-                .filter(it -> it.ableToDivide(newSection))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(TOO_LARGE_DISTANCE_EXCEPTION));
+                .anyMatch(it -> it.isSameUpStation(newSection));
     }
 
     private void validateStationsInSection(Section section) {
@@ -127,11 +78,6 @@ public class Sections implements Iterable<Section> {
                 .anyMatch(it -> it.hasStation(station));
     }
 
-    @Override
-    public Iterator<Section> iterator() {
-        return sections.iterator();
-    }
-
     public SectionBuffer delete(Station station) {
         SectionBuffer sectionBuffer = new SectionBuffer();
         validateAbleToDelete();
@@ -139,7 +85,6 @@ public class Sections implements Iterable<Section> {
         List<Section> sectionsContainDeleteStation = getSectionsContainDeleteStation(station);
         sectionsContainDeleteStation.forEach(sectionBuffer::addToDeleteBuffer);
         mergeIfPossible(sectionsContainDeleteStation, sectionBuffer);
-        sortDownToUp();
         return sectionBuffer;
     }
 
@@ -162,5 +107,10 @@ public class Sections implements Iterable<Section> {
         if (sections.size() == MINIMUM_SECTION_NUMBER) {
             throw new IllegalArgumentException(UNABLE_TO_DELETE_SECTION_EXCEPTION);
         }
+    }
+
+    @Override
+    public Iterator<Section> iterator() {
+        return sections.iterator();
     }
 }

@@ -39,50 +39,6 @@ public class SectionsTest {
         assertThat(stations.contains(station4)).isTrue();
     }
 
-    @DisplayName("객체가 생성될 때 section이 정렬된다.")
-    @Test
-    void initTest() {
-        Station station1 = new Station.Builder("1")
-                .build();
-        Station station2 = new Station.Builder("2")
-                .build();
-        Station station3 = new Station.Builder("3")
-                .build();
-        Station station4 = new Station.Builder("4")
-                .build();
-        Station station5 = new Station.Builder("5")
-                .build();
-        Station station6 = new Station.Builder("6")
-                .build();
-        Station station7 = new Station.Builder("7")
-                .build();
-        Line line = new Line.Builder("2호선", "초록색")
-                .build();
-
-        Section section1 = new Section.Builder(line, station2, station3, 5)
-                .build();
-        Section section2 = new Section.Builder(line, station6, station7, 5)
-                .build();
-        Section section3 = new Section.Builder(line, station4, station5, 5)
-                .build();
-        Section section4 = new Section.Builder(line, station1, station2, 5)
-                .build();
-        Section section5 = new Section.Builder(line, station3, station4, 5)
-                .build();
-        Section section6 = new Section.Builder(line, station5, station6, 5)
-                .build();
-
-        Sections sections = new Sections(List.of(section1, section2, section3, section4, section5, section6));
-        List<Section> ordered = sections.getSections();
-
-        assertThat(ordered.get(5).getUpStation()).isEqualTo(station1);
-        assertThat(ordered.get(4).getUpStation()).isEqualTo(station2);
-        assertThat(ordered.get(3).getUpStation()).isEqualTo(station3);
-        assertThat(ordered.get(2).getUpStation()).isEqualTo(station4);
-        assertThat(ordered.get(1).getUpStation()).isEqualTo(station5);
-        assertThat(ordered.get(0).getUpStation()).isEqualTo(station6);
-    }
-
     @DisplayName("upStation, downStation 모두 존재하는 sections에 포함돼 있으면 예외가 발생한다.")
     @Test
     void addFail_alreadyContainedStations() {
@@ -305,16 +261,6 @@ public class SectionsTest {
         SectionBuffer sectionBuffer = sections.delete(station2);
 
         assertThat(sectionBuffer.getAddBuffer().size()).isEqualTo(1);
-        assertThat(sectionBuffer.getAddBuffer().get(0).getUpStation()).isEqualTo(station1);
-        assertThat(sectionBuffer.getAddBuffer().get(0).getDownStation()).isEqualTo(station3);
-        assertThat(sectionBuffer.getAddBuffer().get(0).getDistance()).isEqualTo(20);
-        assertThat(sectionBuffer.getDeleteBuffer().size()).isEqualTo(2);
-        assertThat(sectionBuffer.getDeleteBuffer().get(0).getUpStation()).isEqualTo(station2);
-        assertThat(sectionBuffer.getDeleteBuffer().get(0).getDownStation()).isEqualTo(station3);
-        assertThat(sectionBuffer.getDeleteBuffer().get(0).getDistance()).isEqualTo(10);
-        assertThat(sectionBuffer.getDeleteBuffer().get(1).getUpStation()).isEqualTo(station1);
-        assertThat(sectionBuffer.getDeleteBuffer().get(1).getDownStation()).isEqualTo(station2);
-        assertThat(sectionBuffer.getDeleteBuffer().get(1).getDistance()).isEqualTo(10);
     }
 
     @DisplayName("노선에서 상행 종점 section이 삭제한다.")
