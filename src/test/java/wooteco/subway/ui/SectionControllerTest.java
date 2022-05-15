@@ -36,6 +36,7 @@ class SectionControllerTest extends ControllerTest{
     private ObjectMapper objectMapper;
 
     @Test
+    @DisplayName("구간을 추가한다.")
     void addSection() throws Exception {
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
         given(sectionService.addSection(sectionRequest, 1L)).willReturn(new Section(1L, 2L, 3L, 10));
@@ -52,6 +53,7 @@ class SectionControllerTest extends ControllerTest{
     }
 
     @ParameterizedTest
+    @DisplayName("구간을 추가할때 요소가 비어있으면 예외를 반환한다.")
     @CsvSource(value = {"2:3:", "2::10", ":3:10"}, delimiter = ':')
     void addSection_Exception(Long upStationId, Long downStationId, Integer distance) throws Exception {
         String sectionRequest = "{\n" +
@@ -70,6 +72,7 @@ class SectionControllerTest extends ControllerTest{
 
 
     @Test
+    @DisplayName("구간을 삭제한다")
     void deleteSection() throws Exception {
         MockHttpServletResponse result = mockMvc.perform(
                 delete("/lines/1/sections")
