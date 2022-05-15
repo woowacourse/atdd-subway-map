@@ -64,7 +64,19 @@ public class LineRepository {
         LineEntity forUpdate = LineEntity.from(line);
         LineEntity updatedEntity = lineDao.update(forUpdate);
         sectionDao.deleteByLineId(line.getId());
+        saveAllSectionsFromLine(line);
         return findById(updatedEntity.getId());
+    }
+
+    private void saveAllSectionsFromLine(Line line) {
+        List<SectionEntity> sectionEntities = getSectionEntities(line);
+        sectionDao.saveAll(sectionEntities);
+    }
+
+    private List<SectionEntity> getSectionEntities(Line line) {
+        return line.getSections().stream()
+                .map(SectionEntity::from)
+                .collect(Collectors.toList());
     }
 
     public Integer deleteById(Long id) {

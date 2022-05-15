@@ -23,6 +23,11 @@ public class SectionEntity {
                 section.getDistance());
     }
 
+    public static SectionEntity from(Section section) {
+        return new SectionEntity(section.getId(), section.getLine_id(), section.getUpStationId(),
+                section.getDownStationId(), section.getDistance());
+    }
+
     public Long getId() {
         return id;
     }
