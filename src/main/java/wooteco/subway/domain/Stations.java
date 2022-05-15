@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Stations {
 
-    public static final String DUPLICATED_NAME_EXCEPTION = "station 이름은 중복될 수 없습니다.";
+    private static final String DUPLICATED_NAME_EXCEPTION = "station 이름은 중복될 수 없습니다.";
 
     private final List<Station> stations;
 

@@ -6,8 +6,6 @@ import wooteco.subway.domain.Line;
 
 public class LineRequest {
 
-    private static final int TRASH_DISTANCE = -1;
-
     @Length(max = 255, message = "노선 이름은 255자 이하여야 합니다.")
     @NotBlank(message = "노선 이름은 공백일 수 없습니다.")
     private String name;

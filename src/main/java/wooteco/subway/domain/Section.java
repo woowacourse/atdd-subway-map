@@ -5,10 +5,10 @@ import java.util.List;
 
 public class Section {
 
-    public static final int MINIMUM_DISTANCE = 1;
-    public static final String UNVALID_DISTANCE_EXCEPTION = "종점 사이 거리는 양의 정수여야 합니다.";
-    public static final String UNVALID_STATION_EXCEPTION = "상행 종점과 하행 종점은 같을 수 없습니다.";
-    public static final String UNABLE_TO_MERGE_EXCEPTION = "합칠 수 없는 section입니다.";
+    private static final int MINIMUM_DISTANCE = 1;
+    private static final String UNVALID_DISTANCE_EXCEPTION = "종점 사이 거리는 양의 정수여야 합니다.";
+    private static final String UNVALID_STATION_EXCEPTION = "상행 종점과 하행 종점은 같을 수 없습니다.";
+    private static final String UNABLE_TO_MERGE_EXCEPTION = "합칠 수 없는 section입니다.";
 
     private final Line line;
     private final Station upStation;
