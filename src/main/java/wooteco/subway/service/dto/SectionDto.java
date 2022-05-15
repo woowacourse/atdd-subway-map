@@ -36,6 +36,4 @@ public class SectionDto {
     public int getDistance() {
         return distance;
     }
-
-
 }

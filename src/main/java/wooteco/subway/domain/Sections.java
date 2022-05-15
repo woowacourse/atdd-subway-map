@@ -59,8 +59,8 @@ public class Sections {
     private void addSection(final Section section, final Section newSection, final AddMatchingResult result) {
         final List<Section> seperatedSection = separateSection(section, newSection, result);
         final int standardSection = value.indexOf(section) + 1;
-        List<Section> leftSection = value.subList(0, standardSection);
-        List<Section> rightSection = new ArrayList<>(List.of(seperatedSection.get(1)));
+        final List<Section> leftSection = value.subList(0, standardSection);
+        final List<Section> rightSection = new ArrayList<>(List.of(seperatedSection.get(1)));
 
         rightSection.addAll(value.subList(standardSection, value.size()));
         leftSection.remove(leftSection.size() - 1);

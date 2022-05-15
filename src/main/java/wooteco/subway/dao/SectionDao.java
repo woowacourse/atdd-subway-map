@@ -25,8 +25,8 @@ public class SectionDao implements CommonSectionDao {
     }
 
     @Override
-    public long save(final Long lineId, SectionDto section) {
-        Map<String, Object> params = new HashMap<>();
+    public long save(final Long lineId, final SectionDto section) {
+        final Map<String, Object> params = new HashMap<>();
         params.put("line_id", lineId);
         params.put("up_station_id", section.getUpStationId());
         params.put("down_station_id", section.getDownStationId());

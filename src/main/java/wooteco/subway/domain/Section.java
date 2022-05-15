@@ -8,7 +8,7 @@ public class Section {
     private final Station downStation;
     private final int distance;
 
-    public Section(Station upStation, Station downStation, final int distance) {
+    public Section(final Station upStation, final Station downStation, final int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
