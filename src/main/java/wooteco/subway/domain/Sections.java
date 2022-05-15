@@ -14,6 +14,7 @@ public class Sections implements Iterable<Section> {
     public static final String UNVALID_STATION_FOR_SECTION_ADD_EXCEPTION = "추가하려는 section의 역 중 하나는 기존 section에 포함되어 있어야 합니다.";
     public static final int DOWN_TERMINAL_STATION_INDEX = 0;
     public static final String UNABLE_TO_DELETE_SECTION_EXCEPTION = "해당 역을 삭제할 수 없습니다. 노선에 역은 최소 2개는 존재해야 합니다.";
+
     private List<Section> sections;
 
     public Sections(List<Section> sections) {

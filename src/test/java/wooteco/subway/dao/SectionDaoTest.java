@@ -20,7 +20,6 @@ public class SectionDaoTest {
 
     @Autowired
     private DataSource dataSource;
-
     private SectionDao sectionDao;
     private LineDao lineDao;
     private Long lineId;

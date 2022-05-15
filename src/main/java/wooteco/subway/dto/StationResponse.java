@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import wooteco.subway.domain.Station;
 
 public class StationResponse {
+
     private Long id;
     private String name;
 

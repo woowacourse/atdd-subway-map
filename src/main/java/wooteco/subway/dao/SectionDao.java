@@ -13,6 +13,7 @@ import wooteco.subway.domain.entity.SectionEntity;
 
 @Repository
 public class SectionDao {
+
     private static final RowMapper<SectionEntity> SECTION_ENTITY_MAPPER = (resultSet, rowNum) -> SectionEntity.of(
             resultSet.getLong("id"),
             resultSet.getLong("line_id"),

@@ -3,6 +3,7 @@ package wooteco.subway.dto;
 import wooteco.subway.domain.entity.SectionEntity;
 
 public class SectionRequest {
+
     private Long upStationId;
     private Long downStationId;
     private int distance;

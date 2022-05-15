@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import wooteco.subway.domain.Section;
 
 public class SectionEntity {
+
     private Long id;
     private Long lineId;
     private Long upStationId;

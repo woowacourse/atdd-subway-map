@@ -13,6 +13,7 @@ import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
+
     private static final RowMapper<Station> STATION_MAPPER = (resultSet, rowNum) -> Station.of(
             resultSet.getLong("id"),
             resultSet.getString("name")
@@ -20,7 +21,6 @@ public class StationDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
-
 
     public StationDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);

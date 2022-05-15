@@ -13,6 +13,7 @@ import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
+
     private static final RowMapper<Line> LINE_MAPPER = (resultSet, rowNum) -> Line.of(
             resultSet.getLong("id"),
             resultSet.getString("name"),
@@ -21,7 +22,6 @@ public class LineDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
-
 
     public LineDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);

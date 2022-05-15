@@ -19,7 +19,6 @@ class LineDaoTest {
 
     @Autowired
     private DataSource dataSource;
-
     private LineDao lineDao;
 
     @BeforeEach

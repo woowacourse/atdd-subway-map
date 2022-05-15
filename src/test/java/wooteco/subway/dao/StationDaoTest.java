@@ -17,7 +17,6 @@ class StationDaoTest {
 
     @Autowired
     private DataSource dataSource;
-
     private StationDao stationDao;
 
     @BeforeEach
