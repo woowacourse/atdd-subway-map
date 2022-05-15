@@ -6,14 +6,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
@@ -50,15 +48,15 @@ class LineServiceTest {
         @Test
         @DisplayName("노선 이름이 중복되지 않으면 저장할 수 있다.")
         void save_Success_If_Not_Exists() {
-            assertThatCode(() -> lineService.save(LINE_FIXTURE))
+            assertThatCode(() -> lineService.saveLine(LINE_FIXTURE))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("노선 이름이 중복되면 예외가 발생한다.")
         void save_Fail_If_Exists() {
-            lineService.save(LINE_FIXTURE);
-            assertThatThrownBy(() -> lineService.save(LINE_FIXTURE))
+            lineService.saveLine(LINE_FIXTURE);
+            assertThatThrownBy(() -> lineService.saveLine(LINE_FIXTURE))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("이미 존재하는 노선입니다. " + LINE_FIXTURE);
         }
@@ -67,9 +65,9 @@ class LineServiceTest {
     @Test
     @DisplayName("전체 지하철 노선을 조회할 수 있다")
     void findAll() {
-        lineService.save(LINE_FIXTURE);
-        lineService.save(LINE_FIXTURE2);
-        lineService.save(LINE_FIXTURE3);
+        lineService.saveLine(LINE_FIXTURE);
+        lineService.saveLine(LINE_FIXTURE2);
+        lineService.saveLine(LINE_FIXTURE3);
 
         assertThat(lineService.findAll()).extracting("name")
                 .isEqualTo(List.of(LINE_FIXTURE.getName(), LINE_FIXTURE2.getName(), LINE_FIXTURE3.getName()));
@@ -85,7 +83,7 @@ class LineServiceTest {
     @Test
     @DisplayName("아이디로 지하철 노선을 조회할 수 있다")
     void findById() {
-        final LineResponse line = lineService.save(LINE_FIXTURE);
+        final LineResponse line = lineService.saveLine(LINE_FIXTURE);
         final LineResponse found = lineService.findById(line.getId());
         assertThat(line.getId()).isEqualTo(found.getId());
     }
@@ -97,7 +95,7 @@ class LineServiceTest {
         @Test
         @DisplayName("아이디가 존재하면 아이디로 지하철노선을 삭제할 수 있다.")
         void deleteById() {
-            final LineResponse line = lineService.save(LINE_FIXTURE);
+            final LineResponse line = lineService.saveLine(LINE_FIXTURE);
             final List<Line> lines = lineService.findAll();
             lineService.deleteById(line.getId());
             final List<Line> afterDelete = lineService.findAll();
@@ -122,11 +120,11 @@ class LineServiceTest {
         @Test
         @DisplayName("노선이 존재하면 노선 이름과 색상을 변경할 수 있다")
         void update_Line_Success() {
-            final LineResponse line = lineService.save(LINE_FIXTURE);
+            final LineResponse line = lineService.saveLine(LINE_FIXTURE);
             final Long id = line.getId();
             final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777", 1L, 2L, 3);
 
-            lineService.update(id, lineRequest);
+            lineService.updateLine(id, lineRequest);
             final LineResponse updated = lineService.findById(id);
 
             assertAll(
@@ -139,7 +137,7 @@ class LineServiceTest {
         @Test
         @DisplayName("노선이 존재하지 않으면 예외를 던진다.")
         void update_Line_Fail() {
-            assertThatThrownBy(() -> lineService.update(1L, new LineRequest("a", "b", 10L, 11L, 12)))
+            assertThatThrownBy(() -> lineService.updateLine(1L, new LineRequest("a", "b", 10L, 11L, 12)))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1 Line{name='a', color='b'}");
 

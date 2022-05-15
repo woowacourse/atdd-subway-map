@@ -1,9 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.CommonLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequest;
@@ -25,7 +23,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse save(final LineRequest lineRequest) {
+    public LineResponse saveLine(final LineRequest lineRequest) {
         final LineDto lineDto = new LineDto(lineRequest.getName(), lineRequest.getColor(),
                 lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         final Line line = lineRepository.save(lineDto);
@@ -40,7 +38,7 @@ public class LineService {
         return lineRepository.findAll();
     }
 
-    public void update(final Long id, final LineRequest lineRequest) {
+    public void updateLine(final Long id, final LineRequest lineRequest) {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final int theNumberOfAffectedRow = lineDao.update(id, line);
         if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
