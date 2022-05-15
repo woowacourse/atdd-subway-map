@@ -35,7 +35,7 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
         Section newSection = sectionRequest.toEntity(lineId);
-        Optional<Section> updateSection = sections.add(newSection);
+        Optional<Section> updateSection = sections.findUpdateWhenAdd(newSection);
 
         sectionDao.save(newSection);
         updateSection.ifPresent(sectionDao::update);

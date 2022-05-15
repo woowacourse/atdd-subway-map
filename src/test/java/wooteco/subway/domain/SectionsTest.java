@@ -34,7 +34,7 @@ class SectionsTest {
         // given
 
         // when
-        Optional<Section> section = sections.add(newSection);
+        Optional<Section> section = sections.findUpdateWhenAdd(newSection);
 
         // then
         if (expected == null) {

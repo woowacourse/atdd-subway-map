@@ -71,7 +71,7 @@ public class Sections {
      * @param newSection 추가하고자 하는 구간
      * @return 데이터가 변경된 Section
      */
-    public Optional<Section> add(Section newSection) {
+    public Optional<Section> findUpdateWhenAdd(Section newSection) {
         validNewSection(newSection);
 
         for (Section section : value) {
