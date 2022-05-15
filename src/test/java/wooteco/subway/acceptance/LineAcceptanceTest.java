@@ -29,8 +29,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void addStations() {
-        Station station1 = Station.of("잠실역");
-        Station station2 = Station.of("강남역");
+        Station station1 = new Station.Builder("잠실역")
+                .build();
+        Station station2 = new Station.Builder("강남역")
+                .build();
 
         stationDao.save(station1);
         stationDao.save(station2);

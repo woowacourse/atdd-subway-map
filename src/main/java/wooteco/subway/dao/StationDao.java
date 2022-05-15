@@ -14,10 +14,10 @@ import wooteco.subway.domain.Station;
 @Repository
 public class StationDao {
 
-    private static final RowMapper<Station> STATION_MAPPER = (resultSet, rowNum) -> Station.of(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
-    );
+    private static final RowMapper<Station> STATION_MAPPER = (resultSet, rowNum) -> new Station.Builder(
+            resultSet.getString("name"))
+            .id(resultSet.getLong("id"))
+            .build();
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
@@ -32,7 +32,9 @@ public class StationDao {
     public Station save(Station station) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return Station.of(id, station);
+        return new Station.Builder(station.getName())
+                .id(id)
+                .build();
     }
 
     public List<Station> findAll() {

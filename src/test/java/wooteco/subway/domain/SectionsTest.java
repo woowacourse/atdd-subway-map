@@ -12,10 +12,14 @@ public class SectionsTest {
     @DisplayName("section 리스트에서 station id를 추출한다")
     @Test
     void extractStationIds() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
-        Station station4 = Station.of("4");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
+        Station station4 = new Station.Builder("4")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -38,13 +42,20 @@ public class SectionsTest {
     @DisplayName("객체가 생성될 때 section이 정렬된다.")
     @Test
     void initTest() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
-        Station station4 = Station.of("4");
-        Station station5 = Station.of("5");
-        Station station6 = Station.of("6");
-        Station station7 = Station.of("7");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
+        Station station4 = new Station.Builder("4")
+                .build();
+        Station station5 = new Station.Builder("5")
+                .build();
+        Station station6 = new Station.Builder("6")
+                .build();
+        Station station7 = new Station.Builder("7")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -75,9 +86,12 @@ public class SectionsTest {
     @DisplayName("upStation, downStation 모두 존재하는 sections에 포함돼 있으면 예외가 발생한다.")
     @Test
     void addFail_alreadyContainedStations() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -98,11 +112,16 @@ public class SectionsTest {
     @DisplayName("upStation, downStation 모두 sections에 없으면 예외가 발생한다..")
     @Test
     void addFail_notContainedStations() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
-        Station station4 = Station.of("4");
-        Station station5 = Station.of("5");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
+        Station station4 = new Station.Builder("4")
+                .build();
+        Station station5 = new Station.Builder("5")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -123,10 +142,14 @@ public class SectionsTest {
     @DisplayName("추가하려는 section이 이미 존재하는 section보다 distance가 크면 예외가 발생한다_upstream")
     @Test
     void addFail_largeDistance() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
-        Station station5 = Station.of("5");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
+        Station station5 = new Station.Builder("5")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -147,10 +170,14 @@ public class SectionsTest {
     @DisplayName("추가하려는 section이 이미 존재하는 section보다 distance가 크면 예외가 발생한다_downstream")
     @Test
     void addFail_largeDistance2() {
-        Station station0 = Station.of("0");
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
+        Station station0 = new Station.Builder("0")
+                .build();
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -170,9 +197,12 @@ public class SectionsTest {
     @DisplayName("추가하려는 section이 이미 존재하는 section보다 distance가 크면 예외가 발생한다")
     @Test
     void addFail_largeDistance3() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -188,9 +218,12 @@ public class SectionsTest {
     @DisplayName("상행 종점 연장")
     @Test
     void addUpStation() {
-        Station station0 = Station.of("0");
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
+        Station station0 = new Station.Builder("0")
+                .build();
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -209,9 +242,12 @@ public class SectionsTest {
     @DisplayName("하행 종점 연장")
     @Test
     void addDownStation() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -230,8 +266,10 @@ public class SectionsTest {
     @DisplayName("노선에 section이 1개이면 section삭제 시 예외가 발생한다.")
     @Test
     void deleteFail() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
         Section section1 = new Section.Builder(line, station1, station2, 10)
@@ -246,10 +284,14 @@ public class SectionsTest {
     @DisplayName("노선에서 양 끝 종점이 아닌 section을 삭제하면 기존 section이 연결된다.")
     @Test
     void deleteSuccess_NoTerminalSection() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
-        Station station4 = Station.of("4");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
+        Station station4 = new Station.Builder("4")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
         Section section1 = new Section.Builder(line, station1, station2, 10)
@@ -278,10 +320,14 @@ public class SectionsTest {
     @DisplayName("노선에서 상행 종점 section이 삭제한다.")
     @Test
     void deleteSuccess_UpTerminalSection() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
-        Station station4 = Station.of("4");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
+        Station station4 = new Station.Builder("4")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 
@@ -305,10 +351,14 @@ public class SectionsTest {
     @DisplayName("노선에서 하행 종점 section이 삭제한다.")
     @Test
     void deleteSuccess_DownTerminalSection() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
-        Station station3 = Station.of("3");
-        Station station4 = Station.of("4");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
+        Station station3 = new Station.Builder("3")
+                .build();
+        Station station4 = new Station.Builder("4")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
 

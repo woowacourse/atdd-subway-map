@@ -30,8 +30,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setStationsAndLine() {
-        Station station1 = Station.of("잠실역");
-        Station station2 = Station.of("강남역");
+        Station station1 = new Station.Builder("잠실역")
+                .build();
+        Station station2 = new Station.Builder("강남역")
+                .build();
 
         stationDao.save(station1);
         stationDao.save(station2);
@@ -43,7 +45,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간을 생성한다.")
     @Test
     void createSection() {
-        Station station = Station.of("선릉역");
+        Station station = new Station.Builder("선릉역")
+                .build();
         station = stationDao.save(station);
         SectionRequest sectionRequest = new SectionRequest(1L, station.getId(), 3);
 
@@ -55,7 +58,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간을 삭제한다.")
     @Test
     void deleteSection() {
-        Station station = Station.of("선릉역");
+        Station station = new Station.Builder("선릉역")
+                .build();
         station = stationDao.save(station);
         SectionRequest sectionRequest = new SectionRequest(1L, station.getId(), 3);
         requestPost(sectionRequest);

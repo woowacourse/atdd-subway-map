@@ -7,24 +7,29 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
+    public static class Builder {
+
+        private final String name;
+
+        private Long id = null;
+
+        public Builder(String name) {
+            this.name = name;
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Station build() {
+            return new Station(this);
+        }
     }
 
-    private Station(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public static Station of(Long id, String name) {
-        return new Station(id, name);
-    }
-
-    public static Station of(Long id, Station other) {
-        return of(id, other.name);
-    }
-
-    public static Station of(String name) {
-        return of(null, name);
+    private Station(Builder builder) {
+        id = builder.id;
+        name = builder.name;
     }
 
     public Long getId() {

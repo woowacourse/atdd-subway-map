@@ -13,8 +13,10 @@ class SectionBufferTest {
 
     @BeforeEach
     void setUp() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
         Section section1 = new Section.Builder(null, station1, station2, 3)
                 .build();
         Section section2 = new Section.Builder(null, station1, station2, 3)

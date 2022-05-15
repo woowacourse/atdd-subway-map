@@ -10,7 +10,8 @@ public class SectionTest {
     @DisplayName("상행 종점과 하행 종점이 같으면 예외가 발생한다")
     @Test
     void sameUpStationAndDownStation() {
-        Station station1 = Station.of("1");
+        Station station1 = new Station.Builder("1")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
         ;
@@ -23,8 +24,10 @@ public class SectionTest {
     @DisplayName("거리가 양의 정수가 아니면 예외가 발생한다")
     @Test
     void unvalidDistanceValue() {
-        Station station1 = Station.of("1");
-        Station station2 = Station.of("2");
+        Station station1 = new Station.Builder("1")
+                .build();
+        Station station2 = new Station.Builder("2")
+                .build();
         Line line = new Line.Builder("2호선", "초록색")
                 .build();
         ;
