@@ -18,10 +18,10 @@ public class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        Section section1 = new Section(UP_END_STATION, 2L, 10);
-        Section section2 = new Section(2L, 3L, 10);
-        Section section3 = new Section(3L, DOWN_END_STATION, 10);
-        sections = new Sections(List.of(section1, section2, section3));
+        Section firstSection = new Section(UP_END_STATION, 2L, 10);
+        Section secondSection = new Section(2L, 3L, 10);
+        Section thirdSection = new Section(3L, DOWN_END_STATION, 10);
+        sections = new Sections(List.of(firstSection, secondSection, thirdSection));
     }
 
     @DisplayName("상행 종점에 새로운 구간을 등록한다.")

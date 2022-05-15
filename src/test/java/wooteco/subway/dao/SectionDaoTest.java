@@ -17,6 +17,11 @@ import wooteco.subway.domain.Sections;
 @JdbcTest
 public class SectionDaoTest {
 
+    private static final Long LINE_ID = 1L;
+
+    private static final Section FIRST_SECTION = new Section(LINE_ID, 1L, 2L, 10);
+    private static final Section SECOND_SECTION = new Section(LINE_ID, 2L, 3L, 5);
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private SectionDao sectionDao;
@@ -29,28 +34,24 @@ public class SectionDaoTest {
     @DisplayName("새 구간을 저장한다.")
     @Test
     void save() {
-        Section section = new Section(1L, 1L, 1L, 2L, 10);
-        Section savedSection = sectionDao.save(section);
+        Section savedSection = sectionDao.save(FIRST_SECTION);
 
         assertAll(
-            () -> assertThat(section.getId()).isEqualTo(1L),
-            () -> assertThat(section.getLineId()).isEqualTo(1L),
-            () -> assertThat(section.getUpStationId()).isEqualTo(1L),
-            () -> assertThat(section.getDownStationId()).isEqualTo(2L),
-            () -> assertThat(section.getDistance()).isEqualTo(10)
+            () -> assertThat(savedSection.getId()).isEqualTo(1L),
+            () -> assertThat(savedSection.getLineId()).isEqualTo(1L),
+            () -> assertThat(savedSection.getUpStationId()).isEqualTo(1L),
+            () -> assertThat(savedSection.getDownStationId()).isEqualTo(2L),
+            () -> assertThat(savedSection.getDistance()).isEqualTo(10)
         );
     }
 
     @DisplayName("노선 id를 이용해 구간 목록을 조회한다.")
     @Test
     void findByLineId() {
-        Section firstSection = new Section(1L, 1L, 2L, 10);
-        Section secondSection = new Section(1L, 2L, 3L, 5);
-        sectionDao.save(firstSection);
-        sectionDao.save(secondSection);
+        sectionDao.save(FIRST_SECTION);
+        sectionDao.save(SECOND_SECTION);
 
-        long lineId = 1;
-        Sections sections = sectionDao.findByLineId(lineId);
+        Sections sections = sectionDao.findByLineId(LINE_ID);
 
         assertThat(sections.getSections().size()).isEqualTo(2);
     }
@@ -58,13 +59,11 @@ public class SectionDaoTest {
     @DisplayName("구간을 제거한다.")
     @Test
     void deleteSection() {
-        Section firstSection = new Section(1L, 1L, 2L, 10);
-        Section secondSection = new Section(1L, 2L, 3L, 5);
-        sectionDao.save(firstSection);
-        Section savedLine = sectionDao.save(secondSection);
+        sectionDao.save(FIRST_SECTION);
+        Section savedLine = sectionDao.save(SECOND_SECTION);
 
         sectionDao.delete(savedLine.getId());
-        Sections result = sectionDao.findByLineId(1L);
+        Sections result = sectionDao.findByLineId(LINE_ID);
 
         assertThat(result.getSections().size()).isEqualTo(1);
     }

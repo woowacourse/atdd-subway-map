@@ -11,9 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
@@ -25,13 +23,7 @@ public class SectionServiceTest {
     private SectionService sectionService;
 
     @Mock
-    private LineDao lineDao;
-
-    @Mock
     private SectionDao sectionDao;
-
-    @Mock
-    private StationDao stationDao;
 
     @DisplayName("기존에 존재하는 노선에 하행 종점 구간을 등록한다.")
     @Test
@@ -144,8 +136,8 @@ public class SectionServiceTest {
         // given
         given(sectionDao.findByLineId(1L))
             .willReturn(new Sections(
-                List.of(new Section(1L,1L,1L, 2L, 10),
-                    new Section(2L,1L,2L, 3L, 10)))
+                List.of(new Section(1L, 1L, 1L, 2L, 10),
+                    new Section(2L, 1L, 2L, 3L, 10)))
             );
         sectionService.deleteSection(1L, 3L);
         // then
@@ -158,8 +150,8 @@ public class SectionServiceTest {
         // given
         given(sectionDao.findByLineId(1L))
             .willReturn(new Sections(
-                List.of(new Section(1L,1L,1L, 2L, 10),
-                    new Section(2L,1L,2L, 3L, 10)))
+                List.of(new Section(1L, 1L, 1L, 2L, 10),
+                    new Section(2L, 1L, 2L, 3L, 10)))
             );
         sectionService.deleteSection(1L, 1L);
         // then
@@ -173,8 +165,8 @@ public class SectionServiceTest {
         SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
         given(sectionDao.findByLineId(1L))
             .willReturn(new Sections(
-                List.of(new Section(1L,1L,1L, 2L, 10),
-                    new Section(2L,1L,2L, 3L, 10)))
+                List.of(new Section(1L, 1L, 1L, 2L, 10),
+                    new Section(2L, 1L, 2L, 3L, 10)))
             );
         sectionService.deleteSection(1L, 2L);
         // then
@@ -189,7 +181,7 @@ public class SectionServiceTest {
         // given
         given(sectionDao.findByLineId(1L))
             .willReturn(new Sections(
-                List.of(new Section(1L,1L,1L, 2L, 10)))
+                List.of(new Section(1L, 1L, 1L, 2L, 10)))
             );
         assertThatThrownBy(() -> sectionService.deleteSection(1L, 2L))
             .isInstanceOf(IllegalArgumentException.class)
@@ -202,8 +194,8 @@ public class SectionServiceTest {
         // given
         given(sectionDao.findByLineId(1L))
             .willReturn(new Sections(
-                List.of(new Section(1L,1L,1L, 2L, 10),
-                    new Section(2L,1L,2L, 3L, 10)))
+                List.of(new Section(1L, 1L, 1L, 2L, 10),
+                    new Section(2L, 1L, 2L, 3L, 10)))
             );
         assertThatThrownBy(() -> sectionService.deleteSection(1L, 5L))
             .isInstanceOf(IllegalArgumentException.class)

@@ -19,6 +19,12 @@ import wooteco.subway.domain.Station;
 @JdbcTest
 class StationDaoTest {
 
+    private static final String FIRST_STATION_NAME = "신설동역";
+    private static final String SECOND_STATION_NAME = "성수역";
+
+    private static final Station FIRST_STATION = new Station(null, FIRST_STATION_NAME);
+    private static final Station SECOND_STATION = new Station(null, SECOND_STATION_NAME);
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private StationDao stationDao;
@@ -31,31 +37,28 @@ class StationDaoTest {
     @DisplayName("새 지하철역을 저장한다.")
     @Test
     void save() {
-        Station testStation = new Station(null, "hi");
-        Station result = stationDao.save(testStation);
+        Station result = stationDao.save(FIRST_STATION);
         assertAll(
             () -> assertNotNull(result.getId()),
-            () -> assertThat(result.getName()).isEqualTo("hi")
+            () -> assertThat(result.getName()).isEqualTo(FIRST_STATION_NAME)
         );
     }
 
     @DisplayName("지하철역 이름을 이용해 지하철역을 조회한다.")
     @Test
     void findByName() {
-        Station test = new Station(null, "test");
-        stationDao.save(test);
-        Station result = stationDao.findByName("test").orElse(null);
+        stationDao.save(FIRST_STATION);
+        Station result = stationDao.findByName(FIRST_STATION_NAME).orElse(null);
 
-        assertThat(result.getName()).isEqualTo("test");
+        assertThat(result.getName()).isEqualTo(FIRST_STATION_NAME);
     }
 
     @DisplayName("존재하지 않는 지하철역 이름을 이용해 지하철역을 조회하면 empty를 반환한다.")
     @Test
     void findByName_empty() {
-        Station test = new Station(null, "test");
-        stationDao.save(test);
+        stationDao.save(FIRST_STATION);
 
-        Optional<Station> result = stationDao.findByName("test2");
+        Optional<Station> result = stationDao.findByName(SECOND_STATION_NAME);
 
         assertThat(result).isEmpty();
     }
@@ -63,37 +66,33 @@ class StationDaoTest {
     @DisplayName("저장된 모든 지하철역을 조회한다.")
     @Test
     void findAll() {
-        Station test1 = new Station(null, "test1");
-        Station test2 = new Station(null, "test2");
-        stationDao.save(test1);
-        stationDao.save(test2);
+        stationDao.save(FIRST_STATION);
+        stationDao.save(SECOND_STATION);
 
         List<Station> stations = stationDao.findAll();
 
         assertAll(
             () -> assertThat(stations.size()).isEqualTo(2),
             () -> assertThat(stations.get(0).getId()).isEqualTo(1),
-            () -> assertThat(stations.get(0).getName()).isEqualTo("test1"),
+            () -> assertThat(stations.get(0).getName()).isEqualTo(FIRST_STATION_NAME),
             () -> assertThat(stations.get(1).getId()).isEqualTo(2),
-            () -> assertThat(stations.get(1).getName()).isEqualTo("test2")
+            () -> assertThat(stations.get(1).getName()).isEqualTo(SECOND_STATION_NAME)
         );
     }
 
     @DisplayName("지하철역 id를 이용해 지하철역을 조회한다.")
     @Test
     void findById() {
-        Station test = new Station(null, "test");
-        stationDao.save(test);
+        stationDao.save(FIRST_STATION);
         Station result = stationDao.findById(1L).orElse(null);
 
-        assertThat(result.getName()).isEqualTo("test");
+        assertThat(result.getName()).isEqualTo(FIRST_STATION_NAME);
     }
 
     @DisplayName("존재하지 않는 지하철역 id를 이용해 지하철역을 조회하면 empty를 반환한다.")
     @Test
     void findById_empty() {
-        Station test = new Station(null, "test");
-        stationDao.save(test);
+        stationDao.save(FIRST_STATION);
 
         Optional<Station> result = stationDao.findById(2L);
 
@@ -103,10 +102,8 @@ class StationDaoTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        Station test = new Station(null, "test1");
-        Station savedTest = stationDao.save(test);
-        Station test2 = new Station(null, "test2");
-        stationDao.save(test2);
+        Station savedTest = stationDao.save(FIRST_STATION);
+        stationDao.save(SECOND_STATION);
 
         stationDao.delete(savedTest);
         List<Station> result = stationDao.findAll();
