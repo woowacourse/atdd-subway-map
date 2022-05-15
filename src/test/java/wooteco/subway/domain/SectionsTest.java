@@ -50,7 +50,7 @@ class SectionsTest {
         Optional<Section> targetSectionBySection = sections.getTargetSectionToInsert(section5to4);
 
         //then
-        assertThat(targetSectionBySection).isEqualTo(Optional.empty());
+        assertThat(targetSectionBySection).isEmpty();
     }
 
     @Test
