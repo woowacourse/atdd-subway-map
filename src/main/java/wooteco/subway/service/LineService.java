@@ -52,10 +52,10 @@ public class LineService {
     }
 
     @Transactional
-    public void update(final Long id, final Line newLine) {
-        validateDuplicateNameExist(newLine);
+    public void update(final Long id, final Line line) {
         final Line result = getLineById(id);
-        result.update(newLine);
+        validateUpdatedName(line, result);
+        result.update(line);
 
         lineDao.update(id, result);
     }
@@ -66,6 +66,12 @@ public class LineService {
 
         if (affectedRows == 0) {
             throw new DataNotFoundException("존재하지 않는 노선 id 입니다.");
+        }
+    }
+
+    private void validateUpdatedName(final Line newLine, final Line result) {
+        if (!result.getName().equals(newLine.getName())) {
+            validateDuplicateNameExist(newLine);
         }
     }
 
