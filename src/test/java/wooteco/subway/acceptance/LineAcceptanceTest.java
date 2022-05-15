@@ -19,19 +19,19 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("노선 관련 기능")
+@DisplayName("노선 관련 Api")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final long 강남역_ID = 1L;
-    private static final long 역삼역_ID = 2L;
-    
+    private long 강남역_ID = 1L;
+    private long 역삼역_ID = 2L;
+
     @BeforeEach
     void setUpData() {
-        createStation("강남역");
-        createStation("역삼역");
+        강남역_ID = extractId(createStation("강남역"));
+        역삼역_ID = extractId(createStation("역삼역"));
         createStation("선릉역");
     }
-
+    
     @DisplayName("정상적으로 노선이 등록되는 경우를 테스트한다.")
     @Test
     void createLineTest() {
@@ -134,7 +134,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 노선을 업데이트하는 경우 예외를 발생시킨다.")
     @Test
     public void updateLineNotExist() {
-
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "인간분당선");
         params2.put("color", "bg-red-600");
@@ -220,5 +219,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    private Long extractId(ExtractableResponse<Response> response) {
+        return Long.parseLong(response.header("Location").split("/")[2]);
     }
 }

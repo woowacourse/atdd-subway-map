@@ -23,27 +23,22 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("구간 관련 Api")
-public class SectionAcceptanceTest {
+public class SectionAcceptanceTest extends AcceptanceTest {
 
-    @LocalServerPort
-    int port;
+    private long 강남역_ID;
+    private long 역삼역_ID;
+    private long 선릉역_ID;
+    private long 노선_ID;
 
     @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-
-        createStation("강남역");
-        createStation("역삼역");
-        createStation("선릉역");
+    public void setUpData() {
+        강남역_ID = createStation("강남역");
+        역삼역_ID = createStation("역삼역");
+        선릉역_ID = createStation("선릉역");
         createStation("잠실역");
-        createLine("2호선", "bg-red-600",  강남역_ID, 역삼역_ID, 10);
+        노선_ID = createLine("2호선", "bg-red-600",  강남역_ID, 역삼역_ID, 10);
     }
-
-    private static final long 강남역_ID = 1L;
-    private static final long 역삼역_ID = 2L;
-    private static final long 선릉역_ID = 3L;
 
     @Nested
     @DisplayName("구간 생성 Api는")
@@ -55,7 +50,6 @@ public class SectionAcceptanceTest {
 
             @Test
             @DisplayName("성공적으로 구간이 생성된다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
             void it_create_new_section() {
                 List<Section> beforeSection = getSections();
                 ExtractableResponse<Response> response = createSection(역삼역_ID, 선릉역_ID, 5);
@@ -66,7 +60,6 @@ public class SectionAcceptanceTest {
 
             @Test
             @DisplayName("200 응답 코드를 반환한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
             void it_return_ok_status_code() {
                 ExtractableResponse<Response> response = createSection(역삼역_ID, 선릉역_ID, 5);
 
@@ -79,7 +72,6 @@ public class SectionAcceptanceTest {
         class Context_add_duplicate {
             @Test
             @DisplayName("400 응답 코드를 반환한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
             void it_return_bad_status_code() {
                 ExtractableResponse<Response> response = createSection(강남역_ID, 역삼역_ID, 5);
 
@@ -92,7 +84,6 @@ public class SectionAcceptanceTest {
         class Context_add_no_exist {
             @Test
             @DisplayName("400 응답 코드를 반환한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
             void it_return_bad_status_code() {
                 ExtractableResponse<Response> response = createSection(10L, 11L, 5);
 
@@ -105,7 +96,6 @@ public class SectionAcceptanceTest {
         class Context_add_with_fork {
             @Test
             @DisplayName("200 응답 코드를 반환한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
             void it_return_ok_status_code() {
                 ExtractableResponse<Response> response = createSection(강남역_ID, 선릉역_ID, 5);
 
@@ -115,7 +105,6 @@ public class SectionAcceptanceTest {
 
             @Test
             @DisplayName("기존 구간에 해당 구간을 넣는다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
             void it_insert_section() {
                 ExtractableResponse<Response> response = createSection(강남역_ID, 선릉역_ID, 5);
 
@@ -132,7 +121,6 @@ public class SectionAcceptanceTest {
         class Context_add_with_fork_exceed_distance {
             @Test
             @DisplayName("400 응답 코드를 반환한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
             void it_return_bad_request_status_code() {
                 ExtractableResponse<Response> response = createSection(강남역_ID, 선릉역_ID, 1000);
 
@@ -149,17 +137,14 @@ public class SectionAcceptanceTest {
         class Context_delete_no_endPoint {
             @Test
             @DisplayName("200 응답 코드를 반환한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
             void it_return_ok_status_code() {
                 createSection(역삼역_ID, 선릉역_ID, 1);
                 ExtractableResponse<Response> response = deleteSection(강남역_ID);
-                Section section = getSections().get(0);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             }
 
             @Test
             @DisplayName("해당 역을 제거한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
             void it_delete_stations() {
                 createSection(역삼역_ID, 선릉역_ID, 1);
                 ExtractableResponse<Response> response = deleteSection(강남역_ID);
@@ -177,7 +162,7 @@ public class SectionAcceptanceTest {
         class Context_delete_only_two_stations {
             @Test
             @DisplayName("400 응답 코드를 반환한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            @DirtiesContext
             void it_return_bad_request_status_code() {
                 ExtractableResponse<Response> response = deleteSection(강남역_ID);
 
@@ -190,7 +175,7 @@ public class SectionAcceptanceTest {
         class Context_delete_not_exist_stations {
             @Test
             @DisplayName("400 응답 코드를 반환한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            @DirtiesContext
             void it_return_bad_request_status_code() {
                 ExtractableResponse<Response> response = deleteSection(강남역_ID);
 
@@ -203,7 +188,7 @@ public class SectionAcceptanceTest {
         class Context_delete_Overlap_up_and_down {
             @Test
             @DisplayName("200 응답 코드를 반환한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            @DirtiesContext
             void it_return_ok_status_code() {
                 createSection(역삼역_ID, 선릉역_ID, 5);
                 ExtractableResponse<Response> response = deleteSection(역삼역_ID);
@@ -212,7 +197,7 @@ public class SectionAcceptanceTest {
 
             @Test
             @DisplayName("삭제된 역을 기준으로 두 구간을 통합한다.")
-            @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+            @DirtiesContext
             void it_combine_sections() {
                 createSection(역삼역_ID, 선릉역_ID, 5);
                 ExtractableResponse<Response> response = deleteSection(역삼역_ID);
@@ -224,15 +209,13 @@ public class SectionAcceptanceTest {
                 );
             }
         }
-
-
     }
 
     private List<Section> getSections() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/lines/1")
+                .get("/lines/" + 노선_ID)
                 .then().log().all()
                 .extract();
 
@@ -251,7 +234,7 @@ public class SectionAcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete("/lines/1/sections?stationId=" + stationId)
+                .delete("/lines/" + 노선_ID + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }
@@ -266,12 +249,12 @@ public class SectionAcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines/1/sections")
+                .post("/lines/"+노선_ID+"/sections")
                 .then().log().all()
                 .extract();
     }
 
-    private void createLine(final String name, final String color, final Long upStationId,
+    private Long createLine(final String name, final String color, final Long upStationId,
                             final Long downStationId, final Integer distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -280,7 +263,7 @@ public class SectionAcceptanceTest {
         params.put("downStationId", downStationId);
         params.put("distance", distance);
 
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -288,19 +271,23 @@ public class SectionAcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
+
+        return Long.parseLong(response.header("location").split("/")[2]);
     }
 
-    private void createStation(final String name) {
+    private Long createStation(final String name) {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then().log().all()
                 .extract();
+
+        return Long.parseLong(response.header("location").split("/")[2]);
     }
 }
