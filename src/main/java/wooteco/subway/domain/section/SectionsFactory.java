@@ -8,10 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.ExceptionType;
 
 public class SectionsFactory {
-
-    private static final String NOT_EXISTING_LINE_EXCEPTION = "존재하지 않는 노선입니다.";
 
     private SectionsFactory() {
     }
@@ -25,7 +24,7 @@ public class SectionsFactory {
 
     private static void validateLineExistence(List<Section> value) {
         if (value.isEmpty()) {
-            throw new NotFoundException(NOT_EXISTING_LINE_EXCEPTION);
+            throw new NotFoundException(ExceptionType.LINE_NOT_FOUND);
         }
     }
 

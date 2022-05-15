@@ -11,11 +11,11 @@ import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.ExceptionType;
 
 @Service
 public class StationService {
 
-    private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 역은 존재하지 않습니다.";
     private static final String NAME_NOT_ALLOWED_EXCEPTION_MESSAGE = "해당 이름의 지하철역을 생성할 수 없습니다.";
     private static final String REGISTERED_STATION_EXCEPTION_MESSAGE = "노선에 등록된 역은 제거할 수 없습니다.";
 
@@ -61,7 +61,7 @@ public class StationService {
     private void validateExistingStation(Long id) {
         boolean isExistingStation = stationDao.findById(id).isPresent();
         if (!isExistingStation) {
-            throw new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE);
+            throw new NotFoundException(ExceptionType.STATION_NOT_FOUND);
         }
     }
 

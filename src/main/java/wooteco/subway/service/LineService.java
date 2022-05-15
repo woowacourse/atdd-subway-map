@@ -23,13 +23,12 @@ import wooteco.subway.entity.RegisteredStationEntity;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.ExceptionType;
 
 @Service
 public class LineService {
 
     private static final String DUPLICATE_LINE_NAME_EXCEPTION_MESSAGE = "중복되는 이름의 지하철 노선이 존재합니다.";
-    private static final String LINE_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 노선은 존재하지 않습니다.";
-    private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "존재하지 않는 역을 입력하였습니다.";
 
     private final LineDao lineDao;
     private final StationDao stationDao;
@@ -71,7 +70,7 @@ public class LineService {
 
     private Line findExistingLine(Long id) {
         return lineDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE))
+                .orElseThrow(() -> new NotFoundException(ExceptionType.LINE_NOT_FOUND))
                 .toDomain();
     }
 
@@ -90,7 +89,7 @@ public class LineService {
 
     private StationEntity findExistingStation(Long stationId) {
         return stationDao.findById(stationId)
-                .orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new NotFoundException(ExceptionType.STATION_NOT_FOUND));
     }
 
     @Transactional
@@ -114,7 +113,7 @@ public class LineService {
     private void validateExistingLine(Long id) {
         boolean isExistingLine = lineDao.findById(id).isPresent();
         if (!isExistingLine) {
-            throw new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE);
+            throw new NotFoundException(ExceptionType.LINE_NOT_FOUND);
         }
     }
 

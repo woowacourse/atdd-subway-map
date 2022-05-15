@@ -13,11 +13,10 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.ExceptionType;
 
 @Service
 public class SectionService {
-
-    private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "존재하지 않는 역을 입력하였습니다.";
 
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -27,7 +26,6 @@ public class SectionService {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
-
 
     @Transactional
     public void save(Long lineId, CreateSectionRequest request) {
@@ -65,7 +63,7 @@ public class SectionService {
 
     private Station findExistingStation(Long stationId) {
         return stationDao.findById(stationId)
-                .orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE))
+                .orElseThrow(() -> new NotFoundException(ExceptionType.STATION_NOT_FOUND))
                 .toDomain();
     }
 }
