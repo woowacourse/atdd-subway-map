@@ -16,13 +16,13 @@ public class SectionsTest {
     void setUp() {
         Section section = new Section(1L, 1L, 2L, 4);
         Section section1 = new Section(1L, 2L, 3L, 4);
-        sections = new Sections(List.of(section, section1));
+        sections = new Sections(List.of(section1, section));
     }
 
     @DisplayName("구간들에서 모든 역 아이디들을 얻어옴")
     @Test
     void getAllStationId() {
-        assertThat(sections.getAllStationId()).containsOnly(1L, 2L, 3L);
+        assertThat(sections.getAllStationId()).containsExactly(1L, 2L, 3L);
     }
 
     @DisplayName("상행이 일치하는 구간을 얻어와서 확인")
