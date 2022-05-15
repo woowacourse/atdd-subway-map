@@ -117,11 +117,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("노선 업데이트에 실패한다.")
+    @DisplayName("이미 존재하는 노선이름으로 변경 시 업데이트에 실패한다.")
     @Test
     void failUpdateLine() {
         // given
-        ExtractableResponse<Response> createResponse1 = createPostLineResponse(일호선);
+        createPostLineResponse(일호선);
         ExtractableResponse<Response> createResponse2 = createPostLineResponse(이호선);
         // when
         String id = createResponse2.header("Location").split("/")[2];
@@ -216,16 +216,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .delete("/lines/" + id)
                 .then().log().all()
                 .extract();
-    }
-
-    private Map<String, String> makeParamsLine(String name, String color, Long upStationId, Long downStationId, int distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", String.valueOf(upStationId));
-        params.put("downStationId", String.valueOf(downStationId));
-        params.put("distance", String.valueOf(distance));
-        return params;
     }
 
     private ExtractableResponse<Response> createPostStationResponse(StationRequest stationRequest) {
