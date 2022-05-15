@@ -58,7 +58,6 @@ public class StationDao {
 
     public List<Station> findByLineId(Long lineId) {
         String sql = "SELECT DISTINCT s.id, s.name FROM station s, section sec "
-                + "JOIN line l ON l.id=sec.line_id "
                 + "WHERE (sec.up_station_id=s.id or sec.down_station_id=s.id) and sec.line_id=? ";
         List<Station> query = jdbcTemplate.query(sql, stationRowMapper, lineId);
         return query;
