@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 public class SectionsV2 {
 
+    private static final int SECTIONS_MINIMUM_SIZE = 1;
+
     private final List<SectionV2> values;
 
     public SectionsV2(List<SectionV2> values) {
@@ -106,6 +108,22 @@ public class SectionsV2 {
     private void validateSectionDistance(SectionV2 section, SectionV2 updateSection) {
         if (updateSection.isOverDistance(section)) {
             throw new IllegalArgumentException("기존의 구간보다 더 긴 구간은 추가할 수 없습니다.");
+        }
+    }
+
+    public List<SectionV2> delete(Station station) {
+        validateDeleteSize(values);
+        List<SectionV2> sections = values.stream()
+                .filter(value -> value.isSameUpStation(station)
+                        || value.isSameDownStation(station))
+                .collect(Collectors.toList());
+        values.removeAll(sections);
+        return sections;
+    }
+
+    private void validateDeleteSize(List<SectionV2> values) {
+        if (values.size() <= SECTIONS_MINIMUM_SIZE) {
+            throw new IllegalArgumentException("구간이 1개만 등록되어 있을 경우에는 삭제할 수 없습니다.");
         }
     }
 
