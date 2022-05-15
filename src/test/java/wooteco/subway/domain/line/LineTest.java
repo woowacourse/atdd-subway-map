@@ -23,8 +23,10 @@ class LineTest {
     private static final Station 강남역 = new Station(1L, "강남역");
     private static final Station 역삼역 = new Station(2L, "역삼역");
     private static final Station 선릉역 = new Station(3L, "선릉역");
+    private static final Station 삼성역 = new Station(4L, "삼성역");
     private static final Section FIRST_SECTION = new Section(1L, 강남역, 역삼역, 10);
     private static final Section SECOND_SECTION = new Section(2L, 역삼역, 선릉역, 10);
+    private static final Section THIRD_SECTION = new Section(3L, 선릉역, 삼성역, 10);
     private static final List<Section> SECTIONS = List.of(FIRST_SECTION, SECOND_SECTION);
 
     private Line line;
@@ -44,6 +46,26 @@ class LineTest {
                 () -> assertThat(line.getName()).isEqualTo(name),
                 () -> assertThat(line.getColor()).isEqualTo(color)
         );
+    }
+
+    @DisplayName("구간을 추가한다")
+    @Test
+    void appendSection() {
+        int expected = line.getSections().size();
+        line.appendSection(THIRD_SECTION);
+
+        List<Section> actual = line.getSections();
+        assertThat(actual).hasSize(expected + 1);
+    }
+
+    @DisplayName("역을 제거한다")
+    @Test
+    void removeStation() {
+        int expected = line.getSections().size();
+        line.removeStation(역삼역);
+
+        List<Section> actual = line.getSections();
+        assertThat(actual).hasSize(expected - 1);
     }
 
     @DisplayName("식별자를 반환한다.")

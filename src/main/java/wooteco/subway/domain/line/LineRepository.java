@@ -14,6 +14,8 @@ public interface LineRepository {
 
     Line updateLine(Line line);
 
+    void updateSections(Line line);
+
     void removeLine(Long lineId);
 
     Station findStationById(Long stationId);

@@ -34,6 +34,14 @@ public class Line {
         this.color = new LineColor(color);
     }
 
+    public void appendSection(Section section) {
+        sections.append(section);
+    }
+
+    public void removeStation(Station station) {
+        sections.remove(station);
+    }
+
     public Long getId() {
         return id.getId();
     }

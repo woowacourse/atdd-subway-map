@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -23,8 +22,6 @@ import javax.sql.DataSource;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineRepository;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.SectionRepository;
-import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.StationRepository;
 import wooteco.subway.repository.dao.LineDao;
@@ -133,49 +130,6 @@ class SubwayRepositoryTest {
 
     @DisplayName("지하철노선 Repository")
     @Nested
-    class SectionRepositoryTest {
-
-        private SectionRepository sectionRepository;
-        private List<Station> stations;
-        private Line line;
-
-        @BeforeEach
-        void setUp() {
-            this.sectionRepository = subwayRepository;
-
-            this.stations = Stream.of(강남역, 역삼역, 선릉역, 삼성역)
-                    .map(subwayRepository::saveStation)
-                    .collect(Collectors.toUnmodifiableList());
-
-            this.line = subwayRepository.saveLine(new Line(
-                    List.of(new Section(stations.get(0), stations.get(1), 10)), "2호선", "red"));
-        }
-
-        @DisplayName("노선에 해당하는 구간 목록을 조회한다.")
-        @Test
-        void findSectionsByLineId() {
-            List<Section> actual = sectionRepository.findSectionsByLineId(line.getId());
-            assertThat(actual).hasSize(line.getSections().size());
-        }
-
-        @DisplayName("구간 목록을 수정한다.")
-        @Test
-        void updateSections() {
-            List<Section> expected = List.of(
-                    new Section(stations.get(0), stations.get(1), 10),
-                    new Section(stations.get(1), stations.get(2), 5),
-                    new Section(stations.get(2), stations.get(3), 5));
-            sectionRepository.updateSections(line.getId(), new Sections(expected));
-
-            List<Section> actual = sectionRepository.findSectionsByLineId(line.getId());
-            assertThat(actual).usingRecursiveComparison()
-                    .ignoringFields("id")
-                    .isEqualTo(expected);
-        }
-    }
-
-    @DisplayName("지하철노선 Repository")
-    @Nested
     class LineRepositoryTest {
 
         private LineRepository lineRepository;
@@ -186,7 +140,7 @@ class SubwayRepositoryTest {
             lineRepository = subwayRepository;
 
             Station station1 = subwayRepository.saveStation(강남역);
-            Station station2 = subwayRepository.saveStation(선릉역);
+            Station station2 = subwayRepository.saveStation(역삼역);
             this.sections = List.of(new Section(station1, station2, 3));
         }
 
@@ -274,6 +228,27 @@ class SubwayRepositoryTest {
             assertThatThrownBy(() -> lineRepository.updateLine(new Line(1L, sections, "신분당선", "color")))
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessageContaining("지하철노선을 찾을 수 없습니다.");
+        }
+
+        @DisplayName("구간 목록을 수정한다.")
+        @Test
+        void updateSections() {
+            Station upStation = subwayRepository.saveStation(new Station("광교역"));
+            Station middleStation = subwayRepository.saveStation(new Station("광교중앙역"));
+            Station downStation = subwayRepository.saveStation(new Station("상현역"));
+
+            Line line = subwayRepository.saveLine(new Line(
+                    List.of(new Section(upStation, downStation, 10)), "신분당선", "red"));
+
+            List<Section> expected = List.of(
+                    new Section(upStation, middleStation, 5),
+                    new Section(middleStation, downStation, 5));
+            lineRepository.updateSections(new Line(line.getId(), expected, line.getName(), line.getColor()));
+
+            List<Section> actual = lineRepository.findLineById(line.getId()).getSections();
+            assertThat(actual).usingRecursiveComparison()
+                    .ignoringFields("id")
+                    .isEqualTo(expected);
         }
 
         @DisplayName("지하철노선을 삭제한다.")

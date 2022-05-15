@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.repository.exception.DuplicateLineColorException;
 import wooteco.subway.repository.exception.DuplicateLineNameException;
 import wooteco.subway.service.LineService;
-import wooteco.subway.service.SectionService;
 import wooteco.subway.service.dto.line.LineRequest;
 import wooteco.subway.service.dto.line.LineResponse;
 import wooteco.subway.service.dto.line.LineUpdateRequest;
@@ -29,11 +28,9 @@ import wooteco.subway.service.dto.section.SectionRequest;
 public class LineController {
 
     private final LineService lineService;
-    private final SectionService sectionService;
 
-    public LineController(LineService lineService, SectionService sectionService) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.sectionService = sectionService;
     }
 
     @PostMapping
@@ -64,19 +61,19 @@ public class LineController {
 
     @DeleteMapping("/{lineId}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
-        lineService.remove(lineId);
+        lineService.delete(lineId);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        sectionService.create(lineId, sectionRequest);
+    public ResponseEntity<Void> appendSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.appendSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{lineId}/sections")
-    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        sectionService.remove(lineId, stationId);
+    public ResponseEntity<Void> removeStation(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.removeStation(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 

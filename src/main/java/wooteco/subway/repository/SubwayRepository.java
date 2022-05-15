@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineRepository;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.SectionRepository;
-import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.StationRepository;
 import wooteco.subway.repository.dao.LineDao;
@@ -28,7 +26,7 @@ import wooteco.subway.repository.exception.NoSuchSectionException;
 import wooteco.subway.repository.exception.NoSuchStationException;
 
 @Repository
-public class SubwayRepository implements LineRepository, SectionRepository, StationRepository {
+public class SubwayRepository implements LineRepository, StationRepository {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -123,8 +121,7 @@ public class SubwayRepository implements LineRepository, SectionRepository, Stat
                 .orElseThrow(() -> new NoSuchLineException(lineId));
     }
 
-    @Override
-    public List<Section> findSectionsByLineId(Long lineId) {
+    private List<Section> findSectionsByLineId(Long lineId) {
         return sectionDao.findAllByLineId(lineId)
                 .stream()
                 .map(sectionEntity -> EntityAssembler.section(
@@ -149,22 +146,26 @@ public class SubwayRepository implements LineRepository, SectionRepository, Stat
     }
 
     @Override
-    public void updateSections(Long lineId, Sections sections) {
-        List<Long> originalSectionIds = sectionDao.findAllIdByLineId(lineId);
-        List<Long> updatedSectionIds = sections.getSectionIds();
+    public void updateSections(Line line) {
+        List<Long> originalSectionIds = sectionDao.findAllIdByLineId(line.getId());
+        List<Section> updatedSections = line.getSections();
 
-        removeSections(originalSectionIds, updatedSectionIds);
-        appendSections(lineId, sections.getSections());
+        removeSections(originalSectionIds, updatedSections);
+        appendSections(line.getId(), updatedSections);
     }
 
-    private void removeSections(List<Long> originalSectionIds, List<Long> updatedSectionIds) {
+    private void removeSections(List<Long> originalSectionIds, List<Section> updatedSections) {
+        List<Long> updatedSectionIds = updatedSections.stream()
+                .map(Section::getId)
+                .collect(Collectors.toUnmodifiableList());
+
         originalSectionIds.stream()
                 .filter(sectionId -> !updatedSectionIds.contains(sectionId))
                 .forEach(sectionDao::remove);
     }
 
-    private void appendSections(Long lineId, List<Section> sections) {
-        sections.stream()
+    private void appendSections(Long lineId, List<Section> updatedSections) {
+        updatedSections.stream()
                 .filter(section -> section.getId() == 0)
                 .forEach(section -> sectionDao.save(EntityAssembler.sectionEntity(lineId, section)));
     }

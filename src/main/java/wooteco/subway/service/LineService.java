@@ -8,10 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineRepository;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.service.dto.DtoAssembler;
 import wooteco.subway.service.dto.line.LineRequest;
 import wooteco.subway.service.dto.line.LineResponse;
 import wooteco.subway.service.dto.line.LineUpdateRequest;
+import wooteco.subway.service.dto.section.SectionRequest;
 
 @Service
 public class LineService {
@@ -54,7 +56,30 @@ public class LineService {
     }
 
     @Transactional
-    public void remove(Long id) {
+    public void delete(Long id) {
         lineRepository.removeLine(id);
+    }
+
+    @Transactional
+    public void appendSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findLineById(lineId);
+        Section section = createSection(sectionRequest);
+        line.appendSection(section);
+        lineRepository.updateSections(line);
+    }
+
+    private Section createSection(SectionRequest sectionRequest) {
+        return new Section(
+                lineRepository.findStationById(sectionRequest.getUpStationId()),
+                lineRepository.findStationById(sectionRequest.getDownStationId()),
+                sectionRequest.getDistance());
+    }
+
+    @Transactional
+    public void removeStation(Long lineId, Long stationId) {
+        Line line = lineRepository.findLineById(lineId);
+        Station station = lineRepository.findStationById(stationId);
+        line.removeStation(station);
+        lineRepository.updateSections(line);
     }
 }
