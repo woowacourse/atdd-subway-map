@@ -6,8 +6,8 @@ import java.util.Objects;
 
 public class Line {
 
-    private static final int MIN__NAME_LENGTH = 1;
-    private static final int MIN__COLOR_LENGTH = 1;
+    private static final int MIN_NAME_LENGTH = 1;
+    private static final int MIN_COLOR_LENGTH = 1;
     private static final int MAX_NAME_LENGTH = 30;
     private static final int MAX_COLOR_LENGTH = 20;
 
@@ -49,14 +49,14 @@ public class Line {
 
     private void validateNameLength(String name) {
         int length = name.length();
-        if (length < MIN__NAME_LENGTH || length > MAX_NAME_LENGTH) {
+        if (length < MIN_NAME_LENGTH || length > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("이름은 1~30 자 이내여야 합니다.");
         }
     }
 
     private void validateColorLength(String color) {
         int length = color.length();
-        if (length < MIN__COLOR_LENGTH || length > MAX_COLOR_LENGTH) {
+        if (length < MIN_COLOR_LENGTH || length > MAX_COLOR_LENGTH) {
             throw new IllegalArgumentException("색상은 1~20 자 이내여야 합니다.");
         }
     }
