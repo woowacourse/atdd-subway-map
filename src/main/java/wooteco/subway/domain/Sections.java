@@ -17,15 +17,15 @@ public class Sections {
     public List<Long> sortStations() {
         List<Long> stations = new ArrayList<>();
 
-        Section nowSection = getFirstSection(sections.get(0));
-        stations.add(nowSection.getUpStationId());
+        Section targetSection = getFirstSection(sections.get(0));
+        stations.add(targetSection.getUpStationId());
 
-        while(!isLastStation(nowSection.getDownStationId())){
-            stations.add(nowSection.getDownStationId());
-            nowSection = findSectionByUpStation(nowSection.getDownStationId());
+        while(!isLastStation(targetSection.getDownStationId())){
+            stations.add(targetSection.getDownStationId());
+            targetSection = findSectionByUpStation(targetSection.getDownStationId());
         }
 
-        stations.add(nowSection.getDownStationId());
+        stations.add(targetSection.getDownStationId());
         return stations;
     }
 
