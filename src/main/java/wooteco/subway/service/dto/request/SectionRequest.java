@@ -1,13 +1,10 @@
-package wooteco.subway.dto;
+package wooteco.subway.service.dto.request;
 
 public class SectionRequest {
 
     private Long upStationId;
     private Long downStationId;
     private int distance;
-
-    public SectionRequest() {
-    }
 
     public SectionRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;

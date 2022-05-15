@@ -1,15 +1,14 @@
 package wooteco.subway.ui;
 
-import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.dto.ErrorResponse;
 import wooteco.subway.exception.BadRequestException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.service.dto.response.ErrorResponse;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {

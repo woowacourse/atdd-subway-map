@@ -2,127 +2,267 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
 import java.util.List;
-import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.LineDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.LineUpdateRequest;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.SectionRepository;
+import wooteco.subway.repository.StationRepository;
+import wooteco.subway.service.dto.request.SectionRequest;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineServiceTest {
 
-    @InjectMocks
+    @Autowired
     private LineService lineService;
 
-    @Mock
-    private LineDao lineDao;
+    @Autowired
+    private LineRepository lineRepository;
 
-    @Test
-    @DisplayName("노선을 생성한다.")
-    void create() {
-        // given
-        given(lineDao.save(any(Line.class))).willReturn(new Line(1L, "1호선", "blue"));
+    @Autowired
+    private StationRepository stationRepository;
 
-        // when
-        LineResponse lineResponse = lineService.create(new LineRequest("1호선", "blue"));
+    @Autowired
+    private SectionRepository sectionRepository;
 
-        // then
-        assertThat(lineResponse.getId()).isEqualTo(1L);
-        assertThat(lineResponse.getName()).isEqualTo("1호선");
-        assertThat(lineResponse.getColor()).isEqualTo("blue");
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    public void setUp() {
+        jdbcTemplate.update("delete from section");
+        jdbcTemplate.update("delete from line");
+        jdbcTemplate.update("delete from station");
     }
 
     @Test
-    @DisplayName("노선을 조회한다.")
-    void findById() {
-        // given
-        given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "1호선", "blue")));
+    @DisplayName("구간 사이에 역을 추가한다. 강남-광교 -> 강남-양재-광교")
+    void addSection() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 광교, 10));
 
-        // when
-        LineResponse lineResponse = lineService.showById(1L);
+        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest);
 
-        // then
-        assertThat(lineResponse.getId()).isEqualTo(1L);
-        assertThat(lineResponse.getName()).isEqualTo("1호선");
-        assertThat(lineResponse.getColor()).isEqualTo("blue");
+        List<Section> sections = sectionRepository.findSectionByLine(신분당선);
+        Section 구간1 = findSection(강남, sections);
+        assertThat(구간1.getDownStation()).isEqualTo(양재);
+        assertThat(구간1.getDistance()).isEqualTo(4);
+
+        Section 구간2 = findSection(양재, sections);
+        assertThat(구간2.getDownStation()).isEqualTo(광교);
+        assertThat(구간2.getDistance()).isEqualTo(6);
     }
 
     @Test
-    @DisplayName("존재하지 않는 노선을 조회할 경우 예외를 발생한다.")
-    void notFindById() {
-        // given
-        given(lineDao.findById(1L)).willThrow(new NotFoundException("조회하려는 id가 존재하지 않습니다."));
+    @DisplayName("구간 사이에 앞역을 기준으로 추가한다. 강남-양재-광교 -> 강남-양재-판교-광교")
+    void addSectionFrontStation() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Station 판교 = stationRepository.save(new Station("판교"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 광교, 10));
+        SectionRequest sectionRequest1 = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest1);
 
-        // when && then
-        assertThatThrownBy(() -> lineService.showById(1L))
-            .isInstanceOf(NotFoundException.class)
-            .hasMessage("조회하려는 id가 존재하지 않습니다.");
+        SectionRequest sectionRequest2 = new SectionRequest(양재.getId(), 판교.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest2);
+
+        List<Section> sections = sectionRepository.findSectionByLine(신분당선);
+        Section 구간2 = findSection(양재, sections);
+        Section 구간3 = findSection(판교, sections);
+        assertThat(구간2.getDownStation()).isEqualTo(판교);
+        assertThat(구간2.getDistance()).isEqualTo(4);
+        assertThat(구간3.getDownStation()).isEqualTo(광교);
+        assertThat(구간3.getDistance()).isEqualTo(2);
     }
 
     @Test
-    @DisplayName("노선 전체를 조회한다.")
-    void findAll() {
-        // given
-        Line line1 = new Line(1L, "1호선", "blue");
-        Line line2 = new Line(2L, "2호선", "green");
-        given(lineDao.findAll()).willReturn(List.of(line1, line2));
+    @DisplayName("구간 사이에 뒷역을 기준으로 추가한다. 강남-양재-광교 -> 강남-양재-판교-광교")
+    void addSectionBackStation() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Station 판교 = stationRepository.save(new Station("판교"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 광교, 10));
+        SectionRequest sectionRequest1 = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest1);
 
-        // when
-        List<LineResponse> lineResponses = lineService.showAll();
+        SectionRequest sectionRequest2 = new SectionRequest(판교.getId(), 광교.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest2);
 
-        // then
-        assertThat(lineResponses).hasSize(2);
+        List<Section> sections = sectionRepository.findSectionByLine(신분당선);
+        Section 구간2 = findSection(양재, sections);
+        Section 구간3 = findSection(판교, sections);
+        assertThat(구간2.getDownStation()).isEqualTo(판교);
+        assertThat(구간2.getDistance()).isEqualTo(2);
+        assertThat(구간3.getDownStation()).isEqualTo(광교);
+        assertThat(구간3.getDistance()).isEqualTo(4);
     }
 
     @Test
-    @DisplayName("노선을 수정한다.")
-    void update() {
-        // given
-        Line line = new Line(1L, "1호선", "blue");
-        given(lineDao.findById(1L)).willReturn(Optional.of(line));
+    @DisplayName("상행 종점을 변경한다. 양재-광교 -> 강남-양재-광교")
+    void addUpStation() {
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 양재, 광교, 10));
 
-        // when
-        lineService.updateById(1L, new LineUpdateRequest("2호선", "green"));
+        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 5);
 
-        // then
-        then(lineDao).should(times(1)).modifyById(1L, line);
+        lineService.createSection(신분당선.getId(), sectionRequest);
+
+        List<Section> sections = sectionRepository.findSectionByLine(신분당선);
+        Section 구간1 = findSection(강남, sections);
+        Section 구간2 = findSection(양재, sections);
+        assertThat(구간1.getDownStation()).isEqualTo(양재);
+        assertThat(구간1.getDistance()).isEqualTo(5);
+        assertThat(구간2.getDownStation()).isEqualTo(광교);
+        assertThat(구간2.getDistance()).isEqualTo(10);
     }
 
     @Test
-    @DisplayName("존재하지 않는 노선을 수정할 경우 예외를 발생한다.")
-    void notUpdateById() {
-        // given
-        given(lineDao.findById(1L)).willThrow(new NotFoundException("조회하려는 id가 존재하지 않습니다."));
+    @DisplayName("하행 종점을 변경한다. 강남-양재 -> 강남-양재-광교")
+    void addDownStation() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 양재, 10));
 
-        // when
-        assertThatThrownBy(() -> lineService.updateById(1L, new LineUpdateRequest("2호선", "blue")))
-            .isInstanceOf(NotFoundException.class)
-            .hasMessage("조회하려는 id가 존재하지 않습니다.");
+        SectionRequest sectionRequest = new SectionRequest(양재.getId(), 광교.getId(), 5);
+        lineService.createSection(신분당선.getId(), sectionRequest);
 
-        // then
-        then(lineDao).should(times(0)).modifyById(1L, new Line("2호선", "blue"));
+        List<Section> sections = sectionRepository.findSectionByLine(신분당선);
+        Section 구간1 = findSection(강남, sections);
+        Section 구간2 = findSection(양재, sections);
+        assertThat(구간1.getDownStation()).isEqualTo(양재);
+        assertThat(구간1.getDistance()).isEqualTo(10);
+        assertThat(구간2.getDownStation()).isEqualTo(광교);
+        assertThat(구간2.getDistance()).isEqualTo(5);
     }
 
     @Test
-    @DisplayName("노선을 삭제한다.")
-    void delete() {
-        // given & when
-        lineService.removeById(1L);
+    @DisplayName("중간 역을 삭제한다. 강남-양재-광교 -> 강남-광교")
+    void deleteSection() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 광교, 10));
+        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest);
 
-        // then
-        then(lineDao).should().deleteById(1L);
+        lineService.deleteSection(신분당선.getId(), 양재.getId());
+
+        List<Section> sections = sectionRepository.findSectionByLine(신분당선);
+        assertThat(sections).hasSize(1);
+        assertThat(sections.get(0).getDistance()).isEqualTo(10);
+        assertThat(sections.get(0).getUpStation()).isEqualTo(강남);
+        assertThat(sections.get(0).getDownStation()).isEqualTo(광교);
+    }
+
+    @Test
+    @DisplayName("상행 종점을 삭제한다. 강남-양재-광교 -> 양재-광교")
+    void deleteUpSection() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 광교, 10));
+        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest);
+
+        lineService.deleteSection(신분당선.getId(), 강남.getId());
+
+        List<Section> sections = sectionRepository.findSectionByLine(신분당선);
+        assertThat(sections).hasSize(1);
+        assertThat(sections.get(0).getDistance()).isEqualTo(6);
+    }
+
+    @Test
+    @DisplayName("하행 종점을 삭제한다. 강남-양재-광교 -> 강남-양재")
+    void deleteDownSection() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 광교, 10));
+        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 4);
+        lineService.createSection(신분당선.getId(), sectionRequest);
+
+        lineService.deleteSection(신분당선.getId(), 광교.getId());
+
+        List<Section> sections = sectionRepository.findSectionByLine(신분당선);
+        assertThat(sections).hasSize(1);
+        assertThat(sections.get(0).getDistance()).isEqualTo(4);
+    }
+
+    @Test
+    @DisplayName("라인에 없는 역을 구간으로 추가할 경우 예외를 발생한다.")
+    void addSectionNotFindStation() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Station 창동 = stationRepository.save(new Station("창동"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 광교, 10));
+
+        SectionRequest sectionRequest = new SectionRequest(양재.getId(), 창동.getId(), 4);
+
+        assertThatThrownBy(() -> lineService.createSection(신분당선.getId(), sectionRequest))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("생성할 수 없는 구간입니다.");
+    }
+
+    @Test
+    @DisplayName("라인에 둘다 존재하는 역을 구간으로 추가할 경우 예외를 발생한다.")
+    void addSectionDuplicateStation() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 광교, 10));
+
+        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 광교.getId(), 4);
+
+        assertThatThrownBy(() -> lineService.createSection(신분당선.getId(), sectionRequest))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("기존에 존재하는 구간입니다.");
+    }
+
+    @Test
+    @DisplayName("기존 구간보다 같거나 긴 거리의 구간으로 추가시 예외를 발생한다.")
+    void addSectionOverDistance() {
+        Station 강남 = stationRepository.save(new Station("강남"));
+        Station 양재 = stationRepository.save(new Station("양재"));
+        Station 광교 = stationRepository.save(new Station("광교"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        sectionRepository.save(new Section(신분당선, 강남, 광교, 10));
+
+        SectionRequest sectionRequest = new SectionRequest(강남.getId(), 양재.getId(), 10);
+
+        assertThatThrownBy(() -> lineService.createSection(신분당선.getId(), sectionRequest))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("추가하려는 거리가 큽니다.");
+    }
+
+    private Section findSection(Station station, List<Section> sections) {
+        return sections.stream()
+            .filter(entity -> entity.isEqualToUpStation(station))
+            .findFirst()
+            .get();
     }
 }
