@@ -44,6 +44,19 @@ public class SectionDao {
         return jdbcTemplate.query(sql, paramSource, ROW_MAPPER);
     }
 
+    public List<SectionEntity> findAllByStationId(Long stationId) {
+        final String sql = "SELECT DISTINCT A.line_id AS line_id, A.distance AS distance, "
+                + "B.id AS up_station_id, B.name AS up_station_name, "
+                + "C.id AS down_station_id, C.name AS down_station_name "
+                + "FROM section A, station B, station C "
+                + "WHERE A.up_station_id = B.id AND A.down_station_id = C.id "
+                + "AND (A.up_station_id = :stationId OR A.down_station_id = :stationId)";
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("stationId", stationId);
+
+        return jdbcTemplate.query(sql, paramSource, ROW_MAPPER);
+    }
+
     public void save(SectionEntity sectionEntity) {
         final String sql = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) "
                 + "VALUES(:lineId, :upStationId, :downStationId, :distance)";

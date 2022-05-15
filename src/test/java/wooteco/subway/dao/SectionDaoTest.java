@@ -26,22 +26,41 @@ class SectionDaoTest extends DaoTest {
 
     @BeforeEach
     void setup() {
-        testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
+        testFixtureManager.saveStations("강남역", "선릉역", "잠실역", "강변역", "청계산입구역");
         testFixtureManager.saveLine("1호선", "색깔");
         testFixtureManager.saveLine("2호선", "색깔2");
     }
 
-    @Test
-    void findAllByLineId_메서드는_lineId에_해당하는_모든_구간_데이터를_조회() {
-        testFixtureManager.saveSection(1L, 2L, 3L, 10);
-        testFixtureManager.saveSection(1L, 1L, 2L, 5);
+    @DisplayName("findAll 메서드들은 조건에 부합하는 모든 데이터를 조회한다")
+    @Nested
+    class FindAllMethodsTest {
 
-        List<SectionEntity> actual = dao.findAllByLineId(1L);
-        List<SectionEntity> expected = List.of(
-                new SectionEntity(1L, STATION2, STATION3, 10),
-                new SectionEntity(1L, STATION1, STATION2, 5));
+        @BeforeEach
+        void setup() {
+            testFixtureManager.saveSection(1L, 1L, 2L, 20);
+            testFixtureManager.saveSection(1L, 2L, 3L, 10);
+            testFixtureManager.saveSection(2L, 1L, 3L, 30);
+        }
 
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+        @Test
+        void findAllByLineId_메서드는_lineId에_해당하는_모든_구간_데이터를_조회() {
+            List<SectionEntity> actual = dao.findAllByLineId(1L);
+            List<SectionEntity> expected = List.of(
+                    new SectionEntity(1L, STATION1, STATION2, 20),
+                    new SectionEntity(1L, STATION2, STATION3, 10));
+
+            assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+        }
+
+        @Test
+        void findAllByStationId_메서드는_특정_역이_등록된_모든_구간들의_데이터를_조회() {
+            List<SectionEntity> actual = dao.findAllByStationId(1L);
+            List<SectionEntity> expected = List.of(
+                    new SectionEntity(1L, STATION1, STATION2, 20),
+                    new SectionEntity(2L, STATION1, STATION3, 30));
+
+            assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+        }
     }
 
     @DisplayName("save 메서드는 데이터를 저장한다")
@@ -52,9 +71,9 @@ class SectionDaoTest extends DaoTest {
         void 중복되지_않는_정보인_경우_데이터_생성() {
             dao.save(new SectionEntity(1L, STATION1, STATION3, 10));
 
-            boolean created = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM section WHERE "
-                            + "id = 1 AND line_id = 1 AND up_station_id = 1 AND down_station_id = 3 AND distance = 10",
-                    Integer.class) > 0;
+            boolean created = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM section "
+                    + "WHERE id = 1 AND line_id = 1 AND up_station_id = 1 "
+                    + "AND down_station_id = 3 AND distance = 10", Integer.class) > 0;
 
             assertThat(created).isTrue();
         }
@@ -102,6 +121,7 @@ class SectionDaoTest extends DaoTest {
             assertThatNoException()
                     .isThrownBy(() -> dao.delete(nonExistingSection));
         }
+
     }
 
     @Test
