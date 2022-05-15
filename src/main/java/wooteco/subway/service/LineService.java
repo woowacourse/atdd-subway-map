@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.JdbcLineDao;
+import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @Service
@@ -20,12 +20,12 @@ public class LineService {
     public static final int LINE_EXIST_VALUE = 1;
 
     private final JdbcLineDao jdbcLineDao;
-    private final SectionService sectionService;
+    private final JdbcSectionDao jdbcSectionDao;
     private final StationService stationService;
 
-    public LineService(JdbcLineDao jdbcLineDao, SectionService sectionService, StationService stationService) {
+    public LineService(JdbcLineDao jdbcLineDao, JdbcSectionDao jdbcSectionDao, StationService stationService) {
         this.jdbcLineDao = jdbcLineDao;
-        this.sectionService = sectionService;
+        this.jdbcSectionDao = jdbcSectionDao;
         this.stationService = stationService;
     }
 
@@ -34,17 +34,19 @@ public class LineService {
         String color = lineRequest.getColor();
         validateDuplication(name);
         Line line = new Line(name, color);
-        Long id = jdbcLineDao.save(line);
-        sectionService.save(id, new SectionRequest(lineRequest.getUpStationId(), lineRequest.getDownStationId(),
-                lineRequest.getDistance()));
+        Long lineId = jdbcLineDao.save(line);
 
-        List<Section> sections = sectionService.getSectionsByLineId(id);
+        Section section = new Section(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
+
+        jdbcSectionDao.save(section);
+        List<Section> sections = jdbcSectionDao.findSectionsByLineId(lineId);
 
         List<StationResponse> stationResponses = findStationInSections(sections).stream()
                 .map(stationService::getStation)
                 .collect(Collectors.toList());
 
-        return new LineResponse(id, name, color, stationResponses);
+        return new LineResponse(lineId, name, color, stationResponses);
     }
 
     private List<Long> findStationInSections(List<Section> sections) {
@@ -67,7 +69,7 @@ public class LineService {
 
     public LineResponse getLine(Long id) {
         Line line = jdbcLineDao.findById(id);
-        List<Section> sections = sectionService.getSectionsByLineId(line.getId());
+        List<Section> sections = jdbcSectionDao.findSectionsByLineId(line.getId());
 
         List<StationResponse> stationResponses = findStationInSections(sections).stream()
                 .map(stationService::getStation)

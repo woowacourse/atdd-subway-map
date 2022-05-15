@@ -20,17 +20,13 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public Optional<Section> addSection(Section inputSection) {
+    public Section connectSection(Section inputSection) {
         validateSameSection(inputSection);
-        if (sections.isEmpty()) {
-            sections.add(inputSection);
-            return Optional.empty();
-        }
         Section connectedSection = selectAddPoint(inputSection);
         Direction direction = Direction.findDirection(connectedSection, inputSection);
         syncSection(connectedSection, inputSection, direction);
         sections.add(inputSection);
-        return Optional.of(connectedSection);
+        return connectedSection;
     }
 
     private void validateSameSection(Section inputSection) {
@@ -50,16 +46,24 @@ public class Sections {
     }
 
     private Section selectAddPoint(Section inputSection) {
-        if (!isEdgeSection(inputSection)) {
+        if (isEdgeSection(inputSection)) {
             return findAddPoint(inputSection);
         }
         List<Section> connectableSection = findConnectableSection(inputSection);
         return findAddPoint(connectableSection, inputSection);
     }
 
+    private boolean isEdgeSection(Section inputSection) {
+        int countOfCoincidence = (int) sections.stream()
+                .filter(section -> section.isExistSameStation(inputSection))
+                .count();
+
+        return countOfCoincidence == 1;
+    }
+
     private Section findAddPoint(Section inputSection) {
         return sections.stream()
-                .filter(section -> sections.size() != 0 && section.isExistSameStation(inputSection))
+                .filter(section -> section.isExistSameStation(inputSection))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION_IN_LINE));
     }
@@ -71,7 +75,13 @@ public class Sections {
                     return direction == Direction.BETWEEN_UP || direction == Direction.BETWEEN_DOWN;
                 })
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION_IN_LINE));
+    }
+
+    private List<Section> findConnectableSection(Section inputSection) {
+        return sections.stream()
+                .filter(section -> section.isExistSameStation(inputSection))
+                .collect(Collectors.toList());
     }
 
     private void syncSection(Section section, Section inputSection, Direction direction) {
@@ -91,20 +101,6 @@ public class Sections {
         if (section.getDistance() <= inputSection.getDistance()) {
             throw new IllegalArgumentException(EXCEED_DISTANCE);
         }
-    }
-
-    private boolean isEdgeSection(Section inputSection) {
-        int countOfCoincidence = (int) sections.stream()
-                .filter(section -> section.isExistSameStation(inputSection))
-                .count();
-
-        return countOfCoincidence == 2;
-    }
-
-    private List<Section> findConnectableSection(Section inputSection) {
-        return sections.stream()
-                .filter(section -> section.isExistSameStation(inputSection))
-                .collect(Collectors.toList());
     }
 
     public Optional<Section> deleteSection(Long stationId) {

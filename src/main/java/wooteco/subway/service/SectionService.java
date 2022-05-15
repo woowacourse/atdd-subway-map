@@ -26,12 +26,11 @@ public class SectionService {
         Section inputSection = new Section(lineId, upStationId, downStationId, distance);
 
         Sections sections = new Sections(getSectionsByLineId(lineId));
-        Optional<Section> connectedPoint = sections.addSection(inputSection);
+        Section connectedPoint = sections.connectSection(inputSection);
 
         Long id = jdbcSectionDao.save(inputSection);
-        if (connectedPoint.isPresent()) {
-            update(lineId, connectedPoint.get());
-        }
+        update(lineId, connectedPoint);
+
         return new Section(id, lineId, upStationId, downStationId, distance);
     }
 
