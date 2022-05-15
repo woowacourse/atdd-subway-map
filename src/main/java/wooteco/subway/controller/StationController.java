@@ -28,14 +28,14 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationInfo stationInfo = StationConverter.toInfo(stationRequest);
         StationResponse stationResponse = StationConverter.toResponse(stationService.save(stationInfo));
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationInfo> stationInfos = stationService.findAll();
         List<StationResponse> stationResponses = stationInfos.stream()

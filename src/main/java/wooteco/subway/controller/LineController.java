@@ -30,14 +30,14 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         RequestLineInfo lineInfo = LineConverter.toInfo(lineRequest);
         LineResponse lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<ResponseLineInfo> lineInfos = lineService.findAll();
         List<LineResponse> lineResponses = lineInfos.stream()
