@@ -17,6 +17,7 @@ import wooteco.subway.controller.dto.station.StationResponse;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.acceptance.ResponseCreator.*;
 
 @DisplayName("지하철 구간 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -204,45 +205,5 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(expected)
                 .usingRecursiveComparison()
                 .isEqualTo(actual);
-    }
-
-
-    private ExtractableResponse<Response> createPostLineResponse(LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> createPostStationResponse(StationRequest stationRequest) {
-        return RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> deleteSectionResponse(Long lineId, Long stationId) {
-        return RestAssured.given().log().all()
-                .when()
-                .queryParam("stationId", stationId)
-                .delete("/lines/" + lineId + "/sections")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> createPostSectionResponse(Long lineId, SectionRequest sectionRequest) {
-        return RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/" + lineId + "/sections")
-                .then().log().all()
-                .extract();
     }
 }

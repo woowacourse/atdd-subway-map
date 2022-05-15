@@ -1,21 +1,19 @@
 package wooteco.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.controller.dto.station.StationRequest;
 import wooteco.subway.controller.dto.station.StationResponse;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static wooteco.subway.acceptance.ResponseCreator.*;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -92,43 +90,5 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createDeleteStationResponseById("-1");
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> createPostStationResponse(StationRequest stationRequest) {
-        return RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> createGetStationResponse() {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private List<Long> postIds(ExtractableResponse<Response>... createResponse) {
-        return Arrays.asList(createResponse).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-    }
-
-    private List<Long> responseIds(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-    }
-
-    private ExtractableResponse<Response> createDeleteStationResponseById(String id) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete("/stations/" + id)
-                .then().log().all()
-                .extract();
     }
 }
