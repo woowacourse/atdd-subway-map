@@ -20,7 +20,7 @@ class SectionLinksTest {
         sectionLinks = SectionLinks.from(List.of(section, section1, section2));
     }
 
-    @DisplayName("기존 역들 중에서 매칭되는 역이 하나도 없는지 확인")
+    @DisplayName("역들 중에서 상행,하행이 모두 존재하지 않으면 참 반환")
     @Test
     void isNotExistMatchedStation() {
         Section section = new Section(1L, 6L, 5L, 4);
@@ -28,15 +28,31 @@ class SectionLinksTest {
         assertThat(sectionLinks.isNotExistMatchedStation(section)).isTrue();
     }
 
-    @DisplayName("기존 역들 중에서 매칭되는 역이 하나도 없는지 확인 - 거짓")
+    @DisplayName("역들 중에서 상행이 존재하면 거짓 반환")
     @Test
-    void isExistMatchedStation() {
+    void isExistMatchedUpStation() {
         Section section = new Section(1L, 2L, 5L, 4);
 
         assertThat(sectionLinks.isNotExistMatchedStation(section)).isFalse();
     }
 
-    @DisplayName("추가할 구간의 모든 역이 기존 역들 중 매칭되는지 확인")
+    @DisplayName("역들 중에서 하행이 존재하면 거짓 반환")
+    @Test
+    void isExistMatchedDownStation() {
+        Section section = new Section(1L, 5L, 4L, 4);
+
+        assertThat(sectionLinks.isNotExistMatchedStation(section)).isFalse();
+    }
+
+    @DisplayName("역들 중에서 상행,하행 모두 기존에 존재하면 거짓 반환")
+    @Test
+    void isExistAllMatchedStation() {
+        Section section = new Section(1L, 2L, 4L, 4);
+
+        assertThat(sectionLinks.isNotExistMatchedStation(section)).isFalse();
+    }
+
+    @DisplayName("역들 중에서 상행,하행 모두 존재하면 참 반환")
     @Test
     void isAllMatchedStation() {
         Section section = new Section(1L, 2L, 3L, 4);
@@ -44,37 +60,67 @@ class SectionLinksTest {
         assertThat(sectionLinks.isAllMatchedStation(section)).isTrue();
     }
 
-    @DisplayName("추가할 구간의 모든 역이 기존 역들 중 매칭되는지 확인 - 거짓")
+    @DisplayName("역들 중에서 상행,하행이 모두 존재하지 않으면 거짓 반환")
     @Test
     void isNotAllMatchedStation() {
-        Section section = new Section(1L, 2L, 6L, 4);
+        Section section = new Section(1L, 6L, 5L, 4);
 
         assertThat(sectionLinks.isAllMatchedStation(section)).isFalse();
     }
 
-    @DisplayName("삽입할 구간이 끝구간인지 확인")
+    @DisplayName("역들 중에서 상행만 존재하면 거짓 반환")
     @Test
-    void isEndSection() {
+    void isNotAllMatchedContainSameUpStation() {
+        Section section = new Section(1L, 2L, 5L, 4);
+
+        assertThat(sectionLinks.isAllMatchedStation(section)).isFalse();
+    }
+
+    @DisplayName("역들 중에서 하행만 존재하면 거짓 반환")
+    @Test
+    void isNotAllMatchedContainSameDownStation() {
+        Section section = new Section(1L, 5L, 4L, 4);
+
+        assertThat(sectionLinks.isAllMatchedStation(section)).isFalse();
+    }
+
+    @DisplayName("구간이 상행 끝구간과 연결되는 지 확인")
+    @Test
+    void isEndUpSection() {
+        Section section = new Section(1L, 5L, 1L, 4);
+
+        assertThat(sectionLinks.isEndSection(section)).isTrue();
+    }
+
+    @DisplayName("구간이 하행 끝구간과 연결되는 지 확인")
+    @Test
+    void isEndDownSection() {
         Section section = new Section(1L, 4L, 5L, 4);
 
         assertThat(sectionLinks.isEndSection(section)).isTrue();
     }
 
-    @DisplayName("구간이 끝구간인지 확인 - 거짓")
+    @DisplayName("구간이 중간 역과 연결되면 거짓 반환")
     @Test
     void isNotEndSection() {
-        Section section = new Section(1L, 2L, 3L, 4);
+        Section section = new Section(1L, 2L, 5L, 4);
 
         assertThat(sectionLinks.isEndSection(section)).isFalse();
     }
 
-    @DisplayName("역이 끝 역인지 확인")
+    @DisplayName("역이 노선의 상행 끝 역인지 확인")
     @Test
-    void isEndStation() {
+    void isUpEndStation() {
         assertThat(sectionLinks.isEndStation(1L)).isTrue();
     }
 
-    @DisplayName("역이 끝 역인지 확인 - 거짓")
+    @DisplayName("역이 노선의 하행 끝 역인지 확인")
+    @Test
+    void isDownEndStation() {
+        assertThat(sectionLinks.isEndStation(4L)).isTrue();
+    }
+
+    @DisplayName("역이 노선의 끝 역이 아니면 거짓 반환")
     @Test
     void isNotEndStation() {
         assertThat(sectionLinks.isEndStation(2L)).isFalse();
@@ -86,7 +132,7 @@ class SectionLinksTest {
         assertThat(sectionLinks.isNotExistStation(5L)).isTrue();
     }
 
-    @DisplayName("존재하지 않는 역인지 확인 - 거짓")
+    @DisplayName("존재하는 역이면 거짓 반환")
     @Test
     void isExistStation() {
         assertThat(sectionLinks.isNotExistStation(2L)).isFalse();
@@ -98,7 +144,7 @@ class SectionLinksTest {
         assertThat(sectionLinks.isExistUpStation(1L)).isTrue();
     }
 
-    @DisplayName("상행 역 중 존재하는 역인지 확인 - 거짓")
+    @DisplayName("상행 역 중 존재하지 않으면 거짓 반환")
     @Test
     void isNotExistUpStation() {
         assertThat(sectionLinks.isExistUpStation(4L)).isFalse();
@@ -110,7 +156,7 @@ class SectionLinksTest {
         assertThat(sectionLinks.isExistDownStation(2L)).isTrue();
     }
 
-    @DisplayName("하행 역 중 존재하는 역인지 확인 - 거짓")
+    @DisplayName("하행 역 중 존재하지 않으면 거짓 반환")
     @Test
     void isNotExistDownStation() {
         assertThat(sectionLinks.isExistDownStation(1L)).isFalse();
