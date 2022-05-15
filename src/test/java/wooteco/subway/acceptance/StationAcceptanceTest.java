@@ -119,9 +119,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getExtractableDeleteResponse(defaultUri + "/" + stationIdA);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message"))
-            .isEqualTo("구간에 할당된 역이 존재하여 삭제할 수 없습니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @Test

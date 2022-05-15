@@ -82,10 +82,11 @@ public class JdbcStationDao implements StationDao {
     @Override
     public int deleteById(Long id) {
         String sql = "delete from station where id = ?";
+
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new DataReferenceViolationException("구간에 할당된 역이 존재하여 삭제할 수 없습니다.");
+            throw new DataReferenceViolationException("연관된 데이터가 존재하여 삭제할 수 없습니다.");
         }
     }
 }

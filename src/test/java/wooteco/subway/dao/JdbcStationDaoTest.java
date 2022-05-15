@@ -146,6 +146,6 @@ class JdbcStationDaoTest {
         //when, then
         assertThatThrownBy(() -> stationDao.deleteById(stationIdC))
             .isInstanceOf(DataReferenceViolationException.class)
-            .hasMessageContaining("구간에 할당된 역이 존재하여 삭제할 수 없습니다.");
+            .hasMessageContaining("연관된 데이터가 존재하여 삭제할 수 없습니다.");
     }
 }

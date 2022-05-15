@@ -1,10 +1,13 @@
 package wooteco.subway.exception;
 
-public class DataReferenceViolationException extends IllegalArgumentException {
+import org.springframework.dao.DataIntegrityViolationException;
+
+public class DataReferenceViolationException extends DataIntegrityViolationException {
 
     private final String message;
 
     public DataReferenceViolationException(String message) {
+        super(message);
         this.message = message;
     }
 

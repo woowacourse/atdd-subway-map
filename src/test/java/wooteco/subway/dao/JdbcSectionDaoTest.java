@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
@@ -50,6 +51,22 @@ class JdbcSectionDaoTest {
 
         //then
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노선 정보로 구간을 저장시 예외를 던진다.")
+    void saveWithInvalidLine() {
+        assertThatThrownBy(() -> sectionDao.save(new SectionEntity(100L, stationIdA, stationIdB, 5)))
+            .isInstanceOf(DataIntegrityViolationException.class)
+            .hasMessageContaining("foreign key 데이터가 존재하지 않아 추가할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 역 정보로 구간을 저장시 예외를 던진다.")
+    void saveWithInvalidStation() {
+        assertThatThrownBy(() -> sectionDao.save(new SectionEntity(savedLineId, stationIdA, 100L, 5)))
+            .isInstanceOf(DataIntegrityViolationException.class)
+            .hasMessageContaining("foreign key 데이터가 존재하지 않아 추가할 수 없습니다.");
     }
 
     @Test
