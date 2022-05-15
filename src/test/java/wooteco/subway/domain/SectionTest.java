@@ -14,7 +14,7 @@ class SectionTest {
     @DisplayName("상행과 하행의 id값이 같은 경우 에러를 발생시킨다")
     @Test
     void validateErrorBySameStationId() {
-        assertThatThrownBy(() -> Section.of(1L, 1L, 1L, 10))
+        assertThatThrownBy(() -> new Section(1L, 1L, 1L, 10))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행과 하행의 지하철 역이 같을 수 없습니다.");
     }
@@ -22,7 +22,7 @@ class SectionTest {
     @DisplayName("거리가 0이하인 경우 에러를 발생시킨다.")
     @Test
     void validateErrorByNonPositiveDistance() {
-        assertThatThrownBy(() -> Section.of(1L, 1L, 2L, -1))
+        assertThatThrownBy(() -> new Section(1L, 1L, 2L, -1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("거리는 양수여야 합니다.");
     }
@@ -31,9 +31,9 @@ class SectionTest {
     @Test
     void splitSectionSameUpStation() {
         //given
-        Section section1 = Section.of(1L, 2L, 10);
-        Section section2 = Section.of(1L, 3L, 4);
-        Section expectedSection = Section.of(3L, 2L, 6);
+        Section section1 = new Section(1L, 2L, 10);
+        Section section2 = new Section(1L, 3L, 4);
+        Section expectedSection = new Section(3L, 2L, 6);
 
         //when
         Section splitSection = section1.splitSection(section2);
@@ -50,9 +50,9 @@ class SectionTest {
     @Test
     void splitSectionSameDownStation() {
         //given
-        Section section1 = Section.of(1L, 2L, 10);
-        Section section2 = Section.of(3L, 2L, 4);
-        Section expectedSection = Section.of(1L, 3L, 6);
+        Section section1 = new Section(1L, 2L, 10);
+        Section section2 = new Section(3L, 2L, 4);
+        Section expectedSection = new Section(1L, 3L, 6);
 
         //when
         Section splitSection = section1.splitSection(section2);

@@ -115,8 +115,8 @@ public class Sections {
         Section secondSection = value.get(1);
 
         if (firstSection.isSameDownStationId(secondSection.getUpStationId())) {
-            return Section.of(firstSection.getUpStationId(), secondSection.getDownStationId(), newDistance);
+            return new Section(firstSection.getUpStationId(), secondSection.getDownStationId(), newDistance);
         }
-        return Section.of(secondSection.getUpStationId(), firstSection.getDownStationId(), newDistance);
+        return new Section(secondSection.getUpStationId(), firstSection.getDownStationId(), newDistance);
     }
 }

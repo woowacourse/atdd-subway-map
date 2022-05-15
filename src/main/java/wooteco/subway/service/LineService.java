@@ -44,7 +44,7 @@ public class LineService {
         Line line = new Line(request.getName(), request.getColor());
         line = lineDao.insert(line);
 
-        Section section = Section.of(request.getUpStationId(), request.getDownStationId(), request.getDistance());
+        Section section = new Section(request.getUpStationId(), request.getDownStationId(), request.getDistance());
         sectionDao.insert(section, line.getId());
 
         List<StationResponse> stationResponses = getStationResponsesByLineId(line.getId());

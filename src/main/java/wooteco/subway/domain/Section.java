@@ -13,22 +13,26 @@ public class Section {
     private final Long downStationId;
     private final Integer distance;
 
-    private Section(Long id, Long upStationId, Long downStationId, Integer distance) {
+    public Section(Long id, Long upStationId, Long downStationId, Integer distance) {
+        validate(upStationId, downStationId, distance);
         this.id = id;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public static Section of(Long id, Long upStationId, Long downStationId, int distance) {
-        validate(upStationId, downStationId, distance);
-        return new Section(id, upStationId, downStationId, distance);
+    public Section(Long upStationId, Long downStationId, Integer distance) {
+        this(0L, upStationId, downStationId, distance);
     }
-
-    public static Section of(Long upStationId, Long downStationId, int distance) {
-        validate(upStationId, downStationId, distance);
-        return new Section(0L, upStationId, downStationId, distance);
-    }
+//
+//    public static Section of(Long id, Long upStationId, Long downStationId, int distance) {
+//        return new Section(id, upStationId, downStationId, distance);
+//    }
+//
+//    public static Section of(Long upStationId, Long downStationId, int distance) {
+//        validate(upStationId, downStationId, distance);
+//        return new Section(0L, upStationId, downStationId, distance);
+//    }
 
     private static void validate(Long upStationId, Long downStationId, int distance) {
         validateStationIds(upStationId, downStationId);
@@ -52,9 +56,9 @@ public class Section {
         int newDistance = distance - section.distance;
 
         if (upStationId.equals(section.upStationId)) {
-            return Section.of(section.getDownStationId(), downStationId, newDistance);
+            return new Section(section.getDownStationId(), downStationId, newDistance);
         }
-        return Section.of(upStationId, section.upStationId, newDistance);
+        return new Section(upStationId, section.upStationId, newDistance);
     }
 
     public boolean isSameUpStationId(long id) {

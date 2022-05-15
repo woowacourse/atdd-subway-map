@@ -33,14 +33,14 @@ public class SectionService {
         checkStationExist(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
 
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        Section inputSection = Section.of(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+        Section inputSection = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
 
         sections.checkSection(inputSection);
         sections.getTargetSectionToInsert(inputSection)
                 .ifPresent(targetSection -> processTargetSection(lineId, inputSection, targetSection));
 
-        Section section = Section.of(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+        Section section = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
         sectionDao.insert(section, lineId);
     }
