@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.controller.dto.line.LineRequest;
 import wooteco.subway.controller.dto.line.LineResponse;
 import wooteco.subway.controller.dto.section.SectionRequest;
@@ -91,6 +90,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 1L,
                 new StationResponse(1L, 낙성대.getName()),
                 new StationResponse(2L, 사당.getName()),
+                new StationResponse(4L, 서초.getName())
+        );
+    }
+
+    @Test
+    @DisplayName("중간 구간 등록이 가능하다.")
+    void createMiddleDownSection() {
+        //given
+        //when
+        createPostSectionResponse(1L, 사당_서초);
+        createPostSectionResponse(1L, 사당_방배);
+        //then
+        checkStationInSection(
+                1L,
+                new StationResponse(1L, 낙성대.getName()),
+                new StationResponse(2L, 사당.getName()),
+                new StationResponse(3L, 방배.getName()),
                 new StationResponse(4L, 서초.getName())
         );
     }
