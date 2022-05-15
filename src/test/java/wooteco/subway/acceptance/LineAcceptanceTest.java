@@ -2,6 +2,7 @@ package wooteco.subway.acceptance;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -38,8 +39,14 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선"),
+                () -> assertThat(response.body().jsonPath().getList("stations", LineResponse.class))
+                        .extracting("name")
+                        .containsExactly("강남역", "역삼역")
+        );
     }
 
     @Test
@@ -135,8 +142,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         final Long findId = response.response().jsonPath().getLong("id");
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(Long.valueOf(savedId)).isEqualTo(findId);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(Long.valueOf(savedId)).isEqualTo(findId)
+        );
     }
 
     @Test
