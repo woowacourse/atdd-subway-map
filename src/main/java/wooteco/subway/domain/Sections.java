@@ -1,12 +1,12 @@
 package wooteco.subway.domain;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.util.CollectionUtils;
 
 public class Sections {
@@ -43,11 +43,8 @@ public class Sections {
     }
 
     private Map<Long, Long> initMapByUpStationKey() {
-        Map<Long, Long> map = new HashMap<>();
-        for (Section section : value) {
-            map.put(section.getUpStationId(), section.getDownStationId());
-        }
-        return map;
+        return value.stream()
+                .collect(Collectors.toMap(Section::getUpStationId, Section::getDownStationId));
     }
 
     private void addDownStationIds(List<Long> ids, Long nowId) {
@@ -59,11 +56,8 @@ public class Sections {
     }
 
     private Map<Long, Long> initMapByDownStationKey() {
-        Map<Long, Long> map = new HashMap<>();
-        for (Section section : value) {
-            map.put(section.getDownStationId(), section.getUpStationId());
-        }
-        return map;
+        return value.stream()
+                .collect(Collectors.toMap(Section::getDownStationId, Section::getUpStationId));
     }
 
     /**
@@ -139,11 +133,7 @@ public class Sections {
             throw new IllegalArgumentException(NO_SECTION_LIST_ERROR);
         }
     }
-
-    public List<Section> getValue() {
-        return value;
-    }
-
+    
     @Override
     public String toString() {
         return "Sections{" +
