@@ -26,13 +26,13 @@ public class SectionService {
         int distance = sectionRequest.getDistance();
 
         Sections sections = jdbcSectionDao.findByLineIdAndStationIds(lineId, upStationId, downStationId);
-        if (isAddingBranch(sections, upStationId, downStationId, distance, lineId)) {
+        if (isAddingBranch(sections, upStationId, downStationId)) {
             addBranch(sections.getSectionForCombine(upStationId, downStationId), upStationId, downStationId, distance, lineId);
         }
         return saveSection(sectionRequest, lineId);
     }
 
-    private boolean isAddingBranch(Sections sections, Long upStationId, Long downStationId, int distance, Long lineId) {
+    private boolean isAddingBranch(Sections sections, Long upStationId, Long downStationId) {
         if (sections.isBlank()) {
             throw new IllegalArgumentException("연결된 역이 없기 때문에 구간을 등록할 수 없습니다.");
         }
