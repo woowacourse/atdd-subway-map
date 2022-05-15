@@ -24,7 +24,7 @@ public class SectionsManager {
     public Sections save(Section newSection) {
         validateSingleRegisteredStation(newSection);
         List<Section> sections = this.sections.toSortedList();
-        if (!isEndSection(newSection)) {
+        if (!this.sections.isEndSection(newSection)) {
             updateOriginalSection(newSection, sections);
         }
         sections.add(newSection);
@@ -67,20 +67,6 @@ public class SectionsManager {
         if (!isRegisteredUpStation && !isRegisteredDownStation) {
             throw new IllegalArgumentException(NO_STATION_REGISTERED_EXCEPTION);
         }
-    }
-
-    private boolean isEndSection(Section section) {
-        return isNewUpperEndSection(section) || isNewLowerEndSection(section);
-    }
-
-    private boolean isNewUpperEndSection(Section section) {
-        Section currentUpperEndSection = sections.getUpperEndSection();
-        return currentUpperEndSection.hasUpStationOf(section.getDownStation());
-    }
-
-    private boolean isNewLowerEndSection(Section section) {
-        Section currentLowerEndSection = sections.getLowerEndSection();
-        return currentLowerEndSection.hasDownStationOf(section.getUpStation());
     }
 
     public Sections delete(Station station) {

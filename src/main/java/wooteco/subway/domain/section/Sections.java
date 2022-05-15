@@ -34,7 +34,7 @@ public class Sections {
     private static List<Section> toSortedSections(List<Section> sections) {
         List<Section> list = new ArrayList<>();
         Map<Station, Section> sectionMap = toSectionMap(sections);
-        Station current = toUpperEndStation(sections);
+        Station current = extractUpperEndStation(sections);
 
         while (sectionMap.containsKey(current)) {
             Section section = sectionMap.get(current);
@@ -44,7 +44,7 @@ public class Sections {
         return list;
     }
 
-    private static Station toUpperEndStation(List<Section> sections) {
+    private static Station extractUpperEndStation(List<Section> sections) {
         Set<Station> downStations = toDownStations(sections);
         return sections.stream()
                 .map(Section::getUpStation)
@@ -78,16 +78,18 @@ public class Sections {
         return value.size() == 1;
     }
 
-    public Station getUpperEndStation() {
-        return getUpperEndSection().getUpStation();
+    public boolean isEndSection(Section section) {
+        return isNewUpperEndSection(section) || isNewLowerEndSection(section);
     }
 
-    public Section getUpperEndSection() {
-        return value.get(0);
+    private boolean isNewUpperEndSection(Section section) {
+        Section currentUpperEndSection = value.get(0);
+        return currentUpperEndSection.hasUpStationOf(section.getDownStation());
     }
 
-    public Section getLowerEndSection() {
-        return value.get(value.size() - 1);
+    private boolean isNewLowerEndSection(Section section) {
+        Section currentLowerEndSection = value.get(value.size() - 1);
+        return currentLowerEndSection.hasDownStationOf(section.getUpStation());
     }
 
     public Section findUpperSectionOfStation(Station station) {
@@ -125,8 +127,9 @@ public class Sections {
     }
 
     public List<Station> toSortedStations() {
+        Station upperEndStation = value.get(0).getUpStation();
         return new ArrayList<>() {{
-            add(getUpperEndStation());
+            add(upperEndStation);
             addAll(toDownStations());
         }};
     }
