@@ -145,6 +145,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
+        void 존재하지_않는_지하철역을_입력한_경우_404_NOT_FOUND() {
+            testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
+            testFixtureManager.saveLine("등록된 노선", "색상");
+            testFixtureManager.saveSection(1L, 1L, 2L, 10);
+
+            ExtractableResponse<Response> response = HttpUtils.send(
+                    HttpMethod.DELETE, toPath(1L, 99999L));
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
         void 구간으로_등록되지_않은_지하철역을_입력한_경우_400_BAD_REQUEST() {
             testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
             testFixtureManager.saveLine("등록된 노선", "색상");
