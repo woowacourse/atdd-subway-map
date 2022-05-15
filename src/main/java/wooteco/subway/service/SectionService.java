@@ -3,32 +3,23 @@ package wooteco.subway.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.SectionRequest;
-import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.StationRepository;
-import wooteco.subway.service.dto.SectionDto;
+import wooteco.subway.repository.SectionRepository;
 
 @Service
 public class SectionService {
 
-    private final SectionDao sectionDao;
-    private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public SectionService(final SectionDao sectionDao,
-                          final LineRepository lineRepository,
-                          final StationRepository stationRepository) {
-        this.sectionDao = sectionDao;
-        this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+    public SectionService(final SectionRepository sectionRepository) {
+        this.sectionRepository = sectionRepository;
     }
 
     public void save(final Long lineId, final SectionRequest request) {
-        final Line line = lineRepository.findById(lineId);
+        final Line line = sectionRepository.findLineById(lineId);
         final List<Section> previousSections = new ArrayList<>(line.getSections());
         final Section newSection = makeSection(request);
 
@@ -36,39 +27,26 @@ public class SectionService {
         final List<Section> addSections = line.getAddSections(previousSections);
         final List<Section> deletedSections = line.getDeletedSections(previousSections);
 
-        deleteSections(lineId, deletedSections);
-        addSections(lineId, addSections);
+        sectionRepository.deleteSections(lineId, deletedSections);
+        sectionRepository.addSections(lineId, addSections);
     }
 
     private Section makeSection(final SectionRequest request) {
-        final Station upStation = stationRepository.findById(request.getUpStationId());
-        final Station downStation = stationRepository.findById(request.getDownStationId());
+        final Station upStation = sectionRepository.findStationById(request.getUpStationId());
+        final Station downStation = sectionRepository.findStationById(request.getDownStationId());
         return new Section(upStation, downStation, request.getDistance());
     }
 
     public void delete(final Long lineId, final Long stationId) {
-        final Line line = lineRepository.findById(lineId);
-        final Station target = stationRepository.findById(stationId);
+        final Line line = sectionRepository.findLineById(lineId);
+        final Station target = sectionRepository.findStationById(stationId);
         final List<Section> previousSections = new ArrayList<>(line.getSections());
 
         line.deleteSection(target);
         final List<Section> addSections = line.getAddSections(previousSections);
         final List<Section> deletedSections = line.getDeletedSections(previousSections);
 
-        deleteSections(lineId, deletedSections);
-        addSections(lineId, addSections);
+        sectionRepository.deleteSections(lineId, deletedSections);
+        sectionRepository.addSections(lineId, addSections);
     }
-
-    private void addSections(final Long lineId, final List<Section> sections) {
-        for (Section section : sections) {
-            sectionDao.save(lineId, SectionDto.from(section));
-        }
-    }
-
-    private void deleteSections(final Long lineId, final List<Section> sections) {
-        for (Section section : sections) {
-            sectionDao.deleteById(lineId, section.getUpStationId());
-        }
-    }
-
 }
