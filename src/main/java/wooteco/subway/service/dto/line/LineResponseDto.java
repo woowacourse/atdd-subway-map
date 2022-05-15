@@ -41,4 +41,14 @@ public class LineResponseDto {
     public List<StationResponseDto> getStations() {
         return stations;
     }
+
+    @Override
+    public String toString() {
+        return "LineResponseDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", stations=" + stations +
+                '}';
+    }
 }

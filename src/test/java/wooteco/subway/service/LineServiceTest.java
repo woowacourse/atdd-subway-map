@@ -12,7 +12,10 @@ import wooteco.subway.dao.jdbc.JdbcSectionDao;
 import wooteco.subway.dao.jdbc.JdbcStationDao;
 import wooteco.subway.service.dto.line.LineRequestDto;
 import wooteco.subway.service.dto.line.LineResponseDto;
+import wooteco.subway.service.dto.section.SectionRequestDto;
+import wooteco.subway.service.dto.station.StationResponseDto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -30,11 +33,13 @@ class LineServiceTest {
 
     private LineService lineService;
     private StationService stationService;
+    private SectionService sectionService;
 
     @BeforeEach
     void setUp() {
         lineService = new LineService(new JdbcLineDao(jdbcTemplate), new StationService(new JdbcStationDao(jdbcTemplate)), new SectionService(new JdbcSectionDao(jdbcTemplate)));
         stationService = new StationService(new JdbcStationDao(jdbcTemplate));
+        sectionService = new SectionService(new JdbcSectionDao(jdbcTemplate));
 
         stationService.createStation("낙성대");
         stationService.createStation("교대");
@@ -46,13 +51,21 @@ class LineServiceTest {
     void saveLine() {
         //given
         LineRequestDto lineRequestDto = new LineRequestDto("2호선", "bg-green-300", 1L, 2L, 10);
+        lineService.create(lineRequestDto);
+        sectionService.create(new SectionRequestDto(1L, 2L, 3L, 20));
+        List<StationResponseDto> expected = new ArrayList<>();
+        expected.add(new StationResponseDto(1L, "낙성대"));
+        expected.add(new StationResponseDto(2L,"교대"));
+        expected.add(new StationResponseDto(3L,"선릉"));
         //when
-        LineResponseDto lineResponseDto = lineService.create(lineRequestDto);
+        LineResponseDto findLineResponseDto = lineService.findById(1L);
+        List<StationResponseDto> actual = findLineResponseDto.getStations();
         //then
         assertAll(
-                () -> assertThat(lineResponseDto.getId()).isEqualTo(1L),
-                () -> assertThat(lineResponseDto.getName()).isEqualTo("2호선"),
-                () -> assertThat(lineResponseDto.getColor()).isEqualTo("bg-green-300")
+                () -> assertThat(findLineResponseDto.getId()).isEqualTo(1L),
+                () -> assertThat(findLineResponseDto.getName()).isEqualTo("2호선"),
+                () -> assertThat(findLineResponseDto.getColor()).isEqualTo("bg-green-300"),
+                () -> assertThat(expected).isEqualTo(actual)
         );
     }
 
