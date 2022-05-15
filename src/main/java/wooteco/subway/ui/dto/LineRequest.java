@@ -2,6 +2,7 @@ package wooteco.subway.ui.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import wooteco.subway.service.dto.LineServiceRequest;
 
 public class LineRequest {
 
@@ -28,6 +29,10 @@ public class LineRequest {
         this.distance = distance;
     }
 
+    public LineRequest(String name, String color) {
+        this(name, color, null, null, 0);
+    }
+
     public String getName() {
         return name;
     }
@@ -46,5 +51,9 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public LineServiceRequest toServiceRequest() {
+        return new LineServiceRequest(name, color, upStationId, downStationId, distance);
     }
 }

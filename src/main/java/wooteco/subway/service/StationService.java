@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.service.dto.StationResponse;
-import wooteco.subway.ui.dto.StationRequest;
+import wooteco.subway.service.dto.StationServiceRequest;
+import wooteco.subway.service.dto.StationServiceResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,10 +20,10 @@ public class StationService {
     }
 
     @Transactional
-    public StationResponse save(StationRequest stationSaveRequest) {
-        validateDuplicationName(stationSaveRequest.getName());
-        Station savedStation = stationDao.save(new Station(stationSaveRequest.getName()));
-        return new StationResponse(savedStation.getId(), savedStation.getName());
+    public StationServiceResponse save(StationServiceRequest stationServiceRequest) {
+        validateDuplicationName(stationServiceRequest.getName());
+        Station savedStation = stationDao.save(new Station(stationServiceRequest.getName()));
+        return new StationServiceResponse(savedStation.getId(), savedStation.getName());
     }
 
     private void validateDuplicationName(String name) {
@@ -32,10 +32,10 @@ public class StationService {
         }
     }
 
-    public List<StationResponse> findAll() {
+    public List<StationServiceResponse> findAll() {
         List<Station> stationEntities = stationDao.findAll();
         return stationEntities.stream()
-            .map(i -> new StationResponse(i.getId(), i.getName()))
+            .map(i -> new StationServiceResponse(i.getId(), i.getName()))
             .collect(Collectors.toList());
     }
 

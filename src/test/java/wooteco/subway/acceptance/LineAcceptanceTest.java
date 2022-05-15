@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.LineServiceResponse;
 import wooteco.subway.ui.dto.LineRequest;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -39,8 +39,9 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // then
-        LineResponse result = response.jsonPath().getObject("", LineResponse.class);
-        assertThat(result).extracting(LineResponse::getName, LineResponse::getColor, i -> i.getStations().size())
+        LineServiceResponse result = response.jsonPath().getObject("", LineServiceResponse.class);
+        assertThat(result).extracting(
+                LineServiceResponse::getName, LineServiceResponse::getColor, i -> i.getStations().size())
                 .containsExactly( "3호선", "bg-orange-600", 2);
         assertThat(response.header("Location")).isNotBlank();
     }
@@ -102,8 +103,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Arrays.asList(createResponse1).stream()
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineServiceResponse.class).stream()
+            .map(LineServiceResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }

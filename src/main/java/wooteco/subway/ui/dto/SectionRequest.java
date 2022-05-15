@@ -1,6 +1,7 @@
 package wooteco.subway.ui.dto;
 
 import javax.validation.constraints.NotNull;
+import wooteco.subway.service.dto.SectionServiceRequest;
 
 public class SectionRequest {
     @NotNull(message = "upStationId를 입력해주세요.")
@@ -29,5 +30,9 @@ public class SectionRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public SectionServiceRequest toServiceRequest() {
+        return new SectionServiceRequest(upStationId, downStationId, distance);
     }
 }

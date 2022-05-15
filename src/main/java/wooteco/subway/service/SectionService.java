@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.ui.dto.SectionDeleteRequest;
-import wooteco.subway.ui.dto.SectionRequest;
+import wooteco.subway.service.dto.SectionServiceDeleteRequest;
+import wooteco.subway.service.dto.SectionServiceRequest;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,8 +19,8 @@ public class SectionService {
     }
 
     @Transactional
-    public Long save(SectionRequest sectionRequest, Long lineId) {
-        Section section = toSection(sectionRequest, lineId);
+    public Long save(SectionServiceRequest sectionServiceRequest, Long lineId) {
+        Section section = toSection(sectionServiceRequest, lineId);
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
         if (sections.isMiddleSection(section)) {
@@ -30,7 +30,7 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
-    private Section toSection(SectionRequest sectionRequest, Long lineId) {
+    private Section toSection(SectionServiceRequest sectionRequest, Long lineId) {
         return new Section(lineId, sectionRequest.getUpStationId(),
             sectionRequest.getDownStationId(), sectionRequest.getDistance());
     }
@@ -71,12 +71,12 @@ public class SectionService {
     }
 
     @Transactional
-    public boolean removeSection(SectionDeleteRequest sectionDeleteRequest) {
-        Sections sections = new Sections(sectionDao.findByLineId(sectionDeleteRequest.getLineId()));
+    public boolean removeSection(SectionServiceDeleteRequest sectionServiceDeleteRequest) {
+        Sections sections = new Sections(sectionDao.findByLineId(sectionServiceDeleteRequest.getLineId()));
 
         validateRemoveSection(sections);
 
-        return deleteSection(sectionDeleteRequest, sections);
+        return deleteSection(sectionServiceDeleteRequest, sections);
     }
 
     private void validateRemoveSection(Sections sections) {
@@ -85,17 +85,17 @@ public class SectionService {
         }
     }
 
-    private boolean deleteSection(SectionDeleteRequest sectionDeleteRequest, Sections sections) {
-        if (isEndStationSection(sectionDeleteRequest, sections)) {
+    private boolean deleteSection(SectionServiceDeleteRequest sectionServiceDeleteRequest, Sections sections) {
+        if (isEndStationSection(sectionServiceDeleteRequest, sections)) {
             Section upStationSection = sections.findSectionByUpStationId(
-                sectionDeleteRequest.getStationId());
+                sectionServiceDeleteRequest.getStationId());
             return sectionDao.deleteById(upStationSection.getId());
         }
 
         Section downStationSection = sections.findSectionByDownStationId(
-            sectionDeleteRequest.getStationId());
+            sectionServiceDeleteRequest.getStationId());
         Section deleteSectionStation = sections.findSectionByUpStationId(
-            sectionDeleteRequest.getStationId());
+            sectionServiceDeleteRequest.getStationId());
 
         int totalDistance = downStationSection.getDistance() + deleteSectionStation.getDistance();
         sectionDao.update(downStationSection.getId(), deleteSectionStation.getDownStationId(),
@@ -103,9 +103,9 @@ public class SectionService {
         return sectionDao.deleteById(deleteSectionStation.getId());
     }
 
-    private boolean isEndStationSection(SectionDeleteRequest sectionDeleteRequest,
+    private boolean isEndStationSection(SectionServiceDeleteRequest sectionServiceDeleteRequest,
         Sections sections) {
         return !sections.isMiddleSection(
-            new Section(sectionDeleteRequest.getStationId(), sectionDeleteRequest.getStationId()));
+            new Section(sectionServiceDeleteRequest.getStationId(), sectionServiceDeleteRequest.getStationId()));
     }
 }

@@ -1,6 +1,7 @@
 package wooteco.subway.ui.dto;
 
 import javax.validation.constraints.NotBlank;
+import wooteco.subway.service.dto.StationServiceRequest;
 
 public class StationRequest {
 
@@ -16,5 +17,9 @@ public class StationRequest {
 
     public String getName() {
         return name;
+    }
+
+    public StationServiceRequest toServiceRequest() {
+        return new StationServiceRequest(name);
     }
 }

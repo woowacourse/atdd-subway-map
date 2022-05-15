@@ -18,8 +18,8 @@ import wooteco.subway.dao.SectionDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.ui.dto.SectionDeleteRequest;
-import wooteco.subway.ui.dto.SectionRequest;
+import wooteco.subway.service.dto.SectionServiceDeleteRequest;
+import wooteco.subway.service.dto.SectionServiceRequest;
 
 @JdbcTest
 public class SectionServiceTest {
@@ -48,7 +48,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 4L, 5L, 5));
 
         // when
-        sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
+        sectionService.save(new SectionServiceRequest(1L, 2L, 2), lineId);
         List<Section> inputSections = sectionDao.findByLineId(lineId);
         Sections sections = new Sections(inputSections);
         List<Long> stationIds = sections.sortedStationId();
@@ -76,7 +76,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 3L, 4L, 5));
 
         // when
-        sectionService.save(new SectionRequest(4L, 5L, 2), lineId);
+        sectionService.save(new SectionServiceRequest(4L, 5L, 2), lineId);
         List<Section> inputSections = sectionDao.findByLineId(lineId);
         Sections sections = new Sections(inputSections);
 
@@ -103,7 +103,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 1L, 3L, 3));
 
         // when
-        sectionService.save(new SectionRequest(1L, 2L, 2), lineId);
+        sectionService.save(new SectionServiceRequest(1L, 2L, 2), lineId);
         List<Section> inputSections = sectionDao.findByLineId(lineId);
         Sections sections = new Sections(inputSections);
         List<Long> stationIds = sections.sortedStationId();
@@ -133,7 +133,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 1L, 3L, 4));
 
         // when
-        sectionService.save(new SectionRequest(2L, 3L, 3), lineId);
+        sectionService.save(new SectionServiceRequest(2L, 3L, 3), lineId);
         List<Section> inputSections = sectionDao.findByLineId(lineId);
 
         Sections sections = new Sections(inputSections);
@@ -166,7 +166,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 4L, 5L, 5));
 
         assertThatThrownBy(() ->
-            sectionService.save(new SectionRequest(2L, 1L, 4), lineId))
+            sectionService.save(new SectionServiceRequest(2L, 1L, 4), lineId))
             .hasMessage("등록할 구간의 길이가 기존 역 사이의 길이보다 길거나 같으면 안됩니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }
@@ -181,7 +181,7 @@ public class SectionServiceTest {
         sectionDao.save(new Section(lineId, 3L, 4L, 5));
 
         // when
-        sectionService.removeSection(new SectionDeleteRequest(lineId, 3L));
+        sectionService.removeSection(new SectionServiceDeleteRequest(lineId, 3L));
         List<Section> inputSections = sectionDao.findByLineId(lineId);
         Sections sections = new Sections(inputSections);
         List<Long> result = sections.sortedStationId();
@@ -208,7 +208,7 @@ public class SectionServiceTest {
 
         // then
         assertThatThrownBy(() ->
-            sectionService.removeSection(new SectionDeleteRequest(lineId, 2L)))
+            sectionService.removeSection(new SectionServiceDeleteRequest(lineId, 2L)))
             .hasMessage("구간을 제거할 수 없는 상태입니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }
