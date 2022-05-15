@@ -13,7 +13,7 @@ public class Station {
 
     public Station(Long id, String name) {
         this.id = id;
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "값을 입력해주세요" + "name");
     }
 
     public Long getId() {
@@ -33,7 +33,7 @@ public class Station {
             return false;
         }
         Station station = (Station) o;
-        return Objects.equals(name, station.name);
+        return Objects.equals(id, station.id);
     }
 
     @Override

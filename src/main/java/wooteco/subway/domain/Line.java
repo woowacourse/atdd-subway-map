@@ -14,21 +14,13 @@ public class Line {
     }
 
     public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
-    public Line(String name, String color, Sections sections) {
-        this.id = null;
-        this.color = color;
-        this.sections = sections;
+        this(id, name, color, null);
     }
 
     public Line(Long id, String name, String color, Sections sections) {
         this.id = id;
-        this.name = name;
-        this.color = color;
+        this.name = Objects.requireNonNull(name, "값을 입력해주세요" + "name");
+        this.color = Objects.requireNonNull(color, "값을 입력해주세요" + "color");
         this.sections = sections;
     }
 
@@ -57,12 +49,12 @@ public class Line {
             return false;
         }
         Line line = (Line) o;
-        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
+        return Objects.equals(id, line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return Objects.hash(id);
     }
 
     @Override
