@@ -12,6 +12,8 @@ import wooteco.subway.domain.Station;
 @Service
 public class SectionService {
 
+    private static final int EXIST_LINE_COUNT = 1;
+
     private final SectionDao<Section> sectionDao;
     private final StationDao stationDao;
     private final LineDao lineDao;
@@ -98,7 +100,7 @@ public class SectionService {
     }
 
     private void checkMinSectionCount(Long lineId) {
-        if (sectionDao.countByLineId(lineId) == 1) {
+        if (sectionDao.countByLineId(lineId) == EXIST_LINE_COUNT) {
             throw new IllegalArgumentException("최소한 한 개의 구간은 있어야 합니다.");
         }
     }
