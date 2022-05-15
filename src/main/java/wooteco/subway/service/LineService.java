@@ -97,7 +97,7 @@ public class LineService {
         checkNotContainSection(sections, upStationId, downStationId);
 
         //상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-        if (sections.keySet().contains(upStationId) && sections.values().contains(downStationId)) {
+        if (sections.containsKey(upStationId) && sections.containsValue(downStationId)) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
         }
 
@@ -115,7 +115,7 @@ public class LineService {
 
         //갈래길 추가
         //1.상행이 같을 경우
-        if (sections.keySet().contains(upStationId)) {
+        if (sections.containsKey(upStationId)) {
             Section existSection = sectionDao.findByLineIdAndUpStationId(lineId, upStationId);
             int existDistance = existSection.getDistance();
             Section updateSection = new Section(existSection.getId(), line, stationDao.findById(downStationId),
@@ -126,7 +126,7 @@ public class LineService {
         }
 
         //2.하행이 같을 경우
-        if (sections.values().contains(downStationId)) {
+        if (sections.containsValue(downStationId)) {
             Section existSection = sectionDao.findByLineIdAndDownStationId(lineId, downStationId);
             int existDistance = existSection.getDistance();
             Section updateSection = new Section(existSection.getId(), line, existSection.getUpStation(),
@@ -165,7 +165,7 @@ public class LineService {
         }
 
         //중간역 제거
-        if (sections.keySet().contains(stationId) && sections.values().contains(stationId)) {
+        if (sections.containsKey(stationId) && sections.containsValue(stationId)) {
             Section upSection = sectionDao.findByLineIdAndDownStationId(lineId, stationId);
             Section downSection = sectionDao.findByLineIdAndUpStationId(lineId, stationId);
             int upSectionDistance = upSection.getDistance();
