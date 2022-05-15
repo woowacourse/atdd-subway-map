@@ -46,7 +46,7 @@ class LineDaoImplTest {
     void findById() {
         Line actual = lineDao.findById(line.getId());
 
-        assertThat(actual).isEqualTo(new Line(line.getId(), "신분당선", "red"));
+        assertThat(actual.getId()).isEqualTo(1L);
     }
 
     @DisplayName("id에 해당하는 노선이 존재하지 않으면 예외를 발생시킨다.")
@@ -74,7 +74,8 @@ class LineDaoImplTest {
 
         Line updated = lineDao.findById(line.getId());
 
-        assertThat(updated).isEqualTo(updatingLine);
+        assertThat(updated.getName()).isEqualTo("7호선");
+        assertThat(updated.getColor()).isEqualTo("darkGreen");
     }
 
     @DisplayName("id에 해당하는 노선을 제거한다.")

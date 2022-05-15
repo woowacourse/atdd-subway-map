@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,13 +45,14 @@ class StationDaoImplTest {
     @Test
     void findAll() {
         stationDao.save(new Station("강남역"));
-        Long seoulStationId = 1L;
-        Long gangnamStationId = 2L;
 
-        List<Station> stations = stationDao.findAll();
+        List<Long> stationIds = stationDao.findAll()
+                .stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
 
-        assertThat(stations)
-                .contains(new Station(seoulStationId, "서울역"), new Station(gangnamStationId, "강남역"));
+        assertThat(stationIds)
+                .contains(1L, 2L);
     }
 
     @DisplayName("id 값에 해당하는 지하철 역을 삭제한다.")

@@ -55,7 +55,7 @@ class LineServiceTest {
     void findLineById() {
         Line actual = lineService.findLineById(line.getId());
 
-        assertThat(actual).isEqualTo(new Line(1L, "신분당선", "red"));
+        assertThat(actual.getId()).isEqualTo(1L);
     }
 
     @DisplayName("노선을 삭제할 수 있다.")
