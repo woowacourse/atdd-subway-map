@@ -18,10 +18,6 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(SectionRequest sectionRequest, long lineId) {
-        this(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-    }
-
     public Section(long id, long lineId, long upStationId, long downStationId, int distance) {
         this.id = id;
         this.lineId = lineId;

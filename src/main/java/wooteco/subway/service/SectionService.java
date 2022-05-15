@@ -30,7 +30,10 @@ public class SectionService {
 
     @Transactional
     public Section addSection(SectionRequest sectionRequest, long lineId) {
-        Section newSection = new Section(sectionRequest, lineId);
+        Section newSection = new Section(lineId,
+                sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
         if (isStartOrEndOfSection(newSection, lineId)) {
             return sectionDao.save(newSection);
         }
@@ -86,10 +89,12 @@ public class SectionService {
 
         if (sections.isFirstStation(station.getId())) {
             deleteFirstStation(stationId, lineId);
+            return;
         }
 
         if (sections.isLastStation(station.getId())) {
             deleteLastStation(stationId, lineId);
+            return;
         }
 
         deleteBetweenStation(stationId, lineId);
