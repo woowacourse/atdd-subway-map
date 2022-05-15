@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
 
     private Long id;
@@ -22,25 +24,25 @@ public class Section {
     }
 
     private void validateStationId(Long upStationId, Long downStationId) {
-        if (upStationId == downStationId) {
+        if (Objects.equals(upStationId, downStationId)) {
             throw new IllegalArgumentException("상행과 하행은 서로 다른 역이어야 합니다.");
         }
     }
 
     public boolean matchUpStationWithUpStationOf(Section newSection) {
-        return this.upStationId == newSection.upStationId;
+        return Objects.equals(this.upStationId, newSection.upStationId);
     }
 
     public boolean matchUpStationWithDownStationOf(Section newSection) {
-        return this.upStationId == newSection.downStationId;
+        return Objects.equals(this.upStationId, newSection.downStationId);
     }
 
     public boolean matchDownStationWithUpStationOf(Section newSection) {
-        return this.downStationId == newSection.upStationId;
+        return Objects.equals(this.downStationId, newSection.upStationId);
     }
 
     public boolean matchDownStationWithDownStationOf(Section newSection) {
-        return this.downStationId == newSection.downStationId;
+        return Objects.equals(this.downStationId, newSection.downStationId);
     }
 
     public boolean isLessThan(Section newSection) {
@@ -69,11 +71,11 @@ public class Section {
     }
 
     public boolean isSameUpStation(Long stationId) {
-        return this.upStationId == stationId;
+        return Objects.equals(this.upStationId, stationId);
     }
 
     public boolean isSameDownStation(Long stationId) {
-        return this.downStationId == stationId;
+        return Objects.equals(this.downStationId, stationId);
     }
 
     public Long getId() {

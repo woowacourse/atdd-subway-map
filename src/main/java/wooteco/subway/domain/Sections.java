@@ -35,7 +35,7 @@ public class Sections {
 
     private boolean isTopSection(Section section, List<Section> value) {
         return value.stream()
-                .allMatch(it -> !it.matchDownStationWithUpStationOf(section));
+                .noneMatch(it -> it.matchDownStationWithUpStationOf(section));
     }
 
     public void add(Section newSection) {
