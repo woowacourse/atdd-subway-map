@@ -124,9 +124,23 @@ public class Sections2 {
         return registeredSectionCount == 2;
     }
 
-    public List<Section> toList() {
+    public List<Section> toSortedList() {
         return new ArrayList<>(value);
     }
+
+    public List<Station> toSortedStations() {
+        return new ArrayList<>() {{
+            add(getUpperEndStation());
+            addAll(toDownStations());
+        }};
+    }
+
+    private List<Station> toDownStations() {
+        return value.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public boolean equals(Object o) {

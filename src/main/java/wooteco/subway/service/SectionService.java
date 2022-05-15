@@ -7,13 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Sections;
-import wooteco.subway.domain.section.SectionsFactory;
+import wooteco.subway.domain.section.Sections2;
+import wooteco.subway.domain.section.SectionsManager;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.entity.SectionEntity;
-import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.ExceptionType;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class SectionService {
@@ -29,27 +29,28 @@ public class SectionService {
 
     @Transactional
     public void save(Long lineId, CreateSectionRequest request) {
-        Sections sections = SectionsFactory.generate(findValidSections(lineId));
+        SectionsManager sectionsManager = new SectionsManager(findValidSections(lineId));
         Station upStation = findExistingStation(request.getUpStationId());
         Station downStation = findExistingStation(request.getDownStationId());
-        Sections updatedSections = sections.save(new Section(upStation, downStation, request.getDistance()));
+        Sections2 updatedSections = sectionsManager.save(
+                new Section(upStation, downStation, request.getDistance()));
 
-        updateSectionChanges(sections, updatedSections, lineId);
+        updateSectionChanges(sectionsManager, updatedSections, lineId);
     }
 
     @Transactional
     public void delete(Long lineId, Long stationId) {
-        Sections sections = SectionsFactory.generate(findValidSections(lineId));
-        Sections updatedSections = sections.delete(findExistingStation(stationId));
+        SectionsManager sectionsManager = new SectionsManager((findValidSections(lineId)));
+        Sections2 updatedSections = sectionsManager.delete(findExistingStation(stationId));
 
-        updateSectionChanges(sections, updatedSections, lineId);
+        updateSectionChanges(sectionsManager, updatedSections, lineId);
     }
 
-    private void updateSectionChanges(Sections oldSections, Sections updatedSections, Long lineId) {
-        for (Section deletedSection : updatedSections.extractDeletedSections(oldSections)) {
+    private void updateSectionChanges(SectionsManager oldSectionsManager, Sections2 updatedSections, Long lineId) {
+        for (Section deletedSection : oldSectionsManager.extractDeletedSections(updatedSections)) {
             sectionDao.delete(SectionEntity.of(lineId, deletedSection));
         }
-        for (Section updatedSection : updatedSections.extractNewSections(oldSections)) {
+        for (Section updatedSection : oldSectionsManager.extractNewSections(updatedSections)) {
             sectionDao.save(SectionEntity.of(lineId, updatedSection));
         }
     }

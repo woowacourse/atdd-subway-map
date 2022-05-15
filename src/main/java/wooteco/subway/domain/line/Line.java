@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Sections;
-import wooteco.subway.domain.section.SectionsFactory;
+import wooteco.subway.domain.section.Sections2;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionType;
 import wooteco.subway.exception.NotFoundException;
@@ -15,9 +14,9 @@ public class Line {
     private static final String INVALID_SECTION_COMPOSITION_EXCEPTION = "다른 노선에 등록된 구간이 포함되었습니다.";
 
     private final LineInfo lineInfo;
-    private final Sections sections;
+    private final Sections2 sections;
 
-    private Line(LineInfo lineInfo, Sections sections) {
+    private Line(LineInfo lineInfo, Sections2 sections) {
         this.lineInfo = lineInfo;
         this.sections = sections;
     }
@@ -26,7 +25,7 @@ public class Line {
         validateNotEmpty(lineSections);
         validateSameLineSections(lineSections);
         LineInfo lineInfo = lineSections.get(0).getLineInfo();
-        Sections sections = toSections(lineSections);
+        Sections2 sections = toSections(lineSections);
 
         return new Line(lineInfo, sections);
     }
@@ -46,11 +45,11 @@ public class Line {
         }
     }
 
-    private static Sections toSections(List<LineSection> sameLineSections) {
+    private static Sections2 toSections(List<LineSection> sameLineSections) {
         List<Section> sections = sameLineSections.stream()
                 .map(LineSection::getSection)
                 .collect(Collectors.toList());
-        return SectionsFactory.generate(sections);
+        return new Sections2(sections);
     }
 
     public Long getId() {
