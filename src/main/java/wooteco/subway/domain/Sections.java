@@ -131,7 +131,7 @@ public class Sections {
     private boolean hasAnySectionWithSameStations(List<Section> foundSections,
         Section section) {
         return foundSections.stream()
-            .anyMatch(it-> it.hasSameStations(section));
+            .anyMatch(it -> it.hasSameStations(section));
     }
 
     private boolean isInvalidCountInMiddle(List<Section> foundSections) {
@@ -185,7 +185,7 @@ public class Sections {
 
     private Section mergeTwoSections(Section section) {
         int index = values.indexOf(section);
-        Section nextSection = findNextSection(section);
+        Section nextSection = findNextSection(index);
         Section modifiedSection = values.set(index,
             new Section(nextSection.getId(), section.getUpStation(), nextSection.getDownStation(),
                 section.getDistance() + nextSection.getDistance()));
@@ -193,8 +193,8 @@ public class Sections {
         return modifiedSection;
     }
 
-    private Section findNextSection(Section section) {
-        return values.get(values.indexOf(section) + 1);
+    private Section findNextSection(int index) {
+        return values.get(index + 1);
     }
 
     public List<Section> getDifference(List<Section> sections) {
