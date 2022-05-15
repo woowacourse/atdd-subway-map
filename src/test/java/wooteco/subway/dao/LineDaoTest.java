@@ -82,6 +82,7 @@ public class LineDaoTest {
         Line line = lineDao.findById(짱구선.getId()).get();
 
         assertAll(
+            () -> assertThat(line.getId()).isEqualTo(짱구선.getId()),
             () -> assertThat(line.getName()).isEqualTo("38선"),
             () -> assertThat(line.getColor()).isEqualTo("rainbow")
         );
