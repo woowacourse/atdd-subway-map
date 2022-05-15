@@ -8,7 +8,7 @@ public class Line {
     private final String color;
 
     public Line(String name, String color) {
-        this(null, name, color);
+        this(0L, new Name(name), color);
     }
 
     public Line(Long id, String name, String color) {

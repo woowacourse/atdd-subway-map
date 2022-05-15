@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.StationDao;
@@ -12,6 +13,7 @@ import wooteco.subway.dto.StationResponse;
 
 @Service
 public class StationService {
+    private static final String ERROR_EXIST = "이미 존재하는 지하철역 이름입니다.";
 
     private final StationDao stationDao;
 
@@ -20,9 +22,14 @@ public class StationService {
     }
 
     public StationResponse create(StationRequest stationRequest) {
-        String name = stationRequest.getName();
-        Station station = stationDao.save(name);
-        return new StationResponse(station);
+        Station station = new Station(stationRequest.getName());
+        Station savedStation;
+        try {
+            savedStation = stationDao.save(station);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException(ERROR_EXIST);
+        }
+        return new StationResponse(savedStation);
     }
 
     public List<StationResponse> show() {

@@ -50,7 +50,7 @@ public class Name {
         if (o == null || getClass() != o.getClass())
             return false;
         Name name = (Name)o;
-        return value.equals(name.value);
+        return Objects.equals(value, name.value);
     }
 
     @Override

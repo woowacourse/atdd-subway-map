@@ -25,7 +25,7 @@ public class StationDaoTest {
 
     @BeforeEach
     void set() {
-        stationDao.save("선릉역");
+        stationDao.save(new Station("선릉역"));
     }
 
     @AfterEach
@@ -36,28 +36,17 @@ public class StationDaoTest {
     @Test
     @DisplayName("지하철역을 저장한다.")
     void save() {
-        String expected = "강남역";
+        Station expected = new Station("강남역");
 
-        Station station = stationDao.save(expected);
-        String actual = station.getName();
+        Station actual = stationDao.save(expected);
 
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    @DisplayName("중복된 역을 저장할 경우 예외를 발생시킨다.")
-    void save_duplicate() {
-        String expected = "선릉역";
-
-        assertThatThrownBy(() -> stationDao.save(expected))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 지하철역 이름입니다.");
-    }
-
-    @Test
     @DisplayName("모든 지하철 역을 조회한다")
     void findAll() {
-        stationDao.save("잠실역");
+        stationDao.save(new Station("잠실역"));
 
         List<Station> stations = stationDao.findAll();
 
@@ -70,6 +59,15 @@ public class StationDaoTest {
         stationDao.deleteById(1L);
 
         assertThat(stationDao.findAll()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("입력된 id의 지하철 역을 검색한다")
+    void findById() {
+        Station actualStation = new Station("선릉역");
+        Station expectedStation = stationDao.findById(1L).orElse(null);
+
+        assertThat(actualStation).isEqualTo(expectedStation);
     }
 }
 

@@ -7,12 +7,14 @@ import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import wooteco.subway.dao.dto.StationDto;
 import wooteco.subway.domain.Station;
 
 @Repository
@@ -33,24 +35,19 @@ public class StationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(String name) {
-        checkDuplicateName(name);
-        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Station(id, name);
+    public Station save(Station station) {
+        StationDto stationDto = new StationDto(station);
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(stationDto);
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return new Station(id, station.getName());
     }
 
-    private void checkDuplicateName(String name) {
-        if (findByName(name).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 지하철역 이름입니다.");
-        }
-    }
-
-    private Optional<Station> findByName(String name) {
-        String sql = "SELECT * FROM station WHERE name = :name";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("name", name);
+    public Optional<Station> findById(long id) {
+        String sql = "SELECT * FROM station WHERE id = :id";
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, stationRowMapper));
+            return Optional.ofNullable(
+                    namedParameterJdbcTemplate.queryForObject(sql, parameterSource, stationRowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -70,7 +67,7 @@ public class StationDao {
 
     public void deleteById(Long id) {
         String sql = "DELETE FROM station WHERE id = :id";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        namedParameterJdbcTemplate.update(sql, parameters);
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
+        namedParameterJdbcTemplate.update(sql, parameterSource);
     }
 }

@@ -7,7 +7,7 @@ public class Station {
     private final Name name;
 
     public Station(String name) {
-        this(null, name);
+        this(null, new Name(name));
     }
 
     public Station(Long id, String name) {

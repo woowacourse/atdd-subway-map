@@ -13,5 +13,4 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handleIllegalException(RuntimeException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-
 }
