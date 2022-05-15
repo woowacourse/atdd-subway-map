@@ -101,7 +101,7 @@ public class SectionService {
     }
 
     private void validateSectionSize(Sections sections) {
-        if (sections.isLessThanOneSection()) {
+        if (sections.isOnlyOneSection()) {
             throw new IllegalArgumentException("노선 내의 구간이 하나 이하라면 삭제할 수 없습니댜.");
         }
     }

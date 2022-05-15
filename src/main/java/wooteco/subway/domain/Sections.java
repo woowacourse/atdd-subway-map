@@ -61,7 +61,7 @@ public class Sections {
                 .noneMatch(s -> s.getUpStationId() == stationId);
     }
 
-    public boolean isLessThanOneSection() {
+    public boolean isOnlyOneSection() {
         return sections.size() == 1;
     }
 }
