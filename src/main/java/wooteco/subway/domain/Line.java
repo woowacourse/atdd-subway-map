@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Line {
@@ -29,6 +30,13 @@ public class Line {
 
     public Line(String name, String color) {
         this(null, name, color);
+    }
+
+    public Line(Long id, String name, String color, List<Station> stations) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.stations = new ArrayList<>(stations);
     }
 
     public Long getId() {
