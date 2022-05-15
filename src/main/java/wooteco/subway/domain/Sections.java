@@ -30,7 +30,7 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    public void checkCanAddAndUpdate(Section section) {
+    public void updateToAdd(Section section) {
         validateCanConnect(section);
         validateAlreadyConnected(section);
         updateIfCanDivide(section);

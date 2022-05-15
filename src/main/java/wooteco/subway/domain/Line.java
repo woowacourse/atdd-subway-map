@@ -51,8 +51,8 @@ public class Line {
         }
     }
 
-    public void checkCanAddAndUpdate(Section section) {
-        sections.checkCanAddAndUpdate(section);
+    public void updateToAdd(Section section) {
+        sections.updateToAdd(section);
     }
 
     public Section delete(Station station) {

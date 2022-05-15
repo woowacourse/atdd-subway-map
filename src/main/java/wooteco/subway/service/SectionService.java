@@ -44,10 +44,14 @@ public class SectionService {
             requestCreateSectionInfo.getDistance());
         LineEntity lineEntity = lineDao.find(lineId);
         Line line = lineCreator.createLine(lineEntity.getId());
-        line.checkCanAddAndUpdate(section);
+        line.updateToAdd(section);
 
-        Sections sections = line.getSections();
         sectionDao.save(line.getId(), section);
+        saveUpdatedLine(line);
+    }
+
+    private void saveUpdatedLine(Line line) {
+        Sections sections = line.getSections();
         sections.forEach(section1 -> sectionDao.update(line.getId(), section1));
     }
 

@@ -15,7 +15,7 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(section));
         Section section1 = new Section(new Station(2L, "선릉역"), new Station(3L, "역삼역"), 10);
 
-        sections.checkCanAddAndUpdate(section1);
+        sections.updateToAdd(section1);
     }
 
     @DisplayName("기존에 있는 역에 연결되지 않는 구간 추가 시 에러를 응답한다.")
@@ -26,7 +26,7 @@ public class SectionsTest {
 
         Section section2 = new Section(new Station(3L, "역삼역"), new Station(4L, "잠실역"), 10);
 
-        assertThatThrownBy(() -> sections.checkCanAddAndUpdate(section2)).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> sections.updateToAdd(section2)).isInstanceOf(IllegalArgumentException.class)
             .hasMessage("해당 구간은 연결 지점이 없습니다");
     }
 
@@ -39,7 +39,7 @@ public class SectionsTest {
 
         Section sectionToAdd = new Section(new Station(1L, "강남역"), new Station(3L, "잠실역"), 10);
 
-        assertThatThrownBy(() -> sections.checkCanAddAndUpdate(sectionToAdd)).isInstanceOf(
+        assertThatThrownBy(() -> sections.updateToAdd(sectionToAdd)).isInstanceOf(
             IllegalArgumentException.class)
             .hasMessage("해당 구간은 이미 이동 가능합니다.");
     }
@@ -51,7 +51,7 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(section));
 
         Section sectionToAdd = new Section(new Station(1L, "강남역"), new Station(3L, "역삼역"), 11);
-        assertThatThrownBy(() -> sections.checkCanAddAndUpdate(sectionToAdd)).isInstanceOf(
+        assertThatThrownBy(() -> sections.updateToAdd(sectionToAdd)).isInstanceOf(
             IllegalArgumentException.class)
             .hasMessage("해당 구간은 추가될 수 없습니다.");
     }
@@ -63,7 +63,7 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(section));
 
         Section sectionToAdd = new Section(2L, new Station(1L, "강남역"), new Station(3L, "역삼역"), 7);
-        sections.checkCanAddAndUpdate(sectionToAdd);
+        sections.updateToAdd(sectionToAdd);
 
         Section resultSection = sections.findById(1L);
         assertThat(resultSection.getDistance()).isEqualTo(3);
