@@ -563,10 +563,12 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertAll(
-            () -> assertThat(responseA.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
-            () -> assertThat(responseB.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+            () -> assertThat(responseA.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(responseB.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(responseA.body().jsonPath().getString("message"))
+                .isEqualTo("구간 목록이 비어있어 삭제할 수 없습니다."),
             () -> assertThat(responseB.body().jsonPath().getString("message"))
-                .isEqualTo("해당 역이 속한 구간이 존재하지 않습니다.")
+                .isEqualTo("구간 목록이 비어있어 삭제할 수 없습니다.")
         );
     }
 }

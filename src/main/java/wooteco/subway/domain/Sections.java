@@ -171,7 +171,19 @@ public class Sections {
     }
 
     private void validateDeletable() {
-        if (values.size() <= 1) {
+        checkEmptySections();
+        checkOnlyOneSectionExist();
+
+    }
+
+    private void checkEmptySections() {
+        if (values.isEmpty()) {
+            throw new IllegalArgumentException("구간 목록이 비어있어 삭제할 수 없습니다.");
+        }
+    }
+
+    private void checkOnlyOneSectionExist() {
+        if (values.size() == 1) {
             throw new IllegalArgumentException("구간이 하나인 경우 삭제할 수 없습니다.");
         }
     }
