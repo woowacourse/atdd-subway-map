@@ -16,36 +16,16 @@ import wooteco.subway.dto.StationRequest;
 @DisplayName("지하철 노선 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    private static StationRequest 대흥역 = new StationRequest("대흥역");
-    private static StationRequest 공덕역 = new StationRequest("공덕역");
-    private static StationRequest 광흥창역 = new StationRequest("광흥창역");
-    private static StationRequest 상수역 = new StationRequest("상수역");
+    private static final StationRequest 광흥창역 = new StationRequest("광흥창역");
+    private static final StationRequest 상수역 = new StationRequest("상수역");
 
-    private Long postStation(StationRequest stationRequest) {
-        return Long.valueOf(RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract()
+    private Long getPostLineId(LineRequest lineRequest) {
+        return Long.valueOf(postLineResponse(lineRequest)
                 .header("Location")
                 .split("/")[2]);
     }
 
-    private Long postLine(LineRequest lineRequest) {
-        return Long.valueOf(RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract()
-                .header("Location")
-                .split("/")[2]);
-    }
-
-    private ExtractableResponse<Response> postSection(Long lineId, SectionRequest sectionRequest) {
+    private ExtractableResponse<Response> postSectionResponse(Long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -55,7 +35,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
+    private ExtractableResponse<Response> deleteSectionResponse(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
                 .when()
                 .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
@@ -63,19 +43,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private Long getLineId(Long stationId1, Long stationId2) {
+        LineRequest 육호선 = new LineRequest("육호선", "bg-red-600", stationId1, stationId2, 10);
+        return getPostLineId(육호선);
+    }
+
     @DisplayName("지하철 구간을 생성한다.")
     @Test
     void createSection() {
         // given
-        Long stationId1 = postStation(대흥역);
-        Long stationId2 = postStation(공덕역);
-        Long stationId3 = postStation(광흥창역);
-        LineRequest 육호선 = new LineRequest("육호선", "bg-red-600", stationId1, stationId2, 10);
-        Long lineId = postLine(육호선);
+        Long stationId1 = postStationId(대흥역);
+        Long stationId2 = postStationId(공덕역);
+        Long stationId3 = postStationId(광흥창역);
+        Long lineId = getLineId(stationId1, stationId2);
 
         // when
         SectionRequest sectionRequest = new SectionRequest(stationId1, stationId3, 4);
-        ExtractableResponse<Response> response = postSection(lineId, sectionRequest);
+        ExtractableResponse<Response> response = postSectionResponse(lineId, sectionRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -85,16 +69,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSectionBothIncludeInLine() {
         // given
-        Long stationId1 = postStation(대흥역);
-        Long stationId2 = postStation(공덕역);
-        Long stationId3 = postStation(광흥창역);
-        Long stationId4 = postStation(상수역);
-        LineRequest 육호선 = new LineRequest("육호선", "bg-red-600", stationId1, stationId2, 10);
-        Long lineId = postLine(육호선);
+        Long stationId1 = postStationId(대흥역);
+        Long stationId2 = postStationId(공덕역);
+        Long stationId3 = postStationId(광흥창역);
+        Long stationId4 = postStationId(상수역);
+        Long lineId = getLineId(stationId1, stationId2);
 
         // when
         SectionRequest sectionRequest = new SectionRequest(stationId3, stationId4, 4);
-        ExtractableResponse<Response> response = postSection(lineId, sectionRequest);
+        ExtractableResponse<Response> response = postSectionResponse(lineId, sectionRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -104,14 +87,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSectionBothExcludeInLine() {
         // given
-        Long stationId1 = postStation(대흥역);
-        Long stationId2 = postStation(공덕역);
-        LineRequest 육호선 = new LineRequest("육호선", "bg-red-600", stationId1, stationId2, 10);
-        Long lineId = postLine(육호선);
+        Long stationId1 = postStationId(대흥역);
+        Long stationId2 = postStationId(공덕역);
+        Long lineId = getLineId(stationId1, stationId2);
 
         // when
         SectionRequest sectionRequest = new SectionRequest(stationId1, stationId2, 4);
-        ExtractableResponse<Response> response = postSection(lineId, sectionRequest);
+        ExtractableResponse<Response> response = postSectionResponse(lineId, sectionRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -121,15 +103,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createLongDistanceSection() {
         // given
-        Long stationId1 = postStation(대흥역);
-        Long stationId2 = postStation(공덕역);
-        Long stationId3 = postStation(광흥창역);
-        LineRequest 육호선 = new LineRequest("육호선", "bg-red-600", stationId1, stationId2, 10);
-        Long lineId = postLine(육호선);
+        Long stationId1 = postStationId(대흥역);
+        Long stationId2 = postStationId(공덕역);
+        Long stationId3 = postStationId(광흥창역);
+        Long lineId = getLineId(stationId1, stationId2);
 
         // when
         SectionRequest sectionRequest = new SectionRequest(stationId1, stationId3, 10);
-        ExtractableResponse<Response> response = postSection(lineId, sectionRequest);
+        ExtractableResponse<Response> response = postSectionResponse(lineId, sectionRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -139,17 +120,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection() {
         // given
-        Long stationId1 = postStation(대흥역);
-        Long stationId2 = postStation(공덕역);
-        Long stationId3 = postStation(광흥창역);
-        LineRequest 육호선 = new LineRequest("육호선", "bg-red-600", stationId1, stationId2, 10);
-        Long lineId = postLine(육호선);
+        Long stationId1 = postStationId(대흥역);
+        Long stationId2 = postStationId(공덕역);
+        Long stationId3 = postStationId(광흥창역);
+        Long lineId = getLineId(stationId1, stationId2);
 
         SectionRequest sectionRequest = new SectionRequest(stationId1, stationId3, 4);
-        postSection(lineId, sectionRequest);
+        postSectionResponse(lineId, sectionRequest);
 
         // when
-        ExtractableResponse<Response> response = deleteSection(lineId, stationId2);
+        ExtractableResponse<Response> response = deleteSectionResponse(lineId, stationId2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -159,13 +139,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLastSection() {
         // given
-        Long stationId1 = postStation(대흥역);
-        Long stationId2 = postStation(공덕역);
-        LineRequest 육호선 = new LineRequest("육호선", "bg-red-600", stationId1, stationId2, 10);
-        Long lineId = postLine(육호선);
+        Long stationId1 = postStationId(대흥역);
+        Long stationId2 = postStationId(공덕역);
+        Long lineId = getLineId(stationId1, stationId2);
 
         // when
-        ExtractableResponse<Response> response = deleteSection(lineId, stationId2);
+        ExtractableResponse<Response> response = deleteSectionResponse(lineId, stationId2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
