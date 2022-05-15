@@ -13,6 +13,8 @@ import wooteco.subway.domain.station.Station;
 
 public class Sections {
 
+    private static final int FIRST_INDEX = 0;
+
     private final List<Section> orderedSections;
 
     private Sections(List<Section> sections) {
@@ -38,8 +40,7 @@ public class Sections {
         validateSectionIsAppendable(section);
 
         if (canBeFirstSection(section)) {
-            int firstIndex = 0;
-            orderedSections.add(firstIndex, section);
+            orderedSections.add(FIRST_INDEX, section);
             return;
         }
 
@@ -82,8 +83,7 @@ public class Sections {
     }
 
     private boolean canBeFirstSection(Section section) {
-        int firstIndex = 0;
-        Section firstSection = orderedSections.get(firstIndex);
+        Section firstSection = orderedSections.get(FIRST_INDEX);
         return section.isPreviousOf(firstSection);
     }
 
@@ -116,8 +116,7 @@ public class Sections {
         validateSectionsSizeEnough();
 
         if (isFirstStation(station)) {
-            int firstIndex = 0;
-            orderedSections.remove(firstIndex);
+            orderedSections.remove(FIRST_INDEX);
             return;
         }
         if (isLastStation(station)) {
@@ -142,8 +141,7 @@ public class Sections {
     }
 
     private boolean isFirstStation(Station station) {
-        int firstIndex = 0;
-        Section firstSection = orderedSections.get(firstIndex);
+        Section firstSection = orderedSections.get(FIRST_INDEX);
         return station.equals(firstSection.getUpStation());
     }
 
