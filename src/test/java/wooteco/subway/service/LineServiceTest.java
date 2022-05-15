@@ -30,13 +30,11 @@ class LineServiceTest {
 
     private LineService lineService;
     private StationService stationService;
-    private SectionService sectionService;
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(new JdbcLineDao(jdbcTemplate), new JdbcStationDao(jdbcTemplate), new JdbcSectionDao(jdbcTemplate));
+        lineService = new LineService(new JdbcLineDao(jdbcTemplate), new StationService(new JdbcStationDao(jdbcTemplate)), new SectionService(new JdbcSectionDao(jdbcTemplate)));
         stationService = new StationService(new JdbcStationDao(jdbcTemplate));
-        sectionService = new SectionService(new JdbcSectionDao(jdbcTemplate));
 
         stationService.createStation("낙성대");
         stationService.createStation("교대");

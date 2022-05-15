@@ -37,6 +37,10 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    public Station findById(Long id) {
+        return stationDao.findById(id);
+    }
+
     public void delete(Long id) {
         validateNonFoundId(id);
 

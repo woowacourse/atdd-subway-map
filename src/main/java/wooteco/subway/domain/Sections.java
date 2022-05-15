@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -119,18 +118,6 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
-    }
-
-    public List<Long> getStationIds() {
-        List<Long> upStationIds = getUpStationIds();
-        List<Long> downStationIds = getDownStationIds();
-        List<Long> stationIds = new ArrayList<>();
-        stationIds.addAll(upStationIds);
-        stationIds.addAll(downStationIds);
-
-        return stationIds.stream()
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     private List<Long> getUpStationIds() {

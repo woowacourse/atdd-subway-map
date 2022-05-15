@@ -3,14 +3,13 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.line.LineRequestDto;
 import wooteco.subway.service.dto.line.LineResponseDto;
+import wooteco.subway.service.dto.section.SectionRequestDto;
 import wooteco.subway.service.dto.station.StationResponseDto;
 
 import java.util.ArrayList;
@@ -22,13 +21,13 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineDao lineDao;
-    private final StationDao stationDao;
-    private final SectionDao sectionDao;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao, StationService stationService, SectionService sectionService) {
         this.lineDao = lineDao;
-        this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     @Transactional(readOnly = true)
@@ -56,16 +55,13 @@ public class LineService {
     public LineResponseDto create(LineRequestDto lineRequestDto) {
         validateDuplicate(lineRequestDto);
         Line line = lineDao.create(new Line(lineRequestDto.getName(), lineRequestDto.getColor()));
-        Section newSection = new Section(line.getId(), lineRequestDto.getUpStationId(), lineRequestDto.getDownStationId(), lineRequestDto.getDistance());
-        Sections sections = new Sections(sectionDao.findAllByLineId(newSection.getLineId()));
-        sections.validateAddNewSection(newSection);
-        sectionDao.create(newSection);
+        sectionService.create(new SectionRequestDto(line.getId(), lineRequestDto.getUpStationId(), lineRequestDto.getDownStationId(), lineRequestDto.getDistance()));
 
         return makeLineResponseDto(line);
     }
 
     private LineResponseDto makeLineResponseDto(Line line) {
-        Sections sections = new Sections(sectionDao.findAllByLineId(line.getId()));
+        Sections sections = sectionService.findAllByLineId(line.getId());
         List<StationResponseDto> stations = new ArrayList<>();
         Long upStationId = sections.findFinalUpStationId();
         addStations(upStationId, sections, stations);
@@ -76,12 +72,12 @@ public class LineService {
     private void addStations(Long upStationId, Sections sections, List<StationResponseDto> stations) {
         if (sections.hasUpStationId(upStationId)){
             Section section = sections.getSectionByUpStationId(upStationId);
-            Station station = stationDao.findById(upStationId);
+            Station station = stationService.findById(upStationId);
             stations.add(new StationResponseDto(station));
             addStations(section.getDownStationId(), sections, stations);
             return;
         }
-        Station station = stationDao.findById(upStationId);
+        Station station = stationService.findById(upStationId);
         stations.add(new StationResponseDto(station));
     }
 
