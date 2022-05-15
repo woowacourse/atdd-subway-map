@@ -27,8 +27,8 @@ public class LineDaoTest {
     }
 
     @Test
-    @DisplayName("지하철 역 이름 중복 여부 조회")
-    void duplicateName() {
+    @DisplayName("노선 이름, 색깔 중복 여부 조회")
+    void duplicateNameAndColor() {
         LineEntity line = new LineEntity("1호선", "blue");
         lineDao.save(line);
         assertThat(lineDao.existByNameAndColor("1호선", "blue")).isTrue();

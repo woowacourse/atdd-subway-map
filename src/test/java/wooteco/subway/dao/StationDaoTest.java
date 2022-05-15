@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import wooteco.subway.dao.entity.StationEntity;
-import wooteco.subway.domain.Station;
 
 @JdbcTest
 @Import(StationDao.class)
