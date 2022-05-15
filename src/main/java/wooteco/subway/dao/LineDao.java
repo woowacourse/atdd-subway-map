@@ -1,5 +1,9 @@
 package wooteco.subway.dao;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,21 +11,16 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 @Repository
 public class LineDao {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+    private static final RowMapper<Line> LINE_ROW_MAPPER = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
     );
+
+    private final JdbcTemplate jdbcTemplate;
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -44,19 +43,19 @@ public class LineDao {
 
     public Optional<Line> findById(Long id) {
         String sql = "SELECT id, name, color FROM LINE WHERE id = ?";
-        List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, id);
+        List<Line> lines = jdbcTemplate.query(sql, LINE_ROW_MAPPER, id);
         return Optional.ofNullable(DataAccessUtils.singleResult(lines));
     }
 
     public Optional<Line> findByName(String name) {
         String sql = "SELECT id, name, color FROM LINE WHERE name = ?";
-        List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, name);
+        List<Line> lines = jdbcTemplate.query(sql, LINE_ROW_MAPPER, name);
         return Optional.ofNullable(DataAccessUtils.singleResult(lines));
     }
 
     public List<Line> findAll() {
         String sql = "SELECT id, name, color FROM LINE";
-        return jdbcTemplate.query(sql, lineRowMapper);
+        return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
     }
 
     public void update(Long id, Line line) {

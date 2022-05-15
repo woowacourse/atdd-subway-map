@@ -1,5 +1,15 @@
 package wooteco.subway.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,18 +21,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DuplicateNameException;
-import wooteco.subway.exception.NotFoundIdException;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import wooteco.subway.exception.NotFoundStationException;
 
 @ExtendWith(MockitoExtension.class)
 class StationServiceTest {
@@ -93,6 +92,6 @@ class StationServiceTest {
     @Test
     void delete_throwsExceptionIfIdNotExist() {
         assertThatThrownBy(() -> stationService.delete(1L))
-                .isInstanceOf(NotFoundIdException.class);
+                .isInstanceOf(NotFoundStationException.class);
     }
 }
