@@ -57,8 +57,8 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public boolean isConnect(Section other) {
-        return this.downStation.equals(other.upStation);
+    public boolean canConnectToNext(Section other) {
+        return downStation.equals(other.upStation);
     }
 
     private void validate(int distance) {

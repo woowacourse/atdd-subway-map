@@ -122,6 +122,6 @@ public class SectionTest {
         Section 첫번째_구간 = new Section(1L, line, 삼성, 성수, 10);
         Section 두번째_구간 = new Section(line, 성수, 강남, 11);
 
-        assertThat(첫번째_구간.isConnect(두번째_구간)).isTrue();
+        assertThat(첫번째_구간.canConnectToNext(두번째_구간)).isTrue();
     }
 }

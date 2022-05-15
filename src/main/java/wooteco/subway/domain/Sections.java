@@ -110,7 +110,7 @@ public class Sections {
     }
 
     private void validateAvailableConnect(Section upSection, Section downSection) {
-        if (!upSection.isConnect(downSection)) {
+        if (!upSection.canConnectToNext(downSection)) {
             throw new IllegalArgumentException("연결할 수 없는 구간입니다.");
         }
     }
