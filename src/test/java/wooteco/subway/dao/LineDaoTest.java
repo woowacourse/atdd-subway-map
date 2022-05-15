@@ -58,9 +58,9 @@ public class LineDaoTest {
         saveLine(line5Name, line5Color);
 
         // when
-        final List<Line> lines = lineDao.findAll();
+        final List<LineEntity> lines = lineDao.findAll();
         List<String> names = lines.stream()
-                .map(Line::getName)
+                .map(LineEntity::getName)
                 .collect(Collectors.toList());
 
         // then
@@ -75,7 +75,7 @@ public class LineDaoTest {
         LineEntity persistLine = saveLine("7호선", "bg-red-600");
 
         // when
-        Line actual = lineDao.findById(persistLine.getId()).get();
+        LineEntity actual = lineDao.findById(persistLine.getId()).get();
 
         // then
         assertAll(() -> {
@@ -92,7 +92,7 @@ public class LineDaoTest {
 
         // when
         final Line lineForUpdate = new Line(persistLine.getId(), "5호선", "bg-green-600");
-        final Line updatedLine = lineDao.update(lineForUpdate).get();
+        final LineEntity updatedLine = lineDao.update(lineForUpdate).get();
 
         // then
         assertAll(() -> {

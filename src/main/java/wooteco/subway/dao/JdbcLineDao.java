@@ -32,22 +32,22 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         final String sql = "SELECT * FROM line";
         return jdbcTemplate.query(sql, getRowMapper());
     }
 
-    private RowMapper<Line> getRowMapper() {
+    private RowMapper<LineEntity> getRowMapper() {
         return (resultSet, rowNumber) -> {
             String name = resultSet.getString("name");
             String color = resultSet.getString("color");
             long id = resultSet.getLong("id");
-            return new Line(id, name, color);
+            return new LineEntity(id, name, color);
         };
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Optional<LineEntity> findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getRowMapper(), id));
@@ -57,7 +57,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> update(Line line) {
+    public Optional<LineEntity> update(Line line) {
         String sql = "UPDATE line set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
         return findById(line.getId());

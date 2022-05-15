@@ -94,7 +94,7 @@ class LineServiceTest {
         lineService.updateById(savedLine.getId(), request);
 
         // then
-        final Line updatedLine = lineDao.findById(savedLine.getId()).get();
+        final LineEntity updatedLine = lineDao.findById(savedLine.getId()).get();
         assertThat(updatedLine.getName()).isEqualTo(name);
         assertThat(updatedLine.getColor()).isEqualTo(color);
     }
@@ -109,7 +109,7 @@ class LineServiceTest {
         lineService.deleteById(savedLine.getId());
 
         // then
-        final List<Line> remainLines = lineDao.findAll();
+        final List<LineEntity> remainLines = lineDao.findAll();
         assertThat(remainLines).hasSize(0);
     }
 }

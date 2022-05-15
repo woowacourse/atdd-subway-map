@@ -67,8 +67,9 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        List<Line> lines = lineDao.findAll();
+        List<LineEntity> lines = lineDao.findAll();
         return lines.stream()
+                .map(entity -> new Line(entity.getId(), entity.getName(), entity.getColor()))
                 .map(line -> LineResponse.of(line, getStationsByLine(line)))
                 .collect(Collectors.toList());
     }
@@ -80,6 +81,7 @@ public class LineService {
 
     private Line getLineFromDao(Long id) {
         return lineDao.findById(id)
+                .map(lineEntity -> new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor()))
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.NOT_FOUND_LINE_BY_ID.getContent()));
     }
 

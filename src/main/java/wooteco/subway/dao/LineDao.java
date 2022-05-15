@@ -9,11 +9,11 @@ public interface LineDao {
 
     LineEntity save(LineEntity line);
 
-    List<Line> findAll();
+    List<LineEntity> findAll();
 
-    Optional<Line> findById(Long id);
+    Optional<LineEntity> findById(Long id);
 
-    Optional<Line> update(Line line);
+    Optional<LineEntity> update(Line line);
 
     Integer deleteById(Long id);
 }
