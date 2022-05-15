@@ -44,4 +44,20 @@ class SectionV2Test {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간의 거리는 0이하로 등록할 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("선행구간과 하행구간을 통해 하나의 구간으로 합병할 수 있다.")
+    void mergerToSectionAndSection() {
+        // given
+        SectionV2 선행구간 = new SectionV2(1L, new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
+        SectionV2 하행구간 = new SectionV2(1L, new Station(2L, "역삼역"), new Station(3L, "선릉역"), 10);
+
+        // when
+        final SectionV2 합병구간 = 선행구간.merge(하행구간);
+
+        // then
+        assertThat(합병구간)
+                .extracting("upStation", "downStation", "distance")
+                .containsExactly(new Station(1L, "강남역"), new Station(3L, "선릉역"), 20);
+    }
 }

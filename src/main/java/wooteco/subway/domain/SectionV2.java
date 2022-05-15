@@ -82,6 +82,15 @@ public class SectionV2 {
         this.distance -= distance;
     }
 
+    public SectionV2 merge(SectionV2 section) {
+        final int sumDistance = this.distance + section.distance;
+
+        if (isSameDownStation(section.upStation)) {
+            return new SectionV2(lineId, upStation, section.downStation, sumDistance);
+        }
+        return new SectionV2(lineId, section.downStation, upStation, sumDistance);
+    }
+
     public Long getId() {
         return id;
     }
