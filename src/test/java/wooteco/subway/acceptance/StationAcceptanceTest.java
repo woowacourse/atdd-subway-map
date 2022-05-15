@@ -22,19 +22,22 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private StationRequest 서울대입구 = new StationRequest("서울대입구");
     private StationRequest 신림 = new StationRequest("신림");
-    private StationRequest 부평 = new StationRequest("부평");
+    private StationRequest 선릉 = new StationRequest("선릉");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // given
         // when
-        ExtractableResponse<Response> response = createPostStationResponse(부평);
+        ExtractableResponse<Response> response = createPostStationResponse(선릉);
+        StationResponse stationResponse = response.body().jsonPath().getObject(".", StationResponse.class);
+        System.out.println(stationResponse.getId());
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank(),
-                () -> assertThat(response.body().jsonPath().get("name").toString()).isEqualTo(부평.getName())
+                () -> assertThat(stationResponse.getName()).isEqualTo(선릉.getName()),
+                () -> assertThat(stationResponse.getId()).isNotNull()
         );
     }
 
@@ -53,18 +56,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> 낙성대응답 = createPostStationResponse(서울대입구);
-        ExtractableResponse<Response> 선릉응답 = createPostStationResponse(신림);
+        ExtractableResponse<Response> 서울대입구응답 = createPostStationResponse(서울대입구);
+        ExtractableResponse<Response> 신림응답 = createPostStationResponse(신림);
         // when
         ExtractableResponse<Response> response = createGetStationResponse();
-        List<Long> 추가한Id = postIds(낙성대응답, 선릉응답);
+        List<StationResponse> stationResponses = response.body().jsonPath().getList(".", StationResponse.class);
+        List<Long> 추가한Id = postIds(서울대입구응답, 신림응답);
         List<Long> 전체Id = responseIds(response);
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(전체Id).containsAll(추가한Id),
-                () -> assertThat(response.body().jsonPath().get("name").toString()).contains(서울대입구.getName()),
-                () -> assertThat(response.body().jsonPath().get("name").toString()).contains(신림.getName())
+                () -> assertThat(stationResponses.stream().map(it -> it.getName()).collect(Collectors.toList()))
+                        .containsAll(List.of(서울대입구.getName(), 신림.getName()))
         );
     }
 
