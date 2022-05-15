@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 
 class SectionsTest {
 
-
-
     @Test
     @DisplayName("1 - 2 - 3의 구간에서 2 - 4의 구간이 중간 구간인지 판별한다.")
     void isMiddleSection() {

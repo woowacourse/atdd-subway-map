@@ -60,9 +60,9 @@ public class LineDaoImpl implements LineDao {
     public Optional<Line> findById(Long id) {
         final String sql = "SELECT * FROM line where id = ?";
 
-        try{
+        try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineMapper(), id));
-        }catch (EmptyResultDataAccessException exception) {
+        } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
     }

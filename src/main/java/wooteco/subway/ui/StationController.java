@@ -25,10 +25,13 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationServiceResponse> createStation(@Validated @RequestBody StationRequest stationRequest) {
-        StationServiceResponse stationServiceResponse = stationService.save(stationRequest.toServiceRequest());
-        return ResponseEntity.created(URI.create("/stations/" + stationServiceResponse.getId())).body(
-            stationServiceResponse);
+    public ResponseEntity<StationServiceResponse> createStation(
+        @Validated @RequestBody StationRequest stationRequest) {
+        StationServiceResponse stationServiceResponse = stationService.save(
+            stationRequest.toServiceRequest());
+        return ResponseEntity.created(URI.create("/stations/" + stationServiceResponse.getId()))
+            .body(
+                stationServiceResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)

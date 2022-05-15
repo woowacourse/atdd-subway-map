@@ -33,7 +33,8 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleValidException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<Map<String, String>> handleValidException(
+        MethodArgumentNotValidException exception) {
         Map<String, String> body = new HashMap<>();
         String errorMessage = exception.getBindingResult().getAllErrors().get(0)
             .getDefaultMessage();

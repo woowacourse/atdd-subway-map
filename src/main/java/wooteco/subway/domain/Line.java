@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Line {
+
     private final Long id;
     private final String name;
     private final String color;

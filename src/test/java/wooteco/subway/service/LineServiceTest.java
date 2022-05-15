@@ -137,7 +137,8 @@ class LineServiceTest {
         // given
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("역삼역"));
-        LineServiceRequest originLine = new LineServiceRequest("1호선", "bg-red-600", station1.getId(),
+        LineServiceRequest originLine = new LineServiceRequest("1호선", "bg-red-600",
+            station1.getId(),
             station2.getId(), 5);
         LineServiceResponse savedLine = lineService.save(originLine);
 
@@ -155,7 +156,8 @@ class LineServiceTest {
         // given
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("역삼역"));
-        LineServiceRequest originLine = new LineServiceRequest("1호선", "bg-red-600", station1.getId(),
+        LineServiceRequest originLine = new LineServiceRequest("1호선", "bg-red-600",
+            station1.getId(),
             station2.getId(), 5);
         LineServiceResponse savedLine = lineService.save(originLine);
 

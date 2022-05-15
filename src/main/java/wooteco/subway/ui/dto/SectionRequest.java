@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 import wooteco.subway.service.dto.SectionServiceRequest;
 
 public class SectionRequest {
+
     @NotNull(message = "upStationId를 입력해주세요.")
     private Long upStationId;
     @NotNull(message = "downStationId를 입력해주세요.")

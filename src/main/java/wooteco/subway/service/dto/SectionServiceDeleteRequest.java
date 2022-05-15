@@ -3,6 +3,7 @@ package wooteco.subway.service.dto;
 import javax.validation.constraints.NotNull;
 
 public class SectionServiceDeleteRequest {
+
     @NotNull(message = "lineId를 입력해주세요.")
     private final Long lineId;
     @NotNull(message = "stationId를 입력해주세요.")

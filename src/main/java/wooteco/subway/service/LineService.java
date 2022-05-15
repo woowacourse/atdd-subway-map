@@ -69,7 +69,8 @@ public class LineService {
             .collect(Collectors.toMap(Station::getId, i -> new Station(i.getName())));
     }
 
-    private List<StationServiceResponse> getSortedStationsByLineId(Long lineId, Map<Long, Station> stations) {
+    private List<StationServiceResponse> getSortedStationsByLineId(Long lineId,
+        Map<Long, Station> stations) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         List<Long> stationIds = sections.sortedStationId();
 
@@ -104,7 +105,8 @@ public class LineService {
         }
         Line line = maybeLine.get();
         List<Station> stations = findSortedStationByLineId(line.getId());
-        return new LineServiceResponse(line.getId(), line.getName(), line.getColor(), toStationResponse(stations));
+        return new LineServiceResponse(line.getId(), line.getName(), line.getColor(),
+            toStationResponse(stations));
     }
 
     private List<Station> findSortedStationByLineId(Long lineId) {
