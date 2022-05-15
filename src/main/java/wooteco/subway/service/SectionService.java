@@ -31,16 +31,16 @@ public class SectionService {
     @Transactional
     public void addSectionInLine(SectionDto sectionDto) {
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(sectionDto.getLineId());
-        List<Section> convertedSections = convertSectionEntitiesToSections(sectionEntities);
+        Section sectionToUpdate = getSectionToUpdate(sectionDto, convertSectionEntitiesToSections(sectionEntities));
+        updateModifiedSections(sectionDto.getLineId(), List.of(sectionToUpdate));
+        sectionDao.save(sectionDto.toEntity());
+    }
+
+    private Section getSectionToUpdate(SectionDto sectionDto, List<Section> convertedSections) {
         Sections sections = new Sections(convertedSections);
         Section newSection = new Section(getStationById(sectionDto.getUpStationId()),
             getStationById(sectionDto.getDownStationId()), sectionDto.getDistance());
-
-        Section sectionsToUpdate = sections.add(newSection);
-
-        updateModifiedSections(sectionDto.getLineId(), List.of(sectionsToUpdate));
-
-        sectionDao.save(sectionDto.toEntity());
+        return sections.add(newSection);
     }
 
     private List<Section> convertSectionEntitiesToSections(List<SectionEntity> sectionEntities) {
