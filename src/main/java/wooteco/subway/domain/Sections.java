@@ -42,7 +42,7 @@ public class Sections {
         return upStationIds.get(0);
     }
 
-    public void validateAddable(Section section) {
+    private void validateAddable(Section section) {
         checkNoStations(section);
         checkExist(section);
     }
@@ -131,7 +131,7 @@ public class Sections {
                 .anyMatch(section::equalsDownStation);
     }
 
-    public void validateDeletable(Long stationId) {
+    private void validateDeletable(Long stationId) {
         if (sections.size() == 1) {
             throw new IllegalStateException("상행 종점과 하행 종점밖에 존재하지 않아 구간을 삭제할 수 없습니다.");
         }
@@ -140,7 +140,7 @@ public class Sections {
         }
     }
 
-    public List<Section> delete(Long stationId) {
+    public List<Section> getSectionsContaining(Long stationId) {
         validateDeletable(stationId);
         if (matchFirstUpStation(stationId)) {
             return sections.stream()

@@ -29,7 +29,7 @@ public class SectionService {
     @Transactional
     public void delete(Long lineId, Long stationId) {
         Sections sections = sectionDao.findByLineId(lineId);
-        List<Section> updateSections = sections.delete(stationId);
+        List<Section> updateSections = sections.getSectionsContaining(stationId);
         sectionDao.deleteSections(updateSections);
 
         if (isDeletedInMiddle(updateSections)) {

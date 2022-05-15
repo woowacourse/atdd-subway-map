@@ -71,7 +71,7 @@ class SectionsTest {
         Section section1 = new Section(1L, 1L, 2L, 10);
         Section section2 = new Section(1L, 2L, 3L, 5);
         Sections sections = new Sections(List.of(section1, section2));
-        List<Section> deletedSections = sections.delete(1L);
+        List<Section> deletedSections = sections.getSectionsContaining(1L);
         Section deletedSection = deletedSections.get(0);
         assertAll(
                 () -> assertThat(deletedSections.size()).isEqualTo(1),
@@ -87,7 +87,7 @@ class SectionsTest {
         Section section1 = new Section(1L, 1L, 2L, 10);
         Section section2 = new Section(1L, 2L, 3L, 5);
         Sections sections = new Sections(List.of(section1, section2));
-        List<Section> deletedSections = sections.delete(3L);
+        List<Section> deletedSections = sections.getSectionsContaining(3L);
         Section deletedSection = deletedSections.get(0);
         assertAll(
                 () -> assertThat(deletedSections.size()).isEqualTo(1),
@@ -103,7 +103,7 @@ class SectionsTest {
         Section section1 = new Section(1L, 1L, 2L, 10);
         Sections sections = new Sections(List.of(section1));
         assertThatThrownBy(
-                () -> sections.delete(1L)
+                () -> sections.getSectionsContaining(1L)
         ).isInstanceOf(IllegalStateException.class)
                 .hasMessage("상행 종점과 하행 종점밖에 존재하지 않아 구간을 삭제할 수 없습니다.");
     }
@@ -115,7 +115,7 @@ class SectionsTest {
         Section section2 = new Section(1L, 2L, 3L, 5);
         Sections sections = new Sections(List.of(section1, section2));
         assertThatThrownBy(
-                () -> sections.delete(4L)
+                () -> sections.getSectionsContaining(4L)
         ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("노선 구간에 존재하지 않는 역입니다.");
     }
@@ -126,7 +126,7 @@ class SectionsTest {
         Section section1 = new Section(1L, 1L, 2L, 10);
         Section section2 = new Section(1L, 2L, 3L, 5);
         Sections sections = new Sections(List.of(section1, section2));
-        List<Section> deletedSections = sections.delete(2L);
+        List<Section> deletedSections = sections.getSectionsContaining(2L);
         System.out.println(deletedSections);
         Section deletedUpSection = deletedSections.get(0);
         Section deletedDownSection = deletedSections.get(1);
