@@ -21,7 +21,6 @@ import wooteco.subway.dto.StationResponse;
 @Transactional
 public class LineService {
 
-    private static final int MID_POINT_COUNT = 2;
     private static final int MINIMUM_SECTIONS_SIZE = 1;
 
     private final StationDao stationDao;
@@ -64,7 +63,7 @@ public class LineService {
     public void saveSection(Long lineId, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         validSections(sections, sectionRequest);
-        if (sections.countLinkedSection(sectionRequest) == MID_POINT_COUNT) {
+        if (sections.isForkSection(sectionRequest)) {
             processBiDirectionSection(sectionRequest, sections);
         }
         sectionDao.save(sectionRequest.toSection(lineId));
@@ -73,15 +72,33 @@ public class LineService {
     private void validSections(Sections sections, SectionRequest sectionRequest) {
         sections.validSameStations(sectionRequest);
         sections.validNonLinkSection(sectionRequest);
-        sections.validExistingSectionDistance(sectionRequest);
     }
 
     private void processBiDirectionSection(SectionRequest sectionRequest, Sections sections) {
-        sections.findUpSection(sectionRequest.getUpStationId())
-                .ifPresent(section -> sectionDao.deleteById(section.getId()));
-        sections.findDownSection(sectionRequest.getDownStationId())
-                .ifPresent(section -> sectionDao.updateDistanceById(section.getId(),
-                        section.getDistance() - sectionRequest.getDistance()));
+        sections.findDownSection(sectionRequest.getUpStationId())
+                .ifPresent(section -> processUpDirectionSection(section, sectionRequest));
+        sections.findUpSection(sectionRequest.getDownStationId())
+                .ifPresent(section -> processDownDirectionSection(section, sectionRequest));
+    }
+
+    private void processUpDirectionSection(Section section, SectionRequest sectionRequest) {
+        validSectionDistance(sectionRequest, section);
+        sectionDao.save(new Section(section.getLineId(), sectionRequest.getDownStationId(), section.getDownStationId(),
+                section.getDistance() - sectionRequest.getDistance()));
+        sectionDao.deleteById(section.getId());
+    }
+
+    private void processDownDirectionSection(Section section, SectionRequest sectionRequest) {
+        validSectionDistance(sectionRequest, section);
+        sectionDao.save(new Section(section.getLineId(), section.getUpStationId(), sectionRequest.getUpStationId(),
+                section.getDistance() - sectionRequest.getDistance()));
+        sectionDao.deleteById(section.getId());
+    }
+
+    private void validSectionDistance(SectionRequest sectionRequest, Section section) {
+        if (section.isOverDistance(sectionRequest.getDistance())) {
+            throw new IllegalArgumentException("추가될 구간의 길이가 기존 구간의 길이보다 깁니다.");
+        }
     }
 
     @Transactional(readOnly = true)

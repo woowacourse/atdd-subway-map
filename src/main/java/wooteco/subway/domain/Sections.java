@@ -7,6 +7,8 @@ import wooteco.subway.dto.SectionRequest;
 
 public class Sections {
 
+    private static final int FORK_SECTION = 1;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -52,8 +54,17 @@ public class Sections {
     public long countLinkedSection(SectionRequest sectionRequest) {
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(sectionRequest.getDownStationId())
-                        || section.getDownStationId().equals(sectionRequest.getUpStationId()))
+                        || section.getDownStationId().equals(sectionRequest.getUpStationId())
+                        || section.getUpStationId().equals(sectionRequest.getUpStationId())
+                        || section.getDownStationId().equals(sectionRequest.getDownStationId()))
                 .count();
+    }
+
+    public boolean isForkSection(SectionRequest sectionRequest) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(sectionRequest.getUpStationId())
+                        || section.getDownStationId().equals(sectionRequest.getDownStationId()))
+                .count() == FORK_SECTION;
     }
 
     public void validSameStations(SectionRequest sectionRequest) {
@@ -63,19 +74,6 @@ public class Sections {
                 .count();
         if (linkedSectionCount > 0) {
             throw new IllegalArgumentException("상행역과 하행역이 노선에 이미 존재합니다.");
-        }
-    }
-
-    public void validExistingSectionDistance(SectionRequest sectionRequest) {
-        sections.stream()
-                .filter(s -> s.getUpStationId().equals(sectionRequest.getUpStationId()))
-                .findFirst()
-                .ifPresent(section1 -> validSectionDistance(sectionRequest, section1));
-    }
-
-    private void validSectionDistance(SectionRequest sectionRequest, Section section) {
-        if (section.getDistance() <= sectionRequest.getDistance()) {
-            throw new IllegalArgumentException("추가될 구간의 길이가 기존 구간의 길이보다 깁니다.");
         }
     }
 
@@ -106,8 +104,5 @@ public class Sections {
         int distance = upSection.getDistance() + downSection.getDistance();
 
         return new Section(lineId, upStationId, downStationId, distance);
-    }
-
-    public void validate(SectionRequest sectionRequest) {
     }
 }
