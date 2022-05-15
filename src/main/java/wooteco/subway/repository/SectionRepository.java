@@ -36,12 +36,12 @@ public class SectionRepository {
         return toSections(line, entities);
     }
 
-    private Station toStation(StationEntity entity) {
-        return new Station(entity.getId(), entity.getName());
-    }
-
     public void deleteById(Long id) {
         sectionDao.deleteById(id);
+    }
+
+    private Station toStation(StationEntity entity) {
+        return new Station(entity.getId(), entity.getName());
     }
 
     private List<Section> toSections(Line line, List<SectionEntity> entities) {
