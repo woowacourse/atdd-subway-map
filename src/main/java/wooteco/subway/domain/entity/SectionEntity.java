@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import wooteco.subway.domain.Section;
 
 public class SectionEntity {
@@ -89,12 +90,10 @@ public class SectionEntity {
 
     public static List<Long> extractStationIds(List<SectionEntity> sectionEntities) {
         sectionEntities = sortUpToDown(sectionEntities);
-        List<Long> stationIds = new ArrayList<>();
-        for (SectionEntity sectionEntity : sectionEntities) {
-            stationIds.add(sectionEntity.getUpStationId());
-        }
-        stationIds.add(sectionEntities.get(sectionEntities.size() - 1).getDownStationId());
-        return new ArrayList<>(stationIds);
+        return sectionEntities.stream()
+                .flatMap(it -> Stream.of(it.getUpStationId(), it.getDownStationId()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private static List<SectionEntity> sortUpToDown(List<SectionEntity> sectionEntities) {
