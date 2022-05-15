@@ -1,8 +1,8 @@
 package wooteco.subway.domain;
 
-public class Station {
+import java.util.Objects;
 
-    private static final int NAME_LENGTH = 255;
+public class Station {
 
     private final Long id;
     private final String name;
@@ -11,23 +11,13 @@ public class Station {
         this(null, null);
     }
 
-    public Station(String name) {
+    public Station(final String name) {
         this(null, name);
     }
 
-    public Station(Long id, String name) {
-        validateName(name);
+    public Station(final Long id, final String name) {
         this.id = id;
         this.name = name;
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("역이름은 비어있을 수 없습니다.");
-        }
-        if (name.length() > NAME_LENGTH) {
-            throw new IllegalArgumentException("역이름은 " + NAME_LENGTH + "자를 초과할 수 없습니다.");
-        }
     }
 
     public Long getId() {
@@ -36,6 +26,19 @@ public class Station {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Station)) return false;
+        Station station = (Station) o;
+        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }
 

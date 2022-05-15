@@ -21,54 +21,64 @@ public class StationDao {
             rs.getString("name")
     );
 
-    public StationDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public StationDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public Optional<Station> findById(Long id) {
-        String sql = "select * from STATION where id=:id";
+    public Optional<Station> findById(final Long id) {
+        final String sql = "select * from STATION where id=:id";
 
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
+        final List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public Optional<Station> findByName(String name) {
-        String sql = "select * from STATION where name=:name";
+    public Optional<Station> findByName(final String name) {
+        final String sql = "select * from STATION where name=:name";
 
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
 
-        List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
+        final List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public Station save(Station station) {
-        String sql = "insert into STATION (name) values (:name)";
+    public Station save(final Station station) {
+        final String sql = "insert into STATION (name) values (:name)";
 
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", station.getName());
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
         return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), station.getName());
     }
 
     public List<Station> findAll() {
-        String sql = "select * from STATION";
+        final String sql = "select * from STATION";
 
         return namedParameterJdbcTemplate.query(sql,
                 (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
     }
 
     public int deleteById(Long id) {
-        String sql = "delete from STATION where id = :id";
+        final String sql = "delete from STATION where id = :id";
 
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
         return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
+    }
+
+    public List<Station> findAllByLineId(final long lineId) {
+        final String sql = "select distinct ST.id, ST.name from STATION ST, SECTION SE " +
+                "where SE.line_id=:lineId and (ST.id=SE.up_station_id or ST.id=SE.down_station_id)";
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+
+        return namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
     }
 }

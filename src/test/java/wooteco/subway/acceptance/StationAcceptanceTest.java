@@ -5,14 +5,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,11 +24,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "상일동역");
+        StationRequest stationRequest = new StationRequest("아차산역");
 
         // when
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", params);
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", stationRequest);
 
         // then
         assertAll(
@@ -39,42 +36,27 @@ public class StationAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("지하철역을 생성할 때 입력값이 잘못되면 예외를 발생한다.")
+    @DisplayName("지하철역을 생성할 때 이름이 공백이면 예외를 발생한다.")
+    @NullAndEmptySource
     @ParameterizedTest
-    @MethodSource("badStationRequest")
-    void createStationWithBadInput(String name, String errorMessage) {
+    void thrown_nameBlank(String name) {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        StationRequest stationRequest = new StationRequest(name);
 
-        // when
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", params);
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", stationRequest);
 
-        // then
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).isEqualTo(errorMessage)
-        );
-    }
-
-    private static Stream<Arguments> badStationRequest() {
-        return Stream.of(
-                Arguments.of(new String(new char[256]), "역이름은 255자를 초과할 수 없습니다."),
-                Arguments.of("", "역이름은 비어있을 수 없습니다."),
-                Arguments.of(null, "역이름은 비어있을 수 없습니다.")
-        );
+        assertThat(response.jsonPath().getString("message")).isEqualTo("역 이름은 공백일 수 없습니다.");
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 예외를 발생한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        AcceptanceTestFixture.post("/stations", params);
+        StationRequest stationRequest = new StationRequest("강남역");
+        AcceptanceTestFixture.post("/stations", stationRequest);
 
         // when
-        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", params);
+        final ExtractableResponse<Response> response = AcceptanceTestFixture.post("/stations", stationRequest);
 
         // then
         assertAll(
@@ -87,13 +69,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "아차산역");
-        final ExtractableResponse<Response> createResponse1 = AcceptanceTestFixture.post("/stations", params1);
+        StationRequest firstStation = new StationRequest("아차산역");
+        final ExtractableResponse<Response> createResponse1 = AcceptanceTestFixture.post("/stations", firstStation);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        final ExtractableResponse<Response> createResponse2 = AcceptanceTestFixture.post("/stations", params2);
+        StationRequest secondStation = new StationRequest("역삼역");
+        final ExtractableResponse<Response> createResponse2 = AcceptanceTestFixture.post("/stations", secondStation);
 
         // when
         final ExtractableResponse<Response> response = AcceptanceTestFixture.get("/stations");
@@ -116,10 +96,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        final ExtractableResponse<Response> createResponse = AcceptanceTestFixture.post("/stations", params);
+        StationRequest stationRequest = new StationRequest("강남역");
+        final ExtractableResponse<Response> createResponse = AcceptanceTestFixture.post("/stations", stationRequest);
         String uri = createResponse.header("Location");
 
         // when

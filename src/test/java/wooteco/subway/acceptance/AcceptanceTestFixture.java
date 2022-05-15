@@ -9,9 +9,9 @@ import java.util.Map;
 
 public class AcceptanceTestFixture {
 
-    static ExtractableResponse<Response> post(String uri, Map<String, String> params) {
+    public static ExtractableResponse<Response> post(String uri, Object param) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(uri)
@@ -27,9 +27,9 @@ public class AcceptanceTestFixture {
                 .extract();
     }
 
-    static ExtractableResponse<Response> put(String uri, Map<String, String> params) {
+    static ExtractableResponse<Response> put(String uri, Object param) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(uri)
