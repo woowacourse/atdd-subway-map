@@ -28,6 +28,14 @@ public class LineRequestHandler {
         return requestHandler.putRequest("/lines/" + lineId, params);
     }
 
+    public ExtractableResponse<Response> appendSection(Long lineId, Map<String, String> params) {
+        return requestHandler.postRequest("/lines/" + lineId + "/sections", params);
+    }
+
+    public ExtractableResponse<Response> removeStation(Long lineId, Long stationId) {
+        return requestHandler.deleteRequest("/lines/" + lineId + "/sections/?stationId=" + stationId);
+    }
+
     public ExtractableResponse<Response> removeLine(Long lineId) {
         return requestHandler.deleteRequest("/lines/" + lineId);
     }

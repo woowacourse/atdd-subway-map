@@ -22,12 +22,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     private final LineRequestHandler lineRequestHandler = new LineRequestHandler();
     private final StationRequestHandler stationRequestHandler = new StationRequestHandler();
     private Long upStationId;
+    private Long middleStationId;
     private Long downStationId;
 
     @BeforeEach
     void setUpStations() {
         this.upStationId = stationRequestHandler.extractId(
                 stationRequestHandler.createStation(Map.of("name", "강남역")));
+        this.middleStationId = stationRequestHandler.extractId(
+                stationRequestHandler.createStation(Map.of("name", "선릉역")));
         this.downStationId = stationRequestHandler.extractId(
                 stationRequestHandler.createStation(Map.of("name", "잠실역")));
     }
@@ -135,6 +138,42 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(updatedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("지하철 노선에서 구간을 추가한다.")
+    @Test
+    void appendSection() {
+        // given
+        Long createdId = lineRequestHandler.extractId(
+                lineRequestHandler.createLine(createParameters("신분당선", "color1")));
+
+        // when
+        ExtractableResponse<Response> response = lineRequestHandler.appendSection(createdId, Map.of(
+                "upStationId", String.valueOf(upStationId),
+                "downStationId", String.valueOf(middleStationId),
+                "distance", String.valueOf(5)));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("지하철 노선에서 역을 제거한다.")
+    @Test
+    void removeStation() {
+        // given
+        Long createdId = lineRequestHandler.extractId(
+                lineRequestHandler.createLine(createParameters("신분당선", "color1")));
+
+        lineRequestHandler.appendSection(createdId, Map.of(
+                "upStationId", String.valueOf(upStationId),
+                "downStationId", String.valueOf(middleStationId),
+                "distance", String.valueOf(5)));
+
+        // when
+        ExtractableResponse<Response> response = lineRequestHandler.removeStation(createdId, middleStationId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void removeLine() {
@@ -149,12 +188,16 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(removedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private Map<String, String> createParameters(String name, String color) {
+    private Map<String, String> createParameters(String name, String color, Long upStationId, Long downStationId, int distance) {
         return Map.of(
                 "name", name,
                 "color", color,
                 "upStationId", String.valueOf(upStationId),
                 "downStationId", String.valueOf(downStationId),
-                "distance", "3");
+                "distance", String.valueOf(distance));
+    }
+
+    private Map<String, String> createParameters(String name, String color) {
+        return createParameters(name, color, this.upStationId, this.downStationId, 10);
     }
 }
