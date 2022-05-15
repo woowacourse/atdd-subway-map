@@ -4,8 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.LineWithStationRequest;
-import wooteco.subway.dto.LineWithStationResponse;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
@@ -35,7 +33,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable final Long id) {
-        final LineResponse lineResponse = lineService.findById(id);
+        final LineResponse lineResponse = lineService.getById(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 

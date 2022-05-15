@@ -28,10 +28,11 @@ public class LineDao {
     }
 
     public Line save(Line line) {
-        if (isContains(line)) {
+        final String sql = "insert into Line(name, color) values (?, ?)";
+        if (isContainsLine(line)) {
             throw new IllegalStateException("노선 이름은 중복될 수 없습니다.");
         }
-        final String sql = "insert into Line(name, color) values (?, ?)";
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -52,7 +53,7 @@ public class LineDao {
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    private boolean isContains(Line line) {
+    private boolean isContainsLine(Line line) {
         final String sql = "select count(*) from Line where name = ? or color = ?";
         final int count = jdbcTemplate.queryForObject(sql, Integer.class, line.getName(), line.getColor());
         return count > 0;
@@ -60,13 +61,13 @@ public class LineDao {
 
     public Line findById(Long id) {
         final String sql = "select id, name, color from Line where id = ?";
-        if (!isExist(id)) {
+        if (!isExistById(id)) {
             throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
         }
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
-    private boolean isExist(Long id) {
+    private boolean isExistById(Long id) {
         final String sql = "select count(*) from Line where id = ?";
         final int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count > 0;
@@ -74,7 +75,7 @@ public class LineDao {
 
     public void update(Long id, Line line) {
         final String sql = "update Line set name = ?, color = ? where id = ?";
-        if (!isExist(id)) {
+        if (!isExistById(id)) {
             throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
         }
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
@@ -82,7 +83,7 @@ public class LineDao {
 
     public void deleteById(Long id) {
         final String sql = "delete from Line where id = ?";
-        if (!isExist(id)) {
+        if (!isExistById(id)) {
             throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
         }
         jdbcTemplate.update(sql, id);

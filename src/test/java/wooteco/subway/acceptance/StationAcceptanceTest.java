@@ -4,11 +4,13 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.apache.http.protocol.HTTP;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.StationResponse;
@@ -20,8 +22,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
+import static org.springframework.test.annotation.DirtiesContext.MethodMode.BEFORE_METHOD;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철역 관련 Api")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
@@ -29,12 +33,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationTest() {
         ExtractableResponse<Response> response = createStation("강남역");
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하는 경우 예외를 발생시킨다.")
     @Test
     void createStationWithDuplicateName() {
         createStation("강남역");
@@ -95,7 +98,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds.contains(id)).isFalse();
     }
 
-    @DisplayName("존재하지 않는 지하철역을 제거한다.")
+    @DisplayName("존재하지 않는 지하철역을 제거하는 경우 예외를 발생시킨다.")
     @Test
     void deleteStationNotExist() {
 
@@ -105,7 +108,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createStation(final String name) {

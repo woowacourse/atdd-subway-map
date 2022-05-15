@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
@@ -69,5 +68,14 @@ public class StationDao {
             throw new NoSuchElementException("해당하는 지하철이 존재하지 않습니다.");
         }
         jdbcTemplate.update(sql, id);
+    }
+
+    public Station getById(Long stationId) {
+        final String sql = "select id, name from station where id=?";
+        return jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")),
+                stationId
+        );
     }
 }
