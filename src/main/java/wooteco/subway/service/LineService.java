@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.domain.Line;
@@ -29,11 +30,10 @@ public class LineService {
         this.stationService = stationService;
     }
 
+    @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
-        String name = lineRequest.getName();
-        String color = lineRequest.getColor();
-        validateDuplication(name);
-        Line line = new Line(name, color);
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        validateDuplication(line);
         Long lineId = jdbcLineDao.save(line);
 
         Section section = new Section(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
@@ -46,15 +46,15 @@ public class LineService {
                 .map(stationService::getStation)
                 .collect(Collectors.toList());
 
-        return new LineResponse(lineId, name, color, stationResponses);
+        return new LineResponse(lineId, line.getName(), line.getColor(), stationResponses);
     }
 
     private List<Long> findStationInSections(List<Section> sections) {
         return new Sections(sections).sortSection();
     }
 
-    private void validateDuplication(String name) {
-        int existFlag = jdbcLineDao.isExistLine(name);
+    private void validateDuplication(Line line) {
+        int existFlag = jdbcLineDao.isExistLine(line.getName());
         if (existFlag == LINE_EXIST_VALUE) {
             throw new IllegalArgumentException(LINE_DUPLICATION);
         }
@@ -62,6 +62,7 @@ public class LineService {
 
     public List<LineResponse> getLines() {
         List<Line> lines = jdbcLineDao.findAll();
+
         return lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());
@@ -78,8 +79,8 @@ public class LineService {
     }
 
     public boolean updateLine(Long id, LineRequest lineRequest) {
-        validateDuplication(lineRequest.getName());
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        validateDuplication(line);
         return jdbcLineDao.updateById(id, line);
     }
 
