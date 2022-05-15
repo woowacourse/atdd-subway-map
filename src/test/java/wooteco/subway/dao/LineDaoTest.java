@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,8 +38,7 @@ class LineDaoTest {
         //when
         Long id = lineDao.save(new Line(name, color));
         //then
-        Line line = lineDao.findById(id);
-        assertThat(line.getName()).isEqualTo(name);
+        lineDao.findById(id).ifPresent(line -> assertThat(line.getName()).isEqualTo(name));
     }
 
     @Test
@@ -71,7 +69,7 @@ class LineDaoTest {
         //given
 
         //when
-        Line line = lineDao.findById(savedId);
+        Line line = lineDao.findById(savedId).orElseThrow(() -> new IllegalStateException("해당 ID를 가진 노선이 없습니다."));
         //then
         assertThat(line.getName()).isEqualTo("2호선");
     }
@@ -82,11 +80,9 @@ class LineDaoTest {
         //given
         Long id = -1L;
         //when
-
+        Line line = lineDao.findById(id).orElse(null);
         //then
-        assertThatThrownBy(() -> lineDao.findById(id))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("노선이 존재하지 않습니다.");
+        assertThat(line).isNull();
     }
 
     @Test
@@ -109,7 +105,7 @@ class LineDaoTest {
         //when
         lineDao.update(savedId, lineRequest);
         //then
-        Line line = lineDao.findById(savedId);
+        Line line = lineDao.findById(savedId).orElseThrow(() -> new IllegalStateException("해당 ID를 가진 노선이 없습니다."));
         assertThat(line.getName()).isEqualTo(name);
     }
 

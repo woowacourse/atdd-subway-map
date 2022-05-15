@@ -51,8 +51,11 @@ public class LineService {
     }
 
     private List<StationResponse> findStationsBySection(Section section) {
-        Station upStation = stationDao.findById(section.getUpStationId());
-        Station downStation = stationDao.findById(section.getDownStationId());
+        Station upStation = stationDao.findById(section.getUpStationId())
+                .orElseThrow(() -> new IllegalStateException("상행 역이 존재하지 않습니다."));
+        Station downStation = stationDao.findById(section.getDownStationId())
+                .orElseThrow(() -> new IllegalStateException("하행 역이 존재하지 않습니다."));
+
         return Stream.of(upStation, downStation)
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
@@ -82,7 +85,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> findLineAll() {
+    public List<LineResponse> findLines() {
         return lineDao.findAll().stream()
                 .map(this::findLineResponseByLine)
                 .collect(Collectors.toList());
@@ -90,7 +93,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
-        Line line = lineDao.findById(id);
+        Line line = lineDao.findById(id).orElseThrow(() -> new IllegalStateException("해당 ID를 가진 노선이 존재하지 않습니다."));
         return findLineResponseByLine(line);
     }
 
@@ -98,21 +101,22 @@ public class LineService {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         List<Long> stationIdsInOrder = sections.findStationIdsInOrder();
         List<StationResponse> stationResponses = stationIdsInOrder.stream()
-                .map(id -> new StationResponse(stationDao.findById(id)))
+                .filter(id -> stationDao.findById(id).orElse(null) != null)
+                .map(id -> new StationResponse(stationDao.findById(id).get()))
                 .collect(Collectors.toUnmodifiableList());
         return new LineResponse(line, stationResponses);
     }
 
-    public void update(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineRequest lineRequest) {
         validDuplicatedLine(lineRequest.getName(), lineRequest.getColor());
         lineDao.update(id, lineRequest);
     }
 
-    public void deleteById(Long id) {
+    public void deleteLine(Long id) {
         lineDao.deleteById(id);
     }
 
-    public void deleteSectionByLineIdAndStationId(Long lineId, Long stationId) {
+    public void deleteSection(Long lineId, Long stationId) {
         validSectionSize(lineId);
         linkSection(lineId, stationId);
         sectionDao.deleteByLineIdAndStationId(lineId, stationId);

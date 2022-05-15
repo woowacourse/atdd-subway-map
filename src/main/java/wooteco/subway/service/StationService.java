@@ -30,7 +30,7 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public List<StationResponse> findAll() {
+    public List<StationResponse> findStations() {
         return stationDao.findAll().stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());

@@ -28,14 +28,14 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@Valid @RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> saveStation(@Valid @RequestBody StationRequest stationRequest) {
         StationResponse response = stationService.save(stationRequest.getName());
         return ResponseEntity.created(URI.create("/stations/" + response.getId())).body(response);
     }
 
     @GetMapping
-    public List<StationResponse> showStations() {
-        return stationService.findAll();
+    public List<StationResponse> findStations() {
+        return stationService.findStations();
     }
 
     @DeleteMapping("/{id}")

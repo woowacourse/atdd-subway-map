@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,7 +83,8 @@ class StationDaoTest {
         //given
 
         //when
-        Station station = stationDao.findById(savedId);
+        Station station = stationDao.findById(savedId)
+                .orElseThrow(() -> new IllegalStateException("지하철 역이 존재하지 않습니다."));
         //then
         assertThat(station.getId()).isEqualTo(savedId);
     }
@@ -95,11 +95,9 @@ class StationDaoTest {
         //given
         Long id = -1L;
         //when
-
+        Station station = stationDao.findById(id).orElse(null);
         //then
-        assertThatThrownBy(() -> stationDao.findById(id))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("지하철 역이 존재하지 않습니다.");
+        assertThat(station).isNull();
     }
 
 }

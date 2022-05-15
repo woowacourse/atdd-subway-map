@@ -38,11 +38,10 @@ public class StationDao {
         return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Boolean.class));
     }
 
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         String selectSql = "select * from STATION where id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        Optional<Station> station = jdbcTemplate.query(selectSql, source, eventRowMapper).stream().findAny();
-        return station.orElseThrow(() -> new IllegalStateException("지하철 역이 존재하지 않습니다."));
+        return jdbcTemplate.query(selectSql, source, eventRowMapper).stream().findAny();
     }
 
     public List<Station> findAll() {

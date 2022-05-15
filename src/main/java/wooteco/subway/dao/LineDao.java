@@ -48,11 +48,10 @@ public class LineDao {
         return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Boolean.class));
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String selectSql = "select * from LINE where id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        Optional<Line> line = jdbcTemplate.query(selectSql, source, eventRowMapper).stream().findAny();
-        return line.orElseThrow(() -> new IllegalStateException("노선이 존재하지 않습니다."));
+        return jdbcTemplate.query(selectSql, source, eventRowMapper).stream().findAny();
     }
 
     public List<Line> findAll() {

@@ -80,7 +80,7 @@ class LineServiceTest {
         //when
         lineService.saveLine(new LineRequest("2호선", "green", 1L, 2L, 5));
         //then
-        assertThatThrownBy(() -> lineService.deleteSectionByLineIdAndStationId(1L, 1L))
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("노선에 구간이 1개 이상은 존재해야합니다.");
     }
@@ -94,9 +94,9 @@ class LineServiceTest {
         lineService.saveSection(1L, new SectionRequest(3L, 4L, 5));
         lineService.saveSection(1L, new SectionRequest(4L, 5L, 5));
         //when
-        lineService.deleteSectionByLineIdAndStationId(1L, 1L);
+        lineService.deleteSection(1L, 1L);
         //then
-        List<LineResponse> lines = lineService.findLineAll();
+        List<LineResponse> lines = lineService.findLines();
         List<Long> lineIds = lines.get(0).getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
@@ -113,9 +113,9 @@ class LineServiceTest {
         lineService.saveSection(1L, new SectionRequest(3L, 4L, 5));
         lineService.saveSection(1L, new SectionRequest(4L, 5L, 5));
         //when
-        lineService.deleteSectionByLineIdAndStationId(1L, 2L);
+        lineService.deleteSection(1L, 2L);
         //then
-        List<LineResponse> lines = lineService.findLineAll();
+        List<LineResponse> lines = lineService.findLines();
         List<Long> lineIds = lines.get(0).getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
@@ -132,9 +132,9 @@ class LineServiceTest {
         lineService.saveSection(1L, new SectionRequest(3L, 4L, 5));
         lineService.saveSection(1L, new SectionRequest(4L, 5L, 5));
         //when
-        lineService.deleteSectionByLineIdAndStationId(1L, 3L);
+        lineService.deleteSection(1L, 3L);
         //then
-        List<LineResponse> lines = lineService.findLineAll();
+        List<LineResponse> lines = lineService.findLines();
         List<Long> lineIds = lines.get(0).getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());

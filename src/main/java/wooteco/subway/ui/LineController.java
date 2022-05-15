@@ -44,8 +44,8 @@ public class LineController {
     }
 
     @GetMapping
-    public List<LineResponse> findLineAll() {
-        return lineService.findLineAll();
+    public List<LineResponse> findLines() {
+        return lineService.findLines();
     }
 
     @GetMapping("/{id}")
@@ -55,20 +55,19 @@ public class LineController {
 
     @PutMapping("/{id}")
     public void updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.update(id, lineRequest);
+        lineService.updateLine(id, lineRequest);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> deleteLineById(@PathVariable Long id) {
-        lineService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public void deleteLineById(@PathVariable Long id) {
+        lineService.deleteLine(id);
     }
 
     @DeleteMapping("/{line-id}/stations")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSectionByLineIdAndStationId(@PathVariable(value = "line-id") Long lineId,
                                                   @RequestParam Long stationId) {
-        lineService.deleteSectionByLineIdAndStationId(lineId, stationId);
+        lineService.deleteSection(lineId, stationId);
     }
 }
