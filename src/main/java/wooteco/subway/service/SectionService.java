@@ -38,7 +38,7 @@ public class SectionService {
         if (sections.isRequireUpdateForDelete(stationId)) {
             sectionDao.update(sections.getUpdatedSectionForDelete(stationId));
         }
-        sectionDao.delete(sections.deletedSectionId(stationId));
+        sectionDao.delete(sections.getDeletedSectionId(stationId));
     }
 
     public List<Station> findStationsByLineId(Long lineId) {

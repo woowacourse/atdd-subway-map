@@ -142,7 +142,7 @@ public class SectionsTest {
     @DisplayName("구간 삭제시 삭제할 구간을 가져온다.")
     @Test
     void deletedSectionId() {
-        Long deletedSectionId = SECTIONS.deletedSectionId(2L);
+        Long deletedSectionId = SECTIONS.getDeletedSectionId(2L);
 
         assertThat(deletedSectionId).isEqualTo(2L);
     }

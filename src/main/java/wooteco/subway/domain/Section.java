@@ -36,6 +36,37 @@ public class Section {
         }
     }
 
+    public Section getUpdatedSectionForSameDownStation(Section newSection) {
+        return new Section(id, lineId, upStationId,
+                newSection.getUpStationId(), distance - newSection.getDistance());
+    }
+
+    public Section getUpdatedSectionForSameUpStation(Section newSection) {
+        return new Section(id, lineId, newSection.getDownStationId(),
+                downStationId, distance - newSection.getDistance());
+    }
+
+    public Section getUpdatedSectionForDelete(Section downStation) {
+        return new Section(id, lineId, upStationId,
+                downStation.getDownStationId(), distance + downStation.getDistance());
+    }
+
+    public boolean equalsUpOrDownStationId(Section section) {
+        return equalsUpStationId(section.getUpStationId()) || equalsDownStationId(section.getDownStationId());
+    }
+
+    public boolean equalsUpStationId(Long otherUpStationId) {
+        return this.upStationId.equals(otherUpStationId);
+    }
+
+    public boolean equalsDownStationId(Long otherDownStationId) {
+        return this.downStationId.equals(otherDownStationId);
+    }
+
+    public boolean isShorterDistance(Section section) {
+        return distance <= section.getDistance();
+    }
+
     public Long getId() {
         return id;
     }
