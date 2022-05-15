@@ -8,13 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.entity.LineEntity;
 import wooteco.subway.repository.LineRepository;
 
 @SpringBootTest
@@ -85,7 +83,7 @@ class LineServiceTest {
     @DisplayName("id에 해당하는 노선 정보를 수정한다.")
     void updateById() {
         // given
-        Line savedLine = lines.save(new Line("1호선", "bg-red-600"));
+        Line savedLine = lines.save(new Line("1호선", "bg-red-600", null));
 
         final String name = "7호선";
         final String color = "bg-blue-600";
@@ -95,7 +93,7 @@ class LineServiceTest {
         lineService.updateById(savedLine.getId(), request);
 
         // then
-        final Line updatedLine = lines.findById(savedLine.getId()).get();
+        final Line updatedLine = lines.findById(savedLine.getId());
         assertThat(updatedLine.getName()).isEqualTo(name);
         assertThat(updatedLine.getColor()).isEqualTo(color);
     }
@@ -104,7 +102,7 @@ class LineServiceTest {
     @DisplayName("id에 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given
-        Line savedLine = lines.save(new Line("1호선", "bg-red-600"));
+        Line savedLine = lines.save(new Line("1호선", "bg-red-600", null));
 
         // when
         lineService.deleteById(savedLine.getId());
