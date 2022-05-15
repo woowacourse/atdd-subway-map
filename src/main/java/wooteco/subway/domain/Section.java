@@ -30,8 +30,15 @@ public class Section {
     }
 
     public boolean hasSameStations(Section section) {
-        return (downStation.equals(section.getDownStation()) && upStation.equals(section.getUpStation())) ||
-            (downStation.equals(section.getUpStation()) && upStation.equals(section.getDownStation()));
+        return contains(section.downStation) && contains(section.upStation);
+    }
+
+    public boolean contains(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public boolean isOverlap(Section section) {
+        return contains(section.downStation) || contains(section.upStation);
     }
 
     public boolean hasSameUpStation(Section section) {
@@ -40,10 +47,6 @@ public class Section {
 
     public boolean hasSameDownStation(Section section) {
         return this.downStation.equals(section.downStation);
-    }
-
-    public boolean contains(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
     }
 
     public Long getId() {

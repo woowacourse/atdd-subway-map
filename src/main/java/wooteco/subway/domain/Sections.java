@@ -32,7 +32,7 @@ public class Sections {
 
         upStations.removeAll(downStations);
         if (upStations.size() != 1) {
-            throw new IllegalStateException("저장된 구간들 값이 올바르지 않습니다.");
+            throw new IllegalStateException("상행 종점을 찾을 수 없습니다. 구간 목록이 올바르게 저장되지 않습니다.");
         }
         return upStations.get(0);
     }
@@ -116,18 +116,19 @@ public class Sections {
 
     private List<Section> findSectionsOverlapped(Section newSection) {
         return values.stream()
-            .filter(section ->
-                section.contains(newSection.getDownStation()) || section.contains(newSection.getUpStation()))
+            .filter(section -> section.isOverlap(newSection))
             .collect(Collectors.toList());
     }
 
     private boolean isInvalid(Section section, List<Section> foundSections) {
-        return hasSameStations(section) ||
+        return hasAnySectionWithSameStations(foundSections, section) ||
             isInvalidCountInMiddle(foundSections) || isSameWithDestinations(foundSections);
     }
 
-    private boolean hasSameStations(Section newSection) {
-        return values.stream().anyMatch(section -> section.hasSameStations(newSection));
+    private boolean hasAnySectionWithSameStations(List<Section> foundSections,
+        Section section) {
+        return foundSections.stream()
+            .anyMatch(it-> it.hasSameStations(section));
     }
 
     private boolean isInvalidCountInMiddle(List<Section> foundSections) {
