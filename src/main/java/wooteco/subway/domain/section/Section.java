@@ -1,5 +1,7 @@
 package wooteco.subway.domain.section;
 
+import java.util.List;
+
 import wooteco.subway.domain.Id;
 import wooteco.subway.domain.station.Station;
 
@@ -32,28 +34,73 @@ public class Section {
         this(new Id(), upStation, downStation, distance);
     }
 
-    public boolean containsStation(Station station) {
-        return equalsUpStation(station) || equalsDownStation(station);
+    public boolean containsUpStationOf(Section section) {
+        return equalsUpStation(section) || isPreviousOf(section);
     }
 
-    public boolean equalsUpStation(Station station) {
+    public boolean containsDownStationOf(Section section) {
+        return equalsDownStation(section) || isNextOf(section);
+    }
+
+    public boolean isPreviousOf(Section section) {
+        return downStation.equals(section.upStation);
+    }
+
+    public boolean isNextOf(Section section) {
+        return upStation.equals(section.downStation);
+    }
+
+    public boolean equalsUpStation(Section section) {
+        return containsAsUpStation(section.upStation);
+    }
+
+    public boolean containsAsUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    public boolean equalsDownStation(Station station) {
+    public boolean equalsDownStation(Section section) {
+        return containsAsDownStation(section.downStation);
+    }
+
+    public boolean containsAsDownStation(Station station) {
         return downStation.equals(station);
     }
 
-    public boolean isLongerThan(Section section) {
-        return distance.isLongerThan(section.distance);
+    public List<Section> split(Section section) {
+        if (equalsUpStation(section)) {
+            Section fragment = new Section(section.downStation, downStation, subtractDistance(section));
+            return List.of(section, fragment);
+        }
+        if (equalsDownStation(section)) {
+            Section fragment = new Section(upStation, section.upStation, subtractDistance(section));
+            return List.of(fragment, section);
+        }
+        throw new IllegalArgumentException("상행역과 하행역이 일치하지 않습니다.");
     }
 
-    public int calculateDifferenceOfDistance(Section section) {
-        return distance.calculateDifferenceBetween(section.distance);
+    private int subtractDistance(Section section) {
+        validateDistanceIsEnoughToSplit(section);
+        return distance.subtract(section.distance);
     }
 
-    public int calculateSumOfDistance(Section section) {
-        return distance.calculateSumBetween(section.distance);
+    private void validateDistanceIsEnoughToSplit(Section section) {
+        if (!distance.isLongerThan(section.distance)) {
+            throw new IllegalArgumentException("기존 구간의 거리보다 길거나 같습니다.");
+        }
+    }
+
+    public Section merge(Section section) {
+        if (isPreviousOf(section)) {
+            return new Section(upStation, section.downStation, sumDistance(section));
+        }
+        if (isNextOf(section)) {
+            return new Section(section.upStation, downStation, sumDistance(section));
+        }
+        throw new IllegalArgumentException("두 구간은 이어지지 않았습니다.");
+    }
+
+    private int sumDistance(Section section) {
+        return distance.sum(section.distance);
     }
 
     public Long getId() {

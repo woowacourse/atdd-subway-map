@@ -22,11 +22,11 @@ public class Line {
     }
 
     public Line(Long id, List<Section> sections, String name, String color) {
-        this(new Id(id), new Sections(sections), name, color);
+        this(new Id(id), Sections.sort(sections), name, color);
     }
 
     public Line(List<Section> sections, String name, String color) {
-        this(new Id(), new Sections(sections), name, color);
+        this(new Id(), Sections.sort(sections), name, color);
     }
 
     public void update(String name, String color) {

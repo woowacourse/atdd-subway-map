@@ -1,175 +1,199 @@
 package wooteco.subway.domain.section;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import wooteco.subway.domain.station.Station;
 
 public class Sections {
 
-    private final List<Section> sections;
+    private final List<Section> orderedSections;
 
-    public Sections(List<Section> sections) {
-        validateSectionsNotEmpty(sections);
-        this.sections = orderSections(sections);
+    private Sections(List<Section> sections) {
+        this.orderedSections = sections;
     }
 
-    private void validateSectionsNotEmpty(List<Section> sections) {
-        if (sections.size() == 0) {
+    public static Sections sort(List<Section> sections) {
+        List<Section> copiedSections = new ArrayList<>(sections);
+        validateSectionsNotEmpty(copiedSections);
+
+        SectionsSorter sorter = new SectionsSorter();
+        List<Section> orderedSections = sorter.create(copiedSections);
+        return new Sections(orderedSections);
+    }
+
+    private static void validateSectionsNotEmpty(List<Section> sections) {
+        if (sections.isEmpty()) {
             throw new IllegalArgumentException("지하철구간은 하나 이상이어야 합니다.");
         }
     }
 
-    private List<Section> orderSections(List<Section> sections) {
-        Station upStation = findUpStation(sections);
-        List<Section> orderedSections = new LinkedList<>();
-        while (orderedSections.size() < sections.size()) {
-            Section section = findSectionByUpStation(upStation, sections);
-            orderedSections.add(section);
-            upStation = section.getDownStation();
-        }
-        return orderedSections;
-    }
-
-    private static Station findUpStation(List<Section> sections) {
-        Section upSection = sections.get(0);
-        while (true) {
-            Section tmpSection = upSection;
-            if (sections.stream().noneMatch(section -> tmpSection.equalsUpStation(section.getDownStation()))) {
-                break;
-            }
-            upSection = sections.stream()
-                    .filter(section -> tmpSection.equalsUpStation(section.getDownStation()))
-                    .findAny()
-                    .orElse(tmpSection);
-        }
-        return upSection.getUpStation();
-    }
-
-    private static Section findSectionByUpStation(Station station, List<Section> sections) {
-        return sections.stream()
-                .filter(section -> section.equalsUpStation(station))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("다음 구간 역을 찾을 수 없습니다."));
-    }
-
     public void append(Section section) {
-        if (sections.stream().anyMatch(it -> it.containsStation(section.getUpStation())) &&
-                sections.stream().anyMatch(it -> it.containsStation(section.getDownStation()))) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 존재하는 구간입니다.");
-        }
+        validateSectionIsAppendable(section);
 
-        Station upStation = sections.get(0).getUpStation();
-        Station downStation = sections.get(sections.size() - 1).getDownStation();
-
-        if (section.equalsDownStation(upStation)) {
-            sections.add(0, section);
+        if (canBeFirstSection(section)) {
+            int firstIndex = 0;
+            orderedSections.add(firstIndex, section);
             return;
         }
 
-        if (section.equalsUpStation(downStation)) {
-            sections.add(section);
+        if (canBeLastSection(section)) {
+            orderedSections.add(section);
             return;
         }
 
-        Optional<Section> sectionEqualsDownStation = sections.stream()
-                .filter(it -> section.equalsDownStation(it.getDownStation()))
+        appendInMiddleIfPossible(section);
+    }
+
+    private void validateSectionIsAppendable(Section section) {
+        boolean existenceOfUpStation = isUpStationAlreadyExist(section);
+        boolean existenceOfDownStation = isDownStationAlreadyExist(section);
+
+        validateStationsBothExist(existenceOfUpStation, existenceOfDownStation);
+        validateStationsNeitherExist(existenceOfUpStation, existenceOfDownStation);
+    }
+
+    private boolean isUpStationAlreadyExist(Section target) {
+        return orderedSections.stream()
+                .anyMatch(section -> section.containsUpStationOf(target));
+    }
+
+    private boolean isDownStationAlreadyExist(Section target) {
+        return orderedSections.stream()
+                .anyMatch(section -> section.containsDownStationOf(target));
+    }
+
+    private void validateStationsBothExist(boolean existenceOfUpStation, boolean existenceOfDownStation) {
+        if (existenceOfUpStation && existenceOfDownStation) {
+            throw new IllegalArgumentException("해당 구간의 상행역과 하행역이 이미 노선에 존재합니다.");
+        }
+    }
+
+    private void validateStationsNeitherExist(boolean existenceOfUpStation, boolean existenceOfDownStation) {
+        if (!existenceOfUpStation && !existenceOfDownStation) {
+            throw new IllegalArgumentException("해당 구간의 상행역과 하행역이 노선에 존재하지 않습니다.");
+        }
+    }
+
+    private boolean canBeFirstSection(Section section) {
+        int firstIndex = 0;
+        Section firstSection = orderedSections.get(firstIndex);
+        return section.isPreviousOf(firstSection);
+    }
+
+    private boolean canBeLastSection(Section section) {
+        int lastIndex = orderedSections.size() - 1;
+        Section lastSection = orderedSections.get(lastIndex);
+        return lastSection.isPreviousOf(section);
+    }
+
+    private void appendInMiddleIfPossible(Section section) {
+        findConnectableSection(section).ifPresent(middleSection -> {
+            int middleIndex = orderedSections.indexOf(middleSection);
+            List<Section> separatedSections = middleSection.split(section);
+
+            orderedSections.remove(middleIndex);
+            new LinkedList<>(separatedSections)
+                    .descendingIterator()
+                    .forEachRemaining(it -> orderedSections.add(middleIndex, it));
+        });
+    }
+
+    private Optional<Section> findConnectableSection(Section section) {
+        return orderedSections.stream()
+                .filter(it -> section.equalsUpStation(it) || section.equalsDownStation(it))
                 .findAny();
-        if (sectionEqualsDownStation.isPresent()) {
-            Section originSection = sectionEqualsDownStation.get();
-            if (!originSection.isLongerThan(section)) {
-                throw new IllegalArgumentException("기존 구간의 길이보다 크거나 같습니다.");
-            }
-
-            int index = sections.indexOf(originSection);
-            sections.remove(index);
-
-            sections.add(index, section);
-            sections.add(index, new Section(originSection.getUpStation(), section.getUpStation(),
-                    originSection.calculateDifferenceOfDistance(section)));
-            return;
-        }
-
-        Optional<Section> sectionEqualsUpStation = sections.stream()
-                .filter(it -> section.equalsUpStation(it.getUpStation()))
-                .findAny();
-        if (sectionEqualsUpStation.isPresent()) {
-            Section originSection = sectionEqualsUpStation.get();
-            if (!originSection.isLongerThan(section)) {
-                throw new IllegalArgumentException("기존 구간의 길이보다 크거나 같습니다.");
-            }
-
-            int index = sections.indexOf(originSection);
-            sections.remove(index);
-
-            sections.add(index, new Section(section.getDownStation(), originSection.getDownStation(),
-                    originSection.calculateDifferenceOfDistance(section)));
-            sections.add(index, section);
-            return;
-        }
-
-        throw new IllegalArgumentException("상행역과 하행역이 존재하지 않는 구간입니다.");
     }
 
     public void remove(Station station) {
+        validateStationContained(station);
+        validateSectionsSizeEnough();
+
+        if (isFirstStation(station)) {
+            int firstIndex = 0;
+            orderedSections.remove(firstIndex);
+            return;
+        }
+        if (isLastStation(station)) {
+            int lastIndex = orderedSections.size() - 1;
+            orderedSections.remove(lastIndex);
+            return;
+        }
+
+        removeMiddleStationIfPossible(station);
+    }
+
+    private void validateStationContained(Station station) {
         if (!getStations().contains(station)) {
             throw new IllegalArgumentException("노선에 포함되어 있는 역이 아닙니다.");
         }
+    }
 
-        if (sections.size() == 1) {
+    private void validateSectionsSizeEnough() {
+        if (orderedSections.size() == 1) {
             throw new IllegalStateException("노선의 구간이 하나이므로 구간을 삭제할 수 없습니다.");
         }
+    }
 
-        Station upStation = sections.get(0).getUpStation();
-        Station downStation = sections.get(sections.size() - 1).getDownStation();
+    private boolean isFirstStation(Station station) {
+        int firstIndex = 0;
+        Section firstSection = orderedSections.get(firstIndex);
+        return station.equals(firstSection.getUpStation());
+    }
 
-        if (upStation.equals(station)) {
-            sections.remove(0);
-            return;
-        }
+    private boolean isLastStation(Station station) {
+        int lastIndex = orderedSections.size() - 1;
+        Section lastSection = orderedSections.get(lastIndex);
+        return station.equals(lastSection.getDownStation());
+    }
 
-        if (downStation.equals(station)) {
-            sections.remove(sections.size() - 1);
-            return;
-        }
+    private void removeMiddleStationIfPossible(Station station) {
+        Section upSection = findSectionContainedAsUpStation(station);
+        Section downSection = findSectionContainedAsDownStation(station);
+        Section mergedSection = upSection.merge(downSection);
 
-        Section upSection = sections.stream()
-                .filter(section -> section.equalsDownStation(station))
+        int index = orderedSections.indexOf(upSection);
+        orderedSections.remove(upSection);
+        orderedSections.remove(downSection);
+        orderedSections.add(index, mergedSection);
+    }
+
+    private Section findSectionContainedAsUpStation(Station station) {
+        return orderedSections.stream()
+                .filter(section -> section.containsAsDownStation(station))
                 .findAny()
-                .orElseThrow();
-        Section downSection = sections.stream()
-                .filter(section -> section.equalsUpStation(station))
+                .orElseThrow(() -> new NoSuchElementException("연결 가능한 구간을 찾을 수 없습니다."));
+    }
+
+    private Section findSectionContainedAsDownStation(Station station) {
+        return orderedSections.stream()
+                .filter(section -> section.containsAsUpStation(station))
                 .findAny()
-                .orElseThrow();
-
-        Section section = new Section(
-                upSection.getUpStation(),
-                downSection.getDownStation(),
-                upSection.calculateSumOfDistance(downSection));
-
-        int index = sections.indexOf(upSection);
-        sections.remove(upSection);
-        sections.remove(downSection);
-        sections.add(index, section);
+                .orElseThrow(() -> new NoSuchElementException("연결 가능한 구간을 찾을 수 없습니다."));
     }
 
     public List<Section> getSections() {
-        return List.copyOf(sections);
+        return List.copyOf(orderedSections);
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>(List.of(sections.get(0).getUpStation()));
-        for (Section section : sections) {
+        Set<Station> stations = new LinkedHashSet<>();
+        for (Section section : orderedSections) {
+            stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         }
-        return stations;
+        return stations.stream()
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<Long> getSectionIds() {
-        return sections.stream()
+        return orderedSections.stream()
                 .map(Section::getId)
                 .collect(Collectors.toUnmodifiableList());
     }
@@ -177,7 +201,7 @@ public class Sections {
     @Override
     public String toString() {
         return "Sections{" +
-                "sections=" + sections +
+                "sections=" + orderedSections +
                 '}';
     }
 }

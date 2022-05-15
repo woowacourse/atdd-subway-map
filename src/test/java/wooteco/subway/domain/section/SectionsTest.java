@@ -34,21 +34,21 @@ class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        this.sections = new Sections(SECTIONS);
+        this.sections = Sections.sort(SECTIONS);
     }
 
     @DisplayName("지하철구간은 하나 이상이어야 한다.")
     @Test
     void validateSectionsNotEmpty() {
-        assertThatThrownBy(() -> new Sections(Collections.emptyList()))
+        assertThatThrownBy(() -> Sections.sort(Collections.emptyList()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철구간은 하나 이상이어야 합니다.");
     }
 
     @DisplayName("구간을 정렬한다.")
     @Test
-    void orderSections() {
-        Sections sections = new Sections(List.of(
+    void sortSections() {
+        Sections sections = Sections.sort(List.of(
                 new Section(1L, 역삼역, 선릉역, STANDARD_DISTANCE),
                 new Section(2L, 강남역, 역삼역, STANDARD_DISTANCE)));
 
@@ -62,8 +62,9 @@ class SectionsTest {
         sections.append(new Section(3L, 삼성역, 강남역, SMALLER_DISTANCE));
 
         List<Station> expected = List.of(삼성역, 강남역, 역삼역, 선릉역);
-        assertThat(sections.getStations()).isEqualTo(expected);
-
+        assertThat(sections.getStations()).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(expected);
     }
 
     @DisplayName("하행 종점을 추가한다.")
@@ -72,7 +73,9 @@ class SectionsTest {
         sections.append(new Section(3L, 선릉역, 삼성역, SMALLER_DISTANCE));
 
         List<Station> expected = List.of(강남역, 역삼역, 선릉역, 삼성역);
-        assertThat(sections.getStations()).isEqualTo(expected);
+        assertThat(sections.getStations()).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(expected);
     }
 
     @DisplayName("상행역이 동일한 구간 사이에 구간을 추가한다.")
@@ -81,7 +84,9 @@ class SectionsTest {
         sections.append(new Section(3L, 강남역, 삼성역, SMALLER_DISTANCE));
 
         List<Station> expected = List.of(강남역, 삼성역, 역삼역, 선릉역);
-        assertThat(sections.getStations()).isEqualTo(expected);
+        assertThat(sections.getStations()).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(expected);
     }
 
     @DisplayName("하행역이 동일한 구간 사이에 구간을 추가한다.")
@@ -90,23 +95,9 @@ class SectionsTest {
         sections.append(new Section(3L, 삼성역, 역삼역, SMALLER_DISTANCE));
 
         List<Station> expected = List.of(강남역, 삼성역, 역삼역, 선릉역);
-        assertThat(sections.getStations()).isEqualTo(expected);
-    }
-
-    @DisplayName("기존 구간의 길이보다 크거나 같은 새로운 구간을 추가한다.")
-    @ParameterizedTest
-    @MethodSource("providerForAppendLongestSection")
-    void appendLongestSection(Section section) {
-        assertThatThrownBy(() -> sections.append(section))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("기존 구간의 길이보다 크거나 같습니다.");
-    }
-
-    private static Stream<Arguments> providerForAppendLongestSection() {
-        return Stream.of(
-                Arguments.of(new Section(3L, 강남역, 삼성역, STANDARD_DISTANCE)),
-                Arguments.of(new Section(3L, 강남역, 삼성역, STANDARD_DISTANCE + 1))
-        );
+        assertThat(sections.getStations()).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(expected);
     }
 
     @DisplayName("상행역과 하행역 모두 포함하고 있으면 추가할 수 없다.")
@@ -115,7 +106,7 @@ class SectionsTest {
     void appendUpStationAndDownStationBothExist(Section section) {
         assertThatThrownBy(() -> sections.append(section))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("상행역과 하행역이 이미 존재하는 구간입니다.");
+                .hasMessageContaining("해당 구간의 상행역과 하행역이 이미 노선에 존재합니다.");
     }
 
     private static Stream<Arguments> providerForAppendUpStationAndDownStationBothExist() {
@@ -133,7 +124,7 @@ class SectionsTest {
 
         assertThatThrownBy(() -> sections.append(section))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("상행역과 하행역이 존재하지 않는 구간입니다.");
+                .hasMessageContaining("해당 구간의 상행역과 하행역이 노선에 존재하지 않습니다.");
     }
 
     @DisplayName("상행종점역을 제거한다.")
@@ -169,7 +160,7 @@ class SectionsTest {
     @DisplayName("구간이 하나뿐인 노선의 역을 제거한다.")
     @Test
     void removeStationFromLineWithOnlyOneSection() {
-        Sections sections = new Sections(List.of(new Section(강남역, 역삼역, SMALLER_DISTANCE)));
+        Sections sections = Sections.sort(List.of(new Section(강남역, 역삼역, SMALLER_DISTANCE)));
         assertThatThrownBy(() -> sections.remove(강남역))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("노선의 구간이 하나이므로 구간을 삭제할 수 없습니다.");

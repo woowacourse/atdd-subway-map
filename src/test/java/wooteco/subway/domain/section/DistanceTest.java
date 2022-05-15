@@ -51,13 +51,13 @@ class DistanceTest {
 
     @DisplayName("거리의 차를 계산한다.")
     @ParameterizedTest
-    @MethodSource("provideForCalculateDifferenceBetween")
-    void calculateDifferenceBetween(Distance other, int expected) {
-        int actual = distance.calculateDifferenceBetween(other);
+    @MethodSource("provideForSubtract")
+    void subtract(Distance other, int expected) {
+        int actual = distance.subtract(other);
         assertThat(actual).isEqualTo(expected);
     }
 
-    private static Stream<Arguments> provideForCalculateDifferenceBetween() {
+    private static Stream<Arguments> provideForSubtract() {
         return Stream.of(
                 Arguments.of(new Distance(DEFAULT_DISTANCE - 5), 5),
                 Arguments.of(new Distance(DEFAULT_DISTANCE + 6), 6));
@@ -65,13 +65,13 @@ class DistanceTest {
 
     @DisplayName("거리의 합을 계산한다.")
     @ParameterizedTest
-    @MethodSource("provideForCalculateSumBetween")
-    void calculateSumBetween(Distance other, int expected) {
-        int actual = distance.calculateSumBetween(other);
+    @MethodSource("provideForSum")
+    void sum(Distance other, int expected) {
+        int actual = distance.sum(other);
         assertThat(actual).isEqualTo(expected);
     }
 
-    private static Stream<Arguments> provideForCalculateSumBetween() {
+    private static Stream<Arguments> provideForSum() {
         return Stream.of(
                 Arguments.of(new Distance(5), 5 + DEFAULT_DISTANCE),
                 Arguments.of(new Distance(2), 2 + DEFAULT_DISTANCE)

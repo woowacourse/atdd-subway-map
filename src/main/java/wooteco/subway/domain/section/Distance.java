@@ -1,7 +1,5 @@
 package wooteco.subway.domain.section;
 
-import java.util.Objects;
-
 public class Distance {
 
     private final int distance;
@@ -21,11 +19,11 @@ public class Distance {
         return this.distance > other.distance;
     }
 
-    public int calculateDifferenceBetween(Distance other) {
+    public int subtract(Distance other) {
         return Math.abs(this.distance - other.distance);
     }
 
-    public int calculateSumBetween(Distance other) {
+    public int sum(Distance other) {
         return this.distance + other.distance;
     }
 
