@@ -12,7 +12,6 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.StationRequest;
 
@@ -33,10 +32,11 @@ public class StationService {
     }
 
     public StationResponse save(StationRequest stationRequest) {
-        validDuplicatedName(stationRequest.getName());
-        Station station = new Station(stationRequest.getName());
-        Long id = stationDao.save(station);
-        return new StationResponse(id, stationRequest.getName());
+        String name = stationRequest.getName();
+        validDuplicatedName(name);
+
+        Long id = stationDao.save(stationRequest.toEntity());
+        return new StationResponse(id, name);
     }
 
     private void validDuplicatedName(String name) {
