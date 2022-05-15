@@ -7,6 +7,7 @@ public class Line {
     private Long id;
     private String name;
     private String color;
+    private SectionsV2 sections;
 
     public Line(String name, String color) {
         this(null, name, color);
@@ -16,6 +17,19 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, SectionsV2 sections) {
+        this.id = null;
+        this.color = color;
+        this.sections = sections;
+    }
+
+    public Line(Long id, String name, String color, SectionsV2 sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
     }
 
     public Long getId() {
@@ -28,6 +42,10 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public SectionsV2 getSections() {
+        return sections;
     }
 
     @Override

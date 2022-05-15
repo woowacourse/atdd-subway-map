@@ -3,8 +3,11 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static wooteco.subway.Fixtures.강남역;
+import static wooteco.subway.Fixtures.역삼역;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,17 +15,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.SectionV2;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 class LineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private DataSource dataSource;
     private LineDao lineDao;
+    private StationDao stationDao;
+    private SectionDaoV2 sectionDao;
 
     @BeforeEach
     void beforeEach() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new LineDao(dataSource);
+        stationDao = new StationDao(jdbcTemplate);
+        sectionDao = new SectionDaoV2(dataSource);
     }
 
     @Test
@@ -44,10 +55,20 @@ class LineDaoTest {
     @DisplayName("전체 노선을 조회할 수 있다.")
     void findAll() {
         // given
-        final Line line1 = new Line("신분당선", "bg-red-600");
-        final Line line2 = new Line("분당선", "bg-green-600");
-        lineDao.save(line1);
-        lineDao.save(line2);
+        Long 강남역_id = stationDao.save(강남역);
+        Long 역삼역_id = stationDao.save(역삼역);
+        Station 강남역 = stationDao.findById(강남역_id);
+        Station 역삼역 = stationDao.findById(역삼역_id);
+
+        Line 신분당선 = new Line("신분당선", "bg-red-600");
+        Line 분당선 = new Line("분당선", "bg-green-600");
+        Long 신분당선_id = lineDao.save(신분당선);
+        Long 분당선_id = lineDao.save(분당선);
+
+        SectionV2 강남_역삼_신분당선 = new SectionV2(신분당선_id, 강남역, 역삼역, 10);
+        SectionV2 강남_역삼_분당선 = new SectionV2(분당선_id, 강남역, 역삼역, 10);
+        sectionDao.save(강남_역삼_신분당선);
+        sectionDao.save(강남_역삼_분당선);
 
         // when
         List<Line> lines = lineDao.findAll();
@@ -64,11 +85,16 @@ class LineDaoTest {
     @DisplayName("단건 노선을 조회한다.")
     void findById() {
         // given
-        final Line line = new Line("신분당선", "bg-red-600");
-        final Long savedId = lineDao.save(line);
+        Long 강남역_id = stationDao.save(강남역);
+        Long 역삼역_id = stationDao.save(역삼역);
+        Station 강남역 = stationDao.findById(강남역_id);
+        Station 역삼역 = stationDao.findById(역삼역_id);
+
+        Line 신분당선 = new Line("신분당선", "bg-red-600");
+        Long 신분당선_id = lineDao.save(신분당선);
 
         // when
-        final Line findLine = lineDao.findById(savedId);
+        Line findLine = lineDao.findById(신분당선_id);
 
         // then
         assertThat(findLine).extracting("name", "color")
@@ -79,15 +105,20 @@ class LineDaoTest {
     @DisplayName("기존 노선의 이름과 색상을 변경할 수 있다.")
     void updateById() {
         // given
-        final Line line = new Line("신분당선", "bg-red-600");
-        final Long savedId = lineDao.save(line);
+        Long 강남역_id = stationDao.save(강남역);
+        Long 역삼역_id = stationDao.save(역삼역);
+        Station 강남역 = stationDao.findById(강남역_id);
+        Station 역삼역 = stationDao.findById(역삼역_id);
+
+        Line 신분당선 = new Line("신분당선", "bg-red-600");
+        Long 신분당선_id = lineDao.save(신분당선);
 
         // when
-        final Line updateLine = new Line(savedId, "다른분당선", "bg-red-600");
+        final Line updateLine = new Line(신분당선_id, "다른분당선", "bg-red-600");
         lineDao.updateByLine(updateLine);
 
         // then
-        final Line findLine = lineDao.findById(savedId);
+        final Line findLine = lineDao.findById(신분당선_id);
         assertThat(findLine).extracting("name", "color")
                 .contains("다른분당선", "bg-red-600");
     }
