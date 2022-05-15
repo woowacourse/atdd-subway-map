@@ -18,18 +18,26 @@ public class SubwayControllerAdvice {
         return ResponseEntity.badRequest().body(SubwayErrorResponse.from(exception));
     }
 
-    @ExceptionHandler({NoHandlerFoundException.class, NoSuchElementException.class})
+    @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<String> handleNoHandlerFoundException() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HttpStatus.NOT_FOUND.getReasonPhrase());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NoHandlerFoundException");
     }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElementException() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NoSuchElementException");
+    }
+
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<String> handleNotFoundException() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HttpStatus.NOT_FOUND.getReasonPhrase());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("EmptyResultDataAccessException");
+
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<Void> handleDataAccessException() {
-        return ResponseEntity.internalServerError().build();
+    public ResponseEntity<String> handleDataAccessException() {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("DataAccessException");
+
     }
 }
