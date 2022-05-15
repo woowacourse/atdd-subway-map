@@ -42,7 +42,7 @@ public class StationDaoTest {
         stationDao.save(station1);
         stationDao.save(station2);
 
-        List<Station> stations = stationDao.findAll();
+        List<StationEntity> stations = stationDao.findAll();
 
         assertThat(stations).hasSize(2);
     }

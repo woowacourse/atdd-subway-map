@@ -17,6 +17,7 @@ import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.BadRequestException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.repository.StationRepository;
 
 @Service
 public class LineService {
@@ -24,11 +25,14 @@ public class LineService {
     private final LineDao lineDao;
     private final StationDao stationDao;
     private final SectionDao sectionDao;
+    private final StationRepository stationRepository;
 
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao,
+        StationRepository stationRepository) {
         this.lineDao = lineDao;
         this.stationDao = stationDao;
         this.sectionDao = sectionDao;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse create(LineRequest lineRequest) {
@@ -111,8 +115,7 @@ public class LineService {
     }
 
     private Station findStation(Long stationId) {
-        return stationDao.findById(stationId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 역입니다. id : " + stationId));
+        return stationRepository.findById(stationId);
     }
 
     private Line findLine(Long lineId) {

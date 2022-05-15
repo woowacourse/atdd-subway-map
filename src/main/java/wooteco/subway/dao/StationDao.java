@@ -14,8 +14,8 @@ import wooteco.subway.domain.Station;
 @Repository
 public class StationDao {
 
-    private static final RowMapper<Station> mapper = (rs, rowNum) ->
-        new Station(
+    private static final RowMapper<StationEntity> mapper = (rs, rowNum) ->
+        new StationEntity(
             rs.getLong("id"),
             rs.getString("name")
         );
@@ -36,12 +36,18 @@ public class StationDao {
         return new Station(id, station.getName());
     }
 
-    public Optional<Station> findById(Long id) {
+    public StationEntity save(StationEntity stationEntity) {
+        SqlParameterSource parameters = new MapSqlParameterSource("name", stationEntity.getName());
+        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new StationEntity(id, stationEntity.getName());
+    }
+
+    public Optional<StationEntity> findById(Long id) {
         String sql = "select * from station where id = ?";
         return Optional.ofNullable(DataAccessUtils.singleResult(jdbcTemplate.query(sql, mapper, id)));
     }
 
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         String sql = "select * from station";
         return jdbcTemplate.query(sql, mapper);
     }
