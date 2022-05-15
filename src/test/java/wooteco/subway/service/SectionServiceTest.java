@@ -1,12 +1,10 @@
 package wooteco.subway.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -18,7 +16,6 @@ import wooteco.subway.dto.SectionRequest;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -216,8 +213,8 @@ class SectionServiceTest {
         sectionService.addSection(sectionRequest, line.getId());
 
         assertThatThrownBy(() -> sectionService.deleteSection(station4.getId(), line.getId()))
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessage("해당 구간이 존재하지 않습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 구간이 존재하지 않습니다.");
     }
 
     @Test
@@ -230,7 +227,7 @@ class SectionServiceTest {
         sectionDao.saveInitialSection(lineRequest, line.getId());
 
         assertThatThrownBy(() -> sectionService.deleteSection(station1.getId(), line.getId()))
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessage("노선 내의 구간이 하나 이하라면 삭제할 수 없습니댜.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선 내의 구간이 하나 이하라면 삭제할 수 없습니댜.");
     }
 }

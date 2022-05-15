@@ -1,9 +1,5 @@
 package wooteco.subway.dto;
 
-import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class SectionRequest {

@@ -3,9 +3,7 @@ package wooteco.subway.dto;
 import org.springframework.validation.annotation.Validated;
 import wooteco.subway.utils.ExceptionMessage;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 @Validated
 public class LineRequest {

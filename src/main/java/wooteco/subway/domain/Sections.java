@@ -20,7 +20,7 @@ public class Sections {
         Section targetSection = getFirstSection(sections.get(0));
         stations.add(targetSection.getUpStationId());
 
-        while(!isLastStation(targetSection.getDownStationId())){
+        while (!isLastStation(targetSection.getDownStationId())) {
             stations.add(targetSection.getDownStationId());
             targetSection = findSectionByUpStation(targetSection.getDownStationId());
         }
@@ -30,7 +30,7 @@ public class Sections {
     }
 
     private Section getFirstSection(Section targetSection) {
-        if(isFirstStation(targetSection.getUpStationId())){
+        if (isFirstStation(targetSection.getUpStationId())) {
             return targetSection;
         }
         Section previousSection = findSectionByDownStation(targetSection.getUpStationId());

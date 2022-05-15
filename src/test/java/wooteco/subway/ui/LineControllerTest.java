@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcTest(LineController.class)
-class LineControllerTest extends ControllerTest{
+class LineControllerTest extends ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

@@ -18,7 +18,7 @@ public class LineResponse {
         this.stations = convertToDto(stations);
     }
 
-    public List<StationResponse> convertToDto(List<Station> stations){
+    public List<StationResponse> convertToDto(List<Station> stations) {
         return stations.stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());

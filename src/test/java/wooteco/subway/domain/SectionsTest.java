@@ -13,8 +13,8 @@ class SectionsTest {
     @DisplayName("구간을 순서에 맞게 정렬하여 역 목록으로 반환한다.")
     void sortStations() {
         Sections sections = new Sections(List.of(
-                new Section(1L, 2L, 3L, 10 ),
-                new Section(1L, 1L, 2L, 10 )
+                new Section(1L, 2L, 3L, 10),
+                new Section(1L, 1L, 2L, 10)
         ));
 
         List<Long> actual = sections.sortStations();
@@ -26,8 +26,8 @@ class SectionsTest {
     @DisplayName("해당 역이 상행종점인지 검사한다. - 참 ")
     void isFirstStation_True() {
         Sections sections = new Sections(List.of(
-                new Section(1L, 2L, 3L, 10 ),
-                new Section(1L, 1L, 2L, 10 )
+                new Section(1L, 2L, 3L, 10),
+                new Section(1L, 1L, 2L, 10)
         ));
 
         boolean actual = sections.isFirstStation(1L);
@@ -39,8 +39,8 @@ class SectionsTest {
     @DisplayName("해당 역이 상행종점인지 검사한다. - 거짓")
     void isFirstStation_False() {
         Sections sections = new Sections(List.of(
-                new Section(1L, 2L, 3L, 10 ),
-                new Section(1L, 1L, 2L, 10 )
+                new Section(1L, 2L, 3L, 10),
+                new Section(1L, 1L, 2L, 10)
         ));
 
         boolean actual = sections.isFirstStation(2L);
@@ -52,8 +52,8 @@ class SectionsTest {
     @DisplayName("해당 역이 하행종점인지 검사한다. - 참")
     void isLastStation_True() {
         Sections sections = new Sections(List.of(
-                new Section(1L, 1L, 2L, 10 ),
-                new Section(1L, 2L, 3L, 10 )
+                new Section(1L, 1L, 2L, 10),
+                new Section(1L, 2L, 3L, 10)
         ));
 
         boolean actual = sections.isLastStation(3L);
@@ -65,8 +65,8 @@ class SectionsTest {
     @DisplayName("해당 역이 하행종점인지 검사한다. - 거짓")
     void isLastStation_False() {
         Sections sections = new Sections(List.of(
-                new Section(1L, 2L, 3L, 10 ),
-                new Section(1L, 1L, 2L, 10 )
+                new Section(1L, 2L, 3L, 10),
+                new Section(1L, 1L, 2L, 10)
         ));
 
         boolean actual = sections.isLastStation(2L);
@@ -78,7 +78,7 @@ class SectionsTest {
     @DisplayName("노선 내의 구간이 하나인지 검사한다. - 참")
     void isLessThanOneSection() {
         Sections sections = new Sections(List.of(
-                new Section(1L, 2L, 3L, 10 )
+                new Section(1L, 2L, 3L, 10)
         ));
 
         boolean actual = sections.isOnlyOneSection();
@@ -90,8 +90,8 @@ class SectionsTest {
     @DisplayName("노선 내의 구간이 하나인지 검사한다. - 거짓")
     void isLessThanOneSection_False() {
         Sections sections = new Sections(List.of(
-                new Section(1L, 2L, 3L, 10 ),
-                new Section(1L, 1L, 2L, 10 )
+                new Section(1L, 2L, 3L, 10),
+                new Section(1L, 1L, 2L, 10)
         ));
 
         boolean actual = sections.isOnlyOneSection();

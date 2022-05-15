@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionRequest;
@@ -26,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcTest(SectionController.class)
-class SectionControllerTest extends ControllerTest{
+class SectionControllerTest extends ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -57,17 +56,17 @@ class SectionControllerTest extends ControllerTest{
     @CsvSource(value = {"2:3:", "2::10", ":3:10"}, delimiter = ':')
     void addSection_Exception(Long upStationId, Long downStationId, Integer distance) throws Exception {
         String sectionRequest = "{\n" +
-                "  \"upStationId\" :" + upStationId +",\n" +
-                "  \"downStationId\" :" + downStationId +",\n" +
+                "  \"upStationId\" :" + upStationId + ",\n" +
+                "  \"downStationId\" :" + downStationId + ",\n" +
                 "  \"distance\" :" + distance +
                 "}";
 
-         mockMvc.perform(
+        mockMvc.perform(
                 post("/lines/1/sections")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(sectionRequest))
-                 .andExpect(this::checkValidException)
-                 .andReturn();
+                .andExpect(this::checkValidException)
+                .andReturn();
     }
 
 

@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 
@@ -86,7 +85,7 @@ public class LineDaoTest {
     void update() {
         LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
         Line line = lineDao.save(lineRequest);
-        LineRequest updateRequest = new LineRequest( "분당선", "green");
+        LineRequest updateRequest = new LineRequest("분당선", "green");
 
         lineDao.update(line.getId(), updateRequest);
 
