@@ -53,7 +53,7 @@ class LineServiceTest extends ServiceTest {
             LineResponse expectedLine1 = new LineResponse(1L, "1호선", "색깔",
                     List.of(STATION_RESPONSE_1, STATION_RESPONSE_3));
             LineResponse expectedLine2 = new LineResponse(2L, "2호선", "색깔2",
-                    List.of(STATION_RESPONSE_1, STATION_RESPONSE_2, STATION_RESPONSE_3));
+                    List.of(STATION_RESPONSE_3, STATION_RESPONSE_1, STATION_RESPONSE_2));
             List<LineResponse> expected = List.of(expectedLine1, expectedLine2);
 
             assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);

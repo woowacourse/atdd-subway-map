@@ -6,21 +6,21 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.RegisteredStationDao;
+import wooteco.subway.dao.RegisteredSectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.SubwayMaps;
+import wooteco.subway.domain.line.Lines;
+import wooteco.subway.domain.section.RegisteredSection;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.section.SectionsFactory;
-import wooteco.subway.domain.station.RegisteredStation;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.RegisteredStationEntity;
+import wooteco.subway.entity.RegisteredSectionEntity;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.exception.ExceptionType;
 import wooteco.subway.exception.NotFoundException;
@@ -33,21 +33,21 @@ public class LineService {
     private final LineDao lineDao;
     private final StationDao stationDao;
     private final SectionDao sectionDao;
-    private final RegisteredStationDao registeredStationDao;
+    private final RegisteredSectionDao registeredSectionDao;
 
     public LineService(LineDao lineDao,
                        SectionDao sectionDao,
                        StationDao stationDao,
-                       RegisteredStationDao registeredStationDao) {
+                       RegisteredSectionDao registeredSectionDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
-        this.registeredStationDao = registeredStationDao;
+        this.registeredSectionDao = registeredSectionDao;
     }
 
     public List<LineResponse> findAll() {
-        return SubwayMaps.of(findAllRegisteredStations())
-                .toList()
+        return Lines.of(findAllRegisteredSections())
+                .toSortedList()
                 .stream()
                 .map(LineResponse::of)
                 .sorted(Comparator.comparingLong(LineResponse::getId))
@@ -91,10 +91,10 @@ public class LineService {
         sectionDao.deleteAllByLineId(id);
     }
 
-    private List<RegisteredStation> findAllRegisteredStations() {
-        return registeredStationDao.findAll()
+    private List<RegisteredSection> findAllRegisteredSections() {
+        return registeredSectionDao.findAll()
                 .stream()
-                .map(RegisteredStationEntity::toDomain)
+                .map(RegisteredSectionEntity::toDomain)
                 .collect(Collectors.toList());
     }
 

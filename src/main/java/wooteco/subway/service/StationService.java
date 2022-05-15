@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.RegisteredStationDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.StationEntity;
-import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.ExceptionType;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class StationService {
@@ -20,11 +20,11 @@ public class StationService {
     private static final String REGISTERED_STATION_EXCEPTION_MESSAGE = "노선에 등록된 역은 제거할 수 없습니다.";
 
     private final StationDao stationDao;
-    private final RegisteredStationDao registeredStationDao;
+    private final SectionDao sectionDao;
 
-    public StationService(StationDao stationDao, RegisteredStationDao registeredStationDao) {
+    public StationService(StationDao stationDao, SectionDao sectionDao) {
         this.stationDao = stationDao;
-        this.registeredStationDao = registeredStationDao;
+        this.sectionDao = sectionDao;
     }
 
     public List<StationResponse> findAll() {
@@ -66,7 +66,7 @@ public class StationService {
     }
 
     private void validateUnRegisteredStation(Long id) {
-        boolean isUnRegistered = registeredStationDao.findAllByStationId(id).isEmpty();
+        boolean isUnRegistered = sectionDao.findAllByStationId(id).isEmpty();
         if (!isUnRegistered) {
             throw new IllegalArgumentException(REGISTERED_STATION_EXCEPTION_MESSAGE);
         }
