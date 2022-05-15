@@ -16,12 +16,15 @@ import wooteco.subway.exception.NotFoundException;
 @Service
 public class SectionService {
 
-    @Autowired
-    private SectionDao sectionDao;
-    @Autowired
-    private StationDao stationDao;
-    @Autowired
-    private LineDao lineDao;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
+    private final LineDao lineDao;
+
+    public SectionService(SectionDao sectionDao, StationDao stationDao, LineDao lineDao) {
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
+        this.lineDao = lineDao;
+    }
 
     @Transactional
     public void save(SectionRequest sectionRequest, Long lineId) {
