@@ -1,7 +1,5 @@
 package wooteco.subway.domain.line;
 
-import java.util.Objects;
-
 public class LineName {
 
     private final String name;

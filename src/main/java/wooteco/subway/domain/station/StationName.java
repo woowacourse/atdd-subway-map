@@ -1,7 +1,5 @@
 package wooteco.subway.domain.station;
 
-import java.util.Objects;
-
 public class StationName {
 
     private final String name;

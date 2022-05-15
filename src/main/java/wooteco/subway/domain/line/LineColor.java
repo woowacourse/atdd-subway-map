@@ -1,7 +1,5 @@
 package wooteco.subway.domain.line;
 
-import java.util.Objects;
-
 public class LineColor {
 
     private final String color;
