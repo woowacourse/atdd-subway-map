@@ -96,3 +96,12 @@
         - [x] 메서드의 기능을 나타낼 수 있는 이름으로 수정
         - [x] Dao와 같이 프로젝트의 구조가 메서드에 드러나는 부분 수정
 
+### 지하철 노선도 미션 3단계
+
+- [ ] 미사용 변수 제거 - 불필요한 모킹 제거
+- [ ] `LineService` - `showLine()`
+    - Transactional, readOnly 옵션 학습
+- [ ] `SectionServiceTest` - 테스트 구조화 및 가독성
+    - describe - context - it 패턴 적용 [참고 링크](https://johngrib.github.io/wiki/junit5-nested/)
+- [ ] `SectionsTest`
+    - 상수화 필요한 변수 수정
