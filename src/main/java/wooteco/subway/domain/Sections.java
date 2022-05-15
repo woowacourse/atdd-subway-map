@@ -131,7 +131,7 @@ public class Sections implements Iterable<Section> {
             .filter(section -> section.isSameDownStation(station))
             .findFirst().orElseThrow();
 
-        sectionWithSameDownStation.connect(sectionWithSameUpStation);
+        sectionWithSameDownStation.concatenate(sectionWithSameUpStation);
         sections.remove(sectionWithSameUpStation);
         return sectionWithSameUpStation;
     }

@@ -5,8 +5,9 @@ import java.util.Objects;
 public class Section {
     private static final String ERROR_MESSAGE_SAME_UP_AND_DOWN_STATION = "구간의 상행역과 하행역은 달라야합니다.";
     private static final String ERROR_MESSAGE_DISTANCE_MUST_PLUS = "구간 사이의 거리는 양수여야합니다.";
+    private static final String ERROR_MESSAGE_NOT_CONNECT_CONDITION = "연결 조건이 맞지 않습니다.";
     private static final int MINIMUM_DISTANCE_VALUE = 1;
-    
+
     private Long id;
     private Station upStation;
     private Station downStation;
@@ -79,9 +80,17 @@ public class Section {
         this.distance -= section.distance;
     }
 
-    public void connect(Section sectionWithSameUpStation) {
-        this.downStation = sectionWithSameUpStation.downStation;
-        this.distance += sectionWithSameUpStation.distance;
+    public void concatenate(Section section) {
+        validateCanConcatenate(section);
+
+        this.downStation = section.downStation;
+        this.distance += section.distance;
+    }
+
+    private void validateCanConcatenate(Section section) {
+        if (!this.downStation.equals(section.upStation)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_CONNECT_CONDITION);
+        }
     }
 
     public boolean isSameId(Long id) {
