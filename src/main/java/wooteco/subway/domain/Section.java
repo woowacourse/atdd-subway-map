@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.dto.section.SectionRequest;
 import wooteco.subway.exception.BusinessException;
 
 public class Section {
@@ -14,23 +13,18 @@ public class Section {
     private final Long downStationId;
     private final int distance;
 
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(0L, lineId, upStationId, downStationId, distance);
+        validateSameId(upStationId, downStationId);
+        validateDistance(distance);
+    }
+
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public static Section of(Long lineId, SectionRequest sectionRequest) {
-        validateSameId(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
-        validateDistance(sectionRequest.getDistance());
-        return new Section(0L,
-                lineId,
-                sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(),
-                sectionRequest.getDistance()
-        );
     }
 
     public boolean isSameUp(Long id) {

@@ -27,7 +27,11 @@ public class SectionService {
     public void save(Long lineId, SectionRequest sectionRequest) {
         validateSectionRequest(sectionRequest);
 
-        Section section = Section.of(lineId, sectionRequest);
+        Section section = new Section(lineId,
+                sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
+
         sectionDao.save(section);
     }
 
@@ -48,7 +52,10 @@ public class SectionService {
         validateSectionRequest(sectionRequest);
 
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        Section target = Section.of(lineId, sectionRequest);
+        Section target = new Section(lineId,
+                sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
 
         sections.validateTarget(target);
 
