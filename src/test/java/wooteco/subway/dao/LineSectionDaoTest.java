@@ -7,11 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.RegisteredSectionEntity;
+import wooteco.subway.entity.LineSectionEntity;
 import wooteco.subway.entity.StationEntity;
 
 @SuppressWarnings("NonAsciiCharacters")
-class RegisteredSectionDaoTest extends DaoTest {
+class LineSectionDaoTest extends DaoTest {
 
     private static final StationEntity STATION1 = new StationEntity(1L, "강남역");
     private static final StationEntity STATION2 = new StationEntity(2L, "선릉역");
@@ -20,7 +20,7 @@ class RegisteredSectionDaoTest extends DaoTest {
     private static final LineEntity LINE2 = new LineEntity(2L, "2호선", "색깔2");
 
     @Autowired
-    private RegisteredSectionDao dao;
+    private LineSectionDao dao;
 
     @BeforeEach
     void setup() {
@@ -35,11 +35,11 @@ class RegisteredSectionDaoTest extends DaoTest {
         testFixtureManager.saveSection(1L, 2L, 3L, 10);
         testFixtureManager.saveSection(2L, 1L, 3L, 30);
 
-        List<RegisteredSectionEntity> actual = dao.findAll();
-        List<RegisteredSectionEntity> expected = List.of(
-                new RegisteredSectionEntity(LINE1, STATION1, STATION2, 20),
-                new RegisteredSectionEntity(LINE1, STATION2, STATION3, 10),
-                new RegisteredSectionEntity(LINE2, STATION1, STATION3, 30));
+        List<LineSectionEntity> actual = dao.findAll();
+        List<LineSectionEntity> expected = List.of(
+                new LineSectionEntity(LINE1, STATION1, STATION2, 20),
+                new LineSectionEntity(LINE1, STATION2, STATION3, 10),
+                new LineSectionEntity(LINE2, STATION1, STATION3, 30));
 
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
@@ -50,10 +50,10 @@ class RegisteredSectionDaoTest extends DaoTest {
         testFixtureManager.saveSection(1L, 2L, 3L, 10);
         testFixtureManager.saveSection(2L, 1L, 3L, 30);
 
-        List<RegisteredSectionEntity> actual = dao.findAllByLineId(1L);
-        List<RegisteredSectionEntity> expected = List.of(
-                new RegisteredSectionEntity(LINE1, STATION1, STATION2, 20),
-                new RegisteredSectionEntity(LINE1, STATION2, STATION3, 10));
+        List<LineSectionEntity> actual = dao.findAllByLineId(1L);
+        List<LineSectionEntity> expected = List.of(
+                new LineSectionEntity(LINE1, STATION1, STATION2, 20),
+                new LineSectionEntity(LINE1, STATION2, STATION3, 10));
 
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }

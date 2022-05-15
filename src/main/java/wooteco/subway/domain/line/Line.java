@@ -3,7 +3,6 @@ package wooteco.subway.domain.line;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import wooteco.subway.domain.section.RegisteredSection;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.section.SectionsFactory;
@@ -23,33 +22,33 @@ public class Line {
         this.sections = sections;
     }
 
-    public static Line of(List<RegisteredSection> registeredSections) {
-        validateNotEmpty(registeredSections);
-        validateSameLineSections(registeredSections);
-        Sections sections = toSections(registeredSections);
-        LineInfo lineInfo = LineInfo.of(registeredSections.get(0));
+    public static Line of(List<LineSection> lineSections) {
+        validateNotEmpty(lineSections);
+        validateSameLineSections(lineSections);
+        LineInfo lineInfo = lineSections.get(0).getLineInfo();
+        Sections sections = toSections(lineSections);
 
         return new Line(lineInfo, sections);
     }
 
-    private static void validateNotEmpty(List<RegisteredSection> registeredSections) {
-        if (registeredSections.isEmpty()) {
+    private static void validateNotEmpty(List<LineSection> lineSections) {
+        if (lineSections.isEmpty()) {
             throw new NotFoundException(ExceptionType.LINE_NOT_FOUND);
         }
     }
 
-    private static void validateSameLineSections(List<RegisteredSection> registeredSections) {
-        RegisteredSection targetSection = registeredSections.get(0);
-        boolean hasAnotherLineSection = registeredSections.stream()
+    private static void validateSameLineSections(List<LineSection> lineSections) {
+        LineSection targetSection = lineSections.get(0);
+        boolean hasAnotherLineSection = lineSections.stream()
                 .anyMatch(it -> !it.isRegisteredAtSameLine(targetSection));
         if (hasAnotherLineSection) {
             throw new IllegalArgumentException(INVALID_SECTION_COMPOSITION_EXCEPTION);
         }
     }
 
-    private static Sections toSections(List<RegisteredSection> sameLineSections) {
+    private static Sections toSections(List<LineSection> sameLineSections) {
         List<Section> sections = sameLineSections.stream()
-                .map(RegisteredSection::getSection)
+                .map(LineSection::getSection)
                 .collect(Collectors.toList());
         return SectionsFactory.generate(sections);
     }

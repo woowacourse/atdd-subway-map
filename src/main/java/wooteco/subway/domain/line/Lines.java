@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import wooteco.subway.domain.section.RegisteredSection;
 
 public class Lines {
 
@@ -16,16 +15,16 @@ public class Lines {
         this.value = value;
     }
 
-    public static Lines of(List<RegisteredSection> sections) {
-        return new Lines(toSortedLines(groupByLine(sections)));
+    public static Lines of(List<LineSection> lineSections) {
+        return new Lines(toSortedLines(groupByLine(lineSections)));
     }
 
-    private static Map<Long, List<RegisteredSection>> groupByLine(List<RegisteredSection> sections) {
-        return sections.stream()
-                .collect(groupingBy(RegisteredSection::getLineId));
+    private static Map<Long, List<LineSection>> groupByLine(List<LineSection> lineSections) {
+        return lineSections.stream()
+                .collect(groupingBy(LineSection::getLineId));
     }
 
-    private static List<Line> toSortedLines(Map<Long, List<RegisteredSection>> registeredSections) {
+    private static List<Line> toSortedLines(Map<Long, List<LineSection>> registeredSections) {
         return registeredSections.keySet()
                 .stream()
                 .map(registeredSections::get)

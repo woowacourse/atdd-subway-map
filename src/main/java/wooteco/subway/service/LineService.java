@@ -5,19 +5,19 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.RegisteredSectionDao;
+import wooteco.subway.dao.LineSectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.Lines;
-import wooteco.subway.domain.section.RegisteredSection;
+import wooteco.subway.domain.line.LineSection;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.RegisteredSectionEntity;
+import wooteco.subway.entity.LineSectionEntity;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.exception.ExceptionType;
 import wooteco.subway.exception.NotFoundException;
@@ -30,20 +30,20 @@ public class LineService {
     private final LineDao lineDao;
     private final StationDao stationDao;
     private final SectionDao sectionDao;
-    private final RegisteredSectionDao registeredSectionDao;
+    private final LineSectionDao lineSectionDao;
 
     public LineService(LineDao lineDao,
                        SectionDao sectionDao,
                        StationDao stationDao,
-                       RegisteredSectionDao registeredSectionDao) {
+                       LineSectionDao lineSectionDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
-        this.registeredSectionDao = registeredSectionDao;
+        this.lineSectionDao = lineSectionDao;
     }
 
     public List<LineResponse> findAll() {
-        return Lines.of(findAllRegisteredSections())
+        return Lines.of(findAllLineSections())
                 .toSortedList()
                 .stream()
                 .map(LineResponse::of)
@@ -51,7 +51,7 @@ public class LineService {
     }
 
     public LineResponse find(Long id) {
-        return LineResponse.of(Line.of(findRegisteredSections(id)));
+        return LineResponse.of(Line.of(findSameLineSections(id)));
     }
 
     @Transactional
@@ -84,17 +84,17 @@ public class LineService {
         sectionDao.deleteAllByLineId(id);
     }
 
-    private List<RegisteredSection> findAllRegisteredSections() {
-        return registeredSectionDao.findAll()
+    private List<LineSection> findAllLineSections() {
+        return lineSectionDao.findAll()
                 .stream()
-                .map(RegisteredSectionEntity::toDomain)
+                .map(LineSectionEntity::toDomain)
                 .collect(Collectors.toList());
     }
 
-    private List<RegisteredSection> findRegisteredSections(Long lineId) {
-        return registeredSectionDao.findAllByLineId(lineId)
+    private List<LineSection> findSameLineSections(Long lineId) {
+        return lineSectionDao.findAllByLineId(lineId)
                 .stream()
-                .map(RegisteredSectionEntity::toDomain)
+                .map(LineSectionEntity::toDomain)
                 .collect(Collectors.toList());
     }
 

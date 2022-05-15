@@ -1,7 +1,6 @@
 package wooteco.subway.domain.line;
 
 import java.util.Objects;
-import wooteco.subway.domain.section.RegisteredSection;
 
 public class LineInfo {
 
@@ -13,13 +12,6 @@ public class LineInfo {
         this.id = id;
         this.name = name;
         this.color = color;
-    }
-
-    public static LineInfo of(RegisteredSection registeredSection) {
-        Long id = registeredSection.getLineId();
-        String name = registeredSection.getLineName();
-        String color = registeredSection.getLineColor();
-        return new LineInfo(id, name, color);
     }
 
     public Long getId() {

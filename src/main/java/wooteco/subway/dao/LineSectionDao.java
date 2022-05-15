@@ -7,13 +7,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.RegisteredSectionEntity;
+import wooteco.subway.entity.LineSectionEntity;
 import wooteco.subway.entity.StationEntity;
 
 @Repository
-public class RegisteredSectionDao {
+public class LineSectionDao {
 
-    private static final RowMapper<RegisteredSectionEntity> ROW_MAPPER = (resultSet, rowNum) -> {
+    private static final RowMapper<LineSectionEntity> ROW_MAPPER = (resultSet, rowNum) -> {
         LineEntity lineEntity = new LineEntity(
                 resultSet.getLong("line_id"),
                 resultSet.getString("line_name"),
@@ -23,16 +23,16 @@ public class RegisteredSectionDao {
         StationEntity downStationEntity = new StationEntity(
                 resultSet.getLong("down_station_id"), resultSet.getString("down_station_name"));
         int distance = resultSet.getInt("distance");
-        return new RegisteredSectionEntity(lineEntity, upStationEntity, downStationEntity, distance);
+        return new LineSectionEntity(lineEntity, upStationEntity, downStationEntity, distance);
     };
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public RegisteredSectionDao(NamedParameterJdbcTemplate jdbcTemplate) {
+    public LineSectionDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<RegisteredSectionEntity> findAll() {
+    public List<LineSectionEntity> findAll() {
         final String sql = "SELECT DISTINCT A.id AS line_id, A.name AS line_name, A.color AS line_color, "
                 + "C.id AS up_station_id, C.name AS up_station_name, "
                 + "D.id AS down_station_id, D.name AS down_station_name, B.distance "
@@ -43,7 +43,7 @@ public class RegisteredSectionDao {
         return jdbcTemplate.query(sql, new EmptySqlParameterSource(), ROW_MAPPER);
     }
 
-    public List<RegisteredSectionEntity> findAllByLineId(Long lineId) {
+    public List<LineSectionEntity> findAllByLineId(Long lineId) {
         final String sql = "SELECT DISTINCT A.id AS line_id, A.name AS line_name, A.color AS line_color, "
                 + "C.id AS up_station_id, C.name AS up_station_name, "
                 + "D.id AS down_station_id, D.name AS down_station_name, B.distance "

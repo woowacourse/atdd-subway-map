@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.domain.section.RegisteredSection;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 
@@ -22,14 +21,14 @@ class LinesTest {
 
     @Test
     void toSortedList_메서드는_노선의_id_순서대로_정렬된_노선들을_반환() {
-        RegisteredSection lineOneSection1 = new RegisteredSection(LINE1, new Section(STATION1, STATION2, 10));
-        RegisteredSection lineOneSection2 = new RegisteredSection(LINE1, new Section(STATION2, STATION3, 30));
-        RegisteredSection lineTwoSection = new RegisteredSection(LINE2, new Section(STATION1, STATION2, 10));
-        RegisteredSection lineThreeSection = new RegisteredSection(LINE3, new Section(STATION2, STATION3, 30));
-        List<RegisteredSection> registeredSections = List.of(
+        LineSection lineOneSection1 = new LineSection(LINE1, new Section(STATION1, STATION2, 10));
+        LineSection lineOneSection2 = new LineSection(LINE1, new Section(STATION2, STATION3, 30));
+        LineSection lineTwoSection = new LineSection(LINE2, new Section(STATION1, STATION2, 10));
+        LineSection lineThreeSection = new LineSection(LINE3, new Section(STATION2, STATION3, 30));
+        List<LineSection> lineSections = List.of(
                 lineTwoSection, lineOneSection1, lineOneSection2, lineThreeSection);
 
-        List<Line> actual = Lines.of(registeredSections).toSortedList();
+        List<Line> actual = Lines.of(lineSections).toSortedList();
         List<Line> expected = List.of(
                 Line.of(List.of(lineOneSection1, lineOneSection2)),
                 Line.of(List.of(lineTwoSection)),
