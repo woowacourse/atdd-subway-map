@@ -143,6 +143,36 @@ public class SectionsV2Test {
         assertThat(updateSection.get()).isEqualTo(강남_역삼);
     }
 
+    @Test
+    @DisplayName("노선의 첫번째 구간을 찾을 수 있다.")
+    void findFirstStation() {
+        // given
+        SectionsV2 sections = createSections(강남_삼성);
+        sections.add(강남_역삼);
+        sections.add(역삼_선릉);
+
+        // when
+        final Station firstStation = sections.findFirstStation();
+
+        // then
+        assertThat(firstStation).isEqualTo(강남역);
+    }
+
+    @Test
+    @DisplayName("노선의 다음역을 찾을 수 있다.")
+    void nextStation() {
+        // given
+        SectionsV2 sections = createSections(강남_삼성);
+        sections.add(강남_역삼);
+        sections.add(역삼_선릉);
+
+        // when
+        final Optional<Station> nextStation = sections.nextStation(강남역);
+
+        // then
+        assertThat(nextStation.get()).isEqualTo(역삼역);
+    }
+
     private SectionsV2 createSections(SectionV2 section) {
         List<SectionV2> sections = new ArrayList<>();
         sections.add(section);

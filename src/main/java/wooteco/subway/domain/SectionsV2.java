@@ -40,16 +40,16 @@ public class SectionsV2 {
     }
 
     private boolean isSectionConnect(Station upStation, Station downStation) {
-        return getUpStation().contains(upStation) && getDownStation().contains(downStation);
+        return getUpStations().contains(upStation) && getDownStations().contains(downStation);
     }
 
-    private List<Station> getUpStation() {
+    private List<Station> getUpStations() {
         return values.stream()
                 .map(SectionV2::getUpStation)
                 .collect(Collectors.toList());
     }
 
-    private List<Station> getDownStation() {
+    private List<Station> getDownStations() {
         return values.stream()
                 .map(SectionV2::getDownStation)
                 .collect(Collectors.toList());
@@ -107,6 +107,23 @@ public class SectionsV2 {
         if (updateSection.isOverDistance(section)) {
             throw new IllegalArgumentException("기존의 구간보다 더 긴 구간은 추가할 수 없습니다.");
         }
+    }
+
+    public Station findFirstStation() {
+        List<Station> downStations = getDownStations();
+        List<Station> upStations = getUpStations();
+
+        return upStations.stream()
+                .filter(station -> !downStations.contains(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("첫번째 구간을 찾을 수 없습니다."));
+    }
+
+    public Optional<Station> nextStation(Station station) {
+        return values.stream()
+                .filter(value -> value.isSameUpStation(station))
+                .map(SectionV2::getDownStation)
+                .findFirst();
     }
 
     public List<SectionV2> getValues() {
