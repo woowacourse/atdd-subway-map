@@ -77,14 +77,14 @@ class LineServiceTest {
         Long stationSaveId1 = stationDao.save(station1);
         Long stationSaveId2 = stationDao.save(station2);
         LineRequest request = new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10);
-        final Long saveId = lineService.save(request);
+        Long saveId = lineService.save(request);
 
         // when
-        final LineRequest updateRequest = new LineRequest("다른분당선", "bg-red-600");
+        LineRequest updateRequest = new LineRequest("다른분당선", "bg-red-600");
         Long updateId = lineService.updateByLine(saveId, updateRequest);
 
         // then
-        final LineResponse response = lineService.findById(updateId);
+        LineResponse response = lineService.findById(updateId);
         assertThat(response).extracting("name", "color")
                 .contains("다른분당선", "bg-red-600");
     }
@@ -98,7 +98,7 @@ class LineServiceTest {
         Long stationSaveId1 = stationDao.save(station1);
         Long stationSaveId2 = stationDao.save(station2);
         LineRequest request = new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10);
-        final Long saveId = lineService.save(request);
+        Long saveId = lineService.save(request);
 
         // when & then
         assertDoesNotThrow(() -> lineService.deleteById(saveId));

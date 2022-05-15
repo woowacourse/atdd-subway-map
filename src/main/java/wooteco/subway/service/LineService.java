@@ -1,9 +1,6 @@
 package wooteco.subway.service;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -13,9 +10,8 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.SectionDaoV2;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionV2;
-import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.SectionsV2;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -70,41 +66,33 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        return lineDao.findAll().stream()
-                .map(line -> findById(line.getId()))
-                .collect(toUnmodifiableList());
+        List<Line> lines = lineDao.findAll();
+        return lines.stream()
+                .map(line -> new LineResponse(line.getId(),
+                        line.getName(),
+                        line.getColor(),
+                        sortSections(line.getSections())))
+                .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        final Line line = lineDao.findById(id);
-
-        final List<Section> sections = sectionDao.findAllByLineId(line.getId());
-        final List<Station> stations = findStationBySections(sections);
-
-        final List<StationResponse> stationsResponses = createStationResponseByStation(stations);
-
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationsResponses);
+        Line line = lineDao.findById(id);
+        return new LineResponse(line.getId(),
+                line.getName(),
+                line.getColor(),
+                sortSections(line.getSections()));
     }
 
-    private List<Station> findStationBySections(List<Section> sections) {
-        final List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
-            stations.add(findByStationId(section.getUpStationId()));
-            stations.add(findByStationId(section.getDownStationId()));
+    private List<StationResponse> sortSections(SectionsV2 sections) {
+        List<StationResponse> stationResponses = new ArrayList<>();
+        Station firstStation = sections.findFirstStation();
+        stationResponses.add(new StationResponse(firstStation.getId(), firstStation.getName()));
+        while (sections.nextStation(firstStation).isPresent()) {
+            firstStation = sections.nextStation(firstStation).get();
+            stationResponses.add(new StationResponse(firstStation.getId(), firstStation.getName()));
         }
-        return stations.stream()
-                .distinct()
-                .collect(Collectors.toUnmodifiableList());
-    }
 
-    private Station findByStationId(Long id) {
-        return stationDao.findById(id);
-    }
-
-    private List<StationResponse> createStationResponseByStation(List<Station> stations) {
-        return stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
-                .collect(Collectors.toList());
+        return stationResponses;
     }
 
     public Long updateByLine(Long id, LineRequest request) {
