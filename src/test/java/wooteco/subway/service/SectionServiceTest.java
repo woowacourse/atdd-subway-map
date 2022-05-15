@@ -37,7 +37,7 @@ class SectionServiceTest {
         Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
 
         // when
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId3, stationSaveId1, 4));
+        sectionService.add(lineId, new SectionRequest(stationSaveId3, stationSaveId1, 4));
 
         // then
         final LineResponse response = lineService.findById(lineId);
@@ -55,7 +55,7 @@ class SectionServiceTest {
         Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
 
         // when
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
+        sectionService.add(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
 
         // then
         final LineResponse response = lineService.findById(lineId);
@@ -72,10 +72,10 @@ class SectionServiceTest {
         Long stationSaveId3 = stationDao.save(new Station("선릉역"));
         Long stationSaveId4 = stationDao.save(new Station("잠실역"));
         Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
+        sectionService.add(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
 
         // when
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId2, stationSaveId4, 2));
+        sectionService.add(lineId, new SectionRequest(stationSaveId2, stationSaveId4, 2));
 
         // then
         assertThat(lineService.findById(lineId).getStations()).hasSize(4)
@@ -92,10 +92,10 @@ class SectionServiceTest {
         Long stationSaveId3 = stationDao.save(new Station("선릉역"));
         Long stationSaveId4 = stationDao.save(new Station("잠실역"));
         Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
+        sectionService.add(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
 
         // when
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId1, stationSaveId4, 2));
+        sectionService.add(lineId, new SectionRequest(stationSaveId1, stationSaveId4, 2));
 
         // then
         assertThat(lineService.findById(lineId).getStations()).hasSize(4)
@@ -111,9 +111,9 @@ class SectionServiceTest {
         Long stationSaveId2 = stationDao.save(new Station("역삼역"));
         Long stationSaveId3 = stationDao.save(new Station("선릉역"));
         Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
+        sectionService.add(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
 
         // when & then
-        assertDoesNotThrow(() -> sectionService.deleteSection(lineId, stationSaveId1));
+        assertDoesNotThrow(() -> sectionService.delete(lineId, stationSaveId1));
     }
 }

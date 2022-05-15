@@ -1,42 +1,59 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.SectionDaoV2;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionV2;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.SectionsV2;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.SectionRequest;
 
 @Service
 @Transactional
 public class SectionService {
 
-    private final SectionDao sectionDao;
-    private final LineDao lineDao;
+    private static final int SECTION_MERGE_SIZE = 2;
+    private static final int FIRST_SECTION = 0;
+    private static final int TWICE_SECTION = 1;
 
-    public SectionService(SectionDao sectionDao, LineDao lineDao) {
+    private final SectionDaoV2 sectionDao;
+    private final StationDao stationDao;
+
+    public SectionService(SectionDaoV2 sectionDao, StationDao stationDao) {
         this.sectionDao = sectionDao;
-        this.lineDao = lineDao;
+        this.stationDao = stationDao;
     }
 
-    public void addSection(Long lineId, SectionRequest request) {
-        final Line line = lineDao.findById(lineId);
-        final Section requestSection = new Section(
-                lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance());
-        final Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+    public void add(Long lineId, SectionRequest sectionRequest) {
+        final SectionsV2 sections = new SectionsV2(sectionDao.findByLineId(lineId));
 
-        sections.add(requestSection);
-        sectionDao.deleteAll(line.getId());
-        sectionDao.saveAll(lineId, sections.getSections());
+        final Station upStation = stationDao.findById(sectionRequest.getUpStationId());
+        final Station downStation = stationDao.findById(sectionRequest.getDownStationId());
+        final SectionV2 section = new SectionV2(lineId, upStation, downStation, sectionRequest.getDistance());
+        sections.add(section);
+
+        sectionDao.save(section);
+        sections.findUpdate(sectionDao.findByLineId(lineId))
+                .ifPresent(sectionDao::update);
     }
 
-    public void deleteSection(Long lineId, Long stationId) {
-        final Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        sections.remove(lineId, stationId);
+    public void delete(Long lineId, Long stationId) {
+        final SectionsV2 sections = new SectionsV2(sectionDao.findByLineId(lineId));
+        final Station station = stationDao.findById(stationId);
 
-        sectionDao.deleteAll(lineId);
-        sectionDao.saveAll(lineId, sections.getSections());
+        final List<SectionV2> deletedSections = sections.delete(station);
+        sectionDao.deleteSections(deletedSections);
+
+        if (deletedSections.size() == SECTION_MERGE_SIZE) {
+            final SectionV2 mergedSection = deletedSections.get(FIRST_SECTION).merge(deletedSections.get(TWICE_SECTION));
+            sectionDao.save(mergedSection);
+        }
     }
 }
