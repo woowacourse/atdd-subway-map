@@ -16,7 +16,10 @@ public class Sections {
         Optional<Section> optionalSection = values.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst();
-        return checkDistance(distance, optionalSection);
+        if (optionalSection.isEmpty()) {
+            return false;
+        }
+        return checkDistance(distance, optionalSection.get());
     }
 
     public Section getOriginUpStationSection(Long stationId) {
@@ -30,7 +33,10 @@ public class Sections {
         Optional<Section> optionalSection = values.stream()
                 .filter(section -> section.getDownStation().equals(downStation))
                 .findFirst();
-        return checkDistance(distance, optionalSection);
+        if (optionalSection.isEmpty()) {
+            return false;
+        }
+        return checkDistance(distance, optionalSection.get());
     }
 
     public Section getOriginDownStationSection(Long stationId) {
@@ -55,11 +61,7 @@ public class Sections {
                         section.getUpStation().equals(downStation) || section.getDownStation().equals(upStation));
     }
 
-    private boolean checkDistance(int distance, Optional<Section> optionalSection) {
-        if (optionalSection.isEmpty()) {
-            return false;
-        }
-        Section section = optionalSection.get();
+    private boolean checkDistance(int distance, Section section) {
         if (section.isBetweenDistance(distance)) {
             return true;
         }
@@ -71,7 +73,7 @@ public class Sections {
         return values.size() == 0;
     }
 
-    public boolean isUpAndDownStation() {
+    public boolean isTwoSections() {
         return values.size() == 2;
     }
 
