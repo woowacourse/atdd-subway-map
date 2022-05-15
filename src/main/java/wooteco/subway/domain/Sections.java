@@ -180,7 +180,7 @@ public class Sections {
         return values.stream()
             .filter(it -> it.contains(station))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("삭제할 역이 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("해당 노선 내에 삭제 요청된 역이 포함된 구간이 존재하지 않습니다."));
     }
 
     private Section mergeTwoSections(Section section) {
