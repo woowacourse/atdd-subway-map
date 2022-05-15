@@ -48,7 +48,7 @@ public class Sections {
         return value.stream()
                 .filter(section -> section.isSameUpStationId(inputSection.getUpStationId())
                         || section.isSameDownStationId(inputSection.getDownStationId()))
-                .findAny();
+                .findFirst();
     }
 
     public List<Long> convertToStationIds() {
