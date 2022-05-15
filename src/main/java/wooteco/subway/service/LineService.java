@@ -63,8 +63,10 @@ public class LineService {
     }
 
     public void updateById(final Long id, final LineRequest request) {
-        final Line updateLine = new Line(id, request.getName(), request.getColor(), null);
-        lines.update(updateLine);
+        Line line = lines.findById(id);
+        line.updateName(request.getName());
+        line.updateColor(request.getColor());
+        lines.update(line);
     }
 
     public void deleteById(final Long id) {

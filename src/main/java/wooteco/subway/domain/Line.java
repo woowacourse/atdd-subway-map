@@ -16,8 +16,8 @@ public class Line {
     private static final int NO_UPPER_SECTION_EXISTS = 0;
 
     private final Long id;
-    private final String name;
-    private final String color;
+    private String name;
+    private String color;
     private List<Section> sections;
 
     public Line(Long id, String name, String color, List<Section> sections) {
@@ -141,5 +141,13 @@ public class Line {
 
     public List<Section> getSections() {
         return new ArrayList<>(sections);
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateColor(String color) {
+        this.color = color;
     }
 }
