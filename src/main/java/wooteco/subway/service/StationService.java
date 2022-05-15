@@ -60,7 +60,7 @@ public class StationService {
     }
 
     private void validateAlreadyUsedInSection(Long id) {
-        if (sectionDao.isUsingStation(id)) {
+        if (sectionDao.existSectionUsingStation(id)) {
             throw new IllegalArgumentException(ERROR_MESSAGE_ALREADY_USED);
         }
     }

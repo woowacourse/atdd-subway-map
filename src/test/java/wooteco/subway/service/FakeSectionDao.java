@@ -69,7 +69,7 @@ public class FakeSectionDao implements SectionDao {
     }
 
     @Override
-    public boolean isUsingStation(Long stationId) {
+    public boolean existSectionUsingStation(Long stationId) {
         return sections.keySet().stream()
             .anyMatch(section -> section.getUpStationId() == stationId || section.getDownStationId() == stationId);
     }
