@@ -10,7 +10,6 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DataNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SectionService {
@@ -26,36 +25,30 @@ public class SectionService {
     }
 
     @Transactional
-    public Section addSection(final long lineId, final Section section) {
-        final Station upStation = stationDao.findById(section.getUpStation().getId())
+    public Section addSection(final long lineId, final Section requestSection) {
+        final Station upStation = stationDao.findById(requestSection.getUpStation().getId())
                 .orElseThrow(() -> new DataNotFoundException("존재하지 않는 지하철역 ID입니다."));
-        final Station downStation = stationDao.findById(section.getDownStation().getId())
+        final Station downStation = stationDao.findById(requestSection.getDownStation().getId())
                 .orElseThrow(() -> new DataNotFoundException("존재하지 않는 지하철역 ID입니다."));
         lineDao.findById(lineId)
                 .orElseThrow(() -> new DataNotFoundException("존재하지 않는 노선 ID입니다."));
 
-        Section sectionToSave = new Section(upStation, downStation, section.getDistance(), lineId);
+        Section section = new Section(upStation, downStation, requestSection.getDistance(), lineId);
+        final Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        sections.add(section);
 
-        final List<Section> lineSections = sectionDao.findAllByLineId(lineId);
-        final Sections sections = new Sections(lineSections);
-        sections.add(sectionToSave);
+        sectionDao.deleteByLineId(lineId);
+        sectionDao.saveAll(sections.getSections());
 
-        lineSections.add(sectionToSave);
-        List<Section> sectionsToUpdate = sections.deleteAll(lineSections);
-        for (Section sectionToUpdate : sectionsToUpdate) {
-            sectionDao.update(sectionToUpdate.getId(), sectionToUpdate);
-        }
-
-        return sectionDao.save(sectionToSave);
+        return section;
     }
 
     @Transactional
     public void delete(final Long lineId, final Long stationId) {
         final Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        final List<Section> sectionsToDelete = sections.pop(stationId);
-        final Optional<Section> mergedSection = sections.findMergedSection(sectionsToDelete);
-        sectionDao.deleteAll(sectionsToDelete);
-        mergedSection.ifPresent(sectionDao::save);
+        sections.remove(stationId);
+        sectionDao.deleteByLineId(lineId);
+        sectionDao.saveAll(sections.getSections());
     }
 
     @Transactional(readOnly = true)

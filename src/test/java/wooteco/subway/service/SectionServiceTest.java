@@ -71,7 +71,7 @@ class SectionServiceTest {
 
         final Optional<Section> foundSection = sectionDao.findAllByLineId(savedLine.getId())
                 .stream()
-                .filter(it -> it.getId().equals(section.getId()))
+                .filter(it -> it.getUpStation().equals(section.getUpStation()))
                 .findAny();
         assert (foundSection.isPresent());
 
@@ -80,7 +80,8 @@ class SectionServiceTest {
                         .ignoringFields("id")
                         .isEqualTo(newSection),
                 () -> assertThat(foundSection.get()).usingRecursiveComparison()
-                        .isEqualTo(new Section(section.getId(), upStation, newStation, 1, savedLine.getId()))
+                        .ignoringFields("id")
+                        .isEqualTo(new Section(upStation, newStation, 1, savedLine.getId()))
         );
     }
 

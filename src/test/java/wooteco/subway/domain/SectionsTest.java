@@ -177,7 +177,7 @@ class SectionsTest {
         final Sections newSections = new Sections(List.of(section, newSection));
         final long stationId = 4L;
 
-        assertThatThrownBy(() -> newSections.pop(stationId))
+        assertThatThrownBy(() -> newSections.remove(stationId))
                 .isInstanceOf(SectionNotFoundException.class)
                 .hasMessage("해당 지하철역으로 구성된 구간이 존재하지 않습니다.");
     }
@@ -185,7 +185,7 @@ class SectionsTest {
     @DisplayName("구간이 1개일 때 삭제를 시도할 경우 예외를 발생한다.")
     @Test
     void delete_throwsSectionsSizeException() {
-        assertThatThrownBy(() -> sections.pop(1L))
+        assertThatThrownBy(() -> sections.remove(1L))
                 .isInstanceOf(IllegalSectionDeleteBySizeException.class)
                 .hasMessage("구간이 1개 이하 이므로 삭제할 수 없습니다.");
     }
@@ -198,7 +198,7 @@ class SectionsTest {
         final Section newSection = new Section(2L, station, upStation, 10, 1L);
         final Sections newSections = new Sections(List.of(section, newSection));
 
-        newSections.pop(stationId);
+        newSections.remove(stationId);
 
         assertThat(newSections.getSections().size()).isOne();
     }
@@ -210,7 +210,7 @@ class SectionsTest {
         final Section newSection = new Section(2L, station, upStation, 10, 1L);
         final Sections newSections = new Sections(List.of(section, newSection));
         // 광나루 - 아차산 - 군자
-        newSections.pop(1L);
+        newSections.remove(1L);
 
         final Optional<Section> foundSection = newSections.getSections()
                 .stream()

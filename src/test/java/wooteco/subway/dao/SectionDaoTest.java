@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import java.util.Optional;
+import java.util.List;
 
 @JdbcTest
 class SectionDaoTest {
@@ -51,6 +51,19 @@ class SectionDaoTest {
         );
     }
 
+    @DisplayName("구간을 모두 저장한다.")
+    @Test
+    void saveAll() {
+        final Station station3 = stationDao.save(new Station("장한평역"));
+        final Section section1 = new Section(station1, station2, 10, line.getId());
+
+        final Section section2 = new Section(station2, station3, 5, line.getId());
+
+        sectionDao.saveAll(List.of(section1, section2));
+
+        assertThat(sectionDao.findAllByLineId(line.getId()).size()).isEqualTo(2);
+    }
+
     @DisplayName("특정 라인의 모든 구간을 불러온다.")
     @Test
     void findAllByLineId() {
@@ -64,24 +77,14 @@ class SectionDaoTest {
         assertThat(sectionDao.findAllByLineId(line.getId()).size()).isEqualTo(2);
     }
 
-    @DisplayName("특정 구간을 수정한다.")
+    @DisplayName("특정 라인의 모든 구간을 삭제한다.")
     @Test
-    void update() {
-        final Section section1 = new Section(station1, station2, 10, line.getId());
-        final Station station3 = stationDao.save(new Station("광나루역"));
-        final Section savedSection = sectionDao.save(section1);
-        final Section newSection = new Section(station1, station3, 5, line.getId());
+    void deleteByLineId() {
+        final Section section = new Section(station1, station2, 10, line.getId());
+        sectionDao.save(section);
 
-        sectionDao.update(savedSection.getId(), newSection);
+        sectionDao.deleteByLineId(line.getId());
 
-        final Optional<Section> updatedSection = sectionDao.findAllByLineId(line.getId())
-                .stream()
-                .findFirst();
-
-        assert (updatedSection.isPresent());
-
-        assertThat(updatedSection.get()).usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(newSection);
+        assertThat(sectionDao.findAllByLineId(line.getId()).size()).isEqualTo(0);
     }
 }

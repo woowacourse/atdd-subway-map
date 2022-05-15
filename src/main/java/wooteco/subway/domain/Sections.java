@@ -12,6 +12,8 @@ public class Sections {
 
     private static final int MINIMUM_SIZE = 1;
     private static final int NEEDS_MERGE_SIZE = 2;
+    private static final int SOURCE_INDEX = 0;
+    private static final int TARGET_INDEX = 1;
 
     private final List<Section> value;
 
@@ -27,49 +29,23 @@ public class Sections {
         value.add(section);
     }
 
-    public List<Section> deleteAll(final List<Section> sections) {
-        List<Section> origin = new ArrayList<>(value);
-        origin.removeAll(sections);
-        return origin;
-    }
-
-    public List<Section> pop(final long stationId) {
-        final List<Section> sections = findSectionByStationId(stationId);
+    public void remove(final long stationId) {
+        final List<Section> sections = findSectionsByStationId(stationId);
         validateMinimumSize();
         validateSectionNotFound(sections);
 
         value.removeAll(sections);
 
-        if (sections.size() != NEEDS_MERGE_SIZE) {
-            return sections;
-        }
-
-        mergeSections(sections);
-        return sections;
-    }
-
-    public Optional<Section> findMergedSection(final List<Section> sections) {
         if (sections.size() == NEEDS_MERGE_SIZE) {
-            return mergeSection(sections);
+            final Section section = mergeSections(sections);
+            value.add(section);
         }
-        return Optional.empty();
     }
 
     public List<Station> extractStations() {
-        return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation)).distinct().collect(Collectors.toList());
-    }
-
-    private Optional<Section> mergeSection(final List<Section> sections) {
-        final Section section1 = sections.get(0);
-        final Section section2 = sections.get(1);
-
-        if (section1.getDownStation().equals(section2.getUpStation())) {
-            return findSection(section1.merge(section2));
-        }
-        if (section1.getUpStation().equals(section2.getDownStation())) {
-            return findSection(section2.merge(section1));
-        }
-        throw new CannotMergeException();
+        return Stream.concat(getStations(Section::getUpStation), getStations(Section::getDownStation))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private void update(final Section source, final Section target) {
@@ -77,7 +53,7 @@ public class Sections {
         value.add(target.createSectionInBetween(source));
     }
 
-    private List<Section> findSectionByStationId(final long stationId) {
+    private List<Section> findSectionsByStationId(final long stationId) {
         return value.stream().filter(section -> section.getUpStation().getId() == stationId || section.getDownStation().getId() == stationId).collect(Collectors.toList());
     }
 
@@ -93,26 +69,28 @@ public class Sections {
         }
     }
 
-    private void mergeSections(final List<Section> sections) {
-        final Section section1 = sections.get(0);
-        final Section section2 = sections.get(1);
+    private Section mergeSections(final List<Section> sections) {
+        final Section source = sections.get(SOURCE_INDEX);
+        final Section target = sections.get(TARGET_INDEX);
 
-        if (section1.getDownStation().equals(section2.getUpStation())) {
-            value.add(section1.merge(section2));
+        if (source.getDownStation().equals(target.getUpStation())) {
+            return source.merge(target);
         }
-        if (section1.getUpStation().equals(section2.getDownStation())) {
-            value.add(section2.merge(section1));
+        if (source.getUpStation().equals(target.getDownStation())) {
+            return target.merge(source);
         }
-    }
-
-    private Optional<Section> findSection(final Section section) {
-        return value.stream().filter(it -> it.equals(section)).findAny();
+        throw new CannotMergeException();
     }
 
     private void validateCanAdd(final Section other) {
         validateSectionInsertion(other, extractStations());
         validateUpSection(other);
         validateDownSection(other);
+    }
+
+    private Stream<Station> getStations(Function<Section, Station> function) {
+        return value.stream()
+                .map(function);
     }
 
     private void validateSectionInsertion(final Section other, final List<Station> stations) {
@@ -151,10 +129,6 @@ public class Sections {
         if (other.isGreaterOrEqualTo(section)) {
             throw new DistanceTooLongException();
         }
-    }
-
-    private Stream<Station> getStations(Function<Section, Station> function) {
-        return value.stream().map(function);
     }
 
     public List<Section> getSections() {
