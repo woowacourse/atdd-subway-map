@@ -55,6 +55,19 @@ class StationDaoTest {
         assertThat(result).isTrue();
     }
 
+    @DisplayName("역 id로 검색")
+    @Test
+    void findById() {
+        // given
+        Long id = 1L;
+
+        // when
+        Station station = stationDao.findById(id);
+
+        // then
+        assertThat(station.getId()).isEqualTo(id);
+    }
+
     @DisplayName("역 전체 조회")
     @Test
     void findAll() {

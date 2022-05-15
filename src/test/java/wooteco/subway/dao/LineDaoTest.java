@@ -35,7 +35,7 @@ class LineDaoTest {
 
     @DisplayName("노선 이름이 존재하는지 확인")
     @Test
-    void countByName() {
+    void existsByName() {
         // given
         String name = "신분당선";
 
@@ -46,7 +46,32 @@ class LineDaoTest {
         assertThat(result).isTrue();
     }
 
-    @DisplayName("노선 이름으로 검색")
+    @DisplayName("특정 id를 제외하고 노선 이름이 존재하는지 확인")
+    @Test
+    void existsByNameExceptWithId() {
+        // given
+        String name = "신분당선";
+
+        // when
+        boolean result = lineDao.existsByNameExceptWithId(name, 1L);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @DisplayName("해당 id 존재하는지 확인")
+    @Test
+    void existsById() {
+        // given
+
+        // when
+        boolean result = lineDao.existsById(1L);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("노선 id로 검색")
     @Test
     void findById() {
         // given
