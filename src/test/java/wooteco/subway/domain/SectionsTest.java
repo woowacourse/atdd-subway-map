@@ -6,171 +6,211 @@ import static org.assertj.core.api.Assertions.tuple;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class SectionsTest {
+public class SectionsTest {
 
     @Test
-    @DisplayName("상행 종점 구간을 등록할 수 있다.")
-    void validAddFinalFirstSection() {
+    @DisplayName("한개의 구간을 등록할 수 있다.")
+    void add() {
         // given
         List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
-        Sections sections = new Sections(sectionList);
+        sectionList.add(new Section(1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
 
         // when
-        sections.add(new Section(3L, 1L, 4L, 1L, 5));
+        Sections sections = new Sections(sectionList);
 
         // then
-        assertThat(sections.getSections()).hasSize(3)
-                .extracting("upStationId", "downStationId", "distance")
-                .containsExactly(
-                        tuple(4L, 1L, 5),
-                        tuple(1L, 2L, 6),
-                        tuple(2L, 3L, 4)
+        assertThat(sections.getValues()).hasSize(1)
+                .extracting(Section::getUpStation, Section::getDownStation)
+                .containsAll(
+                        List.of(tuple(new Station(1L,"강남역"), new Station(2L, "역삼역")))
                 );
     }
 
     @Test
-    @DisplayName("하행 종점 구건을 등록할 수 있다.")
-    void validAddFinalListStation() {
+    @DisplayName("구간이 이미 있을때 구간을 추가할 수 있다.")
+    void addFinalUpSection() {
         // given
-        List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
-        Sections sections = new Sections(sectionList);
+        Sections sections = createSections(new Section(1L, new Station(2L, "역삼역"), new Station(3L,"선릉역"), 5));
 
         // when
-        sections.add(new Section(3L, 1L, 3L, 4L, 5));
+        sections.add(new Section(1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
 
         // then
-        assertThat(sections.getSections()).hasSize(3)
-                .extracting("upStationId", "downStationId", "distance")
-                .containsExactly(
-                        tuple(1L, 2L, 6),
-                        tuple(2L, 3L, 4),
-                        tuple(3L, 4L, 5)
+        assertThat(sections.getValues()).hasSize(2)
+                .extracting(Section::getUpStation, Section::getDownStation)
+                .containsAll(
+                        List.of(tuple(new Station(1L,"강남역"), new Station(2L, "역삼역")), tuple(new Station(2L, "역삼역"), new Station(3L,"선릉역")))
                 );
     }
 
     @Test
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우 예외가 발생한다.")
-    void invalidAddStationOfSameFirstAndEnd() {
+    @DisplayName("구간들의 상행역 혹은 하행역이 추가될 상행역 혹은 하행역에 둘다 존재하는 경우 예외가 발생한다.")
+    void invalidOfStationOneExistSection() {
         // given
-        List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
-        Sections sections = new Sections(sectionList);
+        Sections sections = createSections(new Section(1L, new Station(3L,"선릉역"), new Station(4L,"삼성역"), 5));
+        sections.add(new Section(1L, new Station(2L, "역삼역"), new Station(3L,"선릉역"), 5));
 
         // when & then
-        assertThatThrownBy(() -> sections.add(new Section(3L, 1L, 1L, 2L, 5)))
+        assertThatThrownBy(() -> sections.add(new Section(1L, new Station(2L, "역삼역"), new Station(4L,"삼성역"), 10)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 연결되어 있는 구간입니다.");
     }
 
     @Test
-    @DisplayName("현재 구간들에 하나라도 포함이 안되는 구간을 추가할 경우 예외가 발생한다.")
-    void invalidAddStationOfNotIncluded() {
+    @DisplayName("구간들에 추가될 상행역과 하행역 구간이 존재하는 경우 예외가 발생한다.")
+    void invalidOfStationDuplicateSection() {
         // given
-        List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
-        Sections sections = new Sections(sectionList);
+        Sections sections = createSections(new Section(1L, new Station(2L, "역삼역"), new Station(3L,"선릉역"), 5));
 
         // when & then
-        assertThatThrownBy(() -> sections.add(new Section(4L, 1L, 5L, 4L, 5)))
+        assertThatThrownBy(() -> sections.add(new Section(1L, new Station(2L, "역삼역"), new Station(3L,"선릉역"), 5)))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("기존 노선에 등록할 수 없는 구간입니다.");
+                .hasMessage("이미 존재하는 동일한 구간입니다.");
     }
 
     @Test
-    @DisplayName("노선의 중간구간에 상행역을 등록할 수 있다.")
-    void validAddMiddleSection() {
+    @DisplayName("구간들 중에 추가될 상행역과 하행역이 존재하지 않는 경우 예외가 발생한다.")
+    void invalidOfStationNotExistSection() {
         // given
-        List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 10));
-        sectionList.add(new Section(1L, 1L, 2L, 3L, 10));
-        Sections sections = new Sections(sectionList);
+        Sections sections = createSections(new Section(1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
+
+        // when & then
+        assertThatThrownBy(() -> sections.add(new Section(1L, new Station(3L,"선릉역"), new Station(4L,"삼성역"), 5)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간에 존재하지 않는 역입니다.");
+    }
+
+    @Test
+    @DisplayName("구간이 1개있을때 구간의 중간에 구간을 추가할 수 있다.")
+    void updateMiddleSectionOfSectionSizeOne() {
+        // given
+        Sections sections = createSections(new Section(1L, new Station(1L,"강남역"), new Station(3L,"선릉역"), 10));
 
         // when
-        sections.add(new Section(1L, 1L, 2L, 4L, 5));
+        sections.add(new Section(1L, new Station(1L,"강남역"),  new Station(2L, "역삼역"), 5));
 
         // then
-        assertThat(sections.getSections()).hasSize(3)
-                .extracting("upStationId", "downStationId", "distance")
-                .containsExactly(
-                        tuple(1L, 2L, 10),
-                        tuple(2L, 4L, 5),
-                        tuple(4L, 3L, 5)
+        assertThat(sections.getValues()).hasSize(2)
+                .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
+                .containsAll(
+                        List.of(tuple(new Station(1L,"강남역"), new Station(2L, "역삼역"), 5), tuple(new Station(2L, "역삼역"), new Station(3L,"선릉역"), 5))
                 );
     }
 
     @Test
-    @DisplayName("노선 아이디와 역 아이디를 통해서 중간에 있는 구간을 제거할 수 있다.")
-    void deleteMiddleSection() {
+    @DisplayName("구간의 2개있을때 중간에 구간을 추가할 수 있다.")
+    void updateMiddleSectionOfSectionSizeTwoOrMore() {
         // given
-        List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
-        Sections sections = new Sections(sectionList);
+        Sections sections = createSections(new Section(1L, new Station(1L,"강남역"), new Station(4L,"삼성역"), 15));
+        sections.add(new Section(1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
 
         // when
-        sections.remove(1L, 2L);
+        sections.add(new Section(1L, new Station(2L, "역삼역"), new Station(3L,"선릉역"), 5));
 
         // then
-        assertThat(sections.getSections()).hasSize(1)
-                .extracting("upStationId", "downStationId", "distance")
-                .containsExactly(
-                        tuple(1L, 3L, 10));
+        assertThat(sections.getValues()).hasSize(3)
+                .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
+                .containsAll(
+                        List.of(tuple(new Station(1L,"강남역"), new Station(2L, "역삼역"), 5), tuple(new Station(2L, "역삼역"), new Station(3L,"선릉역"), 5), tuple(new Station(3L,"선릉역"), new Station(4L,"삼성역"), 5))
+                );
     }
 
     @Test
-    @DisplayName("노선 아이디와 역 아이디를 통해서 종점 구간을 제거할 수 있다.")
+    @DisplayName("변경할 구간을 찾을 수 있다.")
+    void findUpdateSection() {
+        // given
+        Sections newSections = createSections(new Section(1L, new Station(1L,"강남역"), new Station(4L,"삼성역"), 15));
+        newSections.add(new Section(1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
+
+        // when
+        final Optional<Section> updateSection = newSections.findUpdate(List.of(new Section(1L, new Station(1L,"강남역"), new Station(4L,"삼성역"), 15)));
+
+        // then
+        assertThat(updateSection.get()).isEqualTo(new Section(1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
+    }
+
+    @Test
+    @DisplayName("노선의 첫번째 구간을 찾을 수 있다.")
+    void findFirstStation() {
+        // given
+        Sections sections = createSections(new Section(1L, new Station(1L,"강남역"), new Station(4L,"삼성역"), 15));
+        sections.add(new Section(1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
+        sections.add(new Section(1L, new Station(2L, "역삼역"), new Station(3L,"선릉역"), 5));
+
+        // when
+        final Station firstStation = sections.findFirstStation();
+
+        // then
+        assertThat(firstStation).isEqualTo(new Station(1L,"강남역"));
+    }
+
+    @Test
+    @DisplayName("노선의 다음역을 찾을 수 있다.")
+    void nextStation() {
+        // given
+        Sections sections = createSections(new Section(1L, new Station(1L,"강남역"), new Station(4L,"삼성역"), 15));
+        sections.add(new Section(1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
+        sections.add(new Section(1L, new Station(2L, "역삼역"), new Station(3L,"선릉역"), 5));
+
+        // when
+        final Optional<Station> nextStation = sections.nextStation(new Station(1L,"강남역"));
+
+        // then
+        assertThat(nextStation.get()).isEqualTo(new Station(2L, "역삼역"));
+    }
+
+    @Test
+    @DisplayName("구간을 역 이름을 통해서 상행, 하행 종점을 삭제할 수 있다.")
     void deleteFinalSection() {
         // given
-        List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
-        Sections sections = new Sections(sectionList);
+        Sections sections = createSections(new Section(1L, 1L, new Station(1L,"강남역"), new Station(3L,"선릉역"), 10));
+        sections.add(new Section(2L, 1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
 
         // when
-        sections.remove(1L, 3L);
+        sections.delete(new Station(3L,"선릉역"));
 
         // then
-        assertThat(sections.getSections()).hasSize(1)
-                .extracting("upStationId", "downStationId", "distance")
-                .containsExactly(
-                        tuple(1L, 2L, 6));
+        assertThat(sections.getValues()).hasSize(1)
+                .extracting(Section::getUpStation, Section::getDownStation, Section::getDistance)
+                .containsAll(
+                        List.of(tuple(new Station(1L, "강남역"), new Station(2L,"역삼역"), 5))
+                );
     }
 
     @Test
-    @DisplayName("구간이 1개 이하일 경우 삭제를 하면 예외가 발생한다.")
-    void invalidSizeDeleteMiddleSection() {
+    @DisplayName("구간을 역 이름을 통해서 구간의 중간역을 삭제할 수 있다.")
+    void deleteMiddleSection() {
         // given
-        List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
-        Sections sections = new Sections(sectionList);
+        Sections sections = createSections(new Section(1L,1L, new Station(1L,"강남역"), new Station(3L,"선릉역"), 10));
+        sections.add(new Section(2L,1L, new Station(1L,"강남역"), new Station(2L, "역삼역"), 5));
 
-        // when & then
-        assertThatThrownBy(() -> sections.remove(1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("구간은 1개 이상이 있어야 합니다.");
+        // when
+        sections.delete(new Station(2L, "역삼역"));
+
+        // then
+        assertThat(sections.getValues()).hasSize(0);
     }
 
     @Test
-    @DisplayName("등록된 구간들 중에 삭제할 역이 존재하지 않는 경우 예외가 발생한다.")
-    void invalidOfNoneStationNumber() {
+    @DisplayName("구간을 삭제할 때 현재 구간이 1개 등록되어 있는 경우이면 예외가 발생한다.")
+    void invalidDeleteSection() {
         // given
-        List<Section> sectionList = new ArrayList<>();
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 6));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 4));
-        Sections sections = new Sections(sectionList);
+        Sections sections = createSections(new Section(1L, new Station(1L,"강남역"), new Station(3L,"선릉역"), 10));
 
         // when & then
-        assertThatThrownBy(() -> sections.remove(1L, 4L))
+        assertThatThrownBy(() -> sections.delete(new Station(1L, "강남역")))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 역과 관련된 구간이 존재하지 않습니다.");
+                .hasMessage("구간이 1개만 등록되어 있을 경우에는 삭제할 수 없습니다.");
+    }
+
+    private Sections createSections(Section section) {
+        List<Section> sections = new ArrayList<>();
+        sections.add(section);
+
+        return new Sections(sections);
     }
 }

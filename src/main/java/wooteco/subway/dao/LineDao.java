@@ -12,8 +12,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.SectionV2;
-import wooteco.subway.domain.SectionsV2;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 @Repository
@@ -64,8 +64,8 @@ public class LineDao {
                 .collect(Collectors.toList());
     }
 
-    private SectionsV2 toSections(List<LineSection> lineSections) {
-        return new SectionsV2(lineSections.stream()
+    private Sections toSections(List<LineSection> lineSections) {
+        return new Sections(lineSections.stream()
                 .map(LineSection::getSectionV2)
                 .collect(Collectors.toList()));
     }
@@ -107,7 +107,7 @@ public class LineDao {
             String upStationName = resultSet.getString("up_station_name");
             String downStationName = resultSet.getString("down_station_name");
             int distance = resultSet.getInt("distance");
-            SectionV2 section = new SectionV2(sectionId,
+            Section section = new Section(sectionId,
                     lineId,
                     new Station(upStationId, upStationName),
                     new Station(downStationId, downStationName),
@@ -119,9 +119,9 @@ public class LineDao {
     static class LineSection {
 
         private Line line;
-        private SectionV2 sectionV2;
+        private Section sectionV2;
 
-        public LineSection(Line line, SectionV2 sectionV2) {
+        public LineSection(Line line, Section sectionV2) {
             this.line = line;
             this.sectionV2 = sectionV2;
         }
@@ -130,7 +130,7 @@ public class LineDao {
             return line;
         }
 
-        public SectionV2 getSectionV2() {
+        public Section getSectionV2() {
             return sectionV2;
         }
     }

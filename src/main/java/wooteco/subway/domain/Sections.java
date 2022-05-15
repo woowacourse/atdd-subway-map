@@ -1,182 +1,157 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
 
-    private static final int FIND_FIRST_SECTION_INDEX = 0;
-    private static final int FIND_SECOND_SECTION_INDEX = 1;
-    private static final int DISTANCE_MINIMUM = 0;
-    private static final int SECTIONS_MINIMUM = 1;
-    private static final int FIND_FINAL_SECTION_SIZE = 1;
+    private static final int SECTIONS_MINIMUM_SIZE = 1;
 
-    private final List<Section> sections;
+    private final List<Section> values;
 
-    public Sections(List<Section> sections) {
-        this.sections = sections;
+    public Sections(List<Section> values) {
+        this.values = new ArrayList<>(values);
     }
 
-    public void add(Section requestSection) {
-        validateIncludeSection(requestSection);
-        validateDuplicateSection(requestSection);
-        validateSameSection(requestSection);
-        if (validateFinalSection(requestSection)) {
-            saveFinalSection(requestSection);
-            return;
+    public void add(Section section) {
+        validateStationDuplicateSection(section);
+        validateOneStationExistSection(section);
+        validateStationNotExistSection(section);
+        validateUpdateMiddleSection(section);
+        values.add(section);
+    }
+
+    private void validateStationDuplicateSection(Section section) {
+        final boolean isExist = values.stream()
+                .anyMatch(value -> value.isSameStation(section));
+
+        if (isExist) {
+            throw new IllegalArgumentException("이미 존재하는 동일한 구간입니다.");
         }
-        saveMiddleSection(requestSection);
     }
 
-    private void validateSameSection(Section requestSection) {
-        final boolean isSameSection = sections.stream()
-                .anyMatch(section -> section.isSameUpStationId(requestSection)
-                        && section.isSameDownStationId(requestSection));
+    private void validateOneStationExistSection(Section section) {
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
 
-        if (isSameSection) {
+        if (isSectionConnect(upStation, downStation) || isSectionConnect(downStation, upStation)) {
             throw new IllegalArgumentException("이미 연결되어 있는 구간입니다.");
         }
     }
 
-    private void validateDuplicateSection(Section requestSection) {
-        if (requestSection.isSameStation(requestSection)) {
-            throw new IllegalArgumentException("같은 역은 등록할 수 없습니다.");
-        }
+    private boolean isSectionConnect(Station upStation, Station downStation) {
+        return getUpStations().contains(upStation) && getDownStations().contains(downStation);
     }
 
-    private void validateIncludeSection(Section requestSection) {
-        final boolean isExistUpStation = sections.stream()
-                .anyMatch(section -> section.isSameDownStationId(requestSection));
-        final boolean isExistDownStation = sections.stream()
-                .anyMatch(section -> section.isSameUpStationId(requestSection));
-
-        if (isExistUpStation == true && isExistDownStation == true) {
-            throw new IllegalArgumentException("이미 연결되어 있는 구간입니다.");
-        }
-    }
-
-    private boolean validateFinalSection(Section requestSection) {
-        return (sections.get(FIND_FIRST_SECTION_INDEX).getUpStationId().equals(requestSection.getDownStationId())
-                || sections.get(sections.size() - 1).getDownStationId().equals(requestSection.getUpStationId()));
-    }
-
-    private void saveFinalSection(Section requestSection) {
-        if (sections.get(FIND_FIRST_SECTION_INDEX).getUpStationId().equals(requestSection.getDownStationId())) {
-            sections.add(FIND_FIRST_SECTION_INDEX, requestSection);
-            return;
-        }
-        sections.add(requestSection);
-    }
-
-    private void saveMiddleSection(Section requestSection) {
-        if (isMiddleUpSection(requestSection)) {
-            saveMiddleDownSection(requestSection);
-            return;
-        }
-        if (isMiddleDownSection(requestSection)) {
-            saveMiddleUpSection(requestSection);
-            return;
-        }
-
-        throw new IllegalArgumentException("기존 노선에 등록할 수 없는 구간입니다.");
-    }
-
-    private boolean isMiddleUpSection(Section requestSection) {
-        return sections.stream()
-                .anyMatch(section -> section.isSameUpStationId(requestSection));
-    }
-
-    private boolean isMiddleDownSection(Section requestSection) {
-        return sections.stream()
-                .anyMatch(section -> section.isSameDownStationId(requestSection));
-    }
-
-    private void saveMiddleUpSection(Section requestSection) {
-        final Section findSection = findIncludedSection(requestSection);
-        final int index = sections.indexOf(findSection);
-        final int changeDistance = findSection.getDistance() - requestSection.getDistance();
-        validateDistance(changeDistance);
-
-        final Section upSection = new Section(
-                findSection.getLineId(), findSection.getUpStationId(), requestSection.getUpStationId(), changeDistance);
-        sections.remove(index);
-        sections.add(index, upSection);
-        sections.add(index + 1, requestSection);
-    }
-
-    private void saveMiddleDownSection(Section requestSection) {
-        final Section findSection = findIncludedSection(requestSection);
-        final int index = sections.indexOf(findSection);
-        final int changeDistance = findSection.getDistance() - requestSection.getDistance();
-        validateDistance(changeDistance);
-
-        final Section downSection = new Section(
-                findSection.getLineId(), requestSection.getDownStationId(), findSection.getDownStationId(), changeDistance);
-        sections.remove(index);
-        sections.add(index, requestSection);
-        sections.add(index + 1, downSection);
-    }
-
-    private void validateDistance(int changeDistance) {
-        if (changeDistance <= DISTANCE_MINIMUM) {
-            throw new IllegalArgumentException("등록할 수 없는 거리 입니다.");
-        }
-    }
-
-    private Section findIncludedSection(Section requestSection) {
-        final Section findSection = sections.stream()
-                .filter(section -> section.isSameDownStationId(requestSection)
-                        || section.isSameUpStationId(requestSection))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구역입니다."));
-        return findSection;
-    }
-
-    public void remove(Long lineId, Long stationId) {
-        validateSectionSize();
-        final List<Section> findSections = findIncludedByStationId(stationId);
-        validateFindSectionSize(findSections);
-        if (findSections.size() == FIND_FINAL_SECTION_SIZE) {
-            removeFinalSection(findSections);
-            return;
-        }
-        removeMiddleSection(lineId, findSections);
-    }
-
-    private void validateSectionSize() {
-        if (sections.size() == SECTIONS_MINIMUM) {
-            throw new IllegalArgumentException("구간은 1개 이상이 있어야 합니다.");
-        }
-    }
-
-    private List<Section> findIncludedByStationId(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.getUpStationId().equals(stationId)
-                        || section.getDownStationId().equals(stationId))
+    private List<Station> getUpStations() {
+        return values.stream()
+                .map(Section::getUpStation)
                 .collect(Collectors.toList());
     }
 
-    private void validateFindSectionSize(List<Section> findSections) {
-        if (findSections.size() == 0) {
-            throw new IllegalArgumentException("해당 역과 관련된 구간이 존재하지 않습니다.");
+    private List<Station> getDownStations() {
+        return values.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Section> findUpdate(List<Section> sections) {
+        return values.stream()
+                .filter(value -> findUpdateSection(sections, value))
+                .findFirst();
+    }
+
+    private boolean findUpdateSection(List<Section> sections, Section section) {
+        return sections.stream()
+                .anyMatch(value -> value.isUpdate(section));
+    }
+
+    private void validateStationNotExistSection(Section section) {
+        final boolean isExist = values.stream()
+                .anyMatch(value -> value.hasStation(section));
+
+        if (!isExist) {
+            throw new IllegalArgumentException("구간에 존재하지 않는 역입니다.");
         }
     }
 
-    private void removeFinalSection(List<Section> findSections) {
-        sections.removeAll(findSections);
+    private void validateUpdateMiddleSection(Section section) {
+        values.stream()
+                .filter(value -> value.isSameUpStation(section.getUpStation())
+                        || value.isSameDownStation(section.getDownStation()))
+                .findAny()
+                .ifPresent(updateSection -> updateMiddleSection(section, updateSection));
     }
 
-    private void removeMiddleSection(Long lineId, List<Section> findSections) {
-        final int updateDistance = findSections.get(FIND_FIRST_SECTION_INDEX).getDistance() + findSections.get(FIND_SECOND_SECTION_INDEX).getDistance();
-        final Section updateSection = new Section(
-                lineId, findSections.get(FIND_FIRST_SECTION_INDEX).getUpStationId(), findSections.get(FIND_SECOND_SECTION_INDEX).getDownStationId(), updateDistance);
-
-        final int index = sections.indexOf(findSections.get(FIND_FIRST_SECTION_INDEX));
-        sections.add(index, updateSection);
-        sections.removeAll(findSections);
+    private void updateMiddleSection(Section section, Section updateSection) {
+        validateSectionDistance(section, updateSection);
+        updateMiddleUpOrDownStation(section, updateSection);
     }
 
-    public List<Section> getSections() {
+    private void updateMiddleUpOrDownStation(Section section, Section updateSection) {
+        if (updateSection.isSameUpStation(section.getUpStation())) {
+            updateStationAndDistance(
+                    updateSection, section.getDownStation(), updateSection.getDownStation(), section.getDistance());
+            return;
+        }
+        updateStationAndDistance(
+                updateSection, updateSection.getUpStation(), section.getUpStation(), section.getDistance());
+    }
+
+    private void updateStationAndDistance(Section updateSection, Station upStation, Station downStation, int distance) {
+        updateSection.updateStation(upStation, downStation);
+        updateSection.splitDistance(distance);
+    }
+
+    private void validateSectionDistance(Section section, Section updateSection) {
+        if (updateSection.isOverDistance(section)) {
+            throw new IllegalArgumentException("기존의 구간보다 더 긴 구간은 추가할 수 없습니다.");
+        }
+    }
+
+    public List<Section> delete(Station station) {
+        validateDeleteSize(values);
+        List<Section> sections = values.stream()
+                .filter(value -> value.isSameUpStation(station)
+                        || value.isSameDownStation(station))
+                .collect(Collectors.toList());
+        values.removeAll(sections);
         return sections;
+    }
+
+    private void validateDeleteSize(List<Section> values) {
+        if (values.size() <= SECTIONS_MINIMUM_SIZE) {
+            throw new IllegalArgumentException("구간이 1개만 등록되어 있을 경우에는 삭제할 수 없습니다.");
+        }
+    }
+
+    public Station findFirstStation() {
+        List<Station> downStations = getDownStations();
+        List<Station> upStations = getUpStations();
+
+        return upStations.stream()
+                .filter(station -> !downStations.contains(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("첫번째 구간을 찾을 수 없습니다."));
+    }
+
+    public Optional<Station> nextStation(Station station) {
+        return values.stream()
+                .filter(value -> value.isSameUpStation(station))
+                .map(Section::getDownStation)
+                .findFirst();
+    }
+
+    public List<Section> getValues() {
+        return values;
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "values=" + values +
+                '}';
     }
 }

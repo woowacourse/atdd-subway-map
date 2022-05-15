@@ -10,22 +10,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class SectionV2Test {
+class SectionTest {
     @Test
     @DisplayName("구간을 라인 아이디, 상행역, 하행역, 거리를 가지고 생성할 수 있다.")
     void create() {
         // given & when
-        SectionV2 section = new SectionV2(1L, new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
+        Section section = new Section(1L, new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
 
         // then
-        assertThat(section).isInstanceOf(SectionV2.class);
+        assertThat(section).isInstanceOf(Section.class);
     }
 
     @ParameterizedTest
     @MethodSource("invalidSectionCreate")
     @DisplayName("구간에 생성의 인자값으로 null값이 들어간 경우 예외가 발생한다.")
     void invalidSectionToParameterOfNull(Long lineId, Station upStation, Station downStation, int distance) {
-        assertThatThrownBy(() -> new SectionV2(lineId, upStation, downStation, distance))
+        assertThatThrownBy(() -> new Section(lineId, upStation, downStation, distance))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -40,7 +40,7 @@ class SectionV2Test {
     @Test
     @DisplayName("구간 생성시 거리가 0이하일 경우 예외가 발생한다.")
     void invalidSectionOfLessThanZeroDistance() {
-        assertThatThrownBy(() -> new SectionV2(1L, new Station(1L, "강남역"), new Station(2L, "역삼역"), 0))
+        assertThatThrownBy(() -> new Section(1L, new Station(1L, "강남역"), new Station(2L, "역삼역"), 0))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간의 거리는 0이하로 등록할 수 없습니다.");
     }
@@ -49,11 +49,11 @@ class SectionV2Test {
     @DisplayName("선행구간과 하행구간을 통해 하나의 구간으로 합병할 수 있다.")
     void mergerToSectionAndSection() {
         // given
-        SectionV2 선행구간 = new SectionV2(1L, new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
-        SectionV2 하행구간 = new SectionV2(1L, new Station(2L, "역삼역"), new Station(3L, "선릉역"), 10);
+        Section 선행구간 = new Section(1L, new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
+        Section 하행구간 = new Section(1L, new Station(2L, "역삼역"), new Station(3L, "선릉역"), 10);
 
         // when
-        final SectionV2 합병구간 = 선행구간.merge(하행구간);
+        final Section 합병구간 = 선행구간.merge(하행구간);
 
         // then
         assertThat(합병구간)
