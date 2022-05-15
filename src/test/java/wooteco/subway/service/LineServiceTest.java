@@ -39,9 +39,18 @@ class LineServiceTest {
         station2 = stationDao.save(new Station("잠실역"));
     }
 
-    @DisplayName("지하철 노선을 중복 생성한다.")
+    @DisplayName("지하철 노선을 생성한다.")
     @Test
     void save() {
+        Line line = new Line("신분당선", "red", station1.getId(), station2.getId(), 10);
+
+        assertThatCode(() -> lineService.save(line))
+            .doesNotThrowAnyException();
+    }
+
+    @DisplayName("지하철 노선을 중복 생성한다.")
+    @Test
+    void saveDuplicatedName() {
         Line line = new Line("신분당선", "red", station1.getId(), station2.getId(), 10);
         lineService.save(line);
 
@@ -68,6 +77,14 @@ class LineServiceTest {
         Line savedLine = lineService.save(line);
 
         assertThat(lineService.findById(savedLine.getId()).getName()).isEqualTo("신분당선");
+    }
+
+    @DisplayName("없는 지하철 노선을 조회하는 경우")
+    @Test
+    void findException() {
+        assertThatThrownBy(() -> lineService.findById(0L))
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("해당 아이디의 노선이 없습니다.");
     }
 
     @DisplayName("지하철 노선을 수정한다.")

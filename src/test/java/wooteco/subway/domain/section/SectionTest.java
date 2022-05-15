@@ -12,7 +12,7 @@ class SectionTest {
     void isSameUpStation() {
         Section section = new Section(1L, 1L, 2L, 4);
 
-        assertThat(section.isSameUpStation(1L)).isTrue();
+        assertThat(section.isSameAsUpStation(1L)).isTrue();
     }
 
     @DisplayName("같은 상행역이 아니면 거짓 반환")
@@ -20,7 +20,7 @@ class SectionTest {
     void isNotSameUpStation() {
         Section section = new Section(1L, 3L, 2L, 4);
 
-        assertThat(section.isSameUpStation(1L)).isFalse();
+        assertThat(section.isSameAsUpStation(1L)).isFalse();
     }
 
     @DisplayName("같은 하행역인지 확인")
@@ -28,7 +28,7 @@ class SectionTest {
     void isSameDownStation() {
         Section section = new Section(1L, 1L, 2L, 4);
 
-        assertThat(section.isSameDownStation(2L)).isTrue();
+        assertThat(section.isSameAsDownStation(2L)).isTrue();
     }
 
     @DisplayName("같은 하행역이 아니면 거짓 반환")
@@ -36,7 +36,7 @@ class SectionTest {
     void isNotSameDownStation() {
         Section section = new Section(1L, 1L, 3L, 4);
 
-        assertThat(section.isSameDownStation(2L)).isFalse();
+        assertThat(section.isSameAsDownStation(2L)).isFalse();
     }
 
     @DisplayName("일치하는 부분을 뺀 구간을 생성할 수 있는지 검증")

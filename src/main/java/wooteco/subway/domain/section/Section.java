@@ -26,57 +26,43 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean isSameUpStation(Long upStationId) {
-        return this.upStationId.equals(upStationId);
+    public boolean isSameAsUpStation(Long id) {
+        return this.upStationId.equals(id);
     }
 
-    public boolean isSameDownStation(Long downStationId) {
-        return this.downStationId.equals(downStationId);
+    public boolean isSameAsDownStation(Long id) {
+        return this.downStationId.equals(id);
     }
 
     public Section createExceptSection(Section section) {
-        validateDistance(section);
-        if (upStationId.equals(section.upStationId)) {
-            return createExceptUpSection(section);
+        validateCreatableExceptSection(section);
+        if (isSameAsUpStation(section.upStationId)) {
+            return new Section(lineId, section.downStationId, downStationId, distance - section.getDistance());
         }
-        if (downStationId.equals(section.downStationId)) {
-            return createExceptDownSection(section);
-        }
-        throw new IllegalArgumentException(CAN_NOT_CREATE_SECTION);
+        return new Section(lineId, upStationId, section.upStationId, distance - section.getDistance());
     }
 
-    private void validateDistance(Section section) {
+    private void validateCreatableExceptSection(Section section) {
         if (distance <= section.distance) {
             throw new IllegalStateException(DISTANCE_EXCEPTION);
         }
+        if (!isSameAsUpStation(section.upStationId) && !isSameAsDownStation(section.downStationId)) {
+            throw new IllegalArgumentException(CAN_NOT_CREATE_SECTION);
+        }
     }
 
-    private Section createExceptUpSection(Section section) {
-        return new Section(
-            lineId,
-            section.downStationId,
-            downStationId,
-            distance - section.getDistance()
-        );
-    }
-
-    private Section createExceptDownSection(Section section) {
-        return new Section(
-            lineId,
-            upStationId,
-            section.upStationId,
-            distance - section.getDistance()
-        );
-    }
-
-    public Section createCombineSection(Section section) {
-        if (upStationId.equals(section.downStationId)) {
+    public Section createCombinedSection(Section section) {
+        validateAbleToCombine(section);
+        if (isSameAsUpStation(section.downStationId)) {
             return new Section(lineId, section.upStationId, downStationId, distance + section.distance);
         }
-        if (downStationId.equals(section.upStationId)) {
-            return new Section(lineId, upStationId, section.downStationId, distance + section.distance);
+        return new Section(lineId, upStationId, section.downStationId, distance + section.distance);
+    }
+
+    private void validateAbleToCombine(Section section) {
+        if (!isSameAsUpStation(section.downStationId) && !isSameAsDownStation(section.upStationId)) {
+            throw new IllegalArgumentException(CAN_NOT_CREATE_SECTION);
         }
-        throw new IllegalArgumentException(CAN_NOT_CREATE_SECTION);
     }
 
     public Long getId() {

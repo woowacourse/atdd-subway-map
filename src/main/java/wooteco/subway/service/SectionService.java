@@ -17,16 +17,14 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public List<Long> findAllStationIdByLineId(Long id) {
-        Sections sections = new Sections(sectionDao.findAllByLineId(id));
-        return sections.getAllStationId();
-    }
-
     public void save(Section section) {
-        List<Section> savedSections = sectionDao.findAllByLineId(section.getLineId());
-        Sections sections = new Sections(savedSections);
+        Sections sections = new Sections(findAll(section.getLineId()));
         sections.validateAddable(section);
         executeSave(section, sections);
+    }
+
+    private List<Section> findAll(Long lineId) {
+        return sectionDao.findAllByLineId(lineId);
     }
 
     private void executeSave(Section section, Sections sections) {
@@ -34,25 +32,22 @@ public class SectionService {
             sectionDao.save(section);
             return;
         }
-        Section searchedSection = sections.searchMatchedSection(section);
+        Section searchedSection = sections.getMatchedSection(section);
         sectionDao.delete(searchedSection.getId());
         sectionDao.save(section);
         sectionDao.save(searchedSection.createExceptSection(section));
     }
 
     public void delete(Long lineId, Long stationId) {
-        List<Section> lineSections = sectionDao.findAllByLineId(lineId);
-        Sections sections = new Sections(lineSections);
+        Sections sections = new Sections(findAll(lineId));
         sections.validateDeletable(stationId);
         executeDelete(lineId, stationId, sections);
     }
 
     private void executeDelete(Long lineId, Long stationId, Sections sections) {
-        if (sections.isEndStation(stationId)) {
-            sectionDao.delete(lineId, stationId);
-            return;
-        }
         sectionDao.delete(lineId, stationId);
-        sectionDao.save(sections.createCombineSection(stationId));
+        if (!sections.isEndStation(stationId)) {
+            sectionDao.save(sections.createCombineSection(stationId));
+        }
     }
 }

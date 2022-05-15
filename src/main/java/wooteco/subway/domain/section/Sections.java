@@ -1,11 +1,6 @@
 package wooteco.subway.domain.section;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.SectionLinks;
 
 public class Sections {
 
@@ -25,34 +20,33 @@ public class Sections {
     }
 
     public List<Long> getAllStationId() {
-        List<Long> stationIdS = new ArrayList<>();
-        sections.forEach(section -> stationIdS.add(section.getUpStationId()));
-        sections.forEach(section -> stationIdS.add(section.getDownStationId()));
-        return stationIdS.stream()
-            .distinct()
-            .collect(Collectors.toList());
+        return sectionLinks.getAllStationId();
     }
 
-    public Section searchMatchedSection(Section section) {
-        if (isExistUpStation(section.getUpStationId())) {
+    public Section getMatchedSection(Section section) {
+        validateExistMatchedSection(section);
+        if (sectionLinks.isExistUpStation(section.getUpStationId())) {
             return getSameUpStationSection(section.getUpStationId());
         }
-        if (isExistDownStation(section.getDownStationId())) {
-            return getSameDownStationSection(section.getDownStationId());
+        return getSameDownStationSection(section.getDownStationId());
+    }
+
+    private void validateExistMatchedSection(Section section) {
+        if (sectionLinks.isNotExistMatchedStation(section)) {
+            throw new IllegalArgumentException(NOT_EXIST_SAME_SECTION);
         }
-        throw new IllegalArgumentException(NOT_EXIST_SAME_SECTION);
     }
 
     private Section getSameUpStationSection(Long id) {
         return sections.stream()
-            .filter(it -> it.isSameUpStation(id))
+            .filter(it -> it.isSameAsUpStation(id))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_SAME_SECTION));
     }
 
     private Section getSameDownStationSection(Long id) {
         return sections.stream()
-            .filter(it -> it.isSameDownStation(id))
+            .filter(it -> it.isSameAsDownStation(id))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_SAME_SECTION));
     }
@@ -74,34 +68,18 @@ public class Sections {
         return sectionLinks.isEndStation(id);
     }
 
-    private boolean isExistUpStation(Long upStationId) {
-        return sectionLinks.isExistUpStation(upStationId);
-    }
-
-    private boolean isExistDownStation(Long downStationId) {
-        return sectionLinks.isExistDownStation(downStationId);
-    }
-
     public void validateDeletable(Long stationId) {
         if (sections.size() == MIN_SIZE) {
             throw new IllegalStateException(MIN_SECTION_SIZE_EXCEPTION);
         }
-        if (isNotExistStation(stationId)) {
+        if (sectionLinks.isNotExistStation(stationId)) {
             throw new IllegalArgumentException(NOT_EXIST_STATION);
         }
-    }
-
-    private boolean isNotExistStation(Long stationId) {
-        return sectionLinks.isNotExistStation(stationId);
     }
 
     public Section createCombineSection(Long stationId) {
         Section upSection = getSameUpStationSection(stationId);
         Section downSection = getSameDownStationSection(stationId);
-        return upSection.createCombineSection(downSection);
-    }
-
-    public SectionLinks getSectionLinks() {
-        return sectionLinks;
+        return upSection.createCombinedSection(downSection);
     }
 }

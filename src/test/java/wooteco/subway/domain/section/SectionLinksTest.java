@@ -149,16 +149,4 @@ class SectionLinksTest {
     void isNotExistUpStation() {
         assertThat(sectionLinks.isExistUpStation(4L)).isFalse();
     }
-
-    @DisplayName("하행 역 중 존재하는 역인지 확인")
-    @Test
-    void isExistDownStation() {
-        assertThat(sectionLinks.isExistDownStation(2L)).isTrue();
-    }
-
-    @DisplayName("하행 역 중 존재하지 않으면 거짓 반환")
-    @Test
-    void isNotExistDownStation() {
-        assertThat(sectionLinks.isExistDownStation(1L)).isFalse();
-    }
 }

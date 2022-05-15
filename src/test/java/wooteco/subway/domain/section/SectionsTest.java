@@ -30,8 +30,8 @@ public class SectionsTest {
     void searchUpMatchedSection() {
         Section section = new Section(1L, 2L, 4L, 4);
 
-        assertThat(sections.searchMatchedSection(section).getUpStationId()).isEqualTo(2L);
-        assertThat(sections.searchMatchedSection(section).getDownStationId()).isEqualTo(3L);
+        assertThat(sections.getMatchedSection(section).getUpStationId()).isEqualTo(2L);
+        assertThat(sections.getMatchedSection(section).getDownStationId()).isEqualTo(3L);
     }
 
     @DisplayName("하행이 일치하는 구간을 얻어와서 확인")
@@ -39,8 +39,8 @@ public class SectionsTest {
     void searchDownMatchedSection() {
         Section section = new Section(1L, 4L, 3L, 4);
 
-        assertThat(sections.searchMatchedSection(section).getUpStationId()).isEqualTo(2L);
-        assertThat(sections.searchMatchedSection(section).getDownStationId()).isEqualTo(3L);
+        assertThat(sections.getMatchedSection(section).getUpStationId()).isEqualTo(2L);
+        assertThat(sections.getMatchedSection(section).getDownStationId()).isEqualTo(3L);
     }
 
     @DisplayName("일치하는 구간을 얻어 올 수 없음")
@@ -48,7 +48,7 @@ public class SectionsTest {
     void canNotSearchMatchedSection() {
         Section section = new Section(1L, 3L, 4L, 4);
 
-        assertThatThrownBy(() -> sections.searchMatchedSection(section))
+        assertThatThrownBy(() -> sections.getMatchedSection(section))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("일치하는 구간이 없습니다.");
     }

@@ -1,9 +1,7 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -12,9 +10,9 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
-import wooteco.subway.domain.Station;
 
 @Service
 public class LineService {
@@ -34,27 +32,32 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        validateDuplicatedName(line.getName());
+        validateNotDuplicatedName(line.getName());
         Line savedLine = lineDao.save(line);
         Section section = new Section(savedLine.getId(), line.getUpStationId(), line.getDownStationId(),
             line.getDistance());
         sectionDao.save(section);
-        List<Station> stations = new ArrayList<>();
-        stations.add(findStationById(line.getUpStationId()));
-        stations.add(findStationById(line.getDownStationId()));
-        return new Line(savedLine.getId(), savedLine.getName(), savedLine.getColor(), stations);
+        return new Line(savedLine.getId(), savedLine.getName(), savedLine.getColor(),
+            findLineStations(savedLine.getId()));
     }
 
-    private void validateDuplicatedName(String name) {
+    private void validateNotDuplicatedName(String name) {
         lineDao.findByName(name)
             .ifPresent(line -> {
                 throw new IllegalStateException(ALREADY_IN_LINE_ERROR_MESSAGE);
             });
     }
 
+    private List<Station> findLineStations(Long lineId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        return sections.getAllStationId().stream()
+            .map(this::findStationById)
+            .collect(Collectors.toList());
+    }
+
     private Station findStationById(Long id) {
-        Optional<Station> station = stationDao.findById(id);
-        return station.orElseThrow(() -> new NoSuchElementException(NOT_EXIST_STATION_ID_ERROR_MESSAGE));
+        return stationDao.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_STATION_ID_ERROR_MESSAGE));
     }
 
     public List<Line> findAll() {
@@ -62,30 +65,22 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        Optional<Line> line = lineDao.findById(id);
-        Line savedLine = line.orElseThrow(() -> new NoSuchElementException(NOT_EXIST_LINE_ID_ERROR_MESSAGE));
-        Sections sections = new Sections(sectionDao.findAllByLineId(id));
-        List<Long> ids = sections.getAllStationId();
-        return new Line(savedLine.getId(), savedLine.getName(), savedLine.getColor(), findStationsByIds(ids));
-    }
-
-    private List<Station> findStationsByIds(List<Long> ids) {
-        return ids.stream()
-            .map(this::findStationById)
-            .collect(Collectors.toList());
+        Line savedLine = lineDao.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_LINE_ID_ERROR_MESSAGE));
+        return new Line(savedLine.getId(), savedLine.getName(), savedLine.getColor(), findLineStations(id));
     }
 
     public void update(Long id, Line line) {
-        validateExistId(id);
+        validateExistLine(id);
         lineDao.update(id, line);
     }
 
     public void delete(Long id) {
-        validateExistId(id);
+        validateExistLine(id);
         lineDao.delete(id);
     }
 
-    private void validateExistId(Long id) {
+    private void validateExistLine(Long id) {
         lineDao.findById(id)
             .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_LINE_ID_ERROR_MESSAGE));
     }

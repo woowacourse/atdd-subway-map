@@ -1,8 +1,11 @@
 package wooteco.subway.domain.section;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SectionLinks {
 
@@ -18,6 +21,12 @@ public class SectionLinks {
             stationIds.put(existingSection.getUpStationId(), existingSection.getDownStationId());
         }
         return new SectionLinks(stationIds);
+    }
+
+    public List<Long> getAllStationId() {
+        Set<Long> ids = new HashSet<>(sections.keySet());
+        ids.addAll(sections.values());
+        return new ArrayList<>(ids);
     }
 
     boolean isNotExistMatchedStation(Section section) {
@@ -46,7 +55,7 @@ public class SectionLinks {
         return sections.containsKey(id);
     }
 
-    boolean isExistDownStation(Long id) {
+    private boolean isExistDownStation(Long id) {
         return sections.containsValue(id);
     }
 }
