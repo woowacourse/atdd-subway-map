@@ -4,24 +4,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.station.StationMockDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.station.JdbcStationDao;
+import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DataNotExistException;
 import wooteco.subway.exception.SubwayException;
 
+@JdbcTest
 class StationServiceTest {
 
     private static final Station STATION = new Station("강남역");
 
-    private final StationMockDao stationMockDao = new StationMockDao();
-    private final StationService stationService = new StationService(stationMockDao);
+    private StationService stationService;
 
-    @AfterEach
-    void afterEach() {
-        stationMockDao.clear();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        StationDao stationDao = new JdbcStationDao(jdbcTemplate);
+        stationService = new StationService(stationDao);
     }
 
     @DisplayName("지하철역을 생성한다.")

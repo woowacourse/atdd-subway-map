@@ -3,30 +3,33 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.section.SectionMockDao;
-import wooteco.subway.dao.station.StationMockDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.section.JdbcSectionDao;
+import wooteco.subway.dao.section.SectionDao;
+import wooteco.subway.dao.station.JdbcStationDao;
+import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Section;
 
+@JdbcTest
 public class SectionServiceTest {
 
-    private final SectionMockDao sectionMockDao = new SectionMockDao();
-    private final StationMockDao stationMockDao = new StationMockDao();
-    private final SectionService sectionService = new SectionService(sectionMockDao, stationMockDao);
+    private SectionService sectionService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        sectionMockDao.save(new Section(1L, 1L, 2L, 10));
-        sectionMockDao.save(new Section(1L, 2L, 3L, 10));
-    }
-
-    @AfterEach
-    void afterEach() {
-        sectionMockDao.clear();
-        stationMockDao.clear();
+        SectionDao sectionDao = new JdbcSectionDao(jdbcTemplate);
+        StationDao stationDao = new JdbcStationDao(jdbcTemplate);
+        sectionDao.save(new Section(1L, 1L, 2L, 10));
+        sectionDao.save(new Section(1L, 2L, 3L, 10));
+        sectionService = new SectionService(sectionDao, stationDao);
     }
 
     @DisplayName("상행종점 위에 있는 지하철 구간을 저장한다.")

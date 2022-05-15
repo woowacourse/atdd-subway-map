@@ -4,29 +4,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.line.LineMockDao;
-import wooteco.subway.dao.section.SectionMockDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.line.JdbcLineDao;
+import wooteco.subway.dao.line.LineDao;
+import wooteco.subway.dao.section.JdbcSectionDao;
+import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.DataNotExistException;
 import wooteco.subway.exception.SubwayException;
 
+@JdbcTest
 class LineServiceTest {
 
     private static final LineRequest LINE_REQUEST =
             new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
-    private final LineMockDao lineMockDao = new LineMockDao();
-    private final SectionMockDao sectionMockDao = new SectionMockDao();
-    private final LineService lineService = new LineService(lineMockDao, sectionMockDao);
+    private LineService lineService;
 
-    @AfterEach
-    void afterEach() {
-        lineMockDao.clear();
-        sectionMockDao.clear();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        LineDao lineDao = new JdbcLineDao(jdbcTemplate);
+        SectionDao sectionDao = new JdbcSectionDao(jdbcTemplate);
+        lineService = new LineService(lineDao, sectionDao);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
