@@ -10,13 +10,13 @@ public class Sections {
 
     private final List<Section> sections;
 
+    public Sections(Section section) {
+        this(List.of(section));
+    }
+
     public Sections(List<Section> sections) {
         validateSize(sections);
         this.sections = new ArrayList<>(sections);
-    }
-
-    public Sections(Section section) {
-        this(List.of(section));
     }
 
     private void validateSize(List<Section> sections) {

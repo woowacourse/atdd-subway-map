@@ -9,6 +9,10 @@ public class Section {
     private final Station downStation;
     private final int distance;
 
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
+    }
+
     public Section(Long id, Station upStation, Station downStation, int distance) {
         Objects.requireNonNull(upStation);
         Objects.requireNonNull(downStation);
@@ -17,10 +21,6 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public Section(Station upStation, Station downStation, int distance) {
-        this(null, upStation, downStation, distance);
     }
 
     public Section slice(Section insertSection) {
