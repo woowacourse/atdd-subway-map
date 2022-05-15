@@ -23,7 +23,7 @@ public class Sections {
     }
 
     public List<Long> getSortedStationIds() {
-        if (value == null || value.size() == 0) {
+        if (CollectionUtils.isEmpty(value)) {
             return new LinkedList<>();
         }
 
