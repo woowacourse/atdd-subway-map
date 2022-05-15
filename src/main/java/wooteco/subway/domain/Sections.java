@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.util.CollectionUtils;
 
 public class Sections {
 
@@ -134,7 +135,7 @@ public class Sections {
     }
 
     private void validSize() {
-        if (value == null || value.size() == 0) {
+        if (CollectionUtils.isEmpty(value)) {
             throw new IllegalArgumentException(NO_SECTION_LIST_ERROR);
         }
     }
