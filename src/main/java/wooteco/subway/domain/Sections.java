@@ -36,13 +36,13 @@ public class Sections {
 
     private int getStationCountForFirstStation(Long stationId) {
         return (int) sections.stream()
-                .filter(section -> section.getDownStationId().equals(stationId))
+                .filter(section -> section.isSameAsDownStation(stationId))
                 .count();
     }
 
     private Long getNextStation(Long downStationId) {
         return sections.stream()
-                .filter(section -> section.getUpStationId().equals(downStationId))
+                .filter(section -> section.isSameAsUpStation(downStationId))
                 .map(Section::getDownStationId)
                 .findFirst()
                 .orElse(NOTING);
@@ -56,7 +56,7 @@ public class Sections {
 
     public Section getSectionStationIdEqualsUpStationId(Long stationId) {
         return sections.stream()
-                .filter(section -> section.getUpStationId().equals(stationId))
+                .filter(section -> section.isSameAsUpStation(stationId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 입력입니다."));
     }
@@ -64,7 +64,7 @@ public class Sections {
 
     public Section getSectionStationIdEqualsDownStationId(Long stationId) {
         return sections.stream()
-                .filter(section -> section.getDownStationId().equals(stationId))
+                .filter(section -> section.isSameAsDownStation(stationId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 입력입니다."));
     }
