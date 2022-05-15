@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -12,13 +12,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-class StationDaoTest {
+class JdbcStationDaoTest {
 
-    private final StationDao stationDao;
+    private static final String FAIL_FIND_STATION = "fail";
+
+    private final JdbcStationDao jdbcStationDao;
 
     @Autowired
-    public StationDaoTest(JdbcTemplate jdbcTemplate) {
-        this.stationDao = new StationDao(jdbcTemplate);
+    public JdbcStationDaoTest(JdbcTemplate jdbcTemplate) {
+        this.jdbcStationDao = new JdbcStationDao(jdbcTemplate);
     }
 
     @Test
@@ -28,10 +30,12 @@ class StationDaoTest {
         final Station station = new Station("지하철역이름");
 
         // when
-        final Long savedId = stationDao.save(station);
+        final Long savedId = jdbcStationDao.save(station);
 
         // then
-        final Station savedStation = stationDao.findById(savedId);
+        final Station savedStation = jdbcStationDao.findById(savedId)
+                .orElseGet(() -> new Station(FAIL_FIND_STATION));
+
         assertThat(station).isEqualTo(savedStation);
     }
 
@@ -43,12 +47,12 @@ class StationDaoTest {
         final Station station2 = new Station("새로운지하철역이름");
         final Station station3 = new Station("또다른지하철역이름");
 
-        stationDao.save(station1);
-        stationDao.save(station2);
-        stationDao.save(station3);
+        jdbcStationDao.save(station1);
+        jdbcStationDao.save(station2);
+        jdbcStationDao.save(station3);
 
         // when
-        final List<Station> stations = stationDao.findAll();
+        final List<Station> stations = jdbcStationDao.findAll();
 
         // then
         assertThat(stations).hasSize(3)
@@ -61,9 +65,9 @@ class StationDaoTest {
     void deleteById() {
         // given
         final Station station = new Station("지하철역이름");
-        final Long savedId = stationDao.save(station);
+        final Long savedId = jdbcStationDao.save(station);
 
         // when & then
-        assertDoesNotThrow(() -> stationDao.deleteById(savedId));
+        assertDoesNotThrow(() -> jdbcStationDao.deleteById(savedId));
     }
 }

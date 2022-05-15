@@ -8,9 +8,6 @@ public class Line {
     private String name;
     private String color;
 
-    public Line() {
-    }
-
     public Line(String name, String color) {
         this(null, name, color);
     }
@@ -26,6 +23,9 @@ public class Line {
     private void validateArgument(String name, String color) {
         if (name.isBlank() || color.isBlank()) {
             throw new IllegalArgumentException("노선의 이름 혹은 색이 공백일 수 없습니다.");
+        }
+        if (name.length() >= 255 || color.length() >= 20) {
+            throw new IllegalArgumentException("노선의 이름 혹은 색이 너무 깁니다.");
         }
     }
 

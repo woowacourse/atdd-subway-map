@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -13,13 +13,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
-class LineDaoTest {
+class JdbcLineDaoTest {
 
-    private final LineDao lineDao;
+    private static final String FAIL_FIND_LINE = "fail";
+    private static final Line INAPPROPRIATE_LINE = new Line(FAIL_FIND_LINE, FAIL_FIND_LINE);
+
+    private final JdbcLineDao jdbcLineDao;
 
     @Autowired
-    public LineDaoTest(JdbcTemplate jdbcTemplate) {
-        this.lineDao = new LineDao(jdbcTemplate);
+    public JdbcLineDaoTest(JdbcTemplate jdbcTemplate) {
+        this.jdbcLineDao = new JdbcLineDao(jdbcTemplate);
     }
 
     @Test
@@ -29,7 +32,7 @@ class LineDaoTest {
         final Line line = new Line("신분당선", "bg-red-600");
 
         // when
-        final Line savedLine = lineDao.save(line);
+        final Line savedLine = jdbcLineDao.save(line);
 
         // then
         assertThat(savedLine).extracting("name", "color")
@@ -42,11 +45,11 @@ class LineDaoTest {
         // given
         final Line line1 = new Line("신분당선", "bg-red-600");
         final Line line2 = new Line("분당선", "bg-green-600");
-        lineDao.save(line1);
-        lineDao.save(line2);
+        jdbcLineDao.save(line1);
+        jdbcLineDao.save(line2);
 
         // when
-        List<Line> lines = lineDao.findAll();
+        List<Line> lines = jdbcLineDao.findAll();
 
         // then
         assertThat(lines).hasSize(2)
@@ -61,10 +64,11 @@ class LineDaoTest {
     void findById() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");
-        final Line savedLine = lineDao.save(line);
+        final Line savedLine = jdbcLineDao.save(line);
 
         // when
-        final Line findLine = lineDao.findById(savedLine.getId());
+        final Line findLine = jdbcLineDao.findById(savedLine.getId())
+                .orElse(INAPPROPRIATE_LINE);
 
         // then
         assertThat(findLine).extracting("name", "color")
@@ -76,14 +80,16 @@ class LineDaoTest {
     void updateById() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");
-        final Line savedLine = lineDao.save(line);
+        final Line savedLine = jdbcLineDao.save(line);
 
         // when
         final Line newLine = new Line(savedLine.getId(), "다른분당선", "bg-red-600");
-        lineDao.updateByLine(newLine);
+        jdbcLineDao.updateByLine(newLine);
 
         // then
-        final Line findLine = lineDao.findById(savedLine.getId());
+        final Line findLine = jdbcLineDao.findById(savedLine.getId())
+                        .orElse(INAPPROPRIATE_LINE);
+
         assertThat(findLine).extracting("name", "color")
                 .contains("다른분당선", "bg-red-600");
     }
@@ -93,9 +99,9 @@ class LineDaoTest {
     void deleteById() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");
-        final Line savedLine = lineDao.save(line);
+        final Line savedLine = jdbcLineDao.save(line);
 
         // when & then
-        assertDoesNotThrow(() -> lineDao.deleteById(savedLine.getId()));
+        assertDoesNotThrow(() -> jdbcLineDao.deleteById(savedLine.getId()));
     }
 }
