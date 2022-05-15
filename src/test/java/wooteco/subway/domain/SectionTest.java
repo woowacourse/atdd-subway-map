@@ -27,13 +27,32 @@ class SectionTest {
                 .hasMessage("거리는 양수여야 합니다.");
     }
 
-    @DisplayName("입력한 Section을 기준으로 기존 Section을 나눈다.")
+    @DisplayName("입력한 Section을 기준으로 기존 Section을 나눈다 - 상행 지하철 역이 겹치는 경우")
     @Test
-    void splitSection() {
+    void splitSectionSameUpStation() {
         //given
         Section section1 = Section.of(1L, 2L, 10);
         Section section2 = Section.of(1L, 3L, 4);
         Section expectedSection = Section.of(3L, 2L, 6);
+
+        //when
+        Section splitSection = section1.splitSection(section2);
+
+        //then
+        assertAll(
+                () -> assertThat(splitSection.getDistance()).isEqualTo(expectedSection.getDistance()),
+                () -> assertThat(splitSection.isSameUpStationId(expectedSection.getUpStationId())).isTrue(),
+                () -> assertThat(splitSection.isSameDownStationId(expectedSection.getDownStationId())).isTrue()
+        );
+    }
+
+    @DisplayName("입력한 Section을 기준으로 기존 Section을 나눈다 - 하행 지하철 역이 겹치는 경우")
+    @Test
+    void splitSectionSameDownStation() {
+        //given
+        Section section1 = Section.of(1L, 2L, 10);
+        Section section2 = Section.of(3L, 2L, 4);
+        Section expectedSection = Section.of(1L, 3L, 6);
 
         //when
         Section splitSection = section1.splitSection(section2);

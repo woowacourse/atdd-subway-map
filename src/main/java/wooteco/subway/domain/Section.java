@@ -54,7 +54,7 @@ public class Section {
         if (upStationId.equals(section.upStationId)) {
             return Section.of(section.getDownStationId(), downStationId, newDistance);
         }
-        return Section.of(upStationId, section.upStationId, distance);
+        return Section.of(upStationId, section.upStationId, newDistance);
     }
 
     public boolean isSameUpStationId(long id) {
