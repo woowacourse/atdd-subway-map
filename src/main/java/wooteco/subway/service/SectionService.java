@@ -81,14 +81,14 @@ public class SectionService {
         Station station = stationDao.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.NO_STATION));
 
-        Sections sections = makeSectionsToStations(lineId);
+        Sections sections = makeSections(lineId);
         validateSectionSize(sections);
 
-        if (sections.isFirstStation(station)) {
+        if (sections.isFirstStation(station.getId())) {
             deleteFirstStation(stationId, lineId);
         }
 
-        if (sections.isLastStation(station)) {
+        if (sections.isLastStation(station.getId())) {
             deleteLastStation(stationId, lineId);
         }
 
@@ -126,19 +126,22 @@ public class SectionService {
         sectionDao.save(mergeSection);
     }
 
-    public Sections makeSectionsToStations(long lineId) {
-        List<SectionWithStation> sections = new ArrayList<>();
+    public Sections makeSections(long lineId) {
         List<Section> getSections = sectionDao.findByLine(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다."));
+        return new Sections(getSections);
+    }
 
-        for (Section section : getSections) {
-            Station upStation = stationDao.findById(section.getUpStationId())
+    public List<Station> makeSectionsToStations(long lineId) {
+        List<Station> sectionStations = new ArrayList<>();
+        List<Long> sortedStations = makeSections(lineId).sortStations();
+
+        for (Long stationId : sortedStations) {
+            Station station = stationDao.findById(stationId)
                     .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.NO_STATION));
-            Station downStation = stationDao.findById(section.getDownStationId())
-                    .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.NO_STATION));
-            sections.add(SectionWithStation.of(section, upStation, downStation));
+            sectionStations.add(station);
         }
 
-        return new Sections(sections);
+        return sectionStations;
     }
 }

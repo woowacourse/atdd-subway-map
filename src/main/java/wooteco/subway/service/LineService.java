@@ -24,21 +24,21 @@ public class LineService {
     public LineResponse create(LineRequest lineRequest) {
         Line line = lineDao.save(lineRequest);
         sectionService.saveInitialSection(lineRequest, line);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(line.getId()).sortStations());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(line.getId()));
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
 
         return lines.stream()
-                .map((line) -> new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(line.getId()).sortStations()))
+                .map((line) -> new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(line.getId())))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(long id) {
         Line line = lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.NO_LINE));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(id).sortStations());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(id));
     }
 
     public void update(Long id, LineRequest lineRequest) {

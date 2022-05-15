@@ -13,6 +13,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -39,9 +40,9 @@ class LineControllerTest {
     @Test
     @DisplayName("노선을 생성한다.")
     void createLine() throws Exception {
-        List<StationResponse> stations = List.of(
-                new StationResponse(1L, "강남역"),
-                new StationResponse(2L, "선릉역")
+        List<Station> stations = List.of(
+                new Station("강남역"),
+                new Station("선릉역")
         );
         LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
         LineResponse lineResponse = new LineResponse(1L, lineRequest.getName(), lineRequest.getColor(), stations);
@@ -90,16 +91,16 @@ class LineControllerTest {
     @Test
     @DisplayName("모든 노선을 반환한다.")
     void findAllLine() throws Exception {
-        List<StationResponse> stations1 = List.of(
-                new StationResponse(1L, "강남역"),
-                new StationResponse(2L, "선릉역")
+        List<Station> stations1 = List.of(
+                new Station("강남역"),
+                new Station("선릉역")
         );
         LineRequest lineRequest1 = new LineRequest("2호선", "green", 1L, 2L, 10);
         LineResponse lineResponse1 = new LineResponse(1L, lineRequest1.getName(), lineRequest1.getColor(), stations1);
 
-        List<StationResponse> stations2 = List.of(
-                new StationResponse(1L, "강남역"),
-                new StationResponse(2L, "선릉역")
+        List<Station> stations2 = List.of(
+                new Station("강남역"),
+                new Station("선릉역")
         );
         LineRequest lineRequest2 = new LineRequest("2호선", "green", 1L, 2L, 10);
         LineResponse lineResponse2 = new LineResponse(1L, lineRequest2.getName(), lineRequest2.getColor(), stations2);
@@ -116,9 +117,9 @@ class LineControllerTest {
     @Test
     @DisplayName("id값이 일치하는 노선을 반환한다.")
     void findLineById() throws Exception {
-        List<StationResponse> stations = List.of(
-                new StationResponse(1L, "강남역"),
-                new StationResponse(2L, "선릉역")
+        List<Station> stations = List.of(
+                new Station("강남역"),
+                new Station("선릉역")
         );
         LineResponse lineResponse = new LineResponse(1L, "2호선", "green", stations);
         given(lineService.findById(any(Long.class)))
@@ -135,9 +136,9 @@ class LineControllerTest {
     @Test
     @DisplayName("노선의 정보를 변경한다.")
     void updateLine() throws Exception {
-        List<StationResponse> stations = List.of(
-                new StationResponse(1L, "강남역"),
-                new StationResponse(2L, "선릉역")
+        List<Station> stations = List.of(
+                new Station("강남역"),
+                new Station("선릉역")
         );
         LineResponse lineResponse = new LineResponse(1L, "2호선", "green", stations);
         given(lineService.findById(any(Long.class)))
@@ -157,9 +158,9 @@ class LineControllerTest {
     @Test
     @DisplayName("노선을 삭제한다.")
     void deleteLine() throws Exception {
-        List<StationResponse> stations = List.of(
-                new StationResponse(1L, "강남역"),
-                new StationResponse(2L, "선릉역")
+        List<Station> stations = List.of(
+                new Station("강남역"),
+                new Station("선릉역")
         );
         LineResponse lineResponse = new LineResponse(1L, "2호선", "green", stations);
         given(lineService.findById(any(Long.class)))
