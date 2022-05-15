@@ -9,7 +9,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.RegisteredSectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.line.LineInfo;
 import wooteco.subway.domain.line.Lines;
 import wooteco.subway.domain.section.RegisteredSection;
 import wooteco.subway.domain.section.Section;
@@ -55,7 +55,7 @@ public class LineService {
     }
 
     public LineResponse find(Long id) {
-        Line line = findExistingLine(id);
+        LineInfo line = findExistingLine(id);
         Sections sections = SectionsFactory.generate(findAllStationsRegisteredToLine(id));
         List<Station> stations = sections.toSortedStations();
         return LineResponse.of(line, stations);
@@ -98,7 +98,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    private Line findExistingLine(Long id) {
+    private LineInfo findExistingLine(Long id) {
         return lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(ExceptionType.LINE_NOT_FOUND))
                 .toDomain();

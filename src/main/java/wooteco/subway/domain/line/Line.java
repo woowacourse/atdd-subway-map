@@ -1,56 +1,32 @@
 package wooteco.subway.domain.line;
 
-import java.util.Objects;
+import java.util.List;
+import wooteco.subway.domain.section.Sections;
+import wooteco.subway.domain.station.Station;
 
 public class Line {
 
-    private final Long id;
-    private final String name;
-    private final String color;
+    private final LineInfo lineInfo;
+    private final Sections sections;
 
-    public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
+    public Line(LineInfo lineInfo, Sections sections) {
+        this.lineInfo = lineInfo;
+        this.sections = sections;
     }
 
     public Long getId() {
-        return id;
+        return lineInfo.getId();
     }
 
     public String getName() {
-        return name;
+        return lineInfo.getName();
     }
 
     public String getColor() {
-        return color;
+        return lineInfo.getColor();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Line line = (Line) o;
-        return Objects.equals(id, line.id)
-                && Objects.equals(name, line.name)
-                && Objects.equals(color, line.color);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, color);
-    }
-
-    @Override
-    public String toString() {
-        return "Line{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                '}';
+    public List<Station> getStations() {
+        return sections.toSortedStations();
     }
 }

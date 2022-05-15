@@ -13,9 +13,9 @@ import wooteco.subway.domain.section.SectionsFactory;
 
 public class Lines {
 
-    private final List<Line2> value;
+    private final List<Line> value;
 
-    private Lines(List<Line2> value) {
+    private Lines(List<Line> value) {
         this.value = value;
     }
 
@@ -28,23 +28,24 @@ public class Lines {
                 .collect(groupingBy(RegisteredSection::getLineId));
     }
 
-    private static List<Line2> toSortedLines(Map<Long, List<RegisteredSection>> registeredSections) {
+    private static List<Line> toSortedLines(Map<Long, List<RegisteredSection>> registeredSections) {
         return registeredSections.keySet()
                 .stream()
                 .map(registeredSections::get)
                 .map(Lines::toLine)
-                .sorted(Comparator.comparingLong(Line2::getId))
+                .sorted(Comparator.comparingLong(Line::getId))
                 .collect(Collectors.toList());
     }
 
-    private static Line2 toLine(List<RegisteredSection> sameLineSections) {
+    private static Line toLine(List<RegisteredSection> sameLineSections) {
         RegisteredSection commonSection = sameLineSections.get(0);
         Long lineId = commonSection.getLineId();
         String lineName = commonSection.getLineName();
         String lineColor = commonSection.getLineColor();
+        LineInfo lineInfo = new LineInfo(lineId, lineName, lineColor);
         Sections sections = toSections(sameLineSections);
 
-        return new Line2(lineId, lineName, lineColor, sections);
+        return new Line(lineInfo, sections);
     }
 
     private static Sections toSections(List<RegisteredSection> sameLineSections) {
@@ -54,7 +55,7 @@ public class Lines {
         return SectionsFactory.generate(sections);
     }
 
-    public List<Line2> toSortedList() {
+    public List<Line> toSortedList() {
         return value;
     }
 }
