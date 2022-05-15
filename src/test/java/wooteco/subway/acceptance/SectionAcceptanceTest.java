@@ -14,10 +14,10 @@ import org.springframework.http.MediaType;
 import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.entity.LineEntity;
 
 class SectionAcceptanceTest extends AcceptanceTest {
 
@@ -34,7 +34,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private Station nowon;
     private Station jamsil;
 
-    private Line line1;
+    private LineEntity line1;
 
     @Override
     @BeforeEach
@@ -43,7 +43,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         gangnam = stationDao.save(new Station("강남"));
         nowon = stationDao.save(new Station("노원"));
         jamsil = stationDao.save(new Station("잠실"));
-        line1 = lineDao.save(new Line("1호선", "red"));
+        line1 = lineDao.save(new LineEntity(null, "1호선", "red"));
         Section section1 = sectionDao.save(new Section(line1.getId(), gangnam.getId(), nowon.getId(), 10));
     }
 

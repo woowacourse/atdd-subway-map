@@ -15,6 +15,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.entity.LineEntity;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.NotFoundException;
 
@@ -44,7 +45,8 @@ public class LineService {
     }
 
     private Line saveLine(LineRequest request) {
-        return lineDao.save(new Line(request.getName(), request.getColor()));
+        LineEntity saved = lineDao.save(new LineEntity(null, request.getName(), request.getColor()));
+        return new Line(saved.getId(), saved.getName(), saved.getColor());
     }
 
     private void saveSection(Long lineId, LineRequest request) {

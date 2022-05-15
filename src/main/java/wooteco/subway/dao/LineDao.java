@@ -3,10 +3,11 @@ package wooteco.subway.dao;
 import java.util.List;
 import java.util.Optional;
 import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 
 public interface LineDao {
 
-    Line save(Line line);
+    LineEntity save(LineEntity line);
 
     List<Line> findAll();
 

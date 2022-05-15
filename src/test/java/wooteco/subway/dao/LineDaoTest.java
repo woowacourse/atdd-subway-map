@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 
 @JdbcTest
 public class LineDaoTest {
@@ -26,14 +27,18 @@ public class LineDaoTest {
         lineDao = new JdbcLineDao(jdbcTemplate);
     }
 
+    LineEntity saveLine(String name, String color) {
+        return lineDao.save(new LineEntity(null, name, color));
+    }
+
     @Test
     @DisplayName("노선을 저장하면 저장된 노선 정보를 반환한다.")
     void save() {
         // given
-        final Line line = new Line("7호선", "bg-red-600");
+        final LineEntity line = new LineEntity(null, "7호선", "bg-red-600");
 
         // when
-        Line savedLine = lineDao.save(line);
+        LineEntity savedLine = lineDao.save(line);
 
         // then
         assertThat(savedLine.getName()).isEqualTo(line.getName());
@@ -46,13 +51,11 @@ public class LineDaoTest {
         // given
         String line7Name = "7호선";
         String line7Color = "bg-red-600";
-        final Line line7 = new Line(line7Name, line7Color);
-        lineDao.save(line7);
+        saveLine(line7Name, line7Color);
 
         final String line5Name = "5호선";
         final String line5Color = "bg-green-600";
-        final Line line5 = new Line(line5Name, line5Color);
-        lineDao.save(line5);
+        saveLine(line5Name, line5Color);
 
         // when
         final List<Line> lines = lineDao.findAll();
@@ -69,8 +72,7 @@ public class LineDaoTest {
     @DisplayName("id를 통해 해당하는 노선을 조회한다.")
     void findById() {
         // given
-        final Line line7 = new Line("7호선", "bg-red-600");
-        Line persistLine = lineDao.save(line7);
+        LineEntity persistLine = saveLine("7호선", "bg-red-600");
 
         // when
         Line actual = lineDao.findById(persistLine.getId()).get();
@@ -86,7 +88,7 @@ public class LineDaoTest {
     @DisplayName("id를 통해 해당하는 노선을 업데이트한다.")
     void updateById() {
         // given
-        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600"));
+        final LineEntity persistLine = saveLine("7호선", "bg-red-600");
 
         // when
         final Line lineForUpdate = new Line(persistLine.getId(), "5호선", "bg-green-600");
@@ -103,7 +105,7 @@ public class LineDaoTest {
     @DisplayName("id를 통해 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given
-        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600"));
+        final LineEntity persistLine = saveLine("7호선", "bg-red-600");
 
         // when
         Long id = persistLine.getId();

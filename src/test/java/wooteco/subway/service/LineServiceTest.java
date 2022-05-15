@@ -14,6 +14,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.entity.LineEntity;
 
 @SpringBootTest
 @Transactional
@@ -83,7 +84,7 @@ class LineServiceTest {
     @DisplayName("id에 해당하는 노선 정보를 수정한다.")
     void updateById() {
         // given
-        Line savedLine = lineDao.save(new Line("1호선", "bg-red-600"));
+        LineEntity savedLine = lineDao.save(new LineEntity(null, "1호선", "bg-red-600"));
 
         final String name = "7호선";
         final String color = "bg-blue-600";
@@ -102,7 +103,7 @@ class LineServiceTest {
     @DisplayName("id에 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given
-        Line savedLine = lineDao.save(new Line("1호선", "bg-red-600"));
+        LineEntity savedLine = lineDao.save(new LineEntity(null, "1호선", "bg-red-600"));
 
         // when
         lineService.deleteById(savedLine.getId());
