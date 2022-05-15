@@ -44,4 +44,17 @@ class RegisteredSectionDaoTest extends DaoTest {
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
+    @Test
+    void findAllByLineId_메서드는_특정_노선에_등록된_모든_구간들의_데이터를_조회() {
+        testFixtureManager.saveSection(1L, 1L, 2L, 20);
+        testFixtureManager.saveSection(1L, 2L, 3L, 10);
+        testFixtureManager.saveSection(2L, 1L, 3L, 30);
+
+        List<RegisteredSectionEntity> actual = dao.findAllByLineId(1L);
+        List<RegisteredSectionEntity> expected = List.of(
+                new RegisteredSectionEntity(LINE1, STATION1, STATION2, 20),
+                new RegisteredSectionEntity(LINE1, STATION2, STATION3, 10));
+
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+    }
 }
