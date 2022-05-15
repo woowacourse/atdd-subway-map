@@ -20,10 +20,11 @@ class StationDaoTest extends DaoTest {
 
     @Test
     void findAll_메서드는_모든_데이터를_조회() {
-        List<StationEntity> actual = dao.findAll();
+        testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
 
+        List<StationEntity> actual = dao.findAll();
         List<StationEntity> expected = List.of(
-                new StationEntity(1L, "이미 존재하는 역 이름"),
+                new StationEntity(1L, "강남역"),
                 new StationEntity(2L, "선릉역"),
                 new StationEntity(3L, "잠실역"));
 
@@ -32,8 +33,9 @@ class StationDaoTest extends DaoTest {
 
     @Test
     void findAllByIds_메서드는_id_목록에_해당되는_모든_데이터를_조회() {
-        List<StationEntity> actual = dao.findAllByIds(List.of(1L, 3L));
+        testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
 
+        List<StationEntity> actual = dao.findAllByIds(List.of(1L, 3L));
         List<StationEntity> expected = List.of(
                 new StationEntity(1L, "이미 존재하는 역 이름"),
                 new StationEntity(3L, "잠실역"));
@@ -47,9 +49,10 @@ class StationDaoTest extends DaoTest {
 
         @Test
         void 존재하는_데이터의_id인_경우_해당_데이터가_담긴_Optional_반환() {
-            StationEntity actual = dao.findById(1L).get();
+            testFixtureManager.saveStations("강남역");
 
-            StationEntity expected = new StationEntity(1L, "이미 존재하는 역 이름");
+            StationEntity actual = dao.findById(1L).get();
+            StationEntity expected = new StationEntity(1L, "강남역");
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -68,16 +71,17 @@ class StationDaoTest extends DaoTest {
 
         @Test
         void 저장된_name인_경우_해당_데이터가_담긴_Optional_반환() {
-            StationEntity actual = dao.findByName("이미 존재하는 역 이름").get();
+            testFixtureManager.saveStations("존재하는 역 이름");
 
-            StationEntity expected = new StationEntity(1L, "이미 존재하는 역 이름");
+            StationEntity actual = dao.findByName("존재하는 역 이름").get();
+            StationEntity expected = new StationEntity(1L, "존재하는 역 이름");
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 저장되지_않는_name인_경우_비어있는_Optional_반환() {
-            boolean dataFound = dao.findByName("존재하지 않는 역 이름").isPresent();
+            boolean dataFound = dao.findByName("저장되지 않은 역 이름").isPresent();
 
             assertThat(dataFound).isFalse();
         }
@@ -89,16 +93,19 @@ class StationDaoTest extends DaoTest {
 
         @Test
         void 중복되지_않는_이름인_경우_저장_성공() {
-            StationEntity actual = dao.save(new StationEntity("새로운 지하철역"));
+            testFixtureManager.saveStations("존재하는 역 이름");
 
-            StationEntity expected = new StationEntity(4L, "새로운 지하철역");
+            StationEntity actual = dao.save(new StationEntity("새로운 지하철역"));
+            StationEntity expected = new StationEntity(2L, "새로운 지하철역");
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 중복되는_이름을_입력한_경우_예외발생() {
-            assertThatThrownBy(() -> dao.save(new StationEntity("이미 존재하는 역 이름")))
+            testFixtureManager.saveStations("존재하는 역 이름");
+
+            assertThatThrownBy(() -> dao.save(new StationEntity("존재하는 역 이름")))
                     .isInstanceOf(DataAccessException.class);
         }
     }
@@ -109,8 +116,9 @@ class StationDaoTest extends DaoTest {
 
         @Test
         void 존재하는_데이터의_id가_입력된_경우_삭제성공() {
-            dao.deleteById(1L);
+            testFixtureManager.saveStations("존재하는 역");
 
+            dao.deleteById(1L);
             boolean exists = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM station WHERE id = 1", Integer.class) > 0;
 
