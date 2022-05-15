@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.DataDuplicationException;
+import wooteco.subway.exception.DataNotFoundException;
 
 @Service
 public class StationService {
@@ -23,14 +24,14 @@ public class StationService {
     public Station createStation(Station station) {
         Optional<Station> foundStation = stationDao.findByName(station.getName());
         if (foundStation.isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 역입니다.");
+            throw new DataDuplicationException("이미 등록된 역입니다.");
         }
         return stationDao.save(station);
     }
 
     public Station findById(Long id) {
-        Optional<Station> foundStation = stationDao.findById(id);
-        return foundStation.orElseThrow(() -> new DataNotExistException("존재하지 않는 역입니다."));
+        return stationDao.findById(id)
+            .orElseThrow(() -> new DataNotFoundException("존재하지 않는 역입니다."));
     }
 
     public List<Station> findAll() {
@@ -39,7 +40,7 @@ public class StationService {
 
     public void deleteById(Long id) {
         if (stationDao.deleteById(id) == ROW_SIZE_WHEN_NOT_DELETED) {
-            throw new DataNotExistException("존재하지 않는 역입니다.");
+            throw new DataNotFoundException("존재하지 않는 역입니다.");
         }
     }
 }
