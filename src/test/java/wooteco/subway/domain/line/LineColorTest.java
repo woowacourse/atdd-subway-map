@@ -20,17 +20,6 @@ class LineColorTest {
                 .hasMessage("지하철노선 색상은 공백이 될 수 없습니다.");
     }
 
-    @DisplayName("색상을 비교한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"red,blue,false", "black,black,true"})
-    void equals(String color1, String color2, boolean expected) {
-        LineColor thisColor = new LineColor(color1);
-        LineColor otherColor = new LineColor(color2);
-
-        boolean actual = thisColor.equals(otherColor);
-        assertThat(actual).isEqualTo(expected);
-    }
-
     @DisplayName("색상을 반환한다.")
     @ParameterizedTest
     @ValueSource(strings = {"white"})

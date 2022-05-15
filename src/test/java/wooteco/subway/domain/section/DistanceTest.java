@@ -36,13 +36,13 @@ class DistanceTest {
 
     @DisplayName("거리를 비교한다.")
     @ParameterizedTest
-    @MethodSource("provideForIsCloserThan")
-    void isLessThan(Distance other, boolean expected) {
+    @MethodSource("provideForIsLongerThan")
+    void isLongerThan(Distance other, boolean expected) {
         boolean actual = distance.isLongerThan(other);
         assertThat(actual).isEqualTo(expected);
     }
 
-    private static Stream<Arguments> provideForIsCloserThan() {
+    private static Stream<Arguments> provideForIsLongerThan() {
         return Stream.of(
                 Arguments.of(new Distance(DEFAULT_DISTANCE - 1), true),
                 Arguments.of(new Distance(DEFAULT_DISTANCE), false),
@@ -76,20 +76,6 @@ class DistanceTest {
                 Arguments.of(new Distance(5), 5 + DEFAULT_DISTANCE),
                 Arguments.of(new Distance(2), 2 + DEFAULT_DISTANCE)
         );
-    }
-
-    @DisplayName("거리가 동일한지 확인한다.")
-    @ParameterizedTest
-    @MethodSource("provideForEquals")
-    void equals(Distance other, boolean expected) {
-        boolean actual = distance.equals(other);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    private static Stream<Arguments> provideForEquals() {
-        return Stream.of(
-                Arguments.of(new Distance(DEFAULT_DISTANCE), true),
-                Arguments.of(new Distance(DEFAULT_DISTANCE + 1), false));
     }
 
     @DisplayName("거리를 반환한다.")

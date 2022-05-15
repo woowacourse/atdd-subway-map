@@ -22,23 +22,6 @@ public class LineColor {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        LineColor lineColor = (LineColor) o;
-        return Objects.equals(color, lineColor.color);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(color);
-    }
-
-    @Override
     public String toString() {
         return "LineColor{'" + color + "'}";
     }
