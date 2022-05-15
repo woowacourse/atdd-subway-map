@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public class Sections {
 
     private static final int MIN_COUNT_OF_SECTION = 1;
+    private static final String NOT_SAME_LINE = "같은 노선에 존재하는 지하철 역이 아닙니다.";
     private static final String NOT_EXIST_STATION = "해당 노선에 존재하는 역이 아닙니다.";
     private static final String ALREADY_ADDED = "이미 등록되어있는 구간입니다.";
     private static final String NO_SECTION = "추가할 수 있는 구간이 없습니다.";
@@ -19,6 +20,7 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
+        validateSections(sections);
         this.sections = sections;
     }
 
@@ -81,6 +83,16 @@ public class Sections {
         }
 
         return result;
+    }
+
+    private void validateSections(List<Section> sections) {
+        Section section = sections.get(0);
+        boolean isSameLine = sections.stream()
+                .allMatch(s -> s.isSameLine(section));
+
+        if (isSameLine) {
+            throw new BusinessException(NOT_SAME_LINE);
+        }
     }
 
     private void addUpStream(LinkedList<Long> result, Long key) {

@@ -27,6 +27,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean isSameLine(Section section) {
+        return this.lineId == section.lineId;
+    }
+
     public boolean isSameUp(Long id) {
         return upStationId == id;
     }
