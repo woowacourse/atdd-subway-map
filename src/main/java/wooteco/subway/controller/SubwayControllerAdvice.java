@@ -22,8 +22,12 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleInvalidArgument(Exception e) {
-        return new ResponseEntity<>("이름이나 색깔이 공백입니다.", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handleInvalidArgument(MethodArgumentNotValidException e) {
+        String errorMessage = e.getBindingResult()
+                .getAllErrors()
+                .get(0)
+                .getDefaultMessage();
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
