@@ -74,10 +74,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createGetLineResponseById(id);
         LineResponse lineResponse = response.body().jsonPath().getObject(".", LineResponse.class);
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponse.getId()).isEqualTo(Long.valueOf(id));
-        assertThat(lineResponse.getName()).isEqualTo(이호선.getName());
-        assertThat(lineResponse.getColor()).isEqualTo(이호선.getColor());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineResponse.getId()).isEqualTo(Long.valueOf(id)),
+                () -> assertThat(lineResponse.getName()).isEqualTo(이호선.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(이호선.getColor())
+        );
     }
 
     @DisplayName("노선을 조회한다.")
@@ -105,8 +107,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String id = createResponse.header("Location").split("/")[2];
         // when
         ExtractableResponse<Response> response = createPutLineResponse(id, 이호선);
+        LineResponse lineResponse = createGetLineResponseById(id).body().jsonPath().getObject(".", LineResponse.class);
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineResponse.getId()).isEqualTo(Long.valueOf(id)),
+                () -> assertThat(lineResponse.getName()).isEqualTo(이호선.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(이호선.getColor())
+        );
     }
 
     @DisplayName("노선 업데이트에 실패한다.")
