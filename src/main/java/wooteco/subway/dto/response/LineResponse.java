@@ -3,7 +3,6 @@ package wooteco.subway.dto.response;
 import java.util.List;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.util.Converter;
 
 public class LineResponse {

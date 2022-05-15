@@ -18,56 +18,19 @@ public class SectionRepository {
 
     private final CommonStationDao stationDao;
     private final CommonSectionDao sectionDao;
-    private final CommonLineDao lineDao;
+    private final LineRepository lineRepository;
 
-    public SectionRepository(final CommonStationDao stationDao, final CommonSectionDao sectionDao, final CommonLineDao lineDao) {
+    public SectionRepository(final CommonStationDao stationDao, final CommonSectionDao sectionDao,
+                             final LineRepository lineRepository) {
         this.stationDao = stationDao;
         this.sectionDao = sectionDao;
-        this.lineDao = lineDao;
+        this.lineRepository = lineRepository;
     }
 
     @Transactional(readOnly = true)
     public Line findLineById(final Long lineId) {
-        final List<SectionDto> sectionDtos = sectionDao.findAllByLineId(lineId);
-        final Line line = lineDao.findById(lineId);
-        return addSectionsToLine(line, sectionDtos);
+        return lineRepository.findById(lineId);
     }
-
-    private Line addSectionsToLine(final Line line, final List<SectionDto> sectionDtos) {
-        final List<SectionDto> sortedSectionDtos = sortSectionDto(sectionDtos, line.getUpStationId());
-        for (SectionDto sectionDto : sortedSectionDtos) {
-            final Station upStation = stationDao.findById(sectionDto.getUpStationId());
-            final Station downStation = stationDao.findById(sectionDto.getDownStationId());
-            line.addSection(new Section(upStation, downStation, sectionDto.getDistance()));
-        }
-        return line;
-    }
-
-    private List<SectionDto> sortSectionDto(List<SectionDto> sectionDtos, final Long upStationId) {
-        final List<SectionDto> sortedSectionDtos = new ArrayList<>();
-        Long sectionId = upStationId;
-        while (!sectionDtos.isEmpty()) {
-            final SectionDto sectionDto = findSectionDtoById(sectionDtos, sectionId);
-            sortedSectionDtos.add(sectionDto);
-            sectionId = sectionDto.getDownStationId();
-            sectionDtos = remove(sectionDtos, sectionDto);
-        }
-        return sortedSectionDtos;
-    }
-
-    private SectionDto findSectionDtoById(final List<SectionDto> sectionDtos, final Long id) {
-        return sectionDtos.stream()
-                .filter(sectionDto -> sectionDto.getUpStationId().equals(id))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private List<SectionDto> remove(final List<SectionDto> sectionDtos, final SectionDto target) {
-        return sectionDtos.stream()
-                .filter(sectionDto -> !(sectionDto.getUpStationId().equals(target.getUpStationId())))
-                .collect(Collectors.toList());
-    }
-
 
     @Transactional(readOnly = true)
     public Station findStationById(final Long stationId) {
