@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Sections;
 
 @Service
 public class SectionService {
