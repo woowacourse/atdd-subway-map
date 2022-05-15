@@ -1,10 +1,10 @@
 package wooteco.subway.dto.info;
 
-public class RequestDeleteSectionInfo {
+public class RequestToDeleteSection {
     private final Long lineId;
     private final Long stationId;
 
-    public RequestDeleteSectionInfo(Long lineId, Long stationId) {
+    public RequestToDeleteSection(Long lineId, Long stationId) {
         this.lineId = lineId;
         this.stationId = stationId;
     }

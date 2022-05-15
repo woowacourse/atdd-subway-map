@@ -2,18 +2,18 @@ package wooteco.subway.dto.info;
 
 import java.util.List;
 
-public class ResponseLineInfo {
+public class ResponseToLineService {
     private final Long id;
     private final String name;
     private final String color;
-    private final List<StationInfo> stationInfos;
+    private final List<StationDto> stationDtos;
 
-    public ResponseLineInfo(Long id, String name, String color,
-        List<StationInfo> stationInfos) {
+    public ResponseToLineService(Long id, String name, String color,
+        List<StationDto> stationDtos) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stationInfos = stationInfos;
+        this.stationDtos = stationDtos;
     }
 
     public Long getId() {
@@ -28,7 +28,7 @@ public class ResponseLineInfo {
         return color;
     }
 
-    public List<StationInfo> getStationInfos() {
-        return stationInfos;
+    public List<StationDto> getStationInfos() {
+        return stationDtos;
     }
 }

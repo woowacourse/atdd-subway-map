@@ -1,6 +1,6 @@
 package wooteco.subway.dto.info;
 
-public class RequestLineInfo {
+public class RequestForLineService {
     private Long id;
     private final String name;
     private final String color;
@@ -8,7 +8,7 @@ public class RequestLineInfo {
     private final Long downStationId;
     private final Integer distance;
 
-    public RequestLineInfo(String name, String color, Long upStationId, Long downStationId, Integer distance) {
+    public RequestForLineService(String name, String color, Long upStationId, Long downStationId, Integer distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
@@ -16,7 +16,7 @@ public class RequestLineInfo {
         this.distance = distance;
     }
 
-    public RequestLineInfo(Long id, String name, String color, Long upStationId, Long downStationId,
+    public RequestForLineService(Long id, String name, String color, Long upStationId, Long downStationId,
         Integer distance) {
         this.id = id;
         this.name = name;

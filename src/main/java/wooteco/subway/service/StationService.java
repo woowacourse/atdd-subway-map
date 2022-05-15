@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.info.StationInfo;
+import wooteco.subway.dto.info.StationDto;
 
 @Service
 public class StationService {
@@ -26,23 +26,23 @@ public class StationService {
     }
 
     @Transactional
-    public StationInfo save(StationInfo stationInfo) {
-        validateNameDuplicate(stationInfo);
-        Station station = new Station(stationInfo.getName());
+    public StationDto save(StationDto stationDto) {
+        validateNameDuplicate(stationDto);
+        Station station = new Station(stationDto.getName());
         Station newStation = stationDao.save(station);
-        return new StationInfo(newStation.getId(), newStation.getName());
+        return new StationDto(newStation.getId(), newStation.getName());
     }
 
-    private void validateNameDuplicate(StationInfo stationInfo) {
-        if (stationDao.existByName(stationInfo.getName())) {
+    private void validateNameDuplicate(StationDto stationDto) {
+        if (stationDao.existByName(stationDto.getName())) {
             throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_NAME);
         }
     }
 
-    public List<StationInfo> findAll() {
+    public List<StationDto> findAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-            .map(it -> new StationInfo(it.getId(), it.getName()))
+            .map(it -> new StationDto(it.getId(), it.getName()))
             .collect(Collectors.toList());
     }
 

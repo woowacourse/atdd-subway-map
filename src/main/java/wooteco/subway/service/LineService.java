@@ -14,10 +14,10 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineEntity;
-import wooteco.subway.dto.info.RequestLineInfo;
-import wooteco.subway.dto.info.RequestLineInfoToUpdate;
-import wooteco.subway.dto.info.ResponseLineInfo;
-import wooteco.subway.dto.info.StationInfo;
+import wooteco.subway.dto.info.RequestForLineService;
+import wooteco.subway.dto.info.RequestToUpdateLine;
+import wooteco.subway.dto.info.ResponseToLineService;
+import wooteco.subway.dto.info.StationDto;
 
 @Service
 public class LineService {
@@ -38,7 +38,7 @@ public class LineService {
     }
 
     @Transactional
-    public ResponseLineInfo save(RequestLineInfo lineInfo) {
+    public ResponseToLineService save(RequestForLineService lineInfo) {
         String lineName = lineInfo.getName();
         String lineColor = lineInfo.getColor();
         Long upStationId = lineInfo.getUpStationId();
@@ -53,7 +53,7 @@ public class LineService {
 
         Line resultLine = lineCreator.createLine(lineEntity.getId());
 
-        return new ResponseLineInfo(resultLine.getId(), resultLine.getName(), resultLine.getColor(),
+        return new ResponseToLineService(resultLine.getId(), resultLine.getName(), resultLine.getColor(),
             convertStationToInfo(resultLine.getStations()));
     }
 
@@ -63,49 +63,49 @@ public class LineService {
         validateNotExistStation(downStationId);
     }
 
-    private void saveFirstSection(RequestLineInfo lineInfo, Long upStationId, Long downStationId,
+    private void saveFirstSection(RequestForLineService lineInfo, Long upStationId, Long downStationId,
         LineEntity lineEntity) {
         Section section = new Section(stationDao.getStation(upStationId), stationDao.getStation(downStationId),
             lineInfo.getDistance());
         sectionDao.save(lineEntity.getId(), section);
     }
 
-    public List<ResponseLineInfo> findAll() {
+    public List<ResponseToLineService> findAll() {
         List<Line> lines = new ArrayList<>();
         List<LineEntity> lineEntities = lineDao.findAll();
         for (LineEntity lineEntity : lineEntities) {
             lines.add(lineCreator.createLine(lineEntity.getId()));
         }
 
-        List<ResponseLineInfo> responseLineInfos = new ArrayList<>();
+        List<ResponseToLineService> responseToLineServices = new ArrayList<>();
         for (Line line : lines) {
-            responseLineInfos.add(new ResponseLineInfo(line.getId(), line.getName(), line.getColor(),
+            responseToLineServices.add(new ResponseToLineService(line.getId(), line.getName(), line.getColor(),
                 convertStationToInfo(line.getStations())));
         }
-        return responseLineInfos;
+        return responseToLineServices;
     }
 
-    public ResponseLineInfo find(Long id) {
+    public ResponseToLineService find(Long id) {
         validateNotExists(id);
         LineEntity lineEntity = lineDao.find(id);
         Line line = lineCreator.createLine(lineEntity.getId());
-        return new ResponseLineInfo(line.getId(), line.getName(), line.getColor(),
+        return new ResponseToLineService(line.getId(), line.getName(), line.getColor(),
             convertStationToInfo(line.getStations()));
     }
 
-    private List<StationInfo> convertStationToInfo(List<Station> stations) {
+    private List<StationDto> convertStationToInfo(List<Station> stations) {
         return stations.stream()
-            .map(station -> new StationInfo(station.getId(), station.getName()))
+            .map(station -> new StationDto(station.getId(), station.getName()))
             .collect(Collectors.toList());
     }
 
-    public void update(RequestLineInfoToUpdate requestLineInfoToUpdate) {
-        Long id = requestLineInfoToUpdate.getId();
-        String name = requestLineInfoToUpdate.getName();
+    public void update(RequestToUpdateLine requestToUpdateLine) {
+        Long id = requestToUpdateLine.getId();
+        String name = requestToUpdateLine.getName();
 
         validateNotExists(id);
         validateNameDuplication(name);
-        Line line = new Line(id, name, requestLineInfoToUpdate.getColor());
+        Line line = new Line(id, name, requestToUpdateLine.getColor());
         lineDao.update(line);
     }
 

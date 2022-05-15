@@ -11,8 +11,8 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineEntity;
-import wooteco.subway.dto.info.RequestCreateSectionInfo;
-import wooteco.subway.dto.info.RequestDeleteSectionInfo;
+import wooteco.subway.dto.info.RequestToCreateSection;
+import wooteco.subway.dto.info.RequestToDeleteSection;
 
 @Service
 public class SectionService {
@@ -33,15 +33,15 @@ public class SectionService {
     }
 
     @Transactional
-    public void save(RequestCreateSectionInfo requestCreateSectionInfo) {
-        Long lineId = requestCreateSectionInfo.getLineId();
-        Long upStationId = requestCreateSectionInfo.getUpStationId();
-        Long downStationId = requestCreateSectionInfo.getDownStationId();
+    public void save(RequestToCreateSection requestToCreateSection) {
+        Long lineId = requestToCreateSection.getLineId();
+        Long upStationId = requestToCreateSection.getUpStationId();
+        Long downStationId = requestToCreateSection.getDownStationId();
 
         validateBeforeSave(lineId, upStationId, downStationId);
 
         Section section = new Section(stationDao.getStation(upStationId), stationDao.getStation(downStationId),
-            requestCreateSectionInfo.getDistance());
+            requestToCreateSection.getDistance());
         LineEntity lineEntity = lineDao.find(lineId);
         Line line = lineCreator.createLine(lineEntity.getId());
         line.updateToAdd(section);
@@ -62,9 +62,9 @@ public class SectionService {
     }
 
     @Transactional
-    public void delete(RequestDeleteSectionInfo requestDeleteSectionInfo) {
-        Long lineId = requestDeleteSectionInfo.getLineId();
-        Long stationId = requestDeleteSectionInfo.getStationId();
+    public void delete(RequestToDeleteSection requestToDeleteSection) {
+        Long lineId = requestToDeleteSection.getLineId();
+        Long stationId = requestToDeleteSection.getStationId();
 
         validateNotExistsLine(lineId);
         validateNotExistStation(stationId);

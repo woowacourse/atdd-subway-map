@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.dto.info.RequestLineInfo;
-import wooteco.subway.dto.info.RequestLineInfoToUpdate;
-import wooteco.subway.dto.info.ResponseLineInfo;
+import wooteco.subway.dto.info.RequestForLineService;
+import wooteco.subway.dto.info.RequestToUpdateLine;
+import wooteco.subway.dto.info.ResponseToLineService;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.service.LineService;
@@ -32,14 +32,14 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        RequestLineInfo lineInfo = LineConverter.toInfo(lineRequest);
+        RequestForLineService lineInfo = LineConverter.toInfo(lineRequest);
         LineResponse lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<ResponseLineInfo> lineInfos = lineService.findAll();
+        List<ResponseToLineService> lineInfos = lineService.findAll();
         List<LineResponse> lineResponses = lineInfos.stream()
             .map(LineConverter::toResponse)
             .collect(Collectors.toList());
@@ -54,8 +54,8 @@ public class LineController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        RequestLineInfoToUpdate requestLineInfoToUpdate = LineConverter.toInfo(id, lineRequest);
-        lineService.update(requestLineInfoToUpdate);
+        RequestToUpdateLine requestToUpdateLine = LineConverter.toInfo(id, lineRequest);
+        lineService.update(requestToUpdateLine);
         return ResponseEntity.ok().build();
     }
 

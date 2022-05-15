@@ -1,15 +1,15 @@
 package wooteco.subway.dto.info;
 
-public class StationInfo {
+public class StationDto {
     private Long id;
     private String name;
 
-    public StationInfo(Long id, String name) {
+    public StationDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public StationInfo(String name) {
+    public StationDto(String name) {
         this.name = name;
     }
 
