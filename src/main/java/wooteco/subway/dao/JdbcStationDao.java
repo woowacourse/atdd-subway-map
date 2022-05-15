@@ -54,4 +54,9 @@ public class JdbcStationDao {
         String sql = "select EXISTS (select name from station where name = ?) as success";
         return jdbcTemplate.queryForObject(sql, Integer.class, name) == STATION_EXIST_VALUE;
     }
+
+    public Station findById(Long id) {
+        String sql = "select * from station where id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
 }

@@ -15,12 +15,16 @@ import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
 
     @Mock
-    private JdbcLineDao JdbcLineDao;
+    private JdbcLineDao jdbcLineDao;
+
+    @Mock
+    private SectionService sectionService;
 
     @InjectMocks
     private LineService lineService;
@@ -29,22 +33,32 @@ class LineServiceTest {
     @Test
     void createLine() {
         doReturn(1L)
-                .when(JdbcLineDao).save("신분당선", "bg-red-600");
+                .when(jdbcLineDao)
+                .save("신분당선", "bg-red-600");
 
-        LineResponse lineResponse = lineService.createLine(new LineRequest("신분당선", "bg-red-600"));
+        doReturn(List.of(
+                new StationResponse(1L, "강남역"),
+                new StationResponse(2L, "사당역")
+        ))
+                .when(sectionService)
+                .getStationsByLineId(1L);
+
+        LineResponse lineResponse = lineService.createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 5));
 
         assertAll(
                 () -> lineResponse.getId().equals(1L),
                 () -> lineResponse.getName().equals("신분당선"),
                 () -> lineResponse.getColor().equals("bg-red-600")
         );
+
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
     }
 
     @DisplayName("지하철 노선 전체 목록을 조회한다.")
     @Test
     void getLines() {
-        doReturn(List.of(new Line("신분당선", "bg-red-600"), new Line("분당선", "bg-green-600")))
-                .when(JdbcLineDao).findAll();
+        doReturn(List.of(new Line(1L, "신분당선", "bg-red-600"), new Line(2L, "분당선", "bg-green-600")))
+                .when(jdbcLineDao).findAll();
 
         List<LineResponse> lineResponses = lineService.getLines();
 
@@ -55,8 +69,15 @@ class LineServiceTest {
     @Test
     void getLine() {
         doReturn(new Line(1L, "신분당선", "bg-red-600"))
-                .when(JdbcLineDao)
+                .when(jdbcLineDao)
                 .findById(1L);
+
+        doReturn(List.of(
+                new StationResponse(1L, "강남역"),
+                new StationResponse(2L, "양재역")
+        ))
+                .when(sectionService)
+                .getStationsByLineId(1L);
 
         LineResponse lineResponse = lineService.getLine(1L);
 
@@ -65,13 +86,14 @@ class LineServiceTest {
                 () -> lineResponse.getName().equals("신분당선"),
                 () -> lineResponse.getColor().equals("bg-red-600")
         );
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         doReturn(true)
-                .when(JdbcLineDao)
+                .when(jdbcLineDao)
                 .updateById(1L, "분당선", "bg-green-600");
 
         boolean isUpdated = lineService.updateLine(1L, new LineRequest("분당선", "bg-green-600"));
@@ -82,7 +104,7 @@ class LineServiceTest {
     @Test
     void deleteLine() {
         doReturn(true)
-                .when(JdbcLineDao)
+                .when(jdbcLineDao)
                 .deleteById(1L);
 
         boolean isDeleted = lineService.deleteLine(1L);
