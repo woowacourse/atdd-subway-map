@@ -40,7 +40,7 @@ public class JdbcLineDao {
     }
 
     public Optional<Line> findById(Long id) {
-        String sql = "select *  from line where id = (?)";
+        String sql = "select * from line where id = (?)";
         return Optional.ofNullable(DataAccessUtils.singleResult(jdbcTemplate.query(sql, mapper, id)));
     }
 
