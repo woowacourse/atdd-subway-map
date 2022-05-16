@@ -50,8 +50,8 @@ public class SectionsOnTheLine {
         return sections.stream().anyMatch(section -> section.isDownStationMatch(sectionToAdd.getDownStation()));
     }
 
-    public boolean isAddableOutOfLine(final Section sectionToAdd) {
-        return !isAddableOnTheLine(sectionToAdd);
+    public boolean isAddableOutOfLine(final Section section) {
+        return !isAddableOnTheLine(section);
     }
 
     public Section findOverlapSection(final Section section) {
