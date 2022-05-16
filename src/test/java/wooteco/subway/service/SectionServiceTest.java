@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.entity.StationEntity;
@@ -47,9 +48,9 @@ class SectionServiceTest {
     void createSectionWithNone() {
         SectionRequest sectionRequest = new SectionRequest(stationAId, stationBId, 10);
 
-        sectionService.createSection(1L, sectionRequest);
+        Sections sections = sectionService.createSection(1L, sectionRequest);
 
-        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+        List<String> orderedStationNames = sections.getOrderedStations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
 
@@ -63,9 +64,9 @@ class SectionServiceTest {
         sectionService.createSection(1L, sectionRequest);
 
         SectionRequest sectionRequest2 = new SectionRequest(stationCId, stationAId, 10);
-        sectionService.createSection(1L, sectionRequest2);
+        Sections sections = sectionService.createSection(1L, sectionRequest2);
 
-        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+        List<String> orderedStationNames = sections.getOrderedStations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
 
@@ -79,9 +80,9 @@ class SectionServiceTest {
         sectionService.createSection(1L, sectionRequest);
 
         SectionRequest sectionRequest2 = new SectionRequest(stationBId, stationCId, 10);
-        sectionService.createSection(1L, sectionRequest2);
+        Sections sections = sectionService.createSection(1L, sectionRequest2);
 
-        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+        List<String> orderedStationNames = sections.getOrderedStations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
 
@@ -98,9 +99,9 @@ class SectionServiceTest {
         sectionService.createSection(1L, sectionRequest2);
 
         SectionRequest sectionRequest3 = new SectionRequest(stationDId, stationBId, 6);
-        sectionService.createSection(1L, sectionRequest3);
+        Sections sections = sectionService.createSection(1L, sectionRequest3);
 
-        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+        List<String> orderedStationNames = sections.getOrderedStations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
 
@@ -149,7 +150,8 @@ class SectionServiceTest {
 
         sectionService.deleteSection(1L, stationAId);
 
-        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+        Sections sections = sectionService.getSectionsByLineId(1L);
+        List<String> orderedStationNames = sections.getOrderedStations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(orderedStationNames).containsExactly("B", "C");
@@ -165,7 +167,8 @@ class SectionServiceTest {
 
         sectionService.deleteSection(1L, stationCId);
 
-        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+        Sections sections = sectionService.getSectionsByLineId(1L);
+        List<String> orderedStationNames = sections.getOrderedStations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(orderedStationNames).containsExactly("A", "B");
@@ -181,7 +184,8 @@ class SectionServiceTest {
 
         sectionService.deleteSection(1L, stationBId);
 
-        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+        Sections sections = sectionService.getSectionsByLineId(1L);
+        List<String> orderedStationNames = sections.getOrderedStations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(orderedStationNames).containsExactly("A", "C");
@@ -198,9 +202,9 @@ class SectionServiceTest {
         sectionService.deleteSection(1L, stationBId);
 
         SectionRequest sectionRequest3 = new SectionRequest(stationAId, stationDId, 9);
-        sectionService.createSection(1L, sectionRequest3);
+        Sections sections = sectionService.createSection(1L, sectionRequest3);
 
-        List<String> orderedStationNames = sectionService.getOrderedStations(1L).stream()
+        List<String> orderedStationNames = sections.getOrderedStations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(orderedStationNames).containsExactly("A", "D", "C");

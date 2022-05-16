@@ -23,7 +23,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public void createSection(Long lineId, SectionRequest sectionRequest) {
+    public Sections createSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = getStation(sectionRequest.getUpStationId());
         Station downStation = getStation(sectionRequest.getDownStationId());
 
@@ -34,6 +34,7 @@ public class SectionService {
                 sectionRequest.getDistance());
 
         saveSection(lineId, sectionRequest, newStation, occupiedSections);
+        return getSectionsByLineId(lineId);
     }
 
     private void saveSection(Long lineId, SectionRequest sectionRequest, Station newStation, List<Section> sections) {
@@ -45,6 +46,13 @@ public class SectionService {
             saveSplitSection(lineId, sectionRequest, newStation, section);
             sectionDao.deleteById(section.getId());
         }
+    }
+
+    private void saveNewSection(Long lineId, SectionRequest sectionRequest) {
+        SectionEntity newSectionEntity = new SectionEntity.Builder(lineId, sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(), sectionRequest.getDistance())
+                .build();
+        sectionDao.save(newSectionEntity);
     }
 
     private void saveSplitSection(Long lineId, SectionRequest sectionRequest, Station newStation, Section section) {
@@ -71,19 +79,7 @@ public class SectionService {
         sectionDao.save(saveRightSectionEntity);
     }
 
-    private void saveNewSection(Long lineId, SectionRequest sectionRequest) {
-        SectionEntity newSectionEntity = new SectionEntity.Builder(lineId, sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(), sectionRequest.getDistance())
-                .build();
-        sectionDao.save(newSectionEntity);
-    }
-
-    public List<Station> getOrderedStations(Long lineId) {
-        Sections sections = getSectionsByLineId(lineId);
-        return sections.getOrderedStations();
-    }
-
-    private Sections getSectionsByLineId(Long lineId) {
+    public Sections getSectionsByLineId(Long lineId) {
         List<Section> sections = new ArrayList<>();
         List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(lineId);
 

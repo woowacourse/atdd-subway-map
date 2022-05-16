@@ -7,13 +7,13 @@ public class Line {
     private final Long id;
     private final String name;
     private final String color;
-    private final Stations stations;
+    private final Sections sections;
 
-    public Line(Long id, String name, String color, Stations stations) {
+    public Line(Long id, String name, String color, Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.sections = sections;
     }
 
     public Long getId() {
@@ -29,6 +29,6 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return stations.getStations();
+        return sections.getOrderedStations();
     }
 }
