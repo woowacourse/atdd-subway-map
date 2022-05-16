@@ -54,7 +54,7 @@ class JdbcStationDaoTest {
     @Test
     void findById() {
         Long id = jdbcStationDao.save(new Station("강남역"));
-        Station station = jdbcStationDao.findById(id);
+        Station station = jdbcStationDao.findById(id).get();
         assertThat(station.getName()).isEqualTo("강남역");
     }
 }

@@ -45,7 +45,7 @@ class JdbcLineDaoTest {
     @DisplayName("단일 지하철 노선을 조회한다.")
     @Test
     void findById() {
-        Line line = jdbcLineDao.findById(id);
+        Line line = jdbcLineDao.findById(id).get();
 
         assertThat(line).isEqualTo(new Line("신분당선", "bg-red-600"));
     }
