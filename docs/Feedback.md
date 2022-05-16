@@ -98,10 +98,13 @@
 
 ### 지하철 노선도 미션 3단계
 
-- [ ] 미사용 변수 제거 - 불필요한 모킹 제거
+- [x] 미사용 변수 제거 - 불필요한 모킹 제거
 - [ ] `LineService` - `showLine()`
     - Transactional, readOnly 옵션 학습
-- [ ] `SectionServiceTest` - 테스트 구조화 및 가독성
+- [x] `SectionServiceTest` - 테스트 구조화 및 가독성
     - describe - context - it 패턴 적용 [참고 링크](https://johngrib.github.io/wiki/junit5-nested/)
-- [ ] `SectionsTest`
+        - describe : 설명할 테스트 대상
+        - context : 테스트 대상이 놓인 상황 설명
+        - it : 테스트 대상의 행동을 설명
+- [x] `SectionsTest`
     - 상수화 필요한 변수 수정

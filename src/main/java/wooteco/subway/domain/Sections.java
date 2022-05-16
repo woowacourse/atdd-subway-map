@@ -79,14 +79,14 @@ public class Sections {
     private void splitByUpStation(Section section, Section findSection) {
         validateDistance(section, findSection);
         int distance = findSection.getDistance() - section.getDistance();
-        sections.add(new Section(section.getDownStationId(), findSection.getDownStationId(), distance));
+        sections.add(new Section(findSection.getId(), section.getDownStationId(), findSection.getDownStationId(), distance));
         sections.remove(findSection);
     }
 
     private void splitByDownStation(Section section, Section findSection) {
         validateDistance(section, findSection);
         int distance = findSection.getDistance() - section.getDistance();
-        sections.add(new Section(findSection.getUpStationId(), section.getUpStationId(), distance));
+        sections.add(new Section(findSection.getId(), findSection.getUpStationId(), section.getUpStationId(), distance));
         sections.remove(findSection);
     }
 
