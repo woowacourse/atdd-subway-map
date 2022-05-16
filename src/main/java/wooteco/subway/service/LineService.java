@@ -37,7 +37,7 @@ public class LineService {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final Line newLine = lineDao.save(line);
         saveSection(newLine.getId(), lineRequest);
-        return LineResponse.of(newLine, stationsOnLine(newLine.getId()));
+        return LineResponse.of(newLine, getStationsFromSection(newLine.getId()));
     }
 
     private void validateDuplicate(final LineRequest lineRequest) {
@@ -60,7 +60,7 @@ public class LineService {
     }
 
 
-    private List<StationResponse> stationsOnLine(long lineId) {
+    private List<StationResponse> getStationsFromSection(long lineId) {
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
         List<Station> stations = sections.getSortedStations();
         return stations.stream()
@@ -79,14 +79,14 @@ public class LineService {
     public List<LineResponse> findLines() {
         final List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(line -> LineResponse.of(line, stationsOnLine(line.getId())))
+                .map(line -> LineResponse.of(line, getStationsFromSection(line.getId())))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLine(final Long id) {
         try {
             Line line = lineDao.findById(id);
-            return LineResponse.of(line, stationsOnLine(line.getId()));
+            return LineResponse.of(line, getStationsFromSection(line.getId()));
         } catch (EmptyResultDataAccessException e) {
             throw new LineNotFoundException("존재하지 않는 노선입니다.");
         }
