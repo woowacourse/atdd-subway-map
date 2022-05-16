@@ -83,21 +83,16 @@ public class Sections {
         int index, Section sectionInLine) {
 
         if (canInsertUpStation(section, sectionInLine) && !canInsertDownStation(section, sectionInLine)) {
-            addSection(flexibleSections, index, section);
+            flexibleSections.add(index, section);
             sectionInLine.updateUpStation(section.getDownStation(),
                 sectionInLine.getDistance() - section.getDistance());
         }
         if (canInsertDownStation(section, sectionInLine) && !canInsertUpStation(section, sectionInLine)) {
-            addSection(flexibleSections, index + 1, section);
+            flexibleSections.add(index + 1, section);
             sectionInLine.updateDownStation(section.getUpStation(),
                 sectionInLine.getDistance() - section.getDistance());
         }
         sections = flexibleSections;
-    }
-
-    private void addSection(LinkedList<Section> sections, int index, Section section) {
-        checkContainsStation(section);
-        sections.add(index, section);
     }
 
     private void checkContainsStation(Section section) {
@@ -110,14 +105,14 @@ public class Sections {
     private boolean insertSectionSide(Section section, LinkedList<Section> flexibleSections) {
         Section lastSection = sections.get(sections.size() - 1);
         if (lastSection.hasDownStation(section.getUpStation())) {
-            addSection(flexibleSections, flexibleSections.size(), section);
+            flexibleSections.add(flexibleSections.size(), section);
             sections = flexibleSections;
             return true;
         }
 
         Section firstSection = sections.get(0);
         if (firstSection.hasUpStation(section.getDownStation())) {
-            addSection(flexibleSections, 0, section);
+            flexibleSections.add(0, section);
             sections = flexibleSections;
             return true;
         }
