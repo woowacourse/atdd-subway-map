@@ -1,23 +1,25 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Line {
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations;
 
-    public Line(String name, String color) {
+    public Line(final String name, final String color) {
         this(null, name, color);
     }
 
-    public Line(Long id, String name, String color) {
+    public Line(final Long id, final String name, final String color) {
+        validateNullOrEmpty(name, color);
         this.id = id;
         this.name = name;
         this.color = color;
-        stations = new ArrayList<>();
+    }
+
+    private void validateNullOrEmpty(final String name, final String color) {
+        if (name.isEmpty() || color.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public String getName() {
@@ -30,9 +32,5 @@ public class Line {
 
     public Long getId() {
         return id;
-    }
-
-    public List<Station> getStations() {
-        return stations;
     }
 }

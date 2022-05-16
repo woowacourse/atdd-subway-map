@@ -13,7 +13,7 @@ create table if not exists Line
     primary key(id)
     );
 
-create table if not exists SECTION
+create table if not exists Section
 (
     id bigint auto_increment not null,
     line_id bigint not null,
