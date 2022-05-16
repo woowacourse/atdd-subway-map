@@ -5,6 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.StationRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -14,27 +16,39 @@ import static java.util.Collections.EMPTY_MAP;
 @SuppressWarnings("NonAsciiCharacters")
 public class FixtureUtils {
 
-    public static String LINE = "/lines";
-    public static String STATION = "/stations";
-    public static Map<String, String> 상도역 = Map.of("name", "상도역");
-    public static Map<String, String> 이수역 = Map.of("name", "이수역");
-    public static Map<String, String> 강남구청역 = Map.of("name", "강남구청역");
-    public static Map<String, String> 선릉역 = Map.of("name", "선릉역");
+    public static final String LINE = "/lines";
+    public static final String STATION = "/stations";
+    public static final StationRequest 상도역 = StationRequest.builder()
+            .name("상도역")
+            .build();
 
-    public static Map<String, String> 신분당선 = Map.of(
-            "name", "신분당선",
-            "color", "yellow",
-            "upStationId", "1",
-            "downStationId", "2",
-            "distance", "7"
-    );
-    public static Map<String, String> _7호선 = Map.of(
-            "name", "7호선",
-            "color", "brown",
-            "upStationId", "1",
-            "downStationId", "2",
-            "distance", "7"
-    );
+    public static final StationRequest 이수역 = StationRequest.builder()
+            .name("이수역")
+            .build();
+
+    public static final StationRequest 강남구청역 = StationRequest.builder()
+            .name("강남구청역")
+            .build();
+
+    public static final StationRequest 선릉역 = StationRequest.builder()
+            .name("선릉역")
+            .build();
+
+    public static LineRequest 신분당선 = LineRequest.builder()
+            .name("신분당선")
+            .color("yellow")
+            .upStationId(1L)
+            .downStationId(2L)
+            .distance(7)
+            .build();
+
+    public static LineRequest _7호선 = LineRequest.builder()
+            .name("7호선")
+            .color("brown")
+            .upStationId(1L)
+            .downStationId(2L)
+            .distance(7)
+            .build();
 
     private FixtureUtils() {
     }
@@ -47,15 +61,15 @@ public class FixtureUtils {
         return get(path, EMPTY_MAP);
     }
 
-    public static ExtractableResponse<Response> put(String path, Map<String, String> requestBody) {
+    public static ExtractableResponse<Response> put(String path, Object requestBody) {
         return postProcess(preProcess(requestBody).put(path));
     }
 
-    public static ExtractableResponse<Response> post(String path, Map<String, String> requestBody) {
+    public static ExtractableResponse<Response> post(String path, Object requestBody) {
         return postProcess(preProcess(requestBody).post(path));
     }
 
-    public static ExtractableResponse<Response> delete(String path, Map<String, String> requestBody) {
+    public static ExtractableResponse<Response> delete(String path, Object requestBody) {
         return postProcess(preProcess(requestBody).delete(path));
     }
 
@@ -83,7 +97,23 @@ public class FixtureUtils {
         return STATION + "/" + id;
     }
 
-    private static RequestSpecification preProcess(Map<String, String> requestBody) {
+    public static LineRequest 신분당선_생성() {
+        return LineRequest.builder()
+                .name("신분당선")
+                .color("yellow")
+                .distance(7)
+                .build();
+    }
+
+    public static LineRequest _7호선_생성() {
+        return LineRequest.builder()
+                .name("7호선")
+                .color("brown")
+                .distance(7)
+                .build();
+    }
+
+    private static RequestSpecification preProcess(Object requestBody) {
         return RestAssured.given().log().all()
                 .body(requestBody)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -15,6 +15,7 @@ import wooteco.subway.dao.DbSectionDao;
 import wooteco.subway.dao.DbStationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 import java.util.HashMap;
@@ -50,12 +51,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @ValueSource(strings = {"", "  ", "     "})
     void createLineWithEmptyName(String lineName) {
         // given
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("name", lineName);
-        requestBody.put("color", "bg-red-600");
+        LineRequest lineRequest = LineRequest.builder()
+                .name(lineName)
+                .color("red")
+                .build();
 
         // when
-        ExtractableResponse<Response> response = post(LINE, requestBody);
+        ExtractableResponse<Response> response = post(LINE, lineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -66,12 +68,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @ValueSource(strings = {"", "  ", "     "})
     void createLineWithEmptyColor(String color) {
         // given
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("name", "신분당선");
-        requestBody.put("color", color);
+        LineRequest lineRequest = LineRequest.builder()
+                .name("신분당선")
+                .color(color)
+                .build();
 
         // when
-        ExtractableResponse<Response> response = post(LINE, requestBody);
+        ExtractableResponse<Response> response = post(LINE, lineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -81,10 +84,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        ExtractableResponse<Response> 역_생성_응답_1 = post(STATION, Map.of("name", "지하철역"));
+        ExtractableResponse<Response> 역_생성_응답_1 = post(STATION, 강남구청역);
         long stationId1 = extractId(역_생성_응답_1);
 
-        ExtractableResponse<Response> 역_생성_응답_2 = post(STATION, Map.of("name", "새로운지하철역"));
+        ExtractableResponse<Response> 역_생성_응답_2 = post(STATION, 선릉역);
         long stationId2 = extractId(역_생성_응답_2);
 
         // when
@@ -98,8 +101,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(lineResponse.getId()).isNotNull(),
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("yellow"),
-                () -> assertThat(stations.get(0)).isEqualTo(new Station(stationId1, "지하철역")),
-                () -> assertThat(stations.get(1)).isEqualTo(new Station(stationId2, "새로운지하철역"))
+                () -> assertThat(stations.get(0)).isEqualTo(new Station(stationId1, "강남구청역")),
+                () -> assertThat(stations.get(1)).isEqualTo(new Station(stationId2, "선릉역"))
         );
     }
 
@@ -131,8 +134,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         // given
-        _7호선_및_역_생성요청();
-        분당선_및_역_생성요청();
+        ExtractableResponse<Response> response1 = _7호선_및_역_생성요청();
+        ExtractableResponse<Response> 분당선_및_역_생성요청 = 분당선_및_역_생성요청();
 
         // when
         ExtractableResponse<Response> response = get(LINE);
@@ -143,6 +146,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         LineResponse lineResponse2 = lineResponses.get(1);
         List<Station> stations2 = lineResponse2.getStations();
+
+/*
+        LineResponse.builder()
+                .name("7호선")
+                .color("brown")
+                .stations(List.of(new Station("상도역"), new Station("이수역")));
+*/
 
         // then
         assertAll(
@@ -167,9 +177,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> response1 = post(LINE, 신분당선);
         long createdId = extractId(response1);
+        LineRequest lineRequest = LineRequest.builder()
+                .name(lineName)
+                .color("blue")
+                .build();
 
         // when & then
-        ExtractableResponse<Response> response2 = put(lineById(createdId), Map.of("name", lineName, "color", "blue"));
+        ExtractableResponse<Response> response2 = put(lineById(createdId), lineRequest);
 
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -181,10 +195,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> response = post(LINE, 신분당선);
         long createdId = extractId(response);
+        LineRequest lineRequest = LineRequest.builder()
+                .name("신분당선")
+                .color(lineColor)
+                .build();
 
         // when & then
-        ExtractableResponse<Response> response2 =
-                put(LINE + "/" + createdId, Map.of("name", "신분당선", "color", lineColor));
+        ExtractableResponse<Response> response2 = put(lineById(createdId), lineRequest);
 
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -206,8 +223,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse 생성된_노선 = convertType(response, LineResponse.class);
 
         assertThat(extractId(생성_응답)).isEqualTo(createdId);
-        assertThat(생성된_노선.getName()).isEqualTo(_7호선.get("name"));
-        assertThat(생성된_노선.getColor()).isEqualTo(_7호선.get("color"));
+        assertThat(생성된_노선.getName()).isEqualTo(_7호선.getName());
+        assertThat(생성된_노선.getColor()).isEqualTo(_7호선.getColor());
     }
 
     @DisplayName("중복된 노선 이름 수정을 허용하지 않는다")
@@ -264,7 +281,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간을 등록할 수 있다")
     @Test
     void create_section() {
-        노선_및_역_생성요청_케이스();
+        노선_및_역_생성요청();
 
         // 구간 등록 요청
         Map<String, String> requestBody = new HashMap<>();
@@ -290,7 +307,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void delete_section() {
         // given
         // 최조 등록
-        노선_및_역_생성요청_케이스();
+        노선_및_역_생성요청();
 
         // 구간 등록
         Map<String, String> requestBody = new HashMap<>();
