@@ -80,7 +80,7 @@ public class LineService {
         Section newSection = sectionService.makeSectionByRequest(sectionRequest);
         Sections resultSections = origin.copy();
 
-        resultSections.insert(newSection);
+        resultSections.add(newSection);
         sectionService.deleteAndSaveSections(lineId, origin, resultSections);
     }
 

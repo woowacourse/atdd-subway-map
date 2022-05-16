@@ -27,7 +27,7 @@ public class SectionsTest {
     void insert_noStationException() {
         Sections sections = new Sections(new Section(신림역, 봉천역, 5));
 
-        assertThatThrownBy(() -> sections.insert(new Section(서울대입구역, 낙성대역, 5)))
+        assertThatThrownBy(() -> sections.add(new Section(서울대입구역, 낙성대역, 5)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역 또는 하행역이 노선에 포함되어 있어야합니다.");
     }
@@ -37,7 +37,7 @@ public class SectionsTest {
     void insert_sameStationsException() {
         Sections sections = new Sections(new Section(신림역, 봉천역, 5));
 
-        assertThatThrownBy(() -> sections.insert(new Section(신림역, 봉천역, 5)))
+        assertThatThrownBy(() -> sections.add(new Section(신림역, 봉천역, 5)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 구간은 기존 노선에 이미 등록되어있습니다.");
     }
@@ -50,7 +50,7 @@ public class SectionsTest {
         Section newSection = new Section(서울대입구역, 신림역, 5);
         Sections sections = new Sections(section);
         // when
-        sections.insert(newSection);
+        sections.add(newSection);
         // then
         List<Section> results = sections.getSections();
         assertThat(results.size()).isEqualTo(2);
@@ -67,7 +67,7 @@ public class SectionsTest {
 
         Sections sections = new Sections(List.of(section, section2));
         // when
-        sections.insert(newSection);
+        sections.add(newSection);
         // then
         List<Section> results = sections.getSections();
         assertThat(results.size()).isEqualTo(3);
@@ -85,7 +85,7 @@ public class SectionsTest {
         Section newSection = new Section(낙성대역, 봉천역, 3);
         Sections sections = new Sections(section);
         // when
-        sections.insert(newSection);
+        sections.add(newSection);
         // then
         List<Section> results = sections.getSections();
         assertThat(results.size()).isEqualTo(2);
@@ -104,7 +104,7 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(section, section2));
         // when
         Section newSection = new Section(봉천역, 서울대입구역, 3);
-        sections.insert(newSection);
+        sections.add(newSection);
         // then
         List<Section> results = sections.getSections();
         assertThat(results).contains(
@@ -122,7 +122,7 @@ public class SectionsTest {
         Section newSection = new Section(봉천역, 서울대입구역, 7);
         Sections sections = new Sections(section);
         // then
-        assertThatThrownBy(() -> sections.insert(newSection))
+        assertThatThrownBy(() -> sections.add(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역 사이에 구간을 등록할 경우 기존 역 구간 길이보다 짧아야 합니다.");
     }
@@ -134,7 +134,7 @@ public class SectionsTest {
         Section section = new Section(봉천역, 낙성대역, 5);
         Section section2 = new Section(낙성대역, 신림역, 5);
         Sections sections = new Sections(section);
-        sections.insert(section2);
+        sections.add(section2);
         // then
         assertThatThrownBy(() -> sections.delete(서울대입구역))
                 .isInstanceOf(IllegalArgumentException.class)

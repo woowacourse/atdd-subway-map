@@ -28,7 +28,7 @@ public class Sections {
         }
     }
 
-    public void insert(Section section) {
+    public void add(Section section) {
         List<Section> connectableSections = findConnectableSections(section);
         validateIncludingStations(section, connectableSections);
 
