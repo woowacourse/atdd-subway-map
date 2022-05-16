@@ -46,19 +46,18 @@ public class Sections {
 
     private List<Station> createSortedStations(final Section section) {
         final List<Station> stations = new ArrayList<>();
-        addStationInSection(stations, section);
-        return stations.stream()
-                .distinct()
-                .collect(Collectors.toList());
+        return addStationInSection(stations, section);
     }
 
-    private void addStationInSection(final List<Station> stations, final Section section) {
+    private List<Station> addStationInSection(final List<Station> stations, final Section section) {
         stations.add(section.getUpStation());
         stations.add(section.getDownStation());
         if (isLastSection(section)) {
-            return;
+            return stations.stream()
+                    .distinct()
+                    .collect(Collectors.toList());
         }
-        addStationInSection(stations, nextLowerSection(section));
+        return addStationInSection(stations, nextLowerSection(section));
     }
 
     private boolean isLastSection(final Section otherSection) {
