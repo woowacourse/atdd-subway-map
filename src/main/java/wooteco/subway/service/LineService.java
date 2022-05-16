@@ -78,17 +78,19 @@ public class LineService {
         List<Long> sortedStationIds = sections.getSortedStationIds();
         List<Station> stations = stationDao.findAllByLineId(lineId);
 
-        List<Station> sortedStation = new ArrayList<>();
+        return convertSortedStationIdToResponses(sortedStationIds, stations);
+    }
+
+    private List<StationResponse> convertSortedStationIdToResponses(List<Long> sortedStationIds, List<Station> stations) {
+        List<StationResponse> sortedStation = new ArrayList<>();
         for (Long stationId : sortedStationIds) {
-            Optional<Station> station = stations.stream()
+            Optional<StationResponse> station = stations.stream()
                     .filter(s -> s.getId().equals(stationId))
+                    .map(s -> new StationResponse(s.getId(), s.getName()))
                     .findFirst();
             station.ifPresent(sortedStation::add);
         }
-
-        return sortedStation.stream()
-                .map(s -> new StationResponse(s.getId(), s.getName()))
-                .collect(Collectors.toList());
+        return sortedStation;
     }
 
     public void update(Long lineId, LineRequest request) {
