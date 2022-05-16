@@ -8,11 +8,12 @@ public class Line {
     private Long id;
     private final String name;
     private final String color;
-    private List<Station> stations;
+    private final List<Station> stations;
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.stations = null;
     }
 
     public Line(Long id, String name, String color) {
