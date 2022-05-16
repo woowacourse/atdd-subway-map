@@ -69,10 +69,6 @@ public class LineService {
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
 
-        // int updateSize = line.insertSection(section);
-        // if (updateSize > 1) {
-        //     sectionDao.update(line.getSections());
-        // }
         boolean success = line.insertSection(section);
         checkInsertSuccess(success);
         sectionDao.update(line.getSections());
