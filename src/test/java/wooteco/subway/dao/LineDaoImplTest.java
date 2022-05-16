@@ -67,9 +67,11 @@ public class LineDaoImplTest extends DaoImplTest{
     @DisplayName("노선 정보를 변경한다.")
     @Test
     void update() {
-        Line line = new Line("7호선", "blue");
-        Line newLine = lineDao.save(line);
+        Line line = new Line(1L,"7호선", "blue");
+        Line newLine = new Line(1L, "8호선", "red");
 
-        assertThat(lineDao.update(newLine.getId(), line)).isOne();
+        lineDao.save(line);
+
+        assertThat(lineDao.update(newLine)).isOne();
     }
 }

@@ -48,9 +48,9 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public int update(Long id, Line line) {
+    public int update(Line line) {
         int targetIndex = IntStream.range(0, lines.size())
-                .filter(index -> lines.get(index).getId() == id)
+                .filter(index -> lines.get(index).getId() == line.getId())
                 .findAny()
                 .orElseThrow(() -> new LineNotFoundException("존재하지 않는 노선입니다."));
         lines.set(targetIndex, line);

@@ -2,16 +2,13 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.datanotfound.DataNotFoundException;
 import wooteco.subway.exception.datanotfound.LineNotFoundException;
 
 @Repository
@@ -59,9 +56,9 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public int update(Long id, Line line) {
+    public int update(Line line) {
         final String sql = "update line set (name, color) = (?, ?) where id = ?";
-        return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+        return jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
     }
 
     @Override

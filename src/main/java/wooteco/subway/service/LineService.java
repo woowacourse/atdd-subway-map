@@ -69,8 +69,8 @@ public class LineService {
     public int updateLine(final Long id, final LineRequest lineRequest) {
         validateDuplicate(lineRequest);
         lineDao.findById(id);
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        return lineDao.update(id, line);
+        Line lineForUpdate = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        return lineDao.update(lineForUpdate);
     }
 
 

@@ -137,7 +137,7 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 노선정보 업데이트시 예외를 발생한다.")
     void updateDuplicateNameLine() {
         LineRequest line = new LineRequest("11호선", "red", 1L, 2L, 10);
-        LineRequest lineForUpdate = new LineRequest("11호선", "red", 1L, 2L, 10);
+        LineRequest lineForUpdate = new LineRequest("12호선", "red", 1L, 2L, 10);
 
         LineResponse newLine = lineService.save(line);
 
