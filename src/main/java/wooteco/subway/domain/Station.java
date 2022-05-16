@@ -1,6 +1,6 @@
 package wooteco.subway.domain;
 
-public class Station implements Comparable<Station> {
+public class Station {
 
     private Long id;
     private Name name;
@@ -48,16 +48,7 @@ public class Station implements Comparable<Station> {
 
     @Override
     public String toString() {
-        return "Station{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            '}';
+        return "Station{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
-
-    @Override
-    public int compareTo(final Station otherStation) {
-        return Long.compare(this.id, otherStation.id);
-    }
-
 }
 
