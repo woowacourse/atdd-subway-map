@@ -1,10 +1,9 @@
 package wooteco.subway.domain.section;
 
-import java.util.Comparator;
 import java.util.Objects;
 import wooteco.subway.dto.request.LineRequest;
 
-public class Section implements Comparator<Section> {
+public class Section {
 
     private static final String ERROR_INVALID_DISTANCE = "[ERROR] 부적절한 거리가 입력되었습니다. 0보다 큰 거리를 입력해주세요.";
     private static final String ERROR_SAME_STATION = "[ERROR] 상행 종점과 하행 종점이 같을 수 없습니다.";
@@ -45,11 +44,6 @@ public class Section implements Comparator<Section> {
         if (distance <= INVALID_DISTANCE_STANDARD) {
             throw new IllegalArgumentException(ERROR_INVALID_DISTANCE);
         }
-    }
-
-    @Override
-    public int compare(final Section section1, final Section section2) {
-        return Long.compare(section1.getUpStationId(), section2.getUpStationId());
     }
 
     public Section createMiddleToDownSection(final Section unSplitSection) {
