@@ -32,9 +32,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // given
-        final long upStationId = Long.parseLong(createStation(stationRequest1));
-        final long downStationId = Long.parseLong(createStation(stationRequest2));
-        createSection(new SectionRequest(upStationId, downStationId, 10));
+        final long upStationId = Long.parseLong(createStationResponse(stationRequest1));
+        final long downStationId = Long.parseLong(createStationResponse(stationRequest2));
+        createSectionResponse(new SectionRequest(upStationId, downStationId, 10), 1L);
 
         // when
         final ExtractableResponse<Response> response = createLineResponse(
@@ -48,9 +48,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("기존에 존재하는 노선 이름으로 생성하면, 예외를 발생한다.")
     void createLineWithDuplicateName() {
-        final long upStationId = Long.parseLong(createStation(stationRequest1));
-        final long downStationId = Long.parseLong(createStation(stationRequest2));
-        createSection(new SectionRequest(upStationId, downStationId, 10));
+        final long upStationId = Long.parseLong(createStationResponse(stationRequest1));
+        final long downStationId = Long.parseLong(createStationResponse(stationRequest2));
+        createSectionResponse(new SectionRequest(upStationId, downStationId, 10), 1L);
 
         // given
         createLineResponse(new LineRequest("2호선", "bg-yellow-500", upStationId, downStationId, 10));
@@ -67,14 +67,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("모든 지하철 노선을 조회한다.")
     void getLines() {
         // given
-        final long upStationId = Long.parseLong(createStation(stationRequest1));
-        final long downStationId = Long.parseLong(createStation(stationRequest2));
-        final long upStationId2 = Long.parseLong(createStation(stationRequest3));
-        final long downStationId2 = Long.parseLong(createStation(stationRequest4));
-        createSection(new SectionRequest(upStationId, downStationId, 10));
-        createSection(new SectionRequest(upStationId2, downStationId2, 7));
-        createLineResponse(new LineRequest("2호선", "bg-yellow-500", upStationId, downStationId, 10));
-        createLineResponse(new LineRequest("신분당선", "bg-red-600", upStationId2, downStationId2, 7));
+        final long upStationId = Long.parseLong(createStationResponse(stationRequest1));
+        final long downStationId = Long.parseLong(createStationResponse(stationRequest2));
+        final long upStationId2 = Long.parseLong(createStationResponse(stationRequest3));
+        final long downStationId2 = Long.parseLong(createStationResponse(stationRequest4));
+        ExtractableResponse<Response> lineResponse1 = createLineResponse(
+                new LineRequest("2호선", "bg-yellow-500", upStationId, downStationId, 10));
+        ExtractableResponse<Response> lineResponse2 = createLineResponse(
+                new LineRequest("신분당선", "bg-red-600", upStationId2, downStationId2, 7));
+        final long id1 = Long.parseLong(lineResponse1.header("Location").split("/")[2]);
+        final long id2 = Long.parseLong(lineResponse2.header("Location").split("/")[2]);
+        createSectionResponse(new SectionRequest(upStationId, downStationId, 10), id1);
+        createSectionResponse(new SectionRequest(upStationId2, downStationId2, 7), id2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -101,12 +105,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     void getLine() {
         // given
-        final long upStationId = Long.parseLong(createStation(stationRequest1));
-        final long downStationId = Long.parseLong(createStation(stationRequest2));
-        createSection(new SectionRequest(upStationId, downStationId, 10));
+        final long upStationId = Long.parseLong(createStationResponse(stationRequest1));
+        final long downStationId = Long.parseLong(createStationResponse(stationRequest2));
         final ExtractableResponse<Response> lineResponse = createLineResponse(
                 new LineRequest("2호선", "bg-yellow-500", upStationId, downStationId, 10));
-        final String id = lineResponse.header("Location").split("/")[2];
+        final long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
+        createSectionResponse(new SectionRequest(upStationId, downStationId, 10), id);
 
         // when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -149,12 +153,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 업데이트 한다.")
     void updateLine() {
         // given
-        final long upStationId = Long.parseLong(createStation(stationRequest1));
-        final long downStationId = Long.parseLong(createStation(stationRequest2));
-        createSection(new SectionRequest(upStationId, downStationId, 10));
+        final long upStationId = Long.parseLong(createStationResponse(stationRequest1));
+        final long downStationId = Long.parseLong(createStationResponse(stationRequest2));
         final ExtractableResponse<Response> lineResponse = createLineResponse(
                 new LineRequest("2호선", "bg-yellow-500", upStationId, downStationId, 10));
-        final String id = lineResponse.header("Location").split("/")[2];
+        final long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
+        createSectionResponse(new SectionRequest(upStationId, downStationId, 10), id);
 
         // when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -195,12 +199,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     void deleteLine() {
         // given
-        final long upStationId = Long.parseLong(createStation(stationRequest1));
-        final long downStationId = Long.parseLong(createStation(stationRequest2));
-        createSection(new SectionRequest(upStationId, downStationId, 10));
+        final long upStationId = Long.parseLong(createStationResponse(stationRequest1));
+        final long downStationId = Long.parseLong(createStationResponse(stationRequest2));
         final ExtractableResponse<Response> lineResponse = createLineResponse(
                 new LineRequest("2호선", "bg-yellow-500", upStationId, downStationId, 10));
-        final String id = lineResponse.header("Location").split("/")[2];
+        final long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
+        createSectionResponse(new SectionRequest(upStationId, downStationId, 10), id);
 
         // when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -230,6 +234,55 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
+    @Test
+    @DisplayName("구간을 생성한다.")
+    void createSection() {
+        // given
+        final long upStationId = Long.parseLong(createStationResponse(stationRequest1));
+        final long downStationId1 = Long.parseLong(createStationResponse(stationRequest2));
+        final long downStationId2 = Long.parseLong(createStationResponse(stationRequest3));
+        final ExtractableResponse<Response> lineResponse = createLineResponse(
+                new LineRequest("2호선", "bg-yellow-500", upStationId, downStationId1, 10));
+        final String id = lineResponse.header("Location").split("/")[2];
+        final SectionRequest request = new SectionRequest(downStationId1, downStationId2, 10);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다.")
+    void deleteSection() {
+        // given
+        final long stationId1 = Long.parseLong(createStationResponse(stationRequest1));
+        final long stationId2 = Long.parseLong(createStationResponse(stationRequest2));
+        final long stationId3 = Long.parseLong(createStationResponse(stationRequest3));
+        final ExtractableResponse<Response> lineResponse = createLineResponse(
+                new LineRequest("2호선", "bg-yellow-500", stationId1, stationId2, 10));
+        final long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
+        createSectionResponse(new SectionRequest(stationId2, stationId3, 10), id);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/{id}/sections?stationId=" + stationId3, id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     private ExtractableResponse<Response> createLineResponse(final LineRequest request) {
         return RestAssured.given().log().all()
                 .body(request)
@@ -240,7 +293,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private String createStation(final StationRequest request) {
+    private String createStationResponse(final StationRequest request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -252,12 +305,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .split("/")[2];
     }
 
-    private void createSection(final SectionRequest request) {
+    private void createSectionResponse(final SectionRequest request, final long id) {
         RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/{id}/sections", 1L)
+                .post("/lines/{id}/sections", id)
                 .then().log().all()
                 .extract();
     }
