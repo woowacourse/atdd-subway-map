@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.function.BiPredicate;
 
 public enum Direction {
-    UP((section, inputSection) -> section.getUpStationId() == inputSection.getDownStationId()),
-    DOWN(((section, inputSection) -> section.getDownStationId() == inputSection.getUpStationId())),
-    BETWEEN_UP((section, inputSection) -> (section.getUpStationId() == inputSection.getUpStationId())),
-    BETWEEN_DOWN((section, inputSection) -> section.getDownStationId() == inputSection.getDownStationId());
+    UP((section, inputSection) -> section.getUpStationId().equals(inputSection.getDownStationId())),
+    DOWN(((section, inputSection) -> section.getDownStationId().equals(inputSection.getUpStationId()))),
+    BETWEEN_UP((section, inputSection) -> (section.getUpStationId().equals(inputSection.getUpStationId()))),
+    BETWEEN_DOWN((section, inputSection) -> section.getDownStationId().equals(inputSection.getDownStationId()));
 
     private final BiPredicate<Section, Section> biPredicate;
 

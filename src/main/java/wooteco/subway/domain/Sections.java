@@ -108,8 +108,8 @@ public class Sections {
             throw new IllegalArgumentException(NON_REMOVABLE_EXCEPTION);
         }
         List<Section> overlapSections = sections.stream()
-                .filter(section -> (stationId == section.getUpStationId()) || stationId ==
-                        section.getDownStationId())
+                .filter(section -> (stationId.equals(section.getUpStationId())) || stationId.equals(
+                        section.getDownStationId()))
                 .collect(Collectors.toList());
 
         if (overlapSections.size() == 1) {
@@ -136,7 +136,7 @@ public class Sections {
     }
 
     private Section generateNewSection(List<Section> overlapSections, Section section, Long stationId) {
-        if (section.getUpStationId() == stationId) {
+        if (section.getUpStationId().equals(stationId)) {
             return new Section(section.getLineId(), overlapSections.get(1).getUpStationId(),
                     section.getDownStationId(),
                     section.getDistance() + overlapSections.get(1).getDistance());
@@ -144,10 +144,6 @@ public class Sections {
         return new Section(section.getLineId(), section.getUpStationId(),
                 overlapSections.get(1).getDownStationId(),
                 section.getDistance() + overlapSections.get(1).getDistance());
-    }
-
-    public List<Section> getSections() {
-        return List.copyOf(sections);
     }
 
     public List<Long> sortSection() {
@@ -171,5 +167,9 @@ public class Sections {
             mostUpStation = nextStation;
         }
         return sortedStations;
+    }
+
+    public List<Section> getSections() {
+        return List.copyOf(sections);
     }
 }
