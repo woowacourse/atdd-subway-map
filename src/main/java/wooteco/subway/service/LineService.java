@@ -64,16 +64,16 @@ public class LineService {
     }
 
     public Line findLineById(Long id) {
-        Line line;
         try {
-            line = lineDao.findById(id);
+            Line line = lineDao.findById(id);
+
+            List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(line.getId());
+            List<Station> stations = stationService.findStationByIds(stationIds);
+
+            return new Line(line, stations);
         } catch (EmptyResultDataAccessException e) {
             throw new LineNotFoundException();
         }
-        List<Long> stationIds = sectionService.findArrangedStationIdsByLineId(line.getId());
-        List<Station> stations = stationService.findStationByIds(stationIds);
-
-        return new Line(line, stations);
     }
 
     public void update(Line updatingLine) {
