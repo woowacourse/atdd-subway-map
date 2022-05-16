@@ -89,7 +89,12 @@ public class SectionService {
             sectionDao.deleteSectionByStationId(id, stationId);
         }
         if (sections.hasTwoSection()) {
-            sectionDao.integrateSectionByStationId(id, stationId, sections.integrateTwoSections());
+            integrateSectionByStationId(id, stationId, sections.integrateTwoSections());
         }
+    }
+
+    private void integrateSectionByStationId(final Long lineId, final Long stationId, final Section integrateTwoSections) {
+        sectionDao.editByUpStationId(lineId, integrateTwoSections);
+        sectionDao.deleteSectionByStationId(lineId, stationId);
     }
 }

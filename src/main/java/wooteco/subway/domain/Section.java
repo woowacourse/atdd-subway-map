@@ -5,6 +5,7 @@ import wooteco.subway.exception.IllegalSectionCreatedException;
 
 public class Section {
     public static final int MIN_DISTANCE = 0;
+
     private final Long upStationId;
     private final Long downStationId;
     private final int distance;
@@ -20,7 +21,7 @@ public class Section {
 
     private void checkNull(final Long upStationId, final Long downStationId, final Integer distance) {
         if (upStationId == null || downStationId == null || distance == null) {
-            throw new NullPointerException();
+            throw new IllegalSectionCreatedException();
         }
     }
 

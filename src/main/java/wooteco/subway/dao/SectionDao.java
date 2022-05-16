@@ -65,11 +65,6 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, stationId, stationId);
     }
 
-    public void integrateSectionByStationId(final Long lineId, final Long stationId, final Section integrateTwoSections) {
-        editByUpStationId(lineId, integrateTwoSections);
-        deleteSectionByStationId(lineId, stationId);
-    }
-
     private static final class SectionMapper implements RowMapper<Section> {
         public Section mapRow(final ResultSet rs, final int rowCnt) throws SQLException {
             return new Section(rs.getLong("up_station_id"), rs.getLong("down_station_id"), rs.getInt("distance"));

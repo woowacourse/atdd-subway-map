@@ -89,5 +89,4 @@ public class StationDaoTest {
 
         assertThat(actual).isEqualTo(0);
     }
-
 }

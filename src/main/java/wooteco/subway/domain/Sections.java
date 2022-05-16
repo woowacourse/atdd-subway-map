@@ -13,12 +13,12 @@ public class Sections {
     }
 
     public void validatePossibleSection(final Section section) {
-        if (!containsStationInSectionsAsXOR(section)) {
+        if (!containsEitherOfStationsIn(section)) {
             throw new IllegalSectionCreatedException();
         }
     }
 
-    private boolean containsStationInSectionsAsXOR(final Section newSection) {
+    private boolean containsEitherOfStationsIn(final Section newSection) {
         final boolean containsUpStation = sections.stream()
                 .anyMatch(section -> section.containsUpStationIdBy(newSection));
         final boolean containsDownStation = sections.stream()
@@ -33,7 +33,7 @@ public class Sections {
 
     private boolean noneMatchRightSection(final Section comparedSection) {
         return sections.stream()
-                .noneMatch(comparedSection::isConnected);
+                .noneMatch(section -> comparedSection.isConnected(section));
     }
 
     public Section integrateTwoSections() {

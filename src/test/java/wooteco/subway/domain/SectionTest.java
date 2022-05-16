@@ -19,7 +19,7 @@ public class SectionTest {
     @Test
     void invalid_station_null() {
         assertThatThrownBy(() -> new Section(null, 2L, 10))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(IllegalSectionCreatedException.class);
     }
 
     @DisplayName("거리가 0일 때 예외 발생을 확인한다.")

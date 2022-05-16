@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
@@ -28,8 +29,8 @@ public class StationDao {
     }
 
     private Station includeIdIn(final Station station) {
-        final String sql = "select max(id) from Station";
-        final Long id = jdbcTemplate.queryForObject(sql, Long.class);
+        final String sql = "select id from Station where name = ?";
+        final Long id = jdbcTemplate.queryForObject(sql, Long.class, station.getName());
         return new Station(id, station.getName());
     }
 
