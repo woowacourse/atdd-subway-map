@@ -1,4 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.datanotfound;
+
+import wooteco.subway.exception.ClientException;
 
 public class DataNotFoundException extends ClientException {
 

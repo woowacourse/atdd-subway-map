@@ -35,9 +35,14 @@ public class LineDaoImplTest extends DaoImplTest{
     @DisplayName("노선정보들을 가져온다.")
     @Test
     void findAll() {
+        Line line = new Line("분당선", "green");
+        Line nextLine = new Line("신분당선", "green");
+        lineDao.save(line);
+        lineDao.save(nextLine);
+
         List<Line> lines = lineDao.findAll();
 
-        assertThat(lines.size()).isEqualTo(3);
+        assertThat(lines.size()).isEqualTo(2);
     }
 
     @DisplayName("노선 정보를 삭제한다.")
@@ -62,9 +67,11 @@ public class LineDaoImplTest extends DaoImplTest{
     @DisplayName("노선 정보를 변경한다.")
     @Test
     void update() {
-        Line line = new Line("7호선", "blue");
-        Line newLine = lineDao.save(line);
+        Line line = new Line(1L,"7호선", "blue");
+        Line newLine = new Line(1L, "8호선", "red");
 
-        assertThat(lineDao.update(newLine.getId(), line)).isOne();
+        lineDao.save(line);
+
+        assertThat(lineDao.update(newLine)).isOne();
     }
 }

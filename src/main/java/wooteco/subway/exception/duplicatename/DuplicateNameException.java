@@ -1,4 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.duplicatename;
+
+import wooteco.subway.exception.ClientException;
 
 public class DuplicateNameException extends ClientException {
 

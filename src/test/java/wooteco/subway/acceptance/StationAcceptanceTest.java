@@ -22,7 +22,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
+        StationRequest stationRequest = new StationRequest("없는역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -37,14 +37,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
 
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo("강남역");
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("없는역");
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성시 예외를 발생한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
+        StationRequest stationRequest = new StationRequest("없는역");
 
         RestAssured.given().log().all()
                 .body(stationRequest)
@@ -72,8 +72,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        StationRequest firstStationRequest = new StationRequest("강남역");
-        StationRequest secondStationRequest = new StationRequest("역삼역");
+        StationRequest firstStationRequest = new StationRequest("이디야역");
+        StationRequest secondStationRequest = new StationRequest("스타벅스역");
 
         // when
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
@@ -113,7 +113,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
+        StationRequest stationRequest = new StationRequest("없는역");
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(stationRequest)

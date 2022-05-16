@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DuplicateNameException;
-import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.datanotfound.StationNotFoundException;
+import wooteco.subway.exception.duplicatename.StationDuplicateException;
 
 class StationServiceTest {
 
@@ -20,6 +20,7 @@ class StationServiceTest {
 
     @BeforeEach
     void setUp() {
+        FakeStationDao.init();
         stationService = new StationService(new FakeStationDao());
     }
 
@@ -48,12 +49,12 @@ class StationServiceTest {
         stationService.createStation(station);
 
         assertThatThrownBy(() -> stationService.createStation(duplicateStation))
-                .isInstanceOf(DuplicateNameException.class)
+                .isInstanceOf(StationDuplicateException.class)
                 .hasMessageContaining("이미 등록된 지하철역 이름입니다.");
     }
 
     @Test
-    @DisplayName("역 정보들 조회")
+    @DisplayName("역 정보전체를 조회한다.")
     void findAll() {
         StationRequest firstStation = new StationRequest("역삼역");
         StationRequest secondStation = new StationRequest("삼성역");
@@ -82,7 +83,7 @@ class StationServiceTest {
     @DisplayName("존재하지 않는 역 정보 삭제시 예외를 발생한다.")
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.deleteStation(12))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(StationNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 역입니다.");
     }
 }

@@ -6,12 +6,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.datanotfound.DataNotFoundException;
+import wooteco.subway.exception.datanotfound.StationNotFoundException;
 
 public class FakeStationDao implements StationDao {
 
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
+
+    public static void init() {
+        seq = 0L;
+        stations = new ArrayList<>();
+        stations.add(new Station(++seq, "선릉역"));
+        stations.add(new Station(++seq, "잠실역"));
+        stations.add(new Station(++seq, "강남역"));
+    }
 
     @Override
     public Station save(Station station) {
@@ -30,7 +39,7 @@ public class FakeStationDao implements StationDao {
         return stations.stream()
                 .filter(station -> station.getId() == id)
                 .findAny()
-                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 역입니다."));
+                .orElseThrow(() -> new StationNotFoundException("존재하지 않는 역입니다."));
     }
 
     private Station createNewObject(Station station) {
