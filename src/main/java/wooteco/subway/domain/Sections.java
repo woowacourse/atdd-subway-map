@@ -71,7 +71,7 @@ public class Sections {
 
     private boolean hasStation(Long stationId) {
         return values.stream()
-                .anyMatch(s -> s.getUpStationId().equals(stationId) || s.getDownStationId().equals(stationId));
+                .anyMatch(s -> s.hasStation(stationId));
     }
 
     private SectionsToBeCreatedAndUpdated addMiddleSection(Section newSection) {

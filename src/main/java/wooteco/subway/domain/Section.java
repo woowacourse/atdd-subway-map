@@ -48,6 +48,10 @@ public class Section {
         return downStationId.equals(stationId);
     }
 
+    public boolean hasStation(Long stationId) {
+        return upStationId.equals(stationId) || downStationId.equals(stationId);
+    }
+
     public Long getId() {
         return id;
     }
