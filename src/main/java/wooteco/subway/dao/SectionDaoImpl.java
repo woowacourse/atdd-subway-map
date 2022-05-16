@@ -33,10 +33,10 @@ public class SectionDaoImpl implements SectionDao {
 
     @Override
     public Section insert(Section section) {
-        Long lineId = section.getLineId();
-        Long upStationId = section.getUpStationId();
-        Long downStationId = section.getDownStationId();
-        Integer distance = section.getDistance();
+        long lineId = section.getLineId();
+        long upStationId = section.getUpStationId();
+        long downStationId = section.getDownStationId();
+        int distance = section.getDistance();
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("line_id", lineId)
                 .addValue("up_station_id", upStationId)

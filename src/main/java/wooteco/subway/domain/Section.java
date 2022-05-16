@@ -16,26 +16,26 @@ public class Section {
     private int distance;
 
     public Section(Long id, long lineId, long upStationId, long downStationId, int distance) {
+        validateDuplicateStation(upStationId, downStationId);
+        validateDistance(distance);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-        validateDuplicateStation();
-        validateDistance();
     }
 
     public Section(long lineId, long upStationId, long downStationId, int distance) {
         this(null, lineId, upStationId, downStationId, distance);
     }
 
-    public void validateDuplicateStation() {
+    public void validateDuplicateStation(long upStationId, long downStationId) {
         if (upStationId == downStationId) {
             throw new IllegalArgumentException(DUPLICATE_STATION_EXCEPTION_MESSAGE);
         }
     }
 
-    public void validateDistance() {
+    public void validateDistance(int distance) {
         if (distance <= MINIMUM_DISTANCE) {
             throw new IllegalArgumentException(STATION_DISTANCE_EXCEPTION_MESSAGE);
         }
