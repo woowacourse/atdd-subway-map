@@ -14,6 +14,8 @@ import wooteco.subway.dao.line.JdbcLineDao;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.section.JdbcSectionDao;
 import wooteco.subway.dao.section.SectionDao;
+import wooteco.subway.dao.station.JdbcStationDao;
+import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.DataNotExistException;
@@ -34,7 +36,10 @@ class LineServiceTest {
     void setUp() {
         LineDao lineDao = new JdbcLineDao(jdbcTemplate);
         SectionDao sectionDao = new JdbcSectionDao(jdbcTemplate);
-        lineService = new LineService(lineDao, sectionDao);
+        StationDao stationDao = new JdbcStationDao(jdbcTemplate);
+        StationService stationService = new StationService(stationDao);
+        SectionService sectionService = new SectionService(sectionDao, stationService);
+        lineService = new LineService(lineDao, sectionService);
     }
 
     @DisplayName("지하철 노선을 생성한다.")

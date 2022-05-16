@@ -25,11 +25,12 @@ public class SectionServiceTest {
 
     @BeforeEach
     void setUp() {
-        SectionDao sectionDao = new JdbcSectionDao(jdbcTemplate);
         StationDao stationDao = new JdbcStationDao(jdbcTemplate);
+        StationService stationService = new StationService(stationDao);
+        SectionDao sectionDao = new JdbcSectionDao(jdbcTemplate);
         sectionDao.save(new Section(1L, 1L, 2L, 10));
         sectionDao.save(new Section(1L, 2L, 3L, 10));
-        sectionService = new SectionService(sectionDao, stationDao);
+        sectionService = new SectionService(sectionDao, stationService);
     }
 
     @DisplayName("상행종점 위에 있는 지하철 구간을 저장한다.")

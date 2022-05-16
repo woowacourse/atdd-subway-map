@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,14 +30,6 @@ public class SectionsTest {
         ));
 
         assertThat(sections.findStationIds()).containsExactly(4L, 1L, 3L, 2L);
-    }
-
-    @DisplayName("구간이 비어있는 경우 Sections 생성 시 예외가 발생한다.")
-    @Test
-    void createEmptySections() {
-        assertThatThrownBy(() -> new Sections(new ArrayList<>()))
-                .isInstanceOf(DataNotExistException.class)
-                .hasMessage("구간이 존재하지 않습니다.");
     }
 
     @DisplayName("지하철 구간의 상행역과 하행역 중 하나만 노선에 존재하는 경우 예외가 발생하지 않는다.")

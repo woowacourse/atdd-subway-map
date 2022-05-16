@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.section.SectionDao;
-import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
@@ -15,21 +14,27 @@ public class SectionService {
 
     private final SectionDao sectionDao;
 
-    private final StationDao stationDao;
+    private final StationService stationService;
 
-    public SectionService(SectionDao sectionDao, StationDao stationDao) {
+    public SectionService(SectionDao sectionDao, StationService stationService) {
         this.sectionDao = sectionDao;
-        this.stationDao = stationDao;
+        this.stationService = stationService;
     }
 
     public Long save(Section section) {
         Sections sections = new Sections(findAllByLineId(section.getLineId()));
-        sections.validateSectionInLine(section);
+        if (!sections.isEmpty()) {
+            sections.validateSectionInLine(section);
+            updateSectionForSave(section, sections);
+        }
+        return sectionDao.save(section);
+    }
+
+    private void updateSectionForSave(Section section, Sections sections) {
         if (sections.isRequireUpdateForSave(section)) {
             sections.validateSectionDistance(section);
             sectionDao.update(sections.getUpdatedSectionForSave(section));
         }
-        return sectionDao.save(section);
     }
 
     public void delete(Long lineId, Long stationId) {
@@ -44,7 +49,7 @@ public class SectionService {
     public List<Station> findStationsByLineId(Long lineId) {
         Sections sections = new Sections(findAllByLineId(lineId));
         List<Long> stationIds = sections.findStationIds();
-        List<Station> stations = stationDao.findAll();
+        List<Station> stations = stationService.findAll();
         return stationIds.stream()
                 .map(id -> getStationById(stations, id))
                 .collect(Collectors.toList());

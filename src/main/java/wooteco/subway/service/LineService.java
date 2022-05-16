@@ -6,6 +6,7 @@ import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.DataNotExistException;
 import wooteco.subway.exception.SubwayException;
@@ -15,11 +16,11 @@ public class LineService {
 
     private final LineDao lineDao;
 
-    private final SectionDao sectionDao;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
-        this.sectionDao = sectionDao;
+        this.sectionService = sectionService;
     }
 
     public long save(LineRequest lineRequest) {
@@ -28,9 +29,9 @@ public class LineService {
         validateColorForSave(line);
         long lineId = lineDao.save(line);
 
-        Section section = new Section(
-                lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        sectionDao.save(section);
+        Section section = new Section(lineId,
+                lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        sectionService.save(section);
 
         return lineId;
     }
