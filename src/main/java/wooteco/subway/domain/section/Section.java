@@ -47,26 +47,6 @@ public class Section implements Comparator<Section> {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getLineId() {
-        return lineId;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
     @Override
     public int compare(final Section section1, final Section section2) {
         return Long.compare(section1.getUpStationId(), section2.getUpStationId());
@@ -85,6 +65,26 @@ public class Section implements Comparator<Section> {
     public Section createUpToDownSection(final Section middleToDownSection) {
         return new Section(id, lineId, upStationId, middleToDownSection.getDownStationId(),
             distance + middleToDownSection.distance);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getLineId() {
+        return lineId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
     }
 
     @Override
