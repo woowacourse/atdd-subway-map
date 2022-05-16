@@ -57,9 +57,11 @@ public class Sections {
         boolean success;
         LinkedList<Section> flexibleSections = new LinkedList<>(this.sections);
         OptionalInt findIndex = IntStream.range(0, flexibleSections.size())
-            .filter(index -> insertSection(section, flexibleSections, index, flexibleSections.get(index)))
+            .filter(index -> canInsertSection(section, flexibleSections.get(index)))
             .findFirst();
         if (findIndex.isPresent()) {
+            int index = findIndex.getAsInt();
+            insertSection(section, flexibleSections, index, flexibleSections.get(index));
             return true;
         }
 
@@ -67,23 +69,30 @@ public class Sections {
         return success;
     }
 
-    private boolean insertSection(Section section, LinkedList<Section> flexibleSections, int index, Section sectionInLine) {
+    private boolean canInsertSection(Section section, Section sectionInLine) {
+        if (canInsertUpStation(section, sectionInLine) && !canInsertDownStation(section, sectionInLine)) {
+            return true;
+        }
+        if (canInsertDownStation(section, sectionInLine) && !canInsertUpStation(section, sectionInLine)) {
+            return true;
+        }
+        return false;
+    }
+
+    private void insertSection(Section section, LinkedList<Section> flexibleSections,
+        int index, Section sectionInLine) {
+
         if (canInsertUpStation(section, sectionInLine) && !canInsertDownStation(section, sectionInLine)) {
             addSection(flexibleSections, index, section);
             sectionInLine.updateUpStation(section.getDownStation(),
                 sectionInLine.getDistance() - section.getDistance());
-            sections = flexibleSections;
-            return true;
         }
         if (canInsertDownStation(section, sectionInLine) && !canInsertUpStation(section, sectionInLine)) {
             addSection(flexibleSections, index + 1, section);
             sectionInLine.updateDownStation(section.getUpStation(),
                 sectionInLine.getDistance() - section.getDistance());
-            sections = flexibleSections;
-            return true;
         }
-
-        return false;
+        sections = flexibleSections;
     }
 
     private void addSection(LinkedList<Section> sections, int index, Section section) {
