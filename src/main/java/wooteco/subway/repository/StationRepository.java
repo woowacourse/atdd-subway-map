@@ -14,49 +14,40 @@ import wooteco.subway.util.SimpleReflectionUtils;
 
 @Repository
 public class StationRepository {
+
+    private final PersistManager<StationEntity> persistManager;
     private final StationDao stationDao;
 
-    public StationRepository(StationDao stationDao) {
+    public StationRepository(PersistManager<StationEntity> persistManager, StationDao stationDao) {
+        this.persistManager = persistManager;
         this.stationDao = stationDao;
     }
 
     public void persist(StationSeries stationSeries) {
-        final List<Station> stations = stationSeries.getStations();
         List<Long> persistedIds = toIds(findAllStations());
+        final List<Station> stations = stationSeries.getStations();
+        for (Station station : stations) {
+            final StationEntity entity = StationEntity.from(station);
+            final Long id = persistManager.persist(stationDao, entity, persistedIds);
+            persistedIds.remove(id);
+            SimpleReflectionUtils.injectId(station, id);
+        }
+        persistManager.deletePersistedAll(stationDao, persistedIds);
+    }
 
-        deleteStations(stations, persistedIds);
-        saveStations(stations, persistedIds);
+    public void persist2(StationSeries stationSeries) {
+        List<Long> persistedIds = toIds(findAllStations());
+        final List<Station> stations = stationSeries.getStations();
+        if (stations.isEmpty()) {
+            persistManager.deletePersistedAll(stationDao, persistedIds);
+        }
+        persistEach(persistedIds, stations);
     }
 
     private List<Long> toIds(List<Station> stations) {
         return stations.stream()
             .map(Station::getId)
             .collect(Collectors.toList());
-    }
-
-    private void deleteStations(List<Station> stations, List<Long> persistedIds) {
-        final List<Long> ids = toIds(stations);
-        for (Long persistedId : persistedIds) {
-            deleteStationIfRemoved(ids, persistedId);
-        }
-    }
-
-    private void deleteStationIfRemoved(List<Long> ids, Long persistedId) {
-        if (!ids.contains(persistedId)) {
-            deleteById(persistedId);
-        }
-    }
-
-    private void saveStations(List<Station> stations, List<Long> persistedIds) {
-        for (Station station : stations) {
-            saveStationIfCreated(persistedIds, station);
-        }
-    }
-
-    private void saveStationIfCreated(List<Long> persistedIds, Station station) {
-        if (!persistedIds.contains(station.getId())) {
-            save(station);
-        }
     }
 
     public Station findById(Long id) {
@@ -72,15 +63,11 @@ public class StationRepository {
             .collect(Collectors.toList());
     }
 
-    private Station save(Station station) {
-        final Long id = stationDao.save(StationEntity.from(station));
-        return SimpleReflectionUtils.injectId(station, id);
-    }
-
-    private void deleteById(Long id) {
-        final boolean isDeleted = stationDao.deleteById(id);
-        if (!isDeleted) {
-            throw new RowNotFoundException("삭제하고자 하는 역이 존재하지 않습니다.");
+    private void persistEach(List<Long> persistedIds, List<Station> stations) {
+        for (Station station : stations) {
+            final StationEntity entity = StationEntity.from(station);
+            final Long id = persistManager.persist(stationDao, entity, persistedIds);
+            SimpleReflectionUtils.injectId(station, id);
         }
     }
 }

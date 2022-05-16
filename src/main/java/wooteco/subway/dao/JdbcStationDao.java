@@ -33,6 +33,16 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
+    public Long update(StationEntity entity) {
+        final String sql = "UPDATE station SET name = ? WHERE id = ?";
+        final int updatedCount = jdbcTemplate.update(sql, entity.getName(), entity.getId());
+        if (!isUpdated(updatedCount)) {
+            return null;
+        }
+        return entity.getId();
+    }
+
+    @Override
     public Long save(StationEntity station) {
         SqlParameterSource param = new BeanPropertySqlParameterSource(station);
         return jdbcInsert.executeAndReturnKey(param).longValue();
@@ -45,10 +55,17 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public Long delete(Long id) {
         final String sql = "DELETE FROM station WHERE id = ?";
         final int deletedCount = jdbcTemplate.update(sql, id);
-        return isUpdated(deletedCount);
+        if (!isUpdated(deletedCount)) {
+            return null;
+        }
+        return id;
+    }
+
+    private boolean isUpdated(int updatedCount) {
+        return updatedCount != 0;
     }
 
     @Override
@@ -59,9 +76,5 @@ public class JdbcStationDao implements StationDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    private boolean isUpdated(int updatedCount) {
-        return updatedCount == 1;
     }
 }

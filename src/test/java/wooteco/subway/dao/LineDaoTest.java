@@ -107,21 +107,21 @@ class LineDaoTest {
         // given
         final Long id = dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
         // when
-        final boolean isUpdated = dao.update(new LineEntity(id, "구분당선", LINE_COLOR));
+        final Long updatedId = dao.update(new LineEntity(id, "구분당선", LINE_COLOR));
         // then
-        assertThat(isUpdated).isTrue();
+        assertThat(updatedId).isEqualTo(id);
     }
 
     @Test
-    @DisplayName("존재하지 않는 ID값을 수정하는 경우 False를 반환한다.")
+    @DisplayName("존재하지 않는 ID값을 수정하는 경우 null을 반환한다.")
     public void update_throwsExceptionWithInvalidId() {
         // given
         dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
         LineEntity updateLine = new LineEntity(100L, "사랑이넘치는", "우테코");
         // when
-        final boolean isUpdated = dao.update(updateLine);
+        final Long id = dao.update(updateLine);
         // then
-        assertThat(isUpdated).isFalse();
+        assertThat(id).isNull();
     }
 
     @Test
@@ -130,20 +130,20 @@ class LineDaoTest {
         // given
         final Long id = dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
         // when
-        final boolean isDeleted = dao.delete(id);
+        final Long deletedId = dao.delete(id);
         // then
-        assertThat(isDeleted).isTrue();
+        assertThat(deletedId).isEqualTo(id);
     }
 
     @Test
-    @DisplayName("존재하지않는 ID값을 삭제하는 경우 False를 반환한다.")
+    @DisplayName("존재하지않는 ID값을 삭제하는 경우 null을 반환한다.")
     public void delete_throwsExceptionWithInvalidId() {
         // given
         dao.save(new LineEntity(LINE_NAME, LINE_COLOR));
         Long deleteId = 100L;
         // when
-        final boolean isDeleted = dao.delete(deleteId);
+        final Long deletedId = dao.delete(deleteId);
         // then
-        assertThat(isDeleted).isFalse();
+        assertThat(deletedId).isNull();
     }
 }

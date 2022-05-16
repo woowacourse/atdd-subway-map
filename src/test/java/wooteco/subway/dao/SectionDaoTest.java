@@ -39,12 +39,12 @@ public class SectionDaoTest {
         sectionDao = new JdbcSectionDao(dataSource, jdbcTemplate);
 
         StationDao stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
-        stationAId = stationDao.save(StationEntity.from(StationFixture.STATION_A));
-        stationBId = stationDao.save(StationEntity.from(StationFixture.STATION_B));
-        stationCId = stationDao.save(StationEntity.from(StationFixture.STATION_C));
+        stationAId = stationDao.save(StationEntity.from(StationFixture.getStationA()));
+        stationBId = stationDao.save(StationEntity.from(StationFixture.getStationB()));
+        stationCId = stationDao.save(StationEntity.from(StationFixture.getStationC()));
 
         LineDao lineDao = new JdbcLineDao(dataSource, jdbcTemplate);
-        lineId = lineDao.save(LineEntity.from(LineFixture.LINE_AB));
+        lineId = lineDao.save(LineEntity.from(LineFixture.getLineAb()));
     }
 
     @Test
@@ -76,6 +76,6 @@ public class SectionDaoTest {
         final Long id = sectionDao.save(new SectionEntity(lineId, stationAId, stationBId, 7));
 
         // then
-        assertThatCode(() -> sectionDao.deleteById(id)).doesNotThrowAnyException();
+        assertThatCode(() -> sectionDao.delete(id)).doesNotThrowAnyException();
     }
 }

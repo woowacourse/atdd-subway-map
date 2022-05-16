@@ -5,12 +5,9 @@ import java.util.Optional;
 
 import wooteco.subway.entity.StationEntity;
 
-public interface StationDao {
-    Long save(StationEntity StationEntity);
+public interface StationDao extends UpdateDao<StationEntity> {
 
     List<StationEntity> findAll();
-
-    boolean deleteById(Long id);
 
     Optional<StationEntity> findById(Long id);
 }

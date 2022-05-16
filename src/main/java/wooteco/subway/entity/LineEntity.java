@@ -2,7 +2,7 @@ package wooteco.subway.entity;
 
 import wooteco.subway.domain.line.Line;
 
-public class LineEntity {
+public class LineEntity implements Entity {
 
     private final Long id;
     private final String name;

@@ -5,14 +5,10 @@ import java.util.Optional;
 
 import wooteco.subway.entity.LineEntity;
 
-public interface LineDao {
-    Long save(LineEntity entity);
+public interface LineDao extends UpdateDao<LineEntity> {
 
     List<LineEntity> findAll();
 
     Optional<LineEntity> findById(Long id);
 
-    boolean update(LineEntity entity);
-
-    boolean delete(Long id);
 }

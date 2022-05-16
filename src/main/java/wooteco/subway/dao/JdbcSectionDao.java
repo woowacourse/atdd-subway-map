@@ -56,9 +56,12 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Long deleteById(Long id) {
+    public Long delete(Long id) {
         final String sql = "DELETE FROM section WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        final int deletedCount = jdbcTemplate.update(sql, id);
+        if (!isUpdated(deletedCount)) {
+            return null;
+        }
         return id;
     }
 
@@ -79,7 +82,19 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public Long update(SectionEntity entity) {
         final String sql = "UPDATE section SET up_station_id = ?, down_station_id = ? WHERE id = ?";
-        jdbcTemplate.update(sql, entity.getUpStationId(), entity.getDownStationId(), entity.getId());
+        final int updateCount = jdbcTemplate.update(
+            sql,
+            entity.getUpStationId(),
+            entity.getDownStationId(),
+            entity.getId()
+        );
+        if (!isUpdated(updateCount)) {
+            return null;
+        }
         return entity.getId();
+    }
+
+    private boolean isUpdated(int updatedCount) {
+        return updatedCount != 0;
     }
 }

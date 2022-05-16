@@ -57,20 +57,27 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public boolean update(LineEntity entity) {
+    public Long update(LineEntity entity) {
         final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         final int updatedCount = jdbcTemplate.update(sql, entity.getName(), entity.getColor(), entity.getId());
-        return isUpdated(updatedCount);
+        if (!isUpdated(updatedCount)) {
+            return null;
+        }
+        return entity.getId();
     }
 
     private boolean isUpdated(int updatedCount) {
-        return updatedCount == 1;
+        return updatedCount != 0;
     }
 
     @Override
-    public boolean delete(Long id) {
+    public Long delete(Long id) {
         final String sql = "DELETE FROM line WHERE id = ?";
         final int deletedCount = jdbcTemplate.update(sql, id);
-        return isUpdated(deletedCount);
+        if (!isUpdated(deletedCount)) {
+            return null;
+        }
+        return id;
     }
+
 }

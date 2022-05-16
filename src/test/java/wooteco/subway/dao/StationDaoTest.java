@@ -98,21 +98,21 @@ class StationDaoTest {
         // given
         final Long id = dao.save(new StationEntity(STATION_NAME));
         // when
-        final boolean isDeleted = dao.deleteById(id);
+        final Long deletedId = dao.delete(id);
         // then
-        assertThat(isDeleted).isTrue();
+        assertThat(deletedId).isEqualTo(id);
     }
 
     @Test
-    @DisplayName("존재하지 않는 역을 삭제할 수 없다.")
+    @DisplayName("존재하지 않는 역을 삭제하는 경우 null을 반환한다.")
     public void deleteById_doesNotExist() {
         // given
         final long id = 1L;
 
         // when
-        final boolean isDeleted = dao.deleteById(id);
+        final Long deletedId = dao.delete(id);
 
         // then
-        assertThat(isDeleted).isFalse();
+        assertThat(deletedId).isNull();
     }
 }

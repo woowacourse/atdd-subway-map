@@ -18,7 +18,7 @@ class LineSeriesTest {
     @DisplayName("중복된 이름인 경우 예외를 던진다.")
     public void throwsExceptionWithDuplicatedName() {
         // given
-        LineSeries series = new LineSeries(List.of(LineFixture.LINE_AB));
+        LineSeries series = new LineSeries(List.of(LineFixture.getLineAb()));
         // when
         Line line = new Line("분당선", "color3");
         // then

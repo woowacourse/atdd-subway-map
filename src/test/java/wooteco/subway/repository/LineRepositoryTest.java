@@ -8,11 +8,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
+import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineSeries;
 
 @SpringBootTest
+@Sql(value = "classpath:schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class LineRepositoryTest {
 
     @Autowired
@@ -51,7 +54,7 @@ class LineRepositoryTest {
     public void deleteByPersist() {
         // given
         LineSeries lineSeries = new LineSeries(new ArrayList<>());
-        final Line addLine = new Line("myName", "myColor");
+        final Line addLine = new Line("deleteLine", "deleteColor");
         lineSeries.add(addLine);
         lineRepository.persist(lineSeries);
 

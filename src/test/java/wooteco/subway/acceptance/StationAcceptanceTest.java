@@ -64,6 +64,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
+        System.out.println();
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
             .map(StationResponse::getId)
             .collect(Collectors.toList());

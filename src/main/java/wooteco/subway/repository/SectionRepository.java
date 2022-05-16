@@ -15,20 +15,37 @@ import wooteco.subway.util.SimpleReflectionUtils;
 @Repository
 public class SectionRepository {
 
+    private final PersistManager<SectionEntity> persistManager;
     private final StationRepository stationRepository;
     private final SectionDao sectionDao;
 
-    public SectionRepository(StationRepository stationRepository, SectionDao sectionDao) {
+    public SectionRepository(PersistManager<SectionEntity> persistManager,
+        StationRepository stationRepository, SectionDao sectionDao) {
+        this.persistManager = persistManager;
         this.stationRepository = stationRepository;
         this.sectionDao = sectionDao;
     }
 
     public void persist(Long lineId, SectionSeries sectionSeries) {
+        final List<Long> persistedIds = toIds(findAllSections(lineId));
         final List<Section> sections = sectionSeries.getSections();
-        final List<Long> persistedIds = toIds(readAllSections(lineId));
+        for (Section section : sections) {
+            final SectionEntity entity = SectionEntity.from(section, lineId);
+            final Long id = persistManager.persist(sectionDao, entity, persistedIds);
+            persistedIds.remove(id);
+            SimpleReflectionUtils.injectId(section, id);
+        }
+        persistManager.deletePersistedAll(sectionDao, persistedIds);
+    }
 
-        deleteSections(sections, persistedIds);
-        saveOrUpdateSections(lineId, sections, persistedIds);
+    public void persist2(Long lineId, SectionSeries sectionSeries) {
+        final List<Long> persistedIds = toIds(findAllSections(lineId));
+        final List<Section> sections = sectionSeries.getSections();
+        if (sections.isEmpty()) {
+            persistManager.deletePersistedAll(sectionDao, persistedIds);
+            return ;
+        }
+        persistEach(lineId, persistedIds, sections);
     }
 
     private List<Long> toIds(List<Section> sections) {
@@ -37,37 +54,7 @@ public class SectionRepository {
             .collect(Collectors.toList());
     }
 
-    private void deleteSections(List<Section> sections, List<Long> persistedIds) {
-        final List<Long> ids = sections.stream()
-            .map(Section::getId)
-            .collect(Collectors.toList());
-
-        for (Long persistedId : persistedIds) {
-            deleteSectionIfRemoved(ids, persistedId);
-        }
-    }
-
-    private void deleteSectionIfRemoved(List<Long> ids, Long persistedId) {
-        if (!ids.contains(persistedId)) {
-            delete(persistedId);
-        }
-    }
-
-    private void saveOrUpdateSections(Long lineId, List<Section> sections, List<Long> persistedIds) {
-        for (Section section : sections) {
-            saveOrUpdateSectionEach(lineId, persistedIds, section);
-        }
-    }
-
-    private void saveOrUpdateSectionEach(Long lineId, List<Long> persistedIds, Section section) {
-        if (persistedIds.contains(section.getId())) {
-            update(section);
-            return;
-        }
-        save(lineId, section);
-    }
-
-    public List<Section> readAllSections(Long lineId) {
+    public List<Section> findAllSections(Long lineId) {
         final List<SectionEntity> entities = sectionDao.findSectionsByLineId(lineId);
         return entities.stream()
             .map(entity -> new Section(entity.getId(),
@@ -77,16 +64,11 @@ public class SectionRepository {
             ).collect(Collectors.toList());
     }
 
-    private Section save(Long lineId, Section createSection) {
-        final Long id = sectionDao.save(SectionEntity.from(createSection, lineId));
-        return SimpleReflectionUtils.injectId(createSection, id);
-    }
-
-    private void update(Section section) {
-        sectionDao.update(SectionEntity.from(section));
-    }
-
-    private void delete(Long id) {
-        sectionDao.deleteById(id);
+    private void persistEach(Long lineId, List<Long> persistedIds, List<Section> sections) {
+        for (Section section : sections) {
+            final SectionEntity entity = SectionEntity.from(section, lineId);
+            final Long id = persistManager.persist(sectionDao, entity, persistedIds);
+            SimpleReflectionUtils.injectId(section, id);
+        }
     }
 }

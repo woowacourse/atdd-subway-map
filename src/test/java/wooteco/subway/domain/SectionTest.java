@@ -15,8 +15,8 @@ class SectionTest {
     @DisplayName("삽입할 수 있는지 여부를 확인한다.")
     void isDividable() {
         // given
-        final Section oldSection = SectionFixture.SECTION_AB;
-        final Section newSection = SectionFixture.SECTION_AC;
+        final Section oldSection = SectionFixture.getSectionAb();
+        final Section newSection = SectionFixture.getSectionAc();
 
         // when
         final boolean isDividable = oldSection.isDividable(newSection);
@@ -29,8 +29,8 @@ class SectionTest {
     @DisplayName("상행 혹은 하행이 둘다 일치하지 않으면 false를 반환한다.")
     void throwsExceptionWithNotMatchingStation() {
         // given
-        final Section oldSection = SectionFixture.SECTION_AB;
-        final Section newSection = SectionFixture.SECTION_XY;
+        final Section oldSection = SectionFixture.getSectionAb();
+        final Section newSection = SectionFixture.getSectionXy();
 
         // when
         final boolean isDividable = oldSection.isDividable(newSection);
@@ -43,8 +43,8 @@ class SectionTest {
     @DisplayName("삽입하려는 구간의 길이가 더 길면 false를 반환한다.")
     void throwsExceptionWithLongerDistance() {
         // given
-        final Section oldSection = SectionFixture.SECTION_AC;
-        final Section newSection = SectionFixture.SECTION_AB;
+        final Section oldSection = SectionFixture.getSectionAc();
+        final Section newSection = SectionFixture.getSectionAb();
 
         // when
         final boolean isDividable = oldSection.isDividable(newSection);
@@ -57,58 +57,25 @@ class SectionTest {
     @DisplayName("기존에 가리키던 상행을 신규 구간의 하행으로 변경한다.")
     void reconnectOldDownToNewUp() {
         // given
-        final Section oldSection = SectionFixture.SECTION_AB;
-        final Section newSection = SectionFixture.SECTION_AC;
+        final Section oldSection = SectionFixture.getSectionAb();
+        final Section newSection = SectionFixture.getSectionAc();
 
         // when
         final Section reconnect = oldSection.divide(newSection);
 
         // then
-        assertThat(reconnect.getUpStation()).isEqualTo(STATION_C);
+        assertThat(reconnect.getUpStation()).isEqualTo(getStationC());
     }
 
     @Test
     @DisplayName("기존에 가리키던 하행을 신규 구간의 상행으로 변경한다.")
     void reconnectOldUpToNewDown() {
-        final Section oldSection = SectionFixture.SECTION_BC;
-        final Section newSection = SectionFixture.SECTION_AC;
+        final Section oldSection = SectionFixture.getSectionBc();
+        final Section newSection = SectionFixture.getSectionAc();
 
         final Section reconnect = oldSection.divide(newSection);
 
-        assertThat(reconnect.getDownStation()).isEqualTo(STATION_A);
+        assertThat(reconnect.getDownStation()).isEqualTo(getStationA());
 
-    }
-
-    @Test
-    @DisplayName("ID가 어느 역(상행)이던 해당하면 True를 반환한다.")
-    public void isIdMatchOnAnyStationWhenUp() {
-        // given
-        final Section section = SectionFixture.SECTION_AB;
-        // when
-        final boolean isMatch = section.isAnyIdMatch(STATION_A.getId());
-        // then
-        assertThat(isMatch).isTrue();
-    }
-
-    @Test
-    @DisplayName("ID가 어느 역(하행)이던 해당하면 True를 반환한다.")
-    public void isIdMatchOnAnyStationWhenDown() {
-        // given
-        final Section section = SectionFixture.SECTION_AB;
-        // when
-        final boolean isMatch = section.isAnyIdMatch(STATION_B.getId());
-        // then
-        assertThat(isMatch).isTrue();
-    }
-
-    @Test
-    @DisplayName("ID가 어느 역이던 해당하지 않으면 False를 반환한다.")
-    public void isIdMatchOnAnyStationWhenNone() {
-        // given
-        final Section section = SectionFixture.SECTION_AB;
-        // when
-        final boolean isMatch = section.isAnyIdMatch(STATION_C.getId());
-        // then
-        assertThat(isMatch).isFalse();
     }
 }
