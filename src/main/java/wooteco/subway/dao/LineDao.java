@@ -38,8 +38,8 @@ public class LineDao {
     }
 
     private Line includeIdIn(final Line line) {
-        final String sql = "select max(id) from Line";
-        final Long id = jdbcTemplate.queryForObject(sql, Long.class);
+        final String sql = "select id from Line where name = ?";
+        final Long id = jdbcTemplate.queryForObject(sql, Long.class, line.getName());
         return new Line(id, line.getName(), line.getColor());
     }
 

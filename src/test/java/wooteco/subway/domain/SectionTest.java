@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.IllegalSectionCreatedException;
+import wooteco.subway.exception.IllegalSectionDeleteException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -165,5 +166,37 @@ public class SectionTest {
         final boolean actual = section1.containsDownStationIdBy(section2);
 
         assertThat(actual).isFalse();
+    }
+
+    @DisplayName("순방향으로 연결되어 있을 때 합친 구간을 반환하는 메서드가 정상적으로 작동하는 지 확인한다.")
+    @Test
+    void integrate_section_direct() {
+        final Section section1 = new Section(1L, 2L, 10);
+        final Section section2 = new Section(2L, 3L, 10);
+        final Section integratedSection = section1.integrate(section2);
+
+        assertThat(integratedSection.getUpStationId()).isEqualTo(1L);
+        assertThat(integratedSection.getDistance()).isEqualTo(20);
+    }
+
+    @DisplayName("역방향으로 연결되어 있을 때 합친 구간을 반환하는 메서드가 정상적으로 작동하는 지 확인한다.")
+    @Test
+    void integrate_section_reverse() {
+        final Section section1 = new Section(1L, 2L, 10);
+        final Section section2 = new Section(2L, 3L, 10);
+        final Section integratedSection = section2.integrate(section1);
+
+        assertThat(integratedSection.getUpStationId()).isEqualTo(1L);
+        assertThat(integratedSection.getDistance()).isEqualTo(20);
+    }
+
+    @DisplayName("구간이 연결되어 있지 않아 합칠 수 없을 때 예외를 반환하는 지 확인한다.")
+    @Test
+    void integrate_section_exception() {
+        final Section section1 = new Section(1L, 2L, 10);
+        final Section section2 = new Section(3L, 4L, 10);
+
+        assertThatThrownBy(() -> section1.integrate(section2))
+                .isInstanceOf(IllegalSectionDeleteException.class);
     }
 }

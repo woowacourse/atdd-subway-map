@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import com.fasterxml.jackson.databind.exc.InvalidNullException;
 import wooteco.subway.exception.IllegalSectionCreatedException;
+import wooteco.subway.exception.IllegalSectionDeleteException;
 
 public class Section {
     public static final int MIN_DISTANCE = 0;
@@ -72,8 +73,11 @@ public class Section {
     }
 
     public Section integrate(final Section section) {
-        if (downStationId.equals(section.upStationId)) {
+        if (this.isConnected(section)) {
             return new Section(upStationId, section.downStationId, distance + section.distance);
+        }
+        if (!section.isConnected(this)) {
+            throw new IllegalSectionDeleteException();
         }
         return new Section(section.upStationId, downStationId, distance + section.distance);
     }

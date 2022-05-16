@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.IllegalSectionCreatedException;
+import wooteco.subway.exception.IllegalSectionDeleteException;
 
 import java.util.List;
 
@@ -119,5 +120,64 @@ public class SectionsTest {
         final boolean actual = sections.matchDownStationId(section);
 
         assertThat(actual).isFalse();
+    }
+
+    @DisplayName("가지고 있는 두 두간이 정상적으로 합쳐지는 지 확인한다.")
+    @Test
+    void integrate_two_sections() {
+        final Sections possibleIntegratedSections = new Sections(
+                List.of(new Section(1L, 2L, 10),
+                        new Section(2L, 3L, 10)));
+        final Section integratedSection = possibleIntegratedSections.integrateTwoSections();
+
+        assertThat(integratedSection.getDistance()).isEqualTo(20);
+    }
+
+    @DisplayName("가지고 있는 구간이 하나일 때 예외를 발생시키는 지 확인한다.")
+    @Test
+    void integrate_lack_section_exception() {
+        final Sections failedToIntegrateSections = new Sections(
+                List.of(new Section(1L, 2L, 10)));
+
+        assertThatThrownBy(failedToIntegrateSections::integrateTwoSections)
+                .isInstanceOf(IllegalSectionDeleteException.class);
+    }
+
+    @DisplayName("구간이 1개일 때 True 를 반환하는 지 확인한다.")
+    @Test
+    void hasOneSection_true() {
+        final Sections sections = new Sections(
+                List.of(new Section(1L, 2L, 10)));
+
+        assertThat(sections.hasOneSection()).isTrue();
+    }
+
+    @DisplayName("구간이 1개가 아닐 때 False 를 반환하는 지 확인한다.")
+    @Test
+    void hasOneSection_false() {
+        final Sections sections = new Sections(
+                List.of(new Section(1L, 2L, 10),
+                        new Section(2L, 3L, 10)));
+
+        assertThat(sections.hasOneSection()).isFalse();
+    }
+
+    @DisplayName("구간이 2개일 때 True 를 반환하는 지 확인한다.")
+    @Test
+    void hasTwoSection_true() {
+        final Sections sections = new Sections(
+                List.of(new Section(1L, 2L, 10),
+                        new Section(2L, 3L, 10)));
+
+        assertThat(sections.hasTwoSection()).isTrue();
+    }
+
+    @DisplayName("구간이 2개가 아닐 때 False 를 반환하는 지 확인한다.")
+    @Test
+    void hasTwoSection_false() {
+        final Sections sections = new Sections(
+                List.of(new Section(1L, 2L, 10)));
+
+        assertThat(sections.hasTwoSection()).isFalse();
     }
 }
