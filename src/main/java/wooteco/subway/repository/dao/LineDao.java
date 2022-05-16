@@ -1,8 +1,8 @@
-package wooteco.subway.dao;
+package wooteco.subway.repository.dao;
 
 import java.util.List;
 import java.util.Optional;
-import wooteco.subway.entity.LineEntity;
+import wooteco.subway.repository.entity.LineEntity;
 
 public interface LineDao {
 

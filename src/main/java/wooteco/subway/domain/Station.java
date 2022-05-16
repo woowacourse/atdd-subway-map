@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.domain.StationException;
 
@@ -30,15 +31,28 @@ public class Station {
         }
     }
 
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
-    }
-
     public Long getId() {
         return id;
     }
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Station station = (Station) o;
+        return Objects.equals(id, station.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

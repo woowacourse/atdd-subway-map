@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.repository.dao;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.entity.LineEntity;
+import wooteco.subway.repository.entity.LineEntity;
 
 @Repository
 public class JdbcLineDao implements LineDao {

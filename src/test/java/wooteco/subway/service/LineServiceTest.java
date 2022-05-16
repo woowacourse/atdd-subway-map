@@ -9,11 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.repository.entity.StationEntity;
 
 @SpringBootTest
 @Transactional
@@ -25,13 +24,13 @@ class LineServiceTest {
     @Autowired
     private StationDao stationDao;
 
-    private Station gangnam;
-    private Station nowon;
+    private StationEntity gangnam;
+    private StationEntity nowon;
 
     @BeforeEach
     void setUp() {
-        gangnam = stationDao.save(new Station("강남역"));
-        nowon = stationDao.save(new Station("노원역"));
+        gangnam = stationDao.save(new StationEntity(null, "강남역"));
+        nowon = stationDao.save(new StationEntity(null, "노원역"));
     }
 
     @Test
@@ -87,7 +86,7 @@ class LineServiceTest {
 
         final String name = "7호선";
         final String color = "bg-blue-600";
-        final LineUpdateRequest request = new LineUpdateRequest(name, color);
+        final LineRequest request = new LineRequest(name, color, nowon.getId(), gangnam.getId(), 20);
 
         // when
         lineService.updateById(saved.getId(), request);

@@ -55,17 +55,17 @@ public class Sections {
     }
 
     private boolean unableConnect(Section section) {
-        List<Long> stationIds = getSortedStationId();
-        return !stationIds.contains(section.getDownStationId())
-                && !stationIds.contains(section.getUpStationId());
+        List<Station> stations = getSortedStation();
+        return !stations.contains(section.getDownStation())
+                && !stations.contains(section.getUpStation());
     }
 
     private boolean isAlreadyConnected(Section section) {
-        List<Long> stationIds = getSortedStationId();
-        return stationIds.contains(section.getDownStationId()) && stationIds.contains(section.getUpStationId());
+        List<Station> station = getSortedStation();
+        return station.contains(section.getDownStation()) && station.contains(section.getUpStation());
     }
 
-    public List<Long> getSortedStationId() {
+    public List<Station> getSortedStation() {
         LinkedList<Section> unsorted = new LinkedList<>(sections);
         LinkedList<Section> sorted = new LinkedList<>();
         Section first = findFirst();
@@ -78,7 +78,7 @@ public class Sections {
             sorted.offerLast(next);
             unsorted.remove(next);
         }
-        return getSortedStationId(sorted);
+        return getSortedStation(sorted);
     }
 
     private Section findFirst() {
@@ -105,21 +105,21 @@ public class Sections {
                 .orElseThrow(SectionNotFoundException::new);
     }
 
-    private List<Long> getSortedStationId(List<Section> sections) {
-        Set<Long> distinctIds = new LinkedHashSet<>();
+    private List<Station> getSortedStation(List<Section> sections) {
+        Set<Station> distinctStations = new LinkedHashSet<>();
         for (Section section : sections) {
-            distinctIds.add(section.getUpStationId());
-            distinctIds.add(section.getDownStationId());
+            distinctStations.add(section.getUpStation());
+            distinctStations.add(section.getDownStation());
         }
-        return new ArrayList<>(distinctIds);
+        return new ArrayList<>(distinctStations);
     }
 
-    public void deleteSectionsByStationId(Long stationId) {
+    public void deleteNearBy(Station station) {
         if (sections.size() < MINIMUM_SECTIONS_FOR_DELETE) {
             throw new SectionException(ExceptionMessage.SECTIONS_NOT_DELETABLE.getContent());
         }
 
-        List<Section> nearSections = findNearSections(stationId);
+        List<Section> nearSections = findNearSections(station);
         removeNearSections(nearSections);
         mergeSections(nearSections).ifPresent(sections::add);
     }
@@ -130,9 +130,9 @@ public class Sections {
         }
     }
 
-    private List<Section> findNearSections(Long stationId) {
+    private List<Section> findNearSections(Station station) {
         return sections.stream()
-                .filter(it -> it.hasStation(stationId))
+                .filter(it -> it.hasStation(station))
                 .collect(Collectors.toList());
     }
 

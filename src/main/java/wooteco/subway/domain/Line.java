@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.List;
-import javax.validation.constraints.NotEmpty;
+import java.util.Objects;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.domain.LineException;
 
@@ -30,12 +30,12 @@ public class Line {
         sections.add(section);
     }
 
-    public List<Long> getSortedStationId() {
-        return sections.getSortedStationId();
+    public List<Station> getSortedStations() {
+        return sections.getSortedStation();
     }
 
-    public void deleteSectionsByStationId(Long stationId) {
-        sections.deleteSectionsByStationId(stationId);
+    public void deleteSectionNearBy(Station station) {
+        sections.deleteNearBy(station);
     }
 
     public Long getId() {
@@ -52,5 +52,22 @@ public class Line {
 
     public List<Section> getSections() {
         return sections.getValue();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

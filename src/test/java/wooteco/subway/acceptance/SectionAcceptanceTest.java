@@ -5,21 +5,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.SectionSaveRequest;
+import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.SectionRequest;
+import wooteco.subway.service.dto.SectionSaveRequest;
+import wooteco.subway.repository.entity.StationEntity;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
 
@@ -34,9 +31,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Autowired
     private SectionService sectionService;
 
-    private Station gangnam;
-    private Station nowon;
-    private Station jamsil;
+    private StationEntity gangnam;
+    private StationEntity nowon;
+    private StationEntity jamsil;
 
     private LineResponse line1;
 
@@ -44,9 +41,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        gangnam = stationDao.save(new Station("강남"));
-        nowon = stationDao.save(new Station("노원"));
-        jamsil = stationDao.save(new Station("잠실"));
+        gangnam = stationDao.save(new StationEntity(null, "강남"));
+        nowon = stationDao.save(new StationEntity(null, "노원"));
+        jamsil = stationDao.save(new StationEntity(null, "잠실"));
         line1 = lineService.save(new LineRequest("1호선", "red", gangnam.getId(), nowon.getId(), 10));
     }
 

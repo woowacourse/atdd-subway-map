@@ -8,15 +8,16 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.StationResponse;
+import wooteco.subway.repository.entity.StationEntity;
 import wooteco.subway.exception.ExceptionMessage;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -27,15 +28,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationDao stationDao;
 
+    private StationEntity 강남역;
+    private StationEntity 노원역;
+
+    @Override
+    @BeforeEach
+    void setUp() {
+        super.setUp();
+        강남역 = stationDao.save(new StationEntity(null, "강남역"));
+        노원역 = stationDao.save(new StationEntity(null, "노원역"));
+    }
+
     @Test
     @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // given
         String lineName = "7호선";
         String lineColor = "bg-red-600";
-
-        Station 강남역 = stationDao.save(new Station("강남역"));
-        Station 노원역 = stationDao.save(new Station("노원역"));
 
         // when
         LineRequest requestBody = new LineRequest(lineName, lineColor, 노원역.getId(), 강남역.getId(), 10);
@@ -79,9 +88,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String redColor = "bg-red-600";
         String blueColor = "bg-blue-600";
 
-        Station 강남역 = stationDao.save(new Station("강남역"));
-        Station 노원역 = stationDao.save(new Station("노원역"));
-
         LineRequest lineRequest = new LineRequest(lineName, redColor, 노원역.getId(), 강남역.getId(), 10);
         postWithBody("/lines", lineRequest);
 
@@ -100,8 +106,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Station 강남역 = stationDao.save(new Station("강남역"));
-        Station 노원역 = stationDao.save(new Station("노원역"));
 
         LineRequest requestBody1 = new LineRequest("7호선", "bg-green-600", 강남역.getId(), 노원역.getId(), 10);
         ExtractableResponse<Response> createResponse1 = postWithBody("/lines", requestBody1);
@@ -140,8 +144,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String lineName = "7호선";
         String lineColor = "bg-green-600";
 
-        Station 강남역 = stationDao.save(new Station("강남역"));
-        Station 노원역 = stationDao.save(new Station("노원역"));
 
         LineRequest lineRequest = new LineRequest(lineName, lineColor, 강남역.getId(), 노원역.getId(), 5);
 
@@ -180,8 +182,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 정보를 수정한다.")
     void updateLine() {
         // given
-        Station 강남역 = stationDao.save(new Station("강남역"));
-        Station 노원역 = stationDao.save(new Station("노원역"));
 
         LineRequest requestBody = new LineRequest("7호선", "bg-red-600", 강남역.getId(), 노원역.getId(), 10);
         ExtractableResponse<Response> response = postWithBody("/lines", requestBody);
@@ -189,7 +189,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long id = getIdFromLocation(response);
 
         // when
-        LineRequest updateBody = new LineRequest("5호선", "bg-green-600", null, null, 10);
+        LineRequest updateBody = new LineRequest("5호선", "bg-green-600", 노원역.getId(), 강남역.getId(), 10);
 
         ExtractableResponse<Response> updateResponse = putWithBody("/lines/" + id, updateBody);
 
@@ -201,8 +201,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 정보를 삭제한다.")
     void deleteLine() {
         // given
-        Station 강남역 = stationDao.save(new Station("강남역"));
-        Station 노원역 = stationDao.save(new Station("노원역"));
 
         LineRequest requestBody = new LineRequest("7호선", "bg-red-600", 강남역.getId(), 노원역.getId(), 0);
         ExtractableResponse<Response> response = postWithBody("/lines", requestBody);

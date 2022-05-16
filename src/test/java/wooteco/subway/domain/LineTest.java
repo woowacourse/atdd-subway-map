@@ -2,10 +2,10 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,11 +19,20 @@ class LineTest {
 
     private Line line;
 
+    private Station one;
+    private Station two;
+    private Station three;
+    private Station four;
+
     @BeforeEach
     void setUp() {
-        Section section1 = new Section(1L, 4L, 2L, 10);
-        Section section2 = new Section(1L, 2L, 3L, 10);
-        Section section3 = new Section(1L, 3L, 1L, 10);
+        one = new Station(1L, "one");
+        two = new Station(2L, "two");
+        three = new Station(3L, "three");
+        four = new Station(4L, "four");
+        Section section1 = new Section(1L, four, two, 10);
+        Section section2 = new Section(1L, two, three, 10);
+        Section section3 = new Section(1L, three, one, 10);
         line = new Line("1호선", "red", List.of(section1, section2, section3));
     }
 
@@ -47,10 +56,12 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("섹션들에서 역 id 찾기")
+    @DisplayName("구간들에서 역 id 찾기")
     void findStationIds() {
         // when
-        List<Long> ids = line.getSortedStationId();
+        List<Long> ids = line.getSortedStations().stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
 
         // then
         assertThat(ids).containsExactly(4L, 2L, 3L, 1L);
@@ -60,7 +71,7 @@ class LineTest {
     @DisplayName("구간들에서 특정역에 따라 구간 삭제")
     void findNearByStationId() {
         // when
-        line.deleteSectionsByStationId(2L);
+        line.deleteSectionNearBy(two);
 
         // then
         assertThat(line.getSections()).hasSize(2);
@@ -70,10 +81,10 @@ class LineTest {
     @DisplayName("구간이 하나일 때 특정역에 따라 삭제할 구간 찾으려 하면 예외")
     void findNearByStationId_invalid() {
         // when
-        Line onlyOneLine = new Line("onlyOne", "red", List.of(new Section(1L, 1L, 2L, 10)));
+        Line onlyOneLine = new Line("onlyOne", "red", List.of(new Section(1L, one, two, 10)));
 
         // then
-        assertThatThrownBy(() -> onlyOneLine.deleteSectionsByStationId(1L))
+        assertThatThrownBy(() -> onlyOneLine.deleteSectionNearBy(one))
                 .isInstanceOf(SectionException.class)
                 .hasMessage(ExceptionMessage.SECTIONS_NOT_DELETABLE.getContent());
     }
@@ -81,31 +92,18 @@ class LineTest {
     @Test
     @DisplayName("인접한 구간이 2개이면 구간을 합쳐서 반환")
     void mergeSections() {
-        // given
-        Line line = provideLineForDelete();
-
         // when
-        line.deleteSectionsByStationId(3L);
+        line.deleteSectionNearBy(three);
 
         // then
         assertThat(line.getSections()).hasSize(2);
     }
 
-    private Line provideLineForDelete() {
-        List<Section> sections = List.of(new Section(1L, 2L, 3L, 4),
-                new Section(1L, 3L, 4L, 5),
-                new Section(1L, 4L, 5L, 6));
-        return new Line("line", "red", sections);
-    }
-
     @Test
     @DisplayName("삭제될 구간이 2개이면 그 구간만 제거")
     void deleteSections() {
-        // given
-        Line line = provideLineForDelete();
-
         // when
-        line.deleteSectionsByStationId(2L);
+        line.deleteSectionNearBy(two);
 
         // then
         assertThat(line.getSections()).hasSize(2);

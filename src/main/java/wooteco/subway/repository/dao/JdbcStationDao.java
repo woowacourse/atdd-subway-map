@@ -1,9 +1,9 @@
-package wooteco.subway.dao;
+package wooteco.subway.repository.dao;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,8 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.domain.Station;
+import wooteco.subway.repository.entity.StationEntity;
 
 @Repository
 public class JdbcStationDao implements StationDao {
@@ -30,31 +29,24 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station save(Station station) {
-        final Map<String, String> params = Map.of("name", station.getName());
+    public StationEntity save(StationEntity entity) {
+        final Map<String, String> params = Map.of("name", entity.getName());
 
         long savedId = simpleInserter.executeAndReturnKey(params).longValue();
-        return setId(station, savedId);
-    }
-
-    private Station setId(Station station, long id) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        Objects.requireNonNull(field).setAccessible(true);
-        ReflectionUtils.setField(field, station, id);
-        return station;
+        return new StationEntity(savedId, entity.getName());
     }
 
     @Override
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, getRowMapper());
     }
 
-    private RowMapper<Station> getRowMapper() {
+    private RowMapper<StationEntity> getRowMapper() {
         return (resultSet, rowNumber) -> {
             String name = resultSet.getString("name");
             long id = resultSet.getLong("id");
-            return new Station(id, name);
+            return new StationEntity(id, name);
         };
     }
 
@@ -65,9 +57,19 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public List<Station> findByIds(List<Long> ids) {
+    public List<StationEntity> findByIds(List<Long> ids) {
         SqlParameterSource parameters = new MapSqlParameterSource("ids", ids);
         String query = "SELECT * FROM station where id in (:ids)";
         return namedParameterJdbcTemplate.query(query, parameters, getRowMapper());
+    }
+
+    @Override
+    public Optional<StationEntity> findById(Long id) {
+        String sql = "SELECT * FROM station WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

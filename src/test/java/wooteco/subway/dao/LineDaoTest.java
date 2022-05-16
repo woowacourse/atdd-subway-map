@@ -11,8 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.domain.Line;
-import wooteco.subway.entity.LineEntity;
+import wooteco.subway.repository.entity.LineEntity;
+import wooteco.subway.repository.dao.JdbcLineDao;
+import wooteco.subway.repository.dao.LineDao;
 
 @JdbcTest
 public class LineDaoTest {

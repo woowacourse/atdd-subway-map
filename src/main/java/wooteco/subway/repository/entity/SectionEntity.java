@@ -1,4 +1,4 @@
-package wooteco.subway.entity;
+package wooteco.subway.repository.entity;
 
 import wooteco.subway.domain.Section;
 
@@ -19,13 +19,13 @@ public class SectionEntity {
     }
 
     public static SectionEntity of(Long lineId, Section section) {
-        return new SectionEntity(section.getId(), lineId, section.getUpStationId(), section.getDownStationId(),
+        return new SectionEntity(section.getId(), lineId, section.getUpStation().getId(), section.getDownStation().getId(),
                 section.getDistance());
     }
 
     public static SectionEntity from(Section section) {
-        return new SectionEntity(section.getId(), section.getLine_id(), section.getUpStationId(),
-                section.getDownStationId(), section.getDistance());
+        return new SectionEntity(section.getId(), section.getLineId(), section.getUpStation().getId(),
+                section.getDownStation().getId(), section.getDistance());
     }
 
     public Long getId() {

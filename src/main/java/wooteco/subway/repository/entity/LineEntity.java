@@ -1,4 +1,4 @@
-package wooteco.subway.entity;
+package wooteco.subway.repository.entity;
 
 import wooteco.subway.domain.Line;
 

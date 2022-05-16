@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.service.dto.StationRequest;
+import wooteco.subway.service.dto.StationResponse;
+import wooteco.subway.repository.entity.StationEntity;
 
 @SpringBootTest
 @Transactional
@@ -40,8 +40,8 @@ class StationServiceTest {
     @DisplayName("모든 역을 조회한다.")
     void findAll() {
         // given
-        stationDao.save(new Station("노원역"));
-        stationDao.save(new Station("왕십리역"));
+        stationDao.save(new StationEntity(null, "노원역"));
+        stationDao.save(new StationEntity(null, "왕십리역"));
 
         // when
         List<StationResponse> stationResponses = stationService.findAll();
@@ -54,13 +54,13 @@ class StationServiceTest {
     @DisplayName("id에 해당하는 역을 삭제한다.")
     void delete() {
         // given
-        Station savedStation = stationDao.save(new Station("마들역"));
+        StationEntity savedEntity = stationDao.save(new StationEntity(null, "마들역"));
 
         // when
-        stationService.delete(savedStation.getId());
+        stationService.delete(savedEntity.getId());
 
         // then
-        List<Station> remainStations = stationDao.findAll();
-        assertThat(remainStations).hasSize(0);
+        List<StationEntity> remainEntities = stationDao.findAll();
+        assertThat(remainEntities).hasSize(0);
     }
 }

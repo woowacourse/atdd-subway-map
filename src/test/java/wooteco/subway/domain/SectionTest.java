@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,28 +16,41 @@ import wooteco.subway.exception.domain.SectionException;
 
 class SectionTest {
 
+    private static Station one;
+    private static Station two;
+    private static Station three;
+    private static Station four;
+
+    @BeforeEach
+    void setUp() {
+        one = new Station(1L, "one");
+        two = new Station(2L, "two");
+        three = new Station(3L, "three");
+        four = new Station(4L, "four");
+    }
+
     private static Stream<Arguments> provideSection_divide() {
         return Stream.of(
-                Arguments.of(new Section(1L, 1L, 2L, 4),
-                        new Section(1L, 3L, 2L, 1),
-                        new Section(1L, 1L, 3L, 3)),
-                Arguments.of(new Section(1L, 1L, 2L, 4),
-                        new Section(1L, 1L, 3L, 1),
-                        new Section(1L, 3L, 2L, 3))
+                Arguments.of(new Section(1L, one, two, 4),
+                        new Section(1L, three, two, 1),
+                        new Section(1L, one, three, 3)),
+                Arguments.of(new Section(1L, one, two, 4),
+                        new Section(1L, one, three, 1),
+                        new Section(1L, three, two, 3))
         );
     }
 
     private static Stream<Arguments> provideSectionsForMergeTest() {
         return Stream.of(
                 Arguments.of(
-                        new Section(1L, 1L, 2L, 4),
-                        new Section(1L, 2L, 3L, 5),
-                        new Section(1L, 1L, 3L, 9)
+                        new Section(1L, one, two, 4),
+                        new Section(1L, two, three, 5),
+                        new Section(1L, one, three, 9)
                 ),
                 Arguments.of(
-                        new Section(1L, 2L, 3L, 5),
-                        new Section(1L, 1L, 2L, 4),
-                        new Section(1L, 1L, 3L, 9)
+                        new Section(1L, two, three, 5),
+                        new Section(1L, one, two, 4),
+                        new Section(1L, one, three, 9)
                 )
         );
     }
@@ -50,8 +64,8 @@ class SectionTest {
 
         // then
         assertAll(() -> {
-            assertThat(actual.getUpStationId()).isEqualTo(expect.getUpStationId());
-            assertThat(actual.getDownStationId()).isEqualTo(expect.getDownStationId());
+            assertThat(actual.getUpStation()).isEqualTo(expect.getUpStation());
+            assertThat(actual.getDownStation()).isEqualTo(expect.getDownStation());
             assertThat(actual.getDistance()).isEqualTo(expect.getDistance());
         });
     }
@@ -60,8 +74,8 @@ class SectionTest {
     @DisplayName("연결할 역이 없는 경우 예외 생성하기")
     void insert_invalidNotMatch() {
         // given
-        Section section = new Section(1L, 1L, 2L, 4);
-        Section sectionForAdd = new Section(1L, 3L, 4L, 1);
+        Section section = new Section(1L, one, two, 4);
+        Section sectionForAdd = new Section(1L, three, four, 1);
 
         // when
         assertThatThrownBy(() -> section.divideFrom(sectionForAdd))
@@ -73,8 +87,8 @@ class SectionTest {
     @DisplayName("삽입되는 구간이 쪼개지는 구간 길이보다 길거나 같은 경우 예외 생성하기")
     void insert_invalidDistance() {
         // given
-        Section section = new Section(1L, 1L, 2L, 4);
-        Section sectionForAdd = new Section(1L, 1L, 3L, 4);
+        Section section = new Section(1L, one, two, 4);
+        Section sectionForAdd = new Section(1L, one, three, 4);
 
         // when
         assertThatThrownBy(() -> section.divideFrom(sectionForAdd))
@@ -86,8 +100,8 @@ class SectionTest {
     @DisplayName("같은 출발점과 도착점을 쪼개려는 경우 예외 생성하기")
     void insert_invalidSection() {
         // given
-        Section section = new Section(1L, 1L, 2L, 4);
-        Section sectionForAdd = new Section(1L, 1L, 2L, 3);
+        Section section = new Section(1L, one, two, 4);
+        Section sectionForAdd = new Section(1L, one, two, 3);
 
         // when
         assertThatThrownBy(() -> section.divideFrom(sectionForAdd))
@@ -104,8 +118,8 @@ class SectionTest {
 
         // then
         assertAll(() -> {
-            assertThat(merged.getUpStationId()).isEqualTo(expected.getUpStationId());
-            assertThat(merged.getDownStationId()).isEqualTo(expected.getDownStationId());
+            assertThat(merged.getUpStation()).isEqualTo(expected.getUpStation());
+            assertThat(merged.getDownStation()).isEqualTo(expected.getDownStation());
             assertThat(merged.getDistance()).isEqualTo(expected.getDistance());
         });
     }
@@ -114,8 +128,8 @@ class SectionTest {
     @DisplayName("같은 출발점과 도착점을 합치려는 경우 예외 생성하기")
     void merge_invalidSameStations() {
         // given
-        Section section = new Section(1L, 1L, 2L, 4);
-        Section sectionForAdd = new Section(1L, 1L, 2L, 5);
+        Section section = new Section(1L, one, two, 4);
+        Section sectionForAdd = new Section(1L, one, two, 5);
 
         // then
         assertThatThrownBy(() -> section.merge(sectionForAdd))
@@ -127,8 +141,8 @@ class SectionTest {
     @DisplayName("연결되지 않는 두 구간을 합치려는 경우 예외 생성하기")
     void merge_invalidNotConnectedSections() {
         // given
-        Section section = new Section(1L, 1L, 2L, 4);
-        Section sectionForAdd = new Section(1L, 3L, 4L, 5);
+        Section section = new Section(1L, one, two, 4);
+        Section sectionForAdd = new Section(1L, three, four, 5);
 
         // then
         assertThatThrownBy(() -> section.merge(sectionForAdd))
