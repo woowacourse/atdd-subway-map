@@ -1,5 +1,7 @@
 package wooteco.subway.service;
 
+import static wooteco.subway.domain.Sections.NEED_MERGE_SIZE;
+
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +15,6 @@ import wooteco.subway.repository.StationRepository;
 @Transactional
 @Service
 public class SectionService {
-
-    private static final int NEED_MERGE_SIZE = 2;
 
     private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
@@ -33,8 +33,7 @@ public class SectionService {
         sections.add(section);
 
         sectionRepository.save(section);
-        sections.pickUpdate(sectionRepository
-                        .findByLineId(lineId))
+        sections.pickUpdate(sectionRepository.findByLineId(lineId))
                 .ifPresent(sectionRepository::update);
     }
 

@@ -12,6 +12,8 @@ import wooteco.subway.utils.exception.SubwayException;
 
 public class Sections {
 
+    public static final int NEED_MERGE_SIZE = 2;
+
     private static final String SECTION_ALREADY_EXIST_MESSAGE = "이미 존재하는 구간입니다.";
     private static final String SECTION_NOT_CONNECT_MESSAGE = "구간이 연결되지 않습니다";
     private static final String SECTION_MUST_SHORTER_MESSAGE = "기존의 구간보다 긴 구간은 넣을 수 없습니다.";
@@ -24,11 +26,15 @@ public class Sections {
     }
 
     public void add(final Section section) {
+        validateSectionCreate(section);
+        cutInSection(section);
+        values.add(section);
+    }
+
+    private void validateSectionCreate(final Section section) {
         validateDuplicateSection(section);
         validateSectionConnect(section);
         validateExistSection(section);
-        cutInSection(section);
-        values.add(section);
     }
 
     private void validateExistSection(final Section section) {
@@ -127,7 +133,14 @@ public class Sections {
                         || value.isSameDownStation(station))
                 .collect(toList());
         values.removeAll(sections);
+        if (isSectionNeedMerge(sections)) {
+            values.add(sections.get(0).merge(sections.get(1)));
+        }
         return sections;
+    }
+
+    private boolean isSectionNeedMerge(final List<Section> sections) {
+        return sections.size() == NEED_MERGE_SIZE;
     }
 
     private void validateDelete() {
