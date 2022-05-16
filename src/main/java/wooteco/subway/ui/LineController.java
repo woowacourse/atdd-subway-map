@@ -59,7 +59,7 @@ public class LineController {
     }
 
     @DeleteMapping("/lines/{lineId}/sections")
-    public void createSection(@PathVariable Long lineId, @RequestParam(name = "stationId") Long stationId) {
+    public void deleteSection(@PathVariable Long lineId, @RequestParam(name = "stationId") Long stationId) {
         lineService.deleteSection(lineId, stationId);
     }
 }
