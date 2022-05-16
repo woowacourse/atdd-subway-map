@@ -17,7 +17,6 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 
-@Transactional
 @Service
 public class LineService {
 
@@ -36,6 +35,7 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public LineResponse createLine(@RequestBody LineRequest lineRequest) {
         if (isDuplicateName(lineRequest.getName())) {
             throw new IllegalArgumentException(LINE_DUPLICATION_NAME_EXCEPTION_MESSAGE);
@@ -50,6 +50,7 @@ public class LineService {
         return new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(), stationResponses);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> showLines() {
         List<Line> lines = lineDao.findAll();
         List<Station> stations = stationDao.findAll();
@@ -59,6 +60,7 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse showLine(Long id) {
         Line line = findLineById(id);
         List<Station> stations = stationDao.findAll();
@@ -66,12 +68,14 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
+    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line originLine = findLineById(id);
         validateUpdateDuplicateLine(originLine, lineRequest);
         lineDao.update(originLine, new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
+    @Transactional
     public void deleteLine(Long id) {
         Line line = findLineById(id);
         sectionDao.deleteByLineId(id);

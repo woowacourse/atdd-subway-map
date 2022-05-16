@@ -9,7 +9,6 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
-@Transactional
 @Service
 public class StationService {
 
@@ -22,6 +21,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationResponse createStation(StationRequest stationRequest) {
         if (stationDao.findByName(stationRequest.getName()).isPresent()) {
             throw new IllegalArgumentException(STATION_DUPLICATION_EXCEPTION_MESSAGE);
@@ -31,6 +31,7 @@ public class StationService {
         return new StationResponse(newStation.getId(), newStation.getName());
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> showStations() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
@@ -38,6 +39,7 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteStation(Long id) {
         Station station = stationDao.findById(id)
             .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE));
