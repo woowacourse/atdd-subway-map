@@ -15,7 +15,6 @@ import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
 
 @Service
-@Transactional
 public class LineService {
 
     private static final String DUPLICATE_NAME_ERROR = "이미 같은 이름의 노선이 존재합니다.";
@@ -29,13 +28,14 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
         LineEntity lineEntity = lineRequest.toLineEntity();
         checkNameDuplication(lineRequest);
         LineEntity savedLineEntity = lineDao.save(lineEntity);
+
         SectionRequest sectionRequest = new SectionRequest(lineRequest.getUpStationId(), lineRequest.getDownStationId(),
                 lineRequest.getDistance());
-
         Sections sections = sectionService.createSection(savedLineEntity.getId(), sectionRequest);
 
         Line savedLine = new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor(),
@@ -49,6 +49,7 @@ public class LineService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = getAllLines();
         return lines.stream()
@@ -68,6 +69,7 @@ public class LineService {
         return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), sections);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         LineEntity lineEntity = getLineEntity(id);
         Line line = getLine(lineEntity);
@@ -79,22 +81,26 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
     }
 
+    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         getLineEntity(id);
         LineEntity lineEntity = lineRequest.toLineEntity();
         lineDao.update(id, lineEntity);
     }
 
+    @Transactional
     public void deleteLine(Long id) {
         getLineEntity(id);
         lineDao.deleteById(id);
     }
 
+    @Transactional
     public void createSection(Long lineId, SectionRequest sectionRequest) {
         getLineEntity(lineId);
         sectionService.createSection(lineId, sectionRequest);
     }
 
+    @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         getLineEntity(lineId);
         sectionService.deleteSection(lineId, stationId);

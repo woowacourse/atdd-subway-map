@@ -12,7 +12,6 @@ import wooteco.subway.dto.request.SectionRequest;
 import wooteco.subway.entity.SectionEntity;
 
 @Service
-@Transactional
 public class SectionService {
 
     private final StationService stationService;
@@ -23,6 +22,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public Sections createSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = getStation(sectionRequest.getUpStationId());
         Station downStation = getStation(sectionRequest.getDownStationId());
@@ -79,6 +79,7 @@ public class SectionService {
         sectionDao.save(saveRightSectionEntity);
     }
 
+    @Transactional(readOnly = true)
     public Sections getSectionsByLineId(Long lineId) {
         List<Section> sections = new ArrayList<>();
         List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(lineId);
@@ -98,6 +99,7 @@ public class SectionService {
         return stationService.findById(id);
     }
 
+    @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Station station = getStation(stationId);
         Sections sections = getSectionsByLineId(lineId);
@@ -108,9 +110,7 @@ public class SectionService {
             SectionEntity unionSectionEntity = getUnionSectionEntity(station, affectedSections);
             sectionDao.save(unionSectionEntity);
         }
-        for (Section section : affectedSections) {
-            sectionDao.deleteById(section.getId());
-        }
+        affectedSections.forEach(section -> sectionDao.deleteById(section.getId()));
     }
 
     private SectionEntity getUnionSectionEntity(Station station, List<Section> affectedSections) {

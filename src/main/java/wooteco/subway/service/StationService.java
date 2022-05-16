@@ -13,7 +13,6 @@ import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.StationEntity;
 
 @Service
-@Transactional
 public class StationService {
 
     private static final String DUPLICATE_NAME_ERROR = "이미 같은 이름의 지하철역이 존재합니다.";
@@ -25,6 +24,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationResponse createStation(StationRequest stationRequest) {
         StationEntity stationEntity = stationRequest.toEntity();
         checkNameDuplication(stationRequest);
@@ -39,6 +39,7 @@ public class StationService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<StationEntity> stations = stationDao.findAll();
         return stations.stream()
@@ -47,12 +48,14 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public Station findById(Long id) {
         StationEntity stationEntity = stationDao.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
         return new Station(stationEntity.getId(), stationEntity.getName());
     }
 
+    @Transactional
     public void deleteStation(Long id) {
         stationDao.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
