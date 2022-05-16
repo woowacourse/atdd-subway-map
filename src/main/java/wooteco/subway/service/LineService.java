@@ -1,8 +1,10 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -155,9 +157,13 @@ public class LineService {
     }
 
     public Line searchLineById(final Long id) {
-        final LineEntity lineEntity = lineDao.findById(id);
-        final SectionsOnTheLine sectionsOnTheLine = new SectionsOnTheLine(searchSectionsByLineId(id));
-        return lineEntity.createLine(sectionsOnTheLine);
+        try {
+            final LineEntity lineEntity = lineDao.findById(id);
+            final SectionsOnTheLine sectionsOnTheLine = new SectionsOnTheLine(searchSectionsByLineId(id));
+            return lineEntity.createLine(sectionsOnTheLine);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new NoSuchElementException("[ERROR] 노선을 찾을 수 없습니다.");
+        }
     }
 
     public List<Line> searchAllLines() {

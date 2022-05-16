@@ -53,11 +53,7 @@ public class JdbcLineDao implements LineDao {
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
-        try {
-            return jdbcTemplate.queryForObject(sql, source, ROW_MAPPER);
-        } catch (EmptyResultDataAccessException exception) {
-            throw new NoSuchElementException("[ERROR] 노선을 찾을 수 없습니다.");
-        }
+        return jdbcTemplate.queryForObject(sql, source, ROW_MAPPER);
     }
 
     @Override
