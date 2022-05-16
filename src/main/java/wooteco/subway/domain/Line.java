@@ -18,13 +18,13 @@ public class Line {
         this.id = id;
     }
 
-    private Line(Long id, String name, String color, List<Section> sections) {
+    private Line(Long id, String name, String color, Sections sections) {
         this(id, name, color);
-        this.sections = Sections.of(sections);
+        this.sections = sections;
     }
 
     public static Line from(Line line, List<Section> sections) {
-        return new Line(line.getId(), line.getName(), line.getColor(), sections);
+        return new Line(line.getId(), line.getName(), line.getColor(), Sections.of(sections));
     }
 
     public void update(String name, String color) {
