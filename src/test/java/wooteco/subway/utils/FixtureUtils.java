@@ -89,6 +89,10 @@ public class FixtureUtils {
         return response.jsonPath().getObject("id", Long.class);
     }
 
+    public static List<Long> extractIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("id", Long.class);
+    }
+
     public static String lineById(Object id) {
         return LINE + "/" + id;
     }

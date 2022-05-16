@@ -11,11 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.DbStationDao;
+import wooteco.subway.dto.StationResponse;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.EMPTY_MAP;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,10 +38,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // when
         ExtractableResponse<Response> response = post(STATION, 상도역);
+        StationResponse stationResponse = convertType(response, StationResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(stationResponse.getId()).isNotNull();
+        assertThat(stationResponse.getName()).isEqualTo("상도역");
     }
 
     @DisplayName("중복된 이름의 역 이름을 생성할 수 없다 - 400 에러")
@@ -80,22 +82,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse2 = post(STATION, 이수역);
 
         // when
-        ExtractableResponse<Response> response = get(STATION, EMPTY_MAP);
+        ExtractableResponse<Response> response = get(STATION);
 
-        List<Long> actualLineIds = response.jsonPath().getList("id", Long.class);
-        List<Long> expectedLineIds = getExpectedLineIds(createResponse1, createResponse2);
+        List<Long> actualLineIds = extractIds(response);
+
+        StationResponse stationResponse1 = convertType(createResponse1, StationResponse.class);
+        StationResponse stationResponse2 = convertType(createResponse2, StationResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actualLineIds).containsAll(expectedLineIds);
+        assertThat(actualLineIds).containsExactlyInAnyOrder(stationResponse1.getId(), stationResponse2.getId());
     }
-
-    private List<Long> getExpectedLineIds(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2) {
-        return Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> it.body().jsonPath().getLong("id"))
-                .collect(Collectors.toList());
-    }
-
 
     @DisplayName("지하철 역을 제거한다.")
     @Test
