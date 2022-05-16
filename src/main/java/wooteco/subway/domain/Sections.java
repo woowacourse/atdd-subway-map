@@ -13,17 +13,14 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
-        validateEmpty(sections);
         this.sections = sortSections(sections);
     }
 
-    private void validateEmpty(List<Section> sections) {
-        if (sections.isEmpty()) {
-            throw new DataNotExistException("구간이 존재하지 않습니다.");
-        }
-    }
-
     private List<Section> sortSections(List<Section> sections) {
+        if (sections.isEmpty()) {
+            return sections;
+        }
+
         List<Section> sortedSections = new ArrayList<>();
         Long topStationId = getTopStationId(sections);
 
@@ -162,5 +159,9 @@ public class Sections {
                 .collect(Collectors.toList());
         stationIds.add(0, sections.get(0).getUpStationId());
         return stationIds;
+    }
+
+    public boolean isEmpty() {
+        return sections.isEmpty();
     }
 }
