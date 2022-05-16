@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class Station {
 
+    private static final int MAX_NAME_LENGTH = 255;
+
     private final Long id;
     private final String name;
 
@@ -31,8 +33,8 @@ public class Station {
     }
 
     private void validateNameLength(String name) {
-        if (name.length() > 255) {
-            throw new IllegalArgumentException("역 이름은 255자를 초과하면 안됩니다.");
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException(String.format("역 이름은 %d자를 초과하면 안됩니다.", MAX_NAME_LENGTH));
         }
     }
 

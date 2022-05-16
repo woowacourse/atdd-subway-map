@@ -20,7 +20,6 @@ public class Line {
 
     public boolean isSameName(String name) {
         Objects.requireNonNull(name);
-
         return name.equals(this.name);
     }
 

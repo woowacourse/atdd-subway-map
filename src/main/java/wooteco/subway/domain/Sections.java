@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class Sections {
 
     private static final int MIDDLE_REMOVE_SIZE = 2;
-    private static final int ONE_SECTION_SIZE = 1;
+    private static final int MIN_SECTION_SIZE = 1;
 
     private final List<Section> sections;
 
@@ -124,7 +124,7 @@ public class Sections {
     }
 
     private void validateSectionSize() {
-        if (sections.size() == ONE_SECTION_SIZE) {
+        if (sections.size() == MIN_SECTION_SIZE) {
             throw new IllegalStateException("구간이 오직 하나인 노선에서 역을 제거할 수 없습니다.");
         }
     }

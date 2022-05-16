@@ -63,22 +63,22 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        Line findLine = findExistLineById(id);
-        List<Section> findSections = sectionDao.findAllByLineId(findLine.getId());
+        Line foundLine = findExistLineById(id);
+        List<Section> findSections = sectionDao.findAllByLineId(foundLine.getId());
         Sections sections = new Sections(findSections);
 
         List<Station> sortedStations = sections.getSortedStations();
-        return LineResponse.of(findLine, sortedStations);
+        return LineResponse.of(foundLine, sortedStations);
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        Line findLine = findExistLineById(id);
-        if (isDuplicateName(lineRequest) && !findLine.isSameName(lineRequest.getName())) {
+        Line foundLine = findExistLineById(id);
+        if (isDuplicateName(lineRequest) && !foundLine.isSameName(lineRequest.getName())) {
             throw new IllegalArgumentException(
                     StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
 
-        lineDao.update(findLine.getId(), lineRequest.toEntity());
+        lineDao.update(foundLine.getId(), lineRequest.toEntity());
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
@@ -118,12 +118,12 @@ public class LineService {
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findExistLineById(lineId);
-        Station stationToDelete = findExistStationById(stationId);
+        Station toDeleteStation = findExistStationById(stationId);
         List<Section> savedSections = sectionDao.findAllByLineId(line.getId());
 
         Sections origin = new Sections(savedSections);
         Sections results = new Sections(savedSections);
-        results.delete(stationToDelete);
+        results.delete(toDeleteStation);
 
         deleteAndSaveSections(lineId, origin, results);
     }
