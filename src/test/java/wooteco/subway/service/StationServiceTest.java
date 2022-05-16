@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -90,7 +91,7 @@ public class StationServiceTest {
     @DisplayName("지하철역 목록 하나를 Id로 조회한다.")
     @Test
     void getStation() {
-        doReturn(new Station("강남역"))
+        doReturn(Optional.of(new Station("강남역")))
                 .when(jdbcStationDao).findById(anyLong());
 
         Station station = stationService.getStation(1L);

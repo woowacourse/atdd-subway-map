@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.JdbcSectionDao;
-import wooteco.subway.dao.JdbcStationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
@@ -13,11 +12,11 @@ import wooteco.subway.dto.SectionRequest;
 public class SectionService {
 
     private final JdbcSectionDao jdbcSectionDao;
-    private final JdbcStationDao jdbcStationDao;
+    private final StationService stationService;
 
-    public SectionService(JdbcSectionDao jdbcSectionDao, JdbcStationDao jdbcStationDao) {
+    public SectionService(JdbcSectionDao jdbcSectionDao, StationService stationService) {
         this.jdbcSectionDao = jdbcSectionDao;
-        this.jdbcStationDao = jdbcStationDao;
+        this.stationService = stationService;
     }
 
     @Transactional
@@ -25,8 +24,8 @@ public class SectionService {
         Long upStationId = sectionRequest.getUpStationId();
         Long downStationId = sectionRequest.getDownStationId();
         int distance = sectionRequest.getDistance();
-        Section inputSection = new Section(lineId, jdbcStationDao.findById(upStationId).getId(),
-                jdbcStationDao.findById(downStationId).getId(), distance);
+        Section inputSection = new Section(lineId, stationService.getStation(upStationId).getId(),
+                stationService.getStation(downStationId).getId(), distance);
 
         Sections sections = new Sections(getSectionsByLineId(lineId));
         Section connectedPoint = sections.connectSection(inputSection);
