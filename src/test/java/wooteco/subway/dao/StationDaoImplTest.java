@@ -75,7 +75,7 @@ class StationDaoImplTest {
 
         List<Long> stationIds = List.of(1L, 2L);
 
-        List<Station> stations = stationDao.findStationByIds(stationIds);
+        List<Station> stations = stationDao.findByIds(stationIds);
 
         assertThat(stations.get(0).getName()).isEqualTo("서울역");
         assertThat(stations.get(1).getName()).isEqualTo("강남역");

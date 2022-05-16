@@ -13,5 +13,5 @@ public interface StationDao {
 
     boolean existsByName(Station station);
 
-    List<Station> findStationByIds(List<Long> ids);
+    List<Station> findByIds(List<Long> ids);
 }

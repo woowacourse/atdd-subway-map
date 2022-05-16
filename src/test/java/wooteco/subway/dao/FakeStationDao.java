@@ -44,7 +44,7 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
-    public List<Station> findStationByIds(List<Long> ids) {
+    public List<Station> findByIds(List<Long> ids) {
         List<Station> targets = new ArrayList<>();
         for (Entry<Long, Station> entry : stations.entrySet()) {
             if (ids.contains(entry.getKey())) {

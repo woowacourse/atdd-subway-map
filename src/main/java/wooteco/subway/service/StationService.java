@@ -42,7 +42,7 @@ public class StationService {
     }
 
     public List<Station> findStationByIds(List<Long> ids) {
-        List<Station> stations = stationDao.findStationByIds(ids);
+        List<Station> stations = stationDao.findByIds(ids);
         List<Station> stationsWithIdOrder = new ArrayList<>();
 
         for (Long id : ids) {
