@@ -12,6 +12,9 @@ public class Section {
     private final int distance;
 
     public Section(Long id, Long line_id, Long upStationId, Long downStationId, int distance) {
+        if (upStationId.equals(downStationId)) {
+            throw new SectionException(ExceptionMessage.SAME_STATIONS_SECTION.getContent());
+        }
         this.id = id;
         this.line_id = line_id;
         this.upStationId = upStationId;
