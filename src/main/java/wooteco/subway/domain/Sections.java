@@ -43,10 +43,10 @@ public class Sections {
                 .filter(section::hasAnySameStationId)
                 .count();
 
-        checkIsValidByStationMatchCount(matchCount);
+        checkValidationByStationMatchCount(matchCount);
     }
 
-    private void checkIsValidByStationMatchCount(long matchCount) {
+    private void checkValidationByStationMatchCount(long matchCount) {
         if (matchCount == TWO_STATION_MATCHED) {
             throw new DuplicatedSectionException();
         }
