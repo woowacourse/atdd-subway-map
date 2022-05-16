@@ -3,7 +3,7 @@ package wooteco.subway.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.station.Station;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,6 +55,11 @@ public class StationDao {
 
         String sql = String.format("select * from STATION where id in (%s)", String.join(", ", stringIds));
         return jdbcTemplate.query(sql, new StationMapper());
+    }
+
+    public boolean existByName(String name) {
+        String sql = "select EXISTS (select id from STATION where name = ?) as success";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
     }
 
     private static class StationMapper implements RowMapper<Station> {

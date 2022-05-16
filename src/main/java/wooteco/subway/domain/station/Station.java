@@ -1,4 +1,4 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.station;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +11,5 @@ public class Station {
 
     public Station(String name) {
         this(null, name);
-    }
-
-    public boolean hasSameName(Station station){
-        return name.equals(station.getName());
     }
 }

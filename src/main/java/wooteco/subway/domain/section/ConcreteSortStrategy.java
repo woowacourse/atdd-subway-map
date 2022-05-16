@@ -1,6 +1,6 @@
 package wooteco.subway.domain.section;
 
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.station.Station;
 
 import java.util.*;
 
