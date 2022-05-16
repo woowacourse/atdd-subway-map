@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.NoSuchStationException;
 
 public class Sections {
     private final Set<Section> values = new HashSet<>();
@@ -78,24 +79,19 @@ public class Sections {
     }
 
     private Long removeInterStation(final Station station) {
-        Section targetToUpdate = null;
-        Section targetToRemove = null;
-        Station downStationCandidate = null;
+        Section targetToUpdate = values.stream()
+                .filter(it -> it.isDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchStationException(station.getId()));
 
-        List<Section> targetSections = values.stream()
-                .filter(it -> it.contains(station))
-                .collect(Collectors.toList());
+        Section targetToRemove = values.stream()
+                .filter(it -> it.isUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchStationException(station.getId()));
 
-        for (Section section : targetSections) {
-            if (section.getDownStation().equals(station)) {
-                targetToUpdate = section;
-            }
-            if (section.getUpStation().equals(station)) {
-                targetToRemove = section;
-                downStationCandidate = section.getDownStation();
-            }
-        }
-        targetToUpdate.changeDownStation(downStationCandidate);
+        Station downStation = targetToRemove.getDownStation();
+
+        targetToUpdate.changeDownStation(downStation);
         targetToUpdate.changeDistance(targetToUpdate.getDistance() + targetToRemove.getDistance());
         values.remove(targetToRemove);
         return targetToRemove.getId();

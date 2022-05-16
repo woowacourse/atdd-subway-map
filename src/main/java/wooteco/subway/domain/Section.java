@@ -30,6 +30,14 @@ public class Section {
         return this.contains(other.getUpStation()) && this.contains(other.getDownStation());
     }
 
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     private void validateMoreThanZero(final int distance) {
         if (distance < 1) {
             throw new IllegalArgumentException("거리가 1 미만인 구간 정보는 생성할 수 없습니다.");
