@@ -88,4 +88,20 @@ class SectionDaoTest {
         });
     }
 
+    @DisplayName("line id 관련 section을 모두 삭제한다.")
+    @Test
+    void deleteAllByLineId() {
+        //given
+        Section section1 = new Section(10, 1L, 1L, 3L);
+        Section section2 = new Section(10, 1L, 11L, 13L);
+        sectionDao.save(section1);
+        sectionDao.save(section2);
+
+        //when
+        sectionDao.deleteAllByLineId(1L);
+
+        //then
+        assertThat(sectionDao.findByLineId(1L).size()).isZero();
+    }
+
 }

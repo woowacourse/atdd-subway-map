@@ -21,6 +21,20 @@ public class Sections {
         this.sections = sections;
     }
 
+    public Sections addSection(Section sectionToInsert) {
+        sections.add(sectionToInsert);
+
+        Optional<Section> deletableSection = findSectionToDelete(sectionToInsert);
+
+        deletableSection.ifPresent(sectionToDelete -> {
+            Section sectionToUpdate = getSectionToUpdate(sectionToDelete, sectionToInsert);
+            sections.remove(sectionToDelete);
+            sections.add(sectionToUpdate);
+        });
+
+        return new Sections(sections);
+    }
+
     public Section getSectionToUpdate(Section sectionToDelete, Section sectionToInsert) {
         return sectionToDelete.createSection(sectionToInsert);
     }

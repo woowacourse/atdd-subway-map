@@ -4,15 +4,18 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.section.NoSuchSectionException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class SectionDao {
@@ -78,5 +81,13 @@ public class SectionDao {
                 "WHERE id = :id";
 
         jdbcTemplate.update(sql, new BeanPropertySqlParameterSource(section));
+    }
+
+    public void deleteAllByLineId(Long lineId) {
+        String sql = "DELETE FROM section WHERE line_id = :lineId";
+        Map<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+
+        jdbcTemplate.update(sql, params);
     }
 }
