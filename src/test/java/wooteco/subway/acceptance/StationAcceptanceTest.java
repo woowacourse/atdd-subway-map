@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.DbStationDao;
 
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import static wooteco.subway.utils.FixtureUtils.*;
 
 @DisplayName("지하철 역 E2E")
 @SuppressWarnings("NonAsciiCharacters")
+@Sql("/init.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired

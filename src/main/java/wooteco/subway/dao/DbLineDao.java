@@ -21,6 +21,7 @@ public class DbLineDao implements LineDao {
         String color = rs.getString("color");
         return new Line(newId, name, color);
     };
+
     private final JdbcTemplate jdbcTemplate;
 
     public DbLineDao(JdbcTemplate jdbcTemplate) {
@@ -39,8 +40,8 @@ public class DbLineDao implements LineDao {
             return ps;
         }, keyHolder);
 
-        long savedId = keyHolder.getKey().longValue();
-        return savedId;
+        long savedLineId = keyHolder.getKey().longValue();
+        return savedLineId;
     }
 
     @Override
