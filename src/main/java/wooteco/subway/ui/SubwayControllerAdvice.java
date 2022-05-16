@@ -1,11 +1,16 @@
 package wooteco.subway.ui;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.NoSuchContentException;
 import wooteco.subway.exception.SubwayException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {
@@ -29,5 +34,13 @@ public class SubwayControllerAdvice {
     @ExceptionHandler(SubwayException.class)
     public ResponseEntity<String> handleSubwayException(SubwayException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex){
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors()
+                .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
+        return ResponseEntity.badRequest().body(errors);
     }
 }
