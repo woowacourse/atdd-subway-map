@@ -3,9 +3,7 @@ package wooteco.subway.repository.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -52,11 +50,7 @@ public class JdbcStationDao implements StationDao {
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
-        try {
-            return jdbcTemplate.queryForObject(sql, source, ROW_MAPPER);
-        } catch (EmptyResultDataAccessException exception) {
-            throw new NoSuchElementException("[ERROR] 역을 찾을 수 없습니다.");
-        }
+        return jdbcTemplate.queryForObject(sql, source, ROW_MAPPER);
     }
 
     @Override

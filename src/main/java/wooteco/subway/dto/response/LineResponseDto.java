@@ -28,7 +28,7 @@ public class LineResponseDto {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
-        this.stations = line.getStations().stream()
+        this.stations = line.getSectionsOnTheLine().lineUpStations().stream()
                 .map(station -> new StationResponseDto(station))
                 .collect(Collectors.toList());
     }
