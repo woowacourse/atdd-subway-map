@@ -21,19 +21,9 @@ class JdbcLineDaoTest {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private static LineDao lineDao;
 
-//    private Station station_GN = new Station(1L, "강남역");
-//    private Station station_YS = new Station(2L, "역삼역");
-//    private Line line_2H = new Line("2호선", "bg-green-600", List.of(station_GN, station_YS));
-//    private Line line_SBD = new Line("신분당선", "bg-red-600", List.of(station_GN, station_YS));
-//    private LineEntity savedLineEntity_2H;
-//    private LineEntity savedLineEntity_SBD;
-
     @BeforeEach
     void setUp() {
         lineDao = new JdbcLineDao(namedParameterJdbcTemplate);
-//
-//        savedLineEntity_2H = lineDao.save(new LineEntity(line_2H));
-//        savedLineEntity_SBD = lineDao.save(new LineEntity(line_SBD));
     }
 
     @DisplayName("노선을 저장하고 id로 노선을 찾는다.")
