@@ -1,4 +1,4 @@
-****## 지하철 노선도 미션
+## 지하철 노선도 미션
 
 ## 기능 요구 사항
 
@@ -61,4 +61,4 @@
   - 노선(lindId)
   - 상행 종점(upStationId)
   - 하행 종점(downStationId)
-  - 두 종점간의 거리(distance)****
+  - 두 종점간의 거리(distance)
