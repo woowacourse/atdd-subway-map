@@ -10,7 +10,6 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DeleteUsingDateException;
@@ -19,7 +18,6 @@ import wooteco.subway.exception.ExistKeyException;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @SuppressWarnings("NonAsciiCharacters")
