@@ -93,7 +93,8 @@ public class StationServiceTest {
         doReturn(new Station("강남역"))
                 .when(jdbcStationDao).findById(anyLong());
 
-        StationResponse stationResponse = stationService.getStation(1L);
+        Station station = stationService.getStation(1L);
+        StationResponse stationResponse = new StationResponse(station.getId(), station.getName());
         assertThat(stationResponse.getName()).isEqualTo("강남역");
     }
 }

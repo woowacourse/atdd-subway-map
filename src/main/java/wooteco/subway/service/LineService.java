@@ -44,6 +44,7 @@ public class LineService {
 
         List<StationResponse> stationResponses = findStationInSections(sections).stream()
                 .map(stationService::getStation)
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
 
         return new LineResponse(lineId, line.getName(), line.getColor(), stationResponses);
@@ -76,6 +77,7 @@ public class LineService {
 
         List<StationResponse> stationResponses = findStationInSections(sections).stream()
                 .map(stationService::getStation)
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
