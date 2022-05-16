@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.dao.MemorySectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.constant.TerminalStation;
 import wooteco.subway.exception.constant.SectionNotDeleteException;
 import wooteco.subway.exception.constant.SectionNotRegisterException;
@@ -52,9 +53,11 @@ class SectionServiceTest {
         sectionDao.save(new Section(3L, 2L, 30, 10L));
         sectionDao.save(new Section(5L, 7L, 50, 10L));
 
-        Map<TerminalStation, Long> terminalStationMap = sectionService.findTerminalStations(10L);
-        assertThat(terminalStationMap.get(TerminalStation.UP)).isEqualTo(3L);
-        assertThat(terminalStationMap.get(TerminalStation.DOWN)).isEqualTo(7L);
+        List<Section> lines = sectionDao.findByLineId(10L);
+        Sections sections = new Sections(lines);
+        Map<TerminalStation, Long> terminalStations = sections.findTerminalStations();
+        assertThat(terminalStations.get(TerminalStation.UP)).isEqualTo(3L);
+        assertThat(terminalStations.get(TerminalStation.DOWN)).isEqualTo(7L);
     }
 
     @DisplayName("[구간 등록]")

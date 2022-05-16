@@ -85,17 +85,16 @@ public class Sections {
         validateUpAndDownStationNotAllExist(sectionWithSameUpStation, sectionWithSameDownStation);
     }
 
+    public Map<TerminalStation, Long> findTerminalStations() {
+        LinkedList<Long> sortedStations = getSorted();
+        return Map.of(TerminalStation.UP, sortedStations.getFirst(), TerminalStation.DOWN, sortedStations.getLast());
+    }
 
     private Section getSectionWithCondition(Predicate<Section> condition) {
         return sections.stream()
                 .filter(condition)
                 .findAny()
                 .orElse(null);
-    }
-
-    private Map<TerminalStation, Long> findTerminalStations() {
-        LinkedList<Long> sortedStations = getSorted();
-        return Map.of(TerminalStation.UP, sortedStations.getFirst(), TerminalStation.DOWN, sortedStations.getLast());
     }
 
     private Map<Long, Long> getToDownSectionMap(List<Section> foundSections) {

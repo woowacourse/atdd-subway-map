@@ -2,17 +2,17 @@ package wooteco.subway.application;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.constant.TerminalStation;
 import wooteco.subway.exception.constant.SectionNotRegisterException;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class SectionService {
 
@@ -37,15 +37,11 @@ public class SectionService {
     }
 
 
+    @Transactional(readOnly = true)
     public LinkedList<Long> findSortedStationIds(long lineId) {
         List<Section> foundSections = sectionDao.findByLineId(lineId);
         Sections sections = new Sections(foundSections);
         return sections.getSorted();
-    }
-
-    public Map<TerminalStation, Long> findTerminalStations(long lineId) {
-        LinkedList<Long> sortedStations = findSortedStationIds(lineId);
-        return Map.of(TerminalStation.UP, sortedStations.getFirst(), TerminalStation.DOWN, sortedStations.getLast());
     }
 
     public void removeSection(long lineId, long stationId) {
