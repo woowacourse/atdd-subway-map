@@ -30,14 +30,17 @@ public class Sections {
     }
 
     public List<Station> sortedStations() {
-        Map<Station, Station> map = new HashMap<>();
+        Map<Station, Station> map = mappingSectionsToTable();
+        Station topStation = findTopStation();
+        return calculateSortedStations(map, topStation);
+    }
+
+    public Set<Section> values() {
+        return Collections.unmodifiableSet(values);
+    }
+
+    private List<Station> calculateSortedStations(final Map<Station, Station> map, final Station topStation) {
         List<Station> result = new ArrayList<>();
-
-        for (final Section section : values) {
-            map.put(section.getUpStation(), section.getDownStation());
-        }
-
-        Station topStation = getTopStation();
         result.add(topStation);
         Station nextStation = map.get(topStation);
         while (nextStation != null) {
@@ -47,8 +50,12 @@ public class Sections {
         return result;
     }
 
-    public Set<Section> values() {
-        return Collections.unmodifiableSet(values);
+    private Map<Station, Station> mappingSectionsToTable() {
+        Map<Station, Station> map = new HashMap<>();
+        for (final Section section : values) {
+            map.put(section.getUpStation(), section.getDownStation());
+        }
+        return map;
     }
 
     private void addSection(final Section section) {
@@ -185,7 +192,7 @@ public class Sections {
         return upStations;
     }
 
-    private Station getTopStation() {
+    private Station findTopStation() {
         ArrayList<Station> topOrLowest = new ArrayList<>(lastStations());
         if (upStations().contains(topOrLowest.get(0))) {
             return topOrLowest.get(0);
