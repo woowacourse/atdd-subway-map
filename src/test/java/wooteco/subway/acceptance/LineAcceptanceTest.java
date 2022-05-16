@@ -134,8 +134,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         // given
-        ExtractableResponse<Response> response1 = _7호선_및_역_생성요청();
-        ExtractableResponse<Response> 분당선_및_역_생성요청 = 분당선_및_역_생성요청();
+        _7호선_및_역_생성요청();
+        분당선_및_역_생성요청();
 
         // when
         ExtractableResponse<Response> response = get(LINE);
@@ -146,13 +146,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         LineResponse lineResponse2 = lineResponses.get(1);
         List<Station> stations2 = lineResponse2.getStations();
-
-/*
-        LineResponse.builder()
-                .name("7호선")
-                .color("brown")
-                .stations(List.of(new Station("상도역"), new Station("이수역")));
-*/
 
         // then
         assertAll(
@@ -332,11 +325,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(deletedSection).isEqualTo(new Section(1L, 1L, 3L, 7, 1L));
     }
 
-    @DisplayName("[예외]구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+    @DisplayName("[예외] 구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
     @Test
     void can_not_delete_one_section() {
         // given
-        // 최조 등록
         노선_및_역_생성요청();
 
         // when

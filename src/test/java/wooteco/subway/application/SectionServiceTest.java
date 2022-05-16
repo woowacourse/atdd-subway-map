@@ -10,6 +10,7 @@ import wooteco.subway.dao.MemorySectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.constant.TerminalStation;
+import wooteco.subway.exception.constant.SectionNotDeleteException;
 import wooteco.subway.exception.constant.SectionNotRegisterException;
 
 import java.util.LinkedList;
@@ -145,7 +146,8 @@ class SectionServiceTest {
             void can_not_register_if_new_distance_is_longer(long upStationId, long downStationId) {
                 firstCreateSection(1L, 1L, 2L, 7);
                 assertThatThrownBy(() -> sectionService.createSection(new Section(upStationId, downStationId, 11, 1L)))
-                        .isInstanceOf(SectionNotRegisterException.class);
+                        .isInstanceOf(SectionNotRegisterException.class)
+                        .hasMessage(SectionNotRegisterException.MESSAGE);
             }
 
             @DisplayName("[예외] 상행역과 하행역 모두 존재하는 것을 등록하려 한다면 구간을 추가할 수 없다 (구간 1개인 경우)")
@@ -155,7 +157,8 @@ class SectionServiceTest {
                 long downStationId = 2L;
                 firstCreateSection(1L, upStationId, downStationId, 7);
                 assertThatThrownBy(() -> sectionService.createSection(new Section(upStationId, downStationId, 11, 1L)))
-                        .isInstanceOf(SectionNotRegisterException.class);
+                        .isInstanceOf(SectionNotRegisterException.class)
+                        .hasMessage(SectionNotRegisterException.MESSAGE);
             }
 
             @DisplayName("[예외] 상행역과 하행역 모두 존재하는 것을 등록하려 한다면 구간을 추가할 수 없다 (구간 2개인 경우)")
@@ -166,7 +169,8 @@ class SectionServiceTest {
                 firstCreateSection(1L, upStationId, 2L, 7);
                 sectionService.createSection(new Section(2L, downStationId, 7, 1L));
                 assertThatThrownBy(() -> sectionService.createSection(new Section(upStationId, downStationId, 11, 1L)))
-                        .isInstanceOf(SectionNotRegisterException.class);
+                        .isInstanceOf(SectionNotRegisterException.class)
+                        .hasMessage(SectionNotRegisterException.MESSAGE);
             }
 
             @DisplayName("[예외] 상행역과 하행역 모두 존재하지 않는다면 구간을 추가할 수 없다")
@@ -174,26 +178,45 @@ class SectionServiceTest {
             void can_not_register_if_up_and_down_all_exist() {
                 firstCreateSection(1L, 1L, 2L, 7);
                 assertThatThrownBy(() -> sectionService.createSection(new Section(5L, 6L, 11, 1L)))
-                        .isInstanceOf(SectionNotRegisterException.class);
+                        .isInstanceOf(SectionNotRegisterException.class)
+                        .hasMessage(SectionNotRegisterException.MESSAGE);
             }
         }
     }
 
-    @DisplayName("구간 삭제")
-    @Test
-    void delete_section() {
-        long lineId = 1L;
-        firstCreateSection(lineId, 1L, 2L, 3);
-        sectionService.createSection(new Section(2L, 3L, 4, lineId));
+    @DisplayName("[구간 등록]")
+    @Nested
+    class delete {
 
-        sectionService.deleteSection(lineId, 2L);
+        @DisplayName("[정상]")
+        @Test
+        void delete_section() {
+            long lineId = 1L;
+            firstCreateSection(lineId, 1L, 2L, 3);
+            sectionService.createSection(new Section(2L, 3L, 4, lineId));
 
-        List<Section> sections = sectionDao.findByLineId(1L);
-        Section section = sections.get(0);
+            sectionService.deleteSection(lineId, 2L);
 
-        assertThat(sections.size()).isEqualTo(1);
-        assertThat(section).isEqualTo(new Section(2L, 1L, 3L, 7, lineId));
+            List<Section> sections = sectionDao.findByLineId(1L);
+            Section section = sections.get(0);
+
+            assertThat(sections.size()).isEqualTo(1);
+            assertThat(section).isEqualTo(new Section(2L, 1L, 3L, 7, lineId));
+        }
+
+        @DisplayName("[예외] 구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+        @Test
+        void delete_section_exception() {
+            long lineId = 1L;
+            firstCreateSection(lineId, 1L, 2L, 3);
+
+            assertThatThrownBy(() -> sectionService.deleteSection(lineId, 2L))
+                    .isInstanceOf(SectionNotDeleteException.class)
+                    .hasMessage(SectionNotDeleteException.MESSAGE);
+        }
+
     }
+
 
     private long firstCreateSection(Long lineId, long upStationId, long downStationId, Integer distance) {
         return sectionDao.save(new Section(upStationId, downStationId, distance, lineId));

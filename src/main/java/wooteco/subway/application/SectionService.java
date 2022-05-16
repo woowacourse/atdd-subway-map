@@ -4,15 +4,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.constant.TerminalStation;
-import wooteco.subway.exception.constant.SectionNotDeleteException;
 import wooteco.subway.exception.constant.SectionNotRegisterException;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -32,11 +31,11 @@ public class SectionService {
         }
 
         if (conditionForInsertStationInMiddle(section.getDistance(), sectionWithSameUpStation)) {
-            return insertDownStationInMiddle(section, sectionWithSameUpStation);
+            return addDownStationInMiddle(section, sectionWithSameUpStation);
         }
 
         if (conditionForInsertStationInMiddle(section.getDistance(), sectionWithSameDownStation)) {
-            return insertUpStationInMiddle(section, sectionWithSameDownStation);
+            return addUpStationInMiddle(section, sectionWithSameDownStation);
         }
 
         validateUpAndDownStationAllExist(sectionWithSameUpStation, sectionWithSameDownStation);
@@ -47,20 +46,10 @@ public class SectionService {
 
     public LinkedList<Long> findSortedStationIds(long lineId) {
         List<Section> foundSections = sectionDao.findByLineId(lineId);
-        Map<Long, Long> toDownSectionMap = convertListToDownSectionMap(foundSections);
-        Map<Long, Long> toUpSectionMap = convertListToUpSectionMap(foundSections);
-
-        LinkedList<Long> result = new LinkedList<>();
-        Long pivot = getAnyPivot(foundSections);
-        Long iterator = pivot;
-        result.add(pivot);
-
-        insertDownSections(toDownSectionMap, result, iterator);
-
-        iterator = pivot;
-        insertUpSections(toUpSectionMap, result, iterator);
-        return result;
+        Sections sections = new Sections(foundSections);
+        return sections.getSorted();
     }
+
 
     public Map<TerminalStation, Long> findTerminalStations(long lineId) {
         LinkedList<Long> sortedStations = findSortedStationIds(lineId);
@@ -68,38 +57,17 @@ public class SectionService {
     }
 
     public void deleteSection(long lineId, long stationId) {
-        List<Section> sections = sectionDao.findByLineId(lineId);
-        validateDeleteSection(sections);
+        List<Section> found = sectionDao.findByLineId(lineId);
+        Sections sections = new Sections(found);
+        sections.validateCanDeleteSection();
 
-        Section upperSection = getUpperSection(stationId, sections);
-        Section lowerSection = getLowerSection(stationId, sections);
+        Section upperSection = sections.getUpperSection(stationId);
+        Section lowerSection = sections.getLowerSection(stationId);
 
-        Long upStationId = upperSection.getUpStationId();
-        lowerSection.setUpStationId(upStationId);
-        lowerSection.setDistance(upperSection.getDistance() + lowerSection.getDistance());
+        sections.joinSection(lowerSection, upperSection);
 
         sectionDao.update(lowerSection);
         sectionDao.deleteSection(upperSection);
-    }
-
-    private void validateDeleteSection(List<Section> sections) {
-        if (sections.size() == ONLY_ONE_SECTION) {
-            throw new SectionNotDeleteException();
-        }
-    }
-
-    private Section getLowerSection(long stationId, List<Section> sections) {
-        return sections.stream()
-                .filter(it -> it.getUpStationId().equals(stationId))
-                .findAny()
-                .get();
-    }
-
-    private Section getUpperSection(long stationId, List<Section> sections) {
-        return sections.stream()
-                .filter(it -> it.getDownStationId().equals(stationId))
-                .findAny()
-                .get();
     }
 
     private boolean conditionForTerminalRegistration(Section section, Map<TerminalStation, Long> terminalStations) {
@@ -129,7 +97,7 @@ public class SectionService {
         return true;
     }
 
-    private long insertDownStationInMiddle(Section section, Section existingSection) {
+    private long addDownStationInMiddle(Section section, Section existingSection) {
         long createdSectionId = sectionDao.save(section);
 
         existingSection.setUpStationId(section.getDownStationId());
@@ -139,7 +107,7 @@ public class SectionService {
         return createdSectionId;
     }
 
-    private Long insertUpStationInMiddle(Section section, Section existingSection) {
+    private Long addUpStationInMiddle(Section section, Section existingSection) {
         long createdSectionId = sectionDao.save(section);
 
         existingSection.setDownStationId(section.getUpStationId());
@@ -163,49 +131,5 @@ public class SectionService {
 
     private Section getSectionWithSameDownStation(List<Section> sections, Long downStationId) {
         return getSectionWithCondition(sections, section -> section.getDownStationId().equals(downStationId));
-    }
-
-    private long saveSection(Long lineId, Long upStationId, Long downStationId, Integer distance) {
-        return sectionDao.save(new Section(upStationId, downStationId, distance, lineId));
-    }
-
-    private long saveSection2(Section section) {
-        return sectionDao.save(section);
-    }
-
-    private Long getAnyPivot(List<Section> foundSections) {
-        return foundSections.get(0).getUpStationId();
-    }
-
-    private Map<Long, Long> convertListToUpSectionMap(List<Section> foundSections) {
-        return foundSections.stream()
-                .collect(Collectors.toMap(section -> section.getDownStationId(), section -> section.getUpStationId()));
-    }
-
-    private Map<Long, Long> convertListToDownSectionMap(List<Section> foundSections) {
-        return foundSections.stream()
-                .collect(Collectors.toMap(section -> section.getUpStationId(), section -> section.getDownStationId()));
-    }
-
-    private void insertUpSections(Map<Long, Long> toUpSection, LinkedList<Long> result, Long iterator) {
-        while (true) {
-            Long upSectionId = toUpSection.get(iterator);
-            if (upSectionId == null) {
-                break;
-            }
-            result.addFirst(upSectionId);
-            iterator = upSectionId;
-        }
-    }
-
-    private void insertDownSections(Map<Long, Long> toDownSection, LinkedList<Long> result, Long iterator) {
-        while (true) {
-            Long downSectionId = toDownSection.get(iterator);
-            if (downSectionId == null) {
-                break;
-            }
-            result.addLast(downSectionId);
-            iterator = downSectionId;
-        }
     }
 }
