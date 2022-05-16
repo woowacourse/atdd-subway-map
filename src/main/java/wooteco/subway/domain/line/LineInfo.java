@@ -14,6 +14,10 @@ public class LineInfo {
         this.color = color;
     }
 
+    public LineInfo(String name, String color) {
+        this(null, name, color);
+    }
+
     public Long getId() {
         return id;
     }

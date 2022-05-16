@@ -2,6 +2,7 @@ package wooteco.subway.domain.line;
 
 import java.util.List;
 import java.util.Objects;
+import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 
@@ -15,12 +16,20 @@ public class Line {
         this.sections = sections;
     }
 
+    public static Line of(LineInfo lineInfo, Section section) {
+        return new Line(lineInfo, new Sections(List.of(section)));
+    }
+
     public Long getId() {
         return lineInfo.getId();
     }
 
     public LineInfo getLineInfo() {
         return lineInfo;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     public List<Station> getSortedStations() {

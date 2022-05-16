@@ -1,37 +1,31 @@
 package wooteco.subway.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.section.SectionsManager;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateSectionRequest;
-import wooteco.subway.entity.SectionEntity;
-import wooteco.subway.exception.ExceptionType;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.repository.StationRepository;
+import wooteco.subway.repository.SubwayRepository;
 
 @Service
 public class SectionService {
 
-    private final SectionDao sectionDao;
-    private final StationDao stationDao;
+    private final SubwayRepository subwayRepository;
+    private final StationRepository stationRepository;
 
-    public SectionService(SectionDao sectionDao,
-                          StationDao stationDao) {
-        this.sectionDao = sectionDao;
-        this.stationDao = stationDao;
+    public SectionService(SubwayRepository subwayRepository, StationRepository stationRepository) {
+        this.subwayRepository = subwayRepository;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public void save(Long lineId, CreateSectionRequest request) {
-        SectionsManager sectionsManager = new SectionsManager(findValidSections(lineId));
-        Station upStation = findExistingStation(request.getUpStationId());
-        Station downStation = findExistingStation(request.getDownStationId());
+        SectionsManager sectionsManager = new SectionsManager(subwayRepository.findAllSectionsByLineId(lineId));
+        Station upStation = stationRepository.findExistingStation(request.getUpStationId());
+        Station downStation = stationRepository.findExistingStation(request.getDownStationId());
         Section newSection = new Section(upStation, downStation, request.getDistance());
         Sections updatedSections = sectionsManager.save(newSection);
 
@@ -40,31 +34,14 @@ public class SectionService {
 
     @Transactional
     public void delete(Long lineId, Long stationId) {
-        SectionsManager sectionsManager = new SectionsManager((findValidSections(lineId)));
-        Sections updatedSections = sectionsManager.delete(findExistingStation(stationId));
+        SectionsManager sectionsManager = new SectionsManager(subwayRepository.findAllSectionsByLineId(lineId));
+        Sections updatedSections = sectionsManager.delete(stationRepository.findExistingStation(stationId));
 
         updateSectionChanges(sectionsManager, updatedSections, lineId);
     }
 
     private void updateSectionChanges(SectionsManager oldSectionsManager, Sections updatedSections, Long lineId) {
-        for (Section deletedSection : oldSectionsManager.extractDeletedSections(updatedSections)) {
-            sectionDao.delete(SectionEntity.of(lineId, deletedSection));
-        }
-        for (Section updatedSection : oldSectionsManager.extractNewSections(updatedSections)) {
-            sectionDao.save(SectionEntity.of(lineId, updatedSection));
-        }
-    }
-
-    private List<Section> findValidSections(Long lineId) {
-        return sectionDao.findAllByLineId(lineId)
-                .stream()
-                .map(SectionEntity::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    private Station findExistingStation(Long stationId) {
-        return stationDao.findById(stationId)
-                .orElseThrow(() -> new NotFoundException(ExceptionType.STATION_NOT_FOUND))
-                .toDomain();
+        subwayRepository.delete(lineId, oldSectionsManager.extractDeletedSections(updatedSections));
+        subwayRepository.save(lineId, oldSectionsManager.extractNewSections(updatedSections));
     }
 }

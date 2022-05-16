@@ -25,11 +25,9 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return LineResponse.of(line.getLineInfo(), line.getSortedStations());
-    }
-
-    public static LineResponse of(LineInfo line, List<Station> stations) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), toStationResponse(stations));
+        LineInfo lineInfo = line.getLineInfo();
+        List<Station> stations = line.getSortedStations();
+        return new LineResponse(lineInfo.getId(), lineInfo.getName(), lineInfo.getColor(), toStationResponse(stations));
     }
 
     private static List<StationResponse> toStationResponse(List<Station> stations) {
