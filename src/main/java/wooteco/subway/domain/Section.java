@@ -8,7 +8,7 @@ public class Section {
     private Long lineId;
     private Station upStation;
     private Station downStation;
-    private Integer distance;
+    private int distance;
 
     public Section() {
     }
