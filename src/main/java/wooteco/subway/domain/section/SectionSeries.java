@@ -13,7 +13,6 @@ import wooteco.subway.util.CollectorsUtils;
 public class SectionSeries {
 
     private static final SectionSeriesSorter SORTER = new SectionSeriesSorter();
-    private static final int ZERO_INDEX = 0;
 
     private final List<Section> sections;
 
@@ -48,11 +47,19 @@ public class SectionSeries {
     }
 
     private boolean isDownTerminal(Station station) {
-        return sections.get(sections.size() - 1).isDownStationSame(station);
+        return sections.get(getLastIndex()).isDownStationSame(station);
     }
 
     private boolean isUpTerminal(Station station) {
-        return sections.get(ZERO_INDEX).isUpStationSame(station);
+        return sections.get(getFirstIndex()).isUpStationSame(station);
+    }
+
+    private int getFirstIndex() {
+        return 0;
+    }
+
+    private int getLastIndex() {
+        return sections.size() - 1;
     }
 
     private void insertSection(Section newSection) {
@@ -76,12 +83,12 @@ public class SectionSeries {
     public void remove(Station deleteStation) {
         validateSectionEnough();
         if (isUpTerminal(deleteStation)) {
-            this.sections.remove(ZERO_INDEX);
+            this.sections.remove(getFirstIndex());
             SORTER.sort(sections);
             return;
         }
         if (isDownTerminal(deleteStation)) {
-            this.sections.remove(sections.size() - 1);
+            this.sections.remove(getLastIndex());
             SORTER.sort(sections);
             return;
         }
@@ -90,7 +97,7 @@ public class SectionSeries {
     }
 
     private void validateSectionEnough() {
-        if (this.sections.size() == 1) {
+        if (this.sections.size() <= 1) {
             throw new SectionNotEnoughException("구간이 하나인 경우에는 삭제할 수 없습니다.");
         }
     }
@@ -107,7 +114,7 @@ public class SectionSeries {
     }
 
     private int findIntermediateStation(Station station) {
-        return IntStream.range(ZERO_INDEX, sections.size())
+        return IntStream.range(getFirstIndex(), sections.size())
             .filter(it -> sections.get(it).isDownStationSame(station))
             .findAny()
             .orElseThrow(() -> new RowNotFoundException("삭제하려는 역이 구간에 등록되어 있지 않습니다."));
