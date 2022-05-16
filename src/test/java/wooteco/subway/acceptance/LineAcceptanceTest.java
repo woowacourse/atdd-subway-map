@@ -49,6 +49,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.header("Location").split("/")[2]).isEqualTo("1");
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
@@ -183,7 +184,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         editParams.put("name", "2호선");
         editParams.put("color", "blue");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> editResponse = RestAssured.given().log().all()
                 .body(editParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -191,8 +192,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+
+        ExtractableResponse<Response> findAllResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(editResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findAllResponse.body().asString()).contains("2호선");
+        assertThat(findAllResponse.body().asString()).contains("blue");
+
     }
 
     private void createStationResponseOf(Map<String, String> params) {
