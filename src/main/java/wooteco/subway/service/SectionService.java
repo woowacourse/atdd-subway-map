@@ -62,12 +62,7 @@ public class SectionService {
 
     @Transactional
     public void delete(Long id, Long stationId) {
-        if (!lineDao.isExistById(id)) {
-            throw new ClientException("존재하지 않는 노선입니다.");
-        }
-        if (!stationDao.isExistById(id)) {
-            throw new ClientException("존재하지 않는 역입니다.");
-        }
+        validateExist(id);
         sectionDao.findById(id).validateDeleteCondition();
 
         Sections sections = sectionDao.findById(id);
@@ -76,6 +71,15 @@ public class SectionService {
             return;
         }
         deleteEndSection(id, sections.findDownSection(stationId), sections.findUpSection(stationId));
+    }
+
+    private void validateExist(Long id) {
+        if (!lineDao.isExistById(id)) {
+            throw new ClientException("존재하지 않는 노선입니다.");
+        }
+        if (!stationDao.isExistById(id)) {
+            throw new ClientException("존재하지 않는 역입니다.");
+        }
     }
 
     private void deleteMiddleSection(Long id, Section downSection, Section upSection) {
