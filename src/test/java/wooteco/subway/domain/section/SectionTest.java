@@ -134,4 +134,36 @@ class SectionTest {
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
+
+    @DisplayName("isRegisteredAtLine 메서드는 특정 노선에 등록되었는지를 반환")
+    @Nested
+    class IsRegisteredAtLineTest {
+
+        @Test
+        void 동일한_노선_id_값이_들어온_경우_참_반환() {
+            Section section1 = new Section(1L, STATION1, STATION3, 10);
+
+            boolean actual = section1.isRegisteredAtLine(1L);
+
+            assertThat(actual).isTrue();
+        }
+
+        @Test
+        void 다른_노선_id_값이_들어온_경우_거짓_반환() {
+            Section section1 = new Section(1L, STATION1, STATION3, 10);
+
+            boolean actual = section1.isRegisteredAtLine(999L);
+
+            assertThat(actual).isFalse();
+        }
+
+        @Test
+        void 해당_노선의_id가_null인_경우_예외는_발생하지_않으며_거짓_반환() {
+            Section section1 = new Section(null, STATION1, STATION3, 10);
+
+            boolean actual = section1.isRegisteredAtLine(1L);
+
+            assertThat(actual).isFalse();
+        }
+    }
 }

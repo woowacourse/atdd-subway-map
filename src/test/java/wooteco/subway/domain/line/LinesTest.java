@@ -21,10 +21,10 @@ class LinesTest {
     private final Station STATION2 = new Station(2L, "역2");
     private final Station STATION3 = new Station(3L, "역3");
 
-    private final Section LINE1_SECTION1 = new Section(STATION1, STATION2, 10);
-    private final Section LINE1_SECTION2 = new Section(STATION2, STATION3, 30);
-    private final Section LINE2_SECTION = new Section(STATION1, STATION2, 10);
-    private final Section LINE3_SECTION = new Section(STATION2, STATION3, 30);
+    private final Section LINE1_SECTION1 = new Section(1L, STATION1, STATION2, 10);
+    private final Section LINE1_SECTION2 = new Section(1L, STATION2, STATION3, 30);
+    private final Section LINE2_SECTION = new Section(2L, STATION1, STATION2, 10);
+    private final Section LINE3_SECTION = new Section(3L, STATION2, STATION3, 30);
 
     @Test
     void toSortedList_메서드는_노선의_id_순서대로_정렬된_노선들을_반환() {
