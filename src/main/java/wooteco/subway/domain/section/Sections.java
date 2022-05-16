@@ -1,6 +1,5 @@
 package wooteco.subway.domain.section;
 
-import static wooteco.subway.domain.section.SectionAddStatus.ADD_MIDDLE_FROM_DOWN_STATION;
 import static wooteco.subway.domain.section.SectionAddStatus.ADD_MIDDLE_FROM_UP_STATION;
 import static wooteco.subway.domain.section.SectionDeleteStatus.DELETE_DOWN_STATION;
 import static wooteco.subway.domain.section.SectionDeleteStatus.DELETE_MIDDLE;
@@ -38,13 +37,23 @@ public class Sections {
 
     public List<Section> addSection(final Section section) {
         final SectionAddStatus sectionAddStatus = getAddSectionStatus(section);
-
-        if (hasMiddleSection(sectionAddStatus)) {
+        if (sectionAddStatus.hasMiddleSection()) {
             addMiddleSection(section, sectionAddStatus);
             return getSortedSections();
         }
         value.add(section);
         return getSortedSections();
+    }
+
+    private SectionAddStatus getAddSectionStatus(final Section section) {
+        validateSection(getTotalStationIds(), section);
+        return SectionAddStatus.from(value, section);
+    }
+
+    private void validateSection(final List<Long> stationIds, final Section section) {
+        if (stationIds.contains(section.getUpStationId()) && stationIds.contains(section.getDownStationId())) {
+            throw new IllegalStateException(ERROR_ALREADY_CONTAIN);
+        }
     }
 
     private void addMiddleSection(final Section section, final SectionAddStatus sectionAddStatus) {
@@ -53,11 +62,6 @@ public class Sections {
             return;
         }
         addMiddleSectionFromDownStation(section);
-    }
-
-    private SectionAddStatus getAddSectionStatus(final Section section) {
-        validateSection(getTotalStationIds(), section);
-        return SectionAddStatus.from(value, section);
     }
 
     private void addMiddleSectionFromUpStation(final Section section) {
@@ -129,16 +133,6 @@ public class Sections {
             .filter(sectionPredicate)
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException(ERROR_NO_STATION));
-    }
-
-    private boolean hasMiddleSection(final SectionAddStatus sectionAddStatus) {
-        return sectionAddStatus == ADD_MIDDLE_FROM_UP_STATION || sectionAddStatus == ADD_MIDDLE_FROM_DOWN_STATION;
-    }
-
-    private void validateSection(final List<Long> stationIds, final Section section) {
-        if (stationIds.contains(section.getUpStationId()) && stationIds.contains(section.getDownStationId())) {
-            throw new IllegalStateException(ERROR_ALREADY_CONTAIN);
-        }
     }
 
     private List<Long> getTotalStationIds() {

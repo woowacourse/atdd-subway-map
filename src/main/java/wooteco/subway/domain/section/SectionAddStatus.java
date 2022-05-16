@@ -13,7 +13,7 @@ public enum SectionAddStatus {
     ADD_NEW_DOWN_STATION(SectionAddStatus::existAnyNewDownStation),
     ;
 
-    BiPredicate<List<Section>, Section> condition;
+    final BiPredicate<List<Section>, Section> condition;
 
     SectionAddStatus(final BiPredicate<List<Section>, Section> condition) {
         this.condition = condition;
@@ -64,5 +64,9 @@ public enum SectionAddStatus {
 
     private static boolean addNewDownStationCase(final Section section, final Long downStationId) {
         return Objects.equals(section.getUpStationId(), downStationId);
+    }
+
+    public boolean hasMiddleSection() {
+        return this == ADD_MIDDLE_FROM_UP_STATION || this == ADD_MIDDLE_FROM_DOWN_STATION;
     }
 }
