@@ -111,7 +111,9 @@ public class LineService {
 
     @Transactional
     public void deleteLine(final long id) {
-        sectionDao.deleteByLineId(id);
+        if (sectionDao.deleteByLineId(id) == NOT_FOUND) {
+            throw new StationNotFoundException();
+        }
         if (lineDao.delete(id) == NOT_FOUND) {
             throw new LineNotFoundException();
         }
