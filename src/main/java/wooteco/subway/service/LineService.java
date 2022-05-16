@@ -16,6 +16,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionEntity;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.SectionNotFoundException;
 import wooteco.subway.exception.StationNotFoundException;
 
 @Service
@@ -110,10 +111,14 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteLine(final long id) {
+    public void deleteAllSectionByLineId(final Long id) {
         if (sectionDao.deleteByLineId(id) == NOT_FOUND) {
-            throw new StationNotFoundException();
+            throw new SectionNotFoundException();
         }
+    }
+
+    @Transactional
+    public void deleteLine(final long id) {
         if (lineDao.delete(id) == NOT_FOUND) {
             throw new LineNotFoundException();
         }

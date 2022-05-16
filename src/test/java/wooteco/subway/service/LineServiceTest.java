@@ -26,6 +26,7 @@ import wooteco.subway.dto.SectionEntity;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.SectionNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -158,13 +159,39 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("같은 라인의 모든 구간을 삭제한다.")
+    void deleteSectionsByLineId() {
+        // given
+        long id = 1L;
+
+        // mocking
+        given(sectionDao.deleteByLineId(id)).willReturn(1);
+
+        // when
+        lineService.deleteAllSectionByLineId(id);
+
+        // then
+        verify(sectionDao).deleteByLineId(id);
+    }
+
+    @Test
     @DisplayName("존재하지않는 id로 노선을 삭제하면, 예외가 발생한다.")
-    void deleteNotFoundException() {
+    void deleteLineNotFoundException() {
         final long id = 0L;
 
         assertThatThrownBy(() -> lineService.deleteLine(id))
                 .isInstanceOf(LineNotFoundException.class)
                 .hasMessage("존재하지 않는 지하철 노선입니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지않는 id로 구간을 삭제하면, 예외가 발생한다.")
+    void deleteSectionNotFoundException() {
+        final long id = 0L;
+
+        assertThatThrownBy(() -> lineService.deleteAllSectionByLineId(id))
+                .isInstanceOf(SectionNotFoundException.class)
+                .hasMessage("존재하지 않는 지하철 구간입니다.");
     }
 
     @Test
