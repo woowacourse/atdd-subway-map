@@ -4,6 +4,8 @@ import wooteco.subway.exception.ClientException;
 
 public class Line {
 
+    private static final long BASIC_ID = 0L;
+
     private final Long id;
     private final String name;
     private final String color;
@@ -16,7 +18,7 @@ public class Line {
     }
 
     public Line(String name, String color) {
-        this(0L, name, color);
+        this(BASIC_ID, name, color);
     }
 
     private void validateNull(String name, String color) {

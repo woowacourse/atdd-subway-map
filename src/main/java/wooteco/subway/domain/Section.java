@@ -9,6 +9,7 @@ public class Section {
 
     private final static int BLANK = 0;
     private final static Long EMPTY = null;
+    private static final long BASIC_ID = 0L;
 
     private final Long id;
     private final Long lineId;
@@ -28,7 +29,7 @@ public class Section {
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this(0L, lineId, upStationId, downStationId, distance);
+        this(BASIC_ID, lineId, upStationId, downStationId, distance);
     }
 
     private void validateMinimumRange(Long lineId, Long upStationId, Long downStationId, int distance) {
