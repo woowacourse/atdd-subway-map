@@ -7,16 +7,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.FakeStationDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
+@JdbcTest
 public class StationServiceTest {
 
-    private StationDao stationDao = new FakeStationDao();
-    private StationService stationService = new StationService(stationDao);
+    private StationDao stationDao;
+    private StationService stationService;
+
+    @Autowired
+    public StationServiceTest(JdbcTemplate jdbcTemplate) {
+        this.stationDao = new StationDaoImpl(jdbcTemplate);
+        this.stationService = new StationService(stationDao);
+    }
 
     @Test
     @DisplayName("지하철 역을 저장할 수 있다.")

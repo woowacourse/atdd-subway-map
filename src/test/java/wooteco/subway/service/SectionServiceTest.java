@@ -5,24 +5,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.FakeLineDao;
-import wooteco.subway.dao.FakeSectionDao;
-import wooteco.subway.dao.FakeStationDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.SectionDaoImpl;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
 
+@JdbcTest
+@Sql("/init.sql")
 public class SectionServiceTest {
 
-    private StationDao stationDao = new FakeStationDao();
-    private LineDao lineDao = new FakeLineDao();
-    private SectionDao sectionDao = new FakeSectionDao();
+    private StationDao stationDao;
+    private LineDao lineDao;
+    private SectionDao sectionDao;
+    private LineService lineService;
+    private SectionService sectionService;
 
-    private LineService lineService = new LineService(stationDao, lineDao, sectionDao);
-    private SectionService sectionService = new SectionService(sectionDao);
+    @Autowired
+    public SectionServiceTest(JdbcTemplate jdbcTemplate) {
+        this.stationDao = new StationDaoImpl(jdbcTemplate);
+        this.lineDao = new LineDaoImpl(jdbcTemplate);
+        this.sectionDao = new SectionDaoImpl(jdbcTemplate);
+        this.lineService = new LineService(stationDao, lineDao, sectionDao);
+        this.sectionService = new SectionService(sectionDao);
+    }
 
     @BeforeEach
     void beforeEach() {
