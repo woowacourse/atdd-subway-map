@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -15,7 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -28,21 +34,35 @@ public class LineServiceTest {
     @Mock
     private LineDao lineDao;
 
+    @Mock
+    private SectionDao sectionDao;
+
+    @Mock
+    private StationDao stationDao;
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = new LineRequest("test", "GREEN");
+        LineRequest lineRequest = new LineRequest("test", "GREEN", 1L, 2L, 10);
         given(lineDao.findByName("test"))
             .willReturn(Optional.empty());
         given(lineDao.save(any(Line.class)))
             .willReturn(new Line(1L, lineRequest.getName(), lineRequest.getColor()));
+        given(sectionDao.save(any()))
+            .willReturn(new Section(1L, 1L, 1L, 2L, 10));
+        given(stationDao.findById(any()))
+            .willReturn(Optional.of(new Station(1L, "신설동역")));
+        given(stationDao.findById(any()))
+            .willReturn(Optional.of(new Station(2L, "성수역")));
         // when
         LineResponse lineResponse = lineService.createLine(lineRequest);
         // then
-        assertThat(lineResponse.getId()).isEqualTo(1L);
-        assertThat(lineResponse.getName()).isEqualTo("test");
-        assertThat(lineResponse.getColor()).isEqualTo("GREEN");
+        assertAll(
+            () -> assertThat(lineResponse.getId()).isEqualTo(1L),
+            () -> assertThat(lineResponse.getName()).isEqualTo("test"),
+            () -> assertThat(lineResponse.getColor()).isEqualTo("GREEN")
+        );
     }
 
     @DisplayName("지하철 노선 생성 시 이름이 중복된다면 에러를 응답한다.")
@@ -78,17 +98,38 @@ public class LineServiceTest {
     void getLines() {
         // given
         given(lineDao.findAll())
-            .willReturn(List.of(new Line(1L, "test1", "GREEN"), new Line(2L, "test2", "YELLOW")));
+            .willReturn(
+                List.of(
+                    new Line(1L, "test1", "GREEN"),
+                    new Line(2L, "test2", "YELLOW")
+                )
+            );
+        given(stationDao.findAll())
+            .willReturn(
+                List.of(
+                    new Station(1L, "신설동역"),
+                    new Station(2L, "용두역"),
+                    new Station(3L, "성수역")
+                )
+            );
+        given(sectionDao.findByLineId(1L))
+            .willReturn(new Sections(
+                List.of(new Section(1L, 2L, 10))));
+        given(sectionDao.findByLineId(2L))
+            .willReturn(new Sections(
+                List.of(new Section(2L, 3L, 10))));
         // when
         List<LineResponse> responses = lineService.showLines();
         // then
-        assertThat(responses.size()).isEqualTo(2);
-        assertThat(responses.get(0).getId()).isEqualTo(1L);
-        assertThat(responses.get(0).getName()).isEqualTo("test1");
-        assertThat(responses.get(0).getColor()).isEqualTo("GREEN");
-        assertThat(responses.get(1).getId()).isEqualTo(2L);
-        assertThat(responses.get(1).getName()).isEqualTo("test2");
-        assertThat(responses.get(1).getColor()).isEqualTo("YELLOW");
+        assertAll(
+            () -> assertThat(responses.size()).isEqualTo(2),
+            () -> assertThat(responses.get(0).getId()).isEqualTo(1L),
+            () -> assertThat(responses.get(0).getName()).isEqualTo("test1"),
+            () -> assertThat(responses.get(0).getColor()).isEqualTo("GREEN"),
+            () -> assertThat(responses.get(1).getId()).isEqualTo(2L),
+            () -> assertThat(responses.get(1).getName()).isEqualTo("test2"),
+            () -> assertThat(responses.get(1).getColor()).isEqualTo("YELLOW")
+        );
     }
 
     @DisplayName("id를 이용해 지하철 노선을 조회한다.")
@@ -97,12 +138,25 @@ public class LineServiceTest {
         // given
         given(lineDao.findById(1L))
             .willReturn(Optional.of(new Line(1L, "test1", "GREEN")));
+        given(stationDao.findAll())
+            .willReturn(
+                List.of(
+                    new Station(1L, "신설동역"),
+                    new Station(2L, "용두역"),
+                    new Station(3L, "성수역")
+                )
+            );
+        given(sectionDao.findByLineId(1L))
+            .willReturn(new Sections(
+                List.of(new Section(1L, 2L, 10))));
         // when
         LineResponse response = lineService.showLine(1L);
         // then
-        assertThat(response.getId()).isEqualTo(1L);
-        assertThat(response.getName()).isEqualTo("test1");
-        assertThat(response.getColor()).isEqualTo("GREEN");
+        assertAll(
+            () -> assertThat(response.getId()).isEqualTo(1L),
+            () -> assertThat(response.getName()).isEqualTo("test1"),
+            () -> assertThat(response.getColor()).isEqualTo("GREEN")
+        );
     }
 
     @DisplayName("존재하지 않는 id를 이용해 지하철 노선을 조회할 경우 에러가 발생한다.")

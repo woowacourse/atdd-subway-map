@@ -84,9 +84,9 @@ public class LineDao {
 
     private RowMapper<Line> rowMapper() {
         return (rs, rowNum) ->
-                new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color"));
+            new Line(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color"));
     }
 }
