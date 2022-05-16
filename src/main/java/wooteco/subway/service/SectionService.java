@@ -29,7 +29,6 @@ public class SectionService {
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    @Transactional
     public List<Station> findSectionStationsByLineId(final Long lineId) {
         return sectionDao.findSectionStationsByLineId(lineId)
             .stream()
