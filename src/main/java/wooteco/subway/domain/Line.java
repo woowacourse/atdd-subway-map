@@ -2,8 +2,6 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
-import wooteco.subway.dto.LineRequest;
-
 public class Line {
     private Long id;
     private String name;
@@ -35,18 +33,17 @@ public class Line {
         return color;
     }
 
+
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Line line = (Line)o;
-        return name.equals(line.name) && color.equals(line.color);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(id, line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return Objects.hash(id);
     }
 }

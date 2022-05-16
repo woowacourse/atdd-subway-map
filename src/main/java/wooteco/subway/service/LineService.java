@@ -1,47 +1,52 @@
 package wooteco.subway.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.utils.ExceptionMessage;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
+        this.sectionService = sectionService;
     }
 
     public LineResponse create(LineRequest lineRequest) {
-        Line line = lineDao.save(lineRequest.getName(), lineRequest.getColor());
-        return new LineResponse(line);
+        Line line = lineDao.save(lineRequest);
+        sectionService.saveInitialSection(lineRequest, line);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(line.getId()));
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
+
         return lines.stream()
-                .map(LineResponse::new)
+                .map((line) -> new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(line.getId())))
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
+    public LineResponse findById(long id) {
         Line line = lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다."));
-        return new LineResponse(line);
+                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.NO_LINE));
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.makeSectionsToStations(id));
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        lineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        lineDao.update(id, lineRequest);
     }
 
     public void delete(Long id) {
         lineDao.deleteById(id);
     }
+
 }

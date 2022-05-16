@@ -1,20 +1,18 @@
 package wooteco.subway.dao;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.sql.DataSource;
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
+
+import javax.sql.DataSource;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -35,10 +33,16 @@ public class LineDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(String name, String color) {
+    public Line save(LineRequest lineRequest) {
+
+        String name = lineRequest.getName();
+        String color = lineRequest.getColor();
+
         checkDuplicateName(name);
-        SqlParameterSource parameters = new MapSqlParameterSource("name", name)
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", name)
                 .addValue("color", color);
+
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Line(id, name, color);
     }
@@ -69,13 +73,6 @@ public class LineDao {
         }
     }
 
-    public void deleteAll() {
-        String sql = "TRUNCATE TABLE line";
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-        String resetIdSql = "ALTER TABLE line ALTER COLUMN id RESTART WITH 1";
-        namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
-    }
-
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
         return namedParameterJdbcTemplate.query(sql, lineRowMapper);
@@ -87,9 +84,12 @@ public class LineDao {
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 
-    public void update(Line line) {
+    public void update(long id, LineRequest lineRequest) {
         String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
-        BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", lineRequest.getName())
+                .addValue("color", lineRequest.getColor())
+                .addValue("id", id);
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 }

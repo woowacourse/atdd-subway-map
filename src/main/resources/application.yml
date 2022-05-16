@@ -1,5 +1,5 @@
 spring:
-  datasource:           # datasource 설정
+  datasource: # datasource 설정
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb
     username: sa
@@ -7,3 +7,7 @@ spring:
   h2:
     console:
       enabled: true     # h2 console 설정
+
+  jpa:
+    hibernate:
+      ddl-auto: none
