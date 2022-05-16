@@ -26,7 +26,7 @@ public class StationService {
     }
 
     public StationResponse save(final StationRequest stationRequest) {
-        validateDuplicateName(stationRepository.findByName(stationRequest.getName()).isPresent());
+        validateDuplicateName(stationRepository.isNameExists(stationRequest.getName()));
 
         Station station = stationRepository.save(new Station(stationRequest.getName()));
         return new StationResponse(station.getId(), station.getName());

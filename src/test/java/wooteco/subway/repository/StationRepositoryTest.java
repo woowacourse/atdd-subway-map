@@ -67,14 +67,14 @@ class StationRepositoryTest extends RepositoryTest {
     @Test
     void findByName() {
         stationRepository.save(new Station("신림역"));
-        assertThat(stationRepository.findByName("신림역")).isNotNull();
+        assertThat(stationRepository.isNameExists("신림역")).isTrue();
     }
 
 
     @DisplayName("이름으로 역 조회시 없다면 Optional empty를 반환한다.")
     @Test
     void findByNameNoName() {
-        assertThat(stationRepository.findByName("신림역").isEmpty()).isTrue();
+        assertThat(stationRepository.isNameExists("신림역")).isFalse();
     }
 
     @DisplayName("id로 역을 조회한다.")
