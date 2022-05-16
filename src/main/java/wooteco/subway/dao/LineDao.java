@@ -52,11 +52,11 @@ public class LineDao {
             .collect(Collectors.groupingBy(item -> (Long) item.get("line_id")));
 
         return resultLineById.values().stream()
-            .map(this::covertLine)
+            .map(this::toLine)
             .collect(Collectors.toList());
     }
 
-    private Line covertLine(List<Map<String, Object>> result) {
+    private Line toLine(List<Map<String, Object>> result) {
         if (result.isEmpty()) {
             throw new IllegalArgumentException("해당 노선 id로 저장된 구간이 존재하지 않습니다.");
         }
@@ -117,7 +117,7 @@ public class LineDao {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("line_id", id);
 
-        return covertLine(jdbcTemplate.queryForList(sql, paramSource));
+        return toLine(jdbcTemplate.queryForList(sql, paramSource));
     }
 
     public Line save(Line line) {
