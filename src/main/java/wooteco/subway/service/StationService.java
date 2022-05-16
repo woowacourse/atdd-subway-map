@@ -44,8 +44,8 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        validateExist(id);
-        return stationDao.findById(id);
+        return stationDao.findById(id)
+                .orElseThrow(() -> new StationNotFoundException("존재하지 않는 역입니다."));
     }
 
     public void delete(Long id) {

@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +65,8 @@ class StationDaoTest {
         Station gangNam = new Station("강남역");
         Long id = stationDao.save(gangNam).getId();
 
-        Station actual = stationDao.findById(id);
+        Station actual = stationDao.findById(id)
+                .orElseGet(() -> fail("존재하지 않는 역입니다."));
 
         assertThat(actual.getName()).isEqualTo("강남역");
     }
