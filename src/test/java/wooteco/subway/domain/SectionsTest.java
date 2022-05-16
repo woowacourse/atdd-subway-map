@@ -23,7 +23,7 @@ class SectionsTest {
         List<Section> sections = List.of(new Section(1L, 1L, 2L, 10),
                 new Section(1L, 2L, 3L, 5));
 
-        assertThatCode(() -> new Sections(sections, 1L))
+        assertThatCode(() -> new Sections(sections))
                 .doesNotThrowAnyException();
     }
 
@@ -31,7 +31,7 @@ class SectionsTest {
     @Test
     void validate_success() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
         Section newSection = new Section(1L, 3L, 4L, 2);
 
         assertThatCode(() -> sections.validateAddable(newSection))
@@ -42,7 +42,7 @@ class SectionsTest {
     @Test
     void validate_duplicateSectionException() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
         Section newSection = new Section(1L, 1L, 2L, 10);
 
         assertThatThrownBy(() -> sections.validateAddable(newSection))
@@ -53,7 +53,7 @@ class SectionsTest {
     @Test
     void validate_duplicateSectionException2() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 3L, 2L, 5),
-                new Section(1L, 4L, 3L, 10))), 1L);
+                new Section(1L, 4L, 3L, 10))));
         Section newSection = new Section(1L, 4L, 2L, 10);
 
         assertThatThrownBy(() -> sections.validateAddable(newSection))
@@ -64,7 +64,7 @@ class SectionsTest {
     @Test
     void validate_notExistingStationException() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
         Section newSection = new Section(1L, 5L, 6L, 10);
 
         assertThatThrownBy(() -> sections.validateAddable(newSection))
@@ -75,7 +75,7 @@ class SectionsTest {
     @Test
     void needToChange_true_sameUpStationId() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
 
         Section newSection = new Section(1L, 2L, 4L, 2);
 
@@ -86,7 +86,7 @@ class SectionsTest {
     @Test
     void needToChange_true_sameDownStationId() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
 
         Section newSection = new Section(1L, 5L, 3L, 2);
 
@@ -97,7 +97,7 @@ class SectionsTest {
     @Test
     void needToChange_false() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
 
         Section newSection = new Section(1L, 3L, 4L, 2);
 
@@ -108,7 +108,7 @@ class SectionsTest {
     @Test
     void findUpdatingSection_upStation() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
 
         Section newSection = new Section(1L, 2L, 4L, 2);
 
@@ -121,7 +121,7 @@ class SectionsTest {
     @Test
     void findUpdatingSection_downStation() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
 
         Section newSection = new Section(1L, 4L, 3L, 2);
 
@@ -134,7 +134,7 @@ class SectionsTest {
     @Test
     void findUpdatingSection_exception() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
 
         assertThatThrownBy(() -> sections.findNeedUpdatingSection(new Section(1L, 4L, 3L, 5)))
                 .isInstanceOf(SectionLengthExcessException.class);
@@ -143,7 +143,7 @@ class SectionsTest {
     @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거하려고 하면 예외가 발생한다.")
     @Test
     void validateRemovable_onlySection() {
-        Sections sections = new Sections(List.of(new Section(1L, 1L, 2L, 10)), 1L);
+        Sections sections = new Sections(List.of(new Section(1L, 1L, 2L, 10)));
 
         assertThatThrownBy(() -> sections.validateRemovable(1L))
                 .isInstanceOf(OnlyOneSectionException.class);
@@ -153,7 +153,7 @@ class SectionsTest {
     @Test
     void validateRemovable_notExist() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
 
         assertThatThrownBy(() -> sections.validateRemovable(10L))
                 .isInstanceOf(NonexistentStationSectionException.class);
@@ -163,7 +163,7 @@ class SectionsTest {
     @Test
     void isEndStation_endUpStation_true() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
 
         assertThat(sections.isEndStation(1L)).isTrue();
     }
@@ -172,7 +172,7 @@ class SectionsTest {
     @Test
     void isEndStation_endDownStation_true() {
         Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5))), 1L);
+                new Section(1L, 2L, 3L, 5))));
 
         assertThat(sections.isEndStation(3L)).isTrue();
     }
@@ -181,7 +181,7 @@ class SectionsTest {
     @Test
     void isEndStation_false() {
         Sections sections = new Sections(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 2L, 3L, 5)), 1L);
+                new Section(1L, 2L, 3L, 5)));
 
         assertThat(sections.isEndStation(2L)).isFalse();
     }
@@ -190,7 +190,7 @@ class SectionsTest {
     @Test
     void findEndSectionIdToRemove_upStation() {
         Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
-                new Section(2L, 1L, 2L, 3L, 5)), 1L);
+                new Section(2L, 1L, 2L, 3L, 5)));
 
         assertThat(sections.findEndSectionIdToRemove(1L)).isEqualTo(1L);
     }
@@ -199,7 +199,7 @@ class SectionsTest {
     @Test
     void findEndSectionIdToRemove_downStation() {
         Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
-                new Section(2L, 1L, 2L, 3L, 5)), 1L);
+                new Section(2L, 1L, 2L, 3L, 5)));
 
         assertThat(sections.findEndSectionIdToRemove(3L)).isEqualTo(2L);
     }
@@ -209,7 +209,7 @@ class SectionsTest {
     void makeNewSection() {
         Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
                 new Section(2L, 1L, 2L, 3L, 5),
-                new Section(3L, 1L, 3L, 4L, 7)), 1L);
+                new Section(3L, 1L, 3L, 4L, 7)));
 
         Section section = sections.makeNewSection(2L);
 
@@ -223,7 +223,7 @@ class SectionsTest {
     void findSectionIdsToRemove() {
         Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
                 new Section(2L, 1L, 2L, 3L, 5),
-                new Section(3L, 1L, 3L, 4L, 7)), 1L);
+                new Section(3L, 1L, 3L, 4L, 7)));
 
         List<Long> sectionIdsToRemove = sections.findSectionIdsToRemove(2L);
 
@@ -235,7 +235,7 @@ class SectionsTest {
     void findArrangedStationIds1() {
         Sections sections = new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
                 new Section(2L, 1L, 2L, 3L, 5),
-                new Section(3L, 1L, 3L, 4L, 7)), 1L);
+                new Section(3L, 1L, 3L, 4L, 7)));
 
         int endUpSectionIndex = 0;
         Section endUpSection = sections.findEndSections().get(endUpSectionIndex);
@@ -252,7 +252,7 @@ class SectionsTest {
                 new Section(3L, 1L, 1L, 3L, 7)));
         Collections.shuffle(rawSections);
 
-        Sections sections = new Sections(rawSections, 1L);
+        Sections sections = new Sections(rawSections);
 
         int endUpSectionIndex = 0;
         Section endUpSection = sections.findEndSections().get(endUpSectionIndex);

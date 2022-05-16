@@ -28,7 +28,7 @@ public class FakeSectionDao implements SectionDao {
         return new Sections(sections.values()
                 .stream()
                 .filter(section -> section.getLineId().equals(lineId))
-                .collect(Collectors.toList()), lineId);
+                .collect(Collectors.toList()));
     }
 
     @Override

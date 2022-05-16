@@ -21,11 +21,9 @@ public class Sections {
     private static final int ONE = 1;
 
     private final List<Section> sections;
-    private final Long lineId;
 
-    public Sections(List<Section> sections, Long lineId) {
+    public Sections(List<Section> sections) {
         this.sections = sections;
-        this.lineId = lineId;
     }
 
     public void validateAddable(Section section) {

@@ -49,7 +49,7 @@ public class SectionDaoImpl implements SectionDao {
     public Sections findByLineId(Long lineId) {
         String sql = "select * from section where line_id = :lineId";
         SqlParameterSource namedParameter = new MapSqlParameterSource("lineId", lineId);
-        return new Sections(namedParameterJdbcTemplate.query(sql, namedParameter, ACTOR_ROW_MAPPER), lineId);
+        return new Sections(namedParameterJdbcTemplate.query(sql, namedParameter, ACTOR_ROW_MAPPER));
     }
 
     @Override
