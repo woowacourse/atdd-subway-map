@@ -2,8 +2,6 @@ package wooteco.subway.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.section.IllegalMergeSectionException;
 
@@ -80,7 +78,7 @@ class SectionsTest {
         Section newSection = new Section(10, 2L, 4L, 5L);
 
         //when
-        Optional<Section> section = sections.getSectionToDelete(newSection);
+        Optional<Section> section = sections.findSectionToDelete(newSection);
 
         //then
         assertThat(section).isEmpty();
@@ -97,7 +95,7 @@ class SectionsTest {
         Section newSection = new Section(10, 2L, 6L, 1L);
 
         //when
-        Optional<Section> section = sections.getSectionToDelete(newSection);
+        Optional<Section> section = sections.findSectionToDelete(newSection);
 
         //then
         assertThat(section).isEmpty();
@@ -114,7 +112,7 @@ class SectionsTest {
         Section newSection = new Section(4, 2L, 1L, 5L);
 
         //when
-        Optional<Section> section = sections.getSectionToDelete(newSection);
+        Optional<Section> section = sections.findSectionToDelete(newSection);
 
         //then
         assertThat(section).isPresent();
@@ -132,7 +130,7 @@ class SectionsTest {
         Section newSection = new Section(4, 2L, 5L, 3L);
 
         //when
-        Optional<Section> section = sections.getSectionToDelete(newSection);
+        Optional<Section> section = sections.findSectionToDelete(newSection);
 
         //then
         assertThat(section).isPresent();
@@ -147,7 +145,7 @@ class SectionsTest {
         Sections sections = new Sections(List.of(section1, section2, section3));
         Section newSection = new Section(10, 2L, 3L, 5L);
 
-        assertThatThrownBy(() -> sections.getSectionToDelete(newSection))
+        assertThatThrownBy(() -> sections.findSectionToDelete(newSection))
                 .isInstanceOf(SubwayException.class)
                 .hasMessageContaining("불가능한 구간의 길이입니다.");
     }
@@ -161,7 +159,7 @@ class SectionsTest {
         Sections sections = new Sections(List.of(section1, section2, section3));
         Section newSection = new Section(10, 2L, 5L, 3L);
 
-        assertThatThrownBy(() -> sections.getSectionToDelete(newSection))
+        assertThatThrownBy(() -> sections.findSectionToDelete(newSection))
                 .isInstanceOf(SubwayException.class)
                 .hasMessageContaining("불가능한 구간의 길이입니다.");
     }
@@ -176,7 +174,7 @@ class SectionsTest {
         Section upStationSection = new Section(10, 2L, 1L, 2L);
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        Optional<Section> upStationIds = sections.getExistingUpStationSection(upStationSection);
+        Optional<Section> upStationIds = sections.findExistingUpStationSection(upStationSection);
 
         assertThat(upStationIds).isPresent();
     }
@@ -192,7 +190,7 @@ class SectionsTest {
 
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        Optional<Section> upStationIds = sections.getExistingUpStationSection(upStationSection);
+        Optional<Section> upStationIds = sections.findExistingUpStationSection(upStationSection);
 
         assertThat(upStationIds).isEmpty();
     }
@@ -208,7 +206,7 @@ class SectionsTest {
 
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        Optional<Section> downStationSectionOptional = sections.getExistingDownStationSection(downStationSection);
+        Optional<Section> downStationSectionOptional = sections.findExistingDownStationSection(downStationSection);
 
         assertThat(downStationSectionOptional).isPresent();
     }
@@ -223,7 +221,7 @@ class SectionsTest {
 
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        Optional<Section> downStationSection = sections.getExistingDownStationSection(givenDownStationSection);
+        Optional<Section> downStationSection = sections.findExistingDownStationSection(givenDownStationSection);
 
         assertThat(downStationSection).isEmpty();
     }
@@ -252,7 +250,7 @@ class SectionsTest {
 
         Sections sections = new Sections(List.of(section1, section2, section3));
 
-        Sections actual = sections.getByStationId(2L);
+        Sections actual = sections.findByStationId(2L);
 
         assertThat(actual.getSections().size()).isEqualTo(2);
         assertThat(actual.getSections()).isEqualTo(List.of(section2, section3));

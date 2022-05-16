@@ -32,7 +32,7 @@ public class SectionServiceTest extends ServiceTest {
                 .willReturn(section);
 
         //when
-        Section savedSection = sectionService.init(section);
+        Section savedSection = sectionService.initialize(section);
 
         //then
         assertThat(savedSection.getDistance()).isEqualTo(section.getDistance());
@@ -94,7 +94,7 @@ public class SectionServiceTest extends ServiceTest {
                 .willReturn(List.of(existedSection1, existedSection2, existedSection3, existedSection4));
 
         //when
-        Set<Long> stationIds = sectionService.getStationIds(1L);
+        Set<Long> stationIds = sectionService.findStationIds(1L);
 
         //then
         assertThat(stationIds.size()).isEqualTo(6);

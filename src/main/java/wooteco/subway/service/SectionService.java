@@ -21,21 +21,21 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public Section init(Section section) {
+    public Section initialize(Section section) {
         return sectionDao.save(section);
     }
 
-    public Set<Long> getStationIds(Long lineId) {
+    public Set<Long> findStationIds(Long lineId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
-        return sections.getDistinctStationIds();
+        return sections.findDistinctStationIds();
     }
 
     public void add(Line line, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         Section sectionToInsert = new Section(sectionRequest.getDistance(), line.getId(), sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
         sections.validateInsertable(sectionToInsert);
-        Optional<Section> deletableSection = sections.getSectionToDelete(sectionToInsert);
+        Optional<Section> deletableSection = sections.findSectionToDelete(sectionToInsert);
 
         sectionDao.save(sectionToInsert);
 
@@ -48,7 +48,7 @@ public class SectionService {
     public void delete(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         sections.validateDeletable();
-        Sections sectionsToDelete = sections.getByStationId(stationId);
+        Sections sectionsToDelete = sections.findByStationId(stationId);
 
         for (Section section : sectionsToDelete.getSections()) {
             sectionDao.deleteById(section.getId());

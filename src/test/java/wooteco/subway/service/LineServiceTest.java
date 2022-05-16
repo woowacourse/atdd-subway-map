@@ -42,7 +42,7 @@ public class LineServiceTest extends ServiceTest {
 
         given(lineDao.save(any()))
                 .willReturn(line);
-        given(sectionService.init(any()))
+        given(sectionService.initialize(any()))
                 .willReturn(section);
         given(stationService.findById(1L))
                 .willReturn(s1);
@@ -70,9 +70,9 @@ public class LineServiceTest extends ServiceTest {
                 .willReturn(List.of(line1, line2));
         given(stationService.findAll())
                 .willReturn(List.of(station1, station2, station3, station4));
-        when(sectionService.getStationIds(1L))
+        when(sectionService.findStationIds(1L))
                 .thenReturn(Set.of(1L, 2L));
-        when(sectionService.getStationIds(2L))
+        when(sectionService.findStationIds(2L))
                 .thenReturn(Set.of(2L, 3L, 4L));
 
         //when
@@ -94,7 +94,7 @@ public class LineServiceTest extends ServiceTest {
                 .willReturn(Optional.of(line1));
         given(stationService.findAll())
                 .willReturn(List.of(station1, station2));
-        when(sectionService.getStationIds(1L))
+        when(sectionService.findStationIds(1L))
                 .thenReturn(Set.of(1L, 2L));
 
         //when

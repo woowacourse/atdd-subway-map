@@ -35,7 +35,7 @@ public class LineService {
         Line line = lineRequest.toEntity();
         validateDuplicateName(line);
         Line savedLine = lineDao.save(line);
-        Section section = sectionService.init(new Section(lineRequest.getDistance(), line.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId()));
+        Section section = sectionService.initialize(new Section(lineRequest.getDistance(), line.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId()));
         Station upStation = stationService.findById(section.getUpStationId());
         Station downStation = stationService.findById(section.getDownStationId());
         return LineResponse.of(savedLine, List.of(upStation, downStation));
@@ -46,7 +46,7 @@ public class LineService {
         List<Station> stations = stationService.findAll();
 
         return lines.stream()
-                .map(line -> getLineResponse(line, stations))
+                .map(line -> createLineResponse(line, stations))
                 .collect(Collectors.toList());
     }
 
@@ -54,7 +54,7 @@ public class LineService {
         Line line = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
         List<Station> stations = stationService.findAll();
-        Set<Long> stationIds = sectionService.getStationIds(id);
+        Set<Long> stationIds = sectionService.findStationIds(id);
 
         return LineResponse.of(line, stations, stationIds);
     }
@@ -79,9 +79,9 @@ public class LineService {
         sectionService.delete(lineId, stationId);
     }
 
-    private LineResponse getLineResponse(Line line, List<Station> allStations) {
+    private LineResponse createLineResponse(Line line, List<Station> allStations) {
         Long lineId = line.getId();
-        Set<Long> stationIds = sectionService.getStationIds(lineId);
+        Set<Long> stationIds = sectionService.findStationIds(lineId);
 
         List<Station> stations = allStations.stream()
                 .filter(station -> stationIds.contains(station.getId()))

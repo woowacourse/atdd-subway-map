@@ -25,26 +25,26 @@ public class Sections {
         return sectionToDelete.createSection(sectionToInsert);
     }
 
-    public Optional<Section> getSectionToDelete(Section section) {
+    public Optional<Section> findSectionToDelete(Section section) {
         if (canAddAsLastStation(section)) {
             return Optional.empty();
         }
-        return Optional.of(getModifiableSectionAfterInsert(section));
+        return Optional.of(findModifiableSectionAfterInsert(section));
     }
 
     private boolean canAddAsLastStation(Section section) {
-        List<Long> upStationIds = getUpStationIds();
-        List<Long> downStationIds = getDownStationIds();
+        List<Long> upStationIds = findUpStationIds();
+        List<Long> downStationIds = findDownStationIds();
 
-        Long upLastStationId = getUpLastStationId(upStationIds, downStationIds);
-        Long downLastStationId = getDownLastStationId(upStationIds, downStationIds);
+        Long upLastStationId = findUpLastStationId(upStationIds, downStationIds);
+        Long downLastStationId = findDownLastStationId(upStationIds, downStationIds);
 
         return section.canAddAsLastStation(upLastStationId, downLastStationId);
     }
 
-    private Section getModifiableSectionAfterInsert(Section insertableSection) {
-        Optional<Section> upStationSection = getExistingUpStationSection(insertableSection);
-        Optional<Section> downStationSection = getExistingDownStationSection(insertableSection);
+    private Section findModifiableSectionAfterInsert(Section insertableSection) {
+        Optional<Section> upStationSection = findExistingUpStationSection(insertableSection);
+        Optional<Section> downStationSection = findExistingDownStationSection(insertableSection);
 
         Section existingSection = upStationSection.orElseGet(() -> downStationSection.orElseThrow(NoSuchSectionException::new));
 
@@ -53,25 +53,25 @@ public class Sections {
         return existingSection;
     }
 
-    public Set<Long> getDistinctStationIds() {
+    public Set<Long> findDistinctStationIds() {
         return sections.stream()
                 .flatMap(section -> Stream.of(section.getUpStationId(), section.getDownStationId()))
                 .collect(Collectors.toSet());
     }
 
-    public Optional<Section> getExistingUpStationSection(Section upStationSection) {
+    public Optional<Section> findExistingUpStationSection(Section upStationSection) {
         return sections.stream()
                 .filter(section -> section.isUpStationIdEquals(upStationSection))
                 .findFirst();
     }
 
-    public Optional<Section> getExistingDownStationSection(Section downStationSection) {
+    public Optional<Section> findExistingDownStationSection(Section downStationSection) {
         return sections.stream()
                 .filter(section -> section.isDownStationIdEquals(downStationSection))
                 .findFirst();
     }
 
-    public Sections getByStationId(Long stationId) {
+    public Sections findByStationId(Long stationId) {
         return new Sections(sections.stream()
                 .filter(section -> section.isEqualDownStationId(stationId) || section.isEqualUpStationId(stationId))
                 .collect(Collectors.toList()));
@@ -90,7 +90,7 @@ public class Sections {
     public Section mergeSections() {
         validateMergeSections();
         int distance = calculateMergedDistance();
-        List<Long> mergedIds = getMergedStationIds();
+        List<Long> mergedIds = findMergedStationIds();
 
         return new Section(distance, sections.get(0).getLineId(), mergedIds.get(0), mergedIds.get(1));
     }
@@ -119,19 +119,19 @@ public class Sections {
         }
     }
 
-    private List<Long> getUpStationIds() {
+    private List<Long> findUpStationIds() {
         return sections.stream()
                 .map(Section::getUpStationId)
                 .collect(Collectors.toList());
     }
 
-    private List<Long> getDownStationIds() {
+    private List<Long> findDownStationIds() {
         return sections.stream()
                 .map(Section::getDownStationId)
                 .collect(Collectors.toList());
     }
 
-    private List<Long> getMergedStationIds() {
+    private List<Long> findMergedStationIds() {
         Section section1 = sections.get(0);
         Section section2 = sections.get(1);
 
@@ -141,14 +141,14 @@ public class Sections {
         return List.of(section1.getUpStationId(), section2.getDownStationId());
     }
 
-    private Long getUpLastStationId(List<Long> upStationIds, List<Long> downStationIds) {
+    private Long findUpLastStationId(List<Long> upStationIds, List<Long> downStationIds) {
         List<Long> upIds = new ArrayList<>(upStationIds);
         upIds.removeAll(downStationIds);
 
         return upIds.get(0);
     }
 
-    private Long getDownLastStationId(List<Long> upStationIds, List<Long> downStationIds) {
+    private Long findDownLastStationId(List<Long> upStationIds, List<Long> downStationIds) {
         List<Long> downIds = new ArrayList<>(downStationIds);
         downIds.removeAll(upStationIds);
 
@@ -156,7 +156,7 @@ public class Sections {
     }
 
     private boolean isUnableToAdd(Section checkableSection) {
-        Set<Long> distinctStationIds = getDistinctStationIds();
+        Set<Long> distinctStationIds = findDistinctStationIds();
 
         return distinctStationIds.contains(checkableSection.getUpStationId()) == distinctStationIds.contains(checkableSection.getDownStationId());
     }
