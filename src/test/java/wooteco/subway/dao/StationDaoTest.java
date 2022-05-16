@@ -11,19 +11,20 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
+@DisplayName("지하철역 관련 DAO 테스트")
 @JdbcTest
 class StationDaoTest {
 
     private static final Station STATION = new Station("강남역");
     
-    private JdbcStationDao stationDao;
+    private StationDao stationDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        stationDao = new JdbcStationDao(jdbcTemplate);
+        stationDao = new StationDao(jdbcTemplate);
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -36,7 +37,15 @@ class StationDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
-    @DisplayName("중복된 이름의 지하철역이 있다면 true를 반환한다.")
+    @DisplayName("중복된 아이디의 지하철역이 있다면 true 를 반환한다.")
+    @Test
+    void existStationById() {
+        long stationId = stationDao.save(STATION);
+
+        assertThat(stationDao.existStationById(stationId)).isTrue();
+    }
+
+    @DisplayName("중복된 이름의 지하철역이 있다면 true 를 반환한다.")
     @Test
     void existStationByName() {
         stationDao.save(STATION);
@@ -52,7 +61,7 @@ class StationDaoTest {
 
         List<Station> stations = stationDao.findAll();
 
-        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations).hasSize(2);
     }
 
     @DisplayName("지하철역을 삭제한다.")
@@ -60,6 +69,9 @@ class StationDaoTest {
     void delete() {
         long stationId = stationDao.save(STATION);
 
-        assertThat(stationDao.delete(stationId)).isEqualTo(1);
+        stationDao.delete(stationId);
+
+        Integer count = jdbcTemplate.queryForObject("select count(*) from STATION", Integer.class);
+        assertThat(count).isEqualTo(0);
     }
 }
