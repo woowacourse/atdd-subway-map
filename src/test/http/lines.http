@@ -1,0 +1,80 @@
+### 노선 등록
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "분당선",
+  "color": "노란색",
+  "upStationId": 1,
+  "downStationId": 3,
+  "distance": 3
+}
+
+### 노선 등록 (예외)
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "분당선",
+  "color": "노란색",
+  "upStationId": 0,
+  "downStationId": 3,
+  "distance": 3
+}
+
+### 노선 등록 (예외)
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "분당선",
+  "color": "노란색",
+  "upStationId": 1,
+  "downStationId": 0,
+  "distance": 3
+}
+
+### 노선 등록 (예외)
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "분당선",
+  "color": "노란색",
+  "upStationId": 1,
+  "downStationId": 3,
+  "distance": -3
+}
+
+### 전체 노선 조회
+GET http://localhost:8080/lines
+Content-Type: application/json
+
+### 노선 업데이트
+PUT http://localhost:8080/lines/1
+Content-Type: application/json
+
+{
+  "name" : "수인 분당선",
+  "color": "주황색"
+}
+
+### 노선 단건 조회
+GET http://localhost:8080/lines/1
+Content-Type: application/json
+
+### 노선 구간 업데이트
+POST http://localhost:8080/lines/1/sections
+Content-Type: application/json
+
+{
+  "upStationId": 1,
+  "downStationId": 2,
+  "distance": 1
+}
+
+### 노선 구간 삭제
+DELETE http://localhost:8080/lines/1/sections?stationId=2
+
+### 노선 삭제
+DELETE http://localhost:8080/lines/1

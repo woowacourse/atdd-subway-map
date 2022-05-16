@@ -99,5 +99,31 @@ class StationServiceTest {
             assertThatThrownBy(() -> stationService.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class);
         }
+
+        @DisplayName("findById 메서드는 단건의 데이터를 조회한다.")
+        @Nested
+        class FindByIdTest {
+
+            @Test
+            void 존재하는_역의_id가_엽력된_경우_성공() {
+                Station expected = new Station(1L, "수서역");
+                given(stationDao.existById(1L))
+                    .willReturn(true);
+                given(stationDao.findById(1L))
+                    .willReturn(expected);
+
+                assertThat(stationService.findById(1L))
+                    .isEqualTo(expected);
+            }
+
+            @Test
+            void 존재하지_않는_역의_id가_입력된_경우_예외발생() {
+                given(stationDao.existById(1L))
+                    .willReturn(false);
+
+                assertThatThrownBy(() -> stationService.findById(1L))
+                    .isInstanceOf(IllegalArgumentException.class);
+            }
+        }
     }
 }

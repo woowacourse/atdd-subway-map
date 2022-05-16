@@ -1,0 +1,45 @@
+### 역 생성 테스트(1번)
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": "복정역"
+}
+
+### 역 생성 테스트(2번)
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+"name": "가천대역"
+}
+
+### 역 생성 테스트(3번)
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+"name": "태평역"
+}
+
+### 역 생성 테스트(4번)
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": "모란역"
+}
+
+### 역 생성 테스트(예외)
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+### 조회 테스트
+GET http://localhost:8080/stations
+
+### 삭제 테스트
+DELETE http://localhost:8080/stations/4

@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,16 +53,16 @@ class StationDaoTest {
 
     @Test
     void existById_메서드는_해당_id로_존재_하는지_확인() {
-        dao.save(new Station("3호선"));
+        dao.save(new Station("수서역"));
 
         assertThat(dao.existById(1L)).isTrue();
     }
 
     @Test
-    void existById_메서드는_해당_Name으로_존재_하는지_확인() {
-        dao.save(new Station("4호선"));
+    void existByName_메서드는_해당_Name으로_존재_하는지_확인() {
+        dao.save(new Station("선릉역"));
 
-        assertThat(dao.existByName("4호선")).isTrue();
+        assertThat(dao.existByName("선릉역")).isTrue();
     }
 
     @Test
@@ -72,5 +71,14 @@ class StationDaoTest {
         dao.deleteById(1L);
 
         assertThat(dao.existById(1L)).isFalse();
+    }
+
+    @Test
+    void findById_메서드는_해당_id로_해당_데이터를_조회한다() {
+        StationFixtures.setUp(jdbcTemplate, "테스트 역");
+
+        Station expected = new Station("테스트 역");
+
+        assertThat(dao.findById(1L)).isEqualTo(expected);
     }
 }

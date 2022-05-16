@@ -29,7 +29,8 @@ public class StationDao {
     public List<Station> findAll() {
         final String sql = "SELECT * FROM station";
 
-        List<Station> stations = jdbcTemplate.query(sql, new EmptySqlParameterSource(), stationRowMapper);
+        List<Station> stations = jdbcTemplate.query(sql, new EmptySqlParameterSource(),
+            stationRowMapper);
         return Collections.unmodifiableList(stations);
     }
 
@@ -64,5 +65,13 @@ public class StationDao {
         paramSource.addValue("name", name);
 
         return jdbcTemplate.queryForObject(sql, paramSource, Integer.class) != 0;
+    }
+
+    public Station findById(Long id) {
+        final String sql = "SELECT * FROM station WHERE id = :id";
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("id", id);
+
+        return jdbcTemplate.queryForObject(sql, parameterSource, stationRowMapper);
     }
 }
