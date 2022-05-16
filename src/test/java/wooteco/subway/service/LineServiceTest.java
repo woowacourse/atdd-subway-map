@@ -16,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -25,14 +26,16 @@ import wooteco.subway.dto.LineResponse;
 class LineServiceTest {
 
     private final StationDao stationDao;
+    private final SectionDao sectionDao;
     private final LineService lineService;
 
     @Autowired
     public LineServiceTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.stationDao = new StationDao(jdbcTemplate, dataSource);
+        this.sectionDao = new SectionDao(jdbcTemplate, dataSource);
         this.lineService = new LineService(
                 new LineDao(jdbcTemplate, dataSource),
-                new SectionDao(jdbcTemplate, dataSource),
+                sectionDao,
                 stationDao);
     }
 
@@ -55,6 +58,16 @@ class LineServiceTest {
 
         lineService.delete(lines.get(0).getId());
         assertThat(lineService.findAll()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("지하철을 추가할 때 노선도 같이 등록된다.")
+    void createLineWithSection() {
+        List<Section> sections = sectionDao.findByLineId(1L);
+
+        assertThat(sections).hasSize(1)
+                .extracting("upStationId", "downStationId", "distance")
+                .containsExactly(tuple(1L, 2L, 5));
     }
 
     @Test
