@@ -79,8 +79,8 @@ public class LineService {
     }
 
     @Transactional
-    public void update(Line updatingLine) {
-        int executedRows = lineDao.update(updatingLine);
+    public void update(Line line) {
+        int executedRows = lineDao.update(line);
         if (executedRows == NONE) {
             throw new LineNotFoundException();
         }

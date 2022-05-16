@@ -51,9 +51,9 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public int update(Line updatingLine) {
+    public int update(Line line) {
         String sql = "update line set name = :name, color = :color where id = :id";
-        SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(updatingLine);
+        SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(line);
         return namedParameterJdbcTemplate.update(sql, namedParameters);
     }
 

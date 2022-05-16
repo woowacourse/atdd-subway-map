@@ -37,10 +37,10 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public int update(Line updatingLine) {
-        Long id = updatingLine.getId();
+    public int update(Line line) {
+        Long id = line.getId();
         if (lines.containsKey(id)) {
-            lines.put(id, updatingLine);
+            lines.put(id, line);
             return EXECUTED_COLUMN_COUNT_ONE;
         }
         return EXECUTED_COLUMN_COUNT_NONE;
