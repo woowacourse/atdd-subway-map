@@ -4,24 +4,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionDeleteRequest;
 import wooteco.subway.dto.SectionSaveRequest;
 import wooteco.subway.entity.SectionEntity;
+import wooteco.subway.exception.notfound.LineNotFoundException;
 
 @Service
 @Transactional
 public class SectionService {
 
     private final SectionDao sectionDao;
+    private final LineDao lineDao;
 
-    public SectionService(SectionDao sectionDao) {
+    public SectionService(SectionDao sectionDao, LineDao lineDao) {
         this.sectionDao = sectionDao;
+        this.lineDao = lineDao;
     }
 
     public void save(SectionSaveRequest request) {
+        lineDao.findById(request.getLineId())
+                .orElseThrow(LineNotFoundException::new);
         Section sectionForSave = new Section(request.getLineId(), request.getUpStationId(),
                 request.getDownStationId(), request.getDistance());
         Sections sections = new Sections(findByLineId(request.getLineId()));
