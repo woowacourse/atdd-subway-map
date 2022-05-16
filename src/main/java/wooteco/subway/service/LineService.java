@@ -2,9 +2,7 @@ package wooteco.subway.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -12,6 +10,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.request.SectionRequest;
@@ -39,10 +38,7 @@ public class LineService {
         checkExistStation(downStation);
         checkDuplicateLine(lineRequest);
 
-        //노선추가
         final Line savedLine = lineDao.save(line);
-
-        //구간정보 추가
         final Section section = new Section(savedLine, upStation, downStation, lineRequest.getDistance());
         sectionDao.save(section);
 
@@ -55,8 +51,8 @@ public class LineService {
 
         List<LineResponse> responses = new ArrayList<>();
         for (Line line : lines) {
-            Map<Long, Long> sections = getSections(line);
-            responses.add(LineResponse.of(line, getStations(sections)));
+            Sections sections = getSections(line);
+            responses.add(LineResponse.of(line, sections.getStations()));
         }
 
         return responses;
@@ -66,9 +62,9 @@ public class LineService {
     public LineResponse findLine(Long id) {
         checkExistLine(id);
         final Line line = lineDao.findById(id);
-        Map<Long, Long> sections = getSections(line);
+        final Sections sections = getSections(line);
 
-        return LineResponse.of(line, getStations(sections));
+        return LineResponse.of(line, sections.getStations());
     }
 
     public void updateLine(Long id, String name, String color) {
@@ -85,87 +81,60 @@ public class LineService {
         checkExistLine(lineId);
 
         final Line line = lineDao.findById(lineId);
-        Map<Long, Long> sections = getSections(line);
-        final Long lastUpStationId = getUpStationId(sections);
-        final Long lastDownStationId = getDownStationId(sections);
+        final Sections sections = getSections(line);
 
-        final Long upStationId = sectionRequest.getUpStationId();
-        final Long downStationId = sectionRequest.getDownStationId();
+        final Station upStation = stationDao.findById(sectionRequest.getUpStationId());
+        final Station downStation = stationDao.findById(sectionRequest.getDownStationId());
         final int distance = sectionRequest.getDistance();
 
-        //상행역과 하행역이 모두 노선에 등록되어 있지 않다면 추가할 수 없음
-        checkNotContainSection(sections, upStationId, downStationId);
+        checkSectionHasNotAnyStation(sections, upStation, downStation);
+        checkSectionHasAllStation(sections, upStation, downStation);
 
-        //상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-        if (sections.containsKey(upStationId) && sections.containsValue(downStationId)) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
-        }
-
-        //상행종점등록
-        if (downStationId == lastUpStationId) {
-            sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
-            return;
-        }
-
-        //하행종점등록
-        if (upStationId == lastDownStationId) {
-            sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
-            return;
-        }
-
-        //갈래길 추가
-        //1.상행이 같을 경우
-        if (sections.containsKey(upStationId)) {
-            Section existSection = sectionDao.findByLineIdAndUpStationId(lineId, upStationId);
+        if (sections.hasSameUpStation(upStation)) {
+            Section existSection = sectionDao.findByLineIdAndUpStationId(lineId, sectionRequest.getUpStationId());
             int existDistance = existSection.getDistance();
-            Section updateSection = new Section(existSection.getId(), line, stationDao.findById(downStationId),
+            Section updateSection = new Section(existSection.getId(), line, downStation,
                     existSection.getDownStation(), existDistance - distance);
-            sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
             sectionDao.update(updateSection);
-            return;
         }
 
-        //2.하행이 같을 경우
-        if (sections.containsValue(downStationId)) {
-            Section existSection = sectionDao.findByLineIdAndDownStationId(lineId, downStationId);
+        if (sections.hasSameDownStation(downStation)) {
+            Section existSection = sectionDao.findByLineIdAndDownStationId(lineId, sectionRequest.getDownStationId());
             int existDistance = existSection.getDistance();
             Section updateSection = new Section(existSection.getId(), line, existSection.getUpStation(),
-                    stationDao.findById(upStationId), existDistance - distance);
-            sectionDao.save(new Section(line, stationDao.findById(upStationId), stationDao.findById(downStationId), distance));
+                    upStation, existDistance - distance);
             sectionDao.update(updateSection);
-            return;
         }
+
+        sectionDao.save(new Section(line, upStation, downStation, distance));
     }
 
     public void deleteSection(Long lineId, Long stationId) {
         checkExistLine(lineId);
 
         final Line line = lineDao.findById(lineId);
-        Map<Long, Long> sections = getSections(line);
+        final Station station = stationDao.findById(stationId);
+        final Sections sections = getSections(line);
         checkOnlyOneSection(sections);
-
-        final Long lastUpStationId = getUpStationId(sections);
-        final Long lastDownStationId = getDownStationId(sections);
-
-        checkNotContainStation(sections, stationId);
+        checkNotContainStation(sections, station);
 
         //종점이 제거될 경우
         //1.상행종점
-        if (lastUpStationId == stationId) {
-            Section existSection = sectionDao.findByLineIdAndUpStationId(lineId, lastUpStationId);
+        if (sections.getLastUpStation().equals(station)) {
+            Section existSection = sectionDao.findByLineIdAndUpStationId(lineId, station.getId());
             sectionDao.deleteById(existSection.getId());
             return;
         }
 
         //2.하행종점
-        if (lastDownStationId == stationId) {
-            Section existSection = sectionDao.findByLineIdAndDownStationId(lineId, lastDownStationId);
+        if (sections.getLastDownStation().equals(station)) {
+            Section existSection = sectionDao.findByLineIdAndDownStationId(lineId, station.getId());
             sectionDao.deleteById(existSection.getId());
             return;
         }
 
         //중간역 제거
-        if (sections.containsKey(stationId) && sections.containsValue(stationId)) {
+        if (sections.hasSameUpStation(station) && sections.hasSameDownStation(station)) {
             Section upSection = sectionDao.findByLineIdAndDownStationId(lineId, stationId);
             Section downSection = sectionDao.findByLineIdAndUpStationId(lineId, stationId);
             int upSectionDistance = upSection.getDistance();
@@ -195,69 +164,31 @@ public class LineService {
         }
     }
 
-    private Map<Long, Long> getSections(Line line) {
-        List<Section> sections = sectionDao.findByLineId(line.getId());
-        Map<Long, Long> map = new HashMap<>();
-        for (Section section : sections) {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-            map.put(upStation.getId(), downStation.getId());
-        }
-        return map;
+    private Sections getSections(Line line) {
+        final List<Section> sections = sectionDao.findByLineId(line.getId());
+        return new Sections(sections);
     }
 
-    private List<Station> getStations(Map<Long, Long> sections) {
-        final List<Station> stations = new ArrayList<>();
-        Station currentStation = stationDao.findById(getUpStationId(sections));
-        while (currentStation != null) {
-            stations.add(currentStation);
-            Long nextStationId = sections.get(currentStation.getId());
-            currentStation = stationDao.findById(nextStationId);
-        }
-        return stations;
-    }
-
-    private Long getUpStationId(Map<Long, Long> sections) {
-        List<Long> keys = new ArrayList<>(sections.keySet());
-        List<Long> values = new ArrayList<>(sections.values());
-        return keys.stream()
-                .filter(key -> !values.contains(key))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    private Long getDownStationId(Map<Long, Long> sections) {
-        List<Long> keys = new ArrayList<>(sections.keySet());
-        List<Long> values = new ArrayList<>(sections.values());
-        return values.stream()
-                .filter(value -> !keys.contains(value))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    private void checkNotContainSection(Map<Long, Long> sections, Long upStationId, Long downStationId) {
-        final boolean isAllDifferentWithUpStationId = sections.keySet()
-                .stream()
-                .allMatch(key -> key != upStationId && key != downStationId);
-        final boolean isAllDifferentWithDownStationId = sections.values()
-                .stream()
-                .allMatch(value -> value != upStationId && value != downStationId);
-        if (isAllDifferentWithUpStationId && isAllDifferentWithDownStationId) {
-            throw new IllegalArgumentException("상행역과 하행역이 모두 노선에 등록되어 있지 않다면 추가할 수 없습니다.");
-        }
-    }
-
-    private void checkNotContainStation(Map<Long, Long> sections, Long stationId) {
-        final boolean isAllDifferentWithStationId = sections.keySet()
-                .stream()
-                .allMatch(key -> key != stationId && sections.get(key) != stationId);
-        if (isAllDifferentWithStationId) {
+    private void checkNotContainStation(Sections sections, Station station) {
+        if (!sections.hasStation(station)) {
             throw new IllegalArgumentException("역이 노선에 등록되어 있지 않다면 삭제할 수 없습니다.");
         }
     }
 
-    private void checkOnlyOneSection(Map<Long, Long> sections) {
-        if (sections.size() == 1) {
+    private void checkSectionHasNotAnyStation(Sections sections, Station upStation, Station downStation) {
+        if (!sections.hasStation(upStation) && !sections.hasStation(downStation)) {
+            throw new IllegalArgumentException("등록하려는 구간 중 하나 이상의 역은 무조건 노선에 등록되어 있어야 합니다.");
+        }
+    }
+
+    private void checkSectionHasAllStation(Sections sections, Station upStation, Station downStation) {
+        if (sections.hasSameUpStation(upStation) && sections.hasSameDownStation(downStation)) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+        }
+    }
+
+    private void checkOnlyOneSection(Sections sections) {
+        if (sections.hasOnlyOneSection()) {
             throw new IllegalArgumentException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
         }
     }

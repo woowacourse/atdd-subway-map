@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +13,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.request.SectionRequest;
@@ -85,7 +83,7 @@ public class LineServiceTest {
 
         // then
         final Line updatedLine = lineDao.findById(lineResponse.getId());
-        final Long actual = getUpStationId(getSections(updatedLine));
+        final Long actual = getSections(updatedLine).getLastUpStation().getId();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -106,7 +104,7 @@ public class LineServiceTest {
 
         // then
         final Line updatedLine = lineDao.findById(lineResponse.getId());
-        final Long actual = getDownStationId(getSections(updatedLine));
+        final Long actual = getSections(updatedLine).getLastDownStation().getId();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -158,9 +156,11 @@ public class LineServiceTest {
 
         // then
         final Line updatedLine = lineDao.findById(lineResponse.getId());
-        Map<Long, Long> sections = getSections(updatedLine);
-        assertAll(() -> assertThat(sections.get(station1.getId())).isEqualTo(station2.getId()),
-                () -> assertThat(sections.get(station2.getId())).isEqualTo(station3.getId()));
+        Sections sections = getSections(updatedLine);
+        List<Station> stations = sections.getStations();
+        assertAll(() -> assertThat(stations.contains(station1)).isTrue(),
+                () -> assertThat(stations.contains(station2)).isTrue(),
+                () -> assertThat(stations.contains(station3)).isTrue());
     }
 
     @Test
@@ -179,9 +179,11 @@ public class LineServiceTest {
 
         // then
         final Line updatedLine = lineDao.findById(lineResponse.getId());
-        Map<Long, Long> sections = getSections(updatedLine);
-        assertAll(() -> assertThat(sections.get(station1.getId())).isEqualTo(station2.getId()),
-                () -> assertThat(sections.get(station2.getId())).isEqualTo(station3.getId()));
+        Sections sections = getSections(updatedLine);
+        List<Station> stations = sections.getStations();
+        assertAll(() -> assertThat(stations.contains(station1)).isTrue(),
+                () -> assertThat(stations.contains(station2)).isTrue(),
+                () -> assertThat(stations.contains(station3)).isTrue());
     }
 
     @Test
@@ -236,41 +238,17 @@ public class LineServiceTest {
         lineService.deleteSection(lineId, station2.getId());
 
         // then
-        Map<Long, Long> sections = getSections(lineDao.findById(lineId));
-        Long upStationId = getUpStationId(sections);
-        Long downStationId = getDownStationId(sections);
+        Sections sections = getSections(lineDao.findById(lineId));
+        Long upStationId = sections.getLastUpStation().getId();
+        Long downStationId = sections.getLastDownStation().getId();
 
         assertThat(upStationId).isEqualTo(station1.getId());
         assertThat(downStationId).isEqualTo(station3.getId());
         assertThat(sectionDao.findByLineIdAndUpStationId(lineId, upStationId).getDistance()).isEqualTo(20);
     }
 
-    private Map<Long, Long> getSections(Line line) {
+    private Sections getSections(Line line) {
         List<Section> sections = sectionDao.findByLineId(line.getId());
-        Map<Long, Long> map = new HashMap<>();
-        for (Section section : sections) {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-            map.put(upStation.getId(), downStation.getId());
-        }
-        return map;
-    }
-
-    private Long getUpStationId(Map<Long, Long> sections) {
-        List<Long> keys = new ArrayList<>(sections.keySet());
-        List<Long> values = new ArrayList<>(sections.values());
-        return keys.stream()
-                .filter(key -> !values.contains(key))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    private Long getDownStationId(Map<Long, Long> sections) {
-        List<Long> keys = new ArrayList<>(sections.keySet());
-        List<Long> values = new ArrayList<>(sections.values());
-        return values.stream()
-                .filter(value -> !keys.contains(value))
-                .findFirst()
-                .orElseThrow();
+        return new Sections(sections);
     }
 }
