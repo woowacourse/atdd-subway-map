@@ -16,6 +16,8 @@
 
 ## 기능 구현 목록
 
+<a href="https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/c682be69ae4e412c9e3905a59ef7b7ed">API 문서</a>
+
 ### API
 
 #### Station
@@ -35,10 +37,10 @@
 
 - [x] 노선을 등록 할 수 있다.
     - 노선의 이름과, 색이 필요하다.
+    - 상행 종점 역 ID, 하행 종점 역 ID, 두 종점간의 거리가 필요하다.
     - 이름이 중복이면 등록 할 수 었다.
-    - 등록을 하면 역 ID와 name, color를 응답한다.
 - [x] 모든 노선을 목록을 조회 할 수 있다.
-    - 각 노선의 id, name, color를 포함한다.
+    - 각 노선의 id, name, color, 상행 종점 역, 하행 종점 역을 포함한다.
 - [x] id에 해당하는 노선을 조회 할 수 있다.
 - [x] id에 해당하는 노선 정보를 수정 할 수 있다.
 - [x] 노선을 삭제 할 수 있다.

@@ -15,7 +15,7 @@ import wooteco.subway.dto.station.StationRequest;
 import wooteco.subway.dto.station.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends AcceptanceTest {
+class StationAcceptanceTest extends AcceptanceTest {
 
     private final StationRequest gangNamStationRequest = new StationRequest("강남역");
     private final StationRequest jamSilStationRequest = new StationRequest("잠실역");
@@ -75,7 +75,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void DeleteStation() {
         // given
-        final long id = createAndGetLineId(gangNamStationRequest);
+        final long id = createAndGetStationId(gangNamStationRequest);
 
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()

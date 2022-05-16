@@ -1,51 +1,88 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.section.SectionRequest;
+import wooteco.subway.dto.station.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
-    private final LineRequest lineOneRequest = new LineRequest("1호선", "bg-red-600", null, null, 0);
-    private final LineRequest lineTwoRequest = new LineRequest("2호선", "bg-green-600", null, null, 0);
+    private static final String LINE_ONE_NAME = "1호선";
+    private static final String LINE_ONE_COLOR = "bg-red-600";
+    private static final String LINE_TWO_NAME = "2호선";
+    private static final String LINE_TWO_COLOR = "bg-green-600";
+
+    private Station seolleung;
+    private Station yeoksam;
+    private Station wangsimni;
+    private Station dapsimni;
+
+    private LineRequest lineOneRequest;
+    private LineRequest lineTwoRequest;
+
+    @BeforeEach
+    void setUpData() {
+        seolleung = createStation(new StationRequest("선릉역")).as(Station.class);
+        yeoksam = createStation(new StationRequest("역삼역")).as(Station.class);
+        wangsimni = createStation(new StationRequest("왕십리역")).as(Station.class);
+        dapsimni = createStation(new StationRequest("답십리역")).as(Station.class);
+
+        lineOneRequest = new LineRequest(
+                LINE_ONE_NAME,
+                LINE_ONE_COLOR,
+                seolleung.getId(),
+                yeoksam.getId(),
+                10
+        );
+        lineTwoRequest = new LineRequest(
+                LINE_TWO_NAME,
+                LINE_TWO_COLOR,
+                wangsimni.getId(),
+                dapsimni.getId(),
+                7
+        );
+    }
 
     @Test
-    @DisplayName("지하철 노선을 생성한다.")
-    void CreateLine() {
+    @DisplayName("지하철 노선과 구간을 생성한다.")
+    void CreateLine_WithSection_Success() {
         // when
         final ExtractableResponse<Response> actual = createLine(lineOneRequest);
+        final long lineId = extractId(actual);
+
+        final LineResponse expected = LineResponse.of(
+                new Line(lineId, LINE_ONE_NAME, LINE_ONE_COLOR),
+                List.of(seolleung, yeoksam)
+        );
 
         // then
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(actual.header(LOCATION)).isNotBlank();
+        assertThat(actual.header(LOCATION)).isEqualTo(LINE_PATH_PREFIX + SLASH + lineId);
 
         final LineResponse actualResponse = actual.body().as(LineResponse.class);
-        assertAll(() -> {
-            assertThat(actualResponse.getId()).isNotNull();
-            assertThat(actualResponse.getName()).isEqualTo(lineOneRequest.getName());
-            assertThat(actualResponse.getColor()).isEqualTo(lineOneRequest.getColor());
-        });
+        assertThat(actualResponse).isEqualTo(expected);
     }
 
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void Show_Lines() {
         // given
-        final ExtractableResponse<Response> expected1 = createLine(lineOneRequest);
-        final ExtractableResponse<Response> expected2 = createLine(lineTwoRequest);
+        final LineResponse expectedLineOne = createLine(lineOneRequest).as(LineResponse.class);
+        final LineResponse expectedLineTwo = createLine(lineTwoRequest).as(LineResponse.class);
 
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
@@ -53,18 +90,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get(LINE_PATH_PREFIX)
                 .then().log().all()
                 .extract();
+        final List<LineResponse> actualResponse = actual.jsonPath().getList(".", LineResponse.class);
 
         // then
-        final List<Long> expectedLineIds = Stream.of(expected1, expected2)
-                .map(this::extractId)
-                .collect(Collectors.toList());
-
-        final List<Long> actualLineIds = actual.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
-
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actualLineIds).containsAll(expectedLineIds);
+        assertThat(actualResponse).containsExactly(expectedLineOne, expectedLineTwo);
     }
 
     @DisplayName("id로 노선을 조회한다.")
@@ -73,22 +103,53 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         final long id = createAndGetLineId(lineOneRequest);
 
+        final LineResponse expected = LineResponse.of(
+                new Line(id, LINE_ONE_NAME, LINE_ONE_COLOR),
+                List.of(seolleung, yeoksam)
+        );
+
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
                 .when()
                 .get(LINE_PATH_PREFIX + SLASH + id)
                 .then().log().all()
                 .extract();
+        final LineResponse actualResponse = actual.body().as(LineResponse.class);
 
         // then
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actualResponse).isEqualTo(expected);
+    }
 
-        final LineResponse lineResponse = actual.body().as(LineResponse.class);
-        assertAll(() -> {
-            assertThat(lineResponse.getId()).isEqualTo(id);
-            assertThat(lineResponse.getName()).isEqualTo(lineOneRequest.getName());
-            assertThat(lineResponse.getColor()).isEqualTo(lineOneRequest.getColor());
-        });
+    @DisplayName("id로 5개의 역을 포함한 노선을 상행에서 하행 순서로 정렬해서 조회한다.")
+    @Test
+    void ShowLine_5StationsOrderByUpStation_OK() {
+        // given
+        final long id = createAndGetLineId(lineOneRequest);
+
+        final long samseongId = createAndGetStationId(new StationRequest("삼성역"));
+
+        createSection(new SectionRequest(dapsimni.getId(), yeoksam.getId(), 5), (int) id);
+        createSection(new SectionRequest(yeoksam.getId(), wangsimni.getId(), 5), (int) id);
+        createSection(new SectionRequest(samseongId, yeoksam.getId(), 3), (int) id);
+
+        final LineResponse expected = LineResponse.of(
+                new Line(id, LINE_ONE_NAME, LINE_ONE_COLOR),
+                List.of(seolleung, dapsimni, new Station(samseongId, "삼성역"), yeoksam, wangsimni)
+        );
+
+        // when
+        final ExtractableResponse<Response> actual = RestAssured.given().log().all()
+                .when()
+                .get(LINE_PATH_PREFIX + SLASH + id)
+                .then().log().all()
+                .extract();
+        final LineResponse actualResponse = actual.body().as(LineResponse.class);
+
+        // then
+        // 선릉 - 답십리 - 삼성 - 역삼 - 왕십리
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actualResponse).isEqualTo(expected);
     }
 
     @Test
@@ -121,7 +182,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @Test

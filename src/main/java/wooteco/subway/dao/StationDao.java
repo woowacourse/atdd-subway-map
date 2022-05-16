@@ -8,7 +8,11 @@ public interface StationDao {
 
     Optional<Station> insert(Station station);
 
+    Optional<Station> findById(Long id);
+
     List<Station> findAll();
+
+    List<Station> findAllByLineId(Long lineId);
 
     Integer deleteById(Long id);
 }

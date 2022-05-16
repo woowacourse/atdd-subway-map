@@ -11,13 +11,15 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.dto.section.SectionRequest;
 import wooteco.subway.dto.station.StationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AcceptanceTest {
+abstract class AcceptanceTest {
 
     protected static final String STATION_PATH_PREFIX = "/stations";
     protected static final String LINE_PATH_PREFIX = "/lines";
+    protected static final String SECTION_PATH_PREFIX = "/sections";
     protected static final String LOCATION = "Location";
     protected static final String SLASH = "/";
 
@@ -34,11 +36,12 @@ public class AcceptanceTest {
 
     @AfterEach
     void cleanUp() {
-        jdbcTemplate.execute("DELETE FROM station;");
-        jdbcTemplate.execute("DELETE FROM line;");
+        jdbcTemplate.execute("DELETE FROM section");
+        jdbcTemplate.execute("DELETE FROM station");
+        jdbcTemplate.execute("DELETE FROM line");
     }
 
-    protected long createAndGetLineId(StationRequest request) {
+    protected long createAndGetStationId(StationRequest request) {
         final ExtractableResponse<Response> response = createStation(request);
         return extractId(response);
     }
@@ -64,6 +67,16 @@ public class AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(LINE_PATH_PREFIX)
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> createSection(final SectionRequest request, final long lineId) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(LINE_PATH_PREFIX + SLASH + lineId + SECTION_PATH_PREFIX)
                 .then().log().all()
                 .extract();
     }
