@@ -36,7 +36,7 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
-    public Station findOne(Long id) {
+    Station findOne(Long id) {
         return stationRepository.findById(id);
     }
 

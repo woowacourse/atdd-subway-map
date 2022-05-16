@@ -30,7 +30,7 @@ public class SectionService {
         sectionRepository.persist(lineId, sectionSeries);
     }
 
-    public Section create(Long upStationId, Long downStationId, int distance) {
+    Section create(Long upStationId, Long downStationId, int distance) {
         return new Section(
             stationService.findOne(upStationId),
             stationService.findOne(downStationId),

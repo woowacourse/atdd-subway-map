@@ -31,24 +31,13 @@ public class LineRepository {
         final List<Long> persistedIds = toIds(findAllLines());
         final List<Line> lines = lineSeries.getLines();
         for (Line line : lines) {
-            LineEntity entity = LineEntity.fromWithId(line);
+            LineEntity entity = LineEntity.from(line);
             Long id = persistManager.persist(lineDao, entity, persistedIds);
             persistedIds.remove(id);
             SimpleReflectionUtils.injectId(line, id);
             sectionRepository.persist(id, line.getSectionSeries());
         }
         persistManager.deletePersistedAll(lineDao, persistedIds);
-    }
-
-    public void persist2(LineSeries lineSeries) {
-        final List<Long> persistedIds = toIds(findAllLines());
-        final List<Line> lines = lineSeries.getLines();
-
-        if (lines.isEmpty()) {
-            persistManager.deletePersistedAll(lineDao, persistedIds);
-            return;
-        }
-        persistEach(lines, persistedIds);
     }
 
     private List<Long> toIds(List<Line> lines) {
@@ -59,7 +48,7 @@ public class LineRepository {
 
     private void persistEach(List<Line> lines, List<Long> persistedIds) {
         for (Line line : lines) {
-            LineEntity entity = LineEntity.fromWithId(line);
+            LineEntity entity = LineEntity.from(line);
             Long id = persistManager.persist(lineDao, entity, persistedIds);
             SimpleReflectionUtils.injectId(line, id);
             sectionRepository.persist(id, line.getSectionSeries());

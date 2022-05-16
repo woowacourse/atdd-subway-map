@@ -35,15 +35,6 @@ public class StationRepository {
         persistManager.deletePersistedAll(stationDao, persistedIds);
     }
 
-    public void persist2(StationSeries stationSeries) {
-        List<Long> persistedIds = toIds(findAllStations());
-        final List<Station> stations = stationSeries.getStations();
-        if (stations.isEmpty()) {
-            persistManager.deletePersistedAll(stationDao, persistedIds);
-        }
-        persistEach(persistedIds, stations);
-    }
-
     private List<Long> toIds(List<Station> stations) {
         return stations.stream()
             .map(Station::getId)

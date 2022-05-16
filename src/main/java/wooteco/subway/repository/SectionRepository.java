@@ -38,16 +38,6 @@ public class SectionRepository {
         persistManager.deletePersistedAll(sectionDao, persistedIds);
     }
 
-    public void persist2(Long lineId, SectionSeries sectionSeries) {
-        final List<Long> persistedIds = toIds(findAllSections(lineId));
-        final List<Section> sections = sectionSeries.getSections();
-        if (sections.isEmpty()) {
-            persistManager.deletePersistedAll(sectionDao, persistedIds);
-            return;
-        }
-        persistEach(lineId, persistedIds, sections);
-    }
-
     private List<Long> toIds(List<Section> sections) {
         return sections.stream()
             .map(Section::getId)

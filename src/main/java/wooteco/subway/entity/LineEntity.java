@@ -19,10 +19,6 @@ public class LineEntity implements Entity {
     }
 
     public static LineEntity from(Line line) {
-        return new LineEntity(line.getName(), line.getColor());
-    }
-
-    public static LineEntity fromWithId(Line line) {
         return new LineEntity(line.getId(), line.getName(), line.getColor());
     }
 
