@@ -67,19 +67,19 @@ public class LineRepositoryTest extends RepositoryTest {
         assertThat(line.isSameName("분당선"));
     }
 
-    @DisplayName("이름으로 노선을 조회한다.")
+    @DisplayName("이름이 존재하는지 확인한다. 있다면 true를 반환한다.")
     @Test
-    void findByName() {
-        Long id = lineRepository.save(new Line("분당선", LINE_COLOR));
-        Line line = lineRepository.findByName("분당선").orElse(null);
+    void isNameExistsTrue() {
+        lineRepository.save(new Line("분당선", LINE_COLOR));
+        lineRepository.isNameExists("분당선");
 
-        assertThat(line.getId()).isEqualTo(id);
+        assertThat(lineRepository.isNameExists("분당선")).isTrue();
     }
 
-    @DisplayName("이름으로 노선을 조회시 없을 경우 빈 Optional을 반환한다.")
+    @DisplayName("이름이 존재하는지 확인한다. 없다면 false를 반환한다.")
     @Test
-    void findByNameNull() {
-        assertThat(lineRepository.findByName("분당선").isEmpty()).isTrue();
+    void isNameExistsFalse() {
+        assertThat(lineRepository.isNameExists("분당선")).isFalse();
     }
 
     @DisplayName("노선을 수정한다.")

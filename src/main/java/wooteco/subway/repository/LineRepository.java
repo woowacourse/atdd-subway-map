@@ -2,7 +2,6 @@ package wooteco.subway.repository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
@@ -85,14 +84,10 @@ public class LineRepository {
                 .collect(Collectors.toList()));
     }
 
-    public Optional<Line> findByName(final String name) {
-        String sql = "SELECT * FROM line WHERE name = :name";
+    public Boolean isNameExists(final String name) {
+        String sql = "SELECT EXISTS (SELECT * FROM line WHERE name = :name)";
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper()));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, parameters, Boolean.class));
     }
 
     private RowMapper<Line> rowMapper() {

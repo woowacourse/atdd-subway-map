@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,7 @@ public class LineService {
     }
 
     public LineResponse create(final LineRequest lineRequest) {
-        validateDuplicateName(lineRepository.findByName(lineRequest.getName()).isPresent());
+        validateDuplicateName(lineRepository.isNameExists(lineRequest.getName()));
         Long id = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         Station upStation = stationRepository.findById(lineRequest.getUpStationId());
         Station downStation = stationRepository.findById(lineRequest.getDownStationId());
@@ -78,7 +77,7 @@ public class LineService {
     public void update(final Long id, final LineRequest lineRequest) {
         Line currentLine = lineRepository.findById(id);
         if (!currentLine.isSameName(lineRequest.getName())) {
-            validateDuplicateName(lineRepository.findByName(lineRequest.getName()).isPresent());
+            validateDuplicateName(lineRepository.isNameExists(lineRequest.getName()));
         }
         lineRepository.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
