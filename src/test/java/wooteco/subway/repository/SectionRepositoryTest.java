@@ -76,4 +76,16 @@ class SectionRepositoryTest extends RepositoryTest {
         assertThat(sectionRepository.findByLineId(1L)).isEmpty();
     }
 
+    @DisplayName("Section에 특정 Station이 존재하는지 확인한다.")
+    @Test
+    void findStationExist() {
+        Station saved_신당역 = stationRepository.save(신당역);
+        Station saved_동묘앞역 = stationRepository.save(동묘앞역);
+
+        Section firstSection = new Section(1L, saved_신당역, saved_동묘앞역, STANDARD_DISTANCE);
+        Long id = sectionRepository.save(firstSection);
+
+        assertThat(sectionRepository.isStationExist(saved_동묘앞역.getId())).isTrue();
+    }
+
 }

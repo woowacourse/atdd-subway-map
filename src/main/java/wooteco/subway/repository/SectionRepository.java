@@ -118,4 +118,11 @@ public class SectionRepository {
 
         namedParameterJdbcTemplate.update(sql, parameters);
     }
+
+    public boolean isStationExist(final Long id) {
+        String sql = "SELECT EXISTS(SELECT id FROM section WHERE up_station_id = :id OR down_station_id = :id) AS isExist";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+
+       return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
 }
