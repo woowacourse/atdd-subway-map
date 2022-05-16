@@ -8,6 +8,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.exception.constant.DuplicateException;
 import wooteco.subway.exception.constant.NotExistException;
+import wooteco.subway.exception.constant.NotExistException.Which;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public Line findById(Long id) {
         return lineDao.findById(id)
-                .orElseThrow(NotExistException::new);
+                .orElseThrow(() -> new NotExistException(Which.LINE));
     }
 
     public Line update(Long id, String name, String color) {
@@ -71,7 +72,7 @@ public class LineService {
 
     public void deleteById(Long id) {
         if (!lineDao.existById(id)) {
-            throw new NotExistException();
+            throw new NotExistException(Which.LINE);
         }
         lineDao.deleteById(id);
     }
