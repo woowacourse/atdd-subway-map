@@ -5,7 +5,7 @@ import java.util.List;
 public class Section {
 
     private Long id;
-    private Long lineId;
+    private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
     private final int distance;
@@ -26,11 +26,14 @@ public class Section {
     }
 
     public Section(Long lineId, Section section) {
-        this(section.getUpStationId(), section.getDownStationId(), section.getDistance());
         this.lineId = lineId;
+        this.upStationId = section.getUpStationId();
+        this.downStationId = section.getDownStationId();
+        this.distance = section.getDistance();
     }
 
     public Section(Long upStationId, Long downStationId, int distance) {
+        this.lineId = null;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;

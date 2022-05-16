@@ -51,6 +51,6 @@ public class LineRequest {
     }
 
     public Section toSection() {
-        return new Section(upStationId, downStationId, distance);
+        return new Section(null, upStationId, downStationId, distance);
     }
 }
