@@ -10,13 +10,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.exception.notfound.NotFoundStationException;
 
 @Repository
 public class StationDao {
 
-    private static final RowMapper<Station> ROW_MAPPER = (resultSet, rowNum) -> new Station(
+    private static final RowMapper<StationEntity> ROW_MAPPER = (resultSet, rowNum) -> new StationEntity(
             resultSet.getLong("id"),
             resultSet.getString("name"));
 
@@ -30,12 +30,12 @@ public class StationDao {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public Long save(final Station station) {
+    public Long save(final StationEntity station) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         return insertActor.executeAndReturnKey(parameters).longValue();
     }
 
-    public Station findById(final Long id) {
+    public StationEntity findById(final Long id) {
         try {
             final String sql = "SELECT * FROM STATION WHERE id = :id";
             return namedParameterJdbcTemplate.queryForObject(sql, Map.of("id", id), ROW_MAPPER);
@@ -44,12 +44,12 @@ public class StationDao {
         }
     }
 
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         final String sql = "SELECT * FROM STATION";
         return namedParameterJdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public void delete(final Long id) {
+    public void deleteById(final Long id) {
         final String sql = "DELETE FROM STATION WHERE id = :id";
         namedParameterJdbcTemplate.update(sql, Map.of("id", id));
     }

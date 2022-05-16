@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.Fixtures.HYEHWA;
+import static wooteco.subway.Fixtures.SINSA;
 
 import java.util.List;
 import javax.sql.DataSource;
@@ -10,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.exception.notfound.NotFoundStationException;
 
 @JdbcTest
@@ -29,56 +31,58 @@ class StationDaoTest {
     @Test
     @DisplayName("역을 저장한다.")
     void save() {
-        final Station station = new Station("한성대입구역");
+        // when
+        final Long id = stationDao.save(new StationEntity(HYEHWA));
 
-        final Long id = stationDao.save(station);
-
-        final String actual = stationDao.findById(id).getName();
-        assertThat(actual).isEqualTo(station.getName());
+        // then
+        assertThat(stationDao.findById(id).getName()).isEqualTo(HYEHWA);
     }
 
     @Test
     @DisplayName("역을 조회한다.")
     void find() {
-        final Station station = new Station("한성대입구역");
-        final long id = stationDao.save(station);
+        // given
+        final long id = stationDao.save(new StationEntity(HYEHWA));
 
-        final Station foundStation = stationDao.findById(id);
+        // when
+        final StationEntity foundStation = stationDao.findById(id);
 
-        assertThat(foundStation.getName()).isEqualTo(station.getName());
+        // then
+        assertThat(foundStation.getName()).isEqualTo(HYEHWA);
     }
 
     @Test
     @DisplayName("존재하지 않는 Id 조회 시, 예외를 발생한다.")
     void findNotExistId() {
-        final long id = 1L;
-
-        assertThatThrownBy(() -> stationDao.findById(id))
+        // when & then
+        assertThatThrownBy(() -> stationDao.findById(1L))
                 .isInstanceOf(NotFoundStationException.class);
     }
 
     @Test
     @DisplayName("모든 역을 조회한다.")
     void findAll() {
-        final Station station1 = new Station("한성대입구역");
-        final Station station2 = new Station("신대방역");
-        stationDao.save(station1);
-        stationDao.save(station2);
+        // given
+        stationDao.save(new StationEntity(HYEHWA));
+        stationDao.save(new StationEntity(SINSA));
 
-        final List<Station> stations = stationDao.findAll();
+        // when
+        final List<StationEntity> stations = stationDao.findAll();
 
+        // then
         assertThat(stations).hasSize(2);
     }
 
     @Test
     @DisplayName("역을 삭제한다.")
     void delete() {
-        final Station station = new Station("한성대입구역");
-        final Long id = stationDao.save(station);
+        // given
+        final Long id = stationDao.save(new StationEntity(HYEHWA));
 
-        stationDao.delete(id);
+        // when
+        stationDao.deleteById(id);
 
-        final int actual = stationDao.findAll().size();
-        assertThat(actual).isEqualTo(0);
+        // then
+        assertThat(stationDao.findAll()).hasSize(0);
     }
 }

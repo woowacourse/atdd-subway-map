@@ -1,7 +1,5 @@
 package wooteco.subway.dto.request;
 
-import wooteco.subway.domain.Section;
-
 public class CreateSectionRequest {
 
     private Long upStationId;
@@ -15,10 +13,6 @@ public class CreateSectionRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public Section toSection(final Long lineId) {
-        return new Section(lineId, upStationId, downStationId, distance);
     }
 
     public Long getUpStationId() {

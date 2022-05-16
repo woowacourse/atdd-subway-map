@@ -15,10 +15,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dao.entity.LineEntity;
+import wooteco.subway.dao.entity.SectionEntity;
+import wooteco.subway.dao.entity.StationEntity;
 
 @JdbcTest
 public class SectionDaoTest {
@@ -40,19 +39,19 @@ public class SectionDaoTest {
     @Test
     @DisplayName("지하철 구간을 저장한다.")
     void save() {
-        final Long upStationId = stationDao.save(new Station(HYEHWA));
-        final Long downStationId = stationDao.save(new Station(SINSA));
-        final Long lineId = lineDao.save(new Line(LINE_2, RED));
-        final Section section = new Section(lineId, upStationId, downStationId, 10);
+        final Long upStationId = stationDao.save(new StationEntity(HYEHWA));
+        final Long downStationId = stationDao.save(new StationEntity(SINSA));
+        final Long lineId = lineDao.save(new LineEntity(LINE_2, RED));
+        final SectionEntity SectionEntity = new SectionEntity(lineId, upStationId, downStationId, 10);
 
-        final Long id = sectionDao.save(section);
-        final Section savedSection = sectionDao.findById(id);
+        final Long id = sectionDao.save(SectionEntity);
+        final SectionEntity savedSection = sectionDao.findById(id);
 
         assertAll(() -> {
             assertThat(savedSection.getId()).isNotNull();
-            assertThat(savedSection.getUpStationId()).isEqualTo(section.getUpStationId());
-            assertThat(savedSection.getDownStationId()).isEqualTo(section.getDownStationId());
-            assertThat(savedSection.getDistance()).isEqualTo(section.getDistance());
+            assertThat(savedSection.getUpStationId()).isEqualTo(SectionEntity.getUpStationId());
+            assertThat(savedSection.getDownStationId()).isEqualTo(SectionEntity.getDownStationId());
+            assertThat(savedSection.getDistance()).isEqualTo(SectionEntity.getDistance());
         });
     }
 
@@ -60,51 +59,51 @@ public class SectionDaoTest {
     @DisplayName("여러개의 지하철 구간을 저장한다.")
     void batchSave() {
         // given
-        final Long stationId1 = stationDao.save(new Station(HYEHWA));
-        final Long stationId2 = stationDao.save(new Station(SINSA));
-        final Long stationId3 = stationDao.save(new Station(GANGNAM));
-        final Long lineId = lineDao.save(new Line(LINE_2, RED));
-        final List<Section> sections = List.of(new Section(lineId, stationId1, stationId2, 10),
-                new Section(lineId, stationId2, stationId3, 10));
+        final Long stationId1 = stationDao.save(new StationEntity(HYEHWA));
+        final Long stationId2 = stationDao.save(new StationEntity(SINSA));
+        final Long stationId3 = stationDao.save(new StationEntity(GANGNAM));
+        final Long lineId = lineDao.save(new LineEntity(LINE_2, RED));
+        final List<SectionEntity> sections = List.of(new SectionEntity(lineId, stationId1, stationId2, 10),
+                new SectionEntity(lineId, stationId2, stationId3, 10));
 
         // when
         sectionDao.batchSave(sections);
-        final Sections savedSections = sectionDao.findAllByLineId(lineId);
+        final List<SectionEntity> savedSections = sectionDao.findAllByLineId(lineId);
 
         // then
-        assertThat(savedSections.getSections()).hasSize(2);
+        assertThat(savedSections).hasSize(2);
     }
 
     @Test
     @DisplayName("지하철 역 ID로 모든 구간을 조회한다.")
     void findAllByLineId() {
-        final Long stationId1 = stationDao.save(new Station(HYEHWA));
-        final Long stationId2 = stationDao.save(new Station(SINSA));
-        final Long stationId3 = stationDao.save(new Station(GANGNAM));
-        final Long lineId = lineDao.save(new Line(LINE_2, RED));
-        final Section section1 = new Section(lineId, stationId1, stationId2, 10);
-        final Section section2 = new Section(lineId, stationId2, stationId3, 10);
+        final Long stationId1 = stationDao.save(new StationEntity(HYEHWA));
+        final Long stationId2 = stationDao.save(new StationEntity(SINSA));
+        final Long stationId3 = stationDao.save(new StationEntity(GANGNAM));
+        final Long lineId = lineDao.save(new LineEntity(LINE_2, RED));
+        final SectionEntity section1 = new SectionEntity(lineId, stationId1, stationId2, 10);
+        final SectionEntity section2 = new SectionEntity(lineId, stationId2, stationId3, 10);
 
         sectionDao.save(section1);
         sectionDao.save(section2);
 
-        final Sections sections = sectionDao.findAllByLineId(lineId);
+        final List<SectionEntity> sections = sectionDao.findAllByLineId(lineId);
 
-        assertThat(sections.getSections()).hasSize(2);
+        assertThat(sections).hasSize(2);
     }
 
     @Test
     @DisplayName("지하철 구간 ID로 해당 구간을 조회한다.")
     void findById() {
         // given
-        final Long upStationId = stationDao.save(new Station(HYEHWA));
-        final Long downStationId = stationDao.save(new Station(SINSA));
-        final Long lineId = lineDao.save(new Line(LINE_2, RED));
-        final Section section = new Section(lineId, upStationId, downStationId, 10);
-        final Long id = sectionDao.save(section);
+        final Long upStationId = stationDao.save(new StationEntity(HYEHWA));
+        final Long downStationId = stationDao.save(new StationEntity(SINSA));
+        final Long lineId = lineDao.save(new LineEntity(LINE_2, RED));
+        final SectionEntity SectionEntity = new SectionEntity(lineId, upStationId, downStationId, 10);
+        final Long id = sectionDao.save(SectionEntity);
 
         // when
-        final Section savedSection = sectionDao.findById(id);
+        final SectionEntity savedSection = sectionDao.findById(id);
 
         // then
         assertAll(() -> {
@@ -119,34 +118,34 @@ public class SectionDaoTest {
     @DisplayName("지하철 구간 ID로 구간을 삭제한다.")
     void deleteById() {
         // given
-        final Long upStationId = stationDao.save(new Station(HYEHWA));
-        final Long downStationId = stationDao.save(new Station(SINSA));
-        final Long lineId = lineDao.save(new Line(LINE_2, RED));
-        final Long sectionId = sectionDao.save(new Section(lineId, upStationId, downStationId, 10));
+        final Long upStationId = stationDao.save(new StationEntity(HYEHWA));
+        final Long downStationId = stationDao.save(new StationEntity(SINSA));
+        final Long lineId = lineDao.save(new LineEntity(LINE_2, RED));
+        final Long sectionId = sectionDao.save(new SectionEntity(lineId, upStationId, downStationId, 10));
 
         // when
         sectionDao.deleteById(sectionId);
 
         // then
-        assertThat(sectionDao.findAllByLineId(lineId).getSections()).hasSize(0);
+        assertThat(sectionDao.findAllByLineId(lineId)).hasSize(0);
     }
 
     @Test
     @DisplayName("여러개의 지하철 구간을 삭제한다.")
     void batchDelete() {
         // given
-        final Long stationId1 = stationDao.save(new Station(HYEHWA));
-        final Long stationId2 = stationDao.save(new Station(SINSA));
-        final Long stationId3 = stationDao.save(new Station(GANGNAM));
-        final Long lineId = lineDao.save(new Line(LINE_2, RED));
-        final List<Section> sections = List.of(new Section(lineId, stationId1, stationId2, 10),
-                new Section(lineId, stationId2, stationId3, 10));
+        final Long stationId1 = stationDao.save(new StationEntity(HYEHWA));
+        final Long stationId2 = stationDao.save(new StationEntity(SINSA));
+        final Long stationId3 = stationDao.save(new StationEntity(GANGNAM));
+        final Long lineId = lineDao.save(new LineEntity(LINE_2, RED));
+        final List<SectionEntity> sections = List.of(new SectionEntity(lineId, stationId1, stationId2, 10),
+                new SectionEntity(lineId, stationId2, stationId3, 10));
 
         // when
         sectionDao.batchDelete(sections);
-        final Sections savedSections = sectionDao.findAllByLineId(lineId);
+        final List<SectionEntity> savedSections = sectionDao.findAllByLineId(lineId);
 
         // then
-        assertThat(savedSections.getSections()).hasSize(0);
+        assertThat(savedSections).hasSize(0);
     }
 }

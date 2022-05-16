@@ -3,7 +3,9 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static wooteco.subway.Fixtures.BLUE;
 import static wooteco.subway.Fixtures.LINE_2;
+import static wooteco.subway.Fixtures.LINE_4;
 import static wooteco.subway.Fixtures.RED;
 
 import java.util.List;
@@ -14,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
-import wooteco.subway.domain.Line;
+import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.exception.notfound.NotFoundLineException;
 
 @JdbcTest
@@ -33,49 +35,49 @@ public class LineDaoTest {
     @Test
     @DisplayName("지하철 노선을 저장한다.")
     void save() {
-        final Line line = new Line("신분당선", "bg-red-600");
+        // when
+        final Long id = lineDao.save(new LineEntity(LINE_2, RED));
 
-        final Long id = lineDao.save(line);
-
-        final Line foundLine = lineDao.find(id);
+        // then
+        final LineEntity savedLine = lineDao.find(id);
         assertAll(() -> {
-            assertThat(foundLine.getId()).isNotNull();
-            assertThat(foundLine.getName()).isEqualTo(line.getName());
-            assertThat(foundLine.getColor()).isEqualTo(line.getColor());
+            assertThat(savedLine.getId()).isNotNull();
+            assertThat(savedLine.getName()).isEqualTo(LINE_2);
+            assertThat(savedLine.getColor()).isEqualTo(RED);
         });
     }
 
     @Test
     @DisplayName("같은 이름의 노선을 저장하는 경우, 예외가 발생한다.")
     void saveDuplicateName() {
-        final Line line1 = new Line("신분당선", "bg-red-600");
-        final Line line2 = new Line("신분당선", "bg-blue-700");
-        lineDao.save(line1);
+        // given
+        lineDao.save(new LineEntity(LINE_2, RED));
 
-        assertThatThrownBy(() -> lineDao.save(line2))
+        // when & then
+        assertThatThrownBy(() -> lineDao.save(new LineEntity(LINE_2, BLUE)))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
     @DisplayName("같은 색상의 노선을 저장하는 경우, 예외가 발생한다.")
     void saveDuplicateColor() {
-        final Line line1 = new Line("신분당선", "bg-red-600");
-        final Line line2 = new Line("분당선", "bg-red-600");
-        lineDao.save(line1);
+        // given
+        lineDao.save(new LineEntity(LINE_2, RED));
 
-        assertThatThrownBy(() -> lineDao.save(line2))
+        // when & then
+        assertThatThrownBy(() -> lineDao.save(new LineEntity(LINE_4, RED)))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
     @DisplayName("지하철 노선 목록을 조회한다.")
     void findAll() {
-        final Line line1 = new Line("신분당선", "bg-red-600");
-        final Line line2 = new Line("분당선", "bg-black-000");
-        lineDao.save(line1);
-        lineDao.save(line2);
+        // given
+        lineDao.save(new LineEntity(LINE_2, RED));
+        lineDao.save(new LineEntity(LINE_4, BLUE));
 
-        final List<Line> lines = lineDao.findAll();
+        // when
+        final List<LineEntity> lines = lineDao.findAll();
 
         assertThat(lines).hasSize(2);
     }
@@ -83,51 +85,54 @@ public class LineDaoTest {
     @Test
     @DisplayName("지하철 노선을 조회한다.")
     void find() {
-        final Line line = new Line("신분당선", "bg-red-600");
-        final Long id = lineDao.save(line);
+        // given
+        final Long id = lineDao.save(new LineEntity(LINE_2, RED));
 
-        final Line foundLine = lineDao.find(id);
+        // when
+        final LineEntity foundLine = lineDao.find(id);
 
+        // then
         assertAll(() -> {
-            assertThat(foundLine.getName()).isEqualTo(line.getName());
-            assertThat(foundLine.getColor()).isEqualTo(line.getColor());
+            assertThat(foundLine.getName()).isEqualTo(LINE_2);
+            assertThat(foundLine.getColor()).isEqualTo(RED);
         });
     }
 
     @Test
     @DisplayName("존재하지 않는 Id 조회 시, 예외를 발생한다.")
     void findNotExistId() {
-        final long id = 1L;
-
-        assertThatThrownBy(() -> lineDao.find(id))
+        // when & then
+        assertThatThrownBy(() -> lineDao.find(1L))
                 .isInstanceOf(NotFoundLineException.class);
     }
 
     @Test
     @DisplayName("노선 정보를 업데이트 한다.")
     void update() {
-        final Line line = new Line("신분당선", "bg-red-600");
-        final Long id = lineDao.save(line);
+        // given
+        final Long id = lineDao.save(new LineEntity(LINE_2, RED));
 
-        final String updateName = "분당선";
-        String updateColor = "bg-blue-900";
-        lineDao.update(id, updateName, updateColor);
+        // when
+        lineDao.update(new LineEntity(id, LINE_4, BLUE));
 
-        final Line updatedLine = lineDao.find(id);
+        // then
+        final LineEntity updatedLine = lineDao.find(id);
         assertAll(() -> {
-            assertThat(updatedLine.getName()).isEqualTo(updateName);
-            assertThat(updatedLine.getColor()).isEqualTo(updateColor);
+            assertThat(updatedLine.getName()).isEqualTo(LINE_4);
+            assertThat(updatedLine.getColor()).isEqualTo(BLUE);
         });
     }
 
     @Test
     @DisplayName("노선을 삭제한다.")
     void delete() {
-        final Line line = new Line("신분당선", "bg-red-600");
-        final Long id = lineDao.save(line);
+        // given
+        final Long id = lineDao.save(new LineEntity(LINE_2, RED));
 
+        // when
         lineDao.delete(id);
 
+        // then
         assertThat(lineDao.findAll()).hasSize(0);
     }
 
@@ -135,13 +140,12 @@ public class LineDaoTest {
     @DisplayName("ID를 이용해 지하철 노선이 있는지 확인한다.")
     void existsById() {
         // given
-        final Line line = new Line(LINE_2, RED);
-        final Long id = lineDao.save(line);
+        final Long id = lineDao.save(new LineEntity(LINE_2, RED));
 
         // when
-        final boolean actual = lineDao.existsById(id);
+        final boolean isExist = lineDao.existsById(id);
 
         // then
-        assertThat(actual).isTrue();
+        assertThat(isExist).isTrue();
     }
 }

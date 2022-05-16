@@ -2,6 +2,14 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.Fixtures.GANGNAM;
+import static wooteco.subway.Fixtures.HYEHWA;
+import static wooteco.subway.Fixtures.JAMSIL;
+import static wooteco.subway.Fixtures.SECTION_1_2;
+import static wooteco.subway.Fixtures.SECTION_1_3;
+import static wooteco.subway.Fixtures.SECTION_2_3;
+import static wooteco.subway.Fixtures.SECTION_3_4;
+import static wooteco.subway.Fixtures.SINSA;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -14,13 +22,12 @@ public class SectionsTest {
     @Test
     @DisplayName("구간들에서 역들을 추출한다.")
     void toStationIds() {
-        final Sections sections = new Sections(List.of(new Section(1L, 1L, 2L, 10),
-                new Section(1L, 3L, 4L, 10),
-                new Section(1L, 2L, 3L, 10)));
+        final Sections sections = new Sections(new Section(new Station(1L, HYEHWA), new Station(2L, SINSA), 10),
+                new Section(new Station(2L, SINSA), new Station(3L, GANGNAM), 10));
 
-        final List<Long> stationIds = sections.toSortedStationIds();
+        final List<Station> stations = sections.toSortedStations();
 
-        assertThat(stationIds).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(stations).containsExactly(new Station(1L, HYEHWA), new Station(2L, SINSA), new Station(3L, GANGNAM));
     }
 
     @Nested
@@ -31,74 +38,62 @@ public class SectionsTest {
         @DisplayName("1-2 구간이 있을 때, 2-3 구간을 추가한다.")
         void addSection1() {
             // given
-            final Section section = new Section(1L, 1L, 2L, 10);
-            final Sections sections = new Sections(List.of(section));
-            final Section newSection = new Section(1L, 2L, 3L, 10);
+            final Sections sections = new Sections(List.of(SECTION_1_2));
 
             // when
-            sections.add(newSection);
+            sections.add(SECTION_2_3);
 
             // then
-            assertThat(sections.getSections()).containsOnly(section, newSection);
+            assertThat(sections.getValues()).containsOnly(SECTION_1_2, SECTION_2_3);
         }
 
         @Test
         @DisplayName("2-3 구간이 있을 때, 1-2 구간을 추가한다.")
         void addSection2() {
             // given
-            final Section section = new Section(1L, 2L, 3L, 10);
-            final Sections sections = new Sections(List.of(section));
-            final Section newSection = new Section(1L, 1L, 2L, 10);
+            final Sections sections = new Sections(List.of(SECTION_2_3));
 
             // when
-            sections.add(newSection);
+            sections.add(SECTION_1_2);
 
             // then
-            assertThat(sections.getSections()).containsOnly(section, newSection);
+            assertThat(sections.getValues()).containsOnly(SECTION_1_2, SECTION_2_3);
         }
 
         @Test
         @DisplayName("1-3 구간이 있을 때, 1-2 구간을 추가한다. 1-3 구간이 삭제되고, 1-2, 1-3 구간이 추가된다.")
         void addSection3() {
             // given
-            final Section section = new Section(1L, 1L, 3L, 10);
-            final Sections sections = new Sections(List.of(section));
-            final Section newSection1 = new Section(1L, 1L, 2L, 5);
-            final Section newSection2 = new Section(1L, 2L, 3L, 5);
+            final Sections sections = new Sections(List.of(SECTION_1_3));
 
             // when
-            sections.add(newSection1);
+            sections.add(new Section(new Station(1L, HYEHWA), new Station(2L, SINSA), 5));
 
             // then
-            assertThat(sections.getSections()).containsOnly(newSection1, newSection2);
+            assertThat(sections.getValues()).containsOnly(SECTION_1_2, SECTION_2_3);
         }
 
         @Test
         @DisplayName("1-3 구간이 있을 때, 2-3 구간을 추가한다. 1-3 구간이 삭제되고, 1-2, 1-3 구간이 추가된다.")
         void addSection4() {
             // given
-            final Section section = new Section(1L, 1L, 3L, 10);
-            final Sections sections = new Sections(List.of(section));
-            final Section newSection1 = new Section(1L, 1L, 2L, 5);
-            final Section newSection2 = new Section(1L, 2L, 3L, 5);
+            final Sections sections = new Sections(List.of(SECTION_1_3));
 
             // when
-            sections.add(newSection2);
+            sections.add(new Section(new Station(2L, SINSA), new Station(3L, GANGNAM), 5));
 
             // then
-            assertThat(sections.getSections()).containsOnly(newSection1, newSection2);
+            assertThat(sections.getValues()).containsOnly(SECTION_1_2, SECTION_2_3);
         }
 
         @Test
         @DisplayName("1-3 구간이 있을 때, 2-3 구간을 추가한다. 이때 2-3 구간의 거리가 1-3 구간의 거리보다 같거나 큰 경우, 예외를 발생키신다.")
         void exceptionAddLongSection() {
             // given
-            final Section section = new Section(1L, 1L, 3L, 10);
-            final Sections sections = new Sections(List.of(section));
-            final Section newSection = new Section(1L, 2L, 3L, 10);
+            final Sections sections = new Sections(List.of(SECTION_1_3));
 
             // when & then
-            assertThatThrownBy(() -> sections.add(newSection))
+            assertThatThrownBy(() -> sections.add(SECTION_2_3))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("구간의 길이가 너무 길어 추가할 수 없습니다.");
         }
@@ -107,14 +102,11 @@ public class SectionsTest {
         @DisplayName("추가하는 구간이 이미 존재하는 경우, 예외를 발생시킨다.")
         void exceptionAddDifferentLineIdSection() {
             // given
-            final Section section = new Section(1L, 1L, 3L, 10);
-            final Sections sections = new Sections(List.of(section));
-            final Section newSection1 = new Section(1L, 1L, 2L, 5);
-            final Section newSection2 = new Section(1L, 2L, 3L, 5);
-            sections.add(newSection1);
+            final Sections sections = new Sections(List.of(SECTION_1_3));
+            sections.add(new Section(new Station(1L, HYEHWA), new Station(2L, SINSA), 5));
 
             // when & then
-            assertThatThrownBy(() -> sections.add(newSection2))
+            assertThatThrownBy(() -> sections.add(SECTION_2_3))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("이미 있는 구간은 추가할 수 없습니다.");
 
@@ -129,72 +121,63 @@ public class SectionsTest {
         @DisplayName("1-2, 2-3 구간이 있을 때, 1 역을 삭제한다.")
         void removeSection1() {
             // given
-            final Section section1 = new Section(1L, 1L, 2L, 10);
-            final Section section2 = new Section(1L, 2L, 3L, 10);
-            final Sections sections = new Sections(List.of(section1, section2));
+            final Sections sections = new Sections(List.of(SECTION_1_2, SECTION_2_3));
 
             // when
             sections.remove(1L);
 
             // then
-            assertThat(sections.getSections()).containsOnly(section2);
+            assertThat(sections.getValues()).containsOnly(SECTION_2_3);
         }
 
         @Test
         @DisplayName("1-2, 2-3 구간이 있을 때, 3 역을 삭제한다.")
         void removeSection2() {
             // given
-            final Section section1 = new Section(1L, 1L, 2L, 10);
-            final Section section2 = new Section(1L, 2L, 3L, 10);
-            final Sections sections = new Sections(List.of(section1, section2));
+            final Sections sections = new Sections(List.of(SECTION_1_2, SECTION_2_3));
 
             // when
             sections.remove(3L);
 
             // then
-            assertThat(sections.getSections()).containsOnly(section1);
+            assertThat(sections.getValues()).containsOnly(SECTION_1_2);
         }
 
         @Test
         @DisplayName("1-2, 2-3, 3-4 구간이 있을 때, 2 역을 삭제한다.")
         void removeSection3() {
             // given
-            final Section section1 = new Section(1L, 1L, 2L, 10);
-            final Section section2 = new Section(1L, 2L, 3L, 10);
-            final Section section3 = new Section(1L, 3L, 4L, 10);
-            final Sections sections = new Sections(List.of(section1, section2,section3));
+            final Sections sections = new Sections(List.of(SECTION_1_2, SECTION_2_3, SECTION_3_4));
 
             // when
             sections.remove(2L);
 
             // then
-            assertThat(sections.getSections()).containsOnly(new Section(1L, 1L, 3L, 20), section3);
-            assertThat(sections.getSections().get(1).getDistance()).isEqualTo(20);
+            assertThat(sections.getValues()).containsOnly(
+                    new Section(new Station(1L, HYEHWA), new Station(3L, GANGNAM), 20), SECTION_3_4);
+            assertThat(sections.getValues().get(1).getDistance()).isEqualTo(20);
         }
 
         @Test
         @DisplayName("1-2, 2-3, 3-4 구간이 있을 때, 3 역을 삭제한다.")
         void removeSection4() {
             // given
-            final Section section1 = new Section(1L, 1L, 2L, 10);
-            final Section section2 = new Section(1L, 2L, 3L, 10);
-            final Section section3 = new Section(1L, 3L, 4L, 10);
-            final Sections sections = new Sections(List.of(section1, section2,section3));
+            final Sections sections = new Sections(List.of(SECTION_1_2, SECTION_2_3, SECTION_3_4));
 
             // when
             sections.remove(3L);
 
             // then
-            assertThat(sections.getSections()).containsOnly(new Section(1L, 2L, 4L, 20), section1);
-            assertThat(sections.getSections().get(1).getDistance()).isEqualTo(20);
+            assertThat(sections.getValues()).containsOnly(
+                    new Section(new Station(2L, SINSA), new Station(4L, JAMSIL), 20), SECTION_1_2);
+            assertThat(sections.getValues().get(1).getDistance()).isEqualTo(20);
         }
 
         @Test
         @DisplayName("1-2구간이 있을 때, 1 역을 삭제하면 예외를 발생시킨다.")
         void exceptionRemoveSection1() {
             // given
-            final Section section = new Section(1L, 1L, 2L, 10);
-            final Sections sections = new Sections(List.of(section));
+            final Sections sections = new Sections(List.of(SECTION_1_2));
 
             // when & then
             assertThatThrownBy(() -> sections.remove(1L))
