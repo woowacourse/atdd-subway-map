@@ -1,12 +1,13 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.line;
 
 import java.util.List;
-import java.util.Optional;
 import wooteco.subway.domain.Line;
 
 public interface LineDao {
 
     long save(Line line);
+
+    boolean existLineById(Long id);
 
     boolean existLineByName(String name);
 
@@ -14,9 +15,9 @@ public interface LineDao {
 
     List<Line> findAll();
 
-    Optional<Line> findById(Long id);
+    Line findById(Long id);
 
-    int update(Line line);
+    void update(Line line);
 
-    int delete(Long id);
+    void delete(Long id);
 }

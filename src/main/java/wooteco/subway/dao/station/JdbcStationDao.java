@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -12,7 +12,7 @@ import wooteco.subway.domain.Station;
 @Repository
 public class JdbcStationDao implements StationDao {
 
-    private static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) -> {
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> {
         return new Station(
                 resultSet.getLong("id"),
                 resultSet.getString("name")
@@ -40,6 +40,12 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
+    public boolean existStationById(Long id) {
+        final String sql = "select exists (select * from STATION where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
     public boolean existStationByName(String name) {
         final String sql = "select exists (select * from STATION where name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
@@ -48,12 +54,12 @@ public class JdbcStationDao implements StationDao {
     @Override
     public List<Station> findAll() {
         final String sql = "select id, name from STATION";
-        return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
+        return jdbcTemplate.query(sql, stationRowMapper);
     }
 
     @Override
-    public int delete(Long id) {
+    public void delete(Long id) {
         final String sql = "delete from STATION where id = ?";
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 }

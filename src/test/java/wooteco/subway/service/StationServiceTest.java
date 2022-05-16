@@ -7,21 +7,29 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import wooteco.subway.dao.StationMockDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.station.JdbcStationDao;
+import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.SubwayException;
 
-@SpringBootTest
+@JdbcTest
 class StationServiceTest {
 
     private static final Station STATION = new Station("강남역");
 
-    private final StationMockDao stationMockDao = new StationMockDao();
-    private final StationService stationService = new StationService(stationMockDao);
+    private StationService stationService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        stationMockDao.clear();
+        StationDao stationDao = new JdbcStationDao(jdbcTemplate);
+        stationService = new StationService(stationDao);
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -29,7 +37,7 @@ class StationServiceTest {
     void save() {
         stationService.save(STATION);
 
-        assertThat(stationService.findAll().size()).isEqualTo(1);
+        assertThat(stationService.findAll()).hasSize(1);
     }
 
     @DisplayName("중복된 지하철역을 생성할 경우 예외를 발생시킨다.")
@@ -38,7 +46,7 @@ class StationServiceTest {
         stationService.save(STATION);
 
         assertThatThrownBy(() -> stationService.save(STATION))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("지하철역 이름이 중복됩니다.");
     }
 
@@ -55,7 +63,7 @@ class StationServiceTest {
     @Test
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotExistException.class)
                 .hasMessage("존재하지 않는 지하철역입니다.");
     }
 }

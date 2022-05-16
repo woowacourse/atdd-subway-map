@@ -6,36 +6,56 @@ import static org.hamcrest.Matchers.equalTo;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
-import java.util.HashMap;
+import io.restassured.response.ValidatableResponse;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private LineRequest 신분당선;
+
+    private ValidatableResponse getLineById(int lineId) {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + lineId)
+                .then().log().all();
+    }
+
+    private List<Long> getResultLineIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+    }
+
+    private void putLine(int lineId, LineRequest lineRequest) {
+        RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        신분당선 = new LineRequest("신분당선", "bg-red-600", postStationId(대흥역), postStationId(공덕역), 10);
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        // given & when
+        ExtractableResponse<Response> response = postLineResponse(신분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -46,29 +66,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        postLineResponse(신분당선);
 
         // when
-        Map<String, String> nameDuplicatedParams = new HashMap<>();
-        nameDuplicatedParams.put("name", "신분당선");
-        nameDuplicatedParams.put("color", "bg-green-600");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(nameDuplicatedParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        LineRequest 초록신분당선 = new LineRequest("신분당선", "bg-green-600", 1L, 2L, 10);
+        ExtractableResponse<Response> response = postLineResponse(초록신분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -78,29 +80,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        postLineResponse(신분당선);
 
         // when
-        Map<String, String> colorDuplicatedParams = new HashMap<>();
-        colorDuplicatedParams.put("name", "다른분당선");
-        colorDuplicatedParams.put("color", "bg-red-600");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(colorDuplicatedParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        LineRequest 다른신분당선 = new LineRequest("다른신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> response = postLineResponse(다른신분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -110,27 +94,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = postLineResponse(신분당선);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "분당선");
-        params2.put("color", "bg-green-600");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        StationRequest 광흥창역 = new StationRequest("광흥창역");
+        StationRequest 상수역 = new StationRequest("상수역");
+        LineRequest 분당선 = new LineRequest("분당선", "bg-green-600",
+                postStationId(광흥창역), postStationId(상수역), 10);
+        ExtractableResponse<Response> createResponse2 = postLineResponse(분당선);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -141,12 +111,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        List<Long> expectedLineIds = getExpectedLineIds(createResponse1, createResponse2);
+        List<Long> resultLineIds = getResultLineIds(response);
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -154,24 +120,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        int expectedLineId = Integer.parseInt(createResponse.header("Location").split("/")[2]);
+        int expectedLineId = Integer.parseInt(postLineResponse(신분당선).header("Location").split("/")[2]);
 
         // when & then
-        RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + expectedLineId)
-                .then().log().all()
+        getLineById(expectedLineId)
                 .body("id", equalTo(expectedLineId));
     }
 
@@ -179,35 +131,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-        int expectedLineId = Integer.parseInt(createResponse.header("Location").split("/")[2]);
+        int expectedLineId = Integer.parseInt(postLineResponse(신분당선).header("Location").split("/")[2]);
 
         // when
-        Map<String, String> updatedParams = new HashMap<>();
-        updatedParams.put("name", "다른분당선");
-        updatedParams.put("color", "bg-green-600");
-        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
-                .body(updatedParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + expectedLineId)
-                .then().log().all()
-                .extract();
+        StationRequest 광흥창역 = new StationRequest("광흥창역");
+        StationRequest 상수역 = new StationRequest("상수역");
+        LineRequest 초록다른분당선 = new LineRequest("다른분당선", "bg-green-600",
+                postStationId(광흥창역), postStationId(상수역), 20);
+
+        putLine(expectedLineId, 초록다른분당선);
 
         // then
-        RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + expectedLineId)
-                .then().log().all()
+        getLineById(expectedLineId)
                 .body("id", equalTo(expectedLineId))
                 .body("name", equalTo("다른분당선"))
                 .body("color", equalTo("bg-green-600"));
@@ -217,16 +152,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = postLineResponse(신분당선);
 
         // when
         String uri = createResponse.header("Location");
