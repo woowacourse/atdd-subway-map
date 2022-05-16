@@ -1,13 +1,17 @@
-package wooteco.subway.dto;
+package wooteco.subway.reopository.Entity;
 
-public class StationResponse {
+public class StationEntity {
 
     private Long id;
     private String name;
 
-    public StationResponse(Long id, String name) {
+    public StationEntity(Long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public StationEntity(String name) {
+        this(null, name);
     }
 
     public Long getId() {

@@ -5,11 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
-import wooteco.subway.dao.JdbcLineDao;
-import wooteco.subway.dao.JdbcStationDao;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
@@ -17,13 +14,12 @@ public class AcceptanceTest {
     int port;
 
     @Autowired
-    private JdbcStationDao jdbcStationDao;
-
-    @Autowired
-    private JdbcLineDao jdbcLineDao;
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+        jdbcTemplate.update("delete from line");
+        jdbcTemplate.update("delete from station");
     }
 }
