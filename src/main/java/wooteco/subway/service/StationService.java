@@ -44,20 +44,12 @@ public class StationService {
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
     }
 
     public int deleteStation(long id) {
-        validateExist(id);
+        stationDao.findById(id);
         return stationDao.deleteStation(id);
-    }
-
-    private void validateExist(final long id) {
-        try {
-            stationDao.findById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new StationNotFoundException("존재하지 않는 역입니다.");
-        }
     }
 }
