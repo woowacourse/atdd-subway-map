@@ -180,4 +180,18 @@ public class Sections {
     public List<Section> getSections() {
         return sections;
     }
+
+    public Sections deleteSection(Long stationId) {
+        validateDeletable();
+        Sections sectionsToDelete = findByStationId(stationId);
+
+        sections.removeAll(sectionsToDelete.getSections());
+
+        if (sectionsToDelete.needMerge()) {
+            Section section = sectionsToDelete.mergeSections();
+            sections.add(section);
+        }
+
+        return new Sections(sections);
+    }
 }

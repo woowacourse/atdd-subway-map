@@ -70,7 +70,6 @@ public class SectionServiceTest extends ServiceTest {
         SectionRequest request = new SectionRequest(1L, 3L, 10);
 
 
-
         given(sectionDao.findByLineId(any()))
                 .willReturn(List.of(existedSection1, existedSection2));
 

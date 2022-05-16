@@ -43,7 +43,7 @@ class SectionTest {
     @DisplayName("[종점 구간 추가] 새 종점 구간으로 추가할 수 있다.")
     @ParameterizedTest
     @CsvSource({"3,1", "2,3"})
-    void canAddAsLastStation(Long upStationId, Long downStationId){
+    void canAddAsLastStation(Long upStationId, Long downStationId) {
         Section section = new Section(10, 2L, 1L, 2L);
 
         boolean actual = section.canAddAsLastStation(upStationId, downStationId);
@@ -54,7 +54,7 @@ class SectionTest {
     @DisplayName("[종점 구간 추가 불가] 새 종점 구간으로 추가할 수 없다.")
     @ParameterizedTest
     @CsvSource({"1,3", "3,2", "4,5", "2,1"})
-    void cantAddAsLastStation(Long upStationId, Long downStationId){
+    void cantAddAsLastStation(Long upStationId, Long downStationId) {
         Section section = new Section(10, 2L, 1L, 2L);
 
         boolean actual = section.canAddAsLastStation(upStationId, downStationId);

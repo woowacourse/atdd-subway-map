@@ -1,21 +1,19 @@
 package wooteco.subway.dao;
 
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.*;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.section.NoSuchSectionException;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 public class SectionDao {
@@ -45,7 +43,7 @@ public class SectionDao {
         params.put("distance", section.getDistance());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate. update(sql, new MapSqlParameterSource(params), keyHolder);
+        jdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
         long sectionId = keyHolder.getKey().longValue();
 
         return new Section(sectionId, section.getDistance(), section.getLineId(), section.getUpStationId(), section.getDownStationId());
@@ -73,14 +71,6 @@ public class SectionDao {
         if (affected == 0) {
             throw new NoSuchSectionException();
         }
-    }
-
-    public void update(Section section) {
-        String sql = "UPDATE section " +
-                "SET up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance " +
-                "WHERE id = :id";
-
-        jdbcTemplate.update(sql, new BeanPropertySqlParameterSource(section));
     }
 
     public void deleteAllByLineId(Long lineId) {

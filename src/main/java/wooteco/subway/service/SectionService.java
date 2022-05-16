@@ -8,7 +8,6 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
 
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -42,16 +41,22 @@ public class SectionService {
 
     public void delete(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        sections.validateDeletable();
-        Sections sectionsToDelete = sections.findByStationId(stationId);
 
-        for (Section section : sectionsToDelete.getSections()) {
-            sectionDao.deleteById(section.getId());
-        }
+        Sections deletedSections = sections.deleteSection(stationId);
 
-        if (sectionsToDelete.needMerge()) {
-            Section section = sectionsToDelete.mergeSections();
-            sectionDao.save(section);
-        }
+        sectionDao.deleteAllByLineId(lineId);
+        sectionDao.saveAll(deletedSections.getSections());
+//
+//        sections.validateDeletable();
+//        Sections sectionsToDelete = sections.findByStationId(stationId);
+//
+//        for (Section section : sectionsToDelete.getSections()) {
+//            sectionDao.deleteById(section.getId());
+//        }
+//
+//        if (sectionsToDelete.needMerge()) {
+//            Section section = sectionsToDelete.mergeSections();
+//            sectionDao.save(section);
+//        }
     }
 }
