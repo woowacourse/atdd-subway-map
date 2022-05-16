@@ -34,9 +34,6 @@ public class SectionService {
     public void add(Line line, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         Section sectionToInsert = new Section(sectionRequest.getDistance(), line.getId(), sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
-//        sections.validateInsertable(sectionToInsert);
-//        Optional<Section> deletableSection = sections.findSectionToDelete(sectionToInsert);
-
         Sections addedSections = sections.addSection(sectionToInsert);
 
         sectionDao.deleteAllByLineId(line.getId());
