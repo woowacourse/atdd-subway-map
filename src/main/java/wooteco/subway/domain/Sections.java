@@ -143,6 +143,10 @@ public class Sections {
         return sortStations(firstStation, endStation);
     }
 
+    public Sections copy() {
+        return new Sections(new ArrayList<>(this.sections));
+    }
+
     private List<Station> sortStations(Station firstStation, Station endStation) {
         List<Station> results = new ArrayList<>();
         results.add(firstStation);

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static wooteco.subway.test.TestFixture.낙성대역;
@@ -24,10 +23,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -40,10 +39,10 @@ class LineServiceTest {
     private LineDao lineDao;
 
     @Mock
-    private SectionDao sectionDao;
+    private StationService stationService;
 
     @Mock
-    private StationDao stationDao;
+    private SectionService sectionService;
 
     @InjectMocks
     private LineService lineService;
@@ -57,16 +56,13 @@ class LineServiceTest {
                 .thenReturn(Optional.empty());
         when(lineDao.save(any(Line.class)))
                 .thenReturn(new Line(1L, testRequest.getName(), testRequest.getColor()));
-        when(stationDao.findById(1L))
-                .thenReturn(Optional.of(신림역));
-        when(stationDao.findById(2L))
-                .thenReturn(Optional.of(봉천역));
+        when(sectionService.save(any(SectionRequest.class)))
+                .thenReturn(new Section(신림역, 봉천역, 5));
         // when
         LineResponse result = lineService.save(testRequest);
         // then
         List<StationResponse> stations = result.getStations();
         assertAll(
-                () -> verify(sectionDao).save(anyLong(), any(Section.class)),
                 () -> assertThat(result.getId()).isEqualTo(1),
                 () -> assertThat(result.getName()).isEqualTo("test"),
                 () -> assertThat(result.getColor()).isEqualTo("GREEN"),
@@ -99,15 +95,17 @@ class LineServiceTest {
                 .thenReturn(List.of(
                         new Line(1L, "test1", "GREEN"),
                         new Line(2L, "test2", "YELLOW")));
-        when(sectionDao.findAllByLineId(1L))
-                .thenReturn(List.of(
-                        new Section(신림역, 봉천역, 5),
-                        new Section(봉천역, 서울대입구역, 5)));
-        when(sectionDao.findAllByLineId(2L))
-                .thenReturn(List.of(
-                        new Section(봉천역, 사당역, 5),
-                        new Section(신림역, 봉천역, 3),
-                        new Section(사당역, 서울대입구역, 8)));
+        when(sectionService.findAllByLineId(1L))
+                .thenReturn(new Sections(
+                        List.of(
+                                new Section(신림역, 봉천역, 5),
+                                new Section(봉천역, 서울대입구역, 5))));
+        when(sectionService.findAllByLineId(2L))
+                .thenReturn(new Sections(
+                        List.of(
+                                new Section(봉천역, 사당역, 5),
+                                new Section(신림역, 봉천역, 3),
+                                new Section(사당역, 서울대입구역, 8))));
         // when
         List<LineResponse> result = lineService.findAll();
         // then
@@ -132,12 +130,13 @@ class LineServiceTest {
         // given
         when(lineDao.findById(1L))
                 .thenReturn(Optional.of(new Line(1L, "test1", "GREEN")));
-        when(sectionDao.findAllByLineId(1L))
-                .thenReturn(List.of(
-                        new Section(봉천역, 서울대입구역, 1),
-                        new Section(서울대입구역, 낙성대역, 2),
-                        new Section(낙성대역, 사당역, 10),
-                        new Section(신림역, 봉천역, 5)));
+        when(sectionService.findAllByLineId(1L))
+                .thenReturn(new Sections(
+                        List.of(
+                                new Section(봉천역, 서울대입구역, 1),
+                                new Section(서울대입구역, 낙성대역, 2),
+                                new Section(낙성대역, 사당역, 10),
+                                new Section(신림역, 봉천역, 5))));
         // when
         LineResponse result = lineService.findById(1L);
         // then
@@ -238,20 +237,17 @@ class LineServiceTest {
         SectionRequest sectionRequest = new SectionRequest(2L, 5L, 3);
         when(lineDao.findById(1L))
                 .thenReturn(Optional.of(new Line(1L, "2호선", "GREEN")));
-        when(sectionDao.findAllByLineId(1L))
-                .thenReturn(List.of(
+        when(sectionService.findAllByLineId(1L))
+                .thenReturn(new Sections(List.of(
                         new Section(신림역, 봉천역, 5),
                         new Section(봉천역, 서울대입구역, 5),
-                        new Section(서울대입구역, 낙성대역, 5)));
-        when(stationDao.findById(2L))
-                .thenReturn(Optional.of(봉천역));
-        when(stationDao.findById(5L))
-                .thenReturn(Optional.of(사당역));
+                        new Section(서울대입구역, 낙성대역, 5))));
+        when(sectionService.makeSectionByRequest(any(SectionRequest.class)))
+                .thenReturn(new Section(봉천역, 사당역, 3));
         // when
         lineService.addSection(1L, sectionRequest);
         // then
-        verify(sectionDao, times(1)).remove(any(Section.class));
-        verify(sectionDao, times(2)).save(eq(1L), any(Section.class));
+        verify(sectionService).deleteAndSaveSections(eq(1L), any(Sections.class), any(Sections.class));
     }
 
     @DisplayName("노선 맨 앞 혹은 맨 뒤에 구간을 추가한다.")
@@ -261,20 +257,18 @@ class LineServiceTest {
         SectionRequest sectionRequest = new SectionRequest(4L, 5L, 3);
         when(lineDao.findById(1L))
                 .thenReturn(Optional.of(new Line(1L, "2호선", "GREEN")));
-        when(sectionDao.findAllByLineId(1L))
-                .thenReturn(List.of(
-                        new Section(신림역, 봉천역, 5),
-                        new Section(봉천역, 서울대입구역, 5),
-                        new Section(서울대입구역, 낙성대역, 5)));
-        when(stationDao.findById(4L))
-                .thenReturn(Optional.of(낙성대역));
-        when(stationDao.findById(5L))
-                .thenReturn(Optional.of(사당역));
+        when(sectionService.findAllByLineId(1L))
+                .thenReturn(new Sections(
+                        List.of(
+                                new Section(신림역, 봉천역, 5),
+                                new Section(봉천역, 서울대입구역, 5),
+                                new Section(서울대입구역, 낙성대역, 5))));
+        when(sectionService.makeSectionByRequest(any(SectionRequest.class)))
+                .thenReturn(new Section(낙성대역, 사당역, 3));
         // when
         lineService.addSection(1L, sectionRequest);
         // then
-        verify(sectionDao, times(0)).remove(any(Section.class));
-        verify(sectionDao, times(1)).save(eq(1L), any(Section.class));
+        verify(sectionService).deleteAndSaveSections(eq(1L), any(Sections.class), any(Sections.class));
     }
 
     @DisplayName("노선에서 중간의 구간을 제거한다.")
@@ -283,18 +277,17 @@ class LineServiceTest {
         // given
         when(lineDao.findById(1L))
                 .thenReturn(Optional.of(new Line(1L, "2호선", "GREEN")));
-        when(stationDao.findById(2L))
-                .thenReturn(Optional.of(봉천역));
-        when(sectionDao.findAllByLineId(1L))
-                .thenReturn(List.of(
+        when(stationService.getById(2L))
+                .thenReturn(new Station("봉천역"));
+        when(sectionService.findAllByLineId(1L))
+                .thenReturn(new Sections(List.of(
                         new Section(신림역, 봉천역, 5),
                         new Section(봉천역, 서울대입구역, 5),
-                        new Section(서울대입구역, 낙성대역, 5)));
+                        new Section(서울대입구역, 낙성대역, 5))));
         // when
         lineService.deleteSection(1L, 2L);
         // then
-        verify(sectionDao, times(2)).remove(any(Section.class));
-        verify(sectionDao, times(1)).save(anyLong(), any(Section.class));
+        verify(sectionService).deleteAndSaveSections(eq(1L), any(Sections.class), any(Sections.class));
     }
 
     @DisplayName("노선에서 맨 앞 혹은 맨 뒤 구간을 제거한다.")
@@ -303,17 +296,16 @@ class LineServiceTest {
         // given
         when(lineDao.findById(1L))
                 .thenReturn(Optional.of(new Line(1L, "2호선", "GREEN")));
-        when(stationDao.findById(1L))
-                .thenReturn(Optional.of(신림역));
-        when(sectionDao.findAllByLineId(1L))
-                .thenReturn(List.of(
+        when(stationService.getById(1L))
+                .thenReturn(new Station("신림역"));
+        when(sectionService.findAllByLineId(1L))
+                .thenReturn(new Sections(List.of(
                         new Section(신림역, 봉천역, 5),
                         new Section(봉천역, 서울대입구역, 5),
-                        new Section(서울대입구역, 낙성대역, 5)));
+                        new Section(서울대입구역, 낙성대역, 5))));
         // when
         lineService.deleteSection(1L, 1L);
         // then
-        verify(sectionDao, times(1)).remove(any(Section.class));
-        verify(sectionDao, times(0)).save(anyLong(), any(Section.class));
+        verify(sectionService).deleteAndSaveSections(eq(1L), any(Sections.class), any(Sections.class));
     }
 }

@@ -45,4 +45,10 @@ public class StationService {
 
         stationDao.delete(station);
     }
+
+    Station getById(Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        StringFormat.errorMessage(id, "해당 ID의 지하철역이 존재하지 않습니다.")));
+    }
 }

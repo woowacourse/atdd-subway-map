@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -24,13 +22,13 @@ public class LineService {
     private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "해당 ID의 지하철 노선이 존재하지 않습니다.";
 
     private final LineDao lineDao;
-    private final SectionDao sectionDao;
-    private final StationDao stationDao;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, StationService stationService, SectionService sectionService) {
         this.lineDao = lineDao;
-        this.sectionDao = sectionDao;
-        this.stationDao = stationDao;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     public LineResponse save(LineRequest lineRequest) {
@@ -40,11 +38,8 @@ public class LineService {
         }
 
         Line newLine = lineDao.save(lineRequest.toEntity());
-        Station up = findExistStationById(lineRequest.getUpStationId());
-        Station down = findExistStationById(lineRequest.getDownStationId());
-
-        sectionDao.save(newLine.getId(), new Section(up, down, lineRequest.getDistance()));
-        return LineResponse.of(newLine, List.of(up, down));
+        Section savedSection = sectionService.save(new SectionRequest(newLine.getId(), lineRequest));
+        return LineResponse.of(newLine, List.of(savedSection.getUpStation(), savedSection.getDownStation()));
     }
 
     @Transactional(readOnly = true)
@@ -53,8 +48,7 @@ public class LineService {
         List<Line> lines = lineDao.findAll();
 
         for (Line line : lines) {
-            List<Section> findSections = sectionDao.findAllByLineId(line.getId());
-            Sections sections = new Sections(findSections);
+            Sections sections = sectionService.findAllByLineId(line.getId());
             lineResponses.add(LineResponse.of(line, sections.getSortedStations()));
         }
 
@@ -64,11 +58,9 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line foundLine = findExistLineById(id);
-        List<Section> findSections = sectionDao.findAllByLineId(foundLine.getId());
-        Sections sections = new Sections(findSections);
+        Sections sections = sectionService.findAllByLineId(foundLine.getId());
 
-        List<Station> sortedStations = sections.getSortedStations();
-        return LineResponse.of(foundLine, sortedStations);
+        return LineResponse.of(foundLine, sections.getSortedStations());
     }
 
     public void update(Long id, LineRequest lineRequest) {
@@ -83,33 +75,13 @@ public class LineService {
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findExistLineById(lineId);
-        List<Section> findSections = sectionDao.findAllByLineId(line.getId());
 
-        Sections origin = new Sections(findSections);
-        Section newSection = getSectionByRequest(sectionRequest);
-        Sections resultSections = new Sections(findSections);
+        Sections origin = sectionService.findAllByLineId(line.getId());
+        Section newSection = sectionService.makeSectionByRequest(sectionRequest);
+        Sections resultSections = origin.copy();
+
         resultSections.insert(newSection);
-
-        deleteAndSaveSections(lineId, origin, resultSections);
-    }
-
-    private Section getSectionByRequest(SectionRequest sectionRequest) {
-        Station up = findExistStationById(sectionRequest.getUpStationId());
-        Station down = findExistStationById(sectionRequest.getDownStationId());
-
-        return new Section(up, down, sectionRequest.getDistance());
-    }
-
-    private void deleteAndSaveSections(Long lineId, Sections origin, Sections resultSections) {
-        List<Section> createdSections = resultSections.getDifferentList(origin);
-        List<Section> toDeleteSections = origin.getDifferentList(resultSections);
-
-        for (Section deleteTargetSection : toDeleteSections) {
-            sectionDao.remove(deleteTargetSection);
-        }
-        for (Section createdSection : createdSections) {
-            sectionDao.save(lineId, createdSection);
-        }
+        sectionService.deleteAndSaveSections(lineId, origin, resultSections);
     }
 
     public void delete(Long id) {
@@ -118,26 +90,19 @@ public class LineService {
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findExistLineById(lineId);
-        Station toDeleteStation = findExistStationById(stationId);
-        List<Section> savedSections = sectionDao.findAllByLineId(line.getId());
+        Station toDeleteStation = stationService.getById(stationId);
 
-        Sections origin = new Sections(savedSections);
-        Sections results = new Sections(savedSections);
+        Sections origin = sectionService.findAllByLineId(line.getId());
+        Sections results = origin.copy();
         results.delete(toDeleteStation);
 
-        deleteAndSaveSections(lineId, origin, results);
+        sectionService.deleteAndSaveSections(lineId, origin, results);
     }
 
     private Line findExistLineById(Long id) {
         return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
                         StringFormat.errorMessage(id, NO_SUCH_LINE_EXCEPTION_MESSAGE)));
-    }
-
-    private Station findExistStationById(Long id) {
-        return stationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        StringFormat.errorMessage(id, "해당 ID의 지하철역이 존재하지 않습니다.")));
     }
 
     private boolean isDuplicateName(LineRequest request) {
