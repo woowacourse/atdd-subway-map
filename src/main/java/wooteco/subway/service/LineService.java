@@ -35,8 +35,8 @@ public class LineService {
     public LineResponse save(LineRequest lineRequest) {
         try {
             Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-            Station upStation = getStationOrException(lineRequest.getUpStationId());
-            Station downStation = getStationOrException(lineRequest.getDownStationId());
+            Station upStation = getStation(lineRequest.getUpStationId());
+            Station downStation = getStation(lineRequest.getDownStationId());
             sectionDao.save(new Section(upStation, downStation, line, lineRequest.getDistance()));
             return new LineResponse(line.getId(), line.getName(), line.getColor(), toStationsResponse(lineRequest));
         } catch (DuplicateKeyException e) {
@@ -45,8 +45,8 @@ public class LineService {
     }
 
     private List<StationResponse> toStationsResponse(LineRequest lineRequest) {
-        return List.of(getStationOrException(lineRequest.getUpStationId()),
-                        getStationOrException(lineRequest.getDownStationId()))
+        return List.of(getStation(lineRequest.getUpStationId()),
+                        getStation(lineRequest.getDownStationId()))
                 .stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
@@ -66,19 +66,19 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    private Station getStationOrException(Long stationId) {
+    private Station getStation(Long stationId) {
         return stationDao.findById(stationId)
                 .orElseThrow(() -> new NotFoundException(stationId + "에 해당하는 지하철 노선을 찾을 수 없습니다."));
     }
 
     public LineResponse findById(Long lineId) {
-        Line line = getLineOrThrowException(lineId);
+        Line line = getLine(lineId);
         return new LineResponse(line, findAllStationResponseByLineId(line.getId()));
     }
 
     @Transactional
     public void update(Long lineId, String name, String color) {
-        getLineOrThrowException(lineId);
+        getLine(lineId);
         try {
             lineDao.update(new Line(lineId, name, color));
         } catch (DuplicateKeyException e) {
@@ -88,12 +88,12 @@ public class LineService {
 
     @Transactional
     public void delete(Long lineId) {
-        getLineOrThrowException(lineId);
+        getLine(lineId);
         lineDao.delete(lineId);
         sectionDao.deleteByLineId(lineId);
     }
 
-    private Line getLineOrThrowException(Long lineId) {
+    private Line getLine(Long lineId) {
         return lineDao.findById(lineId)
                 .orElseThrow(() -> new NotFoundException(lineId + "에 해당하는 지하철 노선을 찾을 수 없습니다."));
     }
