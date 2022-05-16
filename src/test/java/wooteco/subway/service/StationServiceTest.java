@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateNameException;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class StationServiceTest {
@@ -72,28 +71,8 @@ class StationServiceTest {
     @DisplayName("등록된 지하철역을 삭제한다.")
     @Test
     void delete() {
-        final long id = 1L;
-        final String name = "선릉역";
-        final Station station = new Station(id, name);
-
-        given(stationDao.existById(1L)).willReturn(true);
-
+        given(stationDao.deleteById(1L)).willReturn(1);
         stationService.delete(1L);
         verify(stationDao, times(1)).deleteById(1L);
-    }
-
-    @DisplayName("삭제하려는 지하철 역 ID가 존재하지 않을 경우 예외를 발생한다.")
-    @Test
-    void delete_throwsExceptionIfIdNotExist() {
-        final long id = 1L;
-        final String name = "선릉역";
-        final Station station = new Station(id, name);
-
-        given(stationDao.existById(1L)).willReturn(false);
-        stationService.createStation(station);
-
-        assertThatThrownBy(() -> stationService.delete(id))
-                .isInstanceOf(DataNotFoundException.class)
-                .hasMessage("삭제하려는 지하철 역 ID가 존재하지 않습니다.");
     }
 }

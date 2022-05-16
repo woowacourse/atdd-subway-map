@@ -1,55 +1,75 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 @Repository
 public class StationDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public StationDao(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public StationDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
+
+    private static Station rowMapper(ResultSet rs, int row) throws SQLException {
+        return new Station(rs.getLong("id"), rs.getString("name"));
     }
 
     public Station save(final Station station) {
-        final String sql = "INSERT INTO STATION (name) VALUES (?)";
-        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            final PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, station.getName());
-            return ps;
-        }, keyHolder);
+        final String sql = "INSERT INTO STATION (name) VALUES (:name)";
 
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", station.getName());
+
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
         final long stationId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+
         return new Station(stationId, station.getName());
+    }
+
+    public Optional<Station> findById(final Long id) {
+        final String sql = "SELECT id, name FROM STATION WHERE id=:id";
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        final List<Station> stations = namedParameterJdbcTemplate.query(sql, params, StationDao::rowMapper);
+
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
     public List<Station> findAll() {
         final String sql = "SELECT id, name FROM STATION";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Station(
-                resultSet.getLong("id"),
-                resultSet.getString("name")
-        ));
+
+        return namedParameterJdbcTemplate.query(sql, StationDao::rowMapper);
     }
 
-    public void deleteById(final Long id) {
-        final String sql = "DELETE FROM STATION WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+    public int deleteById(final Long id) {
+        final String sql = "DELETE FROM STATION WHERE id = :id";
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
+
     }
 
     public boolean existByName(final String name) {
-        final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE NAME = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
-    }
+        final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE NAME = :name)";
 
-    public boolean existById(final Long id) {
-        final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE ID = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+
+        return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, params, Boolean.class));
     }
 }
