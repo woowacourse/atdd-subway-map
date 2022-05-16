@@ -26,4 +26,10 @@ public class ServiceExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(DeleteUsingDateException.class)
+    public ResponseEntity<ErrorMessageResponse> handleDeleteUsingDateException(DeleteUsingDateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessageResponse(e.getMessage()));
+    }
 }

@@ -64,4 +64,11 @@ public class StationDao {
         final String SQL = "select exists (select * from station where id = ?)";
         return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
     }
+
+    public boolean existStationInSections(Long id) {
+        final String SQL = "select exists (select * from station join section on " +
+                "section.up_station_id = station.id or section.down_station_id = station.id " +
+                "where station.id = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
+    }
 }

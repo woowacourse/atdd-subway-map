@@ -5,6 +5,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DeleteUsingDateException;
 import wooteco.subway.exception.NotFoundException;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class StationService {
 
     public void delete(Long id) {
         validateExistData(id);
+        validateStationInLine(id);
         stationDao.deleteById(id);
     }
 
@@ -41,6 +43,13 @@ public class StationService {
         boolean isExisted = stationDao.existStationById(lineId);
         if (!isExisted) {
             throw new NotFoundException("접근하려는 역이 존재하지 않습니다.");
+        }
+    }
+
+    private void validateStationInLine(Long id) {
+        boolean hasStationInLine = stationDao.existStationInSections(id);
+        if (hasStationInLine) {
+            throw new DeleteUsingDateException("삭제하려는 역은 노선에 포함되어있어 삭제가 불가합니다.");
         }
     }
 }

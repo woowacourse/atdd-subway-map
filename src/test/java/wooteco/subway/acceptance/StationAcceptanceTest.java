@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
@@ -102,6 +103,23 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response =
                 RestAssuredConvenienceMethod.deleteRequest("/stations/" + 100L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선에 속해있는 지하철역을 삭제하려하면 400번 코드를 반환한다.")
+    @Test
+    void deleteStationWithStationInLine() {
+        // given
+        Long 선릉역_id = RestAssuredConvenienceMethod.postStationAndGetId(new StationRequest("선릉역"), "/stations");
+        Long 선정릉역_id = RestAssuredConvenienceMethod.postStationAndGetId(new StationRequest("선정릉역"), "/stations");
+        Long 분당선_id = RestAssuredConvenienceMethod.postLineAndGetId(
+                new LineRequest("분당선", "yellow", 선릉역_id, 선정릉역_id, 10), "/lines");
+
+        // when
+        ExtractableResponse<Response> response =
+                RestAssuredConvenienceMethod.deleteRequest("/stations/" + 선릉역_id);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
