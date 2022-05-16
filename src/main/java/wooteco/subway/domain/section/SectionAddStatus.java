@@ -2,7 +2,6 @@ package wooteco.subway.domain.section;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiPredicate;
 
 public enum SectionAddStatus {
@@ -28,43 +27,24 @@ public enum SectionAddStatus {
 
     private static boolean existAnyUpStationSame(final List<Section> sections, final Section section) {
         return sections.stream()
-            .anyMatch(it -> isOnlyUpStationSame(section, it.getUpStationId(), it.getDownStationId()));
-    }
-
-    private static boolean isOnlyUpStationSame(final Section section, final Long upStationId,
-                                               final Long downStationId) {
-        return Objects.equals(section.getUpStationId(), upStationId) &&
-            !Objects.equals(section.getDownStationId(), downStationId);
+            .anyMatch(it -> it.isOnlyUpStationSame(section));
     }
 
     private static boolean existAnyDownStationSame(final List<Section> sections, final Section section) {
         return sections.stream()
-            .anyMatch(it -> isOnlyDownStationSame(section, it.getUpStationId(), it.getDownStationId()));
-    }
-
-    private static boolean isOnlyDownStationSame(final Section section, final Long upStationId,
-                                                 final Long downStationId) {
-        return !Objects.equals(section.getUpStationId(), upStationId) &&
-            Objects.equals(section.getDownStationId(), downStationId);
+            .anyMatch(it -> it.isOnlyDownStationSame(section));
     }
 
     private static boolean existAnyNewUpStation(final List<Section> sections, final Section section) {
         return sections.stream()
-            .anyMatch(it -> addNewUpStationCase(section, it.getUpStationId()));
-    }
-
-    private static boolean addNewUpStationCase(final Section section, final Long upStationId) {
-        return Objects.equals(section.getDownStationId(), upStationId);
+            .anyMatch(it -> it.addNewUpStationCase(section));
     }
 
     private static boolean existAnyNewDownStation(final List<Section> sections, final Section section) {
         return sections.stream()
-            .anyMatch(it -> addNewDownStationCase(section, it.getDownStationId()));
+            .anyMatch(it -> it.addNewDownStationCase(section));
     }
 
-    private static boolean addNewDownStationCase(final Section section, final Long downStationId) {
-        return Objects.equals(section.getUpStationId(), downStationId);
-    }
 
     public boolean hasMiddleSection() {
         return this == ADD_MIDDLE_FROM_UP_STATION || this == ADD_MIDDLE_FROM_DOWN_STATION;

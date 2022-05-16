@@ -61,6 +61,24 @@ public class Section {
             distance + middleToDownSection.distance);
     }
 
+    public boolean isOnlyUpStationSame(final Section section) {
+        return Objects.equals(section.getUpStationId(), upStationId) &&
+            !Objects.equals(section.getDownStationId(), downStationId);
+    }
+
+    public boolean isOnlyDownStationSame(final Section section) {
+        return !Objects.equals(section.getUpStationId(), upStationId) &&
+            Objects.equals(section.getDownStationId(), downStationId);
+    }
+
+    public boolean addNewUpStationCase(final Section section) {
+        return Objects.equals(section.getDownStationId(), upStationId);
+    }
+
+    public boolean addNewDownStationCase(final Section section) {
+        return Objects.equals(section.getUpStationId(), downStationId);
+    }
+
     public Long getId() {
         return id;
     }
