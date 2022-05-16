@@ -32,6 +32,6 @@ public class ControllerAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> ExceptionHandler(Exception e) {
         logger.error(e.getMessage(), e);
-        return ResponseEntity.internalServerError().body(new ErrorResponse("[ERROR] 데이터를 조회할 수 없습니다."));
+        return ResponseEntity.internalServerError().body(new ErrorResponse("[ERROR] 예상치 못한 에러가 발생했습니다."));
     }
 }
