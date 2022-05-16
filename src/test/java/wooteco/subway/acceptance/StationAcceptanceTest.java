@@ -21,16 +21,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("POST /stations - 지하철역 생성 테스트")
     @Nested
-    class CreateStationTest extends AcceptanceTest {
+    class CreateStationTest {
 
         @Test
         void 성공시_201_CREATED() {
             Map<String, String> params = jsonStationOf("강남역");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", params);
+            StationResponse actualBody = extractSingleStationResponseBody(response);
+            StationResponse expectedBody = new StationResponse(1L, "강남역");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             assertThat(response.header("Location")).isNotBlank();
+            assertThat(actualBody).isEqualTo(expectedBody);
         }
 
         @Test
@@ -53,8 +56,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 중복되는_이름의_지하철역_생성_시도시_400_BAD_REQUEST() {
+            testFixtureManager.saveStations("강남역");
             Map<String, String> params = jsonStationOf("강남역");
-            postStation(params);
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", params);
 
@@ -63,38 +66,57 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("GET /stations - 지하철역 조회 테스트")
-    @Test
-    void 성공시_200_OK() {
-        postStations("강남역", "역삼역");
+    @Nested
+    class ShowStationsTest {
 
-        ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/stations");
+        @Test
+        void 성공시_200_OK() {
+            testFixtureManager.saveStations("강남역", "역삼역");
 
-        List<StationResponse> responseBody = response.jsonPath()
-                .getList(".", StationResponse.class);
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/stations");
+            List<StationResponse> actualBody = extractJsonBody(response);
+            List<StationResponse> expectedBody = List.of(
+                    new StationResponse(1L, "강남역"),
+                    new StationResponse(2L, "역삼역"));
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(responseBody).hasSize(2);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(actualBody).isEqualTo(expectedBody);
+        }
+
+        private List<StationResponse> extractJsonBody(ExtractableResponse<Response> response) {
+            return response.jsonPath().getList(".", StationResponse.class);
+        }
     }
 
     @DisplayName("DELETE /stations/:id - 지하철역 제거 테스트")
     @Nested
-    class DeleteStationTest extends AcceptanceTest {
+    class DeleteStationTest {
 
         @Test
         void 성공시_204_OK() {
-            postStations("강남역");
+            testFixtureManager.saveStations("강남역");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/1");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
-        @DisplayName("존재하지 않는 id로 지하철역을 제거하려는 경우 404 NOT FOUND")
         @Test
-        void deleteNonExistingStation() {
+        void 존재하지_않는_id로_지하철역을_제거하려는_경우_404_NOT_FOUND() {
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/999");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
+        void 등록된_지하철역을_제거하려는_경우_400_BAD_REQUEST() {
+            testFixtureManager.saveStations("강남역", "선릉역");
+            testFixtureManager.saveLine("신분당선", "노란색");
+            testFixtureManager.saveSection(1L, 1L, 2L);
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/1");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -104,13 +126,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         }};
     }
 
-    private void postStations(String... names) {
-        for (String name : names) {
-            postStation(jsonStationOf(name));
-        }
-    }
-
-    private void postStation(Map<String, String> params) {
-        HttpUtils.send(HttpMethod.POST, "/stations", params);
+    private StationResponse extractSingleStationResponseBody(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", StationResponse.class);
     }
 }

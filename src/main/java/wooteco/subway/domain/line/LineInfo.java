@@ -1,35 +1,21 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.line;
 
 import java.util.Objects;
 
-public class Line {
+public class LineInfo {
 
     private final Long id;
     private final String name;
     private final String color;
 
-    public Line(Long id, String name, String color) {
-        validateName(name);
-        validateColor(color);
+    public LineInfo(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color) {
+    public LineInfo(String name, String color) {
         this(null, name, color);
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("노선의 이름 정보가 입력되지 않았습니다.");
-        }
-    }
-
-    private void validateColor(String color) {
-        if (color == null || color.isBlank()) {
-            throw new IllegalArgumentException("노선의 색상 정보가 입력되지 않았습니다.");
-        }
     }
 
     public Long getId() {
@@ -52,18 +38,20 @@ public class Line {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Line line = (Line) o;
-        return Objects.equals(id, line.id);
+        LineInfo line = (LineInfo) o;
+        return Objects.equals(id, line.id)
+                && Objects.equals(name, line.name)
+                && Objects.equals(color, line.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, color);
     }
 
     @Override
     public String toString() {
-        return "Line{" +
+        return "LineInfo{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +

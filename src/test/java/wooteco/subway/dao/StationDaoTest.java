@@ -9,31 +9,36 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.domain.Station;
+import wooteco.subway.entity.StationEntity;
 
 @SuppressWarnings("NonAsciiCharacters")
-@SpringBootTest
-@Sql("classpath:dao_test_db.sql")
-class StationDaoTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+class StationDaoTest extends DaoTest {
 
     @Autowired
     private StationDao dao;
 
     @Test
     void findAll_메서드는_모든_데이터를_조회() {
-        List<Station> actual = dao.findAll();
+        testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
 
-        List<Station> expected = List.of(
-                new Station(1L, "이미 존재하는 역 이름"),
-                new Station(2L, "선릉역"),
-                new Station(3L, "잠실역"));
+        List<StationEntity> actual = dao.findAll();
+        List<StationEntity> expected = List.of(
+                new StationEntity(1L, "강남역"),
+                new StationEntity(2L, "선릉역"),
+                new StationEntity(3L, "잠실역"));
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void findAllByIds_메서드는_id_목록에_해당되는_모든_데이터를_조회() {
+        testFixtureManager.saveStations("강남역", "선릉역", "잠실역");
+
+        List<StationEntity> actual = dao.findAllByIds(List.of(1L, 3L));
+        List<StationEntity> expected = List.of(
+                new StationEntity(1L, "이미 존재하는 역 이름"),
+                new StationEntity(3L, "잠실역"));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -44,9 +49,10 @@ class StationDaoTest {
 
         @Test
         void 존재하는_데이터의_id인_경우_해당_데이터가_담긴_Optional_반환() {
-            Station actual = dao.findById(1L).get();
+            testFixtureManager.saveStations("강남역");
 
-            Station expected = new Station(1L, "이미 존재하는 역 이름");
+            StationEntity actual = dao.findById(1L).get();
+            StationEntity expected = new StationEntity(1L, "강남역");
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -65,16 +71,17 @@ class StationDaoTest {
 
         @Test
         void 저장된_name인_경우_해당_데이터가_담긴_Optional_반환() {
-            Station actual = dao.findByName("이미 존재하는 역 이름").get();
+            testFixtureManager.saveStations("존재하는 역 이름");
 
-            Station expected = new Station(1L, "이미 존재하는 역 이름");
+            StationEntity actual = dao.findByName("존재하는 역 이름").get();
+            StationEntity expected = new StationEntity(1L, "존재하는 역 이름");
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 저장되지_않는_name인_경우_비어있는_Optional_반환() {
-            boolean dataFound = dao.findByName("존재하지 않는 역 이름").isPresent();
+            boolean dataFound = dao.findByName("저장되지 않은 역 이름").isPresent();
 
             assertThat(dataFound).isFalse();
         }
@@ -86,16 +93,19 @@ class StationDaoTest {
 
         @Test
         void 중복되지_않는_이름인_경우_저장_성공() {
-            Station actual = dao.save(new Station("새로운 지하철역"));
+            testFixtureManager.saveStations("존재하는 역 이름");
 
-            Station expected = new Station(4L, "새로운 지하철역");
+            StationEntity actual = dao.save(new StationEntity("새로운 지하철역"));
+            StationEntity expected = new StationEntity(2L, "새로운 지하철역");
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 중복되는_이름을_입력한_경우_예외발생() {
-            assertThatThrownBy(() -> dao.save(new Station("이미 존재하는 역 이름")))
+            testFixtureManager.saveStations("존재하는 역 이름");
+
+            assertThatThrownBy(() -> dao.save(new StationEntity("존재하는 역 이름")))
                     .isInstanceOf(DataAccessException.class);
         }
     }
@@ -106,8 +116,9 @@ class StationDaoTest {
 
         @Test
         void 존재하는_데이터의_id가_입력된_경우_삭제성공() {
-            dao.deleteById(1L);
+            testFixtureManager.saveStations("존재하는 역");
 
+            dao.deleteById(1L);
             boolean exists = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM station WHERE id = 1", Integer.class) > 0;
 

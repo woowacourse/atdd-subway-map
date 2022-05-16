@@ -1,7 +1,10 @@
 package wooteco.subway.dto.request;
 
+import javax.validation.constraints.NotBlank;
+
 public class StationRequest {
 
+    @NotBlank(message = "역의 이름이 입력되지 않았습니다.")
     private String name;
 
     public StationRequest() {

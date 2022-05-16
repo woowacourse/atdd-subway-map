@@ -1,26 +1,20 @@
-package wooteco.subway.domain;
+package wooteco.subway.entity;
 
 import java.util.Objects;
+import wooteco.subway.domain.station.Station;
 
-public class Station {
+public class StationEntity {
 
     private final Long id;
     private final String name;
 
-    public Station(Long id, String name) {
-        validateName(name);
+    public StationEntity(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
+    public StationEntity(String name) {
         this(null, name);
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("역의 이름 정보가 입력되지 않았습니다.");
-        }
     }
 
     public Long getId() {
@@ -31,6 +25,10 @@ public class Station {
         return name;
     }
 
+    public Station toDomain() {
+        return new Station(id, name);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -39,8 +37,8 @@ public class Station {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Station station = (Station) o;
-        return Objects.equals(id, station.id);
+        StationEntity stationEntity = (StationEntity) o;
+        return Objects.equals(id, stationEntity.id);
     }
 
     @Override
@@ -50,6 +48,6 @@ public class Station {
 
     @Override
     public String toString() {
-        return "Station{" + "id=" + id + ", name='" + name + '\'' + '}';
+        return "StationEntity{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
 }
