@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -47,10 +48,10 @@ public class LineDao {
         return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Boolean.class));
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String selectSql = "select * from LINE where id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(selectSql, source, eventRowMapper);
+        return jdbcTemplate.query(selectSql, source, eventRowMapper).stream().findAny();
     }
 
     public List<Line> findAll() {

@@ -66,7 +66,7 @@ class StationDaoTest {
     }
 
     @Test
-    @DisplayName("id 를 이용하여 station을 삭제한다.")
+    @DisplayName("id 를 이용하여 station 을 삭제한다.")
     void deleteById() {
         //given
 
@@ -75,6 +75,29 @@ class StationDaoTest {
         //then
         List<Station> stations = stationDao.findAll();
         assertThat(stations.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("id 를 이용하여 station 을 조회한다.")
+    void findById() {
+        //given
+
+        //when
+        Station station = stationDao.findById(savedId)
+                .orElseThrow(() -> new IllegalStateException("지하철 역이 존재하지 않습니다."));
+        //then
+        assertThat(station.getId()).isEqualTo(savedId);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id 를 이용하여 station 을 조회한다.")
+    void findByIdWhenNotFindStation() {
+        //given
+        Long id = -1L;
+        //when
+        Station station = stationDao.findById(id).orElse(null);
+        //then
+        assertThat(station).isNull();
     }
 
 }

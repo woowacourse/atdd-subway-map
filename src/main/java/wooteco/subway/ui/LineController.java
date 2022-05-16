@@ -2,6 +2,8 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -26,36 +31,43 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        validEmpty(lineRequest.getName(), lineRequest.getColor());
-        LineResponse response = lineService.save(lineRequest.getName(), lineRequest.getColor());
+    public ResponseEntity<LineResponse> saveLine(@Valid @RequestBody LineRequest lineRequest) {
+        LineResponse response = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
-    private void validEmpty(String name, String color) {
-        if (name.isEmpty() || color.isEmpty()) {
-            throw new IllegalArgumentException("노선의 이름과 색은 빈 값일 수 없습니다.");
-        }
+    @PostMapping("/{line-id}/sections")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void saveSection(@PathVariable(value = "line-id") Long lineId,
+                            @RequestBody SectionRequest sectionRequest) {
+        lineService.saveSection(lineId, sectionRequest);
     }
 
     @GetMapping
-    public List<LineResponse> showLines() {
-        return lineService.findAll();
+    public List<LineResponse> findLines() {
+        return lineService.findLines();
     }
 
     @GetMapping("/{id}")
-    public LineResponse findLine(@PathVariable Long id) {
-        return lineService.findById(id);
+    public LineResponse findLineById(@PathVariable Long id) {
+        return lineService.findLineById(id);
     }
 
     @PutMapping("/{id}")
     public void updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.update(id, lineRequest);
+        lineService.updateLine(id, lineRequest);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-        lineService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLineById(@PathVariable Long id) {
+        lineService.deleteLine(id);
+    }
+
+    @DeleteMapping("/{line-id}/stations")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSectionByLineIdAndStationId(@PathVariable(value = "line-id") Long lineId,
+                                                  @RequestParam Long stationId) {
+        lineService.deleteSection(lineId, stationId);
     }
 }

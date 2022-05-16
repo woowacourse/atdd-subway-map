@@ -1,14 +1,15 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Line {
 
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(null, name, color);
     }
 
     public Line(Long id, String name, String color) {
@@ -27,6 +28,23 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

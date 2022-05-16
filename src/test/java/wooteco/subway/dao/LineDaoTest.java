@@ -38,8 +38,7 @@ class LineDaoTest {
         //when
         Long id = lineDao.save(new Line(name, color));
         //then
-        Line line = lineDao.findById(id);
-        assertThat(line.getName()).isEqualTo(name);
+        lineDao.findById(id).ifPresent(line -> assertThat(line.getName()).isEqualTo(name));
     }
 
     @Test
@@ -70,9 +69,20 @@ class LineDaoTest {
         //given
 
         //when
-        Line line = lineDao.findById(savedId);
+        Line line = lineDao.findById(savedId).orElseThrow(() -> new IllegalStateException("해당 ID를 가진 노선이 없습니다."));
         //then
         assertThat(line.getName()).isEqualTo("2호선");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id 를 이용하여 line 을 조회한다.")
+    void findByIdWhenNotFindLine() {
+        //given
+        Long id = -1L;
+        //when
+        Line line = lineDao.findById(id).orElse(null);
+        //then
+        assertThat(line).isNull();
     }
 
     @Test
@@ -95,7 +105,7 @@ class LineDaoTest {
         //when
         lineDao.update(savedId, lineRequest);
         //then
-        Line line = lineDao.findById(savedId);
+        Line line = lineDao.findById(savedId).orElseThrow(() -> new IllegalStateException("해당 ID를 가진 노선이 없습니다."));
         assertThat(line.getName()).isEqualTo(name);
     }
 
