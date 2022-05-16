@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,10 +10,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Lines;
 
 @Repository
-public class LineJdbcDao {
+public class LineJdbcDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -25,6 +25,7 @@ public class LineJdbcDao {
                 rs.getString("name"), rs.getNString("color"));
     }
 
+    @Override
     public Line save(Line line) {
         final String sql = "insert into Line (name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -38,21 +39,37 @@ public class LineJdbcDao {
                 line.getColor());
     }
 
-    public Lines findAll() {
-        final String sql = "select * from line";
-        return new Lines(jdbcTemplate.query(sql, lineRowMapper()));
+    @Override
+    public boolean isExistById(Long id) {
+        final String sql = "select exists(select * from line where id = (?)) ";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
+    @Override
+    public boolean isExistByName(String name) {
+        final String sql = "select exists(select * from line where name = (?)) ";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
+    @Override
     public Line findById(Long id) {
         final String sql = "select * from line where id = (?)";
         return jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
     }
 
+    @Override
+    public List<Line> findAll() {
+        final String sql = "select * from line";
+        return jdbcTemplate.query(sql, lineRowMapper());
+    }
+
+    @Override
     public int update(Long id, Line line) {
         final String sql = "update line set (name, color) = (?, ?) where id = ?";
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
+    @Override
     public int delete(Long id) {
         final String sql = "delete from line where id = ?";
         return jdbcTemplate.update(sql, id);

@@ -66,6 +66,7 @@ class StationServiceTest {
         StationRequest station = new StationRequest("역삼역");
         StationResponse newStation = stationService.save(station);
 
-        assertThat(stationService.delete(newStation.getId())).isEqualTo(1);
+        System.out.println("newStation = " + newStation.getId());
+         assertThat(stationService.delete(newStation.getId())).isEqualTo(1);
     }
 }

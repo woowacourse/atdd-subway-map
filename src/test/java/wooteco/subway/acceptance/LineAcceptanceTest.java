@@ -119,10 +119,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
                 1L, 2L, 10), "/lines", 201);
+        insert(new LineRequest("분당선", "bg-green-600",
+                2L, 3L, 10), "/lines", 201);
         long resultLineId = response.jsonPath().getLong("id");
 
         //then
-        put("/lines/" + resultLineId, new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10)
+        put("/lines/" + resultLineId, new LineRequest("분당선", "bg-red-600", 1L, 2L, 10)
                 , 404);
     }
 

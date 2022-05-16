@@ -11,7 +11,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 
 @Repository
-public class SectionJdbcDao {
+public class SectionJdbcDao implements SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -19,6 +19,7 @@ public class SectionJdbcDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Section save(Long lineId, Section section) {
         final String sql = "insert into section (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -34,6 +35,7 @@ public class SectionJdbcDao {
                 section.getDownStationId(), section.getDistance());
     }
 
+    @Override
     public Sections findById(Long lineId) {
         final String sql = "select * from section where line_id = (?)";
         return new Sections(jdbcTemplate.query(sql, (rs, rowNum) -> new Section(rs.getLong("id"),
@@ -41,6 +43,7 @@ public class SectionJdbcDao {
                 rs.getLong("down_station_id"), rs.getInt("distance")), lineId));
     }
 
+    @Override
     public void delete(Long lineId, Section section) {
         final String sql = "delete from section where line_id = ? and up_station_id = ? and down_station_id = ?";
         jdbcTemplate.update(sql, lineId, section.getUpStationId(), section.getDownStationId());

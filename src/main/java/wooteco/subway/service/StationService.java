@@ -4,40 +4,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineJdbcDao;
+
 import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.ClientException;
 
 @Service
 public class StationService {
 
     private final StationJdbcDao stationDao;
-    private final LineJdbcDao lineDao;
 
-    public StationService(final StationJdbcDao stationDao, LineJdbcDao lineDao) {
+    public StationService(final StationJdbcDao stationDao) {
         this.stationDao = stationDao;
-        this.lineDao = lineDao;
     }
 
     @Transactional
     public StationResponse save(StationRequest request) {
-        Stations stations = stationDao.findAll();
-        Station station = new Station(request.getName());
-        stations.add(station);
-
-        Station newStation = stationDao.save(station);
-        return new StationResponse(newStation.getId(), newStation.getName());
+        if (!stationDao.isExistByName(request.getName())) {
+            Station newStation = stationDao.save(new Station(request.getName()));
+            return new StationResponse(newStation.getId(), newStation.getName());
+        }
+        throw new ClientException("이미 등록된 지하철역입니다.");
     }
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
-        Stations stations = stationDao.findAll();
-        return stations.getStations()
+        return stationDao.findAll()
                 .stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
@@ -45,9 +40,9 @@ public class StationService {
 
     @Transactional
     public int delete(Long id) {
-        lineDao.findAll().validateCanDelete(id);
-        stationDao.findAll().validateExist(id);
-
-        return stationDao.delete(id);
+        if (stationDao.isExistById(id)) {
+            return stationDao.delete(id);
+        }
+        throw new ClientException("존재하지 않는 역입니다.");
     }
 }

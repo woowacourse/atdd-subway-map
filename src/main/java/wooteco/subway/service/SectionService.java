@@ -5,31 +5,33 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineJdbcDao;
-import wooteco.subway.dao.SectionJdbcDao;
-import wooteco.subway.dao.StationJdbcDao;
+import wooteco.subway.dao.*;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionsResponse;
+import wooteco.subway.exception.ClientException;
 
 @Service
 public class SectionService {
 
-    private final SectionJdbcDao sectionJdbcDao;
-    private final LineJdbcDao lineDao;
-    private final StationJdbcDao stationJdbcDao;
+    private final SectionDao sectionDao;
+    private final LineDao lineDao;
+    private final StationDao stationDao;
 
-    public SectionService(SectionJdbcDao sectionJdbcDao, LineJdbcDao lineDao, StationJdbcDao stationJdbcDao) {
-        this.sectionJdbcDao = sectionJdbcDao;
+    public SectionService(SectionDao sectionDao, LineDao lineDao, StationDao stationDao) {
+        this.sectionDao = sectionDao;
         this.lineDao = lineDao;
-        this.stationJdbcDao = stationJdbcDao;
+        this.stationDao = stationDao;
     }
 
     @Transactional
     public void save(Long id, SectionRequest request, SectionsResponse response, LineResponse line) {
-        lineDao.findAll().validateExist(id);
+        if (!lineDao.isExistById(id)) {
+            throw new ClientException("존재하지 않는 노선입니다.");
+        }
+
         Sections sections = new Sections(response.getSections());
         sections.validateUpAndDownSameStation(request);
         sections.validateSaveCondition(request, line);
@@ -38,7 +40,7 @@ public class SectionService {
             addMiddleSection(id, request, sections);
             return;
         }
-        sectionJdbcDao.save(id, new Section(id, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        sectionDao.save(id, new Section(id, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
     }
 
     private void addMiddleSection(Long id, SectionRequest request, Sections sections) {
@@ -51,20 +53,24 @@ public class SectionService {
     }
 
     private void addSectionBySameStationId(Long id, SectionRequest request, Section section) {
-        sectionJdbcDao.save(id, section.createBySameStationId(id, request));
-        sectionJdbcDao.delete(id, section);
+        sectionDao.save(id, section.createBySameStationId(id, request));
+        sectionDao.delete(id, section);
 
         section.updateSameStationId(request);
-        sectionJdbcDao.save(id, section);
+        sectionDao.save(id, section);
     }
 
     @Transactional
     public void delete(Long id, Long stationId) {
-        lineDao.findAll().validateExist(id);
-        stationJdbcDao.findAll().validateExist(id);
-        sectionJdbcDao.findById(id).validateDeleteCondition();
+        if (!lineDao.isExistById(id)) {
+            throw new ClientException("존재하지 않는 노선입니다.");
+        }
+        if (!stationDao.isExistById(id)) {
+            throw new ClientException("존재하지 않는 역입니다.");
+        }
+        sectionDao.findById(id).validateDeleteCondition();
 
-        Sections sections = sectionJdbcDao.findById(id);
+        Sections sections = sectionDao.findById(id);
         if (sections.isMiddleSection(stationId)) {
             deleteMiddleSection(id, sections.findDownSection(stationId).get(), sections.findUpSection(stationId).get());
             return;
@@ -73,18 +79,18 @@ public class SectionService {
     }
 
     private void deleteMiddleSection(Long id, Section downSection, Section upSection) {
-        sectionJdbcDao.save(id, new Section(id, upSection.getUpStationId(), downSection.getDownStationId(),
+        sectionDao.save(id, new Section(id, upSection.getUpStationId(), downSection.getDownStationId(),
                 upSection.getDistance() + downSection.getDistance()));
-        sectionJdbcDao.delete(id, downSection);
-        sectionJdbcDao.delete(id, upSection);
+        sectionDao.delete(id, downSection);
+        sectionDao.delete(id, upSection);
     }
 
     private void deleteEndSection(Long id, Optional<Section> downSection, Optional<Section> upSection) {
         if (upSection.isEmpty()) {
-            sectionJdbcDao.delete(id, downSection.get());
+            sectionDao.delete(id, downSection.get());
         }
         if (downSection.isEmpty()) {
-            sectionJdbcDao.delete(id, upSection.get());
+            sectionDao.delete(id, upSection.get());
         }
     }
 }

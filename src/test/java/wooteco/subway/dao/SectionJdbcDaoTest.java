@@ -16,9 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 class SectionJdbcDaoTest {
 
-    private SectionJdbcDao sectionJdbcDao;
-    private LineJdbcDao lineJdbcDao;
-    private StationJdbcDao stationJdbcDao;
+    private SectionDao sectionJdbcDao;
+    private LineDao lineJdbcDao;
+    private StationDao stationJdbcDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

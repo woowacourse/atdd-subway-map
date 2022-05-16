@@ -12,14 +12,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.domain.Stations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 class StationJdbcDaoTest {
 
-    private StationJdbcDao stationJdbcDao;
+    private StationDao stationJdbcDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -46,9 +45,7 @@ class StationJdbcDaoTest {
     @DisplayName("역 정보 전체 조회")
     @Test
     void findAll() {
-        Stations stations = stationJdbcDao.findAll();
-
-        assertThat(stations.getStations().size()).isEqualTo(3);
+        assertThat(stationJdbcDao.findAll().size()).isEqualTo(3);
     }
 
     @DisplayName("역 정보 삭제")

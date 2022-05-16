@@ -12,14 +12,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Lines;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 public class LineJdbcDaoTest {
 
-    private LineJdbcDao lineDao;
+    private LineDao lineDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -43,9 +42,7 @@ public class LineJdbcDaoTest {
     @DisplayName("노선 정보 전체 조회")
     @Test
     void findAll() {
-        Lines lines = lineDao.findAll();
-
-        assertThat(lines.getLines().size()).isEqualTo(3);
+        assertThat(lineDao.findAll().size()).isEqualTo(3);
     }
 
     @DisplayName("노선 정보 삭제")
