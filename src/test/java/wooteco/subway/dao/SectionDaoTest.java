@@ -28,7 +28,9 @@ public class SectionDaoTest {
     void insert() {
         Section section = sectionDao.insert(new Section(1L, 1L, 2L, 10));
 
-        assertThat(section.getDistance()).isEqualTo(10);
+        assertThat(section)
+                .extracting("lineId", "distance")
+                .containsExactly(1L, 10);
     }
 
     @Test
@@ -48,7 +50,9 @@ public class SectionDaoTest {
         sectionDao.insert(new Section(1L, 1L, 2L, 10));
         List<Section> sections = sectionDao.findByLineId(1L);
 
-        assertThat(sections.get(0).getDistance()).isEqualTo(10);
+        assertThat(sections.get(0))
+                .extracting("lineId", "distance")
+                .containsExactly(1L, 10);
     }
 
     @Test

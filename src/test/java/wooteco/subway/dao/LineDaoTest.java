@@ -27,22 +27,22 @@ class LineDaoTest {
     @Test
     @DisplayName("지하철 노선을 저장할 수 있다.")
     void insert() {
-        String name = "신분당선";
-        String color = "bg-red-600";
-        Line line = lineDao.insert(new Line(name, color));
+        Line line = lineDao.insert(new Line("신분당선", "bg-red-600"));
 
-        assertThat(line.getName()).isEqualTo(name);
+        assertThat(line)
+                .extracting("name", "color")
+                .containsExactly("신분당선", "bg-red-600");
     }
 
     @Test
     @DisplayName("id로 지하철 노선을 조회할 수 있다.")
     void findById() {
-        String name = "신분당선";
-        String color = "bg-red-600";
-        Line line = lineDao.insert(new Line(name, color));
+        Line line = lineDao.insert(new Line("신분당선", "bg-red-600"));
 
         Line foundLine = lineDao.findById(line.getId());
-        assertThat(foundLine.getName()).isEqualTo(name);
+        assertThat(foundLine)
+                .extracting("name", "color")
+                .containsExactly("신분당선", "bg-red-600");
     }
 
     @Test
@@ -79,15 +79,12 @@ class LineDaoTest {
         Line line = lineDao.insert(new Line("신분당선", "bg-red-600"));
 
         Long id = line.getId();
-        String updateName = "2호선";
-        String updateColor = "bg-blue-500";
-        lineDao.update(id, updateName, updateColor);
+        lineDao.update(id, "2호선", "bg-blue-500");
 
         Line updatedLine = lineDao.findById(id);
-        Assertions.assertAll(
-                () -> assertThat(updatedLine.getName()).isEqualTo(updateName),
-                () -> assertThat(updatedLine.getColor()).isEqualTo(updateColor)
-        );
+        assertThat(updatedLine)
+                .extracting("name", "color")
+                .containsExactly("2호선", "bg-blue-500");
     }
 
     @Test

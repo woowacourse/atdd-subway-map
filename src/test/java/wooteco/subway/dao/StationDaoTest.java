@@ -26,10 +26,9 @@ class StationDaoTest {
     @Test
     @DisplayName("지하철 역을 저장할 수 있다.")
     void insert() {
-        String name = "강남역";
-        Station station = stationDao.insert(new Station(name));
+        Station station = stationDao.insert(new Station("강남역"));
 
-        assertThat(station.getName()).isEqualTo(name);
+        assertThat(station.getName()).isEqualTo("강남역");
     }
 
     @Test
