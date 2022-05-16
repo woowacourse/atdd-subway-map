@@ -1,10 +1,10 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -103,7 +103,7 @@ public class Sections {
         }
     }
 
-    public Optional<Section> deleteSection(Long stationId) {
+    public Sections deleteSection(Long stationId) {
         if (sections.size() == 1) {
             throw new IllegalArgumentException(NON_REMOVABLE_EXCEPTION);
         }
@@ -114,18 +114,25 @@ public class Sections {
 
         if (overlapSections.size() == 1) {
             sections.removeAll(overlapSections);
-            return Optional.empty();
+            return new Sections(Collections.emptyList());
         }
-
-        return Optional.of(deleteCenterSection(overlapSections, stationId));
+        deleteCenterSection(overlapSections, stationId);
+        return new Sections(sections);
     }
 
-    private Section deleteCenterSection(List<Section> overlapSections, Long stationId) {
+    public boolean isExistSection() {
+        return !sections.isEmpty();
+    }
+
+    public int size() {
+        return sections.size();
+    }
+
+    private void deleteCenterSection(List<Section> overlapSections, Long stationId) {
         Section section = overlapSections.get(0);
         sections.removeAll(overlapSections);
         Section newSection = generateNewSection(overlapSections, section, stationId);
         sections.add(newSection);
-        return newSection;
     }
 
     private Section generateNewSection(List<Section> overlapSections, Section section, Long stationId) {

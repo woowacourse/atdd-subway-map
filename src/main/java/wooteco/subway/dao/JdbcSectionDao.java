@@ -45,7 +45,6 @@ public class JdbcSectionDao {
         return keyHolder.getKey().longValue();
     }
 
-
     public List<Section> findSectionsByLineId(long lineId) {
         String sql = "select * from section where line_id = ? ";
         return jdbcTemplate.query(sql, rowMapper, lineId);
@@ -56,7 +55,6 @@ public class JdbcSectionDao {
         int count = jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(),
                 section.getDistance(), lineId, section.getId());
 
-        System.out.println("count = " + count);
         return count == UPDATE_SUCCESS_VALUE;
     }
 
