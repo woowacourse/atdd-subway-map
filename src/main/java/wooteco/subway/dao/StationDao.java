@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface StationDao {
 
-    Station save(Station station);
+    Station create(Station station);
+
+    Station findById(Long upStationId);
 
     Station findByName(String name);
 

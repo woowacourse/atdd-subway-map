@@ -26,7 +26,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line save(Line line) {
+    public Line create(Line line) {
         String sql = "INSERT INTO line (name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {

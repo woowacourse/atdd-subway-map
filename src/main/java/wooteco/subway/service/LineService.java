@@ -4,9 +4,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.service.dto.line.LineRequestDTO;
-import wooteco.subway.service.dto.line.LineResponseDTO;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.line.LineRequestDto;
+import wooteco.subway.service.dto.line.LineResponseDto;
+import wooteco.subway.service.dto.section.SectionRequestDto;
+import wooteco.subway.service.dto.station.StationResponseDto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -15,16 +21,20 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationService stationService, SectionService sectionService) {
         this.lineDao = lineDao;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     @Transactional(readOnly = true)
-    public LineResponseDTO findById(Long id) {
+    public LineResponseDto findById(Long id) {
         validateNonFoundId(id);
 
-        return new LineResponseDTO(lineDao.findById(id));
+        return makeLineResponseDto(lineDao.findById(id));
     }
 
     private void validateNonFoundId(Long id) {
@@ -34,24 +44,46 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponseDTO> findAll() {
+    public List<LineResponseDto> findAll() {
         List<Line> lines = lineDao.findAll();
 
         return lines.stream()
-                .map(LineResponseDTO::new)
+                .map(this::makeLineResponseDto)
                 .collect(Collectors.toList());
     }
 
-    public LineResponseDTO create(LineRequestDTO lineRequestDTO) {
-        validateDuplicate(lineRequestDTO);
-        Line line = lineDao.save(new Line(lineRequestDTO.getName(), lineRequestDTO.getColor()));
+    public LineResponseDto create(LineRequestDto lineRequestDto) {
+        validateDuplicate(lineRequestDto);
+        Line line = lineDao.create(new Line(lineRequestDto.getName(), lineRequestDto.getColor()));
+        sectionService.create(new SectionRequestDto(line.getId(), lineRequestDto.getUpStationId(), lineRequestDto.getDownStationId(), lineRequestDto.getDistance()));
 
-        return new LineResponseDTO(line);
+        return makeLineResponseDto(line);
     }
 
-    private void validateDuplicate(LineRequestDTO lineRequestDTO) {
-        validateDuplicateName(lineRequestDTO.getName());
-        validateDuplicateColor(lineRequestDTO.getColor());
+    private LineResponseDto makeLineResponseDto(Line line) {
+        Sections sections = sectionService.findAllByLineId(line.getId());
+        List<StationResponseDto> stations = new ArrayList<>();
+        Long upStationId = sections.findFinalUpStationId();
+        addStations(upStationId, sections, stations);
+
+        return new LineResponseDto(line, stations);
+    }
+
+    private void addStations(Long upStationId, Sections sections, List<StationResponseDto> stations) {
+        if (sections.hasUpStationId(upStationId)){
+            Section section = sections.getSectionByUpStationId(upStationId);
+            Station station = stationService.findById(upStationId);
+            stations.add(new StationResponseDto(station));
+            addStations(section.getDownStationId(), sections, stations);
+            return;
+        }
+        Station station = stationService.findById(upStationId);
+        stations.add(new StationResponseDto(station));
+    }
+
+    private void validateDuplicate(LineRequestDto lineRequestDto) {
+        validateDuplicateName(lineRequestDto.getName());
+        validateDuplicateColor(lineRequestDto.getColor());
     }
 
     private void validateDuplicateName(String name) {
@@ -66,12 +98,12 @@ public class LineService {
         }
     }
 
-    public void updateById(Long id, LineRequestDTO lineRequestDTO) {
+    public void updateById(Long id, LineRequestDto lineRequestDto) {
         validateNonFoundId(id);
-        validateExistName(id, lineRequestDTO.getName());
-        validateExistColor(id, lineRequestDTO.getColor());
+        validateExistName(id, lineRequestDto.getName());
+        validateExistColor(id, lineRequestDto.getColor());
 
-        lineDao.update(id, lineRequestDTO.getName(), lineRequestDTO.getColor());
+        lineDao.update(id, lineRequestDto.getName(), lineRequestDto.getColor());
     }
 
     public void deleteById(Long id) {

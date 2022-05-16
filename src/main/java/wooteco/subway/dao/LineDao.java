@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface LineDao {
 
-    Line save(Line line);
+    Line create(Line line);
 
     Line findById(Long id);
 

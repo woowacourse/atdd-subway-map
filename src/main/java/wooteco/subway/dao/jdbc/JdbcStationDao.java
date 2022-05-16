@@ -25,7 +25,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station save(Station station) {
+    public Station create(Station station) {
         String sql = "INSERT INTO station (name) VALUES(?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -40,6 +40,12 @@ public class JdbcStationDao implements StationDao {
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
+    }
+
+    @Override
+    public Station findById(Long id) {
+        String sql = "SELECT * FROM station WHERE id=?";
+        return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id);
     }
 
     @Override
