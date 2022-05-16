@@ -16,7 +16,7 @@ public class Line {
     private final LineInfo lineInfo;
     private final Sections sections;
 
-    private Line(LineInfo lineInfo, Sections sections) {
+    public Line(LineInfo lineInfo, Sections sections) {
         this.lineInfo = lineInfo;
         this.sections = sections;
     }

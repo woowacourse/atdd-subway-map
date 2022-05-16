@@ -9,9 +9,11 @@ import wooteco.subway.dao.LineSectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.Lines;
+import wooteco.subway.domain.line.LineInfo;
 import wooteco.subway.domain.line.LineSection;
+import wooteco.subway.domain.line.Lines;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
@@ -51,7 +53,9 @@ public class LineService {
     }
 
     public LineResponse find(Long id) {
-        return LineResponse.of(Line.of(findSameLineSections(id)));
+        LineInfo lineInfo = findExistingLine(id);
+        Sections sections = new Sections(findAllSectionsByLineId(id));
+        return LineResponse.of(new Line(lineInfo, sections));
     }
 
     @Transactional
@@ -91,13 +95,6 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    private List<LineSection> findSameLineSections(Long lineId) {
-        return lineSectionDao.findAllByLineId(lineId)
-                .stream()
-                .map(LineSectionEntity::toDomain)
-                .collect(Collectors.toList());
-    }
-
     private Station findExistingStation(Long stationId) {
         return stationDao.findById(stationId)
                 .orElseThrow(() -> new NotFoundException(ExceptionType.STATION_NOT_FOUND))
@@ -109,6 +106,19 @@ public class LineService {
         if (!isExistingLine) {
             throw new NotFoundException(ExceptionType.LINE_NOT_FOUND);
         }
+    }
+
+    private LineInfo findExistingLine(Long id) {
+        return lineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(ExceptionType.LINE_NOT_FOUND))
+                .toDomain();
+    }
+
+    private List<Section> findAllSectionsByLineId(Long id) {
+        return sectionDao.findAllByLineId(id)
+                .stream()
+                .map(SectionEntity::toDomain)
+                .collect(Collectors.toList());
     }
 
     private void validateUniqueLineName(String name) {
