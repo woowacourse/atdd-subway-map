@@ -3,11 +3,9 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Station {
-    private Long id;
-    private String name;
 
-    public Station() {
-    }
+    private final Long id;
+    private final String name;
 
     public Station(Long id, String name) {
         this.id = id;
@@ -15,15 +13,15 @@ public class Station {
     }
 
     public Station(String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
+        this(null, name);
     }
 
     public String getName() {
         return name;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override
@@ -35,12 +33,11 @@ public class Station {
             return false;
         }
         Station station = (Station) o;
-        return name.equals(station.name);
+        return Objects.equals(id, station.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id);
     }
 }
-

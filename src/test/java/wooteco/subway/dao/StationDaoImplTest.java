@@ -25,8 +25,8 @@ class StationDaoImplTest {
     void setUp() {
         stationDao = new StationDaoImpl(jdbcTemplate);
 
-        List<Station> stations = stationDao.findAll();
-        List<Long> stationIds = stations.stream()
+        List<Station> stationEntities = stationDao.findAll();
+        List<Long> stationIds = stationEntities.stream()
             .map(Station::getId)
             .collect(Collectors.toList());
 
@@ -38,13 +38,13 @@ class StationDaoImplTest {
     @Test
     void save() {
         // given
-        Station station = new Station("범고래");
+        Station Station = new Station("범고래");
 
         // when
-        Station result = stationDao.save(station);
+        Station result = stationDao.save(Station);
 
         // then
-        assertThat(station).isEqualTo(result);
+        assertThat(Station.getName()).isEqualTo(result.getName());
     }
 
     @Test
@@ -57,37 +57,33 @@ class StationDaoImplTest {
         List<Station> stations = stationDao.findAll();
 
         // then
-        assertThat(stations)
-            .hasSize(2)
-            .contains(station1, station2);
+        assertThat(stations).containsExactly(station1, station2);
     }
 
     @Test
     void validateDuplication() {
         // given
-        Station station1 = new Station("범고래");
-        Station station2 = new Station("범고래");
+        Station Station1 = new Station("범고래");
+        Station Station2 = new Station("범고래");
 
         // when
-        stationDao.save(station1);
+        stationDao.save(Station1);
 
         // then
-        assertThatThrownBy(() -> stationDao.save(station2))
+        assertThatThrownBy(() -> stationDao.save(Station2))
             .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
     void delete() {
         // given
-        Station station = stationDao.save(new Station("범고래"));
+        Station Station = stationDao.save(new Station("범고래"));
 
         // when
-        stationDao.deleteById(station.getId());
-        List<Station> stations = stationDao.findAll();
+        stationDao.deleteById(Station.getId());
+        List<Station> stationEntities = stationDao.findAll();
 
         // then
-        assertThat(stations)
-            .hasSize(0)
-            .doesNotContain(station);
+        assertThat(stationEntities).doesNotContain(Station);
     }
 }

@@ -25,8 +25,8 @@ class LineDaoImplTest {
     void setUp() {
         lineDaoImpl = new LineDaoImpl(jdbcTemplate);
 
-        List<Line> lines = lineDaoImpl.findAll();
-        List<Long> lineIds = lines.stream()
+        List<Line> lineEntities = lineDaoImpl.findAll();
+        List<Long> lineIds = lineEntities.stream()
             .map(Line::getId)
             .collect(Collectors.toList());
 
@@ -110,11 +110,11 @@ class LineDaoImplTest {
         Long savedId = lineDaoImpl.save(originLine);
 
         // when
-        Line newLine = new Line("2호선", "bg-green-600");
-        lineDaoImpl.updateById(savedId, newLine);
+        Line newline = new Line("2호선", "bg-green-600");
+        lineDaoImpl.updateById(savedId, newline);
         Line line = lineDaoImpl.findById(savedId).get();
 
         // then
-        assertThat(line).isEqualTo(newLine);
+        assertThat(line.getName()).isEqualTo(newline.getName());
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
 @Repository
-public class StationDaoImpl implements StationDao{
+public class StationDaoImpl implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -19,17 +19,17 @@ public class StationDaoImpl implements StationDao{
     }
 
     @Override
-    public Station save(Station station) {
+    public Station save(Station Station) {
         final String sql = "INSERT INTO station (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, station.getName());
+            ps.setString(1, Station.getName());
             return ps;
         }, keyHolder);
         long id = keyHolder.getKey().longValue();
 
-        return new Station(id, station.getName());
+        return new Station(id, Station.getName());
     }
 
     @Override
@@ -50,5 +50,17 @@ public class StationDaoImpl implements StationDao{
         final String sql = "DELETE FROM station where id = ?";
         int updateSize = jdbcTemplate.update(sql, id);
         return updateSize != 0;
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        final String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
+    @Override
+    public Station findById(Long id) {
+        final String sql = "SELECT * FROM station where id = ?";
+        return jdbcTemplate.queryForObject(sql, stationMapper(), id);
     }
 }

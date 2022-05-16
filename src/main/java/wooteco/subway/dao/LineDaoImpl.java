@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 @Repository
-public class LineDaoImpl implements LineDao{
+public class LineDaoImpl implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -58,7 +59,12 @@ public class LineDaoImpl implements LineDao{
     @Override
     public Optional<Line> findById(Long id) {
         final String sql = "SELECT * FROM line where id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineMapper(), id));
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineMapper(), id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -66,5 +72,11 @@ public class LineDaoImpl implements LineDao{
         final String sql = "UPDATE line SET name = ?, color = ? where id = ?";
         int updateSize = jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
         return updateSize != 0;
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        final String sql = "SELECT EXISTS (SELECT * FROM line WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 }

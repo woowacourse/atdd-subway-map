@@ -7,19 +7,29 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.FakeStationDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.StationServiceRequest;
+import wooteco.subway.service.dto.StationServiceResponse;
 
+@JdbcTest
 class StationServiceTest {
 
-    private final StationDao stationDao = new FakeStationDao();
-    private final StationService stationService = new StationService(stationDao);
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    private StationService stationService;
 
     @BeforeEach
     void setUp() {
-        List<Station> stations = stationDao.findAll();
-        List<Long> stationIds = stations.stream()
+        StationDao stationDao = new StationDaoImpl(jdbcTemplate);
+        stationService = new StationService(stationDao);
+        List<Station> stationEntities = stationDao.findAll();
+        List<Long> stationIds = stationEntities.stream()
             .map(Station::getId)
             .collect(Collectors.toList());
 
@@ -31,13 +41,15 @@ class StationServiceTest {
     @Test
     void save() {
         // given
-        Station station = new Station("범고래");
+        StationServiceRequest station = new StationServiceRequest("범고래");
 
         // when
-        Station result = stationService.save(station);
+        StationServiceResponse result = stationService.save(station);
 
         // then
-        assertThat(station).isEqualTo(result);
+        String stationName = station.getName();
+        String resultName = result.getName();
+        assertThat(stationName).isEqualTo(resultName);
     }
 
     @Test
@@ -47,10 +59,11 @@ class StationServiceTest {
         Station station2 = new Station("범고래");
 
         // when
-        stationService.save(station1);
+        stationService.save(new StationServiceRequest(station1.getName()));
 
         // then
-        assertThatThrownBy(() -> stationService.save(station2))
+        assertThatThrownBy(
+            () -> stationService.save(new StationServiceRequest(station2.getName())))
             .hasMessage("중복된 이름이 존재합니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }
@@ -58,30 +71,31 @@ class StationServiceTest {
     @Test
     void findAll() {
         // given
-        Station station1 = stationService.save(new Station("범고래"));
-        Station station2 = stationService.save(new Station("애쉬"));
+        StationServiceResponse station1 = stationService.save(new StationServiceRequest("범고래"));
+        StationServiceResponse station2 = stationService.save(new StationServiceRequest("애쉬"));
 
         // when
-        List<Station> stations = stationService.findAll();
+        List<StationServiceResponse> stations = stationService.findAll();
 
         // then
-        assertThat(stations)
-            .hasSize(2)
-            .contains(station1, station2);
+        assertThat(stations).filteredOn((station) -> station.getName().equals(station1.getName()))
+            .hasSize(1);
+        assertThat(stations).filteredOn((station) -> station.getName().equals(station2.getName()))
+            .hasSize(1);
     }
 
     @Test
     void deleteById() {
         // given
-        Station station = stationService.save(new Station("범고래"));
+        StationServiceResponse savedStation = stationService.save(new StationServiceRequest("범고래"));
 
         // when
-        stationService.deleteById(station.getId());
-        List<Station> stations = stationService.findAll();
+        stationService.deleteById(savedStation.getId());
+        List<StationServiceResponse> stations = stationService.findAll();
 
         // then
-        assertThat(stations)
-            .hasSize(0)
-            .doesNotContain(station);
+        assertThat(stations).filteredOn(
+                (station) -> station.getName().equals(savedStation.getName()))
+            .hasSize(0);
     }
 }

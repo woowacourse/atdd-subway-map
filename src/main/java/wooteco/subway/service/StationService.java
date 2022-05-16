@@ -1,11 +1,16 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.StationServiceRequest;
+import wooteco.subway.service.dto.StationServiceResponse;
 
 @Service
+@Transactional(readOnly = true)
 public class StationService {
 
     private final StationDao stationDao;
@@ -14,20 +19,24 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station save(Station station) {
-        validateDuplicationName(station);
-        return stationDao.save(station);
+    @Transactional
+    public StationServiceResponse save(StationServiceRequest stationServiceRequest) {
+        validateDuplicationName(stationServiceRequest.getName());
+        Station savedStation = stationDao.save(new Station(stationServiceRequest.getName()));
+        return new StationServiceResponse(savedStation.getId(), savedStation.getName());
     }
 
-    private void validateDuplicationName(Station station) {
-        List<Station> stations = stationDao.findAll();
-        if (stations.contains(station)) {
+    private void validateDuplicationName(String name) {
+        if (stationDao.existsByName(name)) {
             throw new IllegalArgumentException("중복된 이름이 존재합니다.");
         }
     }
 
-    public List<Station> findAll() {
-        return stationDao.findAll();
+    public List<StationServiceResponse> findAll() {
+        List<Station> stationEntities = stationDao.findAll();
+        return stationEntities.stream()
+            .map(i -> new StationServiceResponse(i.getId(), i.getName()))
+            .collect(Collectors.toList());
     }
 
     public boolean deleteById(Long id) {

@@ -35,8 +35,8 @@ public class AcceptanceTest {
     }
 
     private void clearAllStations() {
-        List<Station> stations = stationDao.findAll();
-        List<Long> stationIds = stations.stream()
+        List<Station> stationEntities = stationDao.findAll();
+        List<Long> stationIds = stationEntities.stream()
             .map(Station::getId)
             .collect(Collectors.toList());
 
@@ -46,8 +46,8 @@ public class AcceptanceTest {
     }
 
     private void clearAllLines() {
-        List<Line> lines = lineDaoImpl.findAll();
-        List<Long> lineIds = lines.stream()
+        List<Line> lineEntities = lineDaoImpl.findAll();
+        List<Long> lineIds = lineEntities.stream()
             .map(Line::getId)
             .collect(Collectors.toList());
 
