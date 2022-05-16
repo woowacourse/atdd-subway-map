@@ -25,27 +25,47 @@ public class StationDao {
     }
 
     public Long save(Station station) {
-        String insertSql = "insert into STATION (name) values (:name)";
+        String sql = "insert into STATION (name) values (:name)";
         SqlParameterSource source = new BeanPropertySqlParameterSource(station);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(insertSql, source, keyHolder);
+        jdbcTemplate.update(sql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public int countByName(String name) {
-        String selectSql = "select count(*) from STATION where name = :name";
+    public boolean existsByName(String name) {
+        String sql = "select exists (select 1 from STATION where name = :name)";
         SqlParameterSource source = new MapSqlParameterSource("name", name);
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Integer.class));
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
+    }
+
+    public boolean existsById(Long id) {
+        String sql = "select exists (select 1 from STATION where id = :id)";
+        SqlParameterSource source = new MapSqlParameterSource("id", id);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
+    }
+
+    public Station findById(Long id) {
+        String sql = "select * from STATION where id = :id";
+        SqlParameterSource source = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(sql, source, eventRowMapper);
     }
 
     public List<Station> findAll() {
-        String selectSql = "select * from STATION";
-        return jdbcTemplate.query(selectSql, eventRowMapper);
+        String sql = "select * from STATION";
+        return jdbcTemplate.query(sql, eventRowMapper);
     }
 
     public void deleteById(Long id) {
         String sql = "delete from STATION where id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, source);
+    }
+
+    public List<Station> findByLineId(Long id) {
+        String sql = "select st.* "
+                + "from (select distinct up_station_id ,down_station_id from section where line_id = :id) sc, station st "
+                + "where sc.up_station_id = st.id OR sc.down_station_id = st.id";
+        SqlParameterSource source = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.query(sql, source, eventRowMapper);
     }
 }

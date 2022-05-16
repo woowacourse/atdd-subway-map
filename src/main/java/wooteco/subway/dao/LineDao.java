@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,7 +13,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.ui.dto.LineCreateRequest;
+import wooteco.subway.ui.dto.LineRequest;
 
 @Repository
 public class LineDao {
@@ -27,43 +30,61 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(Line line) {
-        String insertSql = "insert into LINE (name, color) values (:name, :color)";
+    public Long save(LineCreateRequest line) {
+        String sql = "insert into LINE (name, color) values (:name, :color)";
         SqlParameterSource source = new BeanPropertySqlParameterSource(line);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(insertSql, source, keyHolder);
+        jdbcTemplate.update(sql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public int countByName(String name) {
-        String selectSql = "select count(*) from LINE where name = :name";
+    public boolean existsByName(String name) {
+        String sql = "select exists (select 1 from LINE where name = :name)";
         SqlParameterSource source = new MapSqlParameterSource("name", name);
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Integer.class));
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
     }
 
-    public Line findById(Long id) {
-        String selectSql = "select * from LINE where id = :id";
+    public boolean existsByNameExceptWithId(String name, Long id) {
+        String sql = "select exists (select 1 from LINE where id != :id and name = :name)";
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("id", id);
+        source.addValue("name", name);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
+    }
+
+    public boolean existsById(Long id) {
+        String sql = "select exists (select 1 from LINE where id = :id)";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(selectSql, source, eventRowMapper);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
+    }
+
+    public Optional<Line> findById(Long id) {
+        try {
+            String sql = "select * from LINE where id = :id";
+            SqlParameterSource source = new MapSqlParameterSource("id", id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, source, eventRowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<Line> findAll() {
-        String selectSql = "select * from LINE";
-        return jdbcTemplate.query(selectSql, eventRowMapper);
+        String sql = "select * from LINE";
+        return jdbcTemplate.query(sql, eventRowMapper);
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        String updateSql = "update LINE set name=:name, color=:color where id=:id";
+        String sql = "update LINE set name=:name, color=:color where id=:id";
         MapSqlParameterSource source = new MapSqlParameterSource();
         source.addValue("id", id);
         source.addValue("color", lineRequest.getColor());
         source.addValue("name", lineRequest.getName());
-        jdbcTemplate.update(updateSql, source);
+        jdbcTemplate.update(sql, source);
     }
 
     public void deleteById(Long id) {
-        String deleteSql = "delete from LINE where id=:id";
+        String sql = "delete from LINE where id=:id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        jdbcTemplate.update(deleteSql, source);
+        jdbcTemplate.update(sql, source);
     }
 }

@@ -1,4 +1,4 @@
-package wooteco.subway.dto;
+package wooteco.subway.ui.dto;
 
 public class LineCreateRequest {
 
@@ -37,5 +37,16 @@ public class LineCreateRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public String toString() {
+        return "LineCreateRequest{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
     }
 }

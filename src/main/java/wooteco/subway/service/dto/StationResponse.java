@@ -1,5 +1,6 @@
-package wooteco.subway.dto;
+package wooteco.subway.service.dto;
 
+import java.util.Objects;
 import wooteco.subway.domain.Station;
 
 public class StationResponse {
@@ -25,5 +26,13 @@ public class StationResponse {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return "StationResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

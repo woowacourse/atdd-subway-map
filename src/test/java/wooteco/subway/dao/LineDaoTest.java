@@ -1,17 +1,17 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.ui.dto.LineCreateRequest;
+import wooteco.subway.ui.dto.LineRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
@@ -24,7 +24,7 @@ class LineDaoTest {
     @Test
     void save() {
         // given
-        Line line = new Line("분당선", "yellow");
+        LineCreateRequest line = new LineCreateRequest("분당선", "yellow", 1L, 2L, 2);
 
         // when
         Long id = lineDao.save(line);
@@ -33,30 +33,56 @@ class LineDaoTest {
         assertThat(id).isEqualTo(3L);
     }
 
-    @DisplayName("노선 이름으로 개수 검색")
+    @DisplayName("노선 이름이 존재하는지 확인")
     @Test
-    void countByName() {
+    void existsByName() {
         // given
         String name = "신분당선";
 
         // when
-        int count = lineDao.countByName(name);
+        boolean result = lineDao.existsByName(name);
 
         // then
-        assertThat(count).isEqualTo(1);
+        assertThat(result).isTrue();
     }
 
-    @DisplayName("노선 이름으로 검색")
+    @DisplayName("특정 id를 제외하고 노선 이름이 존재하는지 확인")
+    @Test
+    void existsByNameExceptWithId() {
+        // given
+        String name = "신분당선";
+
+        // when
+        boolean result = lineDao.existsByNameExceptWithId(name, 1L);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @DisplayName("해당 id 존재하는지 확인")
+    @Test
+    void existsById() {
+        // given
+
+        // when
+        boolean result = lineDao.existsById(1L);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("노선 id로 검색")
     @Test
     void findById() {
         // given
         Line expected = new Line(1L, "신분당선", "red");
 
         // when
-        Line line = lineDao.findById(1L);
+        Optional<Line> line = lineDao.findById(1L);
 
         // then
-        assertThat(line).isEqualTo(expected);
+        assertThat(line.isPresent()).isTrue();
+        assertThat(line.get()).isEqualTo(expected);
     }
 
     @DisplayName("노선 전체 조회")
@@ -82,8 +108,11 @@ class LineDaoTest {
         lineDao.update(id, lineRequest);
 
         // then
-        Line line = lineDao.findById(id);
-        assertThat(line.getColor()).isEqualTo(lineRequest.getColor());
+        Optional<Line> line = lineDao.findById(id);
+
+        assertThat(line.isPresent()).isTrue();
+        assertThat(line.get()).extracting(Line::getName, Line::getColor)
+                .contains(lineRequest.getName(), lineRequest.getColor());
     }
 
     @DisplayName("노선 삭제")
@@ -96,6 +125,6 @@ class LineDaoTest {
         lineDao.deleteById(id);
 
         // then
-        assertThatThrownBy(() -> lineDao.findById(id)).isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(lineDao.findById(id)).isEqualTo(Optional.empty());
     }
 }
