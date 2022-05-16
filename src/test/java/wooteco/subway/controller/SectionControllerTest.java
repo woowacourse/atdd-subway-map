@@ -63,6 +63,7 @@ class SectionControllerTest {
     @Test
     void createSection_success() {
         SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10L);
+
         RestAssured.
                 given().log().all().
                     body(sectionRequest).
@@ -70,8 +71,7 @@ class SectionControllerTest {
                 when().
                     post("/lines/{lineId}/sections", 1).
                 then().log().all().
-                    statusCode(HttpStatus.OK.value()).
-                    extract();
+                    statusCode(HttpStatus.OK.value());
     }
 
     @DisplayName("구간을 제거한다")
@@ -82,7 +82,6 @@ class SectionControllerTest {
                 when().
                     delete("/lines/{lineId}/sections?stationId=3", 1).
                 then().log().all().
-                    statusCode(HttpStatus.OK.value()).
-                    extract();
+                    statusCode(HttpStatus.OK.value());
     }
 }

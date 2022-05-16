@@ -1,13 +1,15 @@
 package wooteco.subway.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,19 +68,15 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = RestAssured.
+        RestAssured.
                 given().log().all().
                     body(testLine1).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/lines").
                 then().log().all().
-                    extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
-
+                    statusCode(HttpStatus.CREATED.value()).
+                    header("Location", is(not("")));
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
@@ -86,53 +84,52 @@ class LineControllerTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         RestAssured.
-                given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE).
-                when()
-                .post("/lines").
-                then()
-                .extract();
-
-        // when
-        RestAssured.
-                given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE).
+                given().log().all().
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/lines").
-                then()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                    post("/lines").
+                then();
+
+        // when && then
+        RestAssured.
+                given().log().all().
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().
+                    statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선을 조회한다.")
     @Test
     void getLine_success() {
-        /// given
+        // given
         ExtractableResponse<Response> createResponse = RestAssured.
-                given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE).
-                        when()
-                .post("/lines").
-                        then().
-                        extract();
+                given().log().all().
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().
+                    extract();
 
         // when
         String uri = createResponse.header("Location");
         RestAssured.
                 given().log().all().
-                when()
-                .get(uri).
+                when().
+                    get(uri).
                 then().log().all().
-                statusCode(HttpStatus.OK.value());
+                    statusCode(HttpStatus.OK.value());
     }
 
     @DisplayName("존재하지 않는노선을 조회한다.")
     @Test
     void getLine_fail() {
         /// given
-        ExtractableResponse<Response> createResponse = RestAssured.
+        RestAssured.
                 given().log().all()
                 .body(testLine1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).
@@ -142,11 +139,10 @@ class LineControllerTest extends AcceptanceTest {
                         extract();
 
         // when
-        String uri = createResponse.header("Location");
         RestAssured.
                 given().log().all().
                 when()
-                .get("/lines/-1").
+                .get("/lines/{lineId}", -1).
                 then().log().all().
                 statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -179,15 +175,15 @@ class LineControllerTest extends AcceptanceTest {
                 when().
                     get("/lines").
                 then().log().all().
+                    statusCode(HttpStatus.OK.value()).
                     extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -227,14 +223,13 @@ class LineControllerTest extends AcceptanceTest {
                 then().log().all().
                     extract();
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.
+        RestAssured.
                 given().log().all().
                     body(testLine2).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/lines").
-                then().log().all().
-                    extract();
+                then().log().all();
 
         // when
         String uri = createResponse1.header("Location");
@@ -252,34 +247,31 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void change_name_no_id() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.
-                given().log().all().
-                body(testLine1).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/lines").
-                then()
-                .extract();
-
-        ExtractableResponse<Response> createResponse2 = RestAssured.
-                given().log().all().
-                body(testLine2).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/lines").
-                then().
-                extract();
-
-        // when
-        String uri = "/lines/1000";
         RestAssured.
                 given().log().all().
-                body(testLine3).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                put(uri).
+                    post("/lines").
+                then();
+
+        RestAssured.
+                given().log().all().
+                    body(testLine2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then();
+
+        // when
+        RestAssured.
+                given().log().all().
+                    body(testLine3).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    put("/lines/{lineId}", 1000).
                 then().
-                statusCode(HttpStatus.BAD_REQUEST.value());
+                    statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("이미 저장된 이름으로 이름을 바꾼다.")
@@ -288,31 +280,30 @@ class LineControllerTest extends AcceptanceTest {
         /// given
         ExtractableResponse<Response> createResponse1 = RestAssured.
                 given().log().all().
-                body(testLine1).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/lines").
+                    post("/lines").
                 then().
-                extract();
+                    extract();
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.
+        RestAssured.
                 given().log().all().
-                body(testLine2).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testLine2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/lines").
-                then().
-                extract();
+                    post("/lines").
+                then();
 
         // when
         String uri = createResponse1.header("Location");
         RestAssured.
                 given().log().all().
-                body(testLine2).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testLine2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                put(uri).
+                    put(uri).
                 then().
-                statusCode(HttpStatus.BAD_REQUEST.value());
+                    statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }
