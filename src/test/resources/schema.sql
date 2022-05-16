@@ -26,6 +26,3 @@ create table if not exists SECTION
     distance int,
     primary key(id)
     );
-
-alter table section
-    alter column id restart with 1;
