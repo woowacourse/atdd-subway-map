@@ -1,28 +1,22 @@
 package wooteco.subway.ui;
 
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.SubwayException;
 import wooteco.subway.dto.ExceptionResponse;
 
 @RestControllerAdvice
-public class Handlers {
+public class ExceptionManager {
 
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<ExceptionResponse> handleDuplicatedName() {
+    @ExceptionHandler(SubwayException.class)
+    public ResponseEntity<ExceptionResponse> handleDuplicatedName(SubwayException subwayException) {
         return ResponseEntity.unprocessableEntity()
-                .body(new ExceptionResponse("이미 중복된 이름이 존재합니다."));
+                .body(new ExceptionResponse(subwayException.getMessage()));
     }
 
-    @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<ExceptionResponse> handleNoExistId() {
-        return ResponseEntity.unprocessableEntity()
-                .body(new ExceptionResponse("존재하지 않는 id입니다."));
-    }
-
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler({RuntimeException.class, Exception.class})
     public ResponseEntity<ExceptionResponse> handleBadRequest() {
         return ResponseEntity.badRequest()
                 .body(new ExceptionResponse("올바르지 않은 요청입니다."));
