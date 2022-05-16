@@ -124,24 +124,24 @@ public class Sections {
     }
 
     private boolean isInvalid(Section section, List<Section> foundSections) {
-        return hasAnySectionWithSameStations(foundSections, section) ||
-            isInvalidCountInMiddle(foundSections) || isSameWithDestinations(foundSections);
+        return hasAnySectionWithSameStations(foundSections, section)
+            || isInvalidCountInMiddle(foundSections)
+            || isSameWithDestinations(section);
     }
 
-    private boolean hasAnySectionWithSameStations(List<Section> foundSections,
-        Section section) {
+    private boolean hasAnySectionWithSameStations(List<Section> foundSections, Section section) {
         return foundSections.stream()
             .anyMatch(it -> it.hasSameStations(section));
     }
 
     private boolean isInvalidCountInMiddle(List<Section> foundSections) {
-        int count = foundSections.size();
-        return count != OVERLAP_COUNT_ADD_DESTINATION && count != OVERLAP_COUNT_ADD_MIDDLE;
+        int foundSectionCount = foundSections.size();
+        return foundSectionCount != OVERLAP_COUNT_ADD_DESTINATION
+            && foundSectionCount != OVERLAP_COUNT_ADD_MIDDLE;
     }
 
-    private boolean isSameWithDestinations(List<Section> foundSections) {
-        return values.size() > 2 && foundSections.size() == 2 &&
-            foundSections.containsAll(List.of(values.get(0), values.get(values.size() - 1)));
+    private boolean isSameWithDestinations(Section section) {
+        return section.contains(getUpDestination()) && section.contains(getDownDestination());
     }
 
     public Station getUpDestination() {
