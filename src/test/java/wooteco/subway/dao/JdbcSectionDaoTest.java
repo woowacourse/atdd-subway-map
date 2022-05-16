@@ -13,7 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Section;
 
 @JdbcTest
-@Sql(scripts = {"classpath:schema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql("/schema.sql")
 public class JdbcSectionDaoTest {
 
     private JdbcSectionDao jdbcSectionDao;
@@ -53,7 +53,7 @@ public class JdbcSectionDaoTest {
     @Test
     void update() {
         Section section1 = new Section(1L, 1L, 1L, 2L, 7);
-        jdbcSectionDao.save(section1);
+        Long id = jdbcSectionDao.save(section1);
         boolean isUpdated = jdbcSectionDao.update(1L, section1);
 
         assertThat(isUpdated).isTrue();
