@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.duplicate.DuplicateStationException;
+import wooteco.subway.exception.notfound.StationNotFoundException;
 
 @SpringBootTest
 @Transactional
@@ -72,7 +72,7 @@ class StationServiceTest {
     @Test
     void findNotExist() {
         assertThatThrownBy(() -> stationService.findById(Long.MAX_VALUE))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(StationNotFoundException.class)
                 .hasMessage("존재하지 않는 역입니다.");
     }
 
@@ -93,7 +93,7 @@ class StationServiceTest {
     @Test
     void deleteNotExist() {
         assertThatThrownBy(() -> stationService.delete(Long.MAX_VALUE))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(StationNotFoundException.class)
                 .hasMessage("존재하지 않는 역입니다.");
     }
 

@@ -8,8 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.duplicate.DuplicateDataException;
+import wooteco.subway.exception.notfound.DataNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

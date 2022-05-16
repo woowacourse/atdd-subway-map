@@ -21,8 +21,9 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.duplicate.DuplicateLineException;
+import wooteco.subway.exception.notfound.LineNotFoundException;
+import wooteco.subway.exception.notfound.SectionNotFoundException;
 
 @SpringBootTest
 @Transactional
@@ -131,7 +132,7 @@ class LineServiceTest {
     @Test
     void findNotExist() {
         assertThatThrownBy(() -> lineService.find(Long.MAX_VALUE))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(LineNotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 
@@ -156,7 +157,7 @@ class LineServiceTest {
         LineUpdateRequest updateRequest = new LineUpdateRequest("2호선", "초록색");
 
         assertThatThrownBy(() -> lineService.update(Long.MAX_VALUE, updateRequest))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(LineNotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 
@@ -206,7 +207,7 @@ class LineServiceTest {
     @Test
     void deleteNotExist() {
         assertThatThrownBy(() -> lineService.delete(Long.MAX_VALUE))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(LineNotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 
@@ -259,7 +260,7 @@ class LineServiceTest {
         LineResponse lineResponse = lineService.save(lineCreateRequest);
 
         assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId() + 1, yeoksam.getId()))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(LineNotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 
@@ -271,7 +272,7 @@ class LineServiceTest {
         LineResponse lineResponse = lineService.save(lineCreateRequest);
 
         assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId(), seolleung.getId()))
-                .isInstanceOf(DataNotFoundException.class)
+                .isInstanceOf(SectionNotFoundException.class)
                 .hasMessage("요청하는 역을 포함하는 구간이 없습니다.");
     }
 

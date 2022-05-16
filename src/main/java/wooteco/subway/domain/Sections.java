@@ -7,9 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.duplicate.DuplicateSectionException;
 import wooteco.subway.exception.invalidrequest.InvalidSectionCreateRequestException;
+import wooteco.subway.exception.notfound.SectionNotFoundException;
 
 public class Sections {
 
@@ -163,7 +163,7 @@ public class Sections {
     private void validateContainsTargetStation(Station station) {
         if (values.stream()
                 .noneMatch(section -> section.containStation(station))) {
-            throw new DataNotFoundException("요청하는 역을 포함하는 구간이 없습니다.");
+            throw new SectionNotFoundException("요청하는 역을 포함하는 구간이 없습니다.");
         }
     }
 
@@ -171,7 +171,7 @@ public class Sections {
         Section targetSection = values.stream()
                 .filter(savedSection -> savedSection.containStation(station))
                 .findFirst()
-                .orElseThrow(() -> new DataNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
+                .orElseThrow(() -> new SectionNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
         values.remove(targetSection);
     }
 
@@ -189,14 +189,14 @@ public class Sections {
         return values.stream()
                 .filter(savedSection -> savedSection.getDownStation().hasSameName(station))
                 .findAny()
-                .orElseThrow(() -> new DataNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
+                .orElseThrow(() -> new SectionNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
     }
 
     private Section findDownSection(Station station) {
         return values.stream()
                 .filter(savedSection -> savedSection.getUpStation().hasSameName(station))
                 .findAny()
-                .orElseThrow(() -> new DataNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
+                .orElseThrow(() -> new SectionNotFoundException("요청하는 역을 포함하는 구간이 없습니다."));
     }
 
     public List<Section> getNotContainSections(Sections sections) {

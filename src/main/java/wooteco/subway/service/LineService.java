@@ -14,8 +14,8 @@ import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.duplicate.DuplicateLineException;
+import wooteco.subway.exception.notfound.LineNotFoundException;
 
 @Service
 public class LineService {
@@ -136,7 +136,7 @@ public class LineService {
 
     private void validateExist(Long id) {
         if (!lineDao.existsId(id)) {
-            throw new DataNotFoundException("존재하지 않는 노선입니다.");
+            throw new LineNotFoundException("존재하지 않는 노선입니다.");
         }
     }
 
