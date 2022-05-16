@@ -17,6 +17,7 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 import static wooteco.subway.acceptance.AcceptanceFixture.*;
 
 @DisplayName("지하철역 관련 기능")
@@ -25,12 +26,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역 생성")
     @Test
     void createStation() {
-        // given
-        ExtractableResponse<Response> response = insert(new StationRequest("강남역"), "/stations", 201);
-
-        // then
-        assertThat(response.jsonPath().getString("name")).isEqualTo("강남역");
-        assertThat(response.header("Location")).isEqualTo("/stations/1");
+        insert(new StationRequest("강남역"), "/stations", 201)
+                .header("Location", is("/stations/1"))
+                .body("name", is("강남역"));
     }
 
     @DisplayName("중복된 지하철역 생성")
@@ -53,10 +51,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations", 201);
-        ExtractableResponse<Response> newStationResponse = insert(new StationRequest("역삼역"), "/stations", 201);
+        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations", 201).extract();
+        ExtractableResponse<Response> newStationResponse = insert(new StationRequest("역삼역"), "/stations", 201).extract();
 
-        ExtractableResponse<Response> response = select("/stations", 200);
+        ExtractableResponse<Response> response = select("/stations", 200).extract();
 
         // then
         List<Long> expectedLineIds = Arrays.asList(stationResponse, newStationResponse).stream()
@@ -73,7 +71,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"), "/stations", 201);
+        ExtractableResponse<Response> stationResponse = insert(new StationRequest("강남역"),
+                "/stations", 201).extract();
 
         // then
         String uri = stationResponse.header("Location");

@@ -16,6 +16,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 import static wooteco.subway.acceptance.AcceptanceFixture.*;
 
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -32,14 +33,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 생성")
     @Test
     void createLines() {
-        // given
-        ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines", 201);
-
-        // then
-        assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
-        assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600");
-        assertThat(response.header("Location")).isEqualTo("/lines/1");
+        insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines", 201)
+                .header("Location", is("/lines/1"))
+                .body("name", is("신분당선"))
+                .body("color", is("bg-red-600"));
     }
 
     @DisplayName("중복된 지하철 노선 생성 예외")
@@ -69,13 +67,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines", 201);
-        long resultLineId = response.jsonPath().getLong("id");
+        long id = insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines", 201)
+                .extract().jsonPath().getLong("id");
 
         // then
-        ExtractableResponse<Response> newResponse = select("/lines/" + resultLineId, 200);
-        assertThat(resultLineId).isEqualTo(newResponse.jsonPath().getLong("id"));
+        select("/lines/" + id, 200).body("stations.size()", is(2));
     }
 
     @DisplayName("지하철 노선 목록 조회")
@@ -83,11 +80,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         ExtractableResponse<Response> createResponse = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines", 201);
+                1L, 2L, 10), "/lines", 201).extract();
         ExtractableResponse<Response> newCreateResponse = insert(new LineRequest("분당선", "bg-green-600",
-                1L, 2L, 10), "/lines", 201);
+                1L, 2L, 10), "/lines", 201).extract();
 
-        ExtractableResponse<Response> response = select("/lines", 200);
+        ExtractableResponse<Response> response = select("/lines", 200).extract();
 
         // then
         List<Long> expectedLineIds = Stream.of(createResponse, newCreateResponse)
@@ -104,27 +101,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifyLine() {
         // given
-        ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines", 201);
-        long resultLineId = response.jsonPath().getLong("id");
+        long id = insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines", 201)
+                .extract().jsonPath().getLong("id");
 
         //then
-        put("/lines/" + resultLineId, new LineRequest("분당선", "bg-red-600", 1L, 2L, 10)
-                , 200);
+        put("/lines/" + id, new LineRequest("분당선", "bg-red-600", 1L, 2L,
+                        10), 200);
     }
 
     @DisplayName("지하철 노선 수정 예외 - 기존에 존재하던 노선 이름으로 변경한 경우")
     @Test
     void checkDuplicateSameName() {
         // given
-        ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines", 201);
+        long id = insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines", 201)
+                .extract().jsonPath().getLong("id");
         insert(new LineRequest("분당선", "bg-green-600",
                 2L, 3L, 10), "/lines", 201);
-        long resultLineId = response.jsonPath().getLong("id");
 
         //then
-        put("/lines/" + resultLineId, new LineRequest("분당선", "bg-red-600", 1L, 2L, 10)
+        put("/lines/" + id, new LineRequest("분당선", "bg-red-600", 1L, 2L, 10)
                 , 404);
     }
 
@@ -132,11 +129,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> response = insert(new LineRequest("신분당선", "bg-red-600",
-                1L, 2L, 10), "/lines", 201);
-        long resultLineId = response.jsonPath().getLong("id");
+        long id = insert(new LineRequest("신분당선", "bg-red-600",
+                1L, 2L, 10), "/lines", 201)
+                .extract().jsonPath().getLong("id");
 
         //then
-        delete("/lines/" + resultLineId, 204);
+        delete("/lines/" + id, 204);
     }
 }
