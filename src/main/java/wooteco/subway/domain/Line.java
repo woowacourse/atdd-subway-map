@@ -8,29 +8,31 @@ public class Line {
     private final Long id;
     private final String name;
     private final String color;
+    private final SectionsOnTheLine sectionsOnTheLine;
 
-    public Line(final Long id, final String name, final String color) {
+    public Line(final Long id, final String name, final String color, final SectionsOnTheLine sectionsOnTheLine) {
         validateName(name);
         validateColor(color);
         this.id = id;
         this.name = name;
         this.color = color;
+        this.sectionsOnTheLine = sectionsOnTheLine;
     }
 
     private void validateName(final String name) {
-        if (name.isBlank()) {
+        if (name.equals(null) || name.isBlank()) {
             throw new IllegalLineNameException();
         }
     }
 
     private void validateColor(final String color) {
-        if (color.isBlank()) {
+        if (color.equals(null) || color.isBlank()) {
             throw new IllegalLineColorException();
         }
     }
 
-    public Line(final String name, final String color) {
-        this(null, name, color);
+    public static Line ofNullId(final String name, final String color, final SectionsOnTheLine sectionsOnTheLine) {
+        return new Line(null, name, color, sectionsOnTheLine);
     }
 
     public Long getId() {
@@ -43,5 +45,9 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public SectionsOnTheLine getSectionsOnTheLine() {
+        return sectionsOnTheLine;
     }
 }

@@ -42,9 +42,9 @@ public class StationController {
         return ResponseEntity.ok().body(stationResponseDtos);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Integer> removeStation(@PathVariable Long id) {
-        stationService.remove(id);
+    @DeleteMapping("/{stationId}")
+    public ResponseEntity<Integer> removeStation(@PathVariable Long stationId) {
+        stationService.remove(stationId);
         return ResponseEntity.noContent().build();
     }
 }

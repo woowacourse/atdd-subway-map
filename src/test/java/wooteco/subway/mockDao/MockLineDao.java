@@ -2,6 +2,7 @@ package wooteco.subway.mockDao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import wooteco.subway.repository.dao.LineDao;
@@ -12,20 +13,20 @@ public class MockLineDao implements LineDao {
     private static Long seq = 0L;
     private static final List<LineEntity> store = new ArrayList<>();
 
-    public static void removeAll() {
+    public void removeAll() {
         store.clear();
     }
 
     public LineEntity save(final LineEntity lineEntity) {
-        long duplicateNameCount = store.stream()
+        final long duplicateNameCount = store.stream()
                 .filter(it -> it.getName().equals(lineEntity.getName()))
                 .count();
         if (duplicateNameCount != 0) {
             throw new DuplicateKeyException(null);
         }
-        final LineEntity saved = new LineEntity(++seq, lineEntity.getName(), lineEntity.getColor());
-        store.add(saved);
-        return saved;
+        final LineEntity lineEntityForSave = new LineEntity(++seq, lineEntity.getName(), lineEntity.getColor());
+        store.add(lineEntityForSave);
+        return lineEntityForSave;
     }
 
     public List<LineEntity> findAll() {
@@ -38,20 +39,20 @@ public class MockLineDao implements LineDao {
                 .findAny();
     }
 
-    public Optional<LineEntity> findById(final Long id) {
+    public LineEntity findById(final Long id) {
         return store.stream()
                 .filter(lineEntity -> lineEntity.getId().equals(id))
-                .findAny();
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 노선을 찾을 수 없습니다."));
     }
 
     public void deleteById(final Long id) {
-        findById(id).ifPresent(store::remove);
+        store.remove(findById(id));
     }
 
     public void update(final LineEntity newLineEntity) {
-        findById(newLineEntity.getId()).ifPresent(oldLineEntity -> {
-            store.remove(oldLineEntity);
-            store.add(new LineEntity(oldLineEntity.getId(), newLineEntity.getName(), newLineEntity.getColor()));
-        });
+        LineEntity oldLineEntity = findById(newLineEntity.getId());
+        store.remove(oldLineEntity);
+        store.add(new LineEntity(oldLineEntity.getId(), newLineEntity.getName(), newLineEntity.getColor()));
     }
 }

@@ -1,3 +1,7 @@
+drop table SECTION;
+drop table LINE;
+drop table STATION;
+
 create table if not exists STATION
 (
     id bigint auto_increment not null,
@@ -23,3 +27,7 @@ create table if not exists SECTION
     primary key (id),
     foreign key (line_id) references LINE (id) on delete cascade
 );
+
+insert into STATION (name) values ('강남역');
+insert into STATION (name) values ('역삼역');
+insert into STATION (name) values ('선릉역');

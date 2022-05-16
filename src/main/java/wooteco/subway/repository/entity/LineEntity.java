@@ -1,6 +1,7 @@
 package wooteco.subway.repository.entity;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.SectionsOnTheLine;
 
 public class LineEntity {
 
@@ -15,13 +16,15 @@ public class LineEntity {
     }
 
     public LineEntity(final Line line) {
-        this.id = line.getId();
-        this.name = line.getName();
-        this.color = line.getColor();
+        this(line.getId(), line.getName(), line.getColor());
     }
 
-    public Line generateLine() {
-        return new Line(id, name, color);
+    public Line createLine(final SectionsOnTheLine sectionsOnTheLine) {
+        return new Line(id, name, color, sectionsOnTheLine);
+    }
+
+    public LineEntity fillId(final Long id) {
+        return new LineEntity(id, name, color);
     }
 
     public Long getId() {

@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
 import wooteco.subway.exception.IllegalStationNameException;
 
 public class Station {
@@ -14,13 +15,13 @@ public class Station {
     }
 
     private void validateName(final String name) {
-        if (name.isBlank()) {
+        if (name.equals(null) || name.isBlank()) {
             throw new IllegalStationNameException();
         }
     }
 
-    public Station(final String name) {
-        this(null, name);
+    public static Station ofNullId(final String name) {
+        return new Station(null, name);
     }
 
     public Long getId() {
@@ -29,6 +30,23 @@ public class Station {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Station station = (Station) o;
+        return name.equals(station.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
 

@@ -1,12 +1,16 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequestDto;
+import wooteco.subway.exception.CanNotDeleteException;
 import wooteco.subway.exception.DuplicateStationNameException;
+import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.entity.StationEntity;
 
@@ -14,29 +18,41 @@ import wooteco.subway.repository.entity.StationEntity;
 public class StationService {
 
     private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public StationService(final StationDao stationDao) {
+    public StationService(final StationDao stationDao, final SectionDao sectionDao) {
         this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public Station register(final StationRequestDto stationRequestDto) {
-        final Station station = new Station(stationRequestDto.getName());
+        final Station station = Station.ofNullId(stationRequestDto.getName());
         try {
-            final StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
-            return savedStationEntity.generateStation();
+            return stationDao.save(new StationEntity(station)).createStation();
         } catch (DuplicateKeyException exception) {
             throw new DuplicateStationNameException();
+        }
+    }
+
+    public Station searchById(final Long id) {
+        try {
+            return stationDao.findById(id).createStation();
+        } catch (EmptyResultDataAccessException exception) {
+            throw new NoSuchElementException("[ERROR] 역을 찾을 수 없습니다.");
         }
     }
 
     public List<Station> searchAll() {
         return stationDao.findAll()
                 .stream()
-                .map(stationEntity -> new Station(stationEntity.getId(), stationEntity.getName()))
+                .map(StationEntity::createStation)
                 .collect(Collectors.toList());
     }
 
     public void remove(final Long id) {
+        if (sectionDao.findByStationId(id).size() != 0) {
+            throw new CanNotDeleteException();
+        }
         stationDao.deleteById(id);
     }
 }

@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 import wooteco.subway.repository.entity.LineEntity;
 
+@Sql("/jdbcLineDaoTest.sql")
 @JdbcTest
 class JdbcLineDaoTest {
 
@@ -27,66 +29,42 @@ class JdbcLineDaoTest {
     @DisplayName("노선을 저장하고 id로 노선을 찾는다.")
     @Test
     void saveAndFindById() {
-        Line line = new Line("2호선", "bg-green-600");
-        LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
+        LineEntity lineEntity = new LineEntity(Line.ofNullId("1호선", "bg-yellow-600", null));
 
-        LineEntity lineEntity = lineDao.findById(savedLineEntity.getId()).orElseThrow();
+        Long lineId = lineDao.save(lineEntity).getId();
+        LineEntity savedLineEntity = lineDao.findById(lineId);
 
         assertAll(
-                () -> assertThat(lineEntity.getName()).isEqualTo("2호선"),
-                () -> assertThat(lineEntity.getColor()).isEqualTo("bg-green-600")
+                () -> assertThat(savedLineEntity.getName()).isEqualTo("1호선"),
+                () -> assertThat(savedLineEntity.getColor()).isEqualTo("bg-yellow-600")
         );
     }
 
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void findAll() {
-        Line line1 = new Line("2호선", "bg-green-600");
-        lineDao.save(new LineEntity(line1));
-        Line line2 = new Line("신분당선", "bg-red-600");
-        lineDao.save(new LineEntity(line2));
-
         assertThat(lineDao.findAll().size()).isEqualTo(2);
-    }
-
-    @DisplayName("이름으로 노선을 찾는다.")
-    @Test
-    void findByName() {
-        Line line = new Line("2호선", "bg-green-600");
-        LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
-
-        LineEntity lineEntity = lineDao.findByName(savedLineEntity.getName()).orElseThrow();
-
-        assertAll(
-                () -> assertThat(lineEntity.getId()).isEqualTo(savedLineEntity.getId()),
-                () -> assertThat(lineEntity.getColor()).isEqualTo("bg-green-600")
-        );
     }
 
     @DisplayName("id 로 노선을 삭제한다.")
     @Test
     void deleteById() {
-        Line line = new Line("2호선", "bg-green-600");
-        LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
+        lineDao.deleteById(1L);
 
-        lineDao.deleteById(savedLineEntity.getId());
-
-        assertThat(lineDao.findAll().size()).isEqualTo(0);
+        assertThat(lineDao.findAll().size()).isEqualTo(1);
     }
 
     @DisplayName("노선을 수정한다.")
     @Test
     void update() {
-        Line line = new Line("2호선", "bg-green-600");
-        LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
-        LineEntity newLineEntity = new LineEntity(savedLineEntity.getId(), "신분당선", "bg-red-600");
+        LineEntity newLineEntity = new LineEntity(1L, "1호", "bg-yellow-600");
 
         lineDao.update(newLineEntity);
-        LineEntity updatedLineEntity = lineDao.findById(savedLineEntity.getId()).orElseThrow();
 
+        LineEntity updatedLineEntity = lineDao.findById(1L);
         assertAll(
-                () -> assertThat(updatedLineEntity.getName()).isEqualTo(newLineEntity.getName()),
-                () -> assertThat(updatedLineEntity.getColor()).isEqualTo(newLineEntity.getColor())
+                () -> assertThat(updatedLineEntity.getName()).isEqualTo("1호"),
+                () -> assertThat(updatedLineEntity.getColor()).isEqualTo("bg-yellow-600")
         );
     }
 }
