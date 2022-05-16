@@ -1,5 +1,6 @@
 package wooteco.subway.domain.section;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -17,7 +18,7 @@ public class SectionSeries {
 
     public SectionSeries(List<Section> sections) {
         validateHasId(sections);
-        this.sections = SORTER.sort(sections);
+        this.sections = new ArrayList<>(SORTER.sort(sections));
     }
 
     private void validateHasId(List<Section> sections) {
@@ -101,6 +102,7 @@ public class SectionSeries {
         sections.add(upSection.connect(downSection));
         sections.remove(upSection);
         sections.remove(downSection);
+        SORTER.sort(sections);
     }
 
     private int findIntermediateStation(Station station) {

@@ -11,6 +11,9 @@ import wooteco.subway.exception.UnexpectedException;
 
 public class SectionSeriesSorter {
     public List<Section> sort(List<Section> sections) {
+        if (sections.isEmpty()) {
+            return sections;
+        }
         final Station upStation = findUpTerminal(sections);
         return upToDown(sections, upStation);
     }

@@ -38,7 +38,7 @@ public class Section {
     }
 
     private boolean isOneStationMatched(Section other) {
-        return isUpStationSame(other.upStation) & isDownStationSame(other.downStation);
+        return isUpStationSame(other.upStation) ^ isDownStationSame(other.downStation);
     }
 
     public Section divide(Section other) {
@@ -54,10 +54,6 @@ public class Section {
 
     private boolean isUpStationConnected(Section other) {
         return this.upStation.equals(other.upStation);
-    }
-
-    public boolean isAnyIdMatch(Long stationId) {
-        return upStation.getId().equals(stationId) || downStation.getId().equals(stationId);
     }
 
     public Long getId() {
