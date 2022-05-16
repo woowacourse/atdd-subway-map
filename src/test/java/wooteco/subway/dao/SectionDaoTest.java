@@ -17,6 +17,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
+@SuppressWarnings("NonAsciiCharacters")
 @JdbcTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Sql("classpath:schema-test.sql")
