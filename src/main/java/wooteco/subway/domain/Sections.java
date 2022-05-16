@@ -104,15 +104,6 @@ public class Sections {
                 .orElseThrow(StationNotFoundException::new);
     }
 
-    private Station findLastStation() {
-        final List<Station> upStations = findAllUpStation();
-        final List<Station> downStations = findAllDownStation();
-        return downStations.stream()
-                .filter(station -> !upStations.contains(station))
-                .findFirst()
-                .orElseThrow(StationNotFoundException::new);
-    }
-
     private Station nextStation(final Station currentStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().isSameStation(currentStation))
