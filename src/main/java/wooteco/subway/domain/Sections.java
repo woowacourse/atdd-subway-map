@@ -152,7 +152,7 @@ public class Sections {
         results.add(firstStation);
         Section target = findSectionIncludingUpStation(firstStation);
 
-        while (!target.isDownStation(endStation)) {
+        while (!target.isSameDownStation(endStation)) {
             Station targetDownStation = target.getDownStation();
             results.add(targetDownStation);
             target = findSectionIncludingUpStation(targetDownStation);
@@ -164,7 +164,7 @@ public class Sections {
 
     private Section findSectionIncludingUpStation(Station firstStation) {
         return sections.stream()
-                .filter(section -> section.isUpStation(firstStation))
+                .filter(section -> section.isSameUpStation(firstStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("찾으려는 구간이 존재하지 않습니다."));
     }

@@ -25,7 +25,7 @@ public class Section {
     }
 
     public Section slice(Section insertSection) {
-        if (isDownStation(insertSection.downStation)) {
+        if (isSameDownStation(insertSection.downStation)) {
             return new Section(upStation, insertSection.upStation, distance - insertSection.distance);
         }
 
@@ -34,7 +34,7 @@ public class Section {
 
     public Section combine(Section target, Station connectStation) {
         validateHavingConnectStation(target, connectStation);
-        if (this.isDownStation(connectStation)) {
+        if (this.isSameDownStation(connectStation)) {
             return new Section(upStation, target.downStation, distance + target.distance);
         }
 
@@ -53,35 +53,35 @@ public class Section {
         }
     }
 
-    public boolean isUpStation(Station station) {
+    boolean isSameUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    public boolean isDownStation(Station station) {
+    boolean isSameDownStation(Station station) {
         return downStation.equals(station);
     }
 
-    public boolean haveStation(Station station) {
-        return isUpStation(station) || isDownStation(station);
+    boolean haveStation(Station station) {
+        return isSameUpStation(station) || isSameDownStation(station);
     }
 
-    public boolean haveAnyStation(Section section) {
+    boolean haveAnyStation(Section section) {
         return haveUpStation(section) || haveDownStation(section);
     }
 
-    public boolean isSameUpOrDownStation(Section section) {
-        return isUpStation(section.upStation) || isDownStation(section.downStation);
+    boolean isSameUpOrDownStation(Section section) {
+        return isSameUpStation(section.upStation) || isSameDownStation(section.downStation);
     }
 
-    public boolean haveUpStation(Section section) {
-        return isUpStation(section.upStation) || isDownStation(section.upStation);
+    boolean haveUpStation(Section section) {
+        return isSameUpStation(section.upStation) || isSameDownStation(section.upStation);
     }
 
-    public boolean haveDownStation(Section section) {
-        return isUpStation(section.downStation) || isDownStation(section.downStation);
+    boolean haveDownStation(Section section) {
+        return isSameUpStation(section.downStation) || isSameDownStation(section.downStation);
     }
 
-    public boolean isShortAndEqualDistanceThan(Section section) {
+    boolean isShortAndEqualDistanceThan(Section section) {
         return distance <= section.distance;
     }
 

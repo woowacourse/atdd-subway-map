@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -19,11 +20,9 @@ public class SectionService {
         this.stationService = stationService;
     }
 
+    @Transactional
     public Section save(SectionRequest sectionRequest) {
-        Station up = stationService.getById(sectionRequest.getUpStationId());
-        Station down = stationService.getById(sectionRequest.getDownStationId());
-
-        Section savedSection = new Section(up, down, sectionRequest.getDistance());
+        Section savedSection = makeSectionByRequest(sectionRequest);
         sectionDao.save(sectionRequest.getLineId(), savedSection);
 
         return savedSection;
@@ -33,14 +32,15 @@ public class SectionService {
         return new Sections(sectionDao.findAllByLineId(lineId));
     }
 
-    Section makeSectionByRequest(SectionRequest sectionRequest) {
+    public Section makeSectionByRequest(SectionRequest sectionRequest) {
         Station up = stationService.getById(sectionRequest.getUpStationId());
         Station down = stationService.getById(sectionRequest.getDownStationId());
 
         return new Section(up, down, sectionRequest.getDistance());
     }
 
-    void deleteAndSaveSections(Long lineId, Sections origin, Sections resultSections) {
+    @Transactional
+    public void deleteAndSaveSections(Long lineId, Sections origin, Sections resultSections) {
         List<Section> createdSections = resultSections.getDifferentList(origin);
         List<Section> toDeleteSections = origin.getDifferentList(resultSections);
 
