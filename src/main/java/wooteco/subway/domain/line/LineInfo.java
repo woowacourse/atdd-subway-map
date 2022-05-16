@@ -47,7 +47,7 @@ public class LineInfo {
 
     @Override
     public String toString() {
-        return "Line{" +
+        return "LineInfo{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
