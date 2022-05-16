@@ -1,39 +1,28 @@
-package wooteco.subway.service;
-
-import java.util.List;
+package wooteco.subway.service; import java.util.List;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.request.StationRequest;
+import wooteco.subway.repository.StationRepository;
 
 @Service
-public class StationService implements CommonStationService {
+public class StationService {
 
-    private final StationDao stationDao;
+    private final StationRepository stationRepository;
 
-    public StationService(final StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationService(StationRepository stationRepository) {
+        this.stationRepository = stationRepository;
     }
 
-    @Transactional
-    @Override
-    public Station save(final StationRequest stationRequest) {
+    public Station saveStation(final StationRequest stationRequest) {
         final Station station = new Station(stationRequest.getName());
-        return stationDao.save(station);
+        return stationRepository.save(station);
     }
 
-
-    @Transactional(readOnly = true)
-    @Override
     public List<Station> findAll() {
-        return stationDao.findAll();
+        return stationRepository.findAll();
     }
 
-
-    @Transactional
-    @Override
     public void deleteById(final Long id) {
-        stationDao.deleteById(id);
+        stationRepository.deleteById(id);
     }
 }

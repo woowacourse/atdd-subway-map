@@ -1,23 +1,46 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Line {
 
     private final Long id;
     private final String name;
     private final String color;
+    private final Sections sections;
+    private final Long upStationId;
 
-    public Line(final Long id, final String name, final String color) {
+    public Line(final Long id, final String name, final String color, final Sections sections, final Long upStationId) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = sections;
+        this.upStationId = upStationId;
+    }
+
+    public Line(final Long id, final String name, final String color, final Long upStationId) {
+        this(id, name, color, new Sections(new ArrayList<>()), upStationId);
     }
 
     public Line(final String name, final String color) {
-        this(null, name, color);
+        this(null, name, color, new Sections(new ArrayList<>()), 0L);
     }
 
-    public boolean isSameId(final Long id) {
-        return this.id.equals(id);
+    public void addSection(final Section newSection) {
+        sections.addIfPossible(newSection);
+    }
+
+    public void deleteSection(final Station target) {
+        sections.deleteIfPossible(target);
+    }
+
+    public List<Section> getAddSections(final List<Section> previousSections) {
+        return sections.getAddSections(previousSections);
+    }
+
+    public List<Section> getDeletedSections(final List<Section> previousSections) {
+        return sections.getDeletedSections(previousSections);
     }
 
     public Long getId() {
@@ -30,6 +53,14 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Section> getSections() {
+        return sections.getValue();
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
     }
 
     @Override

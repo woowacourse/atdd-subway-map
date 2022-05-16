@@ -4,21 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.service.dto.LineDto;
 
-@Repository
-public class LineDao {
-
-    private static final int NO_ROW_AFFECTED = 0;
-    private static final String LINE_DUPLICATED = "이미 존재하는 노선입니다. ";
-    private static final String LINE_NOT_FOUND = "요청한 노선이 존재하지 않습니다. ";
+@Component
+public class LineDao implements CommonLineDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
@@ -30,54 +25,50 @@ public class LineDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(final Line line) {
+    @Override
+    public Line save(final LineDto lineDto) {
         final Map<String, Object> params = new HashMap<>();
-        params.put("name", line.getName());
-        params.put("color", line.getColor());
-        try {
-            final Long id = simpleInsert.executeAndReturnKey(params).longValue();
-            return new Line(id, line.getName(), line.getColor());
-        } catch (DuplicateKeyException e) {
-            throw new IllegalStateException(LINE_DUPLICATED + line);
-        }
+        params.put("name", lineDto.getName());
+        params.put("color", lineDto.getColor());
+        params.put("up_station_id", lineDto.getUpStationId());
+        final Long id = simpleInsert.executeAndReturnKey(params).longValue();
+        return new Line(id, lineDto.getName(), lineDto.getColor(), lineDto.getUpStationId());
     }
 
+    @Override
     public List<Line> findAll() {
-        final String sql = "select id, name, color from LINE";
+        final String sql = "select id, name, color, up_station_id, from LINE";
         return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> {
             return new Line(resultSet.getLong("id"), resultSet.getString("name"),
-                    resultSet.getString("color"));
+                    resultSet.getString("color"), resultSet.getLong("up_station_id"));
         });
     }
 
+    @Override
     public Line findById(final Long id) {
-        final String sql = "select id, name, color from LINE where id = :id";
+        final String sql = "select id, name, color, up_station_id from LINE where id = :id";
         final SqlParameterSource parameter = new MapSqlParameterSource(Map.of("id", id));
         return namedParameterJdbcTemplate.queryForObject(sql, parameter, (resultSet, rowNum) -> {
             return new Line(resultSet.getLong("id"), resultSet.getString("name"),
-                    resultSet.getString("color"));
+                    resultSet.getString("color"), resultSet.getLong("up_station_id"));
         });
     }
 
-    public void update(final Long id, final LineRequest lineRequest) {
+    @Override
+    public int update(final Long id, final Line line) {
         final String sql = "update LINE set name = :name, color = :color where id = :id";
         final Map<String, Object> params = new HashMap<>();
-        params.put("name", lineRequest.getName());
-        params.put("color", lineRequest.getColor());
+        params.put("name", line.getName());
+        params.put("color", line.getColor());
         params.put("id", id);
         final SqlParameterSource parameter = new MapSqlParameterSource(params);
-        final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, parameter);
-        if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
-            throw new IllegalStateException(LINE_NOT_FOUND + "id=" + id + " " + lineRequest);
-        }
+        return namedParameterJdbcTemplate.update(sql, parameter);
     }
 
-    public void deleteById(final Long id) {
+    @Override
+    public int deleteById(final Long id) {
         final String sql = "delete from LINE where id = :id";
-        final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, Map.of("id", id));
-        if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
-            throw new IllegalStateException(LINE_NOT_FOUND + "id=" + id);
-        }
+        return namedParameterJdbcTemplate.update(sql, Map.of("id", id));
     }
 
 }

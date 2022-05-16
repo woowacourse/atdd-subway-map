@@ -1,16 +1,18 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import java.util.ArrayList;
 import java.util.List;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.util.Converter;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;
     private List<StationResponse> stations;
 
-    public LineResponse() {
+    private LineResponse() {
     }
 
     public LineResponse(final Long id, final String name, final String color, final List<StationResponse> stations) {
@@ -22,6 +24,11 @@ public class LineResponse {
 
     public LineResponse(final Long id, final String name, final String color) {
         this(id, name, color, List.of());
+    }
+
+    public static LineResponse from(final Line line) {
+        final List<Section> sections = line.getSections();
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), Converter.convertFromSections(sections));
     }
 
     public Long getId() {

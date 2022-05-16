@@ -1,10 +1,10 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.response;
 
 public class ErrorResponse {
 
     private String message;
 
-    public ErrorResponse(){}
+    private ErrorResponse(){}
 
     public ErrorResponse(final String message) {
         this.message = message;
