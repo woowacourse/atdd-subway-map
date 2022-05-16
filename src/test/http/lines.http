@@ -1,4 +1,4 @@
-###
+### 노선 등록
 POST http://localhost:8080/lines
 Content-Type: application/json
 
@@ -8,6 +8,42 @@ Content-Type: application/json
   "upStationId": 1,
   "downStationId": 3,
   "distance": 3
+}
+
+### 노선 등록 (예외)
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "분당선",
+  "color": "노란색",
+  "upStationId": 0,
+  "downStationId": 3,
+  "distance": 3
+}
+
+### 노선 등록 (예외)
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "분당선",
+  "color": "노란색",
+  "upStationId": 1,
+  "downStationId": 0,
+  "distance": 3
+}
+
+### 노선 등록 (예외)
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "분당선",
+  "color": "노란색",
+  "upStationId": 1,
+  "downStationId": 3,
+  "distance": -3
 }
 
 ### 전체 노선 조회
