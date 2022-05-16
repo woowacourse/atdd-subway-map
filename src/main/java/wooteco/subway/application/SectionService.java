@@ -1,5 +1,6 @@
 package wooteco.subway.application;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
@@ -13,13 +14,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class SectionService {
 
-    private SectionDao sectionDao;
-
-    public SectionService(SectionDao sectionDao) {
-        this.sectionDao = sectionDao;
-    }
+    private final SectionDao sectionDao;
 
     public long createSection(Section section) {
         List<Section> sections = sectionDao.findByLineId(section.getLineId());

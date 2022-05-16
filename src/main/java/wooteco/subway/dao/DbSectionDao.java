@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@AllArgsConstructor
 @Repository
 public class DbSectionDao implements SectionDao {
 
@@ -62,7 +60,9 @@ public class DbSectionDao implements SectionDao {
 
     @Override
     public List<Section> findByLineId(Long lineId) {
-        return jdbcTemplate.query("select * from section", ROW_MAPPER);
+        String sql = "select * from section where line_id = :line_id";
+        SqlParameterSource namedParameters = new MapSqlParameterSource("line_id", lineId);
+        return jdbcTemplate.query(sql, namedParameters , ROW_MAPPER);
     }
 
     @Override

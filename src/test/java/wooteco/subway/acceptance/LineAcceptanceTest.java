@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.DbLineDao;
+import wooteco.subway.dao.DbSectionDao;
 import wooteco.subway.dao.DbStationDao;
-import wooteco.subway.dao.MemorySectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineResponse;
 
@@ -37,13 +37,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private DbLineDao lineDao;
 
     @Autowired
-    private MemorySectionDao sectionDao;
+    private DbSectionDao sectionDao;
 
     @BeforeEach
     void beforeEach() {
         stationDao.deleteAll();
         lineDao.deleteAll();
-        sectionDao.deleteAll();
     }
 
     @DisplayName("지하철 노선 이름에 빈 문자열을 사용할 수 없다")
@@ -126,7 +125,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long 존재하지_않는_노선_ID = 50L;
 
         // when
-        ExtractableResponse<Response> response = get(LINE + "/" + 존재하지_않는_노선_ID);
+        ExtractableResponse<Response> response = get(lineById(존재하지_않는_노선_ID));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -204,12 +203,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long createdId = extractId(생성_응답);
 
         // when
-        ExtractableResponse<Response> 수정_응답 = put(LINE + "/" + createdId, _7호선);
+        ExtractableResponse<Response> 수정_응답 = put(lineById(createdId), _7호선);
 
         // then
         assertThat(수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        ExtractableResponse<Response> response = get(LINE + "/" + createdId);
+        ExtractableResponse<Response> response = get(lineById(createdId));
         LineResponse 생성된_노선 = convertObject(response, LineResponse.class);
 
         assertThat(extractId(생성_응답)).isEqualTo(createdId);
@@ -237,7 +236,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateNotExistLine() {
         // when & then
         long 존재하지_않는_노선_ID = 50L;
-        ExtractableResponse<Response> response = put(LINE + "/" + 존재하지_않는_노선_ID, _7호선);
+        ExtractableResponse<Response> response = put(lineById(존재하지_않는_노선_ID), _7호선);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -247,7 +246,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteNotExistLine() {
         // given & when
         long 존재하지_않는_노선_ID = 50L;
-        ExtractableResponse response = delete(LINE + "/" + 존재하지_않는_노선_ID);
+        ExtractableResponse response = delete(lineById(존재하지_않는_노선_ID));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());

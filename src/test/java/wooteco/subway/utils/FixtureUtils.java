@@ -17,8 +17,8 @@ public class FixtureUtils {
     public static String STATION = "/stations";
     public static Map<String, String> 상도역 = Map.of("name", "상도역");
     public static Map<String, String> 이수역 = Map.of("name", "이수역");
-    public static Map<String, String> 선릉역 = Map.of("name", "선릉역");
     public static Map<String, String> 강남구청역 = Map.of("name", "강남구청역");
+    public static Map<String, String> 선릉역 = Map.of("name", "선릉역");
 
     public static Map<String, String> 신분당선 = Map.of(
             "name", "신분당선",
@@ -68,6 +68,14 @@ public class FixtureUtils {
 
     public static long extractId(ExtractableResponse<Response> response) {
         return response.jsonPath().getObject("id", Long.class);
+    }
+
+    public static String lineById(Object id) {
+        return LINE + "/" + id;
+    }
+
+    public static String stationById(Object id) {
+        return STATION + "/" + id;
     }
 
     private static RequestSpecification preProcess(Map<String, String> requestBody) {

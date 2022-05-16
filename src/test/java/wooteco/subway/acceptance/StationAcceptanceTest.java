@@ -45,7 +45,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-
     @DisplayName("중복된 이름의 역 이름을 생성할 수 없다 - 400 에러")
     @Test
     void createStationWithDuplicateName() {
@@ -119,7 +118,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         int 존재하지_않는_역_ID = 50;
 
         // when
-        ExtractableResponse<Response> response = delete("/stations/" + 존재하지_않는_역_ID, EMPTY_MAP);
+        ExtractableResponse<Response> response = delete(stationById(존재하지_않는_역_ID));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
