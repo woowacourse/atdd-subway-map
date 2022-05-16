@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.domain.LineException;
 

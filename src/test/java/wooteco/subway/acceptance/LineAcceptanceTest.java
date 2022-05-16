@@ -3,7 +3,6 @@ package wooteco.subway.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
@@ -61,6 +59,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("잘못된 값 입력해서 노선 생성 시도")
+    void createLine_invalid() {
+        // given
+        LineRequest lineRequest = new LineRequest(null, null, null, null, null);
+
+        // when
+        ExtractableResponse<Response> response = postWithBody("/lines", lineRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     @DisplayName("이미 존재하는 이름의 호선을 생성하려고 하면 BAD REQUEST를 반환한다.")
     void createLine_duplicatedName() {
         // given
@@ -77,7 +88,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         LineRequest duplicatedNameRequest = new LineRequest(lineName, blueColor, 노원역.getId(), 강남역.getId(), 10);
         ExtractableResponse<Response> response = postWithBody("/lines", duplicatedNameRequest);
-
 
         // then
         String bodyMessage = response.jsonPath().get("message");

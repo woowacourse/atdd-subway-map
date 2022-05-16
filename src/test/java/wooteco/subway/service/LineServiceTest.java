@@ -13,6 +13,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 
 @SpringBootTest
 @Transactional
@@ -86,7 +87,7 @@ class LineServiceTest {
 
         final String name = "7호선";
         final String color = "bg-blue-600";
-        final LineRequest request = new LineRequest(name, color, null, null, 0);
+        final LineUpdateRequest request = new LineUpdateRequest(name, color);
 
         // when
         lineService.updateById(saved.getId(), request);

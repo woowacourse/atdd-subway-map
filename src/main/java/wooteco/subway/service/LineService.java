@@ -12,6 +12,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.SectionSaveRequest;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.exception.ExceptionMessage;
@@ -65,7 +66,7 @@ public class LineService {
                 .orElseThrow(LineNotFoundException::new);
     }
 
-    public void updateById(final Long id, final LineRequest request) {
+    public void updateById(final Long id, final LineUpdateRequest request) {
         lineDao.update(new LineEntity(id, request.getName(), request.getColor()));
     }
 
