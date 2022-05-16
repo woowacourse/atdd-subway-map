@@ -1,14 +1,15 @@
 package wooteco.subway.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mockito;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.station.StationRequest;
+import wooteco.subway.dto.station.StationResponse;
+import wooteco.subway.exception.BusinessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,13 +19,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.BDDMockito.given;
 
-@SpringBootTest
 class StationServiceTest {
-    @Mock
     StationDao stationDao;
-
-    @InjectMocks
+    SectionDao sectionDao;
     StationService stationService;
+
+    @BeforeEach
+    public void setUp() {
+        stationDao = Mockito.mock(StationDao.class);
+        sectionDao = Mockito.mock(SectionDao.class);
+        stationService = new StationService(stationDao, sectionDao);
+    }
 
     @Test
     @DisplayName("지하철 역 이름이 중복되지 않는다면 등록할 수 있다.")
@@ -45,7 +50,7 @@ class StationServiceTest {
         given(stationDao.isExistName("name")).willReturn(true);
 
         assertThatThrownBy(() -> stationService.save(stationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessage("지하철 이름이 중복될 수 없습니다.");
     }
 
@@ -70,5 +75,15 @@ class StationServiceTest {
     @DisplayName("지하철 역을 삭제할 수 있다.")
     void delete() {
         assertDoesNotThrow(() -> stationService.delete(1L));
+    }
+
+    @Test
+    @DisplayName("노선에 등록되어있는 역이라면 삭제할 수 없다.")
+    void cantDelete() {
+        given(sectionDao.isStationExist(1L)).willReturn(true);
+
+        assertThatThrownBy(() -> stationService.delete(1L))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("구간에 존재하는 역은 삭제할 수 없습니다.");
     }
 }

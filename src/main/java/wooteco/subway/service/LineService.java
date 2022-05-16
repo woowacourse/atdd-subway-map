@@ -1,56 +1,80 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dto.line.LineCreateRequest;
+import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.section.SectionRequest;
+import wooteco.subway.exception.BusinessException;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class LineService {
 
     private static final String DUPLICATE_LINE_NAME = "지하철 노선 이름이 중복될 수 없습니다.";
 
-    private final LineDao dao;
+    private final SectionService sectionService;
+    private final LineDao lineDao;
+    private final StationDao stationDao;
 
-    public LineService(LineDao dao) {
-        this.dao = dao;
+    public LineService(SectionService sectionService, LineDao lineDao, StationDao stationDao) {
+        this.sectionService = sectionService;
+        this.lineDao = lineDao;
+        this.stationDao = stationDao;
     }
 
-    public LineResponse save(LineRequest request) {
-        String name = request.getName();
-        if(dao.isExistName(name)){
-            throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
-        }
+    public LineResponse save(LineCreateRequest request) {
+        validateName(request.getName());
 
-        Line line = dao.save(name, request.getColor());
-        return new LineResponse(line);
+        Line line = lineDao.save(request.getName(), request.getColor());
+        sectionService.save(line.getId(), new SectionRequest(request));
+
+        List<Station> stations = List.of(
+                stationDao.getById(request.getUpStationId()),
+                stationDao.getById(request.getDownStationId())
+        );
+        return new LineResponse(line, stations);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
-        List<Line> lines = dao.findAll();
+        List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(LineResponse::new)
+                .map(line -> new LineResponse(line, sectionService.findStationsByLineId(line.getId())))
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return new LineResponse(dao.findById(id));
+        Line line = lineDao.getById(id);
+        List<Station> stations = sectionService.findStationsByLineId(line.getId());
+        return new LineResponse(line, stations);
     }
 
     public void deleteById(Long id) {
-        dao.delete(id);
+        lineDao.delete(id);
     }
 
     public void update(Long id, LineRequest request) {
         String name = request.getName();
-        if(dao.isExistNameWithoutItself(id, name)){
-            throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
+        if (lineDao.isExistNameWithoutItself(id, name)) {
+            throw new BusinessException(DUPLICATE_LINE_NAME);
         }
 
-        dao.update(id, name, request.getColor());
+        lineDao.update(id, name, request.getColor());
+    }
+
+    private void validateName(String name) {
+        if (lineDao.isExistName(name)) {
+            throw new BusinessException(DUPLICATE_LINE_NAME);
+        }
     }
 }

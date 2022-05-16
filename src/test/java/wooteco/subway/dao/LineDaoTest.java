@@ -5,8 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.BusinessException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -63,7 +63,7 @@ public class LineDaoTest {
     void findById() {
         Line saveLine = dao.save("선릉역", "green");
 
-        Line response = dao.findById(saveLine.getId());
+        Line response = dao.getById(saveLine.getId());
 
         assertThat(response.getName()).isEqualTo("선릉역");
         assertThat(response.getColor()).isEqualTo("green");
@@ -72,8 +72,8 @@ public class LineDaoTest {
     @Test
     @DisplayName("지하철 노선이 존재하지 않는 경우 조회 불가능")
     void findByIdEmpty() {
-        assertThatThrownBy(() -> dao.findById(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+        assertThatThrownBy(() -> dao.getById(1L))
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
@@ -90,7 +90,7 @@ public class LineDaoTest {
     @DisplayName("지하철 노선이 존재하지 않는 경우 삭제 불가능")
     void deleteEmpty() {
         assertThatThrownBy(() -> dao.delete(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
@@ -100,7 +100,7 @@ public class LineDaoTest {
         Line saveLine = dao.save("선릉역", "yellow");
 
         dao.update(saveLine.getId(), "구의역", "green");
-        Line findLine = dao.findById(saveLine.getId());
+        Line findLine = dao.getById(saveLine.getId());
 
         assertThat(findLine.getName()).isEqualTo("구의역");
         assertThat(findLine.getColor()).isEqualTo("green");
@@ -110,7 +110,7 @@ public class LineDaoTest {
     @DisplayName("지하철 노선이 존재하지 않는 경우 수정 불가능")
     void updateEmpty() {
         assertThatThrownBy(() -> dao.update(1L, "선릉역", "green"))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
@@ -135,7 +135,7 @@ public class LineDaoTest {
     }
 
     @Test
-    @DisplayName("자신읠 제외하고 존재하지 않는 이름인 경우 false 반환")
+    @DisplayName("자신을 제외하고 존재하지 않는 이름인 경우 false 반환")
     void isExistNameWithoutItselfWhenFalse() {
         Line saveLine = dao.save("선릉역", "green");
         assertThat(dao.isExistNameWithoutItself(saveLine.getId(), "선릉역")).isFalse();
