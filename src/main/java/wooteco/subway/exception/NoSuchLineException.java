@@ -3,9 +3,8 @@ package wooteco.subway.exception;
 import java.util.NoSuchElementException;
 
 public class NoSuchLineException extends NoSuchElementException {
-
-    public NoSuchLineException() {
-        super("존재하지 않는 노선입니다");
+    public NoSuchLineException(Long lineId) {
+        super("id가 " + lineId + "인 노선은 존재하지 않습니다.");
     }
 
     @Override

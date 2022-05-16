@@ -15,4 +15,8 @@ public interface LineDao {
     void update(Line line) throws NoSuchLineException, IllegalArgumentException;
 
     void deleteById(Long id);
+
+    boolean existByName(String name);
+
+    boolean existByColor(String color);
 }

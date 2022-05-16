@@ -1,18 +1,12 @@
 package wooteco.subway.dto;
 
-import wooteco.subway.domain.Line;
-
-public class LineRequest {
+public class LineUpdateRequest {
     private final String name;
     private final String color;
 
-    public LineRequest(String name, String color) {
+    public LineUpdateRequest(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public Line toLine() {
-        return new Line(name, color);
     }
 
     public String getName() {

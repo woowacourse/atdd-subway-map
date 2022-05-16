@@ -4,91 +4,92 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.memory.StationMemoryDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.jdbc.StationJdbcDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.NoSuchStationException;
+import wooteco.subway.exception.DuplicateStationNameException;
 
+@JdbcTest
 class StationDaoTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private StationDao dao;
 
     @BeforeEach
     void setUp() {
-        StationMemoryDao.deleteAll();
+        dao = new StationJdbcDao(jdbcTemplate);
     }
 
     @DisplayName("새로운 지하철 역을 저장한다")
     @Test
     void saveStation() {
-        // given
-        Station station = new Station(1L, "강남역");
+        Station savedStation = dao.save(new Station("강남역"));
 
-        // when
-        StationMemoryDao.save(station);
-
-        // then
-        List<Station> stations = StationMemoryDao.findAll();
-        assertThat(stations.get(0)).isEqualTo(station);
+        List<Station> stations = dao.findAll();
+        Station actual = stations.get(0);
+        assertThat(actual).isEqualTo(savedStation);
     }
 
     @DisplayName("같은 지하철 역 이름이 있는 경우 예외를 발생시킨다")
     @Test
     void saveStationThrowException() {
         String name = "강남역";
-        StationMemoryDao.save(new Station(1L, name));
+        dao.save(new Station(name));
 
-        assertThatThrownBy(() -> StationMemoryDao.save(new Station(2L, name)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("같은 이름");
+        assertThatThrownBy(() -> dao.save(new Station(name)))
+                .isInstanceOf(DuplicateStationNameException.class);
     }
 
     @DisplayName("역 목록을 조회한다")
     @Test
     void findAll() {
         // given
-        StationMemoryDao.save(new Station(1L, "name1"));
-        StationMemoryDao.save(new Station(2L, "name2"));
-        StationMemoryDao.save(new Station(3L, "name3"));
+        dao.save(new Station("name1"));
+        dao.save(new Station("name2"));
+        dao.save(new Station("name3"));
 
         // when
-        List<Station> stations = StationMemoryDao.findAll();
+        List<Station> stations = dao.findAll();
 
         // then
         assertThat(stations).hasSize(3);
-    }
-
-    @DisplayName("저장된 모든 역을 삭제한다")
-    @Test
-    void deleteAll() {
-        // given
-        Station station = new Station(1L, "강남역");
-        StationMemoryDao.save(station);
-
-        // when
-        StationMemoryDao.deleteAll();
-
-        // then
-        assertThat(StationMemoryDao.findAll()).isEmpty();
     }
 
     @DisplayName("id로 역 하나를 삭제한다")
     @Test
     void deleteById() {
         // given
-        Long savedId = StationMemoryDao.save(new Station(1L, "station"));
+        Station savedStation = dao.save(new Station("station"));
 
         // when
-        StationMemoryDao.deleteById(savedId);
+        dao.deleteById(savedStation.getId());
 
         // then
-        assertThat(StationMemoryDao.findAll()).isEmpty();
+        assertThat(dao.findAll()).isEmpty();
     }
 
-    @DisplayName("삭제하려는 지하철 역이 없는 경우 예외를 발생시킨다")
+    @DisplayName("id로 역 하나를 조회한다")
     @Test
-    void throwsExceptionWhenTargetIdDoesNotExist() {
-        assertThatThrownBy(() -> StationMemoryDao.deleteById(1))
-                .isInstanceOf(NoSuchStationException.class);
+    void findById() {
+        Station savedStation = dao.save(new Station("station"));
+
+        Station findStation = dao.findById(savedStation.getId()).get();
+
+        assertThat(findStation).isEqualTo(savedStation);
+    }
+
+    @DisplayName("존재하지 않는 id로 역을 조회하면 빈 값을 반환한다")
+    @Test
+    void throwExceptionWhenTargetLineDoesNotExist() {
+        Optional<Station> optionalStation = dao.findById(1L);
+        assertThat(optionalStation).isEqualTo(Optional.empty());
     }
 }

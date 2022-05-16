@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.presentation;
 
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
