@@ -195,7 +195,7 @@ class SectionServiceTest {
             firstCreateSection(lineId, 1L, 2L, 3);
             sectionService.createSection(new Section(2L, 3L, 4, lineId));
 
-            sectionService.deleteSection(lineId, 2L);
+            sectionService.removeSection(lineId, 2L);
 
             List<Section> sections = sectionDao.findByLineId(1L);
             Section section = sections.get(0);
@@ -210,7 +210,7 @@ class SectionServiceTest {
             long lineId = 1L;
             firstCreateSection(lineId, 1L, 2L, 3);
 
-            assertThatThrownBy(() -> sectionService.deleteSection(lineId, 2L))
+            assertThatThrownBy(() -> sectionService.removeSection(lineId, 2L))
                     .isInstanceOf(SectionNotDeleteException.class)
                     .hasMessage(SectionNotDeleteException.MESSAGE);
         }

@@ -59,8 +59,11 @@ public class MemoryLineDao implements LineDao {
 
     @Override
     public void deleteById(Long id) {
-        Line found = findById(id).get();
-        lines.remove(found);
+        Line found = findById(id)
+                .orElse(null);
+        if (found != null) {
+            lines.remove(found);
+        }
     }
 
     @Override

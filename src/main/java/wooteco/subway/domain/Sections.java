@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class Sections {
-    public static final int ONLY_ONE_SECTION = 1;
+    private static final int ONLY_ONE_SECTION = 1;
 
     private final List<Section> sections;
 

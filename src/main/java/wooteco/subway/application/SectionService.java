@@ -48,7 +48,7 @@ public class SectionService {
         return Map.of(TerminalStation.UP, sortedStations.getFirst(), TerminalStation.DOWN, sortedStations.getLast());
     }
 
-    public void deleteSection(long lineId, long stationId) {
+    public void removeSection(long lineId, long stationId) {
         List<Section> found = sectionDao.findByLineId(lineId);
         Sections sections = new Sections(found);
         sections.validateCanDeleteSection();
