@@ -37,11 +37,7 @@ class SectionsTest {
         Optional<Section> section = sections.findUpdateWhenAdd(newSection);
 
         // then
-        if (expected == null) {
-            assertThat(section).isEqualTo(Optional.empty());
-            return;
-        }
-        assertThat(section).isEqualTo(Optional.of(expected));
+        assertThat(section).isEqualTo(Optional.ofNullable(expected));
     }
 
     private static Stream<Arguments> parameterProvider() {
