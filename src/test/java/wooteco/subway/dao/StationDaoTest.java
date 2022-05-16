@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +65,8 @@ class StationDaoTest {
         Station gangNam = new Station("강남역");
         Long id = stationDao.save(gangNam).getId();
 
-        Station actual = stationDao.findById(id);
+        Station actual = stationDao.findById(id)
+                .orElseGet(() -> fail("존재하지 않는 역입니다."));
 
         assertThat(actual.getName()).isEqualTo("강남역");
     }
@@ -77,5 +79,37 @@ class StationDaoTest {
         stationDao.deleteById(persistStation.getId());
 
         assertThat(stationDao.findAll()).isEmpty();
+    }
+
+    @DisplayName("id 값이 저장되어 있는지 확인한다.")
+    @Test
+    void checkExistId() {
+        Station station = new Station("강남역");
+        Long id = stationDao.save(station).getId();
+
+        boolean actual = stationDao.existsId(id);
+
+        assertThat(actual).isTrue();
+    }
+
+    @DisplayName("이름이 저장되어 있는지 확인한다.")
+    @Test
+    void checkExistsName() {
+        Station station = new Station("강남역");
+        stationDao.save(station);
+
+        boolean actual = stationDao.existsName(station);
+
+        assertThat(actual).isTrue();
+    }
+
+    @DisplayName("id가 같은 값에 대해서는 저장되어 있는지 검사를 하지 않는다.")
+    @Test
+    void notCheckExists() {
+        Station station = new Station("강남역");
+        Long id = stationDao.save(station).getId();
+        Station checkStation = new Station(id, station.getName());
+
+        assertThat(stationDao.existsName(checkStation)).isFalse();
     }
 }

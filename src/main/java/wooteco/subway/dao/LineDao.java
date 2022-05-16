@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -41,10 +42,12 @@ public class LineDao {
         return jdbcTemplate.query(sql, LINE_MAPPER);
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM LINE WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(sql, parameters, LINE_MAPPER);
+        return jdbcTemplate.query(sql, parameters, LINE_MAPPER)
+                .stream()
+                .findAny();
     }
 
     public void updateById(Long id, Line line) {
@@ -59,6 +62,31 @@ public class LineDao {
         String sql = "DELETE FROM LINE WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, parameters);
+    }
+
+    public boolean existsId(Long id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM LINE WHERE id = :id)";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
+    public boolean existsName(Line line) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM LINE WHERE name = :name AND id != :id)";
+        SqlParameterSource parameters = decideParametersForExists(line);
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
+    public boolean existsColor(Line line) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM LINE WHERE color = :color AND id != :id)";
+        SqlParameterSource parameters = decideParametersForExists(line);
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
+    private SqlParameterSource decideParametersForExists(Line line) {
+        if (line.getId() == null) {
+            return new BeanPropertySqlParameterSource(new Line(0L, line.getName(), line.getColor()));
+        }
+        return new BeanPropertySqlParameterSource(line);
     }
 
 }

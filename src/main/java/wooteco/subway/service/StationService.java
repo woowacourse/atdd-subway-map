@@ -2,14 +2,15 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.duplicate.DuplicateStationException;
+import wooteco.subway.exception.invalidrequest.InvalidStationDeleteRequestException;
+import wooteco.subway.exception.notfound.StationNotFoundException;
 
 @Service
 public class StationService {
@@ -22,16 +23,19 @@ public class StationService {
 
     @Transactional
     public StationResponse create(StationRequest stationRequest) {
-        Station station = stationRequest.toEntity();
-        try {
-            Station newStation = stationDao.save(station);
-            return new StationResponse(newStation);
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateKeyException("이미 존재하는 역입니다.");
+        Station station = new Station(stationRequest.getName());
+        validateUnique(station);
+        Station newStation = stationDao.save(station);
+        return new StationResponse(newStation);
+    }
+
+    private void validateUnique(Station station) {
+        if (stationDao.existsName(station)) {
+            throw new DuplicateStationException("이미 존재하는 역 이름입니다.");
         }
     }
 
-    public List<StationResponse> showAll() {
+    public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
 
         return stations.stream()
@@ -39,16 +43,26 @@ public class StationService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    public Station findById(Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new StationNotFoundException("존재하지 않는 역입니다."));
+    }
+
     public void delete(Long id) {
         validateExist(id);
+        validateDeletable(id);
         stationDao.deleteById(id);
     }
 
     private void validateExist(Long id) {
-        try {
-            stationDao.findById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new EmptyResultDataAccessException("존재하지 않는 역입니다.", 1);
+        if (!stationDao.existsId(id)) {
+            throw new StationNotFoundException("존재하지 않는 역입니다.");
+        }
+    }
+
+    private void validateDeletable(Long id) {
+        if (stationDao.existsContainingSection(id)) {
+            throw new InvalidStationDeleteRequestException("해당 역을 포함하고 있는 구간이 있어 삭제할 수 없습니다.");
         }
     }
 
