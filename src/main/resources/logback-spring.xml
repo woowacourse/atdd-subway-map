@@ -15,15 +15,13 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-        <file>${LOG_PATH}/${FILE_NAME}.%d{yyyy-MM-dd}_.log</file>
+        <file>${LOG_PATH}/${FILE_NAME}.%d{yyyy-MM-dd}_%i.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/${FILE_NAME}.log</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${FILE_NAME}.%d.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>

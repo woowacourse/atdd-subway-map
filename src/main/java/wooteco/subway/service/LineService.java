@@ -36,12 +36,12 @@ public class LineService {
     public LineResponse create(final LineRequest lineRequest) {
         validateDuplicateName(lineRepository.findByName(lineRequest.getName()).isPresent());
         Long id = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor(), new Sections(Collections.emptyList()));
-
         Station upStation = stationRepository.findById(lineRequest.getUpStationId());
         Station downStation = stationRepository.findById(lineRequest.getDownStationId());
-        Section section = new Section(line.getId(), upStation, downStation, lineRequest.getDistance());
+
+        Section section = new Section(id, upStation, downStation, lineRequest.getDistance());
         sectionRepository.save(section);
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor(), new Sections(List.of(section)));
         return new LineResponse(line.getId(),
                 line.getName(),
                 line.getColor(),
