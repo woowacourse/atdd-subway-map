@@ -79,22 +79,31 @@ public class Sections {
     }
 
     private Long removeInterStation(final Station station) {
-        Section targetToUpdate = values.stream()
+        Section targetToUpdate = findTargetToUpdate(station);
+        Section targetToRemove = findTargetToRemove(station);
+        updateAndRemove(targetToUpdate, targetToRemove);
+        return targetToRemove.getId();
+    }
+
+    private Section findTargetToUpdate(final Station station) {
+        return values.stream()
                 .filter(it -> it.isDownStation(station))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchStationException(station.getId()));
+    }
 
-        Section targetToRemove = values.stream()
+    private Section findTargetToRemove(final Station station) {
+        return values.stream()
                 .filter(it -> it.isUpStation(station))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchStationException(station.getId()));
+    }
 
+    private void updateAndRemove(final Section targetToUpdate, final Section targetToRemove) {
         Station downStation = targetToRemove.getDownStation();
-
         targetToUpdate.changeDownStation(downStation);
         targetToUpdate.changeDistance(targetToUpdate.getDistance() + targetToRemove.getDistance());
         values.remove(targetToRemove);
-        return targetToRemove.getId();
     }
 
     private boolean isLastStation(final Station station) {
