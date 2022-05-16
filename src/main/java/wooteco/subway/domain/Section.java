@@ -24,15 +24,6 @@ public class Section {
     public Section(Long upStationId, Long downStationId, Integer distance) {
         this(0L, upStationId, downStationId, distance);
     }
-//
-//    public static Section of(Long id, Long upStationId, Long downStationId, int distance) {
-//        return new Section(id, upStationId, downStationId, distance);
-//    }
-//
-//    public static Section of(Long upStationId, Long downStationId, int distance) {
-//        validate(upStationId, downStationId, distance);
-//        return new Section(0L, upStationId, downStationId, distance);
-//    }
 
     private static void validate(Long upStationId, Long downStationId, int distance) {
         validateStationIds(upStationId, downStationId);
