@@ -25,13 +25,6 @@ public class Sections {
         this.value = Collections.unmodifiableList(sortedSections);
     }
 
-    public static Sections of(List<Section2> value) {
-        List<Section> sections = value.stream()
-                .map(Section2::toDomain)
-                .collect(Collectors.toList());
-        return new Sections(sections);
-    }
-
     private static void validateLineExistence(List<Section> value) {
         if (value.isEmpty()) {
             throw new NotFoundException(ExceptionType.LINE_NOT_FOUND);

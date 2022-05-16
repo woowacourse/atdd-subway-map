@@ -9,9 +9,8 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineInfo;
-import wooteco.subway.domain.line.Lines2;
+import wooteco.subway.domain.line.Lines;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Section2;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
@@ -40,7 +39,7 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        return Lines2.of(findAllLines(), findAllSections())
+        return Lines.of(findAllLines(), findAllSections())
                 .toSortedList()
                 .stream()
                 .map(LineResponse::of)
@@ -90,10 +89,10 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    private List<Section2> findAllSections() {
+    private List<Section> findAllSections() {
         return sectionDao.findAll()
                 .stream()
-                .map(SectionEntity::toDomain2)
+                .map(SectionEntity::toDomain)
                 .collect(Collectors.toList());
     }
 

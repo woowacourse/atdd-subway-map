@@ -2,7 +2,6 @@ package wooteco.subway.entity;
 
 import java.util.Objects;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Section2;
 import wooteco.subway.domain.station.Station;
 
 public class SectionEntity {
@@ -49,11 +48,7 @@ public class SectionEntity {
     }
 
     public Section toDomain() {
-        return new Section(upStation.toDomain(), downStation.toDomain(), distance);
-    }
-
-    public Section2 toDomain2() {
-        return new Section2(lineId, upStation.toDomain(), downStation.toDomain(), distance);
+        return new Section(lineId, upStation.toDomain(), downStation.toDomain(), distance);
     }
 
     @Override

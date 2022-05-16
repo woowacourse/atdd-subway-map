@@ -1,10 +1,6 @@
 package wooteco.subway.entity;
 
 import java.util.Objects;
-import wooteco.subway.domain.line.LineInfo;
-import wooteco.subway.domain.line.LineSection;
-import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.station.Station;
 
 public class LineSectionEntity {
 

@@ -11,16 +11,22 @@ public class Section {
     private static final String NON_ADJACENT_SECTIONS_EXCEPTION = "서로 겹치는 구간이 아닙니다.";
     private static final int MIN_DISTANCE = 1;
 
+    private final Long lineId;
     private final Station upStation;
     private final Station downStation;
     private final int distance;
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Long lineId, Station upStation, Station downStation, int distance) {
         validateDifferentStations(upStation, downStation);
         validateDistance(distance);
+        this.lineId = lineId;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
     }
 
     private void validateDifferentStations(Station upStation, Station downStation) {
@@ -71,6 +77,10 @@ public class Section {
         }
     }
 
+    public Long getLineId() {
+        return lineId;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -83,6 +93,10 @@ public class Section {
         return distance;
     }
 
+    public boolean isRegisteredAtLine(Long lineId) {
+        return lineId.equals(this.lineId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -93,19 +107,21 @@ public class Section {
         }
         Section section = (Section) o;
         return distance == section.distance
+                && Objects.equals(lineId, section.lineId)
                 && Objects.equals(upStation, section.upStation)
                 && Objects.equals(downStation, section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStation, downStation, distance);
+        return Objects.hash(lineId, upStation, downStation, distance);
     }
 
     @Override
     public String toString() {
         return "Section{" +
-                "upStation=" + upStation +
+                "lineId=" + lineId +
+                ", upStation=" + upStation +
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';
