@@ -1,35 +1,62 @@
 package wooteco.subway.application;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineResponse;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao<Section> sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao<Section> sectionDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     @Transactional
-    public Line save(String name, String color) {
+    public LineResponse save(String name, String color, Long upStationId, Long downStationId, int distance) {
         checkExistsName(name);
-        return lineDao.save(new Line(name, color));
+        Line savedLine = lineDao.save(new Line(name, color));
+
+        checkExistsStationId(upStationId);
+        checkExistsStationId(downStationId);
+        Station upStation = stationDao.findById(upStationId);
+        Station downStation = stationDao.findById(downStationId);
+        sectionDao.save(new Section(savedLine, upStation, downStation, distance));
+
+        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(),
+                List.of(upStation, downStation));
     }
 
     @Transactional(readOnly = true)
-    public List<Line> showLines() {
-        return lineDao.findAll();
+    public List<LineResponse> showLines() {
+        List<Line> lines = lineDao.findAll();
+        return lines.stream()
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), getStations(line.getId())))
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getStations(Long lineId) {
+        return stationDao.findAllByLineId(lineId);
     }
 
     @Transactional(readOnly = true)
-    public Line showLine(Long id) {
+    public LineResponse showLine(Long id) {
         checkExistsId(id);
-        return lineDao.findById(id);
+        Line line = lineDao.findById(id);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), getStations(line.getId()));
     }
 
     @Transactional
@@ -46,13 +73,19 @@ public class LineService {
     }
 
     private void checkExistsName(String name) {
-        if (lineDao.existsByName(name)){
+        if (lineDao.existsByName(name)) {
             throw new IllegalArgumentException("중복된 노선 이름입니다.");
         }
     }
 
     private void checkExistsId(Long id) {
         if (lineDao.notExistsById(id)) {
+            throw new IllegalArgumentException("존재하지 않는 id입니다.");
+        }
+    }
+
+    private void checkExistsStationId(Long stationId) {
+        if (stationDao.nonExistsById(stationId)) {
             throw new IllegalArgumentException("존재하지 않는 id입니다.");
         }
     }

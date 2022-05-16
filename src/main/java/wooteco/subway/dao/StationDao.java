@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -14,8 +15,8 @@ public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
-        resultSet.getLong("id"),
-        resultSet.getString("name")
+            resultSet.getLong("id"),
+            resultSet.getString("name")
     );
 
     public StationDao(JdbcTemplate jdbcTemplate) {
@@ -24,7 +25,7 @@ public class StationDao {
 
     public Station save(Station station) {
         final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-            .withTableName("station").usingGeneratedKeyColumns("id");
+                .withTableName("station").usingGeneratedKeyColumns("id");
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", station.getName());
@@ -42,11 +43,29 @@ public class StationDao {
     public boolean existsByName(String name) {
         final String sql = "select count(*) from station where name = ?";
         final Integer numOfStation = jdbcTemplate.queryForObject(sql, Integer.class, name);
-        return !numOfStation.equals(0);
+        return !Objects.equals(numOfStation, 0);
     }
 
     public int deleteById(Long id) {
         final String sql = "DELETE FROM station where id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public Station findById(Long id) {
+        final String sql = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+    }
+
+    public List<Station> findAllByLineId(Long lineId) {
+        String sql = "SELECT DISTINCT s.id, s.name FROM station s, section sec "
+                + "WHERE (sec.up_station_id=s.id or sec.down_station_id=s.id) and sec.line_id=? ";
+        List<Station> query = jdbcTemplate.query(sql, stationRowMapper, lineId);
+        return query;
+    }
+
+    public boolean nonExistsById(Long stationId) {
+        final String sql = "select count(*) from station where id = ?";
+        final Integer numOfStation = jdbcTemplate.queryForObject(sql, Integer.class, stationId);
+        return Objects.equals(numOfStation, 0);
     }
 }

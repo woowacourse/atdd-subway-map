@@ -45,8 +45,8 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    private StationResponse toStationResponse(Station newStation) {
-        return new StationResponse(newStation.getId(), newStation.getName());
+    private StationResponse toStationResponse(Station station) {
+        return new StationResponse(station.getId(), station.getName());
     }
 
     private List<StationResponse> toStationResponses(List<Station> stations) {
