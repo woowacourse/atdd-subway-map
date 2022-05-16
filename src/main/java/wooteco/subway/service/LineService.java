@@ -5,19 +5,15 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.service.dto.LineRequest;
-import wooteco.subway.service.dto.LineResponse;
-import wooteco.subway.service.dto.SectionSaveRequest;
-import wooteco.subway.repository.entity.LineEntity;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.domain.LineException;
-import wooteco.subway.exception.notfound.LineNotFoundException;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.LineResponse;
 
 @Service
 @Transactional

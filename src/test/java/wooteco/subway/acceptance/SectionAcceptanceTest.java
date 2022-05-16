@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.repository.entity.StationEntity;
+import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.service.dto.SectionRequest;
 import wooteco.subway.service.dto.SectionSaveRequest;
-import wooteco.subway.repository.entity.StationEntity;
-import wooteco.subway.service.LineService;
-import wooteco.subway.service.SectionService;
 
 class SectionAcceptanceTest extends AcceptanceTest {
 

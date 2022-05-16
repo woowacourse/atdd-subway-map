@@ -11,34 +11,30 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.dao.StationDao;
-import wooteco.subway.service.dto.SectionDeleteRequest;
-import wooteco.subway.service.dto.SectionSaveRequest;
 import wooteco.subway.repository.entity.LineEntity;
 import wooteco.subway.repository.entity.SectionEntity;
 import wooteco.subway.repository.entity.StationEntity;
+import wooteco.subway.service.dto.SectionDeleteRequest;
+import wooteco.subway.service.dto.SectionSaveRequest;
 
 @SpringBootTest
 @Transactional
 class SectionServiceTest {
 
-    @Autowired
-    private SectionService sectionService;
-
-    @Autowired
-    private SectionDao sectionDao;
-
-    @Autowired
-    private StationDao stationDao;
-
-    @Autowired
-    private LineDao lineDao;
-
-    private Long lineId;
     StationEntity first;
     StationEntity second;
     StationEntity third;
     StationEntity fourth;
     StationEntity add;
+    @Autowired
+    private SectionService sectionService;
+    @Autowired
+    private SectionDao sectionDao;
+    @Autowired
+    private StationDao stationDao;
+    @Autowired
+    private LineDao lineDao;
+    private Long lineId;
 
     @BeforeEach
     void setUp() {

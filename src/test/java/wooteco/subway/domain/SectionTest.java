@@ -21,14 +21,6 @@ class SectionTest {
     private static Station three;
     private static Station four;
 
-    @BeforeEach
-    void setUp() {
-        one = new Station(1L, "one");
-        two = new Station(2L, "two");
-        three = new Station(3L, "three");
-        four = new Station(4L, "four");
-    }
-
     private static Stream<Arguments> provideSection_divide() {
         return Stream.of(
                 Arguments.of(new Section(1L, one, two, 4),
@@ -53,6 +45,14 @@ class SectionTest {
                         new Section(1L, one, three, 9)
                 )
         );
+    }
+
+    @BeforeEach
+    void setUp() {
+        one = new Station(1L, "one");
+        two = new Station(2L, "two");
+        three = new Station(3L, "three");
+        four = new Station(4L, "four");
     }
 
     @ParameterizedTest

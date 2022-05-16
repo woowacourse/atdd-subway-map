@@ -94,7 +94,8 @@ public class JdbcSectionDao implements SectionDao {
             @Override
             public int getBatchSize() {
                 return entities.size();
-            }};
+            }
+        };
     }
 
     @Override

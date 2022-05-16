@@ -19,7 +19,8 @@ public class SectionEntity {
     }
 
     public static SectionEntity of(Long lineId, Section section) {
-        return new SectionEntity(section.getId(), lineId, section.getUpStation().getId(), section.getDownStation().getId(),
+        return new SectionEntity(section.getId(), lineId, section.getUpStation().getId(),
+                section.getDownStation().getId(),
                 section.getDistance());
     }
 

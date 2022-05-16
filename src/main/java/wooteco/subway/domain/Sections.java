@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.ExceptionMessage;
-import wooteco.subway.exception.notfound.SectionNotFoundException;
 import wooteco.subway.exception.domain.SectionException;
+import wooteco.subway.exception.notfound.SectionNotFoundException;
 
 public class Sections {
 

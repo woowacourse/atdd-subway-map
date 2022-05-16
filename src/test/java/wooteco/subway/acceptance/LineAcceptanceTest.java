@@ -13,12 +13,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.repository.entity.StationEntity;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.service.dto.StationResponse;
-import wooteco.subway.repository.entity.StationEntity;
-import wooteco.subway.exception.ExceptionMessage;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -143,7 +143,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         /// given
         String lineName = "7호선";
         String lineColor = "bg-green-600";
-
 
         LineRequest lineRequest = new LineRequest(lineName, lineColor, 강남역.getId(), 노원역.getId(), 5);
 

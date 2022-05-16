@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.service.SectionService;
 import wooteco.subway.service.dto.SectionDeleteRequest;
 import wooteco.subway.service.dto.SectionRequest;
 import wooteco.subway.service.dto.SectionSaveRequest;
-import wooteco.subway.service.SectionService;
 
 @RestController
 @RequestMapping("/lines/{lineId}/sections")

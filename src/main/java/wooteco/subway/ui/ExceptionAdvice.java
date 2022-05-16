@@ -5,9 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.service.dto.ErrorResponse;
 import wooteco.subway.exception.domain.DomainException;
 import wooteco.subway.exception.notfound.NotFoundException;
+import wooteco.subway.service.dto.ErrorResponse;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
