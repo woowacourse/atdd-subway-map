@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineBasicRequest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -121,14 +122,13 @@ class LineServiceTest {
         }
     }
 
-
     @DisplayName("update 메서드는 데이터를 수정한다.")
     @Nested
     class UpdateClass {
 
         @Test
         void 유효한_입력값인_경우_성공() {
-            LineRequest lineRequest = new LineRequest("5호선", "보라색", 1L, 2L, 5);
+            LineBasicRequest lineRequest = new LineBasicRequest("5호선", "보라색");
 
             lineService.update(1L, lineRequest);
 
@@ -141,7 +141,7 @@ class LineServiceTest {
 
         @Test
         void 중복되는_이름으로_수정하려는_경우_예외발생() {
-            LineRequest lineRequest = new LineRequest("2호선", "보라색", 1L, 2L, 5);
+            LineBasicRequest lineRequest = new LineBasicRequest("2호선", "보라색");
 
             assertThatThrownBy(() -> lineService.update(1L, lineRequest))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -149,7 +149,7 @@ class LineServiceTest {
 
         @Test
         void 존재하지_않는_노선을_수정하려는_경우_예외발생() {
-            LineRequest lineRequest = new LineRequest("1호선", "보라색", 1L, 2L, 10);
+            LineBasicRequest lineRequest = new LineBasicRequest("1호선", "보라색");
 
             assertThatThrownBy(() -> lineService.update(9999L, lineRequest))
                 .isInstanceOf(IllegalArgumentException.class);

@@ -9,6 +9,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineBasicRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.SectionRequest;
@@ -32,18 +33,17 @@ public class LineService {
 
     @Transactional
     public LineResponse save(LineRequest lineRequest) {
-        validateDuplicatedName(lineRequest);
+        validateDuplicatedName(lineRequest.getName());
         Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
-        Section section = new Section(line.getId(), upStation, downStation,
-            lineRequest.getDistance());
+        Section section = new Section(line.getId(), upStation, downStation, lineRequest.getDistance());
         line.addSection(sectionDao.save(section));
         return toLineBasicResponse(line);
     }
 
-    private void validateDuplicatedName(LineRequest lineRequest) {
-        if (lineDao.existByName(lineRequest.getName())) {
+    private void validateDuplicatedName(String name) {
+        if (lineDao.existByName(name)) {
             throw new IllegalArgumentException("중복되는 이름의 지하철 노선이 존재합니다.");
         }
     }
@@ -70,9 +70,9 @@ public class LineService {
     }
 
     @Transactional
-    public void update(Long id, LineRequest lineRequest) {
+    public void update(Long id, LineBasicRequest lineRequest) {
         validateById(id);
-        validateDuplicatedName(lineRequest);
+        validateDuplicatedName(lineRequest.getName());
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
     }
@@ -95,7 +95,6 @@ public class LineService {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
         line.addSection(upStation, downStation, request.getDistance());
-
         updateSection(line);
     }
 
