@@ -2,12 +2,12 @@ package wooteco.subway.service;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import wooteco.subway.dao.FakeStationDao;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ClientException;
@@ -15,28 +15,18 @@ import wooteco.subway.exception.ClientException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest
+@Sql(scripts = {"classpath:schema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class StationServiceTest {
 
+    @Autowired
     private StationService stationService;
-
-    @BeforeEach
-    void setUp() {
-        stationService = new StationService(new FakeStationDao());
-    }
-
-    @AfterEach
-    void finish() {
-        List<StationResponse> stations = stationService.findAll();
-        for (StationResponse station : stations) {
-            stationService.deleteStation(station.getId());
-        }
-    }
 
     @Test
     @DisplayName("역정보 저장")
     void save() {
         StationRequest station = new StationRequest("역삼역");
-        StationResponse newStation = stationService.createStation(station);
+        StationResponse newStation = stationService.save(station);
 
         assertThat(station.getName()).isEqualTo(newStation.getName());
     }
@@ -46,9 +36,9 @@ class StationServiceTest {
     void duplicateStation() {
         StationRequest station = new StationRequest("역삼역");
         StationRequest duplicateStation = new StationRequest("역삼역");
-        stationService.createStation(station);
+        stationService.save(station);
 
-        assertThatThrownBy(() -> stationService.createStation(duplicateStation))
+        assertThatThrownBy(() -> stationService.save(duplicateStation))
                 .isInstanceOf(ClientException.class)
                 .hasMessageContaining("이미 등록된 지하철역입니다.");
     }
@@ -58,8 +48,8 @@ class StationServiceTest {
     void findAll() {
         StationRequest firstStation = new StationRequest("역삼역");
         StationRequest secondStation = new StationRequest("삼성역");
-        stationService.createStation(firstStation);
-        stationService.createStation(secondStation);
+        stationService.save(firstStation);
+        stationService.save(secondStation);
 
         List<StationResponse> stations = stationService.findAll();
         StationResponse stationResponse = stations.stream()
@@ -74,8 +64,8 @@ class StationServiceTest {
     @DisplayName("역 정보를 삭제")
     void deleteStation() {
         StationRequest station = new StationRequest("역삼역");
-        StationResponse newStation = stationService.createStation(station);
+        StationResponse newStation = stationService.save(station);
 
-        assertThat(stationService.deleteStation(newStation.getId())).isEqualTo(1);
+        assertThat(stationService.delete(newStation.getId())).isEqualTo(1);
     }
 }

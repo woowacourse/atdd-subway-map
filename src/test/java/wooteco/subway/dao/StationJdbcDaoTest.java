@@ -12,14 +12,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 class StationJdbcDaoTest {
 
-    private StationJdbcDao stationJdbcDao;
+    private StationDao stationJdbcDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -28,12 +27,6 @@ class StationJdbcDaoTest {
     void setUp() {
         stationJdbcDao = new StationJdbcDao(jdbcTemplate);
 
-        jdbcTemplate.execute("DROP TABLE station IF EXISTS");
-        jdbcTemplate.execute("CREATE TABLE station(" +
-                "id bigint auto_increment not null,\n" +
-                "name varchar(255) not null unique,\n" +
-                "primary key(id));");
-
         List<Object[]> splitStation = Arrays.asList("선릉역", "잠실역", "강남역").stream()
                 .map(name -> name.split(" "))
                 .collect(Collectors.toList());
@@ -41,29 +34,25 @@ class StationJdbcDaoTest {
         jdbcTemplate.batchUpdate("INSERT INTO station(name) VALUES (?)", splitStation);
     }
 
-    @DisplayName("역 정보를 저장한다.")
+    @DisplayName("역 정보 저장")
     @Test
     void save() {
-        StationRequest station = new StationRequest("역삼역");
-        Station newStation = stationJdbcDao.save(station);
+        Station newStation = stationJdbcDao.save(new Station("역삼역"));
 
         assertThat(newStation.getName()).isEqualTo("역삼역");
     }
 
-    @DisplayName("역 정보들을 가져온다.")
+    @DisplayName("역 정보 전체 조회")
     @Test
     void findAll() {
-        List<Station> stations = stationJdbcDao.findAll();
-
-        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stationJdbcDao.findAll().size()).isEqualTo(3);
     }
 
-    @DisplayName("역 정보를 삭제한다.")
+    @DisplayName("역 정보 삭제")
     @Test
     void delete() {
-        StationRequest station = new StationRequest("역삼역");
-        Station newStation = stationJdbcDao.save(station);
+        Station newStation = stationJdbcDao.save(new Station("역삼역"));
 
-        assertThat(stationJdbcDao.deleteStation(newStation.getId())).isEqualTo(1);
+        assertThat(stationJdbcDao.delete(newStation.getId())).isEqualTo(1);
     }
 }

@@ -3,13 +3,18 @@ package wooteco.subway.dao;
 import java.util.List;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
 
 public interface StationDao {
 
-    Station save(StationRequest stationRequest);
+    Station save(Station station);
+
+    boolean isExistById(Long id);
+
+    boolean isExistByName(String name);
+
+    Station findById(long id);
 
     List<Station> findAll();
 
-    int deleteStation(long id);
+    int delete(long id);
 }
