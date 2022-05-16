@@ -10,6 +10,7 @@ import wooteco.subway.exception.CustomException;
 import wooteco.subway.exception.IdMissingException;
 import wooteco.subway.exception.RowDuplicatedException;
 import wooteco.subway.exception.RowNotFoundException;
+import wooteco.subway.exception.UnexpectedException;
 
 public class StationSeries {
 
@@ -61,7 +62,7 @@ public class StationSeries {
             .stream()
             .filter(upStation -> !sectionMap.containsValue(upStation))
             .findAny()
-            .orElseThrow(() -> new CustomException("상행 종점을 찾을 수 없습니다.")); // fix to refined
+            .orElseThrow(() -> new UnexpectedException("상행 종점을 찾을 수 없습니다."));
     }
 
     private static List<Station> getOrderedStations(Map<Station, Station> sectionMap, Station cursor) {
