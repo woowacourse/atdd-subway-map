@@ -139,9 +139,9 @@ class LineServiceTest {
         LineResponse line = sut.findLine(createdLine.getId());
         assertThat(line).usingRecursiveComparison()
                 .isEqualTo(new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor(),
-                        List.of(new StationResponse(station1.getId(), station1.getName()),
-                                new StationResponse(station2.getId(), station2.getName()),
-                                new StationResponse(station3.getId(), station3.getName()))));
+                        List.of(StationResponse.from(station1),
+                                StationResponse.from(station2),
+                                StationResponse.from(station3))));
     }
 
     @DisplayName("구간을 제거한다.")
