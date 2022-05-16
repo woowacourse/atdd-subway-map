@@ -53,7 +53,7 @@ public class LineService {
         Section newSection = new Section(upStation, downStation, lineRequest.getDistance());
 
         LineInfo newLine = new LineInfo(lineRequest.getName(), lineRequest.getColor());
-        return LineResponse.of(subwayRepository.save(newLine, newSection));
+        return LineResponse.of(subwayRepository.saveLine(newLine, newSection));
     }
 
     @Transactional
@@ -61,13 +61,13 @@ public class LineService {
         String name = lineRequest.getName();
         validateExistingLine(id);
         validateUniqueLineName(name);
-        subwayRepository.update(new LineInfo(id, name, lineRequest.getColor()));
+        subwayRepository.updateLine(new LineInfo(id, name, lineRequest.getColor()));
     }
 
     @Transactional
     public void delete(Long id) {
         LineInfo line = subwayRepository.findExistingLine(id);
-        subwayRepository.delete(line);
+        subwayRepository.deleteLine(line);
     }
 
     private void validateExistingLine(Long id) {

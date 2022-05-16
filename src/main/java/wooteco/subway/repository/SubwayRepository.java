@@ -67,30 +67,30 @@ public class SubwayRepository {
         return lineDao.findByName(name).isPresent();
     }
 
-    public Line save(LineInfo lineInfo, Section section) {
+    public Line saveLine(LineInfo lineInfo, Section section) {
         LineEntity lineEntity = lineDao.save(new LineEntity(lineInfo.getName(), lineInfo.getColor()));
         sectionDao.save(SectionEntity.of(lineEntity.getId(), section));
         return Line.of(lineEntity.toDomain(), section);
     }
 
-    public void update(LineInfo lineInfo) {
-        LineEntity updatedLine = new LineEntity(lineInfo.getId(), lineInfo.getName(), lineInfo.getColor());
-        lineDao.update(updatedLine);
-    }
-
-    public void delete(LineInfo lineInfo) {
-        Long lineId = lineInfo.getId();
-        lineDao.deleteById(lineId);
-        sectionDao.deleteAllByLineId(lineId);
-    }
-
-    public void save(Long lineId, List<Section> sections) {
+    public void saveSections(Long lineId, List<Section> sections) {
         for (Section section : sections) {
             sectionDao.save(SectionEntity.of(lineId, section));
         }
     }
 
-    public void delete(Long lineId, List<Section> sections) {
+    public void updateLine(LineInfo lineInfo) {
+        LineEntity updatedLine = new LineEntity(lineInfo.getId(), lineInfo.getName(), lineInfo.getColor());
+        lineDao.update(updatedLine);
+    }
+
+    public void deleteLine(LineInfo lineInfo) {
+        Long lineId = lineInfo.getId();
+        lineDao.deleteById(lineId);
+        sectionDao.deleteAllByLineId(lineId);
+    }
+
+    public void deleteSections(Long lineId, List<Section> sections) {
         for (Section section : sections) {
             sectionDao.delete(SectionEntity.of(lineId, section));
         }

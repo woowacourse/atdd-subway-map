@@ -41,7 +41,7 @@ public class SectionService {
     }
 
     private void updateSectionChanges(SectionsManager oldSectionsManager, Sections updatedSections, Long lineId) {
-        subwayRepository.delete(lineId, oldSectionsManager.extractDeletedSections(updatedSections));
-        subwayRepository.save(lineId, oldSectionsManager.extractNewSections(updatedSections));
+        subwayRepository.deleteSections(lineId, oldSectionsManager.extractDeletedSections(updatedSections));
+        subwayRepository.saveSections(lineId, oldSectionsManager.extractNewSections(updatedSections));
     }
 }
