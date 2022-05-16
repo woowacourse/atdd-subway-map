@@ -37,7 +37,7 @@ public class LineController {
         this.sectionService = sectionService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         final Line createdLine = lineService.create(lineRequest);
         final List<Station> stations = stationService.findUpAndDownStations(lineRequest);
@@ -46,7 +46,7 @@ public class LineController {
             .body(lineResponse);
     }
 
-    @GetMapping()
+    @GetMapping
     public List<LineResponse> findAllLine() {
         final List<Line> lines = lineService.findAll();
         final List<LineResponse> lineResponses = lines.stream()
