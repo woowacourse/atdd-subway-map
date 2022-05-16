@@ -51,7 +51,7 @@ public class LineService {
     @Transactional
     public void createSection(final Long lineId, final SectionRequest sectionRequest) {
         final Sections sections = new Sections(toSections(sectionDao.findAllByLineId(lineId)));
-        final Section newSection = getNewSection(lineId, sectionRequest);
+        final Section newSection = createNewSection(lineId, sectionRequest);
         saveAndUpdateSection(sections, newSection);
     }
 
@@ -75,7 +75,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    private Section getNewSection(Long lineId, SectionRequest sectionRequest) {
+    private Section createNewSection(Long lineId, SectionRequest sectionRequest) {
         final Station upStation = stationDao.findById(sectionRequest.getUpStationId())
                 .orElseThrow(StationNotFoundException::new);
         final Station downStation = stationDao.findById(sectionRequest.getDownStationId())
