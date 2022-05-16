@@ -67,8 +67,8 @@ public class LineService {
 
     @Transactional
     public void saveSectionBySectionRequest(Long lineId, SectionRequest sectionRequest) {
-        validateExist(lineId);
-        Line line = lineDao.findById(lineId);
+        Line line = lineDao.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("존재하지 않는 노선입니다."));
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         int distance = sectionRequest.getDistance();
@@ -120,8 +120,8 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse find(Long id) {
-        validateExist(id);
-        Line persistLine = lineDao.findById(id);
+        Line persistLine = lineDao.findById(id)
+                .orElseThrow(() -> new LineNotFoundException("존재하지 않는 노선입니다."));
         Sections sections = new Sections(sectionDao.findAllByLine(persistLine));
         return new LineResponse(persistLine, sections.getSortedStations());
     }
@@ -149,8 +149,8 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Station station = stationService.findById(stationId);
-        validateExist(lineId);
-        Line line = lineDao.findById(lineId);
+        Line line = lineDao.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("존재하지 않는 노선입니다."));
         Sections originSections = new Sections(sectionDao.findAllByLine(line));
         Sections newSections = new Sections(originSections.getValues());
 

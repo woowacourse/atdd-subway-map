@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -41,10 +42,12 @@ public class LineDao {
         return jdbcTemplate.query(sql, LINE_MAPPER);
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM LINE WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(sql, parameters, LINE_MAPPER);
+        return jdbcTemplate.query(sql, parameters, LINE_MAPPER)
+                .stream()
+                .findAny();
     }
 
     public void updateById(Long id, Line line) {

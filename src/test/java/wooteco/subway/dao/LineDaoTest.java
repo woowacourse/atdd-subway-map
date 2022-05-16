@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +68,8 @@ class LineDaoTest {
         Line line = new Line("2호선", "초록색");
         Long id = lineDao.save(line).getId();
 
-        Line actual = lineDao.findById(id);
+        Line actual = lineDao.findById(id)
+                .orElseGet(() -> fail("존재하지 않는 노선입니다."));
         Line expected = new Line(id, line.getName(), line.getColor());
 
         assertEquals(expected, actual);
@@ -81,7 +83,8 @@ class LineDaoTest {
         Line updateLine = new Line("8호선", "분홍색");
         lineDao.updateById(id, updateLine);
 
-        Line actual = lineDao.findById(id);
+        Line actual = lineDao.findById(id)
+                .orElseGet(() -> fail("존재하지 않는 노선입니다."));
         Line expected = new Line(id, updateLine.getName(), updateLine.getColor());
 
         assertEquals(expected, actual);
