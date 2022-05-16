@@ -24,6 +24,7 @@ import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.duplicate.DuplicateLineException;
 import wooteco.subway.exception.notfound.LineNotFoundException;
 import wooteco.subway.exception.notfound.SectionNotFoundException;
+import wooteco.subway.exception.notfound.StationNotFoundException;
 
 @SpringBootTest
 @Transactional
@@ -229,6 +230,20 @@ class LineServiceTest {
                         tuple(gangnam, yeoksam, 1),
                         tuple(yeoksam, seolleung, 1)
                 );
+    }
+
+    @DisplayName("없는 역으로 구간을 생성하려고 하면 예외를 반환한다.")
+    @Test
+    void addSectionWithNotExistStation() {
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "green", gangnam.getId(), seolleung.getId(),
+                2);
+        LineResponse lineResponse = lineService.save(lineCreateRequest);
+        Line line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
+        SectionRequest sectionRequest = new SectionRequest(seolleung.getId(), Long.MAX_VALUE, 2);
+
+        assertThatThrownBy(() -> lineService.saveSectionBySectionRequest(line.getId(), sectionRequest))
+                .isInstanceOf(StationNotFoundException.class)
+                .hasMessage("존재하지 않는 역입니다.");
     }
 
     @DisplayName("특정 노선에서 요청으로 받은 역을 포함하는 구간을 제거한다.")
