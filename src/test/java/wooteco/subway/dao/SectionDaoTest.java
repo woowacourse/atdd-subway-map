@@ -72,4 +72,72 @@ class SectionDaoTest {
         final int actual = sectionDao.countsByLine(1L);
         assertThat(actual).isEqualTo(1);
     }
+
+    @DisplayName("노선에 해당하는 구간을 모두 삭제하는 것을 확인한다.")
+    @Test
+    void delete_all_by_line() {
+        final Section section = new Section(1L, 2L, 10);
+        sectionDao.save(1L, section);
+        sectionDao.deleteAllByLine(1L);
+        final int actual = jdbcTemplate.queryForObject("select count(*) from Section where line_id = ?", Integer.class, 1L);
+
+        assertThat(actual).isEqualTo(0);
+    }
+
+    @DisplayName("상행역 id로 구간을 찾는 것을 확인한다.")
+    @Test
+    void find_section_by_up_station_id() {
+        final Section section = new Section(1L, 2L, 10);
+        sectionDao.save(1L, section);
+        final Section findingStation = sectionDao.findSectionByUpStationId(1L, section);
+
+        assertThat(findingStation.getUpStationId()).isEqualTo(1L);
+    }
+
+    @DisplayName("하행역 id로 구간을 찾는 것을 확인한다.")
+    @Test
+    void find_section_by_down_station_id() {
+        final Section section = new Section(1L, 2L, 10);
+        sectionDao.save(1L, section);
+        final Section findingStation = sectionDao.findSectionByDownStationId(1L, section);
+
+        assertThat(findingStation.getDownStationId()).isEqualTo(2L);
+    }
+
+    @DisplayName("상행역 id로 구간을 찾아 수정하는 것을 확인한다.")
+    @Test
+    void edit_by_up_station_id() {
+        final Section section = new Section(1L, 2L, 10);
+        sectionDao.save(1L, section);
+        final Section editedSection = new Section(1L, 2L, 5);
+        sectionDao.editByUpStationId(1L, editedSection);
+        final Section actualSection = sectionDao.findSectionByUpStationId(1L, editedSection);
+
+        assertThat(actualSection.getDistance()).isEqualTo(5);
+    }
+
+    @DisplayName("같은 라인에서 입력한 역을 가지고 있는 구간을 모두 반환하는 것을 확인한다.")
+    @Test
+    void find_sections_by_station_id() {
+        final Section section1 = new Section(1L, 2L, 10);
+        final Section section2 = new Section(2L, 3L, 10);
+        sectionDao.save(1L, section1);
+        sectionDao.save(1L, section2);
+        final List<Section> sections = sectionDao.findSectionsByStationId(1L, 2L);
+
+        assertThat(sections.size()).isEqualTo(2);
+    }
+
+    @DisplayName("같은 라인에서 입력한 역을 가지고 있는 구간을 모두 삭제하는 것을 확인한다.")
+    @Test
+    void delete_section_by_station_id() {
+        final Section section1 = new Section(1L, 2L, 10);
+        final Section section2 = new Section(2L, 3L, 10);
+        sectionDao.save(1L, section1);
+        sectionDao.save(1L, section2);
+        sectionDao.deleteSectionByStationId(1L, 2L);
+        final int actual = sectionDao.countsByLine(1L);
+
+        assertThat(actual).isEqualTo(0);
+    }
 }
