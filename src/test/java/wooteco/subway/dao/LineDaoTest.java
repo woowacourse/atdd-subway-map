@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.Fixture.강남역;
+import static wooteco.subway.Fixture.청계산입구역;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +27,8 @@ class LineDaoTest {
 
     @Test
     void save() {
-        final Line createdLine = lineDao.save(new Line("8호선", "핑크"));
+        final Line createdLine = lineDao.save(Line.initialCreateWithoutId("8호선", "핑크", 강남역, 청계산입구역, 1));
+
         assertThat(createdLine.getId()).isEqualTo(4L);
     }
 
@@ -33,6 +36,7 @@ class LineDaoTest {
     @DisplayName("노선의 이름이 존재하면 true 반환")
     void existsByName() {
         final boolean result = lineDao.existsByName("경의중앙선");
+
         assertThat(result).isTrue();
     }
 
@@ -40,21 +44,24 @@ class LineDaoTest {
     @DisplayName("노선의 이름이 존재하지 않으면 false 반환")
     void nonExistsName() {
         final boolean result = lineDao.existsByName("2호선");
+
         assertThat(result).isFalse();
     }
 
     @Test
     void findAll() {
         final List<Line> lines = lineDao.findAll();
+
         assertThat(lines.size()).isEqualTo(3);
     }
 
     @Test
     void findById() {
-        Line line = new Line("2호선", "초록이");
+        Line line = Line.initialCreateWithoutId("2호선", "초록이", 강남역, 청계산입구역, 1);
         final Line createdLine = lineDao.save(line);
 
         final Line foundLine = lineDao.findById(createdLine.getId());
+
         assertThat(foundLine.getColor()).isEqualTo(line.getColor());
     }
 
@@ -78,6 +85,7 @@ class LineDaoTest {
         lineDao.deleteById(1L);
 
         final List<Line> lines = lineDao.findAll();
+
         assertThat(lines.size()).isEqualTo(2);
     }
 

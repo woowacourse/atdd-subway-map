@@ -26,6 +26,11 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
+    public Station findStationById(Long id) {
+        return stationDao.findById(id);
+    }
+
+    @Transactional(readOnly = true)
     public List<Station> showStations() {
         return stationDao.findAll();
     }
