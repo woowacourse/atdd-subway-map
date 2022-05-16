@@ -20,8 +20,8 @@ public class Station {
         }
     }
 
-    public Station(final String name) {
-        this(null, name);
+    public static Station ofNullId(final String name) {
+        return new Station(null, name);
     }
 
     public Long getId() {

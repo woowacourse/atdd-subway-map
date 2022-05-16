@@ -26,10 +26,10 @@ public class Section {
         }
     }
 
-    public Section(final Station upStation,
-                   final Station downStation,
-                   final int distance) {
-        this(null, upStation, downStation, distance);
+    public static Section ofNullId(final Station upStation,
+                                   final Station downStation,
+                                   final int distance) {
+        return new Section(null, upStation, downStation, distance);
     }
 
     public boolean isUpStationMatch(final Station station) {

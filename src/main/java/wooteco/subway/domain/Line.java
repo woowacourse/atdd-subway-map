@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.List;
 import wooteco.subway.exception.IllegalLineColorException;
 import wooteco.subway.exception.IllegalLineNameException;
 
@@ -9,15 +8,15 @@ public class Line {
     private final Long id;
     private final String name;
     private final String color;
-    private final List<Station> stations;
+    private final SectionsOnTheLine sectionsOnTheLine;
 
-    public Line(final Long id, final String name, final String color, final List<Station> stations) {
+    public Line(final Long id, final String name, final String color, final SectionsOnTheLine sectionsOnTheLine) {
         validateName(name);
         validateColor(color);
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.sectionsOnTheLine = sectionsOnTheLine;
     }
 
     private void validateName(final String name) {
@@ -32,8 +31,8 @@ public class Line {
         }
     }
 
-    public Line(final String name, final String color, final List<Station> stations) {
-        this(null, name, color, stations);
+    public static Line ofNullId(final String name, final String color, final SectionsOnTheLine sectionsOnTheLine) {
+        return new Line(null, name, color, sectionsOnTheLine);
     }
 
     public Long getId() {
@@ -48,7 +47,7 @@ public class Line {
         return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public SectionsOnTheLine getSectionsOnTheLine() {
+        return sectionsOnTheLine;
     }
 }
