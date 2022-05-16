@@ -5,21 +5,19 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.LineSectionDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineInfo;
-import wooteco.subway.domain.line.LineSection;
-import wooteco.subway.domain.line.Lines;
+import wooteco.subway.domain.line.Lines2;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Section2;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.LineSectionEntity;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.exception.ExceptionType;
 import wooteco.subway.exception.NotFoundException;
@@ -32,20 +30,17 @@ public class LineService {
     private final LineDao lineDao;
     private final StationDao stationDao;
     private final SectionDao sectionDao;
-    private final LineSectionDao lineSectionDao;
 
     public LineService(LineDao lineDao,
                        SectionDao sectionDao,
-                       StationDao stationDao,
-                       LineSectionDao lineSectionDao) {
+                       StationDao stationDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
-        this.lineSectionDao = lineSectionDao;
     }
 
     public List<LineResponse> findAll() {
-        return Lines.of(findAllLineSections())
+        return Lines2.of(findAllLines(), findAllSections())
                 .toSortedList()
                 .stream()
                 .map(LineResponse::of)
@@ -88,10 +83,17 @@ public class LineService {
         sectionDao.deleteAllByLineId(id);
     }
 
-    private List<LineSection> findAllLineSections() {
-        return lineSectionDao.findAll()
+    private List<LineInfo> findAllLines() {
+        return lineDao.findAll()
                 .stream()
-                .map(LineSectionEntity::toDomain)
+                .map(LineEntity::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    private List<Section2> findAllSections() {
+        return sectionDao.findAll()
+                .stream()
+                .map(SectionEntity::toDomain2)
                 .collect(Collectors.toList());
     }
 

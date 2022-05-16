@@ -23,14 +23,6 @@ public class LineSectionEntity {
         this.distance = distance;
     }
 
-    public LineSection toDomain() {
-        LineInfo line = lineEntity.toDomain();
-        Station upStation = upStationEntity.toDomain();
-        Station downStation = downStationEntity.toDomain();
-        Section section = new Section(upStation, downStation, distance);
-        return new LineSection(line, section);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
