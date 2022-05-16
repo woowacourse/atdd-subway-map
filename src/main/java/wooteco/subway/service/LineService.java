@@ -11,7 +11,6 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.domain.LineException;
 import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 
@@ -19,15 +18,10 @@ import wooteco.subway.service.dto.LineResponse;
 @Transactional
 public class LineService {
 
-    private final LineDao lineDao;
-    private final SectionService sectionService;
     private final StationService stationService;
     private final LineRepository lineRepository;
 
-    public LineService(LineDao lineDao, SectionService sectionService, StationService stationService,
-                       LineRepository lineRepository) {
-        this.lineDao = lineDao;
-        this.sectionService = sectionService;
+    public LineService(StationService stationService, LineRepository lineRepository) {
         this.stationService = stationService;
         this.lineRepository = lineRepository;
     }
@@ -49,12 +43,14 @@ public class LineService {
         return LineResponse.of(line, line.getSortedStations());
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineRepository.findAll().stream()
                 .map(this::createResponseFrom)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line line = lineRepository.findById(id);
         List<Station> sortedStations = line.getSortedStations();
@@ -70,7 +66,6 @@ public class LineService {
     }
 
     public void deleteById(final Long id) {
-        sectionService.deleteByLineId(id);
-        lineDao.deleteById(id);
+        lineRepository.deleteById(id);
     }
 }

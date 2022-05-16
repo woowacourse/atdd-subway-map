@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.domain.StationException;
@@ -45,11 +44,6 @@ public class StationService {
 
     public void delete(Long id) {
         stationRepository.deleteById(id);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Station> getSortedStations(Sections sections) {
-        return sections.getSortedStation();
     }
 
     @Transactional(readOnly = true)

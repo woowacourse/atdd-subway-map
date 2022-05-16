@@ -49,8 +49,4 @@ public class SectionService {
         sectionRepository.deleteByLineId(lineId);
         sectionRepository.saveAll(sections);
     }
-
-    public void deleteByLineId(Long lineId) {
-        sectionRepository.deleteByLineId(lineId);
-    }
 }

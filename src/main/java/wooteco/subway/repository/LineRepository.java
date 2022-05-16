@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.exception.notfound.LineNotFoundException;
 import wooteco.subway.exception.notfound.NotFoundException;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.entity.LineEntity;
@@ -51,5 +52,12 @@ public class LineRepository {
                 .collect(Collectors.toList());
         sectionRepository.saveAll(sections);
         return new Line(saved.getId(), saved.getName(), saved.getColor(), sections);
+    }
+
+    public void deleteById(Long id) {
+        lineDao.findById(id)
+                        .orElseThrow(LineNotFoundException::new);
+        sectionRepository.deleteByLineId(id);
+        lineDao.deleteById(id);
     }
 }
