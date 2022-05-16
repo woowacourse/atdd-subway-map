@@ -15,9 +15,9 @@ import wooteco.subway.exception.section.SectionLengthExcessException;
 
 public class Sections {
 
+    private static final int NOT_MATCHED = 0;
     private static final int NONE = 0;
-    private static final int TWO = 2;
-
+    private static final int TWO_STATION_MATCHED = 2;
     private static final int ONE = 1;
 
     private final List<Section> sections;
@@ -26,25 +26,31 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void validateAddable(Section section) {
-        if (sections.size() == NONE) {
-            return;
+    public void validateDuplication(Section section) {
+        if (existSections()) {
+            checkIsDuplicate(section);
         }
-        checkIsDuplicate(section);
+    }
+
+    private boolean existSections() {
+        return sections.size() > NONE;
     }
 
     private void checkIsDuplicate(Section section) {
         List<Long> stationIds = findStationIds();
 
         long matchCount = stationIds.stream()
-                .filter(it -> section.isSameUpStationId(it)
-                        || section.isSameDownStationId(it))
+                .filter(section::hasAnySameStationId)
                 .count();
 
-        if (matchCount == TWO) {
+        checkIsValidByStationMatchCount(matchCount);
+    }
+
+    private void checkIsValidByStationMatchCount(long matchCount) {
+        if (matchCount == TWO_STATION_MATCHED) {
             throw new DuplicatedSectionException();
         }
-        if (matchCount == NONE) {
+        if (matchCount == NOT_MATCHED) {
             throw new NonexistentSectionStationException();
         }
     }

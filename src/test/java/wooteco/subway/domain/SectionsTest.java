@@ -34,7 +34,7 @@ class SectionsTest {
                 new Section(1L, 2L, 3L, 5))));
         Section newSection = new Section(1L, 3L, 4L, 2);
 
-        assertThatCode(() -> sections.validateAddable(newSection))
+        assertThatCode(() -> sections.validateDuplication(newSection))
                 .doesNotThrowAnyException();
     }
 
@@ -45,7 +45,7 @@ class SectionsTest {
                 new Section(1L, 2L, 3L, 5))));
         Section newSection = new Section(1L, 1L, 2L, 10);
 
-        assertThatThrownBy(() -> sections.validateAddable(newSection))
+        assertThatThrownBy(() -> sections.validateDuplication(newSection))
                 .isInstanceOf(DuplicatedSectionException.class);
     }
 
@@ -56,7 +56,7 @@ class SectionsTest {
                 new Section(1L, 4L, 3L, 10))));
         Section newSection = new Section(1L, 4L, 2L, 10);
 
-        assertThatThrownBy(() -> sections.validateAddable(newSection))
+        assertThatThrownBy(() -> sections.validateDuplication(newSection))
                 .isInstanceOf(DuplicatedSectionException.class);
     }
 
@@ -67,7 +67,7 @@ class SectionsTest {
                 new Section(1L, 2L, 3L, 5))));
         Section newSection = new Section(1L, 5L, 6L, 10);
 
-        assertThatThrownBy(() -> sections.validateAddable(newSection))
+        assertThatThrownBy(() -> sections.validateDuplication(newSection))
                 .isInstanceOf(NonexistentSectionStationException.class);
     }
 

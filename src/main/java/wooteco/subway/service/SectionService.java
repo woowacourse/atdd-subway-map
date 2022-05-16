@@ -22,7 +22,7 @@ public class SectionService {
     @Transactional
     public Section save(Section section) {
         Sections sections = sectionDao.findByLineId(section.getLineId());
-        sections.validateAddable(section);
+        sections.validateDuplication(section);
         if (sections.needToChangeExistingSection(section)) {
             Section newSection = sections.findNeedUpdatingSection(section);
             sectionDao.update(newSection);
