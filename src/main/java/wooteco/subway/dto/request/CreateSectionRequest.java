@@ -1,14 +1,15 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.request;
 
-public class SectionRequest {
+public class CreateSectionRequest {
+
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public SectionRequest() {
+    private CreateSectionRequest() {
     }
 
-    public SectionRequest(Long upStationId, Long downStationId, int distance) {
+    public CreateSectionRequest(final Long upStationId, final Long downStationId, final int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;

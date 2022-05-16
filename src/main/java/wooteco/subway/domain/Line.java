@@ -1,21 +1,29 @@
 package wooteco.subway.domain;
 
+import java.util.List;
+
 public class Line {
 
     private final Long id;
     private final String name;
     private final String color;
+    private final Sections sections;
 
     public Line(final String name, final String color) {
-        this(null, name, color);
+        this(null, name, color, new Sections());
     }
 
     public Line(final Long id, final String name, final String color) {
+        this(id, name, color, new Sections());
+    }
+
+    public Line(final Long id, final String name, final String color, final Sections sections) {
         validateName(name);
         validateColor(color);
         this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = sections;
     }
 
     private void validateName(final String name) {
@@ -30,6 +38,10 @@ public class Line {
         }
     }
 
+    public List<Station> getSortedStations() {
+        return sections.toSortedStations();
+    }
+
     public Long getId() {
         return id;
     }
@@ -40,5 +52,9 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 }

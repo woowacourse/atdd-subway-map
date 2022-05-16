@@ -12,3 +12,16 @@ create table if not exists LINE
     color varchar(20) not null unique,
     primary key(id)
 );
+
+create table if not exists SECTION
+(
+    id bigint auto_increment not null,
+    line_id bigint not null,
+    up_station_id bigint not null,
+    down_station_id bigint not null,
+    distance int not null,
+    primary key(id),
+    foreign key(line_id) references LINE (id) on delete cascade,
+    foreign key(up_station_id) references STATION (id),
+    foreign key(down_station_id) references STATION (id)
+);

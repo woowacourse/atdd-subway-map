@@ -14,11 +14,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.response.StationResponse;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철 역 관리 API")
 public class StationAcceptanceTest extends AcceptanceTest {
 
+    /*
+        Scenario: 지하철 역 등록
+            When: 지하철 역 등록을 요청한다.
+            Then: 지하철 역이 생성된다.
+            And: 201 상태, 지하철 역 정보, 저장 경로를 응답 받는다.
+     */
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -40,6 +46,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    /*
+        Scenario: 중복된 지하철 역 등록
+            When: 같은 이름의 지하철 역 생성을 요청한다.
+            Then: 역이 생성되지 않는다.
+            And: 400 상태, 에러 메시지를 응답 받는다.
+     */
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
@@ -68,6 +80,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /*
+        Scenario: 지하철 역 조회
+            When: 지하철 역 조회를 요청한다.
+            Then: 200 상태, 지하철 역 정보를 응답 받는다.
+     */
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
@@ -110,6 +127,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultStationIds).containsAll(expectedStationIds);
     }
 
+    /*
+        Scenario: 지하철 역 제거
+            When: 지하철 역 제거를 요청한다.
+            Then: 역이 제거된다.
+            And: 204 상태를 응답 받는다.
+     */
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
