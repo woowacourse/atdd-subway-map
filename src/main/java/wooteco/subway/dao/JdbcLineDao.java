@@ -16,13 +16,15 @@ import wooteco.subway.domain.Line;
 @Repository
 public class JdbcLineDao implements LineDao {
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Line> LINE_ROW_MAPPER = (resultSet, rowNum) ->
         new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
-            resultSet.getString("color"));
+            resultSet.getString("color")
+        );
+
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcLineDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -44,12 +46,13 @@ public class JdbcLineDao implements LineDao {
         return new Line(id, line.getName(), line.getColor());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public Optional<Line> findById(final Long id) {
         final String sql = "SELECT * FROM line WHERE id = :id";
         final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, lineRowMapper));
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, LINE_ROW_MAPPER));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -58,7 +61,7 @@ public class JdbcLineDao implements LineDao {
     @Override
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
-        return namedParameterJdbcTemplate.query(sql, lineRowMapper);
+        return namedParameterJdbcTemplate.query(sql, LINE_ROW_MAPPER);
     }
 
     @Override
@@ -69,9 +72,9 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public void delete(final Line line) {
+    public void deleteById(final Long id) {
         final String sql = "DELETE FROM line WHERE id = :id";
-        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 

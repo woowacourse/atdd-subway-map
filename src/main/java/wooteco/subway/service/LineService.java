@@ -4,8 +4,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.exception.LineDuplicateException;
 import wooteco.subway.exception.LineNotFoundException;
 
@@ -13,20 +15,27 @@ import wooteco.subway.exception.LineNotFoundException;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(final LineDao lineDao) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public Line create(final LineRequest lineRequest) {
-        final Line line = lineRequest.toEntity();
-        checkDuplicateName(line);
-        return lineDao.save(line);
+        final Line targetLine = lineRequest.toEntity();
+        checkDuplicateName(targetLine);
+        final Line createdLine = lineDao.save(targetLine);
+        final Section targetSection = new Section(createdLine.getId(), lineRequest);
+        sectionDao.save(targetSection);
+
+        return createdLine;
     }
 
     private void checkDuplicateName(final Line line) {
         if (lineDao.existsName(line)) {
-            throw new LineDuplicateException("이미 존재하는 노선입니다.");
+            throw new LineDuplicateException("[ERROR] 이미 존재하는 노선입니다.");
         }
     }
 
@@ -37,7 +46,7 @@ public class LineService {
 
     public Line findById(final Long id) {
         return lineDao.findById(id)
-            .orElseThrow(() -> new LineNotFoundException("해당 노선이 없습니다."));
+            .orElseThrow(() -> new LineNotFoundException("[ERROR] 해당 노선이 없습니다."));
     }
 
     @Transactional
@@ -51,6 +60,6 @@ public class LineService {
     @Transactional
     public void delete(final Long id) {
         final Line targetLine = findById(id);
-        lineDao.delete(targetLine);
+        lineDao.deleteById(targetLine.getId());
     }
 }

@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.exception.StationDuplicateException;
 import wooteco.subway.exception.StationNotFoundException;
 
@@ -26,7 +27,7 @@ public class StationService {
 
     private void checkDuplicateName(final Station station) {
         if (stationDao.existsName(station)) {
-            throw new StationDuplicateException("이미 존재하는 지하철역 이름입니다.");
+            throw new StationDuplicateException("[ERROR] 이미 존재하는 지하철역 이름입니다.");
         }
     }
 
@@ -37,8 +38,17 @@ public class StationService {
 
     @Transactional
     public void delete(final Long id) {
-        final Station targetLine = stationDao.findById(id)
-            .orElseThrow(() -> new StationNotFoundException("이미 존재하는 지하철역 이름입니다."));
-        stationDao.delete(targetLine);
+        stationDao.findById(id)
+            .orElseThrow(() -> new StationNotFoundException("[ERROR] 해당 이름의 지하철역이 존재하지 않습니다."));
+        stationDao.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Station> findUpAndDownStations(final LineRequest lineRequest) {
+        final Station upStation = stationDao.findById(lineRequest.getUpStationId())
+            .orElseThrow(() -> new StationNotFoundException("[ERROR] 해당 이름의 지하철역이 존재하지 않습니다."));
+        final Station downStation = stationDao.findById(lineRequest.getDownStationId())
+            .orElseThrow(() -> new StationNotFoundException("[ERROR] 해당 이름의 지하철역이 존재하지 않습니다."));
+        return List.of(upStation, downStation);
     }
 }

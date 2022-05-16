@@ -1,4 +1,4 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.response;
 
 import wooteco.subway.domain.Station;
 
