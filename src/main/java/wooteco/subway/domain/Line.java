@@ -6,8 +6,8 @@ import java.util.Objects;
 
 public class Line {
 
-    private static final int NAME_LENGTH = 20;
-    private static final int COLOR_LENGTH = 20;
+    private static final int MAX_NAME_LENGTH = 20;
+    private static final int MAX_COLOR_LENGTH = 20;
 
     private final Long id;
     private final String name;
@@ -25,11 +25,11 @@ public class Line {
     }
 
     private void validateDataSize(String name, String color) {
-        if (name.isEmpty() || name.length() > NAME_LENGTH) {
-            throw new DataLengthException("노선 이름이 빈 값이거나 최대 범위(" + NAME_LENGTH + ")를 초과했습니다.");
+        if (name.isEmpty() || name.length() > MAX_NAME_LENGTH) {
+            throw new DataLengthException("노선 이름이 빈 값이거나 최대 범위(" + MAX_NAME_LENGTH + ")를 초과했습니다.");
         }
-        if (color.isEmpty() || color.length() > COLOR_LENGTH) {
-            throw new DataLengthException("노선 색이 빈 값이거나 최대 범위(" + COLOR_LENGTH + "를 초과했습니다.");
+        if (color.isEmpty() || color.length() > MAX_COLOR_LENGTH) {
+            throw new DataLengthException("노선 색이 빈 값이거나 최대 범위(" + MAX_COLOR_LENGTH + "를 초과했습니다.");
         }
     }
 
