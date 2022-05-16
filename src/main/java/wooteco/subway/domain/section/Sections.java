@@ -7,9 +7,9 @@ import static wooteco.subway.domain.section.SectionDeleteStatus.DELETE_MIDDLE;
 import static wooteco.subway.domain.section.SectionDeleteStatus.DELETE_UP_STATION;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +21,7 @@ public class Sections {
     private static final String ERROR_ALREADY_CONTAIN = "[ERROR] 추가할 구간 속 지하철역이 기존 구간에 이미 존재합니다.";
     private static final String ERROR_INVALID_DISTANCE = "[ERROR] 기존 구간보다 긴 구간을 추가할 순 없습니다.";
     private static final String ERROR_NO_STATION = "[ERROR] 해당 종점을 가지는 구간이 존재 하지 않습니다.";
+    private static final String ERROR_FIRST_SECTION_NOT_FOUND = "[ERROR] 첫번째 구간을 찾을 수 없습니다.";
 
     private final List<Section> value;
 
@@ -40,10 +41,10 @@ public class Sections {
 
         if (hasMiddleSection(sectionAddStatus)) {
             addMiddleSection(section, sectionAddStatus);
-            return getSortedByUpStationIdSections();
+            return getSortedSections();
         }
         value.add(section);
-        return getSortedByUpStationIdSections();
+        return getSortedSections();
     }
 
     private void addMiddleSection(final Section section, final SectionAddStatus sectionAddStatus) {
@@ -52,6 +53,11 @@ public class Sections {
             return;
         }
         addMiddleSectionFromDownStation(section);
+    }
+
+    private SectionAddStatus getAddSectionStatus(final Section section) {
+        validateSection(getTotalStationIds(), section);
+        return SectionAddStatus.from(value, section);
     }
 
     private void addMiddleSectionFromUpStation(final Section section) {
@@ -72,11 +78,44 @@ public class Sections {
         value.add(section.createUpToMiddleSection(sameDownStationSection));
     }
 
-    private List<Section> getSortedByUpStationIdSections() {
-        final List<Section> sections = value.stream()
-            .sorted(Comparator.comparing(Section::getUpStationId))
+    public List<Section> getSortedSections() {
+        final Section firstSection = findFirstSection();
+
+        return Stream.concat(Stream.of(firstSection), findNextSections(firstSection).stream())
             .collect(Collectors.toList());
-        return List.copyOf(sections);
+    }
+
+    private Section findFirstSection() {
+        return value.stream()
+            .filter(this::isFirstSection)
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException(ERROR_FIRST_SECTION_NOT_FOUND));
+    }
+
+    private boolean isFirstSection(final Section section) {
+        return !getDownStationIds().contains(section.getUpStationId());
+    }
+
+    private List<Long> getDownStationIds() {
+        return value.stream()
+            .map(Section::getDownStationId)
+            .collect(Collectors.toList());
+    }
+
+    private List<Section> findNextSections(Section section) {
+        final List<Section> sections = new ArrayList<>();
+        while (findNextSection(section).isPresent()) {
+            final Section nextSection = findNextSection(section).get();
+            sections.add(nextSection);
+            section = nextSection;
+        }
+        return sections;
+    }
+
+    private Optional<Section> findNextSection(final Section previousSection) {
+        return value.stream()
+            .filter(section -> section.getUpStationId().equals(previousSection.getDownStationId()))
+            .findFirst();
     }
 
     private void checkDistance(final Section section, final Section sameStandardStationSection) {
@@ -94,11 +133,6 @@ public class Sections {
 
     private boolean hasMiddleSection(final SectionAddStatus sectionAddStatus) {
         return sectionAddStatus == ADD_MIDDLE_FROM_UP_STATION || sectionAddStatus == ADD_MIDDLE_FROM_DOWN_STATION;
-    }
-
-    private SectionAddStatus getAddSectionStatus(final Section section) {
-        validateSection(getTotalStationIds(), section);
-        return SectionAddStatus.from(value, section);
     }
 
     private void validateSection(final List<Long> stationIds, final Section section) {
