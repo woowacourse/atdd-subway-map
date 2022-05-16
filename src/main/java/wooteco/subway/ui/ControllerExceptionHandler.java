@@ -20,7 +20,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleUnexpected(Exception e) {
+    public ResponseEntity<String> handleUnexpected() {
         return ResponseEntity.internalServerError().body("예상치 못한 에러가 발생했습니다.");
     }
 }

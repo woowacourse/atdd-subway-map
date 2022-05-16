@@ -3,7 +3,6 @@ package wooteco.subway.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -12,91 +11,50 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    @Autowired
-    private ObjectMapper om;
-
-    @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() throws JsonProcessingException {
+    @DisplayName("지하철역을 생성한다.")
+    void createStation() {
         // given
-        Station station = new Station("강남역");
-        String params = om.writeValueAsString(station);
+        StationRequest stationRequest = new StationRequest("강남역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = postStations(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() throws JsonProcessingException {
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    void createStationWithDuplicateName() {
         // given
-        Station station = new Station("강남역");
-        String params = om.writeValueAsString(station);
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        StationRequest stationRequest = new StationRequest("강남역");
+        postStations(stationRequest);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = postStations(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() throws JsonProcessingException {
+    @DisplayName("지하철역을 조회한다.")
+    void getStations() {
         /// given
-        Station station1 = new Station("강남역");
-        String params1 = om.writeValueAsString(station1);
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        StationRequest stationRequest1 = new StationRequest("강남역");
+        StationRequest stationRequest2 = new StationRequest("역삼역");
 
-        Station station2 = new Station("역삼역");
-        String params2 = om.writeValueAsString(station2);
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = postStations(stationRequest1);
+        ExtractableResponse<Response> createResponse2 = postStations(stationRequest2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -111,24 +69,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultStationIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultStationIds).containsAll(expectedStationIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() throws JsonProcessingException {
+    @DisplayName("지하철역을 제거한다.")
+    void deleteStation() {
         // given
-        Station station = new Station("강남역");
-        String params = om.writeValueAsString(station);
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        StationRequest stationRequest = new StationRequest("강남역");
+        ExtractableResponse<Response> createResponse = postStations(stationRequest);
 
         // when
         String uri = createResponse.header("Location");

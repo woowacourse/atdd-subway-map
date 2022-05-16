@@ -26,16 +26,16 @@ class StationDaoTest {
     @Test
     @DisplayName("지하철 역을 저장할 수 있다.")
     void insert() {
-        String name = "강남역";
-        Station station = stationDao.insert(new Station(name));
+        Station station = stationDao.insert(new Station("강남역"));
 
-        assertThat(station.getName()).isEqualTo(name);
+        assertThat(station.getName()).isEqualTo("강남역");
     }
 
     @Test
     @DisplayName("이미 존재하는 이름의 지하철 역인지 확인한다.")
     void existByName() {
         stationDao.insert(new Station("강남역"));
+
         Boolean actual = stationDao.existByName(new Station("강남역"));
 
         assertThat(actual).isTrue();
@@ -48,7 +48,18 @@ class StationDaoTest {
         stationDao.insert(new Station("역삼역"));
 
         List<Station> stations = stationDao.findAll();
+
         assertThat(stations.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("지하철 역을 식별자로 조회할 수 있다.")
+    void findById() {
+        Station station = stationDao.insert(new Station("강남역"));
+
+        Station actual = stationDao.findById(station.getId());
+
+        assertThat(actual.getName()).isEqualTo("강남역");
     }
 
     @Test
@@ -58,6 +69,7 @@ class StationDaoTest {
         stationDao.delete(station.getId());
 
         List<Station> stations = stationDao.findAll();
+
         assertThat(stations).isEmpty();
     }
 }

@@ -51,6 +51,12 @@ public class StationDaoImpl implements StationDao {
     }
 
     @Override
+    public Station findById(Long id) {
+        String sql = "SELECT * FROM STATION WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
+
+    @Override
     public void delete(Long id) {
         String sql = "DELETE FROM STATION WHERE id = ?";
         jdbcTemplate.update(sql, id);

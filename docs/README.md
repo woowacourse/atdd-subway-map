@@ -1,11 +1,10 @@
-## 기능 요구 사항
+# 기능 요구 사항
 
+## 1,2 단계
 ### 1. 역 관리
 
 - [x] 중복된 이름을 가진 역을 만들 수 없다.
 - [x] 역을 삭제할 수 있다.
-
-
 
 ### 2. 노선 관리
 
@@ -20,13 +19,32 @@
   - [x] 색깔
 - [x] 지하철 노선을 삭제하는 기능
 
+## 3단계
+### 1. 노선 추가 API 수정
 
+- [x] 노선 추가 시 3가지 정보 추가(upStationId, downStationId, distance)
+  - [x] 지하철 노선을 등록하는 기능
+  - [x] 지하철 노선 목록을 조회하는 기능
+- [x] 노선 추가 시 구간 정보도 함께 등록하는 기능
+
+### 2. 구간 관리
+- [x] 구간을 등록하는 기능
+  - [x] 상행 종점 등록
+  - [x] 하행 종점 등록
+  - [x] 갈래길 방지
+  - [x] 예외 - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.
+  - [x] 예외 - 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.
+  - [x] 예외 - 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없다.
+- [x] 구간을 제거하는 기능
+  - [x] 종점 역 제거
+  - [x] 구간 중간의 역 제거
 
 
 
 ### Reference
 
- [API 문서](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#Line)
+ [API 문서v1](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#Line)
+ [API 문서v2](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/c682be69ae4e412c9e3905a59ef7b7ed#Line)
 
 
 
