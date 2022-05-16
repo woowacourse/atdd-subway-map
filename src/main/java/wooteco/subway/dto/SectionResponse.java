@@ -13,14 +13,6 @@ public class SectionResponse {
     public SectionResponse() {
     }
 
-    public SectionResponse(Long id, Long lineId, Long upStationId, Long downStationId, Long distance) {
-        this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
-    }
-
     public SectionResponse(Long lineId, Long upStationId, Long downStationId, Long distance) {
         this.lineId = lineId;
         this.upStationId = upStationId;

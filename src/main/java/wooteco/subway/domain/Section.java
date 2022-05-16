@@ -7,23 +7,20 @@ import java.util.Objects;
 public class Section {
     private Long id;
     private Long lineId;
-    private Station upStation;
-    private Station downStation;
+    private final Station upStation;
+    private final Station downStation;
     private Long distance;
-
-    public Section(Long id, Long lineId, Station upStation, Station downStation, Long distance) {
-        this.id = id;
-        this.lineId = lineId;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
 
     public Section(Long lineId, Station upStation, Station downStation, Long distance) {
         this.lineId = lineId;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Long id, Long lineId, Station upStation, Station downStation, Long distance) {
+        this(lineId, upStation, downStation, distance);
+        this.id = id;
     }
 
     public List<Section> putBetweenUpStation(Section section) {

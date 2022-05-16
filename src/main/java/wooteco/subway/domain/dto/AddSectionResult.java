@@ -38,10 +38,6 @@ public class AddSectionResult {
         return newEndSection;
     }
 
-    public List<Section> getSplitSections() {
-        return splitSections;
-    }
-
     public Section getFirstSplitSection() {
         return splitSections.get(0);
     }

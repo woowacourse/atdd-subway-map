@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Sections {
-    List<Section> sections;
+    private final List<Section> sections;
 
     public Sections(List<Section> sections) {
         this.sections = new ArrayList<>(sections);

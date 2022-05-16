@@ -1,8 +1,5 @@
 package wooteco.subway.domain.entity;
 
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
-
 public class SectionEntity {
     private Long id;
     private Long lineId;
