@@ -32,14 +32,6 @@ public class SectionsOnTheLine {
         }
     }
 
-    private boolean doMatchedUpStationExist(final Section sectionToAdd) {
-        return sections.stream().anyMatch(section -> section.isUpStationMatch(sectionToAdd.getUpStation()));
-    }
-
-    private boolean doMatchedDownStationExist(final Section sectionToAdd) {
-        return sections.stream().anyMatch(section -> section.isDownStationMatch(sectionToAdd.getDownStation()));
-    }
-
     private boolean doNotAllStationExist(final List<Station> stations, final Station upStation,
                                          final Station downStation) {
         return !stations.contains(upStation) && !stations.contains(downStation);
@@ -48,6 +40,21 @@ public class SectionsOnTheLine {
     private boolean doAllStationExist(final List<Station> stations, final Station upStation,
                                       final Station downStation) {
         return stations.contains(upStation) && stations.contains(downStation);
+    }
+
+    private boolean doMatchedUpStationExist(final Section sectionToAdd) {
+        return sections.stream().anyMatch(section -> section.isUpStationMatch(sectionToAdd.getUpStation()));
+    }
+
+    private boolean doMatchedDownStationExist(final Section sectionToAdd) {
+        return sections.stream().anyMatch(section -> section.isDownStationMatch(sectionToAdd.getDownStation()));
+    }
+
+    public boolean isAddableOutOfLine(final Section sectionToAdd) {
+        validateSectionForAdd(sectionToAdd);
+        return sections.stream()
+                .anyMatch(section -> section.isUpStationMatch(sectionToAdd.getDownStation()) ||
+                                section.isDownStationMatch(sectionToAdd.getUpStation()));
     }
 
     public Section findOverlapSection(final Section section) {

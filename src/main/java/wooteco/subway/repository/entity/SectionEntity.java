@@ -1,6 +1,7 @@
 package wooteco.subway.repository.entity;
 
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 public class SectionEntity {
 
@@ -30,6 +31,10 @@ public class SectionEntity {
                 section.getDownStation().getId(),
                 section.getDistance()
         );
+    }
+
+    public Section createSection(final Station upStation, final Station downStation) {
+        return new Section(id, upStation, downStation, distance);
     }
 
     public SectionEntity fillId(final Long id) {

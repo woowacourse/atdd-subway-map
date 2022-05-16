@@ -28,8 +28,7 @@ public class StationService {
     public Station register(final StationRequestDto stationRequestDto) {
         final Station station = Station.ofNullId(stationRequestDto.getName());
         try {
-            final StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
-            return new Station(savedStationEntity.getId(), savedStationEntity.getName());
+            return stationDao.save(new StationEntity(station)).createStation();
         } catch (DuplicateKeyException exception) {
             throw new DuplicateStationNameException();
         }
@@ -38,8 +37,7 @@ public class StationService {
     // 이거 문제 없는지 체크
     public Station searchById(final Long id) {
         try {
-            final StationEntity stationEntity = stationDao.findById(id);
-            return new Station(stationEntity.getId(), stationEntity.getName());
+            return stationDao.findById(id).createStation();
         } catch (EmptyResultDataAccessException exception) {
             throw new NoSuchElementException("[ERROR] 역을 찾을 수 없습니다.");
         }
@@ -48,7 +46,7 @@ public class StationService {
     public List<Station> searchAll() {
         return stationDao.findAll()
                 .stream()
-                .map(stationEntity -> new Station(stationEntity.getId(), stationEntity.getName()))
+                .map(StationEntity::createStation)
                 .collect(Collectors.toList());
     }
 

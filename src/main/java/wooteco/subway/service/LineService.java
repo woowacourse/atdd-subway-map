@@ -33,30 +33,48 @@ public class LineService {
 
     public void registerSection(final Long lineId, final SectionRequestDto sectionRequestDto) {
         final Line line = searchLineById(lineId);
-        final Station upStation = stationService.searchById(sectionRequestDto.getUpStationId());
-        final Station downStation = stationService.searchById(sectionRequestDto.getDownStationId());
-        final Section section = new Section(upStation, downStation, sectionRequestDto.getDistance());
+        final Section section = creatSectionOf(sectionRequestDto);
         final SectionsOnTheLine sectionsOnTheLine = new SectionsOnTheLine(searchSectionsByLineId(line.getId()));
         if (sectionsOnTheLine.isAddableOnTheLine(section)) {
-            final Section overlapSection = sectionsOnTheLine.findOverlapSection(section);
-            registerSectionWhenOnTheLine(line.getId(), section, overlapSection);
-            return;
+            saveSectionWhenOnTheLine(line.getId(), section, sectionsOnTheLine.findOverlapSection(section));
         }
-        sectionDao.save(new SectionEntity(lineId, section));
+        if (sectionsOnTheLine.isAddableOutOfLine(section)) {
+            sectionDao.save(new SectionEntity(line.getId(), section));
+        }
     }
 
-    private void registerSectionWhenOnTheLine(final Long lineId, final Section section, final Section overlapSection) {
+    private Section creatSectionOf(final SectionRequestDto sectionRequestDto) {
+        final Station upStation = stationService.searchById(sectionRequestDto.getUpStationId());
+        final Station downStation = stationService.searchById(sectionRequestDto.getDownStationId());
+        return Section.ofNullId(upStation, downStation, sectionRequestDto.getDistance());
+    }
+
+    private void saveSectionWhenOnTheLine(final Long lineId, final Section section, final Section overlapSection) {
         if (overlapSection.isUpStationMatch(section.getUpStation())) {
-            final SectionEntity sectionEntity = new SectionEntity(
-                    overlapSection.getId(),
-                    lineId,
-                    section.getDownStation().getId(),
-                    overlapSection.getDownStation().getId(),
-                    overlapSection.getDistance() - section.getDistance());
-            sectionDao.update(sectionEntity);
+            updateOverlapSectionWhenUpStationMatch(lineId, section, overlapSection);
             sectionDao.save(new SectionEntity(lineId, section));
-            return;
         }
+        if (overlapSection.isDownStationMatch(section.getDownStation())) {
+            updateOverlapSectionWhenDownStationMatch(lineId, section, overlapSection);
+            sectionDao.save(new SectionEntity(lineId, section));
+        }
+    }
+
+    private void updateOverlapSectionWhenUpStationMatch(final Long lineId,
+                                                        final Section section,
+                                                        final Section overlapSection) {
+        final SectionEntity sectionEntity = new SectionEntity(
+                overlapSection.getId(),
+                lineId,
+                section.getDownStation().getId(),
+                overlapSection.getDownStation().getId(),
+                overlapSection.getDistance() - section.getDistance());
+        sectionDao.update(sectionEntity);
+    }
+
+    private void updateOverlapSectionWhenDownStationMatch(final Long lineId,
+                                                          final Section section,
+                                                          final Section overlapSection) {
         final SectionEntity sectionEntity = new SectionEntity(
                 overlapSection.getId(),
                 lineId,
@@ -64,44 +82,48 @@ public class LineService {
                 section.getUpStation().getId(),
                 overlapSection.getDistance() - section.getDistance());
         sectionDao.update(sectionEntity);
-        sectionDao.save(new SectionEntity(lineId, section));
-        return;
     }
 
     public List<Section> searchSectionsByLineId(final Long lineId) {
         return sectionDao.findByLineId(lineId).stream()
-                .map(sectionEntity -> new Section(
-                        sectionEntity.getId(),
-                        stationService.searchById(sectionEntity.getUpStationId()),
-                        stationService.searchById(sectionEntity.getDownStationId()),
-                        sectionEntity.getDistance()
-                )).collect(Collectors.toList());
+                .map(sectionEntity -> createSectionOf(sectionEntity))
+                .collect(Collectors.toList());
+    }
+
+    private Section createSectionOf(final SectionEntity sectionEntity) {
+        final Station upStation = stationService.searchById(sectionEntity.getUpStationId());
+        final Station downStation = stationService.searchById(sectionEntity.getDownStationId());
+        return sectionEntity.createSection(upStation, downStation);
     }
 
     public void removeSection(final Long lineId, final Long stationId) {
         final Line line = searchLineById(lineId);
         final Station station = stationService.searchById(stationId);
         final SectionsOnTheLine sectionsOnTheLine = new SectionsOnTheLine(searchSectionsByLineId(line.getId()));
-        validateRemoveSection(station, sectionsOnTheLine);
-        if (sectionsOnTheLine.isTerminus(station)) {
-            sectionDao.deleteByLineIdAndStationId(line.getId(), station.getId());
-            return;
+        validateStationForDeleteSection(station, sectionsOnTheLine);
+        sectionDao.deleteByLineIdAndStationId(line.getId(), station.getId());
+        if (!sectionsOnTheLine.isTerminus(station)) {
+            saveSectionWhenDeleteStationOnTheLine(line.getId(), station, sectionsOnTheLine);
         }
-        Section upperSection = sectionsOnTheLine.findByDownStation(station);
-        Section lowerSection = sectionsOnTheLine.findByUpStation(station);
-        Section section = new Section(
+    }
+
+    private void validateStationForDeleteSection(final Station station, final SectionsOnTheLine sectionsOnTheLine) {
+        if (!sectionsOnTheLine.contains(station) || sectionsOnTheLine.hasSingleSection()) {
+            throw new CanNotDeleteException();
+        }
+    }
+
+    private void saveSectionWhenDeleteStationOnTheLine(final Long lineId,
+                                                       final Station station,
+                                                       final SectionsOnTheLine sectionsOnTheLine) {
+        final Section upperSection = sectionsOnTheLine.findByDownStation(station);
+        final Section lowerSection = sectionsOnTheLine.findByUpStation(station);
+        final Section section = Section.ofNullId(
                 upperSection.getUpStation(),
                 lowerSection.getDownStation(),
                 upperSection.getDistance() + lowerSection.getDistance()
         );
-        sectionDao.deleteByLineIdAndStationId(line.getId(), station.getId());
-        sectionDao.save(new SectionEntity(line.getId(), section));
-    }
-
-    private void validateRemoveSection(final Station station, final SectionsOnTheLine sectionsOnTheLine) {
-        if (!sectionsOnTheLine.contains(station) || sectionsOnTheLine.hasSingleSection()) {
-            throw new CanNotDeleteException();
-        }
+        sectionDao.save(new SectionEntity(lineId, section));
     }
 
     public Line registerLine(final LineRequestDto lineRequestDto) {

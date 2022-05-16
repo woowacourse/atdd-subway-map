@@ -16,6 +16,10 @@ public class StationEntity {
         this(station.getId(), station.getName());
     }
 
+    public Station createStation() {
+        return new Station(id, name);
+    }
+
     public StationEntity fillId(final Long id) {
         return new StationEntity(id, name);
     }
