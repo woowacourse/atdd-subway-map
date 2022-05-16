@@ -36,10 +36,11 @@ public class Sections {
     }
 
     private void validateConnectSection(final Section checkSection) {
-        sections.stream()
-                .filter(section -> section.hasSectionToConnect(checkSection))
-                .findFirst()
-                .orElseThrow(CannotConnectSectionException::new);
+        boolean hasSection = sections.stream()
+                .anyMatch(section -> section.hasSectionToConnect(checkSection));
+        if (!hasSection) {
+            throw new CannotConnectSectionException();
+        }
     }
 
     private Optional<Section> findNearbySection(final Section newSection) {
