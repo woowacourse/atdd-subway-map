@@ -16,6 +16,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionEntity;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.StationNotFoundException;
 
 @Service
 public class LineService {
@@ -37,8 +38,10 @@ public class LineService {
     public LineResponse createLine(final LineRequest request) {
         final Line line = new Line(request.getName(), request.getColor());
         final Long lineId = lineDao.save(line);
-        final Station upStation = stationDao.findById(request.getUpStationId());
-        final Station downStation = stationDao.findById(request.getDownStationId());
+        final Station upStation = stationDao.findById(request.getUpStationId())
+                .orElseThrow(StationNotFoundException::new);
+        final Station downStation = stationDao.findById(request.getDownStationId())
+                .orElseThrow(StationNotFoundException::new);
 
         sectionDao.save(new Section(lineId, upStation, downStation, request.getDistance()));
 
@@ -63,16 +66,20 @@ public class LineService {
                 .map(entity -> new Section(
                         entity.getId(),
                         entity.getLineId(),
-                        stationDao.findById(entity.getUpStationId()),
-                        stationDao.findById(entity.getDownStationId()),
+                        stationDao.findById(entity.getUpStationId())
+                                .orElseThrow(StationNotFoundException::new),
+                        stationDao.findById(entity.getDownStationId())
+                                .orElseThrow(StationNotFoundException::new),
                         entity.getDistance()
                 ))
                 .collect(Collectors.toList());
     }
 
     private Section getNewSection(Long lineId, SectionRequest sectionRequest) {
-        final Station upStation = stationDao.findById(sectionRequest.getUpStationId());
-        final Station downStation = stationDao.findById(sectionRequest.getDownStationId());
+        final Station upStation = stationDao.findById(sectionRequest.getUpStationId())
+                .orElseThrow(StationNotFoundException::new);
+        final Station downStation = stationDao.findById(sectionRequest.getDownStationId())
+                .orElseThrow(StationNotFoundException::new);
         final int distance = sectionRequest.getDistance();
         return new Section(lineId, upStation, downStation, distance);
     }
@@ -85,7 +92,8 @@ public class LineService {
     }
 
     public LineResponse showLine(final long id) {
-        final Line line = lineDao.findById(id);
+        final Line line = lineDao.findById(id)
+                .orElseThrow(LineNotFoundException::new);
         return LineResponse.of(line, findStations(line.getId()));
     }
 
@@ -111,7 +119,8 @@ public class LineService {
 
     @Transactional
     public void deleteSection(long lineId, long stationId) {
-        final Station deleteStation = stationDao.findById(stationId);
+        final Station deleteStation = stationDao.findById(stationId)
+                .orElseThrow(StationNotFoundException::new);
         final Sections sections = new Sections(toSections(sectionDao.findAllByLineId(lineId)));
 
         final List<Section> deletedSections = sections.delete(deleteStation);

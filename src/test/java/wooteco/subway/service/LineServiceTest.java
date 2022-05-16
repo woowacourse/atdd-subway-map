@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,8 +48,8 @@ class LineServiceTest {
 
         // mocking
         given(lineDao.save(any())).willReturn(1L);
-        given(stationDao.findById(1L)).willReturn(new Station(1L, "신대방역"));
-        given(stationDao.findById(2L)).willReturn(new Station(2L, "선릉역"));
+        given(stationDao.findById(1L)).willReturn(Optional.of(new Station(1L, "신대방역")));
+        given(stationDao.findById(2L)).willReturn(Optional.of(new Station(2L, "선릉역")));
         given(sectionDao.save(any())).willReturn(1L);
 
         // when
@@ -75,8 +76,8 @@ class LineServiceTest {
         // mocking
         given(lineDao.findAll()).willReturn(saveLines);
         given(sectionDao.findAllByLineId(1L)).willReturn(List.of(new SectionEntity(1L, 1L, 1L, 2L, 10)));
-        given(stationDao.findById(1L)).willReturn(new Station("강남역"));
-        given(stationDao.findById(2L)).willReturn(new Station("판교역"));
+        given(stationDao.findById(1L)).willReturn(Optional.of(new Station("강남역")));
+        given(stationDao.findById(2L)).willReturn(Optional.of(new Station("판교역")));
 
         // when
         final List<LineResponse> responses = lineService.showLines();
@@ -98,10 +99,10 @@ class LineServiceTest {
         final String color = "bg-red-600";
 
         // mocking
-        given(lineDao.findById(id)).willReturn(new Line(id, name, color));
+        given(lineDao.findById(id)).willReturn(Optional.of(new Line(id, name, color)));
         given(sectionDao.findAllByLineId(1L)).willReturn(List.of(new SectionEntity(1L, 1L, 1L, 2L, 10)));
-        given(stationDao.findById(1L)).willReturn(new Station("강남역"));
-        given(stationDao.findById(2L)).willReturn(new Station("판교역"));
+        given(stationDao.findById(1L)).willReturn(Optional.of(new Station("강남역")));
+        given(stationDao.findById(2L)).willReturn(Optional.of(new Station("판교역")));
 
         // when
         final LineResponse response = lineService.showLine(id);
@@ -176,10 +177,10 @@ class LineServiceTest {
 
         // mocking
         given(sectionDao.findAllByLineId(1L)).willReturn(List.of(new SectionEntity(1L, 1L, 1L, 2L, 10)));
-        given(stationDao.findById(1L)).willReturn(station1);
-        given(stationDao.findById(2L)).willReturn(station2);
-        given(stationDao.findById(1L)).willReturn(station1);
-        given(stationDao.findById(3L)).willReturn(station3);
+        given(stationDao.findById(1L)).willReturn(Optional.of(station1));
+        given(stationDao.findById(2L)).willReturn(Optional.of(station2));
+        given(stationDao.findById(1L)).willReturn(Optional.of(station1));
+        given(stationDao.findById(3L)).willReturn(Optional.of(station3));
 
         // when
         lineService.createSection(1L, new SectionRequest(1L, 3L, 7));
@@ -199,10 +200,10 @@ class LineServiceTest {
                 new SectionEntity(2L, 1L, 2L, 3L, 7));
 
         // mocking
-        given(stationDao.findById(1L)).willReturn(station1);
+        given(stationDao.findById(1L)).willReturn(Optional.of(station1));
         given(sectionDao.findAllByLineId(1L)).willReturn(sectionEntities);
-        given(stationDao.findById(2L)).willReturn(station2);
-        given(stationDao.findById(3L)).willReturn(station3);
+        given(stationDao.findById(2L)).willReturn(Optional.of(station2));
+        given(stationDao.findById(3L)).willReturn(Optional.of(station3));
 
         // when
         lineService.deleteSection(1L, 1L);

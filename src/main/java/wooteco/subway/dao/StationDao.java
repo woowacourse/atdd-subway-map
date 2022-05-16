@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,9 +32,9 @@ public class StationDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Station findById(final Long id) {
+    public Optional<Station> findById(final Long id) {
         final String sql = "SELECT * FROM STATION WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
     }
 
     public List<Station> findAll() {
