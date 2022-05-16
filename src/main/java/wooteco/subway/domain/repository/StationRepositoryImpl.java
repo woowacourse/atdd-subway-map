@@ -1,5 +1,6 @@
-package wooteco.subway.dao;
+package wooteco.subway.domain.repository;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -49,9 +50,13 @@ public class StationRepositoryImpl implements StationRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void delete(final Station station) {
         String sql = "DELETE FROM station WHERE id = :id";
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
+        try {
+            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", station.getId()));
+        } catch (DataAccessException e) {
+            throw new RuntimeException("역 삭제에 실패했습니다.");
+        }
     }
 
     @Override

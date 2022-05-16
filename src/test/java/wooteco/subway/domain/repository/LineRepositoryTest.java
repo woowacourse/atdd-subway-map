@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.domain.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.domain.Line;
+import wooteco.subway.utils.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -15,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 public class LineRepositoryTest {
+
+    private static final long LINE_ID = 1L;
 
     @Autowired
     private DataSource dataSource;
@@ -49,8 +52,8 @@ public class LineRepositoryTest {
         List<Line> lines = lineRepository.findAll();
 
         assertAll(
-                () -> assertThat(lines).hasSize(2),
-                () -> assertThat(lines).containsExactly(saveLine1, saveLine2)
+                () -> assertThat(lines).hasSize(3),
+                () -> assertThat(lines).contains(saveLine1, saveLine2)
         );
     }
 
@@ -79,6 +82,12 @@ public class LineRepositoryTest {
         assertThat(lineRepository.existByName("분당선")).isTrue();
     }
 
+    @DisplayName("동일한 이름의 노선이 존재하지않을 경우 false를 반환한다.")
+    @Test
+    void existByNameFailure() {
+        assertThat(lineRepository.existByName("분당선")).isFalse();
+    }
+
     @DisplayName("노선을 수정한다.")
     @Test
     void update() {
@@ -96,8 +105,9 @@ public class LineRepositoryTest {
     @DisplayName("노선을 삭제한다.")
     @Test
     void deleteById() {
-        Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        lineRepository.deleteById(saveLine.getId());
+        Line line = lineRepository.findById(LINE_ID)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 노선을 찾지 못했습니다."));
+        lineRepository.delete(line);
 
         assertThat(lineRepository.findAll()).isEmpty();
     }

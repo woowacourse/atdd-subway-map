@@ -18,6 +18,10 @@ public class Line {
         this.color = color;
     }
 
+    public static Line create(String name, String color) {
+        return new Line(name, color);
+    }
+
     public Long getId() {
         return id;
     }

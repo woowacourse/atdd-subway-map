@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.domain.repository;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -86,17 +86,17 @@ public class LineRepositoryImpl implements LineRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void delete(Line line) {
         String sql = "DELETE FROM line WHERE id = :id";
-        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        SqlParameterSource parameters = new MapSqlParameterSource("id", line.getId());
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 
     @Override
     public boolean existByName(String name) {
-        final String sql = "SELECT COUNT(*) FROM line WHERE name = :name";
+        final String sql = "SELECT * FROM line WHERE name = :name";
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class);
-        return count != 0;
+        List<Line> lines = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
+        return !lines.isEmpty();
     }
 }

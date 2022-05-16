@@ -1,4 +1,4 @@
-package wooteco.subway.dto;
+package wooteco.subway.service.dto;
 
 public class SectionRequest {
     private Long upStationId;
@@ -12,6 +12,14 @@ public class SectionRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public static SectionRequest from(LineRequest lineRequest) {
+        return new SectionRequest(
+                lineRequest.getUpStationId(),
+                lineRequest.getDownStationId(),
+                lineRequest.getDistance()
+        );
     }
 
     public Long getUpStationId() {

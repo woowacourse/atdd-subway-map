@@ -2,11 +2,14 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
-import wooteco.subway.utils.exception.NameDuplicatedException;
+import wooteco.subway.domain.repository.SectionRepository;
+import wooteco.subway.domain.repository.StationRepository;
+import wooteco.subway.service.dto.StationRequest;
+import wooteco.subway.service.dto.StationResponse;
+import wooteco.subway.utils.exception.DuplicatedException;
+import wooteco.subway.utils.exception.NotDeleteException;
+import wooteco.subway.utils.exception.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,9 +19,11 @@ import java.util.stream.Collectors;
 public class StationService {
 
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public StationService(StationRepository stationRepository) {
+    public StationService(StationRepository stationRepository, SectionRepository sectionRepository) {
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public StationResponse save(final StationRequest stationRequest) {
@@ -30,7 +35,7 @@ public class StationService {
 
     private void validateDuplicateName(StationRequest stationRequest) {
         if (stationRepository.existByName(stationRequest.getName())) {
-            throw new NameDuplicatedException("[ERROR] 이미 존재하는 역의 이름입니다.");
+            throw new DuplicatedException("[ERROR] 이미 존재하는 역의 이름입니다.");
         }
     }
 
@@ -41,7 +46,16 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteStation(final Long id) {
-        stationRepository.deleteById(id);
+    public void deleteById(final Long id) {
+        validateEnrollSection(id);
+        Station station = stationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("[ERROR] 식별자에 해당하는 역을 찾을수 없습니다."));
+        stationRepository.delete(station);
+    }
+
+    private void validateEnrollSection(Long id) {
+        if (sectionRepository.existsByStationId(id)) {
+            throw new NotDeleteException("[ERROR] 구간에 등록되어 있는 역은 제거할 수 없습니다.");
+        }
     }
 }

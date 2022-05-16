@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.domain.repository;
 
 import wooteco.subway.domain.Line;
 
@@ -17,7 +17,7 @@ public interface LineRepository {
 
     void update(Long id, Line line);
 
-    void deleteById(Long id);
+    void delete(Line line);
 
     boolean existByName(String name);
 }
