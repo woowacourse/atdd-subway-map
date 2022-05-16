@@ -6,6 +6,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DeleteUsingDateException;
+import wooteco.subway.exception.ExistKeyException;
 import wooteco.subway.exception.NotFoundException;
 
 import java.util.List;
@@ -21,9 +22,16 @@ public class StationService {
     }
 
     public StationResponse create(StationRequest request) {
+        validateExistStationName(request.getName());
         Station station = new Station(request.getName());
         Station newStation = stationDao.insert(station);
         return StationResponse.of(newStation);
+    }
+
+    private void validateExistStationName(String name) {
+        if (stationDao.existStationByName(name)) {
+            throw new ExistKeyException("요청하신 역의 이름은 이미 존재합니다.");
+        }
     }
 
     public List<StationResponse> findAll() {

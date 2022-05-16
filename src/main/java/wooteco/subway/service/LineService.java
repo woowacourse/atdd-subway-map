@@ -12,6 +12,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.ExistKeyException;
 import wooteco.subway.exception.NotFoundException;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class LineService {
 
     @Transactional
     public LineResponse create(LineRequest request) {
+        validateExistLineName(request.getName());
         Line line = new Line(request.getName(), request.getColor());
         Line savedLine = lineDao.insert(line);
 
@@ -44,6 +46,12 @@ public class LineService {
 
         List<StationResponse> stationResponses = finAllStationsByLineId(savedLine);
         return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), stationResponses);
+    }
+
+    private void validateExistLineName(String name) {
+        if (lineDao.existLineByName(name)) {
+            throw new ExistKeyException("요청하신 노선의 이름은 이미 존재합니다.");
+        }
     }
 
     private void validateExistStation(Long upStationId, Long downStationId) {

@@ -63,4 +63,9 @@ public class LineDao {
         final String SQL = "select exists (select * from line where id = ?)";
         return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
     }
+
+    public boolean existLineByName(String name) {
+        final String SQL = "select exists (select * from line where name = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, name);
+    }
 }

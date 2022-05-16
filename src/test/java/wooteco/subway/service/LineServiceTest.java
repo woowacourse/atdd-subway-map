@@ -13,6 +13,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.ExistKeyException;
 import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
@@ -65,6 +66,18 @@ class LineServiceTest {
                 () -> assertThat(response.getColor()).isEqualTo(request.getColor()),
                 () -> assertThat(response.getStations()).hasSize(2)
         );
+    }
+
+    @DisplayName("존재하는 노선 이름으로 새로운 노선을 생성하려 시도하면 예외가 발생한다.")
+    @Test
+    void throwsExceptionWhenCreateLineWithExistName() {
+        LineRequest request =
+                new LineRequest("신분당선", "red", 선릉역.getId(), 선정릉역.getId(), 10);
+        lineService.create(request);
+
+        assertThatThrownBy(() -> lineService.create(request))
+                .isInstanceOf(ExistKeyException.class)
+                .hasMessageMatching("요청하신 노선의 이름은 이미 존재합니다.");
     }
 
     @DisplayName("존재하지 않는 역으로 노선을 생성하면 예외가 발생한다.")

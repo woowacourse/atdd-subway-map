@@ -14,6 +14,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DeleteUsingDateException;
+import wooteco.subway.exception.ExistKeyException;
 
 import javax.sql.DataSource;
 
@@ -37,6 +38,17 @@ class StationServiceTest {
         stationService = new StationService(new StationDao(jdbcTemplate, dataSource));
         lineService = new LineService(new LineDao(jdbcTemplate, dataSource),
                 new StationDao(jdbcTemplate, dataSource), new SectionDao(jdbcTemplate, dataSource));
+    }
+
+    @DisplayName("존재하는 역 이름으로 새로운 노선을 생성하려 시도하면 예외가 발생한다.")
+    @Test
+    void throwsExceptionWhenCreateStationWithExistName() {
+        StationRequest request = new StationRequest("선릉역");
+        stationService.create(request);
+
+        assertThatThrownBy(() -> stationService.create(request))
+                .isInstanceOf(ExistKeyException.class)
+                .hasMessageMatching("요청하신 역의 이름은 이미 존재합니다.");
     }
 
     @DisplayName("삭제하려는 역이 노선에 포함되어있으면 예외가 발생한다.")
