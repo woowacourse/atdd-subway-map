@@ -70,24 +70,18 @@ public class Sections {
     }
 
     private boolean canInsertSection(Section section, Section sectionInLine) {
-        if (canInsertUpStation(section, sectionInLine) && !canInsertDownStation(section, sectionInLine)) {
-            return true;
-        }
-        if (canInsertDownStation(section, sectionInLine) && !canInsertUpStation(section, sectionInLine)) {
-            return true;
-        }
-        return false;
+        return canInsertLeft(section, sectionInLine) || canInsertRight(section, sectionInLine);
     }
 
     private void insertSection(Section section, LinkedList<Section> flexibleSections,
         int index, Section sectionInLine) {
 
-        if (canInsertUpStation(section, sectionInLine) && !canInsertDownStation(section, sectionInLine)) {
+        if (canInsertLeft(section, sectionInLine)) {
             flexibleSections.add(index, section);
             sectionInLine.updateUpStation(section.getDownStation(),
                 sectionInLine.getDistance() - section.getDistance());
         }
-        if (canInsertDownStation(section, sectionInLine) && !canInsertUpStation(section, sectionInLine)) {
+        if (canInsertRight(section, sectionInLine)) {
             flexibleSections.add(index + 1, section);
             sectionInLine.updateDownStation(section.getUpStation(),
                 sectionInLine.getDistance() - section.getDistance());
@@ -118,6 +112,14 @@ public class Sections {
         }
 
         return false;
+    }
+
+    private boolean canInsertLeft(Section section, Section sectionInLine) {
+        return canInsertUpStation(section, sectionInLine) && !canInsertDownStation(section, sectionInLine);
+    }
+
+    private boolean canInsertRight(Section section, Section sectionInLine) {
+        return canInsertDownStation(section, sectionInLine) && !canInsertUpStation(section, sectionInLine);
     }
 
     private boolean canInsertUpStation(Section section, Section sectionInLine) {
