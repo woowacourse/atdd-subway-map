@@ -69,7 +69,9 @@ public class LineService {
     }
 
     public LineResponse getLine(Long id) {
-        Line line = jdbcLineDao.findById(id);
+        Line line = jdbcLineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(LINE_NOT_EXIST));
+
         List<Section> sections = jdbcSectionDao.findSectionsByLineId(line.getId());
 
         List<StationResponse> stationResponses = findStationInSections(sections).stream()
