@@ -1,10 +1,8 @@
 package wooteco.subway.dao;
 
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -12,6 +10,8 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.section.NoSuchSectionException;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,5 +89,11 @@ public class SectionDao {
         params.put("lineId", lineId);
 
         jdbcTemplate.update(sql, params);
+    }
+
+    public void saveAll(List<Section> sections) {
+        String sql = "INSERT INTO section (distance, line_id, up_station_id, down_station_id) VALUES (:distance, :lineId, :upStationId, :downStationId)";
+        SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(sections);
+        jdbcTemplate.batchUpdate(sql, batch);
     }
 }

@@ -22,15 +22,17 @@ public class Sections {
     }
 
     public Sections addSection(Section sectionToInsert) {
-        sections.add(sectionToInsert);
+        validateInsertable(sectionToInsert);
 
         Optional<Section> deletableSection = findSectionToDelete(sectionToInsert);
 
+        sections.add(sectionToInsert);
         deletableSection.ifPresent(sectionToDelete -> {
             Section sectionToUpdate = getSectionToUpdate(sectionToDelete, sectionToInsert);
             sections.remove(sectionToDelete);
             sections.add(sectionToUpdate);
         });
+
 
         return new Sections(sections);
     }

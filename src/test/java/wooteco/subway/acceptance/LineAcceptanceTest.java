@@ -311,9 +311,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long savedLineId = Long.parseLong(response.header("Location").split("/")[2]);
 
         //when
-        Map<String, String> updateParams = new HashMap<>();
+        Map<String, Object> updateParams = new HashMap<>();
         updateParams.put("name", "3호선");
         updateParams.put("color", "orange");
+        updateParams.put("upStationId", 1L);
+        updateParams.put("downStationId", 2L);
+        updateParams.put("distance", 10);
 
         ExtractableResponse<Response> updateResponse = put("/lines/" + savedLineId, updateParams);
 

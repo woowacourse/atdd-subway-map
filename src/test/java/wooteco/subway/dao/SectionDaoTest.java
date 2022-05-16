@@ -104,4 +104,19 @@ class SectionDaoTest {
         assertThat(sectionDao.findByLineId(1L).size()).isZero();
     }
 
+    @DisplayName("모든 section을 저장한다.")
+    @Test
+    void saveAll() {
+        Section section1 = new Section(10, 1L, 1L, 3L);
+        Section section2 = new Section(10, 1L, 11L, 13L);
+        Section section3 = new Section(10, 1L, 13L, 14L);
+        Section section4 = new Section(10, 1L, 14L, 15L);
+
+        List<Section> sections = List.of(section1, section2, section3, section4);
+
+        sectionDao.saveAll(sections);
+
+        assertThat(sectionDao.findByLineId(1L).size()).isEqualTo(4);
+
+    }
 }

@@ -35,7 +35,7 @@ public class LineService {
         Line line = lineRequest.toEntity();
         validateDuplicateName(line);
         Line savedLine = lineDao.save(line);
-        Section section = sectionService.initialize(new Section(lineRequest.getDistance(), line.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId()));
+        Section section = sectionService.initialize(new Section(lineRequest.getDistance(), savedLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId()));
         Station upStation = stationService.findById(section.getUpStationId());
         Station downStation = stationService.findById(section.getDownStationId());
         return LineResponse.of(savedLine, List.of(upStation, downStation));
