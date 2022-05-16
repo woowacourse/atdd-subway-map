@@ -1,15 +1,15 @@
 package wooteco.subway.dao;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-
-import javax.sql.DataSource;
-import java.util.List;
-import java.util.Map;
 
 @Repository
 public class LineDao {
@@ -31,9 +31,11 @@ public class LineDao {
                     resultSet.getString("color")
             );
 
-    public Line insert(String name, String color) {
-        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name, "color", color)).longValue();
-        return new Line(id, name, color);
+    public Line insert(Line line) {
+        long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", line.getName(), "color", line.getColor()))
+                .longValue();
+
+        return new Line(id, line.getName(), line.getColor());
     }
 
     public List<Line> findAll() {
@@ -43,11 +45,11 @@ public class LineDao {
 
     public Optional<Line> findById(Long id) {
         final String sql = "SELECT * FROM LINE WHERE id = ?";
-        List<Line> result = jdbcTemplate.query(sql, lineRowMapper, id);
-        if(result.isEmpty()){
+        try{
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper, id));
+        } catch(IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
         }
-        return Optional.of(result.get(0));
     }
 
     public int delete(Long id) {
@@ -58,11 +60,6 @@ public class LineDao {
     public int update(Line line) {
         final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
-    }
-
-    public boolean isExistId(Long id) {
-        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 
     public boolean isExistName(String name) {

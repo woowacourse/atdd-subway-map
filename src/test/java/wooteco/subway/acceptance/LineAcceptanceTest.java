@@ -4,7 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.delete;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.get;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.getLineRequest;
+import static wooteco.subway.acceptance.AcceptanceTestFixture.getStationRequest;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.insert;
+import static wooteco.subway.acceptance.AcceptanceTestFixture.line1Post;
+import static wooteco.subway.acceptance.AcceptanceTestFixture.line2Post;
+import static wooteco.subway.acceptance.AcceptanceTestFixture.line2Put;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.update;
 
 import io.restassured.response.ExtractableResponse;
@@ -12,33 +16,55 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    @BeforeEach
+    void setStations() {
+        insert(getStationRequest("name1"), "/stations");
+        insert(getStationRequest("name2"), "/stations");
+        insert(getStationRequest("name3"), "/stations");
+        insert(getStationRequest("name4"), "/stations");
+    }
+
     @Test
     @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // given & when
-        ExtractableResponse<Response> response = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> response = insert(getLineRequest(line1Post), "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성할 시 400에러를 발생시킨다.")
     @Test
     void createLineWithDuplicateName() {
         // given
-        insert(getLineRequest("name", "red"), "/lines");
+        insert(getLineRequest(line1Post), "/lines");
 
         // when
-        ExtractableResponse<Response> createResponse = insert(getLineRequest("name", "green"), "/lines");
+        ExtractableResponse<Response> createResponse = insert(getLineRequest(line1Post), "/lines");
+
+        // then
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("중복되는 상하행 지하철역 id로 지하철 노선을 생성할 시 400에러를 발생시킨다.")
+    @Test
+    void createLineWithDuplicateStationId() {
+        // when
+        ExtractableResponse<Response> createResponse = insert(
+                getLineRequest(new LineRequest.Post("1호선", "blue", 1L, 1L, 10)), "/lines");
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -49,9 +75,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> createResponse1 = insert(getLineRequest(line1Post), "/lines");
 
-        ExtractableResponse<Response> createResponse2 = insert(getLineRequest("name2", "green"), "/lines");
+        ExtractableResponse<Response> createResponse2 = insert(getLineRequest(line2Post), "/lines");
         // when
         ExtractableResponse<Response> getResponse = get("/lines");
 
@@ -72,9 +98,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        ExtractableResponse<Response> createResponse1 = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> createResponse1 = insert(getLineRequest(line1Post), "/lines");
 
-        ExtractableResponse<Response> createResponse2 = insert(getLineRequest("name2", "green"), "/lines");
+        ExtractableResponse<Response> createResponse2 = insert(getLineRequest(line2Post), "/lines");
 
         Long expectedId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
 
@@ -88,12 +114,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultId).isEqualTo(expectedId);
     }
 
+    @DisplayName("존재하지 않는 노선을 조회할 시 404에러가 발생한다.")
+    @Test
+    void getLineNotExist() {
+        /// given
+        ExtractableResponse<Response> createResponse = insert(getLineRequest(line1Post), "/lines");
+        long expectedId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        // when
+        ExtractableResponse<Response> response = get("/lines/" + expectedId + 1);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> createResponse = insert(getLineRequest(line1Post), "/lines");
 
         // when
         String path = createResponse.header("Location");
@@ -103,17 +143,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("기존에 존재하지 않는 노선을 삭제할 시 404에러를 발생한다.")
+    @Test
+    void deleteLineNotExist() {
+        /// given
+        ExtractableResponse<Response> createResponse = insert(getLineRequest(line1Post), "/lines");
+        long expectedId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        // when
+        ExtractableResponse<Response> response = delete("/lines/" + expectedId + 1);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> createResponse = insert(getLineRequest(line1Post), "/lines");
         String path = createResponse.header("Location");
 
         //when
-        ExtractableResponse<Response> updateResponse = update(getLineRequest("2호선", "green"), path);
+        ExtractableResponse<Response> updateResponse = update(getLineRequest(line2Put), path);
 
         // then
         ExtractableResponse<Response> findResponse = get(path);
@@ -122,22 +175,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getName()).isEqualTo("2호선");
-        assertThat(lineResponse.getColor()).isEqualTo("green");
+        assertThat(lineResponse.getColor()).isEqualTo("blue");
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선명으로 지하철 노선명을 수정한다.")
+    @DisplayName("기존에 존재하는 지하철 노선명으로 지하철 노선명을 수정할 경우 400에러를 발생시킨다.")
     @Test
     void updateLineWithDuplicateName() {
         /// given
-        ExtractableResponse<Response> createResponse1 = insert(getLineRequest("name", "red"), "/lines");
-        ExtractableResponse<Response> createResponse2 = insert(getLineRequest("name2", "green"), "/lines");
-        String path = createResponse2.header("Location");
+        ExtractableResponse<Response> createResponse1 = insert(getLineRequest(line1Post), "/lines");
+        ExtractableResponse<Response> createResponse2 = insert(getLineRequest(line2Post), "/lines");
+        String path = createResponse1.header("Location");
 
         //when
-        ExtractableResponse<Response> updateResponse = update(getLineRequest("name", "green"), path);
+        ExtractableResponse<Response> updateResponse = update(getLineRequest(line2Put), path);
 
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    @DisplayName("기존에 존재하지 않는 노선을 수정할 시 404에러를 발생한다.")
+    @Test
+    void updateLineNotExist() {
+        /// given
+        ExtractableResponse<Response> createResponse = insert(getLineRequest(line1Post), "/lines");
+        long expectedId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        //when
+        ExtractableResponse<Response> updateResponse = update(getLineRequest(line2Put), "/lines/" + expectedId + 1);
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
 }
