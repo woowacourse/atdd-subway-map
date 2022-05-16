@@ -81,9 +81,9 @@ public class LineDaoTest {
         Line line = new Line("2호선", "green");
         Line savedLine = lineDao.save(line);
 
-        Line updatedLine = lineDao.update(savedLine.getId(), new Line("3호선", "orange"));
+        lineDao.updateById(savedLine.getId(), new Line("3호선", "orange"));
 
-        assertThat(updatedLine.getName()).isEqualTo("3호선");
+        assertThat(lineDao.findById(savedLine.getId()).getName()).isEqualTo("3호선");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")

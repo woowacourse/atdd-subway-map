@@ -1,9 +1,9 @@
 package wooteco.subway.domain;
 
 public class Line {
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
 
     public Line(Long id, String name, String color) {
         this.id = id;
@@ -12,8 +12,7 @@ public class Line {
     }
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(null, name, color);
     }
 
     public Long getId() {
