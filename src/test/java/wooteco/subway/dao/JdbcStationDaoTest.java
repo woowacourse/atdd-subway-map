@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.SectionEntity;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataReferenceViolationException;
 
 @JdbcTest
 class JdbcStationDaoTest {
@@ -41,7 +44,7 @@ class JdbcStationDaoTest {
     }
 
     @Test
-    @DisplayName("모든 Station 을 검색한다.")
+    @DisplayName("모든 Station 을 조회한다.")
     void findAll() {
         //given
         Station station1 = new Station("lala");
@@ -88,7 +91,7 @@ class JdbcStationDaoTest {
     }
 
     @Test
-    @DisplayName("id로 station 을 조회한다.")
+    @DisplayName("id 로 station 을 조회한다.")
     void findById() {
         //given
         Station station = stationDao.save(new Station("lala"));
@@ -98,6 +101,23 @@ class JdbcStationDaoTest {
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
+    }
+
+    @Test
+    @DisplayName("두 id 로 두 station 을 조회한다.")
+    void findStationsByIds() {
+        //given
+        Station stationA = stationDao.save(new Station("lala"));
+        Station stationB = stationDao.save(new Station("sojukang"));
+
+        //when
+        List<Station> actual = stationDao.findStationsByIds(stationA.getId(), stationB.getId());
+
+        //then
+        assertAll(
+            () -> assertThat(actual.get(0).getName()).isEqualTo(stationA.getName()),
+            () -> assertThat(actual.get(1).getName()).isEqualTo(stationB.getName())
+        );
     }
 
     @Test
@@ -122,5 +142,27 @@ class JdbcStationDaoTest {
 
         //then
         assertThat(actual).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("특정 구간에 속한 역을 삭제하려 할 경우 예외를 던진다.")
+    void deleteStationInSectionException() {
+        //given
+        Long stationIdA = stationDao.save(new Station("강남역")).getId();
+        Long stationIdB = stationDao.save(new Station("선릉역")).getId();
+
+        Long savedLineId = new JdbcLineDao(jdbcTemplate).save(new Line("2호선", "green")).getId();
+
+        Long stationIdC = stationDao.save(new Station("서초역")).getId();
+
+        SectionDao sectionDao = new JdbcSectionDao(jdbcTemplate);
+
+        sectionDao.save(new SectionEntity(savedLineId, stationIdA, stationIdB, 5));
+        sectionDao.save(new SectionEntity(savedLineId, stationIdB, stationIdC, 5));
+
+        //when, then
+        assertThatThrownBy(() -> stationDao.deleteById(stationIdC))
+            .isInstanceOf(DataReferenceViolationException.class)
+            .hasMessageContaining("연관된 데이터가 존재하여 삭제할 수 없습니다.");
     }
 }

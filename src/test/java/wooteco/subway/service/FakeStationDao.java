@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -35,6 +36,13 @@ class FakeStationDao implements StationDao {
         return stations.stream()
             .filter(station -> station.getId().equals(id))
             .findFirst();
+    }
+
+    @Override
+    public List<Station> findStationsByIds(Long idA, Long idB) {
+        return stations.stream()
+            .filter(station -> station.getId().equals(idA) || station.getId().equals(idB))
+            .collect(Collectors.toList());
     }
 
     @Override

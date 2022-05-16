@@ -10,7 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.DataDuplicationException;
+import wooteco.subway.exception.DataNotFoundException;
 
 class StationServiceTest {
 
@@ -43,12 +44,12 @@ class StationServiceTest {
 
         //then
         assertThatThrownBy(() -> stationService.createStation(station))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DataDuplicationException.class)
             .hasMessageContaining("이미 등록된 역입니다.");
     }
 
     @Test
-    @DisplayName("모든 station 목록을 조회한다.")
+    @DisplayName("모든 역 목록을 조회한다.")
     void findAll() {
         //given
         Station station1 = new Station("lala");
@@ -67,7 +68,7 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("id 로 Line 을 조회한다.")
+    @DisplayName("id 로 역을 조회한다.")
     void findById() {
         //given
         Station station = new Station("lala");
@@ -89,12 +90,31 @@ class StationServiceTest {
 
         //then
         assertThatThrownBy(() -> stationService.findById(id + 1))
-            .isInstanceOf(DataNotExistException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessage("존재하지 않는 역입니다.");
     }
 
     @Test
-    @DisplayName("Station 을 삭제한다.")
+    @DisplayName("두 id 로 두 역을 조회한다.")
+    void findBothStationsByIds() {
+        //given
+        Station stationA = new Station("lala");
+        Station stationB = new Station("sojukang");
+        Long idA = stationService.createStation(stationA).getId();
+        Long idB = stationService.createStation(stationB).getId();
+
+        //when
+        List<Station> actual = stationService.findBothStationsByIds(idA, idB);
+
+        //then
+        assertAll(
+            () -> assertThat(actual.get(0).getName()).isEqualTo(stationA.getName()),
+            () -> assertThat(actual.get(1).getName()).isEqualTo(stationB.getName())
+        );
+    }
+
+    @Test
+    @DisplayName("역을 삭제한다.")
     void deleteById() {
         //given
         Station station = new Station("이수");
@@ -112,7 +132,7 @@ class StationServiceTest {
     void deleteByIdWithIdNotExists() {
         //then
         assertThatThrownBy(() -> stationService.deleteById(1L))
-            .isInstanceOf(DataNotExistException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessageContaining("존재하지 않는 역입니다.");
     }
 }
