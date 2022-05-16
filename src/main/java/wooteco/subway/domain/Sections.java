@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -72,15 +73,23 @@ public class Sections {
         }
 
         for (Section section : values) {
-            if (section.hasSameUpStation(newSection)) {
-                return insertAfterUpStation(newSection, section);
-            }
-
-            if (section.hasSameDownStation(newSection)) {
-                return insertBeforeDownStation(newSection, section);
+            Optional<Section> insertedSection = insertStation(newSection, section);
+            if (insertedSection.isPresent()) {
+                return insertedSection.get();
             }
         }
+
         throw new IllegalStateException("구간을 추가할 수 있는 상태가 아닙니다.");
+    }
+
+    private Optional<Section> insertStation(Section newSection, Section section) {
+        if (section.hasSameUpStation(newSection)) {
+            return Optional.of(insertAfterUpStation(newSection, section));
+        }
+        if (section.hasSameDownStation(newSection)) {
+            return Optional.of(insertBeforeDownStation(newSection, section));
+        }
+        return Optional.empty();
     }
 
     private Section insertAfterUpStation(Section newSection, Section section) {
