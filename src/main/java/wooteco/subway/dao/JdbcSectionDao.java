@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
@@ -86,5 +87,12 @@ public class JdbcSectionDao implements SectionDao {
     public void batchUpdate(final List<Section> sections) {
         final String sql = "UPDATE section SET up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance WHERE id = :id";
         namedParameterJdbcTemplate.batchUpdate(sql, SqlParameterSourceUtils.createBatch(sections));
+    }
+
+    @Override
+    public void update(final Section section) {
+        final String sql = "UPDATE section SET up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance WHERE id = :id";
+        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(section);
+        namedParameterJdbcTemplate.update(sql, parameters);
     }
 }

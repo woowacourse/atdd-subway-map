@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,12 +31,13 @@ public class SectionService {
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     public List<Station> findSectionStationsByLineId(final Long lineId) {
-        return sectionDao.findSectionStationsByLineId(lineId)
+        return new Sections(sectionDao.findSectionStationsByLineId(lineId))
+            .getSortedSections()
             .stream()
             .flatMap(section -> Stream.of(section.getUpStationId(), section.getDownStationId()))
             .distinct()
             .map(id -> stationDao.findById(id).get())
-            .sorted()
+            .sorted(Comparator.comparing(Station::getId))
             .collect(Collectors.toList());
     }
 
@@ -44,20 +46,24 @@ public class SectionService {
         final List<Section> sectionsBeforeAddSection = sectionDao.findSectionStationsByLineId(lineId);
         Section newSection = sectionRequest.toEntity(lineId);
         newSection = sectionDao.save(newSection);
-        final List<Section> sectionsAfterAdd = new Sections(sectionsBeforeAddSection).addSection(newSection);
-        sectionDao.batchUpdate(sectionsAfterAdd);
+        new Sections(sectionsBeforeAddSection).addSection(newSection)
+            .ifPresent(sectionDao::update);
     }
 
     @Transactional
     public void deleteSection(final Long id, final Long stationId) {
         lineDao.findById(id)
-            .orElseThrow(() -> new LineNotFoundException("해당 노선이 없습니다."));
+            .orElseThrow(() -> new LineNotFoundException("[ERROR] 해당 노선이 없습니다."));
         stationDao.findById(id)
             .orElseThrow(() -> new StationNotFoundException("[ERROR] 해당 이름의 지하철역이 존재하지 않습니다."));
+
         final Sections sections = new Sections(sectionDao.findSectionStationsByLineId(id));
-        final Long sectionId = sections.deleteSectionByStationId(stationId);
-        sectionDao.deleteById(sectionId);
-        final List<Section> sectionsAfterDelete = sections.getValue();
-        sectionDao.batchUpdate(sectionsAfterDelete);
+        final boolean isMiddleDelete = sections.isMiddleDelete(stationId);
+        sectionDao.deleteById(sections.deleteSectionByStationId(stationId));
+        if (isMiddleDelete) {
+            final Section updatedSection = sections.getUpdatedSection(
+                new Sections(sectionDao.findSectionStationsByLineId(id)));
+            sectionDao.update(updatedSection);
+        }
     }
 }

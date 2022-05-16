@@ -35,14 +35,13 @@ public class Sections {
         }
     }
 
-    public List<Section> addSection(final Section section) {
+    public Optional<Section> addSection(final Section section) {
         final SectionAddStatus sectionAddStatus = getAddSectionStatus(section);
         if (sectionAddStatus.hasMiddleSection()) {
-            addMiddleSection(section, sectionAddStatus);
-            return getSortedSections();
+            return Optional.ofNullable(addMiddleSection(section, sectionAddStatus));
         }
         value.add(section);
-        return getSortedSections();
+        return Optional.empty();
     }
 
     private SectionAddStatus getAddSectionStatus(final Section section) {
@@ -56,30 +55,25 @@ public class Sections {
         }
     }
 
-    private void addMiddleSection(final Section section, final SectionAddStatus sectionAddStatus) {
+    private Section addMiddleSection(final Section section, final SectionAddStatus sectionAddStatus) {
         if (sectionAddStatus == ADD_MIDDLE_FROM_UP_STATION) {
-            addMiddleSectionFromUpStation(section);
-            return;
+            return addMiddleSectionFromUpStation(section);
         }
-        addMiddleSectionFromDownStation(section);
+        return addMiddleSectionFromDownStation(section);
     }
 
-    private void addMiddleSectionFromUpStation(final Section section) {
+    private Section addMiddleSectionFromUpStation(final Section section) {
         final Section sameUpStationSection = getSameConditionStationSection(
             it -> Objects.equals(it.getUpStationId(), section.getUpStationId()));
         checkDistance(section, sameUpStationSection);
-        value.removeIf(it -> Objects.equals(it.getId(), sameUpStationSection.getId()));
-        value.add(section);
-        value.add(section.createMiddleToDownSection(sameUpStationSection));
+        return section.createMiddleToDownSection(sameUpStationSection);
     }
 
-    private void addMiddleSectionFromDownStation(final Section section) {
+    private Section addMiddleSectionFromDownStation(final Section section) {
         final Section sameDownStationSection = getSameConditionStationSection(
             it -> Objects.equals(it.getDownStationId(), section.getDownStationId()));
         checkDistance(section, sameDownStationSection);
-        value.removeIf(it -> Objects.equals(it.getId(), sameDownStationSection.getId()));
-        value.add(section);
-        value.add(section.createUpToMiddleSection(sameDownStationSection));
+        return section.createUpToMiddleSection(sameDownStationSection);
     }
 
     public List<Section> getSortedSections() {
@@ -157,31 +151,6 @@ public class Sections {
         throw new IllegalStateException("[ERROR] 해당 구간을 삭제할 수 없습니다.");
     }
 
-    private Long deleteMiddle(final Long stationId) {
-        final Section upToMiddleSection = findSectionByCondition(
-            it -> Objects.equals(it.getDownStationId(), stationId));
-        final Section middleToDownSection = findSectionByCondition(
-            it -> Objects.equals(it.getUpStationId(), stationId));
-        value.removeIf(it -> it.equals(upToMiddleSection));
-        value.add(
-            upToMiddleSection.createUpToDownSection(middleToDownSection));
-        value.removeIf(it -> it.equals(middleToDownSection));
-        return middleToDownSection.getId();
-    }
-
-    private Long deleteUpStation(final Long stationId) {
-        final Section firstSection = findSectionByCondition(it -> Objects.equals(it.getUpStationId(), stationId));
-        value.removeIf(it -> it.equals(firstSection));
-        return firstSection.getId();
-    }
-
-    private Long deleteDownStation(final Long stationId) {
-        final Section lastSection = findSectionByCondition(
-            it -> Objects.equals(it.getDownStationId(), stationId));
-        value.removeIf(it -> it.equals(lastSection));
-        return lastSection.getId();
-    }
-
     private SectionDeleteStatus getDeleteSectionStatus(final Long stationId) {
         validateDeleteSection(stationId);
         return SectionDeleteStatus.from(value, stationId);
@@ -206,6 +175,42 @@ public class Sections {
         if (getTotalStationIds().size() == 2) {
             throw new IllegalStateException("[ERROR] 역 2개의 기본 구간만 존재하므로 더이상 구간 삭제할 수 없습니다.");
         }
+    }
+
+    private Long deleteMiddle(final Long stationId) {
+        final Section upToMiddleSection = findSectionByCondition(
+            it -> Objects.equals(it.getDownStationId(), stationId));
+        final Section middleToDownSection = findSectionByCondition(
+            it -> Objects.equals(it.getUpStationId(), stationId));
+        value.removeIf(it -> it.equals(upToMiddleSection));
+        final Section updated = upToMiddleSection.createUpToDownSection(middleToDownSection);
+        value.add(updated);
+        value.removeIf(it -> it.equals(middleToDownSection));
+        return middleToDownSection.getId();
+    }
+
+    private Long deleteUpStation(final Long stationId) {
+        final Section firstSection = findSectionByCondition(it -> Objects.equals(it.getUpStationId(), stationId));
+        value.removeIf(it -> it.equals(firstSection));
+        return firstSection.getId();
+    }
+
+    private Long deleteDownStation(final Long stationId) {
+        final Section lastSection = findSectionByCondition(
+            it -> Objects.equals(it.getDownStationId(), stationId));
+        value.removeIf(it -> it.equals(lastSection));
+        return lastSection.getId();
+    }
+
+    public boolean isMiddleDelete(final Long stationId) {
+        return getDeleteSectionStatus(stationId) == DELETE_MIDDLE;
+    }
+
+    public Section getUpdatedSection(final Sections sections) {
+        return value.stream()
+            .filter(section -> !sections.value.contains(section))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("[ERROR] update할 구간이 존재하지 않습니다."));
     }
 
     private Section findSectionByCondition(final Predicate<Section> sectionPredicate) {

@@ -95,3 +95,5 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] [예외] 구간내 존재하지 않는 지하철역은 구간 제거할 수 없음
     - [x] [예외] 구간이 하나인 노선에서 마지막 구간을 제거할 수 없음
 - 구간 관리 API 스펙은 [API 문서v2](https://github.com/jinyoungchoi95/atdd-subway-map.git) 참고
+
+- 테스트용 front: https://d2owgqwkhzq0my.cloudfront.net/

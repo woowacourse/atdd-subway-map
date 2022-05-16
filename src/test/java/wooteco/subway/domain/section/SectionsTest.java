@@ -9,10 +9,9 @@ import static wooteco.subway.testutils.Fixture.SECTION_LINE_1_STATION_1_3_22;
 import static wooteco.subway.testutils.Fixture.SECTION_LINE_1_STATION_2_3_12;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.SectionNotFoundException;
@@ -92,60 +91,59 @@ class SectionsTest {
             .hasMessage("[ERROR] 기존 구간보다 긴 구간을 추가할 순 없습니다.");
     }
 
-    @DisplayName("상행종점이 같은 구간에 대해 역 사이에 새로운 역을 등록할 경우, 기존 구간을 제거하고 쪼개진 구간을 추가하여 등록한다.")
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @DisplayName("상행종점이 같은 구간에 대해 역 사이에 새로운 역을 등록할 경우, 기존 구간(1~3)을 쪼개진 구간(1~2, 2~3) 중 하나(2~3)로 업데이트한다.")
     @Test
     void addSection_same_up_station() {
         //given
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_3_22));
-        final Section targetSection = new Section(3L, 1L, 1L, 2L, 15);
+        final Sections sections_1_3 = new Sections(List.of(SECTION_LINE_1_STATION_1_3_22));
+        final Section section_1_2 = new Section(3L, 1L, 1L, 2L, 15);
 
         // when
-        final List<Section> actual = sections.addSection(targetSection);
+        final Section section_2_3 = sections_1_3.addSection(section_1_2).get();
 
         //then
-        assertThat(actual).hasSize(2);
+        assertAll(
+            () -> assertThat(section_2_3.getUpStationId()).isEqualTo(section_1_2.getDownStationId()),
+            () -> assertThat(section_2_3.getDownStationId()).isEqualTo(SECTION_LINE_1_STATION_1_3_22.getDownStationId())
+        );
     }
 
-    @DisplayName("하행 종점이 같은 구간에 대해 역 사이에 새로운 역을 등록할 경우, 기존 구간을 제거하고 쪼개진 구간을 추가하여 등록한다.")
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Disabled
+    @DisplayName("하행종점이 같은 구간에 대해 역 사이에 새로운 역을 등록할 경우, 기존 구간(1~3)을 쪼개진 구간(1~2, 2~3) 중 하나(1~2)를 반환받아 updated한다.")
     @Test
     void addSection_same_down_station() {
         //given
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_1_3_22));
-        final Section targetSection = new Section(3L, 1L, 2L, 3L, 15);
+        final Sections sections_1_3 = new Sections(List.of(SECTION_LINE_1_STATION_1_3_22));
+        final Section section_2_3 = new Section(3L, 1L, 2L, 3L, 15);
 
         //when
-        final List<Section> actual = sections.addSection(targetSection)
-            .stream()
-            .sorted(Comparator.comparing(Section::getUpStationId))
-            .collect(Collectors.toList());
+        final Section section_1_2 = sections_1_3.addSection(section_2_3).get();
 
         //then
         assertAll(
-            () -> assertThat(actual).hasSize(2),
-            () -> assertThat(actual.get(0).getUpStationId()).isEqualTo(1L),
-            () -> assertThat(actual.get(actual.size() - 1).getDownStationId()).isEqualTo(3L)
+            () -> assertThat(section_1_2.getUpStationId()).isEqualTo(SECTION_LINE_1_STATION_1_3_22.getUpStationId()),
+            () -> assertThat(section_1_2.getDownStationId()).isEqualTo(section_2_3.getUpStationId())
         );
-
     }
 
-    @DisplayName("구간을 추가할 때, 상행/하행 종점으로 새로운 역이 추가될 수 있다.")
+    @Disabled
+    @DisplayName("구간을 추가할 때, 상행/하행 종점으로 새로운 역이 추가될 경우, 구간은 1개가 추가되며 update될 데이터는 없다.")
     @Test
     void addSection_end_station() {
         //given
-        final Sections sections = new Sections(List.of(SECTION_LINE_1_STATION_2_3_12));
-        final Section targetSection = new Section(3L, 1L, 1L, 2L, 15);
+        final Sections section_2_3 = new Sections(List.of(SECTION_LINE_1_STATION_2_3_12));
+        final Section section_1_2 = new Section(3L, 1L, 1L, 2L, 15);
 
         //when
-        final List<Section> actual = sections.addSection(targetSection)
-            .stream()
-            .sorted(Comparator.comparing(Section::getUpStationId))
-            .collect(Collectors.toList());
+        final Section update = section_2_3.addSection(section_1_2)
+            .orElse(null);
 
         //then
         assertAll(
-            () -> assertThat(actual).hasSize(2),
-            () -> assertThat(actual.get(0).getUpStationId()).isEqualTo(1L),
-            () -> assertThat(actual.get(actual.size() - 1).getDownStationId()).isEqualTo(3L)
+            () -> assertThat(section_2_3.getValue()).hasSize(2),
+            () -> assertThat(update).isNull()
         );
     }
 
