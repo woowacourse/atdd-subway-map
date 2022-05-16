@@ -9,6 +9,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.error.exception.NotFoundException;
 
 @Transactional(readOnly = true)
 @Service
@@ -28,6 +29,15 @@ public class StationService {
 
         Station station = stationDao.save(new Station(stationRequest.getName()));
         return new StationResponse(station);
+    }
+
+    public StationResponse findById(Long id) {
+        return new StationResponse(getStation(id));
+    }
+
+    private Station getStation(Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(id + "의 지하철역은 존재하지 않습니다."));
     }
 
     public List<StationResponse> findAll() {

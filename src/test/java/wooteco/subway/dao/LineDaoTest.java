@@ -16,16 +16,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
-public class JdbcLineDaoTest {
+public class LineDaoTest {
 
     private final LineDao lineDao;
 
     @Autowired
-    public JdbcLineDaoTest(JdbcTemplate jdbcTemplate) {
-        this.lineDao = new JdbcLineDao(jdbcTemplate);
+    public LineDaoTest(JdbcTemplate jdbcTemplate) {
+        this.lineDao = new LineDao(jdbcTemplate);
     }
 
-    @DisplayName("노선을 저장한다")
+    @DisplayName("노선을 저장한다.")
     @Test
     void 노선_저장() {
         Line line = new Line("2호선", "bg-green-600");
