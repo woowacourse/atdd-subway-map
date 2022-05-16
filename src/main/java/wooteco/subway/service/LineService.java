@@ -5,8 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.*;
+import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.*;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -31,14 +32,20 @@ public class LineService {
         Station downStation = stationDao.findById(lineRequest.getDownStationId());
         Station upStation = stationDao.findById(lineRequest.getUpStationId());
 
-        Lines lines = new Lines(lineDao.findAll());
-        Line line = lines.save(lineRequest.toLine());
+        Line line = lineRequest.toLine();
+        checkDuplication(line);
         Line newLine = lineDao.save(line);
 
         Section section = new Section(newLine.getId(), upStation.getId(), downStation.getId(), lineRequest.getDistance());
         sectionDao.save(section);
 
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), createStationResponseOf(newLine));
+    }
+
+    private void checkDuplication(Line line) {
+        if(lineDao.existByName(line.getName())){
+            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+        }
     }
 
     public List<LineResponse> findAll() {

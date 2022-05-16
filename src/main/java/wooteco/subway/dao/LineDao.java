@@ -3,7 +3,7 @@ package wooteco.subway.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.line.Line;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,6 +49,11 @@ public class LineDao {
     public void edit(Long id, String name, String color) {
         String sql = "update LINE set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, name, color, id);
+    }
+
+    public boolean existByName(String name) {
+        String sql = "select EXISTS (select id from LINE where name = ?) as success";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
     }
 
     private static class LineMapper implements RowMapper<Line> {

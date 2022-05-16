@@ -2,7 +2,7 @@ package wooteco.subway.domain.section;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.station.Station;
 
 import java.util.HashSet;
 import java.util.List;

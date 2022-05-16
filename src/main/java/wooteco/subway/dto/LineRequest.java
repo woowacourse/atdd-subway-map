@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.line.Line;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;

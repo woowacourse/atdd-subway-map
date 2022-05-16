@@ -1,4 +1,4 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.line;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,9 +12,5 @@ public class Line {
 
     public Line(String name, String color) {
         this(null, name, color);
-    }
-
-    public boolean hasSameName(Line line) {
-        return name.equals(line.getName());
     }
 }
