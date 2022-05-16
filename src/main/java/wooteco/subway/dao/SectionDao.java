@@ -14,11 +14,16 @@ import wooteco.subway.domain.Section;
 @Repository
 public class SectionDao {
 
+    private final StationDao stationDao;
+    private final LineDao lineDao;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public SectionDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public SectionDao(StationDao stationDao, LineDao lineDao, JdbcTemplate jdbcTemplate,
+                      DataSource dataSource) {
+        this.stationDao = stationDao;
+        this.lineDao = lineDao;
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("SECTION")
@@ -29,8 +34,7 @@ public class SectionDao {
     public Section save(Section section) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(section);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Section(id, section.getUpStationId(), section.getDownStationId(), section.getLineId(),
-                section.getDistance());
+        return new Section(id, section);
     }
 
     public void saveAll(List<Section> sections) {
@@ -46,9 +50,9 @@ public class SectionDao {
         return jdbcTemplate.query(SQL, (rs, rowNum) ->
                 new Section(
                         rs.getLong("id"),
-                        rs.getLong("upStationId"),
-                        rs.getLong("downStationId"),
-                        rs.getLong("lineId"),
+                        stationDao.findById(rs.getLong("upStationId")).get(),
+                        stationDao.findById(rs.getLong("downStationId")).get(),
+                        lineDao.findById(rs.getLong("lineId")).get(),
                         rs.getInt("distance")
                 ), lineId);
     }

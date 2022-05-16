@@ -25,7 +25,7 @@ public class SectionDaoTest extends AcceptanceTest {
         Station seonreong = stationDao.save(new Station("선릉역"));
         Line twoLine = lineDao.save(new Line("2호선", "연두색"));
 
-        Section expected = new Section(jamsil.getId(), seonreong.getId(), twoLine.getId(), 10);
+        Section expected = new Section(jamsil, seonreong, twoLine, 10);
         Section actual = sectionDao.save(expected);
 
         Assertions.assertThat(actual).isEqualTo(expected);

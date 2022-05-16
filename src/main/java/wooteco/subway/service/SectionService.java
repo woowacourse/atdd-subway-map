@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -29,14 +28,15 @@ public class SectionService {
     @Transactional
     public void save(SectionRequest sectionRequest, Long lineId) {
         Line line = findByLineId(lineId);
+        Sections sections = new Sections(sectionDao.findAllByLineId(line.getId()));
+        Sections updateSections = sections.update(toSection(sectionRequest, line));
+        updateSectionsByLineId(line.getId(), updateSections);
+    }
+
+    private Section toSection(SectionRequest sectionRequest, Line line) {
         Station upStation = findByStationId(sectionRequest.getUpStationId());
         Station downStation = findByStationId(sectionRequest.getDownStationId());
-        Sections sections = new Sections(sectionDao.findAllByLineId(line.getId()));
-        Section section = new Section(upStation.getId(), downStation.getId(), lineId, sectionRequest.getDistance());
-        Sections updateSections = sections.update(section);
-
-        sectionDao.deleteByLineId(line.getId());
-        sectionDao.saveAll(updateSections.value());
+        return new Section(upStation, downStation, line, sectionRequest.getDistance());
     }
 
     private Line findByLineId(Long lineId) {
@@ -47,6 +47,10 @@ public class SectionService {
     public void delete(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         Sections updateSections = sections.deleteByStation(findByStationId(stationId));
+        updateSectionsByLineId(lineId, updateSections);
+    }
+
+    private void updateSectionsByLineId(Long lineId, Sections updateSections) {
         sectionDao.deleteByLineId(lineId);
         sectionDao.saveAll(updateSections.value());
     }

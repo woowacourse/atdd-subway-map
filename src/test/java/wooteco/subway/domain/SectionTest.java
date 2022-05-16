@@ -11,7 +11,8 @@ public class SectionTest {
     @DisplayName("상행선과 하행선은 같은 역으로 할 수 없다.")
     @Test
     void duplicateStationException() {
-        assertThatThrownBy(() -> new Section(1L, 1L, 1L, 1))
+        Station 강남 = new Station("강남");
+        assertThatThrownBy(() -> new Section(강남, 강남, new Line("2호선", "green"), 1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간에서 상행선과 하행선은 같은 역으로 할 수 없습니다.");
     }
@@ -19,7 +20,9 @@ public class SectionTest {
     @DisplayName("상행선과 하행선의 거리는 1 이상이어야 한다.")
     @Test
     void distanceException() {
-        assertThatThrownBy(() -> new Section(1L, 2L, 1L, 0))
+        Station 강남 = new Station("강남");
+        Station 선릉 = new Station("선릉");
+        assertThatThrownBy(() -> new Section(강남, 선릉, new Line("2호선", "green"), 0))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행선과 하행선의 거리는 1 이상이어야 합니다.");
     }

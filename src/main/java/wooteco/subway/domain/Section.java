@@ -6,26 +6,30 @@ import java.util.Objects;
 public class Section {
 
     private final Long id;
-    private final Long upStationId;
-    private final Long downStationId;
-    private final Long lineId;
+    private final Station upStation;
+    private final Station downStation;
+    private final Line line;
     private final int distance;
 
-    public Section(Long id, Long upStationId, Long downStationId, Long lineId, int distance) {
+    public Section(Long id, Station upStation, Station downStation, Line line, int distance) {
         this.id = id;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.lineId = lineId;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.line = line;
         this.distance = distance;
         validateField();
     }
 
-    public Section(Long upStationId, Long downStationId, Long lineId, int distance) {
-        this(0L, upStationId, downStationId, lineId, distance);
+    public Section(Long id, Section section) {
+        this(id, section.upStation, section.downStation, section.line, section.distance);
+    }
+
+    public Section(Station upStation, Station downStation, Line line, int distance) {
+        this(0L, upStation, downStation, line, distance);
     }
 
     private void validateField() {
-        if (upStationId.equals(downStationId)) {
+        if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("구간에서 상행선과 하행선은 같은 역으로 할 수 없습니다.");
         }
 
@@ -34,28 +38,28 @@ public class Section {
         }
     }
 
-    public boolean beIncludedInUpStation(List<Long> stationsId) {
-        return stationsId.contains(upStationId);
+    public boolean beIncludedInUpStation(List<Station> stations) {
+        return stations.contains(upStation);
     }
 
-    public boolean beIncludedInDownStation(List<Long> stationsId) {
-        return stationsId.contains(downStationId);
+    public boolean beIncludedInDownStation(List<Station> stations) {
+        return stations.contains(downStation);
     }
 
     public boolean isEqualOfUpStation(Section section) {
-        return upStationId.equals(section.upStationId);
+        return upStation.equals(section.upStation);
     }
 
-    public boolean isEqualOfUpStation(Long stationId) {
-        return upStationId.equals(stationId);
+    public boolean isEqualOfUpStation(Station station) {
+        return upStation.equals(station);
     }
 
     public boolean isEqualOfDownStation(Section section) {
-        return downStationId.equals(section.downStationId);
+        return downStation.equals(section.downStation);
     }
 
-    public boolean isEqualOfDownStation(Long stationId) {
-        return downStationId.equals(stationId);
+    public boolean isEqualOfDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public Section getCutDistanceSection(Section section) {
@@ -63,14 +67,14 @@ public class Section {
         if(cutDistance <= 0) {
             throw new IllegalArgumentException("이미 존재하는 구간의 거리보다 거리가 길거나 같습니다.");
         }
-        if (upStationId.equals(section.upStationId)) {
-            return new Section(section.downStationId, downStationId, lineId, cutDistance);
+        if (upStation.equals(section.upStation)) {
+            return new Section(section.downStation, downStation, line, cutDistance);
         }
-        return new Section(upStationId, section.upStationId, lineId, cutDistance);
+        return new Section(upStation, section.upStation, line, cutDistance);
     }
 
-    public boolean containsStation(long stationId) {
-        return upStationId.equals(stationId) || downStationId.equals(stationId);
+    public boolean containsStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 
     public Long getId() {
@@ -78,19 +82,31 @@ public class Section {
     }
 
     public Long getUpStationId() {
-        return upStationId;
+        return upStation.getId();
     }
 
     public Long getDownStationId() {
-        return downStationId;
+        return downStation.getId();
     }
 
     public Long getLineId() {
-        return lineId;
+        return line.getId();
     }
 
     public int getDistance() {
         return distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     @Override
@@ -102,13 +118,13 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return distance == section.distance && Objects.equals(upStationId, section.upStationId)
-                && Objects.equals(downStationId, section.downStationId) && Objects.equals(lineId,
-                section.lineId);
+        return distance == section.distance && Objects.equals(upStation, section.upStation)
+                && Objects.equals(downStation, section.downStation) && Objects.equals(line,
+                section.line);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStationId, downStationId, lineId, distance);
+        return Objects.hash(upStation, downStation, line, distance);
     }
 }

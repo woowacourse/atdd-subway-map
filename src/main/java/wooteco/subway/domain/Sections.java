@@ -14,26 +14,26 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public List<Long> getStationsId() {
-        List<Long> upStationsId = getUpStationsId();
+    public List<Station> getStations() {
+        List<Station> upStations = getUpStations();
 
-        upStationsId.add(getDownStationsId().stream()
-                .filter(id -> !upStationsId.contains(id))
+        upStations.add(getDownStationsId().stream()
+                .filter(id -> !upStations.contains(id))
                 .findAny()
                 .orElseThrow(() -> new RuntimeException()));
 
-        return upStationsId;
+        return upStations;
     }
 
-    private List<Long> getUpStationsId() {
+    private List<Station> getUpStations() {
         return sections.stream()
-                .map(Section::getUpStationId)
+                .map(Section::getUpStation)
                 .collect(Collectors.toList());
     }
 
-    private List<Long> getDownStationsId() {
+    private List<Station> getDownStationsId() {
         return sections.stream()
-                .map(Section::getDownStationId)
+                .map(Section::getDownStation)
                 .collect(Collectors.toList());
     }
 
@@ -57,10 +57,10 @@ public class Sections {
     }
 
     private void validateAddable(Section section) {
-        List<Long> stationsId = getStationsId();
+        List<Station> stations = getStations();
 
-        boolean upStationIsInclude = section.beIncludedInDownStation(stationsId);
-        boolean downStationIsInclude = section.beIncludedInUpStation(stationsId);
+        boolean upStationIsInclude = section.beIncludedInDownStation(stations);
+        boolean downStationIsInclude = section.beIncludedInUpStation(stations);
         if (!upStationIsInclude && !downStationIsInclude) {
             throw new IllegalArgumentException("상행선과 하행선이 노선에 없습니다.");
         }
@@ -106,8 +106,8 @@ public class Sections {
         if (sectionsIncludingStation.size() == 2) {
             Section downSection = getSectionsEqualOfDownStation(station);
             Section upSection = getSectionsEqualOfUpStation(station);
-            this.sections.add(new Section(upSection.getUpStationId(), downSection.getDownStationId(),
-                    downSection.getLineId(), downSection.getDistance() + upSection.getDistance()));
+            this.sections.add(new Section(upSection.getUpStation(), downSection.getDownStation(),
+                    upSection.getLine(), downSection.getDistance() + upSection.getDistance()));
             this.sections.remove(downSection);
             this.sections.remove(upSection);
         }
@@ -115,20 +115,20 @@ public class Sections {
 
     private List<Section> findSectionsIncludingStation(Station station) {
         return this.sections.stream()
-                .filter(s -> s.containsStation(station.getId()))
+                .filter(s -> s.containsStation(station))
                 .collect(Collectors.toList());
     }
 
     private Section getSectionsEqualOfUpStation(Station station) {
         return sections.stream()
-                .filter(s -> s.isEqualOfDownStation(station.getId()))
+                .filter(s -> s.isEqualOfDownStation(station))
                 .findAny()
                 .get();
     }
 
     private Section getSectionsEqualOfDownStation(Station station) {
         return sections.stream()
-                .filter(s -> s.isEqualOfUpStation(station.getId()))
+                .filter(s -> s.isEqualOfUpStation(station))
                 .findAny()
                 .get();
     }

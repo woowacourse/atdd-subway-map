@@ -35,9 +35,9 @@ public class LineService {
     public LineResponse save(LineRequest lineRequest) {
         try {
             Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-            sectionDao.save(
-                    new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), line.getId(),
-                            lineRequest.getDistance()));
+            Station upStation = getStationOrException(lineRequest.getUpStationId());
+            Station downStation = getStationOrException(lineRequest.getDownStationId());
+            sectionDao.save(new Section(upStation, downStation, line, lineRequest.getDistance()));
             return new LineResponse(line.getId(), line.getName(), line.getColor(), toStationsResponse(lineRequest));
         } catch (DuplicateKeyException e) {
             throw new DuplicateNameException(lineRequest.getName() + "은 존재하는 노선입니다.");
@@ -61,8 +61,7 @@ public class LineService {
 
     public List<StationResponse> findAllStationResponseByLineId(Long lineId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        return sections.getStationsId().stream()
-                .map(this::getStationOrException)
+        return sections.getStations().stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
     }

@@ -76,7 +76,7 @@ class LineControllerTest extends AcceptanceTest {
         Station upStation = stationDao.save(new Station("동천역"));
         Station downStation = stationDao.save(new Station("판교역"));
         Line line = lineDao.save(new Line("신분당선", "red"));
-        sectionDao.save(new Section(upStation.getId(), downStation.getId(), line.getId(), 5));
+        sectionDao.save(new Section(upStation, downStation, line, 5));
 
         ExtractableResponse<Response> response = get(URL);
         List<LineResponse> actual = response.jsonPath().getList(".", LineResponse.class);
@@ -91,7 +91,7 @@ class LineControllerTest extends AcceptanceTest {
         Station upStation = stationDao.save(new Station("동천역"));
         Station downStation = stationDao.save(new Station("판교역"));
         Line line = lineDao.save(new Line("신분당선", "red"));
-        sectionDao.save(new Section(upStation.getId(), downStation.getId(), line.getId(), 5));
+        sectionDao.save(new Section(upStation, downStation, line, 5));
 
         ExtractableResponse<Response> response = get(URL + "/" + pathParameter);
 

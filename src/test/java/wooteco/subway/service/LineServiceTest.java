@@ -72,7 +72,7 @@ public class LineServiceTest extends AcceptanceTest {
         Station 강남 = stationDao.save(new Station("강남"));
         Station 양재 = stationDao.save(new Station("양재"));
         Line line = lineDao.save(new Line("신분당선", "red"));
-        sectionDao.save(new Section(강남.getId(), 양재.getId(), line.getId(), 3));
+        sectionDao.save(new Section(강남, 양재, line, 3));
 
         lineService.delete(line.getId());
 
