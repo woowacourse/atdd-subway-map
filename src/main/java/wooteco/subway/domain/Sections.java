@@ -1,11 +1,14 @@
 package wooteco.subway.domain;
 
 import lombok.AllArgsConstructor;
+import wooteco.subway.domain.constant.TerminalStation;
 import wooteco.subway.exception.constant.SectionNotDeleteException;
+import wooteco.subway.exception.constant.SectionNotRegisterException;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -21,8 +24,8 @@ public class Sections {
         LinkedList<Long> result = new LinkedList<>();
         Long pivot = getAnyPivot();
         result.add(pivot);
-        addDownSections(toDownSectionMap, result, getAnyPivot());
-        addUpSections(toUpSectionMap, result, getAnyPivot());
+        addDownSections(toDownSectionMap, result, pivot);
+        addUpSections(toUpSectionMap, result, pivot);
         return result;
     }
 
@@ -33,23 +36,66 @@ public class Sections {
     }
 
     public Section getUpperSection(long stationId) {
-        return sections.stream()
-                .filter(it -> it.getDownStationId().equals(stationId))
-                .findAny()
-                .get();
+        return getSectionWithConditionToDelete(stationId, section -> section.getDownStationId().equals(stationId));
     }
 
     public Section getLowerSection(long stationId) {
+        return getSectionWithConditionToDelete(stationId, section -> section.getUpStationId().equals(stationId));
+    }
+
+    private Section getSectionWithConditionToDelete(long stationId, Predicate<Section> condition) {
         return sections.stream()
-                .filter(it -> it.getUpStationId().equals(stationId))
+                .filter(condition)
                 .findAny()
-                .get();
+                .orElseThrow(() -> new SectionNotDeleteException());
     }
 
     public void joinSection(Section sectionToJoin, Section sectionToDelete) {
         Long upStationId = sectionToDelete.getUpStationId();
         sectionToJoin.setUpStationId(upStationId);
         sectionToJoin.setDistance(sectionToDelete.getDistance() + sectionToJoin.getDistance());
+    }
+
+    public boolean isTerminalRegistration(Section section) {
+        Map<TerminalStation, Long> terminalStations = findTerminalStations();
+        return terminalStations.get(TerminalStation.UP).equals(section.getDownStationId())
+                || terminalStations.get(TerminalStation.DOWN).equals(section.getUpStationId());
+    }
+
+    public boolean isAddStationInMiddle(Integer distance, Section section) {
+        if (section == null) {
+            return false;
+        }
+        if (distance >= section.getDistance()) {
+            throw new SectionNotRegisterException();
+        }
+        return true;
+    }
+
+    public Section getSectionWithSameUpStation(Long upStationId) {
+        return getSectionWithCondition(section -> section.getUpStationId().equals(upStationId));
+    }
+
+    public Section getSectionWithSameDownStation(Long downStationId) {
+        return getSectionWithCondition(section -> section.getDownStationId().equals(downStationId));
+    }
+
+    public void validateCreateSection(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
+        validateUpAndDownStationAllExist(sectionWithSameUpStation, sectionWithSameDownStation);
+        validateUpAndDownStationNotAllExist(sectionWithSameUpStation, sectionWithSameDownStation);
+    }
+
+
+    private Section getSectionWithCondition(Predicate<Section> condition) {
+        return sections.stream()
+                .filter(condition)
+                .findAny()
+                .orElse(null);
+    }
+
+    private Map<TerminalStation, Long> findTerminalStations() {
+        LinkedList<Long> sortedStations = getSorted();
+        return Map.of(TerminalStation.UP, sortedStations.getFirst(), TerminalStation.DOWN, sortedStations.getLast());
     }
 
     private Map<Long, Long> getToDownSectionMap(List<Section> foundSections) {
@@ -85,6 +131,17 @@ public class Sections {
             }
             result.addFirst(upSectionId);
             iterator = upSectionId;
+        }
+    }
+    private void validateUpAndDownStationAllExist(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
+        if (sectionWithSameUpStation != null && sectionWithSameDownStation != null) {
+            throw new SectionNotRegisterException();
+        }
+    }
+
+    private void validateUpAndDownStationNotAllExist(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
+        if (sectionWithSameUpStation == null && sectionWithSameDownStation == null) {
+            throw new SectionNotRegisterException();
         }
     }
 }

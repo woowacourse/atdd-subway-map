@@ -11,45 +11,37 @@ import wooteco.subway.exception.constant.SectionNotRegisterException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 @Service
 @AllArgsConstructor
 public class SectionService {
 
-    public static final int ONLY_ONE_SECTION = 1;
     private final SectionDao sectionDao;
 
     public long createSection(Section section) {
-        List<Section> sections = sectionDao.findByLineId(section.getLineId());
-        Section sectionWithSameUpStation = getSectionWithSameUpStation(sections, section.getUpStationId());
-        Section sectionWithSameDownStation = getSectionWithSameDownStation(sections, section.getDownStationId());
-        Map<TerminalStation, Long> terminalStations = findTerminalStations(section.getLineId());
-
-        if (conditionForTerminalRegistration(section, terminalStations)) {
+        List<Section> found = sectionDao.findByLineId(section.getLineId());
+        Sections sections = new Sections(found);
+        Section sectionWithSameUpStation = sections.getSectionWithSameUpStation(section.getUpStationId());
+        Section sectionWithSameDownStation = sections.getSectionWithSameDownStation(section.getDownStationId());
+        if(sections.isTerminalRegistration(section)) {
             return sectionDao.save(section);
         }
-
-        if (conditionForInsertStationInMiddle(section.getDistance(), sectionWithSameUpStation)) {
+        if(sections.isAddStationInMiddle(section.getDistance(), sectionWithSameUpStation)) {
             return addDownStationInMiddle(section, sectionWithSameUpStation);
         }
-
-        if (conditionForInsertStationInMiddle(section.getDistance(), sectionWithSameDownStation)) {
+        if(sections.isAddStationInMiddle(section.getDistance(), sectionWithSameDownStation)) {
             return addUpStationInMiddle(section, sectionWithSameDownStation);
         }
-
-        validateUpAndDownStationAllExist(sectionWithSameUpStation, sectionWithSameDownStation);
-        validateUpAndDownStationNotAllExist(sections, sectionWithSameUpStation, sectionWithSameDownStation);
-
-        return sectionDao.save(section);
+        sections.validateCreateSection(sectionWithSameUpStation, sectionWithSameDownStation);
+        throw new SectionNotRegisterException();
     }
+
 
     public LinkedList<Long> findSortedStationIds(long lineId) {
         List<Section> foundSections = sectionDao.findByLineId(lineId);
         Sections sections = new Sections(foundSections);
         return sections.getSorted();
     }
-
 
     public Map<TerminalStation, Long> findTerminalStations(long lineId) {
         LinkedList<Long> sortedStations = findSortedStationIds(lineId);
@@ -70,66 +62,23 @@ public class SectionService {
         sectionDao.deleteSection(upperSection);
     }
 
-    private boolean conditionForTerminalRegistration(Section section, Map<TerminalStation, Long> terminalStations) {
-        return terminalStations.get(TerminalStation.UP).equals(section.getDownStationId())
-                || terminalStations.get(TerminalStation.DOWN).equals(section.getUpStationId());
-    }
+    private long addDownStationInMiddle(Section sectionToAdd, Section existingSection) {
+        long createdSectionId = sectionDao.save(sectionToAdd);
 
-    private void validateUpAndDownStationAllExist(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
-        if (sectionWithSameUpStation != null && sectionWithSameDownStation != null) {
-            throw new SectionNotRegisterException();
-        }
-    }
-
-    private void validateUpAndDownStationNotAllExist(List<Section> sections, Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
-        if (sectionWithSameUpStation == null && sectionWithSameDownStation == null) {
-            throw new SectionNotRegisterException();
-        }
-    }
-
-    private boolean conditionForInsertStationInMiddle(Integer distance, Section section) {
-        if (section == null) {
-            return false;
-        }
-        if (distance >= section.getDistance()) {
-            throw new SectionNotRegisterException();
-        }
-        return true;
-    }
-
-    private long addDownStationInMiddle(Section section, Section existingSection) {
-        long createdSectionId = sectionDao.save(section);
-
-        existingSection.setUpStationId(section.getDownStationId());
-        existingSection.setDistance(existingSection.getDistance() - section.getDistance());
+        existingSection.setUpStationId(sectionToAdd.getDownStationId());
+        existingSection.setDistance(existingSection.getDistance() - sectionToAdd.getDistance());
         sectionDao.update(existingSection);
 
         return createdSectionId;
     }
 
-    private Long addUpStationInMiddle(Section section, Section existingSection) {
-        long createdSectionId = sectionDao.save(section);
+    private Long addUpStationInMiddle(Section sectionToAdd, Section existingSection) {
+        long createdSectionId = sectionDao.save(sectionToAdd);
 
-        existingSection.setDownStationId(section.getUpStationId());
-        existingSection.setDistance(existingSection.getDistance() - section.getDistance());
+        existingSection.setDownStationId(sectionToAdd.getUpStationId());
+        existingSection.setDistance(existingSection.getDistance() - sectionToAdd.getDistance());
         sectionDao.update(existingSection);
 
         return createdSectionId;
-    }
-
-
-    private Section getSectionWithCondition(List<Section> sections, Predicate<Section> condition) {
-        return sections.stream()
-                .filter(condition)
-                .findAny()
-                .orElse(null);
-    }
-
-    private Section getSectionWithSameUpStation(List<Section> sections, Long upStationId) {
-        return getSectionWithCondition(sections, section -> section.getUpStationId().equals(upStationId));
-    }
-
-    private Section getSectionWithSameDownStation(List<Section> sections, Long downStationId) {
-        return getSectionWithCondition(sections, section -> section.getDownStationId().equals(downStationId));
     }
 }
