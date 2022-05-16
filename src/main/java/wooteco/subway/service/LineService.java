@@ -33,14 +33,15 @@ public class LineService {
     }
 
     public LineResponse create(final LineRequest lineRequest) {
-        validateDuplicateName(lineRepository.isNameExists(lineRequest.getName()));
-        Long id = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        String name = lineRequest.getName();
+        validateDuplicateName(lineRepository.isNameExists(name), name);
+        Long id = lineRepository.save(new Line(name, lineRequest.getColor()));
         Station upStation = stationRepository.findById(lineRequest.getUpStationId());
         Station downStation = stationRepository.findById(lineRequest.getDownStationId());
 
         Section section = new Section(id, upStation, downStation, lineRequest.getDistance());
         sectionRepository.save(section);
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor(), new Sections(List.of(section)));
+        Line line = new Line(id, name, lineRequest.getColor(), new Sections(List.of(section)));
         return new LineResponse(line.getId(),
                 line.getName(),
                 line.getColor(),
@@ -48,9 +49,9 @@ public class LineService {
                         new StationResponse(downStation)));
     }
 
-    private void validateDuplicateName(final boolean isDuplicateName) {
+    private void validateDuplicateName(final boolean isDuplicateName, final String name) {
         if (isDuplicateName) {
-            throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE);
+            throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE + name);
         }
     }
 
@@ -76,10 +77,11 @@ public class LineService {
 
     public void update(final Long id, final LineRequest lineRequest) {
         Line currentLine = lineRepository.findById(id);
-        if (!currentLine.isSameName(lineRequest.getName())) {
-            validateDuplicateName(lineRepository.isNameExists(lineRequest.getName()));
+        String name = lineRequest.getName();
+        if (!currentLine.isSameName(name)) {
+            validateDuplicateName(lineRepository.isNameExists(name), name);
         }
-        lineRepository.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        lineRepository.update(new Line(id, name, lineRequest.getColor()));
     }
 
     public void delete(final Long id) {

@@ -26,15 +26,16 @@ public class StationService {
     }
 
     public StationResponse save(final StationRequest stationRequest) {
-        validateDuplicateName(stationRepository.isNameExists(stationRequest.getName()));
+        String name = stationRequest.getName();
+        validateDuplicateName(stationRepository.isNameExists(name), name);
 
-        Station station = stationRepository.save(new Station(stationRequest.getName()));
+        Station station = stationRepository.save(new Station(name));
         return new StationResponse(station.getId(), station.getName());
     }
 
-    private void validateDuplicateName(final boolean isDuplicateName) {
+    private void validateDuplicateName(final boolean isDuplicateName, final String name) {
         if (isDuplicateName) {
-            throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE);
+            throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE + name);
         }
     }
 
