@@ -38,12 +38,16 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    public Station show(final Long id) {
+        return stationDao.findById(id);
+    }
+
     public void deleteStation(final Long id) {
         validateNotExistStation(id);
         stationDao.delete(id);
     }
 
-    private void validateNotExistStation(Long id) {
+    public void validateNotExistStation(final Long id) {
         if (!stationDao.existsById(id)) {
             throw new NotFoundStationException();
         }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -18,7 +17,6 @@ import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.exception.duplicate.DuplicateLineException;
 import wooteco.subway.exception.notfound.NotFoundLineException;
-import wooteco.subway.exception.notfound.NotFoundStationException;
 
 @Transactional
 @Service
@@ -26,12 +24,13 @@ public class LineService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
-    private final StationDao stationDao;
 
-    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationDao stationDao) {
+    private final StationService stationService;
+
+    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationService stationService) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
-        this.stationDao = stationDao;
+        this.stationService = stationService;
     }
 
     public LineResponse create(final CreateLineRequest request) {
@@ -56,7 +55,7 @@ public class LineService {
         final Sections sections = sectionDao.findAllByLineId(line.getId());
         final List<Station> stations = sections.toSortedStationIds()
                 .stream()
-                .map(stationDao::findById)
+                .map(stationService::show)
                 .collect(Collectors.toList());
         return LineResponse.of(line, stations);
     }
@@ -89,8 +88,8 @@ public class LineService {
 
     private void validateCreateSection(final Long lineId, final CreateSectionRequest request) {
         validateNotExistLine(lineId);
-        validateNotExistStation(request.getUpStationId());
-        validateNotExistStation(request.getDownStationId());
+        stationService.validateNotExistStation(request.getUpStationId());
+        stationService.validateNotExistStation(request.getDownStationId());
     }
 
     private void deleteOldSections(final Sections originSections, final Sections newSections) {
@@ -115,18 +114,12 @@ public class LineService {
 
     private void validateDeleteSection(Long lineId, Long stationId) {
         validateNotExistLine(lineId);
-        validateNotExistStation(stationId);
+        stationService.validateNotExistStation(stationId);
     }
 
     private void validateNotExistLine(final Long id) {
         if (!lineDao.existsById(id)) {
             throw new NotFoundLineException();
-        }
-    }
-
-    private void validateNotExistStation(final Long id) {
-        if (!stationDao.existsById(id)) {
-            throw new NotFoundStationException();
         }
     }
 }

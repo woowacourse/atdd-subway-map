@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static wooteco.subway.Fixtures.HYEHWA;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,7 @@ class StationServiceTest {
         // given
         final Long id = 1L;
         final String name = "한성대입구역";
-        final Station savedStation= new Station(id, name);
+        final Station savedStation = new Station(id, name);
         final CreateStationRequest request = new CreateStationRequest(name);
 
         // mocking
@@ -64,6 +65,30 @@ class StationServiceTest {
 
         // then
         assertThat(responses).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("역을 조회한다.")
+    void show() {
+        // mocking
+        given(stationDao.findById(any(Long.class))).willReturn(new Station(1L, HYEHWA));
+
+        // when
+        final Station station = stationService.show(1L);
+
+        // then
+        assertThat(station.getName()).isEqualTo(HYEHWA);
+    }
+
+    @Test
+    @DisplayName("없는 역을 조회하면, 예외를 발생시킨다.")
+    void showNotExistStation() {
+        // mocking
+        given(stationDao.findById(any(Long.class))).willThrow(NotFoundStationException.class);
+
+        // when & then
+        assertThatThrownBy(() -> stationService.show(1L))
+                .isInstanceOf(NotFoundStationException.class);
     }
 
     @Test

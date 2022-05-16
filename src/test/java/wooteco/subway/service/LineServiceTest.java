@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static wooteco.subway.Fixtures.BLUE;
 import static wooteco.subway.Fixtures.HYEHWA;
@@ -21,10 +22,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -34,7 +33,6 @@ import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
-import wooteco.subway.exception.duplicate.DuplicateException;
 import wooteco.subway.exception.duplicate.DuplicateLineException;
 import wooteco.subway.exception.notfound.NotFoundLineException;
 import wooteco.subway.exception.notfound.NotFoundStationException;
@@ -52,7 +50,7 @@ class LineServiceTest {
     private SectionDao sectionDao;
 
     @Mock
-    private StationDao stationDao;
+    private StationService stationService;
 
     @Test
     @DisplayName("지하철 노선을 생성한다. 이때 관련 구간을 같이 생성한다.")
@@ -67,8 +65,8 @@ class LineServiceTest {
         given(sectionDao.save(any(Section.class))).willReturn(1L);
         given(lineDao.find(1L)).willReturn(savedLine);
         given(sectionDao.findAllByLineId(1L)).willReturn(sections);
-        given(stationDao.findById(1L)).willReturn(new Station(1L, HYEHWA));
-        given(stationDao.findById(2L)).willReturn(new Station(2L, SINSA));
+        given(stationService.show(1L)).willReturn(new Station(1L, HYEHWA));
+        given(stationService.show(2L)).willReturn(new Station(2L, SINSA));
 
         // when
         final LineResponse response = lineService.create(request);
@@ -109,8 +107,8 @@ class LineServiceTest {
         given(lineDao.findAll()).willReturn(lines);
         given(sectionDao.findAllByLineId(1L)).willReturn(new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10))));
         given(sectionDao.findAllByLineId(2L)).willReturn(new Sections(List.of(new Section(2L, 2L, 1L, 2L, 10))));
-        given(stationDao.findById(1L)).willReturn(new Station(1L, HYEHWA));
-        given(stationDao.findById(2L)).willReturn(new Station(2L, SINSA));
+        given(stationService.show(1L)).willReturn(new Station(1L, HYEHWA));
+        given(stationService.show(2L)).willReturn(new Station(2L, SINSA));
 
         // when
         final List<LineResponse> responses = lineService.showAll();
@@ -134,8 +132,8 @@ class LineServiceTest {
         given(lineDao.find(id)).willReturn(new Line(id, name, color));
         given(sectionDao.findAllByLineId(id)).willReturn(
                 new Sections(List.of(new Section(id, upStationId, downStationId, distance))));
-        given(stationDao.findById(upStationId)).willReturn(new Station(upStationId, HYEHWA));
-        given(stationDao.findById(downStationId)).willReturn(new Station(downStationId, SINSA));
+        given(stationService.show(upStationId)).willReturn(new Station(upStationId, HYEHWA));
+        given(stationService.show(downStationId)).willReturn(new Station(downStationId, SINSA));
 
         // when
         final LineResponse response = lineService.show(id);
@@ -231,7 +229,6 @@ class LineServiceTest {
 
         // mocking
         given(lineDao.existsById(any(Long.class))).willReturn(true);
-        given(stationDao.existsById(any(Long.class))).willReturn(true);
         given(sectionDao.findAllByLineId(lineId)).willReturn(
                 new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10))));
 
@@ -250,7 +247,6 @@ class LineServiceTest {
 
         // mocking
         given(lineDao.existsById(any(Long.class))).willReturn(true);
-        given(stationDao.existsById(any(Long.class))).willReturn(true);
         given(sectionDao.findAllByLineId(lineId)).willReturn(
                 new Sections(List.of(new Section(1L, 1L, 2L, 3L, 10))));
 
@@ -269,7 +265,6 @@ class LineServiceTest {
 
         // mocking
         given(lineDao.existsById(any(Long.class))).willReturn(true);
-        given(stationDao.existsById(any(Long.class))).willReturn(true);
         given(sectionDao.findAllByLineId(lineId)).willReturn(
                 new Sections(List.of(new Section(1L, 1L, 1L, 3L, 10))));
 
@@ -287,7 +282,6 @@ class LineServiceTest {
     void createSectionMiddleSameDown() {
         // mocking
         given(lineDao.existsById(any(Long.class))).willReturn(true);
-        given(stationDao.existsById(any(Long.class))).willReturn(true);
         given(sectionDao.findAllByLineId(any(Long.class))).willReturn(
                 new Sections(List.of(new Section(1L, 1L, 1L, 3L, 10))));
 
@@ -305,7 +299,6 @@ class LineServiceTest {
     void createWithLongDistance() {
         // mocking
         given(lineDao.existsById(any(Long.class))).willReturn(true);
-        given(stationDao.existsById(any(Long.class))).willReturn(true);
         given(sectionDao.findAllByLineId(any(Long.class))).willThrow(IllegalArgumentException.class);
 
         // when
@@ -330,7 +323,7 @@ class LineServiceTest {
     void createWithNotExistStation() {
         // mocking
         given(lineDao.existsById(any(Long.class))).willReturn(true);
-        given(stationDao.existsById(any(Long.class))).willReturn(false);
+        doThrow(NotFoundStationException.class).when(stationService).validateNotExistStation(any(Long.class));
 
         // when
         assertThatThrownBy(() -> lineService.createSection(1L, new CreateSectionRequest(1L, 2L, 5)))
@@ -346,7 +339,6 @@ class LineServiceTest {
 
         // mocking
         given(lineDao.existsById(any(Long.class))).willReturn(true);
-        given(stationDao.existsById(any(Long.class))).willReturn(true);
         given(sectionDao.findAllByLineId(lineId)).willReturn(
                 new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10),
                         new Section(2L, 1L, 2L, 3L, 10))));
@@ -364,7 +356,6 @@ class LineServiceTest {
     void deleteWhenRemainOneSection() {
         // mocking
         given(lineDao.existsById(any(Long.class))).willReturn(true);
-        given(stationDao.existsById(any(Long.class))).willReturn(true);
         given(sectionDao.findAllByLineId(any(Long.class))).willReturn(
                 new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10))));
 
@@ -389,8 +380,7 @@ class LineServiceTest {
     void deleteWithNotExistStation() {
         // mocking
         given(lineDao.existsById(any(Long.class))).willReturn(true);
-        given(stationDao.existsById(any(Long.class))).willReturn(false);
-
+        doThrow(NotFoundStationException.class).when(stationService).validateNotExistStation(any(Long.class));
 
         // when
         assertThatThrownBy(() -> lineService.deleteSection(1L, 1L))
