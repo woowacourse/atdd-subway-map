@@ -21,13 +21,19 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.response.StationResponse;
 
 @Nested
 @DisplayName("지하철 노선 관리 API")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    /*
+        Scenario: 지하철 노선 등록
+            When: 지하철 노선 등록을 요청한다.
+            Then: 지하철 노선이 생성된다.
+            And: 201 상태, 지하철 노선 정보, 관련 역 정보, 저장 경로를 응답 받는다.
+     */
     @Test
     @DisplayName("지하철 노선을 등록한다.")
     void create() {
@@ -65,6 +71,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         });
     }
 
+    /*
+        Scenario: 중복된 지하철 노선 등록
+            When: 지하철 노선 등록을 요청한다.
+            Then: 같은 이름의 지하철 노선 등록을 요청한다.
+            And: 400 상태, 에러 메시지를 응답 받는다.
+     */
     @Test
     @DisplayName("기존에 존재하는 노선 이름으로 생성하면, 예외를 발생한다.")
     void createWithDuplicateName() {
@@ -100,6 +112,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /*
+        Scenario: 지하럴 노선 목록 조회
+            When: 지하철 노선 목록 조회를 요청한다.
+            Then: 200 상태, 모든 지하철 역 정보, 관련 역 종보를 응답 받는다.
+     */
     @Test
     @DisplayName("지하철 노선 목록을 조회한다.")
     void showAll() {
@@ -155,6 +172,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         });
     }
 
+    /*
+        Scenario: 지하럴 노선 조회
+            When: 지하철 노선 조회를 요청한다.
+            Then: 200 상태, 지하철 역 정보, 관련 역 종보를 응답 받는다.
+     */
     @Test
     @DisplayName("지하철 노선 ID로 노선을 조회한다.")
     void show() {
@@ -197,6 +219,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         });
     }
 
+    /*
+        Scenario: 없는 지하철 노선 조회
+            When: 없는 지하철 노선 조회를 요청한다.
+            Then: 404 상태, 에러 메시지를 응답 받는다.
+     */
     @Test
     @DisplayName("존재하지 않는 지하철 노선 ID로 조회한다면, 예외를 발생한다.")
     void getLineNotExistId() {
@@ -214,6 +241,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
+    /*
+        Scenario: 지하철 노선 수정
+            When: 지하철 노선 수정을 요청한다.
+            Then: 지하철 노선이 수정된다.
+            And: 200 상태를 응답한다.
+     */
     @Test
     @DisplayName("노선을 업데이트 한다.")
     void update() {
@@ -253,6 +286,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    /*
+        Scenario: 없는 지하철 노선 수정
+            When: 없는 지하철 노선 수정을 요청한다.
+            Then: 404 상태, 에러 메시지를 응답 받는다.
+     */
     @Test
     @DisplayName("존재하지 않는 ID로 업데이트 한다면, 예외를 발생한다.")
     void updateNotExistId() {
@@ -275,6 +313,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
+    /*
+        Scenario: 지하철 노선 제거
+            When: 지하철 노선 제거를 요청한다.
+            Then: 지하철 노선이 제거된다.
+            And: 204 상태를 응답 받는다.
+     */
     @Test
     @DisplayName("지하철 노선을 삭제한다.")
     void delete() {
@@ -308,6 +352,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    /*
+        Scenario: 없는 지하철 노선 제거
+            When: 없는 지하철 노선 제거을 요청한다.
+            Then: 404 상태, 에러 메시지를 응답 받는다.
+     */
     @Test
     @DisplayName("존재하지 않는 ID로 삭제한다면, 예외를 발생한다.")
     void deleteLineNotExistId() {
@@ -329,6 +378,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간을 등록한다.")
     class CreateSectionTest extends AcceptanceTest {
 
+        /*
+            Scenario: 지하철 구간 등록
+                When: 지하철 구간 등록을 요청한다.
+                Then: 지하철 구간이 생성된다.
+                And: 200 상태를 응답 받는다.
+         */
         @Test
         @DisplayName("노선의 끝에 구간을 추가한다. - 성공 200")
         void createSection1() {
@@ -522,6 +577,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간을 삭제한다.")
     class DeleteSectionTest extends AcceptanceTest {
 
+        /*
+            Scenario: 지하철 구간 제거
+                When: 지하철 구간 제거를 요청한다.
+                Then: 지하철 구간이 제거된다.
+                And: 200 상태를 응답 받는다.
+         */
         @Test
         @DisplayName("구간을 삭제한다. - 성공 200")
         void deleteSection1() {
@@ -634,7 +695,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .header("Location").split("/")[2]);
     }
 
-    private void createSection(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+    private void createSection(final Long lineId, final Long upStationId, final Long downStationId,
+                               final int distance) {
         final Map<String, Object> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
