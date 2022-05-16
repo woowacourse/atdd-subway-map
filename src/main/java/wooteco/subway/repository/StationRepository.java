@@ -1,7 +1,6 @@
-package wooteco.subway.dao;
+package wooteco.subway.repository;
 
 import java.util.List;
-import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -56,14 +55,10 @@ public class StationRepository {
         }
     }
 
-    public Optional<Station> findByName(final String name) {
-        String sql = "SELECT * FROM station WHERE name = :name";
+    public Boolean isNameExists(final String name) {
+        String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = :name)";
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper()));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, parameters, Boolean.class));
     }
 
     public Station findById(final Long id) {

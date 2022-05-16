@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,25 +7,21 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import wooteco.subway.domain.Station;
 import wooteco.subway.utils.exception.IdNotFoundException;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 class StationRepositoryTest extends RepositoryTest {
 
-    @Autowired
-    StationRepository stationRepository;
-
     @DisplayName("역을 저장한다.")
     @Test
     void save() {
         Station station = new Station("신림역");
-        Station saveStation = stationRepository.save(station);
+        Station savedStation = stationRepository.save(station);
 
         assertAll(
-            () -> assertThat(saveStation.getId()).isNotNull(),
-            () -> assertThat(saveStation).isEqualTo(station)
+                () -> assertThat(savedStation.getId()).isNotNull(),
+                () -> assertThat(savedStation.getName()).isEqualTo(station.getName())
         );
     }
 
@@ -48,18 +44,14 @@ class StationRepositoryTest extends RepositoryTest {
         stationRepository.save(station2);
 
         List<Station> stations = stationRepository.findAll();
-
-        assertAll(
-            () -> assertThat(stations).hasSize(2),
-            () -> assertThat(stations).containsExactly(station1, station2)
-        );
+        assertThat(stations).hasSize(2);
     }
 
     @DisplayName("역을 삭제한다")
     @Test
     void deleteById() {
-        Station saveStation = stationRepository.save(new Station("신림역"));
-        stationRepository.deleteById(saveStation.getId());
+        Station savedStation = stationRepository.save(new Station("신림역"));
+        stationRepository.deleteById(savedStation.getId());
 
         assertThat(stationRepository.findAll()).isEmpty();
     }
@@ -73,23 +65,23 @@ class StationRepositoryTest extends RepositoryTest {
 
     @DisplayName("이름으로 역이 존재하는지 조회한다.")
     @Test
-    void findByName() {
+    void isNameExistsTrue() {
         stationRepository.save(new Station("신림역"));
-        assertThat(stationRepository.findByName("신림역")).isNotNull();
+        assertThat(stationRepository.isNameExists("신림역")).isTrue();
     }
 
 
-    @DisplayName("이름으로 역 조회시 없다면 Optional empty를 반환한다.")
+    @DisplayName("이름으로 역 조회시 없다면 false를 반환한다.")
     @Test
-    void findByNameNoName() {
-        assertThat(stationRepository.findByName("신림역").isEmpty()).isTrue();
+    void isNameExistsFalse() {
+        assertThat(stationRepository.isNameExists("신림역")).isFalse();
     }
 
     @DisplayName("id로 역을 조회한다.")
     @Test
     void findById() {
-        Station saveStation = stationRepository.save(new Station("신림역"));
-        assertThat(stationRepository.findById(saveStation.getId())).isNotNull();
+        Station savedStation = stationRepository.save(new Station("신림역"));
+        assertThat(stationRepository.findById(savedStation.getId())).isNotNull();
     }
 
     @DisplayName("id로 역 조회시 존재하지 않는 id일 경우 에러를 발생한다")

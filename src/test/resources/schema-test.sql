@@ -1,15 +1,11 @@
-drop table if exists STATION;
-drop table if exists SECTION;
-drop table if exists LINE;
-
-create table STATION
+create table if not exists STATION
 (
     id   bigint auto_increment not null,
     name varchar(255) not null unique,
     primary key (id)
 );
 
-create table LINE
+create table if not exists LINE
 (
     id    bigint auto_increment not null,
     name  varchar(255) not null unique,
@@ -17,7 +13,7 @@ create table LINE
     primary key (id)
 );
 
-create table SECTION
+create table if not exists SECTION
 (
     id              bigint auto_increment not null,
     line_id         bigint not null,
@@ -26,3 +22,12 @@ create table SECTION
     distance        int,
     primary key (id)
 );
+
+TRUNCATE TABLE station RESTART IDENTITY;
+ALTER TABLE station ALTER COLUMN id RESTART WITH 1;
+
+TRUNCATE TABLE line RESTART IDENTITY;
+ALTER TABLE line ALTER COLUMN id RESTART WITH 1;
+
+TRUNCATE TABLE section RESTART IDENTITY;
+ALTER TABLE section ALTER COLUMN id RESTART WITH 1;

@@ -6,17 +6,16 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
+    private Station() {
     }
 
     public Station(Long id, String name) {
         this.id = id;
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "[ERROR] 잘못된 입력값입니다. cause = name");
     }
 
     public Station(String name) {
-        id = null;
-        this.name = name;
+        this(null, name);
     }
 
     public Long getId() {
@@ -36,12 +35,20 @@ public class Station {
             return false;
         }
         Station station = (Station) o;
-        return Objects.equals(name, station.name);
+        return Objects.equals(id, station.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
 
