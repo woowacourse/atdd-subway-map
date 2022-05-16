@@ -1,7 +1,6 @@
 package wooteco.subway.domain.section;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import wooteco.subway.domain.station.Station;
@@ -11,11 +10,14 @@ import wooteco.subway.exception.SectionNotEnoughException;
 import wooteco.subway.util.CollectorsUtils;
 
 public class SectionSeries {
+
+    private static final SectionSeriesSorter SORTER = new SectionSeriesSorter();
+
     private final List<Section> sections;
 
     public SectionSeries(List<Section> sections) {
         validateHasId(sections);
-        this.sections = new SectionSeriesSorter().sort(sections);
+        this.sections = SORTER.sort(sections);
     }
 
     private void validateHasId(List<Section> sections) {
@@ -32,9 +34,11 @@ public class SectionSeries {
     public void add(Section section) {
         if (sections.isEmpty() || isAppending(section.getUpStation(), section.getDownStation())) {
             this.sections.add(section);
+            SORTER.sort(sections);
             return;
         }
-        insert(section);
+        insertSection(section);
+        SORTER.sort(sections);
     }
 
     private boolean isAppending(Station upStation, Station downStation) {
@@ -49,7 +53,7 @@ public class SectionSeries {
         return sections.get(0).isUpStationSame(station);
     }
 
-    private void insert(Section newSection) {
+    private void insertSection(Section newSection) {
         final Section findSection = findIntermediateSection(newSection);
         this.sections.remove(findSection);
         this.sections.add(newSection);
@@ -71,14 +75,16 @@ public class SectionSeries {
         validateSectionEnough();
         if (isUpTerminal(deleteStation)) {
             this.sections.remove(0);
+            SORTER.sort(sections);
             return;
         }
         if (isDownTerminal(deleteStation)) {
             this.sections.remove(sections.size() - 1);
+            SORTER.sort(sections);
             return;
         }
         removeIntermediate(deleteStation);
-
+        SORTER.sort(sections);
     }
 
     private void validateSectionEnough() {
