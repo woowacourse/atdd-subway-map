@@ -3,16 +3,12 @@ package wooteco.subway.dao;
 import java.util.List;
 import java.util.Optional;
 
-import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 
-public interface LineDao {
-    Optional<Line> save(Line line);
+public interface LineDao extends UpdateDao<LineEntity> {
 
-    List<Line> findAll();
+    List<LineEntity> findAll();
 
-    Optional<Line> findById(Long id);
+    Optional<LineEntity> findById(Long id);
 
-    boolean update(Line line);
-
-    boolean delete(Long id);
 }

@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,12 +13,12 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 
 @Repository
 public class JdbcLineDao implements LineDao {
 
-    private static final RowMapper<Line> LINE_ROW_MAPPER = (resultSet, rowNum) -> new Line(
+    private static final RowMapper<LineEntity> LINE_ROW_MAPPER = (resultSet, rowNum) -> new LineEntity(
         resultSet.getLong("id"),
         resultSet.getString("name"),
         resultSet.getString("color")
@@ -36,24 +35,19 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> save(Line line) {
-        try {
-            final SqlParameterSource param = new BeanPropertySqlParameterSource(line);
-            final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
-            return Optional.of(new Line(id, line.getName(), line.getColor()));
-        } catch (DuplicateKeyException ignored) {
-            return Optional.empty();
-        }
+    public Long save(LineEntity entity) {
+        final SqlParameterSource param = new BeanPropertySqlParameterSource(entity);
+        return jdbcInsert.executeAndReturnKey(param).longValue();
     }
 
     @Override
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         final String sql = "SELECT * FROM line";
         return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Optional<LineEntity> findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id));
@@ -63,20 +57,27 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public boolean update(Line line) {
+    public Long update(LineEntity entity) {
         final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
-        final int updatedCount = jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
-        return isUpdated(updatedCount);
+        final int updatedCount = jdbcTemplate.update(sql, entity.getName(), entity.getColor(), entity.getId());
+        if (!isUpdated(updatedCount)) {
+            return null;
+        }
+        return entity.getId();
     }
 
     private boolean isUpdated(int updatedCount) {
-        return updatedCount == 1;
+        return updatedCount != 0;
     }
 
     @Override
-    public boolean delete(Long id) {
+    public Long delete(Long id) {
         final String sql = "DELETE FROM line WHERE id = ?";
         final int deletedCount = jdbcTemplate.update(sql, id);
-        return isUpdated(deletedCount);
+        if (!isUpdated(deletedCount)) {
+            return null;
+        }
+        return id;
     }
+
 }

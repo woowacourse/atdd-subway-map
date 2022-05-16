@@ -1,4 +1,4 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.property;
 
 import wooteco.subway.exception.InvalidRequestException;
 
@@ -19,5 +19,12 @@ public class Color {
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "Color{" +
+            "value='" + value + '\'' +
+            '}';
     }
 }

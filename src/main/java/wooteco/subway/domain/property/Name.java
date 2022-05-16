@@ -1,4 +1,4 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.property;
 
 import java.util.Objects;
 
@@ -36,5 +36,12 @@ public class Name {
     @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return "Name{" +
+            "value='" + value + '\'' +
+            '}';
     }
 }

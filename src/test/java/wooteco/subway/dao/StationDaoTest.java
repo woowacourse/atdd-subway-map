@@ -7,15 +7,15 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import wooteco.subway.domain.Station;
+import wooteco.subway.entity.StationEntity;
 
 @JdbcTest
 class StationDaoTest {
@@ -39,29 +39,44 @@ class StationDaoTest {
     @DisplayName("역을 저장한다.")
     public void save() {
         // given
-        Station station = new Station("청구역");
+        StationEntity entity = new StationEntity("청구역");
         // when
-        final Optional<Station> saved = dao.save(station);
+        final Long id = dao.save(entity);
         // then
-        assertThat(saved).isPresent();
+        assertThat(id).isNotNull();
     }
 
     @Test
     @DisplayName("중복된 이름을 저장하는 경우 빈 Optional을 돌려준다.")
     public void save_throwsExceptionWithDuplicatedName() {
         // given
-        final Optional<Station> saved = dao.save(new Station("청구역"));
+        final StationEntity entity = new StationEntity("청구역");
         // when
-        final Optional<Station> duplicated = dao.save(new Station("청구역"));
+        dao.save(entity);
+
         // then
-        assertThat(duplicated).isEmpty();
+        assertThatExceptionOfType(DuplicateKeyException.class)
+            .isThrownBy(() -> dao.save(new StationEntity("청구역")));
+    }
+
+    @Test
+    @DisplayName("ID값으로 역을 불러온다.")
+    public void findById() {
+        // given
+        final Long savedId = dao.save(new StationEntity(STATION_NAME));
+
+        // when
+        final Optional<StationEntity> foundEntity = dao.findById(savedId);
+
+        // then
+        assertThat(foundEntity).isPresent();
     }
 
     @Test
     @DisplayName("역 목록을 불러온다.")
     public void findAll() {
         // given & when
-        final List<Station> stations = dao.findAll();
+        final List<StationEntity> stations = dao.findAll();
         // then
         assertThat(stations).hasSize(0);
     }
@@ -70,9 +85,9 @@ class StationDaoTest {
     @DisplayName("역을 하나 추가한 뒤, 역 목록을 불러온다.")
     public void findAll_afterSaveOneStation() {
         // given
-        dao.save(new Station(STATION_NAME));
+        dao.save(new StationEntity(STATION_NAME));
         // when
-        final List<Station> stations = dao.findAll();
+        final List<StationEntity> stations = dao.findAll();
         // then
         assertThat(stations).hasSize(1);
     }
@@ -81,24 +96,23 @@ class StationDaoTest {
     @DisplayName("ID값으로 역을 삭제한다.")
     public void deleteById() {
         // given
-        final Station saved = dao.save(new Station(STATION_NAME)).orElseThrow(IllegalStateException::new);
-        final Long id = saved.getId();
+        final Long id = dao.save(new StationEntity(STATION_NAME));
         // when
-        final boolean isDeleted = dao.deleteById(id);
+        final Long deletedId = dao.delete(id);
         // then
-        assertThat(isDeleted).isTrue();
+        assertThat(deletedId).isEqualTo(id);
     }
 
     @Test
-    @DisplayName("존재하지 않는 역을 삭제할 수 없다.")
+    @DisplayName("존재하지 않는 역을 삭제하는 경우 null을 반환한다.")
     public void deleteById_doesNotExist() {
         // given
         final long id = 1L;
 
         // when
-        final boolean isDeleted = dao.deleteById(id);
+        final Long deletedId = dao.delete(id);
 
         // then
-        assertThat(isDeleted).isFalse();
+        assertThat(deletedId).isNull();
     }
 }

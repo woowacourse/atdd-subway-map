@@ -1,0 +1,51 @@
+POST /stations HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Host: localhost:8080
+
+{
+  "name" : "a"
+}
+###
+POST /stations HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Host: localhost:8080
+
+{
+"name" : "b"
+}
+###
+POST /stations HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Host: localhost:8080
+
+{
+"name" : "c"
+}
+###
+POST /stations HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Host: localhost:8080
+
+{
+"name" : "d"
+}
+
+###
+
+POST /lines HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Host: localhost:8080
+
+{
+  "name" : "신분당선",
+  "color" : "bg-red-600",
+  "upStationId" : 1,
+  "downStationId" : 4,
+  "distance" : 100,
+  "extraFare" : 900
+}

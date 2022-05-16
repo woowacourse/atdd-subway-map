@@ -1,17 +1,18 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.request;
 
-public class SectionRequest {
+public class LineRequest {
+    private String name;
+    private String color;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public SectionRequest() {
+    public String getName() {
+        return name;
     }
 
-    public SectionRequest(Long upStationId, Long downStationId, int distance) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    public String getColor() {
+        return color;
     }
 
     public Long getUpStationId() {

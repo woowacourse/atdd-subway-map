@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.acceptance.fixture.SimpleRestAssured;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.response.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -64,6 +64,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
+        System.out.println();
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
             .map(StationResponse::getId)
             .collect(Collectors.toList());
