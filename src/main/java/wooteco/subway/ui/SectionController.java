@@ -1,5 +1,6 @@
 package wooteco.subway.ui;
 
+import javax.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class SectionController {
     }
 
     @PostMapping
-    public void save(@PathVariable Long lineId, @RequestBody SectionRequest request) {
+    public void save(@PathVariable Long lineId, @RequestBody @Valid SectionRequest request) {
         SectionSaveRequest saveRequest = SectionSaveRequest.of(lineId, request);
         sectionService.save(saveRequest);
     }

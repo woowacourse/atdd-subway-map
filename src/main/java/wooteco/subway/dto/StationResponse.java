@@ -1,9 +1,14 @@
 package wooteco.subway.dto;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import wooteco.subway.domain.Station;
 
 public class StationResponse {
+
+    @NotNull
     private Long id;
+    @NotEmpty
     private String name;
 
     public StationResponse() {

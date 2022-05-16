@@ -1,10 +1,16 @@
 package wooteco.subway.dto;
 
+import javax.validation.constraints.NotNull;
+
 public class SectionSaveRequest {
 
+    @NotNull
     private Long lineId;
+    @NotNull
     private Long upStationId;
+    @NotNull
     private Long downStationId;
+    @NotNull
     private Integer distance;
 
     public SectionSaveRequest() {
