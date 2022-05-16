@@ -33,7 +33,8 @@ public class SectionDaoImpl implements SectionDao {
 
     @Override
     public Section save(final Section section) {
-        final String sql = "insert into Section (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
+        final String sql = "INSERT INTO section (line_id, up_station_id, down_station_id, distance, deleted) "
+                + "VALUES (?, ?, ?, ?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
@@ -41,6 +42,7 @@ public class SectionDaoImpl implements SectionDao {
             ps.setLong(2, section.getUpStation().getId());
             ps.setLong(3, section.getDownStation().getId());
             ps.setInt(4, section.getDistance());
+            ps.setBoolean(5, false);
             return ps;
         }, keyHolder);
         return new Section(keyHolder.getKey().longValue(), section.getLineId(), section.getUpStation(),
@@ -49,18 +51,19 @@ public class SectionDaoImpl implements SectionDao {
 
     @Override
     public List<Section> findByLineId(long lineId) {
-        final String sql = "SELECT section.id as id, line_id, up_station_id, down_station_id, distance, "
-                + "upstation.name as up_name, downstation.name as dw_name "
+        final String sql = "SELECT section.id AS id, line_id, up_station_id, down_station_id, distance, "
+                + "upstation.name AS up_name, downstation.name AS dw_name "
                 + "FROM section "
-                + "JOIN station as upstation ON upstation.id = section.up_station_id "
-                + "JOIN station as downstation ON downstation.id = section.down_station_id "
-                + "WHERE line_id = (?);";
-        return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
+                + "JOIN station AS upstation ON upstation.id = section.up_station_id "
+                + "JOIN station AS downstation ON downstation.id = section.down_station_id "
+                + "WHERE line_id = (?) AND section.deleted = (?)";
+        return jdbcTemplate.query(sql, sectionRowMapper(), lineId, false);
     }
 
     @Override
     public int update(List<Section> sections) {
-        final String sql = "update section set (up_station_id, down_station_id, distance) = (?, ?, ?) where id = (?)";
+        final String sql = "UPDATE section SET (up_station_id, down_station_id, distance) = (?, ?, ?) "
+                + "WHERE id = (?) AND deleted = (?)";
         return jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -68,6 +71,7 @@ public class SectionDaoImpl implements SectionDao {
                 ps.setLong(2, sections.get(i).getDownStation().getId());
                 ps.setInt(3, sections.get(i).getDistance());
                 ps.setLong(4, sections.get(i).getId());
+                ps.setBoolean(5, false);
             }
 
             @Override
@@ -79,7 +83,7 @@ public class SectionDaoImpl implements SectionDao {
 
     @Override
     public int delete(final Section section) {
-        final String sql = "delete from section where id = (?)";
-        return jdbcTemplate.update(sql, section.getId());
+        final String sql = "UPDATE section SET deleted = (?) WHERE id = (?)";
+        return jdbcTemplate.update(sql, true, section.getId());
     }
 }

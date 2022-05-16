@@ -27,11 +27,12 @@ public class StationDaoImpl implements StationDao {
 
     @Override
     public Station save(Station station) {
-        final String sql = "insert into station (name) values (?)";
+        final String sql = "INSERT INTO station (name, deleted) VALUES (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, station.getName());
+            ps.setBoolean(2, false);
             return ps;
         }, keyHolder);
         return new Station(keyHolder.getKey().longValue(), station.getName());
@@ -39,15 +40,15 @@ public class StationDaoImpl implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        final String sql = "select * from station";
-        return jdbcTemplate.query(sql, stationRowMapper());
+        final String sql = "SELECT * FROM station WHERE deleted = (?)";
+        return jdbcTemplate.query(sql, stationRowMapper(), false);
     }
 
     @Override
     public Station findById(long id) {
         try {
-            final String sql = "select * from station where id = (?)";
-            return jdbcTemplate.queryForObject(sql, stationRowMapper(), id);
+            final String sql = "SELECT * FROM station WHERE id = (?) AND deleted = (?)";
+            return jdbcTemplate.queryForObject(sql, stationRowMapper(), id, false);
         } catch (EmptyResultDataAccessException e) {
             throw new StationNotFoundException("존재하지 않는 역입니다.");
         }
@@ -55,7 +56,7 @@ public class StationDaoImpl implements StationDao {
 
     @Override
     public int deleteStation(long id) {
-        final String sql = "delete from station where id = (?)";
-        return jdbcTemplate.update(sql, id);
+        final String sql = "UPDATE station SET deleted = (?) WHERE id = (?)";
+        return jdbcTemplate.update(sql, true, id);
     }
 }
