@@ -1,12 +1,14 @@
 package wooteco.subway.dto;
 
 import lombok.Getter;
+import lombok.ToString;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 
 import java.util.List;
 
 @Getter
+@ToString
 public class LineResponse {
 
     private Long id;

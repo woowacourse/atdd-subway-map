@@ -12,8 +12,11 @@ import static wooteco.subway.util.StringUtils.isBlank;
 @Setter
 public class Station {
 
-    private final Long id;
-    private final String name;
+    private Long id;
+    private String name;
+
+    private Station() {
+    }
 
     public Station(Long id) {
         this(id, null);

@@ -14,17 +14,17 @@ import wooteco.subway.dao.DbLineDao;
 import wooteco.subway.dao.DbSectionDao;
 import wooteco.subway.dao.DbStationDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineResponse;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.utils.FixtureUtils.*;
-import static wooteco.subway.utils.LineTestFixture.*;
+import static wooteco.subway.utils.LineFixtureUtils.*;
 
 @DisplayName("지하철 노선 E2E")
 @Sql("/init.sql")
@@ -88,22 +88,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long stationId2 = extractId(역_생성_응답_2);
 
         // when
-        LinkedHashMap<String, Object> responseBody = post(LINE, 신분당선).jsonPath().get();
-        List<Map<String, String>> stationsResponse = (List<Map<String, String>>) responseBody.get("stations");
+        ExtractableResponse<Response> response = post(LINE, 신분당선);
+        LineResponse lineResponse = convertType(response, LineResponse.class);
+
+        List<Station> stations = lineResponse.getStations();
 
         // then
         assertAll(
-                () -> assertThat(responseBody.get("id")).isNotNull(),
-                () -> assertThat(responseBody.get("name")).isEqualTo("신분당선"),
-                () -> assertThat(responseBody.get("color")).isEqualTo("yellow"),
-                () -> assertAll(
-                        () -> assertThat(Integer.valueOf(String.valueOf(stationsResponse.get(0).get("id"))))
-                                .isEqualTo(Integer.valueOf(String.valueOf(stationId1))),
-                        () -> assertThat(stationsResponse.get(0).get("name")).isEqualTo("지하철역"),
-                        () -> assertThat(Integer.valueOf(String.valueOf(stationsResponse.get(1).get("id"))))
-                                .isEqualTo(Integer.valueOf(String.valueOf(stationId2))),
-                        () -> assertThat(stationsResponse.get(1).get("name")).isEqualTo("새로운지하철역")
-                )
+                () -> assertThat(lineResponse.getId()).isNotNull(),
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("yellow"),
+                () -> assertThat(stations.get(0)).isEqualTo(new Station(stationId1, "지하철역")),
+                () -> assertThat(stations.get(1)).isEqualTo(new Station(stationId2, "새로운지하철역"))
         );
     }
 
@@ -140,28 +136,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = get(LINE);
+        List<LineResponse> lineResponses = convertTypeList(response, LineResponse.class);
 
-        List<Map<String, Object>> responseBody = response.jsonPath().get();
-        List<Map<String, Object>> firstStations = (List<Map<String, Object>>) responseBody.get(0).get("stations");
-        List<Map<String, Object>> secondStations = (List<Map<String, Object>>) responseBody.get(1).get("stations");
+        LineResponse lineResponse1 = lineResponses.get(0);
+        List<Station> stations1 = lineResponse1.getStations();
 
+        LineResponse lineResponse2 = lineResponses.get(1);
+        List<Station> stations2 = lineResponse2.getStations();
 
         // then
         assertAll(
-                () -> assertThat(responseBody.get(0).get("id")).isNotNull(),
-                () -> assertThat(responseBody.get(0).get("name")).isEqualTo("7호선"),
-                () -> assertThat(responseBody.get(0).get("color")).isEqualTo("brown"),
-                () -> assertAll(
-                        () -> assertThat(firstStations.get(0).get("name")).isEqualTo("상도역"),
-                        () -> assertThat(firstStations.get(1).get("name")).isEqualTo("이수역")
-                ),
-                () -> assertThat(responseBody.get(1).get("id")).isNotNull(),
-                () -> assertThat(responseBody.get(1).get("name")).isEqualTo("신분당선"),
-                () -> assertThat(responseBody.get(1).get("color")).isEqualTo("yellow"),
-                () -> assertAll(
-                        () -> assertThat(secondStations.get(0).get("name")).isEqualTo("강남구청역"),
-                        () -> assertThat(secondStations.get(1).get("name")).isEqualTo("선릉역")
-                )
+                () -> assertThat(lineResponse1.getId()).isNotNull(),
+                () -> assertThat(lineResponse1.getName()).isEqualTo("7호선"),
+                () -> assertThat(lineResponse1.getColor()).isEqualTo("brown"),
+                () -> assertThat(stations1.get(0).getName()).isEqualTo("상도역"),
+                () -> assertThat(stations1.get(1).getName()).isEqualTo("이수역"),
+
+                () -> assertThat(lineResponse2.getId()).isNotNull(),
+                () -> assertThat(lineResponse2.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse2.getColor()).isEqualTo("yellow"),
+                () -> assertThat(stations2.get(0).getName()).isEqualTo("강남구청역"),
+                () -> assertThat(stations2.get(1).getName()).isEqualTo("선릉역")
         );
     }
 
@@ -174,8 +169,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long createdId = extractId(response1);
 
         // when & then
-        ExtractableResponse<Response> response2 =
-                put(LINE + "/" + createdId, Map.of("name", lineName, "color", "blue"));
+        ExtractableResponse<Response> response2 = put(lineById(createdId), Map.of("name", lineName, "color", "blue"));
 
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -209,7 +203,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> response = get(lineById(createdId));
-        LineResponse 생성된_노선 = convertObject(response, LineResponse.class);
+        LineResponse 생성된_노선 = convertType(response, LineResponse.class);
 
         assertThat(extractId(생성_응답)).isEqualTo(createdId);
         assertThat(생성된_노선.getName()).isEqualTo(_7호선.get("name"));
@@ -227,7 +221,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         post(LINE, _7호선);
 
         // when
-        ExtractableResponse<Response> response = put("/lines/" + createdId, _7호선);
+        ExtractableResponse<Response> response = put(lineById(createdId), _7호선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

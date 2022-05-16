@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.http.MediaType;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.EMPTY_MAP;
@@ -62,8 +63,12 @@ public class FixtureUtils {
         return postProcess(preProcess(EMPTY_MAP).delete(path));
     }
 
-    public static <T> T convertObject(ExtractableResponse<Response> response, Class<T> clazz) {
+    public static <T> T convertType(ExtractableResponse<Response> response, Class<T> clazz) {
         return response.jsonPath().getObject(".", clazz);
+    }
+
+    public static <T> List<T> convertTypeList(ExtractableResponse<Response> response, Class<T> clazz) {
+        return response.jsonPath().getList(".", clazz);
     }
 
     public static long extractId(ExtractableResponse<Response> response) {

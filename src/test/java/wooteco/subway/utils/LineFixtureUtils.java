@@ -8,9 +8,9 @@ import java.util.Map;
 
 import static wooteco.subway.utils.FixtureUtils.*;
 
-public class LineTestFixture {
+public class LineFixtureUtils {
 
-    private LineTestFixture() {
+    private LineFixtureUtils() {
     }
 
     public static ExtractableResponse<Response> _7호선_및_역_생성요청() {
