@@ -43,6 +43,7 @@ public class LineService {
         return new Line(newLine, stations);
     }
 
+    @Transactional(readOnly = true)
     public List<Line> findAll() {
         List<Line> lines = lineDao.findAll();
         List<Line> newLines = new ArrayList<>();
@@ -63,6 +64,7 @@ public class LineService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Line findLineById(Long id) {
         try {
             Line line = lineDao.findById(id);
@@ -76,6 +78,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void update(Line updatingLine) {
         int executedRows = lineDao.update(updatingLine);
         if (executedRows == NONE) {

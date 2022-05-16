@@ -37,10 +37,12 @@ public class StationService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Station> findAll() {
         return stationDao.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<Station> findStationByIds(List<Long> ids) {
         List<Station> stations = stationDao.findByIds(ids);
         List<Station> stationsWithIdOrder = new ArrayList<>();

@@ -30,10 +30,12 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
+    @Transactional(readOnly = true)
     public Sections findByLineId(long lineId) {
         return sectionDao.findByLineId(lineId);
     }
 
+    @Transactional(readOnly = true)
     public List<Long> findArrangedStationIdsByLineId(Long id) {
         Sections sections = sectionDao.findByLineId(id);
         List<Section> endSections = sections.findEndSections();
