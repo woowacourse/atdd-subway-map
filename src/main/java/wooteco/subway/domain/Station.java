@@ -22,7 +22,7 @@ public class Station {
     }
 
     private void validateDataSize(String name) {
-        if (name.isEmpty() || name.length() > NAME_LENGTH) {
+        if (name.isBlank() || name.length() > NAME_LENGTH) {
             throw new DataLengthException("역 이름이 빈 값이거나 최대 범위(" + NAME_LENGTH + "를 초과했습니다.");
         }
     }
