@@ -6,20 +6,51 @@ import wooteco.subway.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class Sections {
 
     private final List<Section> values;
 
     public Sections(List<Section> values) {
-        this.values = values;
+        this.values = sortSections(values);
+    }
+
+    private List<Section> sortSections(List<Section> sections) {
+        List<Section> sortedSections = new ArrayList<>();
+        Section section = findLastUpSection(sections);
+        sortedSections.add(section);
+
+        while (sections.size() > sortedSections.size()) {
+            Long nextUpStationId = section.getDownStationId();
+            section = findNextSection(sections, nextUpStationId);
+            sortedSections.add(section);
+        }
+        return sortedSections;
+    }
+
+    private Section findLastUpSection(List<Section> sections) {
+        return sections.stream()
+                .filter(s -> isLastUpStation(sections, s))
+                .findAny()
+                .orElseThrow(() -> new NotFoundException("상행 종점을 찾지 못했습니다."));
+    }
+
+    private boolean isLastUpStation(List<Section> sections, Section section) {
+        return sections.stream()
+                .noneMatch(s -> s.getDownStationId().equals(section.getUpStationId()));
+    }
+
+    private Section findNextSection(List<Section> sections, Long nextUpStationId) {
+        return sections.stream()
+                .filter(s -> s.getUpStationId().equals(nextUpStationId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("구간들 정렬중 다음 구간을 찾지 못하였습니다."));
     }
 
     public SectionsToBeCreatedAndUpdated add(Section newSection) {
         validateExistStationInLine(newSection);
-        Long currentLastUpStationId = findLastUpSection().getUpStationId();
-        Long currentLastDownStationId = findLastDownSection().getDownStationId();
+        Long currentLastUpStationId = values.get(0).getUpStationId();
+        Long currentLastDownStationId = values.get(values.size() - 1).getDownStationId();
 
         if (newSection.isNewLastStation(currentLastUpStationId, currentLastDownStationId)) {
             return new SectionsToBeCreatedAndUpdated(newSection);
@@ -60,12 +91,6 @@ public class Sections {
         return new SectionsToBeCreatedAndUpdated(newSection, sectionThatNeedToBeUpdated);
     }
 
-    private void validateNewSectionDistance(Section newSection, Section existNearSection) {
-        if (newSection.getDistance() >= existNearSection.getDistance()) {
-            throw new IllegalArgumentException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
-        }
-    }
-
     private Section findNearSection(Section newSection) {
         return values.stream()
                 .filter(s -> s.getUpStationId().equals(newSection.getUpStationId()) ||
@@ -74,21 +99,23 @@ public class Sections {
                 .orElseThrow(() -> new NotFoundException("중간역 생성중 기존역을 찾지 못하였습니다."));
     }
 
+    private void validateNewSectionDistance(Section newSection, Section existNearSection) {
+        if (newSection.getDistance() >= existNearSection.getDistance()) {
+            throw new IllegalArgumentException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
+        }
+    }
+
     public SectionsToBeDeletedAndUpdated delete(Long stationId) {
         validateExistStation(stationId);
         validateRemainOneSection();
-        Section currentLastUpSection = findLastUpSection();
-        Section currentLastDownSection = findLastDownSection();
+        Section currentLastUpSection = values.get(0);
+        Section currentLastDownSection = values.get(values.size() - 1);
         if (currentLastUpSection.isUpStation(stationId) ||
                 currentLastDownSection.isDownStation(stationId)) {
             return deleteLastSection(currentLastUpSection, currentLastDownSection, stationId);
         }
 
-        Section upSideStation = extractUpSideStation(stationId);
-        Section downSideStation = extractDownSideStation(stationId);
-        Section sectionToBeUpdated = new Section(upSideStation.getId(), upSideStation.getLineId(), upSideStation.getUpStationId(),
-                downSideStation.getDownStationId(), upSideStation.getDistance() + downSideStation.getDistance());
-        return new SectionsToBeDeletedAndUpdated(downSideStation, sectionToBeUpdated);
+        return deleteMiddleSection(stationId);
     }
 
     private void validateExistStation(Long stationId) {
@@ -103,30 +130,6 @@ public class Sections {
         }
     }
 
-    private Section findLastUpSection() {
-        return values.stream()
-                .filter(this::isLastUpStation)
-                .findAny()
-                .orElseThrow(() -> new NotFoundException("상행 종점을 찾지 못했습니다."));
-    }
-
-    private boolean isLastUpStation(Section section) {
-        return values.stream()
-                .noneMatch(s -> s.getDownStationId().equals(section.getUpStationId()));
-    }
-
-    private Section findLastDownSection() {
-        return values.stream()
-                .filter(this::isLastDownStation)
-                .findAny()
-                .orElseThrow(() -> new NotFoundException("하행 종점을 찾지 못했습니다."));
-    }
-
-    private boolean isLastDownStation(Section section) {
-        return values.stream()
-                .noneMatch(s -> s.getUpStationId().equals(section.getDownStationId()));
-    }
-
     private SectionsToBeDeletedAndUpdated deleteLastSection(Section lastUpSection, Section lastDownSection, Long stationId) {
         if (stationId.equals(lastUpSection.getUpStationId())) {
             return new SectionsToBeDeletedAndUpdated(lastUpSection);
@@ -135,6 +138,14 @@ public class Sections {
             return new SectionsToBeDeletedAndUpdated(lastDownSection);
         }
         return null;
+    }
+
+    private SectionsToBeDeletedAndUpdated deleteMiddleSection(Long stationId) {
+        Section upSideStation = extractUpSideStation(stationId);
+        Section downSideStation = extractDownSideStation(stationId);
+        Section sectionToBeUpdated = new Section(upSideStation.getId(), upSideStation.getLineId(), upSideStation.getUpStationId(),
+                downSideStation.getDownStationId(), upSideStation.getDistance() + downSideStation.getDistance());
+        return new SectionsToBeDeletedAndUpdated(downSideStation, sectionToBeUpdated);
     }
 
     private Section extractUpSideStation(Long stationId) {
@@ -152,24 +163,11 @@ public class Sections {
     }
 
     public List<Long> getSortedStationIds() {
-        Section lastUpSection = findLastUpSection();
-        Long downStationId = lastUpSection.getDownStationId();
-
         List<Long> sortedStationIds = new ArrayList<>();
-        sortedStationIds.add(lastUpSection.getUpStationId());
-        sortedStationIds.add(lastUpSection.getDownStationId());
-
-        while (values.size() >= sortedStationIds.size()) {
-            downStationId = getNextDownStationId(downStationId);
-            sortedStationIds.add(downStationId);
+        sortedStationIds.add(values.get(0).getUpStationId());
+        for (Section value : values) {
+            sortedStationIds.add(value.getDownStationId());
         }
         return sortedStationIds;
-    }
-
-    private Long getNextDownStationId(Long downStationId) {
-        Optional<Section> nextSection = values.stream()
-                .filter(s -> s.getUpStationId().equals(downStationId))
-                .findFirst();
-        return nextSection.map(Section::getDownStationId).orElseThrow();
     }
 }
