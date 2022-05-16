@@ -33,6 +33,14 @@ class StationServiceTest {
     @Test
     void save() {
         Station station = new Station("hunch");
+        Station savedStation = stationService.save(station);
+        assertThat(savedStation.getName()).isEqualTo("hunch");
+    }
+
+    @DisplayName("중복되는 지하철역을 저장하면 에러")
+    @Test
+    void saveDuplicatedName() {
+        Station station = new Station("hunch");
         stationService.save(station);
         assertThatThrownBy(() -> stationService.save(station))
             .isInstanceOf(IllegalStateException.class)
@@ -63,7 +71,7 @@ class StationServiceTest {
         assertThat(stations).hasSize(0);
     }
 
-    @DisplayName("없는 지하철 역을 삭제한다.")
+    @DisplayName("없는 지하철 역을 삭제하면 에러")
     @Test
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.delete(0L))
