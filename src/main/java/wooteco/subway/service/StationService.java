@@ -2,15 +2,15 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequest;
-import wooteco.subway.dto.request.StationSaveRequest;
 import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.entity.StationEntity;
 
 @Service
 public class StationService {
@@ -24,28 +24,41 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationResponse createStation(StationRequest stationRequest) {
-        StationSaveRequest stationSaveRequest = StationSaveRequest.of(stationRequest.getName());
-        Optional<Station> wrappedStation = stationDao.findByName(stationRequest.getName());
-        if (wrappedStation.isPresent()) {
-            throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
-        }
-        Station newStation = stationDao.save(stationSaveRequest);
+        StationEntity stationEntity = stationRequest.toEntity();
+        checkNameDuplication(stationRequest);
+        StationEntity newStationEntity = stationDao.save(stationEntity);
+        Station newStation = new Station(newStationEntity.getId(), newStationEntity.getName());
         return StationResponse.of(newStation);
     }
 
+    private void checkNameDuplication(StationRequest stationRequest) {
+        if (stationDao.findByName(stationRequest.getName()).isPresent()) {
+            throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
+        }
+    }
+
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
-        List<Station> stations = stationDao.findAll();
+        List<StationEntity> stations = stationDao.findAll();
         return stations.stream()
+                .map(stationEntity -> new Station(stationEntity.getId(), stationEntity.getName()))
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public Station findById(Long id) {
+        StationEntity stationEntity = stationDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
+        return new Station(stationEntity.getId(), stationEntity.getName());
+    }
+
+    @Transactional
     public void deleteStation(Long id) {
-        Optional<Station> wrappedStation = stationDao.findById(id);
-        if (wrappedStation.isEmpty()) {
-            throw new NoSuchElementException(NOT_EXIST_ERROR);
-        }
+        stationDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
         stationDao.deleteById(id);
     }
 }

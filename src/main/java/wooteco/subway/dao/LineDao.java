@@ -11,8 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
-import wooteco.subway.dto.request.LineSaveRequest;
+import wooteco.subway.entity.LineEntity;
 
 @Repository
 public class LineDao {
@@ -23,57 +22,63 @@ public class LineDao {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public Line save(LineSaveRequest lineSaveRequest) {
+    public LineEntity save(LineEntity lineEntity) {
         String sql = "insert into LINE (name, color) values (:name, :color)";
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", lineSaveRequest.getName());
-        params.put("color", lineSaveRequest.getColor());
+        params.put("name", lineEntity.getName());
+        params.put("color", lineEntity.getColor());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
-        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), lineSaveRequest.getName(),
-                lineSaveRequest.getColor());
+        return new LineEntity.Builder(lineEntity.getName(), lineEntity.getColor())
+                .id(Objects.requireNonNull(keyHolder.getKey()).longValue())
+                .build();
     }
 
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         String sql = "select * from LINE";
 
         return namedParameterJdbcTemplate.query(sql,
-                (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
+                (rs, rowNum) -> new LineEntity.Builder(rs.getString("name"), rs.getString("color"))
+                        .id(rs.getLong("id"))
+                        .build()
+        );
     }
 
-    public Optional<Line> findById(Long id) {
+    public Optional<LineEntity> findById(Long id) {
         String sql = "select * from LINE where id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        List<Line> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
-                (rs, rowNum) ->
-                        new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
+        List<LineEntity> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
+                (rs, rowNum) -> new LineEntity.Builder(rs.getString("name"), rs.getString("color"))
+                        .id(rs.getLong("id"))
+                        .build());
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public Optional<Line> findByName(String name) {
+    public Optional<LineEntity> findByName(String name) {
         String sql = "select * from LINE where name = :name";
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
 
-        List<Line> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
-                (rs, rowNum) ->
-                        new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
+        List<LineEntity> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
+                (rs, rowNum) -> new LineEntity.Builder(rs.getString("name"), rs.getString("color"))
+                        .id(rs.getLong("id"))
+                        .build());
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public int update(Long id, LineSaveRequest lineSaveRequest) {
+    public int update(Long id, LineEntity lineEntity) {
         String sql = "update LINE set name = :name, color = :color where id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-        params.put("name", lineSaveRequest.getName());
-        params.put("color", lineSaveRequest.getColor());
+        params.put("name", lineEntity.getName());
+        params.put("color", lineEntity.getColor());
 
         return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
     }
