@@ -56,7 +56,7 @@ class StationServiceTest {
         List<String> stationNameResponses = stationResponses.stream()
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());
-
+        
         assertAll(
                 () -> assertThat(stationResponses).hasSize(2),
                 () -> assertThat(stationNameResponses).contains("선릉역", "강남역")

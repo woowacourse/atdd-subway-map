@@ -2,7 +2,6 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -47,8 +46,7 @@ public class LineService {
     }
 
     private void checkNameDuplication(LineRequest lineRequest) {
-        Optional<LineEntity> wrappedLineEntity = lineDao.findByName(lineRequest.getName());
-        if (wrappedLineEntity.isPresent()) {
+        if (lineDao.findByName(lineRequest.getName()).isPresent()) {
             throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
         }
     }
@@ -73,37 +71,34 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Optional<LineEntity> wrappedLineEntity = lineDao.findById(id);
-        checkLineExist(wrappedLineEntity);
-        LineEntity lineEntity = wrappedLineEntity.get();
+        LineEntity lineEntity = lineDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
         Line line = getLine(lineEntity);
         return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        checkLineExist(lineDao.findById(id));
+        lineDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
         LineEntity lineEntity = lineRequest.toLineEntity();
         lineDao.update(id, lineEntity);
     }
 
     public void deleteLine(Long id) {
-        checkLineExist(lineDao.findById(id));
+        lineDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
         lineDao.deleteById(id);
     }
 
-    private void checkLineExist(Optional<LineEntity> wrappedLine) {
-        if (wrappedLine.isEmpty()) {
-            throw new NoSuchElementException(NOT_EXIST_ERROR);
-        }
-    }
-
     public void createSection(Long lineId, SectionRequest sectionRequest) {
-        checkLineExist(lineDao.findById(lineId));
+        lineDao.findById(lineId)
+                .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
         sectionService.createSection(lineId, sectionRequest);
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        checkLineExist(lineDao.findById(lineId));
+        lineDao.findById(lineId)
+                .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
         sectionService.deleteSection(lineId, stationId);
     }
 }

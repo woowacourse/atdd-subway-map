@@ -2,7 +2,6 @@ package wooteco.subway.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
@@ -30,22 +29,22 @@ public class SectionService {
 
         Sections sections = getSectionsByLineId(lineId);
         Station newStation = sections.findNewStation(upStation, downStation);
-        Optional<Section> wrappedSection = sections.findSectionByAddingSection(upStation, downStation,
+
+        List<Section> occupiedSections = sections.findSectionByAddingSection(upStation, downStation,
                 sectionRequest.getDistance());
 
-        saveSection(lineId, sectionRequest, newStation, wrappedSection);
+        saveSection(lineId, sectionRequest, newStation, occupiedSections);
     }
 
-    private void saveSection(Long lineId, SectionRequest sectionRequest, Station newStation,
-                             Optional<Section> wrappedSection) {
-        if (wrappedSection.isPresent()) {
-            Section section = wrappedSection.get();
-
+    private void saveSection(Long lineId, SectionRequest sectionRequest, Station newStation, List<Section> sections) {
+        if (sections.isEmpty()) {
+            saveNewSection(lineId, sectionRequest);
+            return;
+        }
+        for (Section section : sections) {
             saveSplitSection(lineId, sectionRequest, newStation, section);
             sectionDao.deleteById(section.getId());
         }
-
-        saveNewSection(lineId, sectionRequest);
     }
 
     private void saveSplitSection(Long lineId, SectionRequest sectionRequest, Station newStation, Section section) {
@@ -58,16 +57,14 @@ public class SectionService {
         saveRightSection(lineId, sectionRequest.getDistance(), section, newStation);
     }
 
-    private void saveLeftSection(Long lineId, int distance, Section section,
-                                 Station newStation) {
+    private void saveLeftSection(Long lineId, int distance, Section section, Station newStation) {
         SectionEntity saveLeftSectionEntity = new SectionEntity.Builder(lineId, section.getUpStation().getId(),
                 newStation.getId(), distance)
                 .build();
         sectionDao.save(saveLeftSectionEntity);
     }
 
-    private void saveRightSection(Long lineId, int distance, Section section,
-                                  Station newStation) {
+    private void saveRightSection(Long lineId, int distance, Section section, Station newStation) {
         SectionEntity saveRightSectionEntity = new SectionEntity.Builder(lineId, newStation.getId(),
                 section.getDownStation().getId(), distance)
                 .build();
@@ -88,7 +85,6 @@ public class SectionService {
 
     private Sections getSectionsByLineId(Long lineId) {
         List<Section> sections = new ArrayList<>();
-
         List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(lineId);
 
         for (SectionEntity sectionEntity : sectionEntities) {

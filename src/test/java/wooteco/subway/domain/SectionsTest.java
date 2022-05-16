@@ -14,7 +14,6 @@ import static wooteco.subway.fixture.StationFixture.stationZ;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,10 +56,9 @@ class SectionsTest {
     @MethodSource("createStations")
     void findSectionByAddingSectionInMiddleStation(Station upStation, Station downStation, Section updateSection) {
         Sections sections = SectionsFixture.createSections();
-        Optional<Section> wrappedSection = sections.findSectionByAddingSection(upStation, downStation, 9);
-        assert (wrappedSection).isPresent();
+        List<Section> occupiedSections = sections.findSectionByAddingSection(upStation, downStation, 9);
 
-        assertThat(wrappedSection.get()).isEqualTo(updateSection);
+        assertThat(occupiedSections).contains(updateSection);
     }
 
     static Stream<Arguments> createStations() {

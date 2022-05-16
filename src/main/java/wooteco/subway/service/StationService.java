@@ -2,7 +2,6 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -28,13 +27,16 @@ public class StationService {
 
     public StationResponse createStation(StationRequest stationRequest) {
         StationEntity stationEntity = stationRequest.toEntity();
-        Optional<StationEntity> wrappedStationEntity = stationDao.findByName(stationRequest.getName());
-        if (wrappedStationEntity.isPresent()) {
-            throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
-        }
+        checkNameDuplication(stationRequest);
         StationEntity newStationEntity = stationDao.save(stationEntity);
         Station newStation = new Station(newStationEntity.getId(), newStationEntity.getName());
         return StationResponse.of(newStation);
+    }
+
+    private void checkNameDuplication(StationRequest stationRequest) {
+        if (stationDao.findByName(stationRequest.getName()).isPresent()) {
+            throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
+        }
     }
 
     public List<StationResponse> findAllStations() {
@@ -46,18 +48,14 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        Optional<StationEntity> stationEntity = stationDao.findById(id);
-        if (stationEntity.isEmpty()) {
-            throw new NoSuchElementException(NOT_EXIST_ERROR);
-        }
-        return new Station(stationEntity.get().getId(), stationEntity.get().getName());
+        StationEntity stationEntity = stationDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
+        return new Station(stationEntity.getId(), stationEntity.getName());
     }
 
     public void deleteStation(Long id) {
-        Optional<StationEntity> wrappedStationEntity = stationDao.findById(id);
-        if (wrappedStationEntity.isEmpty()) {
-            throw new NoSuchElementException(NOT_EXIST_ERROR);
-        }
+        stationDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_ERROR));
         stationDao.deleteById(id);
     }
 }

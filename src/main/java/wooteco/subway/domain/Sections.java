@@ -1,12 +1,12 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -54,16 +54,16 @@ public class Sections {
         return orderedStations;
     }
 
-    public Optional<Section> findSectionByAddingSection(Station upStation, Station downStation, int distance) {
+    public List<Section> findSectionByAddingSection(Station upStation, Station downStation, int distance) {
         if (this.sections.size() == 0) {
-            return Optional.empty();
+            return new ArrayList<>();
         }
         List<Station> orderedStations = getOrderedStations();
         checkStationExist(upStation, downStation, orderedStations);
         checkSectionAlreadyExist(upStation, downStation, orderedStations);
-        Optional<Section> wrappedSection = findNeedToUpdateSection(upStation, downStation, orderedStations);
-        wrappedSection.ifPresent(section -> checkAlreadyExistSectionDistance(section, distance));
-        return wrappedSection;
+        List<Section> sections = findNeedToUpdateSection(upStation, downStation, orderedStations);
+        checkAlreadyExistSectionDistance(sections, distance);
+        return sections;
     }
 
     private void checkStationExist(Station upStation, Station downStation, List<Station> orderedStations) {
@@ -78,20 +78,20 @@ public class Sections {
         }
     }
 
-    private Optional<Section> findNeedToUpdateSection(Station upStation, Station downStation,
-                                                      List<Station> orderedStations) {
+    private List<Section> findNeedToUpdateSection(Station upStation, Station downStation,
+                                                  List<Station> orderedStations) {
         if (orderedStations.contains(upStation)) {
             int nextIndex = orderedStations.indexOf(upStation) + 1;
             if (nextIndex >= orderedStations.size()) {
-                return Optional.empty();
+                return new ArrayList<>();
             }
-            return Optional.of(getNeedToUpdateSection(upStation, orderedStations.get(nextIndex)));
+            return List.of(getNeedToUpdateSection(upStation, orderedStations.get(nextIndex)));
         }
         int beforeIndex = orderedStations.indexOf(downStation) - 1;
         if (beforeIndex < 0) {
-            return Optional.empty();
+            return new ArrayList<>();
         }
-        return Optional.of(getNeedToUpdateSection(orderedStations.get(beforeIndex), downStation));
+        return List.of(getNeedToUpdateSection(orderedStations.get(beforeIndex), downStation));
     }
 
     private Section getNeedToUpdateSection(Station upStation, Station downStation) {
@@ -101,8 +101,8 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 상행 지하철역이 없습니다."));
     }
 
-    private void checkAlreadyExistSectionDistance(Section section, int distance) {
-        section.checkDistance(distance);
+    private void checkAlreadyExistSectionDistance(List<Section> sections, int distance) {
+        sections.forEach(section -> section.checkDistance(distance));
     }
 
     public Station findNewStation(Station upStation, Station downStation) {
