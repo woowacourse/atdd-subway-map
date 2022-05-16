@@ -95,6 +95,6 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(new Section(1L, 2L, 1L, 10)));
         assertThatThrownBy(() -> sections.deleteByStation(new Station(2L, "제거될 역")))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
+                .hasMessage("역을 없애려는 노선은 최소 2개 이상의 구간을 가져야 합니다.");
     }
 }
