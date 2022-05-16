@@ -69,15 +69,9 @@ public class LineService {
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
 
-        checkInsertSuccess(line.insertSection(section));
+        line.insertSection(section);
         sectionDao.update(line.getSections());
         sectionDao.save(section, line.getId());
-    }
-
-    private void checkInsertSuccess(boolean success) {
-        if (!success) {
-            throw new IllegalArgumentException("구간을 추가하지 못했습니다.");
-        }
     }
 
     public void deleteStation(Long lineId, Long stationId) {

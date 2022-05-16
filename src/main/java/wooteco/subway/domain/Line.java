@@ -32,8 +32,8 @@ public class Line {
         this.color = color;
     }
 
-    public boolean insertSection(Section section) {
-        return sections.insert(section);
+    public void insertSection(Section section) {
+        sections.insert(section);
     }
 
     public Long deleteSection(Station station) {

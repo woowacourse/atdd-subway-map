@@ -51,10 +51,9 @@ public class Sections {
             .orElseThrow(() -> new IllegalArgumentException("해당 구간을 찾을 수 없습니다."));
     }
 
-    public boolean insert(Section section) {
+    public void insert(Section section) {
         checkContainsStation(section);
 
-        boolean success;
         LinkedList<Section> flexibleSections = new LinkedList<>(this.sections);
         OptionalInt findIndex = IntStream.range(0, flexibleSections.size())
             .filter(index -> canInsertSection(section, flexibleSections.get(index)))
@@ -62,11 +61,10 @@ public class Sections {
         if (findIndex.isPresent()) {
             int index = findIndex.getAsInt();
             insertSection(section, flexibleSections, index, flexibleSections.get(index));
-            return true;
+            return;
         }
 
-        success = insertSectionSide(section, flexibleSections);
-        return success;
+        insertSectionSide(section, flexibleSections);
     }
 
     private boolean canInsertSection(Section section, Section sectionInLine) {
@@ -96,22 +94,22 @@ public class Sections {
         }
     }
 
-    private boolean insertSectionSide(Section section, LinkedList<Section> flexibleSections) {
+    private void insertSectionSide(Section section, LinkedList<Section> flexibleSections) {
         Section lastSection = sections.get(sections.size() - 1);
         if (lastSection.hasDownStation(section.getUpStation())) {
             flexibleSections.add(flexibleSections.size(), section);
             sections = flexibleSections;
-            return true;
+            return;
         }
 
         Section firstSection = sections.get(0);
         if (firstSection.hasUpStation(section.getDownStation())) {
             flexibleSections.add(0, section);
             sections = flexibleSections;
-            return true;
+            return;
         }
 
-        return false;
+        throw new IllegalArgumentException("구간을 추가하지 못했습니다.");
     }
 
     private boolean canInsertLeft(Section section, Section sectionInLine) {
