@@ -40,6 +40,13 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
+    public List<StationResponse> findByStationIds(List<Long> stationsId) {
+        return stationsId.stream()
+            .map(id -> createStationResponse(stationDao.findById(id)))
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         return stationDao.findAll().stream()
             .map(this::createStationResponse)

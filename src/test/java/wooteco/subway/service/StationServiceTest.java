@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -15,6 +16,7 @@ import wooteco.subway.exception.DuplicateStationException;
 
 @SpringBootTest
 @Transactional
+@Sql("/stationInitSchema.sql")
 class StationServiceTest {
 
     private final StationService stationService;
