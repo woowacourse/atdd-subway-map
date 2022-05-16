@@ -1,6 +1,8 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.not;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -26,70 +28,71 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // when
         Station testStation1 = new Station("강남역");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(testStation1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        RestAssured.
+                given().log().all().
+                    body(testStation1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/stations").
+                then().log().all().
+                    statusCode(HttpStatus.CREATED.value()).
+                    header("Location",is(not("")));
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
-        RestAssured.given().log().all()
-                .body(testStation1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        RestAssured.
+                given().log().all().
+                    body(testStation1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/stations").
+                then().log().all();
 
         // when
-        RestAssured.given().log().all()
-                .body(testStation1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                .log().all();
+        RestAssured.
+                given().log().all().
+                    body(testStation1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/stations").
+                then().log().all()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(testStation1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = RestAssured.
+                given().log().all().
+                    body(testStation1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/stations").
+                then().log().all().
+                    extract();
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(testStation2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = RestAssured.
+                given().log().all().
+                    body(testStation2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/stations").
+                then().log().all().
+                    extract();
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssured.
+                given().log().all().
+                when().
+                    get("/stations").
+                then().log().all().
+                    statusCode(HttpStatus.OK.value()).
+                    extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
@@ -103,21 +106,22 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(testStation1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = RestAssured.
+                given().log().all().
+                    body(testStation1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/stations").
+                then().log().all().
+                    extract();
 
         // when
         String uri = createResponse.header("Location");
-        RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value())
-                .log().all();
+        RestAssured.
+                given().log().all().
+                when().
+                    delete(uri).
+                then().
+                    statusCode(HttpStatus.NO_CONTENT.value()).log().all();
     }
 }

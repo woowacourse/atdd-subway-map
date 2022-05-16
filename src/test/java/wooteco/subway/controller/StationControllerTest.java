@@ -10,33 +10,19 @@ import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestDatabase
-@Sql("classpath:test-schema.sql")
-class StationControllerTest {
+class StationControllerTest extends AcceptanceTest {
 
-    private Station testStation1 = new Station("강남역");
-    private Station testStation2 = new Station("역삼역");
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-    }
+    private final Station testStation7 = new Station("testStation7");
+    private final Station testStation7DuplicatedName = new Station("testStation7");
+    private final Station testStation8 = new Station("testStation8");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -44,7 +30,7 @@ class StationControllerTest {
         // when
         RestAssured.
                 given().log().all().
-                    body(testStation1).
+                    body(testStation7).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
@@ -59,7 +45,7 @@ class StationControllerTest {
         // given
         RestAssured.
                 given().log().all().
-                    body(testStation1).
+                    body(testStation7).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
@@ -69,7 +55,7 @@ class StationControllerTest {
         // when
         RestAssured.
                 given().log().all().
-                    body(testStation1).
+                    body(testStation7DuplicatedName).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
@@ -83,21 +69,21 @@ class StationControllerTest {
         /// given
         ExtractableResponse<Response> createResponse1 = RestAssured.
                 given().log().all().
-                body(testStation1).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testStation7).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/stations").
+                    post("/stations").
                 then().
-                extract();
+                    extract();
 
         ExtractableResponse<Response> createResponse2 = RestAssured.
                 given().log().all().
-                body(testStation2).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testStation8).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/stations").
+                    post("/stations").
                 then().
-                extract();
+                    extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.
@@ -124,7 +110,7 @@ class StationControllerTest {
         // given
         ExtractableResponse<Response> createResponse = RestAssured.
                 given().log().all().
-                    body(testStation1).
+                    body(testStation7).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").

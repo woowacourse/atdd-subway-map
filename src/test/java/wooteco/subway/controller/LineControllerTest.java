@@ -26,43 +26,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestDatabase
-@Sql("classpath:test-schema.sql")
 class LineControllerTest extends AcceptanceTest {
-
-    private LineRequest testLine1;
-    private LineRequest testLine2;
-    private LineRequest testLine3;
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private StationDao stationDao;
-
-    private Station testStation1;
-    private Station testStation2;
-    private Station testStation3;
-    private Station testStation4;
-    private Station testStation5;
-    private Station testStation6;
-
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-
-        testStation1 = stationDao.save(new Station("testStation1"));
-        testStation2 = stationDao.save(new Station("testStation2"));
-        testStation3 = stationDao.save(new Station("testStation3"));
-        testStation4 = stationDao.save(new Station("testStation4"));
-        testStation5 = stationDao.save(new Station("testStation5"));
-        testStation6 = stationDao.save(new Station("testStation6"));
-
-        testLine1 = new LineRequest("신분당선", "bg-red-600", testStation1.getId(), testStation2.getId(), 10L);
-        testLine2  = new LineRequest("분당선", "bg-red-600", testStation3.getId(), testStation4.getId(), 20L);
-        testLine3 = new LineRequest("2호선", "bg-green-500", testStation5.getId(), testStation6.getId(), 30L);
-    }
 
     @DisplayName("노선을 생성한다.")
     @Test
