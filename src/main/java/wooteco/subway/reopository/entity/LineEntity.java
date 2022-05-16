@@ -1,4 +1,4 @@
-package wooteco.subway.reopository.Entity;
+package wooteco.subway.reopository.entity;
 
 public class LineEntity {
 
