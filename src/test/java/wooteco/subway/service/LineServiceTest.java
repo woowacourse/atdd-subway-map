@@ -75,7 +75,7 @@ class LineServiceTest {
         assertAll(
                 () -> assertThat(createdLine.getName()).isEqualTo("2호선"),
                 () -> assertThat(createdLine.getColor()).isEqualTo("bg-green-600"),
-                () -> assertThat(createdLine.getStations().size()).isEqualTo(2)
+                () -> assertThat(createdLine.getSectionsOnTheLine().lineUpStations().size()).isEqualTo(2)
         );
     }
 

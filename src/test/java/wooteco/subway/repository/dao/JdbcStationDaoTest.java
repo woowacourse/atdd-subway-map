@@ -8,9 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 import wooteco.subway.repository.entity.StationEntity;
 
+@Sql("/jdbcStationDaoTest.sql")
 @JdbcTest
 class JdbcStationDaoTest {
 
@@ -26,33 +28,25 @@ class JdbcStationDaoTest {
     @DisplayName("지하철역을 저장하고 id로 지하철역을 찾는다.")
     @Test
     void saveAndFindById() {
-        Station station = new Station("잠실역");
+        Station station = Station.ofNullId("신대방역");
         StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
 
         StationEntity stationEntity = stationDao.findById(savedStationEntity.getId());
 
-        assertThat(stationEntity.getName()).isEqualTo("잠실역");
+        assertThat(stationEntity.getName()).isEqualTo("신대방역");
     }
 
     @DisplayName("모든 지하철역을 조회한다.")
     @Test
     void findAll() {
-        Station station1 = new Station("잠실역");
-        stationDao.save(new StationEntity(station1));
-        Station station2 = new Station("선릉역");
-        stationDao.save(new StationEntity(station2));
-
         assertThat(stationDao.findAll().size()).isEqualTo(2);
     }
 
     @DisplayName("id 로 노선을 삭제한다.")
     @Test
     void deleteById() {
-        Station station = new Station("잠실역");
-        StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
+        stationDao.deleteById(1L);
 
-        stationDao.deleteById(savedStationEntity.getId());
-
-        assertThat(stationDao.findAll().size()).isEqualTo(0);
+        assertThat(stationDao.findAll().size()).isEqualTo(1);
     }
 }

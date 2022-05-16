@@ -18,8 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dto.response.LineResponseDto;
 
-@DisplayName("노선 관련 기능")
 @Sql("/lineAcceptanceTest.sql")
+@DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 생성한다.")

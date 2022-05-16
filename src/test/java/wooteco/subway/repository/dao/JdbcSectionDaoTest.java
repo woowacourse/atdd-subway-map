@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.repository.entity.SectionEntity;
 
-@Sql("/jdbcSectionDaoSetting.sql")
+@Sql("/jdbcSectionDaoTest.sql")
 @JdbcTest
 class JdbcSectionDaoTest {
 
