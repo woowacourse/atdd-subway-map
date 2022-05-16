@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,21 @@ class LineDaoTest extends DaoTest {
 
     @Autowired
     private LineDao dao;
+
+    @Test
+    void findAll_메서드는_존재하는_모든_노선_정보들의_리스트를_반환() {
+        testFixtureManager.saveLine("노선명1", "색깔1");
+        testFixtureManager.saveLine("노선명2", "색깔2");
+        testFixtureManager.saveLine("노선명3", "색깔3");
+
+       List<LineEntity> actual = dao.findAll();
+        List<LineEntity> expected = List.of(
+                new LineEntity(1L, "노선명1", "색깔1"),
+                new LineEntity(2L, "노선명2", "색깔2"),
+                new LineEntity(3L, "노선명3", "색깔3"));
+
+        assertThat(actual).isEqualTo(expected);
+    }
 
     @DisplayName("findById 메서드는 특정 id의 데이터를 조회한다.")
     @Nested

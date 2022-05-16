@@ -43,6 +43,17 @@ class SectionDaoTest extends DaoTest {
         }
 
         @Test
+        void findAll_메서드는_모든_구간_데이터를_조회() {
+            List<SectionEntity> actual = dao.findAll();
+            List<SectionEntity> expected = List.of(
+                    new SectionEntity(1L, STATION1, STATION2, 20),
+                    new SectionEntity(1L, STATION2, STATION3, 10),
+                    new SectionEntity(2L, STATION1, STATION3, 30));
+
+            assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+        }
+
+        @Test
         void findAllByLineId_메서드는_lineId에_해당하는_모든_구간_데이터를_조회() {
             List<SectionEntity> actual = dao.findAllByLineId(1L);
             List<SectionEntity> expected = List.of(
@@ -88,7 +99,6 @@ class SectionDaoTest extends DaoTest {
         }
     }
 
-
     @DisplayName("delete 메서드는 데이터를 삭제한다")
     @Nested
     class DeleteTest {
@@ -121,7 +131,6 @@ class SectionDaoTest extends DaoTest {
             assertThatNoException()
                     .isThrownBy(() -> dao.delete(nonExistingSection));
         }
-
     }
 
     @Test

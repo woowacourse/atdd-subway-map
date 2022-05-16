@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -29,6 +30,16 @@ public class SectionDao {
 
     public SectionDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<SectionEntity> findAll() {
+        final String sql = "SELECT A.line_id AS line_id, A.distance AS distance, "
+                + "B.id AS up_station_id, B.name AS up_station_name, "
+                + "C.id AS down_station_id, C.name AS down_station_name "
+                + "FROM section A, station B, station C "
+                + "WHERE A.up_station_id = B.id AND A.down_station_id = C.id";
+
+        return jdbcTemplate.query(sql, new EmptySqlParameterSource(), ROW_MAPPER);
     }
 
     public List<SectionEntity> findAllByLineId(Long lineId) {
