@@ -135,7 +135,6 @@ class LineServiceTest {
         lineService.save(line);
 
         LineRequest secondLine = new LineRequest("8호선", "red", firstStation.getId(), secondStation.getId(), 10);
-        ;
         LineResponse secondNewLine = lineService.save(secondLine);
 
         assertThatThrownBy(() -> lineService.update(secondNewLine.getId(),

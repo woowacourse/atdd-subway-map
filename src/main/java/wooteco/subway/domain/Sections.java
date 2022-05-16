@@ -1,10 +1,10 @@
 package wooteco.subway.domain;
 
+import java.util.*;
+
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.ClientException;
-
-import java.util.*;
 
 public class Sections {
 
@@ -86,7 +86,6 @@ public class Sections {
     public boolean isMiddleSection(Long stationId) {
         return findUpSection(stationId).isPresent() && findDownSection(stationId).isPresent();
     }
-
 
     private Optional<Station> findExistStation(long id, LineResponse line) {
         return line.getStations()

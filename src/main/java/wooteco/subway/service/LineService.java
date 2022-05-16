@@ -88,12 +88,10 @@ public class LineService {
         if (!lineDao.isExistById(id)) {
             throw new ClientException("존재하지 않는 노선입니다.");
         }
-
         if (lineDao.isExistByName(request.getName()) && !lineDao.findById(id).isSameName(request.getName())) {
             throw new ClientException("해당 지하철 노선이 존재하고 있습니다.");
         }
-        Line line = new Line(request.getName(), request.getColor());
-        return lineDao.update(id, new Line(line.getName(), line.getColor()));
+        return lineDao.update(id, new Line(request.getName(), request.getColor()));
     }
 
     @Transactional
