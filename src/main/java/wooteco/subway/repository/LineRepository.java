@@ -46,7 +46,7 @@ public class LineRepository {
 
         if (lines.isEmpty()) {
             persistManager.deletePersistedAll(lineDao, persistedIds);
-            return ;
+            return;
         }
         persistEach(lines, persistedIds);
     }

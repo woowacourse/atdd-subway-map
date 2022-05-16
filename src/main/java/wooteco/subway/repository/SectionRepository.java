@@ -43,7 +43,7 @@ public class SectionRepository {
         final List<Section> sections = sectionSeries.getSections();
         if (sections.isEmpty()) {
             persistManager.deletePersistedAll(sectionDao, persistedIds);
-            return ;
+            return;
         }
         persistEach(lineId, persistedIds, sections);
     }

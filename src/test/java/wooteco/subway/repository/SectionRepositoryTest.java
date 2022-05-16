@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static wooteco.subway.domain.fixture.SectionFixture.*;
 import static wooteco.subway.domain.fixture.StationFixture.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -24,12 +23,9 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.fixture.LineFixture;
-import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.LineSeries;
 import wooteco.subway.domain.property.Distance;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.SectionSeries;
-import wooteco.subway.domain.station.StationSeries;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.entity.StationEntity;

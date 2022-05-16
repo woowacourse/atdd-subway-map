@@ -10,7 +10,6 @@ import wooteco.subway.entity.Entity;
 @Repository
 public class PersistManager<T extends Entity> {
 
-
     public Long persist(UpdateDao<T> dao, T entity, List<Long> persistedIds) {
         if (entity.getId() == null) {
             return dao.save(entity);

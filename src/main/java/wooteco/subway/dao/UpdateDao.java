@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-
 public interface UpdateDao<T> {
 
     Long update(T entity);
