@@ -15,8 +15,19 @@ import wooteco.subway.domain.section.Section;
 @Repository
 public class JdbcSectionDao implements SectionDao {
 
+    private static final RowMapper<Section> SECTION_ROW_MAPPER = (resultSet, rowNum) -> (
+        new Section(
+            resultSet.getLong("id"),
+            resultSet.getLong("line_id"),
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id"),
+            resultSet.getInt("distance")
+        )
+    );
+
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+
 
     public JdbcSectionDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -51,7 +62,7 @@ public class JdbcSectionDao implements SectionDao {
         final String sql = "SELECT * FROM section WHERE id = :id";
         final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
-            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, getSectionRowMapper()));
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, SECTION_ROW_MAPPER));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -61,19 +72,7 @@ public class JdbcSectionDao implements SectionDao {
     public List<Section> findSectionStationsByLineId(final Long lineId) {
         final String sql = "SELECT * FROM section WHERE line_id = :lineId";
         final MapSqlParameterSource parameters = new MapSqlParameterSource("lineId", lineId);
-        return namedParameterJdbcTemplate.query(sql, parameters, getSectionRowMapper());
-    }
-
-    private RowMapper<Section> getSectionRowMapper() {
-        return (resultSet, rowNum) -> (
-            new Section(
-                resultSet.getLong("id"),
-                resultSet.getLong("line_id"),
-                resultSet.getLong("up_station_id"),
-                resultSet.getLong("down_station_id"),
-                resultSet.getInt("distance")
-            )
-        );
+        return namedParameterJdbcTemplate.query(sql, parameters, SECTION_ROW_MAPPER);
     }
 
     @Override

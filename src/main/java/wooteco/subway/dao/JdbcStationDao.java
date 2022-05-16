@@ -15,14 +15,15 @@ import wooteco.subway.domain.Station;
 @Repository
 public class JdbcStationDao implements StationDao {
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) ->
         new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
         );
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+    
     public JdbcStationDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
@@ -47,7 +48,7 @@ public class JdbcStationDao implements StationDao {
     @Override
     public List<Station> findAll() {
         final String sql = "SELECT * FROM station";
-        return namedParameterJdbcTemplate.query(sql, stationRowMapper);
+        return namedParameterJdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
     @Override
@@ -63,7 +64,7 @@ public class JdbcStationDao implements StationDao {
         final String sql = "SELECT * FROM station WHERE id = :id";
         final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
-            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, stationRowMapper));
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, STATION_ROW_MAPPER));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
