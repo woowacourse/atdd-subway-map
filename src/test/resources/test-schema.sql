@@ -12,7 +12,7 @@ create table if not exists LINE
     color varchar(20) not null,
     distance int,
     primary key(id)
-    );
+);
 
 create table if not exists SECTION
 (

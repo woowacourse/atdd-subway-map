@@ -1,8 +1,8 @@
-package wooteco.subway.acceptance;
+package wooteco.subway.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.CoreMatchers.not;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -14,51 +14,53 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
 
-@DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends AcceptanceTest {
+class StationControllerTest extends AcceptanceTest {
 
-    private Station testStation1 = new Station("강남역");
-    private Station testStation2 = new Station("역삼역");
+    private final Station testStation7 = new Station("testStation7");
+    private final Station testStation7DuplicatedName = new Station("testStation7");
+    private final Station testStation8 = new Station("testStation8");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // when
-        Station testStation1 = new Station("강남역");
         RestAssured.
                 given().log().all().
-                    body(testStation1).
+                    body(testStation7).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
                 then().log().all().
                     statusCode(HttpStatus.CREATED.value()).
-                    header("Location",is(not("")));
+                    header("Location", is(not("")));
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
+        // given
         RestAssured.
                 given().log().all().
-                    body(testStation1).
+                    body(testStation7).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
-                then().log().all();
+                then().
+                    extract();
 
         // when
         RestAssured.
                 given().log().all().
-                    body(testStation1).
+                    body(testStation7DuplicatedName).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
-                then().log().all()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                then().
+                    statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -67,20 +69,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         ExtractableResponse<Response> createResponse1 = RestAssured.
                 given().log().all().
-                    body(testStation1).
+                    body(testStation7).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
-                then().log().all().
+                then().
                     extract();
 
         ExtractableResponse<Response> createResponse2 = RestAssured.
                 given().log().all().
-                    body(testStation2).
+                    body(testStation8).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
-                then().log().all().
+                then().
                     extract();
 
         // when
@@ -88,9 +90,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 given().log().all().
                 when().
                     get("/stations").
-                then().log().all().
+                then().
                     statusCode(HttpStatus.OK.value()).
-                    extract();
+                extract();
 
         // then
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
@@ -108,11 +110,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> createResponse = RestAssured.
                 given().log().all().
-                    body(testStation1).
+                    body(testStation7).
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
-                then().log().all().
+                then().
                     extract();
 
         // when
@@ -122,6 +124,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 when().
                     delete(uri).
                 then().
-                    statusCode(HttpStatus.NO_CONTENT.value()).log().all();
+                    statusCode(HttpStatus.NO_CONTENT.value());
     }
 }

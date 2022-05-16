@@ -1,21 +1,24 @@
-package wooteco.subway.dto;
+package wooteco.subway.domain.entity;
 
-public class LineRequest {
+public class LineEntity {
+    private Long id;
     private String name;
     private String color;
     private Long upStationId;
     private Long downStationId;
     private Long distance;
 
-    public LineRequest() {
-    }
-
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, Long distance) {
+    public LineEntity(Long id, String name, String color, Long upStationId, Long downStationId, Long distance) {
+        this.id = id;
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -37,4 +40,5 @@ public class LineRequest {
     public Long getDistance() {
         return distance;
     }
+
 }

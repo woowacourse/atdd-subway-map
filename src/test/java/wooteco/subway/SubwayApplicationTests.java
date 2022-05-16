@@ -8,6 +8,7 @@ class SubwayApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
