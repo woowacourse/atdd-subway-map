@@ -79,7 +79,7 @@ class SectionsTest {
 
         Section newSection = new Section(1L, 2L, 4L, 2);
 
-        assertThat(sections.needToChangeExistingSection(newSection)).isTrue();
+        assertThat(sections.IsNeedToChangeExistingSection(newSection)).isTrue();
     }
 
     @DisplayName("입력받은 구간에 대해 같은 하행역이 존재하는 경우 구간 변경이 필요하다.")
@@ -90,7 +90,7 @@ class SectionsTest {
 
         Section newSection = new Section(1L, 5L, 3L, 2);
 
-        assertThat(sections.needToChangeExistingSection(newSection)).isTrue();
+        assertThat(sections.IsNeedToChangeExistingSection(newSection)).isTrue();
     }
 
     @DisplayName("입력받은 구간에 대해 같은 상행역과 하행역이 존재하지 않는 경우 구간 변경이 필요없다.")
@@ -101,7 +101,7 @@ class SectionsTest {
 
         Section newSection = new Section(1L, 3L, 4L, 2);
 
-        assertThat(sections.needToChangeExistingSection(newSection)).isFalse();
+        assertThat(sections.IsNeedToChangeExistingSection(newSection)).isFalse();
     }
 
     @DisplayName("입력받은 구간에 대해 같은 상행역이 존재하면 기존의 구간들에서 변경될 구간을 반환한다.")

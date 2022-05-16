@@ -62,7 +62,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public boolean needToChangeExistingSection(Section section) {
+    public boolean IsNeedToChangeExistingSection(Section section) {
         return sections.stream()
                 .anyMatch(it -> section.hasSameUpStation(it)
                         || section.hasSameDownStation(it));
