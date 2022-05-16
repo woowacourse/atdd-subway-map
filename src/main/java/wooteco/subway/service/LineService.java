@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
@@ -18,6 +19,7 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.EmptyResultException;
 
 @Service
+@Transactional
 public class LineService {
     private final LineDao lineDao;
     private final StationDao stationDao;
@@ -40,12 +42,14 @@ public class LineService {
         return LineResponse.from(savedLineId, line);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         return lineDao.findById(id)
             .map(LineResponse::from)
             .orElseThrow(throwEmptyLineResultException());
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll().stream()
             .map(LineResponse::from)
