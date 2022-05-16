@@ -23,8 +23,8 @@ public class Sections {
             return;
         }
         validateConnected(section);
-        findUpSection(section).ifPresent(it -> updateSectionWithUpStation(section, it));
-        findDownSection(section).ifPresent(it -> updateSectionWithDownStation(section, it));
+        findUpSection(section).ifPresent(it -> updateSectionWithDownStation(section, it));
+        findDownSection(section).ifPresent(it -> updateSectionWithUpStation(section, it));
         sections.add(section);
     }
 
@@ -62,7 +62,7 @@ public class Sections {
 
     private void updateSectionWithDownStation(Section newSection, Section registeredSection) {
         validateSectionLength(newSection, registeredSection);
-        sections.add(new Section(newSection.getUpStation(), registeredSection.getUpStation(),
+        sections.add(new Section(newSection.getDownStation(), registeredSection.getDownStation(),
             registeredSection.getDistance() - newSection.getDistance()));
         sections.remove(registeredSection);
     }
@@ -91,18 +91,18 @@ public class Sections {
     }
 
     private Section findSectionByNextUpStation(Station station) {
-        return this.sections.stream()
+        return sections.stream()
             .filter(it -> it.getUpStation().equals(station))
             .findFirst()
             .orElse(null);
     }
 
     private Section findUpEndSection() {
-        List<Station> downStations = this.sections.stream()
+        List<Station> downStations = sections.stream()
             .map(Section::getDownStation)
             .collect(Collectors.toList());
 
-        return this.sections.stream()
+        return sections.stream()
             .filter(it -> !downStations.contains(it.getUpStation()))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("상행 종점이 존재하지 않습니다."));
@@ -120,13 +120,13 @@ public class Sections {
             .filter(it -> it.getDownStation().equals(station))
             .findFirst();
 
-        newConnection(upSection, downSection);
+        reConnection(upSection, downSection);
 
         upSection.ifPresent(it -> sections.remove(it));
         downSection.ifPresent(it -> sections.remove(it));
     }
 
-    private void newConnection(Optional<Section> upSection, Optional<Section> downSection) {
+    private void reConnection(Optional<Section> upSection, Optional<Section> downSection) {
         if (upSection.isPresent() && downSection.isPresent()) {
             Station newUpStation = downSection.get().getUpStation();
             Station newDownStation = upSection.get().getDownStation();
