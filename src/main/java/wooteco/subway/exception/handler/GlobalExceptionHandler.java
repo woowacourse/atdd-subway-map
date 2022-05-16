@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.constant.BlankArgumentException;
 import wooteco.subway.exception.constant.DuplicateException;
 import wooteco.subway.exception.constant.NotExistException;
+import wooteco.subway.exception.constant.SectionNotDeleteException;
 import wooteco.subway.exception.dto.ErrorResult;
 
 import static org.springframework.http.HttpStatus.*;
@@ -21,7 +22,11 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler({DuplicateException.class, BlankArgumentException.class, DuplicateKeyException.class})
+    @ExceptionHandler({
+            DuplicateException.class,
+            BlankArgumentException.class,
+            DuplicateKeyException.class,
+            SectionNotDeleteException.class})
     private ErrorResult handleExceptionToBadRequest(Exception e) {
         return new ErrorResult(BAD_REQUEST, e.getMessage());
     }

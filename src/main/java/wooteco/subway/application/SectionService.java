@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.constant.TerminalStation;
+import wooteco.subway.exception.constant.SectionNotDeleteException;
 import wooteco.subway.exception.constant.SectionNotRegisterException;
 
 import java.util.LinkedList;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SectionService {
 
+    public static final int ONLY_ONE_SECTION = 1;
     private final SectionDao sectionDao;
 
     public long createSection(Section section) {
@@ -25,7 +27,7 @@ public class SectionService {
         Section sectionWithSameDownStation = getSectionWithSameDownStation(sections, section.getDownStationId());
         Map<TerminalStation, Long> terminalStations = findTerminalStations(section.getLineId());
 
-        if (conditionForTerminalRegistration2(section, terminalStations)) {
+        if (conditionForTerminalRegistration(section, terminalStations)) {
             return sectionDao.save(section);
         }
 
@@ -67,15 +69,10 @@ public class SectionService {
 
     public void deleteSection(long lineId, long stationId) {
         List<Section> sections = sectionDao.findByLineId(lineId);
-        Section upperSection = sections.stream()
-                .filter(it -> it.getDownStationId().equals(stationId))
-                .findAny()
-                .get();
+        validateDeleteSection(sections);
 
-        Section lowerSection = sections.stream()
-                .filter(it -> it.getUpStationId().equals(stationId))
-                .findAny()
-                .get();
+        Section upperSection = getUpperSection(stationId, sections);
+        Section lowerSection = getLowerSection(stationId, sections);
 
         Long upStationId = upperSection.getUpStationId();
         lowerSection.setUpStationId(upStationId);
@@ -85,12 +82,27 @@ public class SectionService {
         sectionDao.deleteSection(upperSection);
     }
 
-    private boolean conditionForTerminalRegistration(Long upStationId, Long downStationId, Map<TerminalStation, Long> terminalStations) {
-        return terminalStations.get(TerminalStation.UP).equals(downStationId)
-                || terminalStations.get(TerminalStation.DOWN).equals(upStationId);
+    private void validateDeleteSection(List<Section> sections) {
+        if (sections.size() == ONLY_ONE_SECTION) {
+            throw new SectionNotDeleteException();
+        }
     }
 
-    private boolean conditionForTerminalRegistration2(Section section, Map<TerminalStation, Long> terminalStations) {
+    private Section getLowerSection(long stationId, List<Section> sections) {
+        return sections.stream()
+                .filter(it -> it.getUpStationId().equals(stationId))
+                .findAny()
+                .get();
+    }
+
+    private Section getUpperSection(long stationId, List<Section> sections) {
+        return sections.stream()
+                .filter(it -> it.getDownStationId().equals(stationId))
+                .findAny()
+                .get();
+    }
+
+    private boolean conditionForTerminalRegistration(Section section, Map<TerminalStation, Long> terminalStations) {
         return terminalStations.get(TerminalStation.UP).equals(section.getDownStationId())
                 || terminalStations.get(TerminalStation.DOWN).equals(section.getUpStationId());
     }

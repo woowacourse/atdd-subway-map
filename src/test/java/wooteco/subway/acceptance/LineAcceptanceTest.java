@@ -302,7 +302,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(secondSection).isEqualTo(new Section(2L, 1L, 2L, 3, 1L));
     }
 
-    @DisplayName("구간을 삭제할 수 있다")
+    @DisplayName("구간을 제거할 수 있다")
     @Test
     void delete_section() {
         // given
@@ -317,7 +317,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         post("/lines/1/sections", requestBody);
 
-        // 구간 삭제 요청
+        // when : 구간 삭제 요청
         ExtractableResponse response = delete("/lines/1/sections?stationId=2");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -326,9 +326,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         /**
          * 1번역 - (거리 3) - 2번역 - (거리 4) - 3번역
-         * - 2번역 삭제 후 -
+         * --- 2번역 삭제 후 ---
          * 1번역 - (거리 7) - 3번역
          */
         assertThat(deletedSection).isEqualTo(new Section(1L, 1L, 3L, 7, 1L));
+    }
+
+    @DisplayName("[예외]구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+    @Test
+    void can_not_delete_one_section() {
+        // given
+        // 최조 등록
+        노선_및_역_생성요청();
+
+        // when
+        ExtractableResponse response = delete("/lines/1/sections?stationId=2");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
