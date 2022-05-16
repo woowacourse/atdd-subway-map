@@ -13,6 +13,7 @@ import wooteco.subway.util.CollectorsUtils;
 public class SectionSeries {
 
     private static final SectionSeriesSorter SORTER = new SectionSeriesSorter();
+    private static final int ZERO_INDEX = 0;
 
     private final List<Section> sections;
 
@@ -51,7 +52,7 @@ public class SectionSeries {
     }
 
     private boolean isUpTerminal(Station station) {
-        return sections.get(0).isUpStationSame(station);
+        return sections.get(ZERO_INDEX).isUpStationSame(station);
     }
 
     private void insertSection(Section newSection) {
@@ -75,7 +76,7 @@ public class SectionSeries {
     public void remove(Station deleteStation) {
         validateSectionEnough();
         if (isUpTerminal(deleteStation)) {
-            this.sections.remove(0);
+            this.sections.remove(ZERO_INDEX);
             SORTER.sort(sections);
             return;
         }
@@ -106,7 +107,7 @@ public class SectionSeries {
     }
 
     private int findIntermediateStation(Station station) {
-        return IntStream.range(0, sections.size())
+        return IntStream.range(ZERO_INDEX, sections.size())
             .filter(it -> sections.get(it).isDownStationSame(station))
             .findAny()
             .orElseThrow(() -> new RowNotFoundException("삭제하려는 역이 구간에 등록되어 있지 않습니다."));
