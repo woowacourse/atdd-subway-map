@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.line.NoSuchLineException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +91,7 @@ public class LineDao {
         int affected = jdbcTemplate.update(sql, params);
 
         if (affected == 0) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
+            throw new NoSuchLineException();
         }
     }
 }

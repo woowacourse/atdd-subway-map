@@ -9,6 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -30,7 +31,7 @@ public class AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> post(String uri, Map<String, String> params) {
+    protected ExtractableResponse<Response> post(String uri, Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -48,7 +49,16 @@ public class AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> put(String uri, Map<String, String> params) {
+    protected ExtractableResponse<Response> deleteWithQueryParam(String uri, Long stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", stationId)
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> put(String uri, Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -56,5 +66,11 @@ public class AcceptanceTest {
                 .put(uri)
                 .then().log().all()
                 .extract();
+    }
+
+    public ExtractableResponse<Response> createStation(String name) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        return post("/stations", params);
     }
 }

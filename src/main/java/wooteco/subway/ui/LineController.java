@@ -1,23 +1,19 @@
 package wooteco.subway.ui;
 
-import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.domain.Line;
+import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
 
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
+
 @RestController
+@RequestMapping("/lines")
 public class LineController {
 
     private final LineService lineService;
@@ -26,39 +22,45 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineRequest.toEntity();
-        Line newLine = lineService.save(line);
-        LineResponse lineResponse = LineResponse.from(line);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+    @PostMapping
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
+        LineResponse lineResponse = lineService.save(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineService.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
+        List<LineResponse> lineResponses = lineService.findAll();
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping("/lines/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineService.findById(id);
-        LineResponse lineResponse = LineResponse.from(line);
+        LineResponse lineResponse = lineService.findById(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @PutMapping("/lines/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
         lineService.update(id, lineRequest.toEntity());
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(id, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam("stationId") Long stationId) {
+        lineService.deleteSection(id, stationId);
+        return ResponseEntity.ok().build();
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.station.NoSuchStationException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public class StationDao {
 
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
-        return jdbcTemplate.query(sql, new MapSqlParameterSource(), rowMapper);
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public Optional<Station> findByName(String name) {
@@ -52,6 +53,17 @@ public class StationDao {
         return stations.stream().findFirst();
     }
 
+    public Optional<Station> findById(Long id) {
+        String sql = "SELECT id, name FROM station WHERE id = :id";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        List<Station> stations = jdbcTemplate.query(sql, new MapSqlParameterSource(params), rowMapper);
+
+        return stations.stream().findFirst();
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM station WHERE id=:id";
 
@@ -61,7 +73,7 @@ public class StationDao {
         int affected = jdbcTemplate.update(sql, params);
 
         if (affected == 0) {
-            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+            throw new NoSuchStationException();
         }
     }
 }
