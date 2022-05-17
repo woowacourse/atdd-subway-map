@@ -21,7 +21,10 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        return new LineResponse(line.getId(),
+                line.getName(),
+                line.getColor(),
+                StationResponse.from(line.getStations()));
     }
 
     public Long getId() {

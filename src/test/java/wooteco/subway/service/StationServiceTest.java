@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,8 +45,11 @@ class StationServiceTest {
         stationService.save(new Station("선릉역"));
         stationService.save(new Station("서울역"));
 
-        List<Station> stations = stationService.findAll();
+        List<String> stationNames = stationService.findAll()
+                .stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
 
-        assertThat(stations).contains(new Station(1L, "선릉역"), new Station(2L, "서울역"));
+        assertThat(stationNames).containsExactly("선릉역", "서울역");
     }
 }

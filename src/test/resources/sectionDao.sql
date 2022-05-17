@@ -1,14 +1,8 @@
 drop table section if exists;
-drop table station if exists;
 drop table line if exists;
+drop table station if exists;
 
 
-create table STATION
-(
-    id   bigint auto_increment not null,
-    name varchar(255) not null unique,
-    primary key (id)
-);
 
 create table LINE
 (
@@ -17,6 +11,14 @@ create table LINE
     color varchar(20)  not null,
     primary key (id)
 );
+
+create table STATION
+(
+    id   bigint auto_increment not null,
+    name varchar(255) not null unique,
+    primary key (id)
+);
+
 
 create table SECTION
 (

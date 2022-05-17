@@ -1,6 +1,7 @@
 package wooteco.subway.dto;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 public class LineRequest {
 
@@ -41,11 +42,15 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toEntity() {
+    public Line toLine(Long id) {
+        return new Line(id, name, color);
+    }
+
+    public Line toLine() {
         return new Line(name, color);
     }
 
-    public Line toEntityWithId(Long id) {
-        return new Line(id, name, color);
+    public Section toSection() {
+        return new Section(null, upStationId, downStationId, distance);
     }
 }

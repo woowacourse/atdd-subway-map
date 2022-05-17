@@ -12,4 +12,6 @@ public interface StationDao {
     int deleteById(Long id);
 
     boolean existsByName(Station station);
+
+    List<Station> findByIds(List<Long> ids);
 }

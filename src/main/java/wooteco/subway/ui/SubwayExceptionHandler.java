@@ -10,7 +10,12 @@ import wooteco.subway.exception.InvalidInputException;
 public class SubwayExceptionHandler {
 
     @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<ExceptionResponse> handleException(InvalidInputException invalidInputException) {
+    public ResponseEntity<ExceptionResponse> handleUserException(InvalidInputException invalidInputException) {
         return ResponseEntity.badRequest().body(new ExceptionResponse(invalidInputException.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ExceptionResponse> handleIllegalStateException(IllegalStateException illegalStateException) {
+        return ResponseEntity.internalServerError().body(new ExceptionResponse(illegalStateException.getMessage()));
     }
 }
