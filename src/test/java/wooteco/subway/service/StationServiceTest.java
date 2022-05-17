@@ -1,14 +1,16 @@
 package wooteco.subway.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.util.List;
-import org.assertj.core.api.Assertions;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.request.StationRequest;
+import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.service.fakeDao.StationDaoImpl;
 
 public class StationServiceTest {
 
@@ -29,7 +31,7 @@ public class StationServiceTest {
 
         stationService.saveStation(stationRequest1);
 
-        Assertions.assertThatThrownBy(() -> stationService.saveStation(stationRequest2))
+        assertThatThrownBy(() -> stationService.saveStation(stationRequest2))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("같은 이름의 역이 존재합니다.");
     }
@@ -42,8 +44,8 @@ public class StationServiceTest {
         final StationResponse stationResponse = stationService.saveStation(stationRequest);
         final Long invalidStationId = stationResponse.getId() + 1L;
 
-        Assertions.assertThatThrownBy(() -> stationService.deleteStation(invalidStationId))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> stationService.deleteStation(invalidStationId))
+                .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당하는 역이 존재하지 않습니다.");
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.response.LineResponse;
 
 public class RestAssuredUtils {
 

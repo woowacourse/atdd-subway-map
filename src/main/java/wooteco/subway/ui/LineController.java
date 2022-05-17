@@ -2,7 +2,6 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -31,7 +30,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<LineResponse>> showLines() {
         final List<LineResponse> lineResponses = lineService.findAllLines();
         return ResponseEntity.ok().body(lineResponses);
