@@ -5,16 +5,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.line.LineRequest;
-import wooteco.subway.dto.line.LineResponse;
 
 @JdbcTest
 class LineServiceTest {
@@ -26,21 +27,54 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(new LineDao(jdbcTemplate));
+        lineService = new LineService(
+                new LineDao(jdbcTemplate),
+                new SectionDao(jdbcTemplate),
+                new StationDao(jdbcTemplate)
+        );
     }
 
     @Test
     @DisplayName("노선 생성")
     void saveLine() {
-        var lineResponse = lineService.createLine(new LineRequest("2호선", "테스트색20"));
+        //given
+        var upStationId = insertStation("테스트1역");
+        var downStationId = insertStation("테스트2역");
 
-        assertThat(lineResponse.getName()).isEqualTo("2호선");
+        //when
+        var lineResponse = lineService.createLine(
+                new LineRequest("테스트호선", "테스트색", upStationId, downStationId, 1)
+        );
+
+        var upStationResponse = lineResponse.getStations().get(0);
+        var downStationResponse = lineResponse.getStations().get(1);
+
+        //then
+        assertAll(
+                () -> assertThat(upStationResponse.getId()).isEqualTo(upStationId),
+                () -> assertThat(downStationResponse.getId()).isEqualTo(downStationId),
+                () -> assertThat(lineResponse.getName()).isEqualTo("테스트호선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("테스트색")
+        );
+    }
+
+    private Long insertStation(String name) {
+        var keyHolder = new GeneratedKeyHolder();
+        var sql = "INSERT INTO station (name) values(?)";
+
+        jdbcTemplate.update(con -> {
+            var statement = con.prepareStatement(sql, new String[]{"id"});
+            statement.setString(1, name);
+            return statement;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
     @Test
     @DisplayName("중복 노선 생성시 예외 발생")
     void duplicateLineName() {
-        var lineRequest = new LineRequest("1호선", "테스트색21");
+        var lineRequest = new LineRequest("테스트호선", "테스트색");
         lineService.createLine(lineRequest);
 
         assertThatThrownBy(() -> lineService.createLine(lineRequest))
@@ -50,10 +84,14 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 조회")
     void findLine() {
+        //given
         var lineRequest = new LineRequest("1호선", "blue");
         var lineResponse = lineService.createLine(lineRequest);
+
+        //when
         var findLineResponse = lineService.findLineInfos(lineResponse.getId());
 
+        //then
         assertAll(
                 () -> assertThat(findLineResponse.getId()).isEqualTo(lineResponse.getId()),
                 () -> assertThat(findLineResponse.getName()).isEqualTo("1호선"),
@@ -72,21 +110,17 @@ class LineServiceTest {
     @DisplayName("노선 목록 조회")
     void findAllLine() {
         //given
-        var lineRequest1 = new LineRequest("1호선", "blue");
-        var lineRequest2 = new LineRequest("2호선", "green");
-        var lineResponse1 = lineService.createLine(lineRequest1);
-        var lineResponse2 = lineService.createLine(lineRequest2);
+        var upStationId = insertStation("테스트1역");
+        var downStationId = insertStation("테스트2역");
+        var lineRequest = new LineRequest("1호선", "blue", upStationId, downStationId, 1);
+        var createResponse = lineService.createLine(lineRequest);
 
         //when
-        var ids = lineService.findAll().stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        var lines = lineService.findAll();
+        var findResponse = lines.get(0);
 
         //then
-        assertAll(
-                () -> assertThat(ids.contains(lineResponse1.getId())).isTrue(),
-                () -> assertThat(ids.contains(lineResponse2.getId())).isTrue()
-        );
+        assertThat(findResponse).isEqualTo(createResponse);
     }
 
     @Test
@@ -128,15 +162,17 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 삭제")
     void deleteLine() {
+        //given
         var lineRequest = new LineRequest("500호선", "테스트색200");
         var lineResponse = lineService.createLine(lineRequest);
         var id = lineResponse.getId();
 
+        //when
         lineService.deleteById(id);
-
         var actual = lineService.findAll().stream()
                 .noneMatch(it -> it.getId().equals(id));
 
+        //then
         assertThat(actual).isTrue();
     }
 
