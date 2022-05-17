@@ -3,62 +3,69 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.LineDao;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.exception.ExceptionMessage;
-import wooteco.subway.exception.InternalServerException;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.domain.LineException;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.LineResponse;
 
 @Service
+@Transactional
 public class LineService {
 
-    private static final int LINES_NOT_DELETED = 0;
-    private final LineDao lineDao;
+    private final StationService stationService;
+    private final LineRepository lineRepository;
 
-    public LineService(final LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineService(StationService stationService, LineRepository lineRepository) {
+        this.stationService = stationService;
+        this.lineRepository = lineRepository;
     }
 
-    public LineResponse create(final LineRequest request) {
-        Line line = new Line(request.getName(), request.getColor());
+    public LineResponse save(final LineRequest request) {
         try {
-            final Line savedLine = lineDao.save(line);
-            return LineResponse.of(savedLine);
+            Station upStation = stationService.findById(request.getUpStationId());
+            Station downStation = stationService.findById(request.getDownStationId());
+            Section section = new Section(null, upStation, downStation, request.getDistance());
+            Line line = new Line(request.getName(), request.getColor(), List.of(section));
+            Line saved = lineRepository.save(line);
+            return createResponseFrom(saved);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
+            throw new LineException(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
         }
     }
 
+    private LineResponse createResponseFrom(Line line) {
+        return LineResponse.of(line, line.getSortedStations());
+    }
+
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
-        List<Line> lines = lineDao.findAll();
-        return lines.stream()
-                .map(LineResponse::of)
+        return lineRepository.findAll().stream()
+                .map(this::createResponseFrom)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        try {
-            Line line = lineDao.findById(id);
-            return LineResponse.of(line);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(ExceptionMessage.NOT_FOUND_LINE_BY_ID.getContent());
-        }
+        Line line = lineRepository.findById(id);
+        List<Station> sortedStations = line.getSortedStations();
+        return LineResponse.of(line, sortedStations);
     }
 
     public void updateById(final Long id, final LineRequest request) {
-        final Line line = new Line(request.getName(), request.getColor());
-        lineDao.updateById(id, line);
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        Section section = new Section(null, id, upStation, downStation, request.getDistance());
+        Line updated = new Line(id, request.getName(), request.getColor(), List.of(section));
+        lineRepository.update(updated);
     }
 
     public void deleteById(final Long id) {
-        Integer deletedLines = lineDao.deleteById(id);
-
-        if (deletedLines == LINES_NOT_DELETED) {
-            throw new InternalServerException(ExceptionMessage.UNKNOWN_DELETE_LINE_FAIL.getContent());
-        }
+        lineRepository.deleteById(id);
     }
 }

@@ -3,24 +3,25 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.repository.entity.StationEntity;
+import wooteco.subway.service.dto.StationRequest;
+import wooteco.subway.service.dto.StationResponse;
 
+@SpringBootTest
+@Transactional
 class StationServiceTest {
 
+    @Autowired
     private StationService stationService;
-    private StationDao fakeStationDao;
 
-    @BeforeEach
-    void setUp() {
-        fakeStationDao = new FakeStationDao();
-        stationService = new StationService(fakeStationDao);
-    }
+    @Autowired
+    private StationDao stationDao;
 
     @Test
     @DisplayName("역을 생성한다.")
@@ -39,8 +40,8 @@ class StationServiceTest {
     @DisplayName("모든 역을 조회한다.")
     void findAll() {
         // given
-        fakeStationDao.save(new Station("노원역"));
-        fakeStationDao.save(new Station("왕십리역"));
+        stationDao.save(new StationEntity(null, "노원역"));
+        stationDao.save(new StationEntity(null, "왕십리역"));
 
         // when
         List<StationResponse> stationResponses = stationService.findAll();
@@ -53,13 +54,13 @@ class StationServiceTest {
     @DisplayName("id에 해당하는 역을 삭제한다.")
     void delete() {
         // given
-        Station savedStation = fakeStationDao.save(new Station("마들역"));
+        StationEntity savedEntity = stationDao.save(new StationEntity(null, "마들역"));
 
         // when
-        stationService.delete(savedStation.getId());
+        stationService.delete(savedEntity.getId());
 
         // then
-        List<Station> remainStations = fakeStationDao.findAll();
-        assertThat(remainStations).hasSize(0);
+        List<StationEntity> remainEntities = stationDao.findAll();
+        assertThat(remainEntities).hasSize(0);
     }
 }

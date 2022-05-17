@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.domain.Station;
+import wooteco.subway.repository.dao.JdbcStationDao;
+import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.repository.entity.StationEntity;
 
 @JdbcTest
 class StationDaoTest {
@@ -29,24 +31,24 @@ class StationDaoTest {
     void save() {
         // given
         final String name = "선릉";
-        final Station station = new Station(name);
+        final StationEntity entity = new StationEntity(null, name);
 
         // when
-        final Station savedStation = stationDao.save(station);
+        final StationEntity savedEntity = stationDao.save(entity);
 
         // then
-        assertThat(savedStation.getName()).isEqualTo(name);
+        assertThat(savedEntity.getName()).isEqualTo(name);
     }
 
     @Test
     @DisplayName("모든 역 조회하기")
     void findAll() {
         // given
-        stationDao.save(new Station("선릉"));
-        stationDao.save(new Station("노원"));
+        stationDao.save(new StationEntity(null, "선릉"));
+        stationDao.save(new StationEntity(null, "노원"));
 
         // when
-        List<Station> stations = stationDao.findAll();
+        List<StationEntity> stations = stationDao.findAll();
 
         // then
         assertThat(stations).hasSize(2);
@@ -56,12 +58,26 @@ class StationDaoTest {
     @DisplayName("id에 해당하는 역 삭제하기")
     void deleteById() {
         // given
-        Station station = stationDao.save(new Station("선릉"));
+        StationEntity entity = stationDao.save(new StationEntity(null, "선릉"));
 
         // when
-        Integer affectedRows = stationDao.deleteById(station.getId());
+        Integer affectedRows = stationDao.deleteById(entity.getId());
 
         // then
         assertThat(affectedRows).isOne();
+    }
+
+    @Test
+    @DisplayName("id들에 해당하는 역 모두 가져오기")
+    void findByIds() {
+        // given
+        Long gangNamId = stationDao.save(new StationEntity(null, "강남역")).getId();
+        Long jamSilId = stationDao.save(new StationEntity(null, "잠실역")).getId();
+
+        // when
+        List<StationEntity> entities = stationDao.findByIds(List.of(gangNamId, jamSilId));
+
+        // then
+        assertThat(entities).hasSize(2);
     }
 }

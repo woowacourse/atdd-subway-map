@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import wooteco.subway.exception.domain.StationException;
 
 class StationTest {
 
@@ -14,7 +15,7 @@ class StationTest {
     @ValueSource(strings = {"", " ", "    "})
     void newStation_blankName(String name) {
         assertThatThrownBy(() -> new Station(name))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(StationException.class)
                 .hasMessage("역의 이름이 공백이 되어서는 안됩니다.");
     }
 
@@ -26,7 +27,7 @@ class StationTest {
 
         // then
         assertThatThrownBy(() -> new Station(name))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(StationException.class)
                 .hasMessage("역의 이름이 15자를 넘어서는 안됩니다.");
 
     }

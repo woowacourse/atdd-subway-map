@@ -4,36 +4,38 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.StationDao;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ExceptionMessage;
-import wooteco.subway.exception.InternalServerException;
+import wooteco.subway.exception.domain.StationException;
+import wooteco.subway.repository.StationRepository;
+import wooteco.subway.service.dto.StationRequest;
+import wooteco.subway.service.dto.StationResponse;
 
 @Service
+@Transactional
 public class StationService {
 
-    private static final int STATIONS_NOT_DELETED = 0;
-    private final StationDao stationDao;
+    private final StationRepository stationRepository;
 
-    public StationService(StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationService(StationRepository stationRepository) {
+        this.stationRepository = stationRepository;
     }
 
     public StationResponse create(StationRequest request) {
         Station station = new Station(request.getName());
 
         try {
-            Station savedStation = stationDao.save(station);
-            return StationResponse.of(savedStation);
+            Station savedLine = stationRepository.save(station);
+            return StationResponse.of(savedLine);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException(ExceptionMessage.DUPLICATED_STATION_NAME.getContent());
+            throw new StationException(ExceptionMessage.DUPLICATED_STATION_NAME.getContent());
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
-        List<Station> stations = stationDao.findAll();
+        List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
                 .map(StationResponse::of)
@@ -41,10 +43,11 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        Integer deletedStations = stationDao.deleteById(id);
+        stationRepository.deleteById(id);
+    }
 
-        if (deletedStations == STATIONS_NOT_DELETED) {
-            throw new InternalServerException(ExceptionMessage.UNKNOWN_DELETE_STATION_FAIL.getContent());
-        }
+    @Transactional(readOnly = true)
+    public Station findById(Long id) {
+        return stationRepository.findById(id);
     }
 }
