@@ -2,7 +2,6 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -39,7 +38,6 @@ public class LineService {
             .orElseThrow(() -> new NoSuchElementException("해당하는 지하철역을 찾을 수 없습니다."));
         final Station downStation = stationDao.findById(lineRequest.getDownStationId())
             .orElseThrow(() -> new NoSuchElementException("해당하는 지하철역을 찾을 수 없습니다."));
-        validateDuplicateStation(upStation.getId(), downStation.getId());
 
         final Line line = lineDao.save(lineRequest.toEntity());
         sectionDao.save(new Section(line.getId(), upStation, downStation, lineRequest.getDistance()));
@@ -50,12 +48,6 @@ public class LineService {
     private void validateLineName(final String name) {
         if (lineDao.existsByName(name)) {
             throw new IllegalStateException("이미 존재하는 노선입니다.");
-        }
-    }
-
-    private void validateDuplicateStation(final Long upStationId, final Long downStationId) {
-        if (Objects.equals(upStationId, downStationId)) {
-            throw new IllegalStateException("상행 종점과 하행 종점은 같을 수 없습니다.");
         }
     }
 
