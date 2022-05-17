@@ -19,7 +19,6 @@ class LineDaoTest {
 
     @Autowired
     private DataSource dataSource;
-
     private LineDao lineDao;
 
     @BeforeEach
@@ -30,7 +29,8 @@ class LineDaoTest {
     @DisplayName("노선 저장 기능을 테스트한다.")
     @Test
     void saveLine() {
-        Line line = new Line("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
 
         Line persistLine = lineDao.save(line);
 
@@ -43,9 +43,11 @@ class LineDaoTest {
     @ParameterizedTest
     @CsvSource(value = {"2호선,검은색", "성수지선,초록색"})
     void saveDuplicateNameLine(String name, String color) {
-        Line line = new Line("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
         lineDao.save(line);
-        Line duplicateLine = new Line(name, color);
+        Line duplicateLine = new Line.Builder(name, color)
+                .build();
 
         assertThatThrownBy(() -> lineDao.save(duplicateLine))
                 .isInstanceOf(DuplicateKeyException.class);
@@ -54,8 +56,10 @@ class LineDaoTest {
     @DisplayName("전체 노선의 개수가 맞는지 확인한다.")
     @Test
     void find_All_Line() {
-        Line lineTwo = new Line("2호선", "초록색");
-        Line lineEight = new Line("8호선", "분홍색");
+        Line lineTwo = new Line.Builder("2호선", "초록색")
+                .build();
+        Line lineEight = new Line.Builder("8호선", "분홍색")
+                .build();
         lineDao.save(lineTwo);
         lineDao.save(lineEight);
 
@@ -65,7 +69,8 @@ class LineDaoTest {
     @DisplayName("특정 id를 가지는 노선을 조회한다.")
     @Test
     void findById() {
-        Line line = new Line("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
         Long id = lineDao.save(line).getId();
 
         Line actual = lineDao.findById(id);
@@ -77,11 +82,14 @@ class LineDaoTest {
     @DisplayName("특정 id를 가지는 라인의 이름과 색을 변경한다.")
     @Test
     void updateLineById() {
-        Line line = new Line("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
         Long id = lineDao.save(line).getId();
 
-        Line updateLine = new Line(id, "8호선", "분홍색");
-        lineDao.updateById(updateLine);
+        Line updateLine = new Line.Builder("8호선", "분홍색")
+                .id(id)
+                .build();
+        lineDao.update(updateLine);
 
         Line actual = lineDao.findById(id);
         assertThat(actual.getName()).isEqualTo("8호선");
@@ -91,7 +99,8 @@ class LineDaoTest {
     @DisplayName("특정 id를 가지는 노선을 삭제한다.")
     @Test
     void deleteById() {
-        Line line = new Line("2호선", "초록색");
+        Line line = new Line.Builder("2호선", "초록색")
+                .build();
         Long id = lineDao.save(line).getId();
 
         lineDao.deleteById(id);

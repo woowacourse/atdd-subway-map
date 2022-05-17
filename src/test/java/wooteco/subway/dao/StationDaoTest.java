@@ -17,7 +17,6 @@ class StationDaoTest {
 
     @Autowired
     private DataSource dataSource;
-
     private StationDao stationDao;
 
     @BeforeEach
@@ -28,7 +27,8 @@ class StationDaoTest {
     @DisplayName("지하철 역 저장 테스트")
     @Test
     void saveStation() {
-        Station station = new Station("강남역");
+        Station station = new Station.Builder("강남역")
+                .build();
 
         Station persistStation = stationDao.save(station);
 
@@ -39,7 +39,8 @@ class StationDaoTest {
     @DisplayName("중복된 이름의 지하철 역을 저장할 경우 예외가 발생한다.")
     @Test
     void saveDuplicateStation() {
-        Station station = new Station("강남역");
+        Station station = new Station.Builder("강남역")
+                .build();
         stationDao.save(station);
 
         assertThatThrownBy(() -> stationDao.save(station))
@@ -49,8 +50,10 @@ class StationDaoTest {
     @DisplayName("전체 역의 개수가 맞는지 확인한다.")
     @Test
     void findAllStation() {
-        Station gangNam = new Station("강남역");
-        Station jamSil = new Station("잠실역");
+        Station gangNam = new Station.Builder("강남역")
+                .build();
+        Station jamSil = new Station.Builder("잠실역")
+                .build();
 
         stationDao.save(gangNam);
         stationDao.save(jamSil);
@@ -61,10 +64,23 @@ class StationDaoTest {
     @DisplayName("특정 id를 가지는 역을 삭제한다.")
     @Test
     void deleteStation() {
-        Station station = new Station("강남역");
+        Station station = new Station.Builder("강남역")
+                .build();
         Station persistStation = stationDao.save(station);
         stationDao.deleteById(persistStation.getId());
 
         assertThat(stationDao.findAll()).isEmpty();
+    }
+
+    @DisplayName("특정 id를 가지는 기차역을 반환한다")
+    @Test
+    void findById() {
+        Station station = new Station.Builder("강남역")
+                .build();
+        Station persistStation = stationDao.save(station);
+
+        Station lookUpStation = stationDao.findById(persistStation.getId());
+
+        assertThat(lookUpStation).isEqualTo(persistStation);
     }
 }

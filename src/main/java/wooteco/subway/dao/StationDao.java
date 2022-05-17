@@ -14,13 +14,13 @@ import wooteco.subway.domain.Station;
 @Repository
 public class StationDao {
 
+    private static final RowMapper<Station> STATION_MAPPER = (resultSet, rowNum) -> new Station.Builder(
+            resultSet.getString("name"))
+            .id(resultSet.getLong("id"))
+            .build();
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
-
-    private final RowMapper<Station> stationMapper = (resultSet, rowNum) -> new Station(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
-    );
 
     public StationDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -32,17 +32,23 @@ public class StationDao {
     public Station save(Station station) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return new Station(id, station.getName());
+        return station.addId(id);
     }
 
     public List<Station> findAll() {
         String sql = "SELECT * FROM STATION";
-        return jdbcTemplate.query(sql, stationMapper);
+        return jdbcTemplate.query(sql, STATION_MAPPER);
     }
     
     public void deleteById(Long id) {
         String sql = "DELETE FROM STATION WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, parameters);
+    }
+
+    public Station findById(Long id) {
+        String sql = "SELECT * FROM STATION WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(sql, parameters, STATION_MAPPER);
     }
 }

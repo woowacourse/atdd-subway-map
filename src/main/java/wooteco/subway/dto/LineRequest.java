@@ -1,12 +1,14 @@
 package wooteco.subway.dto;
 
 import javax.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
 import wooteco.subway.domain.Line;
 
 public class LineRequest {
-    @NotBlank
+
+    @Length(max = 255, message = "노선 이름은 255자 이하여야 합니다.")
+    @NotBlank(message = "노선 이름은 공백일 수 없습니다.")
     private String name;
-    @NotBlank
     private String color;
     private Long upStationId;
     private Long downStationId;
@@ -21,14 +23,6 @@ public class LineRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public Line toEntity() {
-        return new Line(name, color);
-    }
-
-    public Line toEntity(Long id) {
-        return new Line(id, name, color);
     }
 
     public String getName() {
@@ -49,5 +43,16 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Line toLine() {
+        return new Line.Builder(name, color)
+                .build();
+    }
+
+    public Line toLine(Long id) {
+        return new Line.Builder(name, color)
+                .id(id)
+                .build();
     }
 }

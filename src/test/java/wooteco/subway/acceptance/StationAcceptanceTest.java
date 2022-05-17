@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
@@ -30,10 +31,10 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> params = getParams("강남역");
+        StationRequest stationRequest = new StationRequest("강남역");
 
         // when
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPost(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -44,11 +45,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = getParams("강남역");
-        requestPost(params);
+        StationRequest stationRequest = new StationRequest("강남역");
+        requestPost(stationRequest);
 
         // when
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPost(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -58,11 +59,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> params1 = getParams("강남역");
-        ExtractableResponse<Response> createResponse1 = requestPost(params1);
+        StationRequest stationRequest1 = new StationRequest("강남역");
+        ExtractableResponse<Response> createResponse1 = requestPost(stationRequest1);
 
-        Map<String, String> params2 = getParams("역삼역");
-        ExtractableResponse<Response> createResponse2 = requestPost(params2);
+        StationRequest stationRequest2 = new StationRequest("역삼역");
+        ExtractableResponse<Response> createResponse2 = requestPost(stationRequest2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -86,8 +87,8 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = getParams("강남역");
-        ExtractableResponse<Response> createResponse = requestPost(params);
+        StationRequest stationRequest = new StationRequest("강남역");
+        ExtractableResponse<Response> createResponse = requestPost(stationRequest);
 
         // when
         String uri = createResponse.header("Location");
@@ -105,16 +106,16 @@ class StationAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void notAllowNullOrBlankName(String name) {
-        Map<String, String> params = getParams(name);
+        StationRequest stationRequest = new StationRequest(name);
 
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPost(stationRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> requestPost(Map<String, String> params) {
+    private ExtractableResponse<Response> requestPost(StationRequest stationRequest) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")

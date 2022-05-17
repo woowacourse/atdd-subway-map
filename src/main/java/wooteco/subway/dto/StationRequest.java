@@ -1,10 +1,13 @@
 package wooteco.subway.dto;
 
 import javax.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
 import wooteco.subway.domain.Station;
 
 public class StationRequest {
-    @NotBlank
+
+    @Length(max=255, message = "역 이름은 255자 이하여야 합니다.")
+    @NotBlank(message = "역 이름은 공백일 수 없습니다.")
     private String name;
 
     public StationRequest() {
@@ -14,11 +17,12 @@ public class StationRequest {
         this.name = name;
     }
 
-    public Station toEntity() {
-        return new Station(name);
-    }
-
     public String getName() {
         return name;
+    }
+
+    public Station toStation() {
+        return new Station.Builder(name)
+                .build();
     }
 }

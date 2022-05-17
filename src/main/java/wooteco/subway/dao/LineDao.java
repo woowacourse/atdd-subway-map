@@ -13,15 +13,15 @@ import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
-    private static final RowMapper<Line> lineMapper = (resultSet, rowNum) -> new Line(
-            resultSet.getLong("id"),
+
+    private static final RowMapper<Line> LINE_MAPPER = (resultSet, rowNum) -> new Line.Builder(
             resultSet.getString("name"),
-            resultSet.getString("color")
-    );
+            resultSet.getString("color"))
+            .id(resultSet.getLong("id"))
+            .build();
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
-
 
     public LineDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -33,21 +33,21 @@ public class LineDao {
     public Line save(Line line) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return new Line(id, line.getName(), line.getColor());
+        return line.addId(id);
     }
 
     public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
-        return jdbcTemplate.query(sql, lineMapper);
+        return jdbcTemplate.query(sql, LINE_MAPPER);
     }
 
     public Line findById(Long id) {
         String sql = "SELECT * FROM LINE WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(sql, parameters, lineMapper);
+        return jdbcTemplate.queryForObject(sql, parameters, LINE_MAPPER);
     }
 
-    public void updateById(Line line) {
+    public void update(Line line) {
         String sql = "UPDATE LINE SET name = :name, color = :color WHERE id = :id";
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         jdbcTemplate.update(sql, parameters);
