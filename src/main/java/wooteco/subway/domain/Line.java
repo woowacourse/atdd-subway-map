@@ -3,24 +3,24 @@ package wooteco.subway.domain;
 import java.util.List;
 
 public class Line {
-    private Long id;
+    private final Long id;
     private String name;
     private String color;
-    private Sections sections;
+    private final Sections sections;
 
-    public Line(String name, String color) {
+    private Line(Long id, String name, String color, Sections sections) {
+        this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = sections;
+    }
+
+    public Line(String name, String color) {
+        this(null, name, color, null);
     }
 
     public Line(Long id, String name, String color) {
-        this(name, color);
-        this.id = id;
-    }
-
-    private Line(Long id, String name, String color, Sections sections) {
-        this(id, name, color);
-        this.sections = sections;
+        this(id, name, color, null);
     }
 
     public static Line from(Line line, List<Section> sections) {
