@@ -24,10 +24,26 @@ public class StationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(Station station) {
+    public Station insert(Station station) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Station(id, station.getName());
+    }
+
+    private Station findById(Long id) {
+        String SQL = "select * from station where id = ?;";
+        return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
+    }
+
+    public List<Station> findAll() {
+        String SQL = "select * from station;";
+        return jdbcTemplate.query(SQL, rowMapper());
+    }
+
+    public List<Station> findAllByLineId(Long id) {
+        String SQL = "select * from station join section on station.id = section.up_station_id " +
+                "or station.id = section.down_station_id where line_id = ?";
+        return jdbcTemplate.query(SQL, rowMapper(), id);
     }
 
     private RowMapper<Station> rowMapper() {
@@ -38,24 +54,26 @@ public class StationDao {
         };
     }
 
-    public boolean existStationById(Long id) {
-        final String SQL = "select exists (select * from station where id = ?)";
-        return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
-    }
-
-    public List<Station> findAll() {
-        String SQL = "select * from station;";
-        return jdbcTemplate.query(SQL, rowMapper());
-    }
-
     public void deleteById(Long id) {
         findById(id);
         String SQL = "delete from station where id = ?";
         jdbcTemplate.update(SQL, id);
     }
 
-    private Station findById(Long id) {
-        String SQL = "select * from station where id = ?;";
-        return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
+    public boolean existStationById(Long id) {
+        final String SQL = "select exists (select * from station where id = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
+    }
+
+    public boolean existStationByName(String name) {
+        final String SQL = "select exists (select * from station where name = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, name);
+    }
+
+    public boolean existStationInSections(Long id) {
+        final String SQL = "select exists (select * from station join section on " +
+                "section.up_station_id = station.id or section.down_station_id = station.id " +
+                "where station.id = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
     }
 }

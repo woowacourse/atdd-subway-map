@@ -24,10 +24,15 @@ public class LineDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(Line line) {
+    public Line insert(Line line) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Line(id, line.getName(), line.getColor());
+    }
+
+    public Line findById(Long id) {
+        String SQL = "select * from line where id = ?;";
+        return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
     }
 
     public List<Line> findAll() {
@@ -44,16 +49,6 @@ public class LineDao {
         };
     }
 
-    public boolean existLineById(Long id) {
-        final String SQL = "select exists (select * from line where id = ?)";
-        return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
-    }
-
-    public Line findById(Long id) {
-        String SQL = "select * from line where id = ?;";
-        return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
-    }
-
     public void update(Line line) {
         String SQL = "update line set name = ?, color = ? where id = ?;";
         jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId());
@@ -62,5 +57,15 @@ public class LineDao {
     public void delete(Long id) {
         String SQL = "delete from line where id = ?";
         jdbcTemplate.update(SQL, id);
+    }
+
+    public boolean existLineById(Long id) {
+        final String SQL = "select exists (select * from line where id = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
+    }
+
+    public boolean existLineByName(String name) {
+        final String SQL = "select exists (select * from line where name = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, name);
     }
 }
