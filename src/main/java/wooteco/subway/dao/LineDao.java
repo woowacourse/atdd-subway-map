@@ -34,8 +34,9 @@ public class LineDao {
     }
 
     public Optional<Line> findById(Long id) {
-        String sql = "select * from line where id = :id";
+        String sql = "select id, name, color from line where id = :id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+
         try {
             Line line = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(line);
@@ -45,8 +46,9 @@ public class LineDao {
     }
 
     public Optional<Line> findByName(String name) {
-        String sql = "select * from line where name = :name";
+        String sql = "select id, name, color from line where name = :name";
         SqlParameterSource namedParameters = new MapSqlParameterSource("name", name);
+
         try {
             Line line = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(line);
@@ -56,7 +58,7 @@ public class LineDao {
     }
 
     public List<Line> findAll() {
-        String sql = "select * from line";
+        String sql = "select id, name, color from line";
         return jdbcTemplate.query(sql, rowMapper());
     }
 
@@ -73,14 +75,14 @@ public class LineDao {
     public void delete(Line line) {
         String sql = "delete from line where id = :id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", line.getId());
+
         jdbcTemplate.update(sql, namedParameters);
     }
 
     private RowMapper<Line> rowMapper() {
-        return (rs, rowNum) ->
-                new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color"));
+        return (rs, rowNum) -> new Line(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color"));
     }
 }

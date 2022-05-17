@@ -24,7 +24,6 @@ public class StationDao {
                 .withTableName("STATION")
                 .usingGeneratedKeyColumns("id");
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-
     }
 
     public Station save(Station station) {
@@ -35,8 +34,9 @@ public class StationDao {
     }
 
     public Optional<Station> findById(Long id) {
-        String sql = "select * from station where id = :id";
+        String sql = "select id, name from station where id = :id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+
         try {
             Station station = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(station);
@@ -46,8 +46,9 @@ public class StationDao {
     }
 
     public Optional<Station> findByName(String name) {
-        String sql = "select * from station where name = :name";
+        String sql = "select id, name from station where name = :name";
         SqlParameterSource namedParameters = new MapSqlParameterSource("name", name);
+
         try {
             Station station = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(station);
@@ -57,20 +58,20 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        String sql = "select * from station";
+        String sql = "select id, name from station";
         return jdbcTemplate.query(sql, rowMapper());
     }
 
     public void delete(Station station) {
         String sql = "delete from station where id = :id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", station.getId());
+
         jdbcTemplate.update(sql, namedParameters);
     }
 
     private RowMapper<Station> rowMapper() {
         return (rs, rowNum) ->
-                new Station(
-                        rs.getLong("id"),
+                new Station(rs.getLong("id"),
                         rs.getString("name"));
     }
 }
