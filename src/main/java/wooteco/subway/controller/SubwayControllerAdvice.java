@@ -22,8 +22,12 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleInvalidArgument(Exception e) {
-        return new ResponseEntity<>("이름이나 색깔이 공백입니다.", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handleInvalidArgument(MethodArgumentNotValidException e) {
+        String errorMessage = e.getBindingResult()
+                .getAllErrors()
+                .get(0)
+                .getDefaultMessage();
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
@@ -31,7 +35,7 @@ public class SubwayControllerAdvice {
         return new ResponseEntity<>("해당 데이터를 조회 할 수 없습니다.", HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<String> handleBadRequest(Exception e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }

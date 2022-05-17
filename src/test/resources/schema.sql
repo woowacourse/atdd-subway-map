@@ -2,6 +2,13 @@ TRUNCATE TABLE STATION;
 TRUNCATE TABLE LINE;
 TRUNCATE TABLE SECTION;
 
+ALTER TABLE STATION
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE LINE
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE SECTION
+    ALTER COLUMN id RESTART WITH 1;
+
 create table if not exists STATION
 (
     id   bigint auto_increment not null,
@@ -13,7 +20,7 @@ create table if not exists LINE
 (
     id    bigint auto_increment not null,
     name  varchar(255)          not null unique,
-    color varchar(20)           not null unique,
+    color varchar(20)           not null,
     primary key (id)
 );
 

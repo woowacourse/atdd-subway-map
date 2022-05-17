@@ -1,11 +1,12 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
 import java.util.List;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
@@ -13,9 +14,13 @@ import wooteco.subway.domain.Line;
 public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
+    public LineDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("line")
+                .usingGeneratedKeyColumns("id");
     }
 
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> {
@@ -27,16 +32,9 @@ public class LineDao {
         return line;
     };
 
-    public Long save(Line line) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into LINE (name, color) values (?, ?)";
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, line.getName());
-            preparedStatement.setString(2, line.getColor());
-            return preparedStatement;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
+    public long save(Line line) {
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(line);
+        return simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 
     public List<Line> findAll() {
@@ -51,7 +49,6 @@ public class LineDao {
 
     public Line findById(Long lineId) {
         String sql = "select * from LINE where id = (?)";
-
         return jdbcTemplate.queryForObject(sql, lineRowMapper, lineId);
     }
 
@@ -63,10 +60,5 @@ public class LineDao {
     public boolean existByName(Line line) {
         String sql = "select exists (select * from LINE where name = (?))";
         return jdbcTemplate.queryForObject(sql, Boolean.class, line.getName());
-    }
-
-    public boolean existByColor(Line line) {
-        String sql = "select exists (select * from LINE where color = (?))";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getColor());
     }
 }
