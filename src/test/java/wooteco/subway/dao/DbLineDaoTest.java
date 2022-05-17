@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
@@ -13,16 +14,17 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-class LineDaoTest {
+@Sql("/init.sql")
+class DbLineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private LineDao lineDao;
+    private DbLineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new DbLineDao(jdbcTemplate);
     }
 
     @DisplayName("저장을 하고 리스트 및 단일 조회를 할 수 있다")

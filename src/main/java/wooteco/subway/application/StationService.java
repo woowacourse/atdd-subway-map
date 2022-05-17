@@ -6,7 +6,10 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.constant.DuplicateException;
 import wooteco.subway.exception.constant.NotExistException;
+import wooteco.subway.exception.constant.NotExistException.Which;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -31,9 +34,13 @@ public class StationService {
         return stationDao.findAll();
     }
 
+    public List<Station> findByIdIn(LinkedList<Long> sortedStations) {
+        return Collections.unmodifiableList(stationDao.findByIdIn(sortedStations));
+    }
+
     public void deleteById(Long id) {
         if (!stationDao.existById(id)) {
-            throw new NotExistException();
+            throw new NotExistException(Which.STATION);
         }
         stationDao.deleteById(id);
     }

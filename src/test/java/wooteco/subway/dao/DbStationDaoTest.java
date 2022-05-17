@@ -14,16 +14,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 테스트")
 @JdbcTest
-class StationDaoTest {
+class DbStationDaoTest {
     
-    private StationDao stationDao;
+    private DbStationDao stationDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        stationDao = new StationDao(jdbcTemplate);
+        stationDao = new DbStationDao(jdbcTemplate);
     }
     
     @DisplayName("저장을 하고 리스트 및 단일 조회를 할 수 있다")

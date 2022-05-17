@@ -1,38 +1,34 @@
 package wooteco.subway.domain;
 
+import lombok.Getter;
 import wooteco.subway.exception.constant.BlankArgumentException;
 
 import java.util.Objects;
 
+import static wooteco.subway.util.StringUtils.isBlank;
+
+@Getter
 public class Line {
 
     private final Long id;
     private final String name;
     private final String color;
 
+    public Line(Long id) {
+        this(id, null, null);
+    }
+
     public Line(String name, String color) {
         this(null, name, color);
     }
 
     public Line(Long id, String name, String color) {
-        if (name.isBlank() || color.isBlank()) {
+        if (isBlank(name) || isBlank(color)) {
             throw new BlankArgumentException();
         }
         this.id = id;
         this.name = name;
         this.color = color;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public boolean isSameName(String name) {
