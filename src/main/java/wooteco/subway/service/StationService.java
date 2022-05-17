@@ -48,4 +48,9 @@ public class StationService {
         }
         return true;
     }
+
+    public Station getStation(Long id) {
+        Station station = stationDao.findById(id).orElseThrow(() -> new IllegalArgumentException(STATION_NOT_EXIST));
+        return new Station(station.getId(), station.getName());
+    }
 }

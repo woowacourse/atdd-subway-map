@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.JdbcLineDao;
+import wooteco.subway.dao.JdbcSectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -26,6 +30,12 @@ class LineServiceTest {
 
     @Mock
     private JdbcLineDao jdbcLineDao;
+
+    @Mock
+    private JdbcSectionDao jdbcSectionDao;
+
+    @Mock
+    private StationService stationService;
 
     @InjectMocks
     private LineService lineService;
@@ -36,12 +46,30 @@ class LineServiceTest {
         doReturn(1L)
                 .when(jdbcLineDao).save(any(Line.class));
 
-        LineResponse lineResponse = lineService.createLine(new LineRequest("신분당선", "bg-red-600"));
+        doReturn(new Station(1L, "강남역"))
+                .when(stationService).getStation(1L);
+
+        doReturn(new Station(2L, "잠실역"))
+                .when(stationService).getStation(2L);
+
+        doReturn(new Station(3L, "선릉역"))
+                .when(stationService).getStation(3L);
+
+        doReturn(List.of(new Section(1L, 1L, 2L, 3), new Section(2L, 2L, 3L, 4)))
+                .when(jdbcSectionDao).findSectionsByLineId(1L);
+
+        LineResponse lineResponse = lineService.createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 3));
+
+        List<String> names = lineResponse.getStations().stream()
+                .map(stationResponse -> stationResponse.getName())
+                .collect(Collectors.toList());
 
         assertAll(
-                () -> lineResponse.getId().equals(1L),
-                () -> lineResponse.getName().equals("신분당선"),
-                () -> lineResponse.getColor().equals("bg-red-600")
+                () -> assertThat(lineResponse.getId()).isEqualTo(1L),
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600"),
+                () -> assertThat(lineResponse.getStations().size()).isEqualTo(3),
+                () -> assertThat(names).containsExactly("강남역", "잠실역", "선릉역")
         );
     }
 
@@ -73,9 +101,21 @@ class LineServiceTest {
     @DisplayName("지하철 노선 하나를 조회한다.")
     @Test
     void getLine() {
-        doReturn(new Line(1L, "신분당선", "bg-red-600"))
+        doReturn(Optional.of(new Line(1L, "신분당선", "bg-red-600")))
                 .when(jdbcLineDao)
                 .findById(anyLong());
+
+        doReturn(List.of(new Section(1L, 1L, 2L, 3)))
+                .when(jdbcSectionDao)
+                .findSectionsByLineId(1L);
+
+        doReturn(new Station(1L, "강남역"))
+                .when(stationService)
+                .getStation(1L);
+
+        doReturn(new Station(2L, "잠실역"))
+                .when(stationService)
+                .getStation(2L);
 
         LineResponse lineResponse = lineService.getLine(1L);
 

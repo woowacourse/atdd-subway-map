@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,5 +86,16 @@ public class StationServiceTest {
         assertThatThrownBy(() -> stationService.deleteStation(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않은 지하철역입니다.");
+    }
+
+    @DisplayName("지하철역 목록 하나를 Id로 조회한다.")
+    @Test
+    void getStation() {
+        doReturn(Optional.of(new Station("강남역")))
+                .when(jdbcStationDao).findById(anyLong());
+
+        Station station = stationService.getStation(1L);
+        StationResponse stationResponse = new StationResponse(station.getId(), station.getName());
+        assertThat(stationResponse.getName()).isEqualTo("강남역");
     }
 }

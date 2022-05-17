@@ -3,6 +3,8 @@ package wooteco.subway.dao;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -52,5 +54,14 @@ public class JdbcStationDao {
     public int isExistStation(String name) {
         String sql = "select EXISTS (select name from station where name = ?) as success";
         return jdbcTemplate.queryForObject(sql, Integer.class, name);
+    }
+
+    public Optional<Station> findById(Long id) {
+        try {
+            String sql = "select * from station where id = ?";
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 }

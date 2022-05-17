@@ -8,15 +8,14 @@ public class Line {
     private String name;
     private String color;
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
     public boolean isSameId(Long id) {
@@ -49,11 +48,11 @@ public class Line {
             return false;
         }
         Line line = (Line) o;
-        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
+        return Objects.equals(name, line.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return Objects.hash(name);
     }
 }

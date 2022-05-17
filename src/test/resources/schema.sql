@@ -1,3 +1,7 @@
+truncate table station;
+truncate table line;
+truncate table section;
+
 create table if not exists STATION
 (
     id bigint auto_increment not null,
@@ -22,6 +26,3 @@ create table if not exists SECTION
     distance int,
     primary key(id)
     );
-
-alter table section
-    alter column id restart with 1;
