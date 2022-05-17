@@ -109,13 +109,13 @@ cd ..
 
 ### 등록
 
-- [ ] POST /lines/{id}/sections : upStationId, downStationId, distance 를 전달하여 구간을 등록할 수 있다
-    - [ ] 생성 성공시 200 OK 를 응답한다
-    - [ ] [예외처리] 생성 실패 조건 추가 확인 필요
+- [x] POST /lines/{id}/sections : upStationId, downStationId, distance 를 전달하여 구간을 등록할 수 있다
+    - [x] 생성 성공시 200 OK 를 응답한다
+    - [x] [예외처리] 생성 실패 조건 추가 확인 필요
 
-- [ ] DELETE /lines/{id}/sections?stationId={stationId}
-    - [ ] 삭제 성공 시 200 OK 를 응답한다 (NO_CONTENT 가 되어야 할 것 같으나 문서를 따름)
-    - [ ] [예외처리] 등록된 구간이 없을 경우 요청했던 id 와 stationId 를 body 에 담아 404 NOT_FOUND 를 응답한다
+- [x] DELETE /lines/{id}/sections?stationId={stationId}
+    - [x] 삭제 성공 시 200 OK 를 응답한다 (NO_CONTENT 가 되어야 할 것 같으나 문서를 따름)
+    - [x] [예외처리] 등록된 구간이 없을 경우 요청했던 id 와 stationId 를 body 에 담아 404 NOT_FOUND 를 응답한다
 
 <br><br>
 

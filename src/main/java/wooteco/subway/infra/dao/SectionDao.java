@@ -14,16 +14,6 @@ import wooteco.subway.infra.dao.entity.SectionEntity;
 @Repository
 public class SectionDao extends AbstractDao<SectionEntity, Long> {
 
-    private static final RowMapper<SectionEntity> SECTION_ENTITY_MAPPER = (rs, rowNum) ->
-            new SectionEntity(
-                    rs.getLong("id"),
-                    rs.getLong("line_id"),
-                    rs.getLong("up_station_id"),
-                    rs.getString("up_station_name"),
-                    rs.getLong("down_station_id"),
-                    rs.getString("down_station_name"),
-                    rs.getInt("distance")
-            );
     private static final String SECTION_STATION_JOIN_QUERY =
             "SELECT a.id, "
                     + "a.line_id, "
@@ -35,6 +25,17 @@ public class SectionDao extends AbstractDao<SectionEntity, Long> {
                     + "FROM section a "
                     + "JOIN station b ON a.up_station_id = b.id "
                     + "JOIN station c ON a.down_station_id = c.id";
+
+    private static final RowMapper<SectionEntity> SECTION_ENTITY_MAPPER = (rs, rowNum) ->
+            new SectionEntity(
+                    rs.getLong("id"),
+                    rs.getLong("line_id"),
+                    rs.getLong("up_station_id"),
+                    rs.getString("up_station_name"),
+                    rs.getLong("down_station_id"),
+                    rs.getString("down_station_name"),
+                    rs.getInt("distance")
+            );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;

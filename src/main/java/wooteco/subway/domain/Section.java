@@ -81,6 +81,14 @@ public class Section implements Comparable<Section> {
         return this.distance > input.distance;
     }
 
+    public boolean upStationIsSameToDownStation(Section other) {
+        return Objects.equals(this.upStation, other.downStation);
+    }
+
+    public boolean downStationIsSameToUpStation(Section other) {
+        return Objects.equals(this.downStation, other.upStation);
+    }
+
     public boolean hasStationById(Long stationId) {
         return upStation.isSameId(stationId) || downStation.isSameId(stationId);
     }

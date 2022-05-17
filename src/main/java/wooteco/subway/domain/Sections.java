@@ -24,12 +24,11 @@ public class Sections {
     }
 
     public SectionResult add(Section input) {
-        validateJoinPoints(input);
         final Section joinPoint = findJoinPoint(input);
 
-        final SectionResult sectionResult = joinPoint.sync(input);
+        final SectionResult joinResult = SectionJoinUtil.join(joinPoint, input);
         sections.add(input);
-        return sectionResult;
+        return joinResult;
     }
 
     private void validateJoinPoints(Section input) {
@@ -39,6 +38,10 @@ public class Sections {
             stations.add(section.getDownStation());
         }
 
+        validateExistSingleJoinPoint(input, stations);
+    }
+
+    private void validateExistSingleJoinPoint(Section input, Set<Station> stations) {
         final Station upStation = input.getUpStation();
         final Station downStation = input.getDownStation();
 
@@ -51,16 +54,15 @@ public class Sections {
     }
 
     private Section findJoinPoint(Section input) {
+        validateJoinPoints(input);
         Collections.sort(sections);
 
         if (sections.get(FIRST_INDEX).getUpStation().equals(input.getDownStation())) {
-            // 상행 확장
             return sections.get(FIRST_INDEX);
         }
 
         final int lastIndex = sections.size() - 1;
         if (sections.get(lastIndex).getDownStation().equals(input.getUpStation())) {
-            // 상행 확장
             return sections.get(lastIndex);
         }
 
@@ -68,11 +70,15 @@ public class Sections {
                 .filter(section -> section.isAddable(input))
                 .collect(Collectors.toList());
 
+        validateSingleJoinPointFound(joinPoints);
+
+        return joinPoints.get(FIRST_INDEX);
+    }
+
+    private void validateSingleJoinPointFound(List<Section> joinPoints) {
         if (joinPoints.size() != SINGLE_SIZE) {
             throw new SubwayUnknownException("구간 추가 시도 중 예외가 발생했습니다");
         }
-
-        return joinPoints.get(FIRST_INDEX);
     }
 
     private boolean doesNotContainAny(Set<Station> stations, Station upStation, Station downStation) {

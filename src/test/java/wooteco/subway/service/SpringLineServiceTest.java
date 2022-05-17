@@ -37,7 +37,7 @@ import wooteco.subway.service.dto.LineServiceRequest;
 @DisplayName("노선 서비스")
 @Sql("classpath:/schema.sql")
 class SpringLineServiceTest {
-
+    
     private static final LineServiceRequest LINE_FIXTURE = new LineServiceRequest("2호선", "bg-color-600", 1L, 2L, 10);
     private static final LineServiceRequest LINE_FIXTURE2 = new LineServiceRequest("3호선", "bg-color-700", 1L, 2L, 10);
     private static final LineServiceRequest LINE_FIXTURE3 = new LineServiceRequest("4호선", "bg-color-800", 1L, 2L, 10);

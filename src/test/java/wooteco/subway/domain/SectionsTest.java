@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.SubwayFixtures.GANGNAM;
 import static wooteco.subway.SubwayFixtures.SAMSUNG;
 import static wooteco.subway.SubwayFixtures.STATION_FIXTURE1;
@@ -11,7 +12,6 @@ import static wooteco.subway.SubwayFixtures.SUNGDAM;
 import static wooteco.subway.SubwayFixtures.SUNNEUNG;
 import static wooteco.subway.SubwayFixtures.YEOKSAM;
 
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -130,11 +130,13 @@ public class SectionsTest {
                 List.of(SUNNEUNG_TO_SAMSUNG, GANGNAM_TO_YEOKSAM, YEOKSAM_TO_SUNNEUNG));
 
         // when
-        final List<Section> ff = sections.getSections();
-        Collections.sort(ff);
+        final List<Section> sortedSections = sections.getSections();
 
         // then
-        final List<Section> sections1 = sections.getSections();
-        System.out.println();
+        assertAll(
+                () -> assertThat(sortedSections.get(0)).isEqualTo(GANGNAM_TO_YEOKSAM),
+                () -> assertThat(sortedSections.get(1)).isEqualTo(YEOKSAM_TO_SUNNEUNG),
+                () -> assertThat(sortedSections.get(2)).isEqualTo(SUNNEUNG_TO_SAMSUNG)
+        );
     }
 }

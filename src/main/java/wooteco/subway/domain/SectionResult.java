@@ -9,4 +9,5 @@ public enum SectionResult {
     UP_REDUCED,
     DOWN_REDUCED,
     MIDDLE_REMOVED,
+    NOT_BOTH_END_EXTENSION,
 }
