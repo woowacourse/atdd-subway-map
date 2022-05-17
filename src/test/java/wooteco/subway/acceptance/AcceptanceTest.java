@@ -1,13 +1,15 @@
 package wooteco.subway.acceptance;
 
-import io.restassured.RestAssured;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+
+import io.restassured.RestAssured;
 import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
@@ -34,7 +36,7 @@ public class AcceptanceTest {
         clearAllLines();
     }
 
-    private void clearAllStations() {
+    public void clearAllStations() {
         List<Station> stations = stationDao.findAll();
         List<Long> stationIds = stations.stream()
             .map(Station::getId)
@@ -45,7 +47,7 @@ public class AcceptanceTest {
         }
     }
 
-    private void clearAllLines() {
+    public void clearAllLines() {
         List<Line> lines = lineDaoImpl.findAll();
         List<Long> lineIds = lines.stream()
             .map(Line::getId)

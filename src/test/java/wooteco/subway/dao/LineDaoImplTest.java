@@ -15,6 +15,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 class LineDaoImplTest {
@@ -23,10 +25,25 @@ class LineDaoImplTest {
     private JdbcTemplate jdbcTemplate;
 
     private LineDao lineDao;
+    private StationDao stationDao;
+    private SectionDao sectionDao;
+
+    private Station station1;
+    private Station station2;
+    private Station station3;
+    private Station station4;
 
     @BeforeEach
     void setUp() {
         lineDao = new LineDaoImpl(jdbcTemplate);
+        stationDao = new StationDaoImpl(jdbcTemplate);
+        sectionDao = new SectionDaoImpl(jdbcTemplate);
+
+        station1 = stationDao.save(new Station("강남역"));
+        station2 = stationDao.save(new Station("선릉역"));
+
+        station3 = stationDao.save(new Station("교대역"));
+        station4 = stationDao.save(new Station("잠실역"));
 
         List<Line> lines = lineDao.findAll();
         List<Long> lineIds = lines.stream()
@@ -45,10 +62,9 @@ class LineDaoImplTest {
 
         // when
         Long savedId = lineDao.save(line);
-        Line line1 = lineDao.findById(savedId).get();
 
         // then
-        assertThat(line.getName()).isEqualTo(line1.getName());
+        assertThat(savedId).isPositive();
     }
 
     @Test
@@ -72,15 +88,16 @@ class LineDaoImplTest {
         Line line = new Line("1호선", "bg-red-600");
 
         // when
-        Long saveId = lineDao.save(line);
-        Line findLine = lineDao.findById(saveId).get();
+        Long savedId = lineDao.save(line);
+        sectionDao.save(new Section(station1, station2, 10), savedId);
+        Line findLine = lineDao.findById(savedId).get();
 
         // then
         assertThat(findLine.getName()).isEqualTo(line.getName());
     }
 
     @Test
-    @DisplayName("없는 id값으로 조회할 경우 Optional.empty() 를 반환해야 한다.")
+    @DisplayName("없는 id값으로 조회할 경우 Optional.empty()를 반환해야 한다.")
     void findByWrongId() {
         Optional<Line> line = lineDao.findById(0L);
         assertThat(line.isEmpty()).isTrue();
@@ -93,8 +110,10 @@ class LineDaoImplTest {
         Line line2 = new Line("2호선", "bg-green-600");
 
         // when
-        lineDao.save(line1);
-        lineDao.save(line2);
+        Long savedId1 = lineDao.save(line1);
+        sectionDao.save(new Section(station1, station2, 10), savedId1);
+        Long savedId2 = lineDao.save(line2);
+        sectionDao.save(new Section(station3, station4, 10), savedId2);
 
         // then
         List<String> names = lineDao.findAll()
@@ -136,6 +155,7 @@ class LineDaoImplTest {
         // when
         Line newLine = new Line("2호선", "bg-green-600");
         lineDao.updateById(savedId, newLine);
+        sectionDao.save(new Section(station1, station2, 10), savedId);
         Line line = lineDao.findById(savedId).get();
 
         // then
