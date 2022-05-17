@@ -1,61 +1,85 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.service.dto.ServiceDtoAssembler;
-import wooteco.subway.service.dto.line.LineRequestDto;
-import wooteco.subway.service.dto.line.LineResponseDto;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.line.LineRepository;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.service.dto.DtoAssembler;
+import wooteco.subway.service.dto.line.LineRequest;
+import wooteco.subway.service.dto.line.LineResponse;
+import wooteco.subway.service.dto.line.LineUpdateRequest;
+import wooteco.subway.service.dto.section.SectionRequest;
 
 @Service
 public class LineService {
 
-    private final LineDao lineDao;
+    private final LineRepository lineRepository;
 
-    public LineService(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineService(LineRepository lineRepository) {
+        this.lineRepository = lineRepository;
     }
 
-    public LineResponseDto create(String name, String color) {
-        validateNameNotDuplicated(name);
-        validateColorNotDuplicated(color);
-        Long lineId = lineDao.save(new Line(name, color));
-        Line line = lineDao.findById(lineId);
-        return ServiceDtoAssembler.lineResponseDto(line);
+    @Transactional
+    public LineResponse create(LineRequest lineRequest) {
+        Section section = createSection(lineRequest);
+        Line line = lineRepository.saveLine(DtoAssembler.line(section, lineRequest));
+        return DtoAssembler.lineResponse(line);
     }
 
-    private void validateNameNotDuplicated(String name) {
-        if (lineDao.existsByName(name)) {
-            throw new IllegalArgumentException("해당 이름의 지하철 노선이 이미 존재합니다");
-        }
+    private Section createSection(LineRequest lineRequest) {
+        return new Section(
+                lineRepository.findStationById(lineRequest.getUpStationId()),
+                lineRepository.findStationById(lineRequest.getDownStationId()),
+                lineRequest.getDistance());
     }
 
-    private void validateColorNotDuplicated(String color) {
-        if (lineDao.existsByColor(color)) {
-            throw new IllegalArgumentException("해당 색상의 지하철 노선이 이미 존재합니다");
-        }
+    public List<LineResponse> findAll() {
+        List<Line> lines = lineRepository.findLines();
+        return DtoAssembler.lineResponses(lines);
     }
 
-    public List<LineResponseDto> findAll() {
-        return lineDao.findAll()
-                .stream()
-                .map(ServiceDtoAssembler::lineResponseDto)
-                .collect(Collectors.toUnmodifiableList());
+    public LineResponse findOne(Long id) {
+        Line line = lineRepository.findLineById(id);
+        return DtoAssembler.lineResponse(line);
     }
 
-    public LineResponseDto findOne(Long id) {
-        return ServiceDtoAssembler.lineResponseDto(lineDao.findById(id));
+    @Transactional
+    public void update(Long id, LineUpdateRequest lineUpdateRequest) {
+        Line line = lineRepository.findLineById(id);
+        line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+        lineRepository.updateLine(line);
     }
 
-    public void update(Long id, LineRequestDto lineRequestDto) {
-        lineDao.update(id, lineRequestDto.getName(), lineRequestDto.getColor());
+    @Transactional
+    public void delete(Long id) {
+        lineRepository.removeLine(id);
     }
 
-    public void remove(Long id) {
-        lineDao.remove(id);
+    @Transactional
+    public void appendSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findLineById(lineId);
+        Section section = createSection(sectionRequest);
+        line.appendSection(section);
+        lineRepository.updateSections(line);
+    }
+
+    private Section createSection(SectionRequest sectionRequest) {
+        return new Section(
+                lineRepository.findStationById(sectionRequest.getUpStationId()),
+                lineRepository.findStationById(sectionRequest.getDownStationId()),
+                sectionRequest.getDistance());
+    }
+
+    @Transactional
+    public void removeStation(Long lineId, Long stationId) {
+        Line line = lineRepository.findLineById(lineId);
+        Station station = lineRepository.findStationById(stationId);
+        line.removeStation(station);
+        lineRepository.updateSections(line);
     }
 }

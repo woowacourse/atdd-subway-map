@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,23 +15,33 @@ import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.controller.dto.line.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final String PREFIX_URL = "/lines";
+    private final LineRequestHandler lineRequestHandler = new LineRequestHandler();
+    private final StationRequestHandler stationRequestHandler = new StationRequestHandler();
+    private Long upStationId;
+    private Long middleStationId;
+    private Long downStationId;
 
-    private final AcceptanceHandler acceptanceHandler = new AcceptanceHandler(PREFIX_URL);
+    @BeforeEach
+    void setUpStations() {
+        this.upStationId = stationRequestHandler.extractId(
+                stationRequestHandler.createStation(Map.of("name", "강남역")));
+        this.middleStationId = stationRequestHandler.extractId(
+                stationRequestHandler.createStation(Map.of("name", "선릉역")));
+        this.downStationId = stationRequestHandler.extractId(
+                stationRequestHandler.createStation(Map.of("name", "잠실역")));
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void saveLine() {
         // given
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.save(Map.of(
-                "name", "신분당선",
-                "color", "bg-red-600"));
+        ExtractableResponse<Response> response = lineRequestHandler.createLine(
+                createParameters("신분당선", "color"));
 
         // then
         assertAll(() -> {
@@ -45,19 +55,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @ValueSource(strings = {"신분당선", "분당선"})
     void createLineWithDuplicateName(String name) {
         // given
-        acceptanceHandler.save(Map.of(
-                "name", name,
-                "color", "bg-red-600"));
+        lineRequestHandler.createLine(createParameters(name, "color1"));
 
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.save(Map.of(
-                "name", name,
-                "color", "bg-red-601"));
+        ExtractableResponse<Response> response = lineRequestHandler.createLine(createParameters(name, "color2"));
 
         // then
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("해당 이름의 지하철 노선이 이미 존재합니다");
+            assertThat(response.body().asString()).contains("해당 이름의 지하철노선은 이미 존재합니다");
         });
     }
 
@@ -66,19 +72,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @ValueSource(strings = {"bg-red-600", "bg-blue-808"})
     void createLineWithDuplicateColor(String color) {
         // given
-        acceptanceHandler.save(Map.of(
-                "name", "신분당선",
-                "color", color));
+        lineRequestHandler.createLine(createParameters("신분당선", color));
 
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.save(Map.of(
-                "name", "분당선",
-                "color", color));
+        ExtractableResponse<Response> response = lineRequestHandler.createLine(createParameters("분당선", color));
 
         // then
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("해당 색상의 지하철 노선이 이미 존재합니다");
+            assertThat(response.body().asString()).contains("해당 색상의 지하철노선은 이미 존재합니다");
         });
     }
 
@@ -86,20 +88,19 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long createdId1 = extractId(acceptanceHandler.save(Map.of(
-                "name", "신분당선",
-                "color", "bg-red-600")));
-        Long createdId2 = extractId(acceptanceHandler.save(Map.of(
-                "name", "분당선",
-                "color", "bg-red-601")));
+        Long createdId1 = lineRequestHandler.extractId(
+                lineRequestHandler.createLine(createParameters("신분당선", "color1")));
+        Long createdId2 = lineRequestHandler.extractId(
+                lineRequestHandler.createLine(createParameters("분당선", "color2")));
+
 
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.findAll();
+        ExtractableResponse<Response> response = lineRequestHandler.findLines();
 
         // then
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(extractIds(response)).containsAll(List.of(createdId1, createdId2));
+            assertThat(lineRequestHandler.extractIds(response)).containsAll(List.of(createdId1, createdId2));
         });
     }
 
@@ -107,13 +108,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLine() {
         // given
-        Long createdId = extractId(acceptanceHandler.save(Map.of(
-                "name", "신분당선",
-                "color", "bg-red-600")));
+        Long createdId = lineRequestHandler.extractId(
+                lineRequestHandler.createLine(createParameters("신분당선", "color1")));
 
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.findOne(createdId);
-        Long expectedId = extractId(response);
+        ExtractableResponse<Response> response = lineRequestHandler.findLine(createdId);
+        Long expectedId = lineRequestHandler.extractId(response);
 
         // then
         assertAll(() -> {
@@ -126,46 +126,78 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Long createdId = extractId(acceptanceHandler.save(Map.of(
-                "name", "신분당선",
-                "color", "bg-red-600")));
+        Long createdId = lineRequestHandler.extractId(
+                lineRequestHandler.createLine(createParameters("신분당선", "color1")));
 
         // when
-        ExtractableResponse<Response> updatedResponse = acceptanceHandler.update(
-                createdId, Map.of(
-                        "name", "다른분당선",
-                        "color", "bg-red-600"));
+        ExtractableResponse<Response> updatedResponse = lineRequestHandler.updateLine(createdId, Map.of(
+                "name", "다른분당선",
+                "color", "bg-red-600"));
 
         // then
         assertThat(updatedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("지하철 노선에서 구간을 추가한다.")
+    @Test
+    void appendSection() {
+        // given
+        Long createdId = lineRequestHandler.extractId(
+                lineRequestHandler.createLine(createParameters("신분당선", "color1")));
+
+        // when
+        ExtractableResponse<Response> response = lineRequestHandler.appendSection(createdId, Map.of(
+                "upStationId", String.valueOf(upStationId),
+                "downStationId", String.valueOf(middleStationId),
+                "distance", String.valueOf(5)));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("지하철 노선에서 역을 제거한다.")
+    @Test
+    void removeStation() {
+        // given
+        Long createdId = lineRequestHandler.extractId(
+                lineRequestHandler.createLine(createParameters("신분당선", "color1")));
+
+        lineRequestHandler.appendSection(createdId, Map.of(
+                "upStationId", String.valueOf(upStationId),
+                "downStationId", String.valueOf(middleStationId),
+                "distance", String.valueOf(5)));
+
+        // when
+        ExtractableResponse<Response> response = lineRequestHandler.removeStation(createdId, middleStationId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void removeLine() {
         // given
-        Long createdId = extractId(acceptanceHandler.save(Map.of(
-                "name", "신분당선",
-                "color", "bg-red-600")));
+        Long createdId = lineRequestHandler.extractId(
+                lineRequestHandler.createLine(createParameters("신분당선", "color1")));
 
         // when
-        ExtractableResponse<Response> removedResponse = acceptanceHandler.remove(createdId);
+        ExtractableResponse<Response> removedResponse = lineRequestHandler.removeLine(createdId);
 
         // then
         assertThat(removedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private Long extractId(ExtractableResponse<Response> response) {
-        return response.jsonPath()
-                .getObject(".", LineResponse.class)
-                .getId();
+    private Map<String, String> createParameters(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return Map.of(
+                "name", name,
+                "color", color,
+                "upStationId", String.valueOf(upStationId),
+                "downStationId", String.valueOf(downStationId),
+                "distance", String.valueOf(distance));
     }
 
-    private List<Long> extractIds(ExtractableResponse<Response> response) {
-        return response.jsonPath()
-                .getList(".", LineResponse.class)
-                .stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toUnmodifiableList());
+    private Map<String, String> createParameters(String name, String color) {
+        return createParameters(name, color, this.upStationId, this.downStationId, 10);
     }
 }
