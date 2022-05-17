@@ -24,6 +24,10 @@ public class Station {
         }
     }
 
+    public boolean isSameStation(Station downStation) {
+        return name.equals(downStation.getName());
+    }
+
     public Long getId() {
         return id;
     }
@@ -41,11 +45,11 @@ public class Station {
             return false;
         }
         Station station = (Station) o;
-        return Objects.equals(name, station.name);
+        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id, name);
     }
 }

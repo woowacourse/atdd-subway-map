@@ -31,7 +31,7 @@ class StationDaoTest {
 
         final Long id = stationDao.save(station);
 
-        final String actual = stationDao.find(id).getName();
+        final String actual = stationDao.findById(id).get().getName();
         assertThat(actual).isEqualTo(station.getName());
     }
 
@@ -41,7 +41,7 @@ class StationDaoTest {
         final Station station = new Station("한성대입구역");
         final long id = stationDao.save(station);
 
-        final Station foundStation = stationDao.find(id);
+        final Station foundStation = stationDao.findById(id).get();
 
         assertThat(foundStation.getName()).isEqualTo(station.getName());
     }
@@ -58,8 +58,8 @@ class StationDaoTest {
 
         assertAll(() -> {
             assertThat(stations).hasSize(2);
-            assertThat(stations).hasSize(2);
-            assertThat(stations).contains(station1, station2);
+            assertThat(stations.get(0).getName()).isEqualTo(station1.getName());
+            assertThat(stations.get(1).getName()).isEqualTo(station2.getName());
         });
     }
 

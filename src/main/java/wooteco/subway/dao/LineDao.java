@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -37,9 +38,9 @@ public class LineDao {
         return jdbcTemplate.query(sql, rowMapper());
     }
 
-    public Line find(final Long id) {
+    public Optional<Line> findById(final Long id) {
         final String sql = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
     }
 
     public int update(final Long id, final String name, final String color) {
