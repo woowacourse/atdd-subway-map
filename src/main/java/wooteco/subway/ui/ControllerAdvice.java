@@ -16,6 +16,6 @@ public class ControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> exceptionHandle(Exception e) {
-        return ResponseEntity.badRequest().body("예외가 발생했습니다.");
+        return ResponseEntity.internalServerError().body("예외가 발생했습니다.");
     }
 }

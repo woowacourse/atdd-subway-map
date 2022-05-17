@@ -43,30 +43,30 @@ public class StationDaoTest {
     @Test
     @DisplayName("등록된 지하철역을 전체 조회한다.")
     void findAllTest() {
-        stationDao.save(new Station("선릉역"));
-        stationDao.save(new Station("역삼역"));
-        stationDao.save(new Station("강남역"));
+        Station expected1 = stationDao.save(new Station("선릉역"));
+        Station expected2 = stationDao.save(new Station("역삼역"));
+        Station expected3 = stationDao.save(new Station("강남역"));
 
-        List<String> stations = stationDao.findAll()
+        List<Long> actual = stationDao.findAll()
             .stream()
-            .map(Station::getName)
+            .map(Station::getId)
             .collect(Collectors.toList());
 
         assertAll(
-            () -> assertThat(stations).hasSize(3),
-            () -> assertThat(stations).containsAll(List.of("선릉역", "역삼역", "강남역"))
+            () -> assertThat(actual).hasSize(3),
+            () -> assertThat(actual).containsAll(List.of(expected1.getId(), expected2.getId(), expected3.getId()))
         );
     }
 
     @Test
     @DisplayName("ID로 특정 지하철역을 조회한다.")
     void findByIdTest() {
-        Station 짱구역 = stationDao.save(new Station("짱구역"));
-        Station station = stationDao.findById(짱구역.getId()).get();
+        Station expected = stationDao.save(new Station("짱구역"));
+        Station actual = stationDao.findById(expected.getId()).get();
 
         assertAll(
-            () -> assertThat(station.getId()).isEqualTo(짱구역.getId()),
-            () -> assertThat(station.getName()).isEqualTo(짱구역.getName())
+            () -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+            () -> assertThat(actual.getName()).isEqualTo(expected.getName())
         );
     }
 
