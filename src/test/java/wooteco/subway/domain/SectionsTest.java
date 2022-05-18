@@ -3,7 +3,6 @@ package wooteco.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.SubwayFixtures.GANGNAM;
 import static wooteco.subway.SubwayFixtures.SAMSUNG;
 import static wooteco.subway.SubwayFixtures.STATION_FIXTURE1;
@@ -16,8 +15,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.SectionDuplicateException;
-import wooteco.subway.exception.SectionNotSuitableException;
+import wooteco.subway.exception.validation.SectionDuplicateException;
+import wooteco.subway.exception.validation.SectionNotSuitableException;
 
 public class SectionsTest {
 
@@ -126,17 +125,12 @@ public class SectionsTest {
     @DisplayName("상행역과 하행역을 엮어 정렬이 가능하다")
     void sectionsSortTest() {
         // given
-        final Sections sections = new Sections(
-                List.of(SUNNEUNG_TO_SAMSUNG, GANGNAM_TO_YEOKSAM, YEOKSAM_TO_SUNNEUNG));
+        final Sections sections = new Sections(List.of(SUNNEUNG_TO_SAMSUNG, GANGNAM_TO_YEOKSAM, YEOKSAM_TO_SUNNEUNG));
 
         // when
         final List<Section> sortedSections = sections.getSections();
 
         // then
-        assertAll(
-                () -> assertThat(sortedSections.get(0)).isEqualTo(GANGNAM_TO_YEOKSAM),
-                () -> assertThat(sortedSections.get(1)).isEqualTo(YEOKSAM_TO_SUNNEUNG),
-                () -> assertThat(sortedSections.get(2)).isEqualTo(SUNNEUNG_TO_SAMSUNG)
-        );
+        assertThat(sortedSections).containsExactly(SUNNEUNG_TO_SAMSUNG, YEOKSAM_TO_SUNNEUNG, GANGNAM_TO_YEOKSAM);
     }
 }

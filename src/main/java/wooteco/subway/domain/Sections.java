@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import wooteco.subway.exception.SectionDuplicateException;
-import wooteco.subway.exception.SectionNotSuitableException;
 import wooteco.subway.exception.SubwayUnknownException;
 import wooteco.subway.exception.SubwayValidationException;
+import wooteco.subway.exception.validation.SectionDuplicateException;
+import wooteco.subway.exception.validation.SectionNotSuitableException;
 
 public class Sections {
 
@@ -157,6 +157,20 @@ public class Sections {
     public List<Section> getSections() {
         final List<Section> sections = new ArrayList<>(this.sections);
         Collections.sort(sections);
+        modifyUpEnd(sections);
         return sections;
+    }
+
+    private void modifyUpEnd(List<Section> sections) {
+        final Section lastSection = sections.get(sections.size() - 1);
+        final Station upStationOfLastSection = lastSection.getUpStation();
+        final boolean lastSectionShouldBeFirstSection = sections.stream()
+                .filter(section -> !section.isSameId(lastSection.getId()))
+                .noneMatch(section -> section.hasStationById(upStationOfLastSection.getId()));
+
+        if (lastSectionShouldBeFirstSection) {
+            sections.add(0, lastSection);
+            sections.remove(sections.size() - 1);
+        }
     }
 }
