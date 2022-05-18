@@ -105,6 +105,7 @@ public class Sections {
 
         sections.removeAll(List.of(upSection, downSection));
         sections.add(merged);
+        Collections.sort(sections);
 
         return SectionResult.MIDDLE_REMOVED;
     }
@@ -156,21 +157,26 @@ public class Sections {
 
     public List<Section> getSections() {
         final List<Section> sections = new ArrayList<>(this.sections);
+        return sortSectionsUpToDown(sections);
+    }
+
+    private List<Section> sortSectionsUpToDown(List<Section> sections) {
+        final Section section = findFirstSection(sections);
+
+        sections.remove(section);
+        sections.add(FIRST_INDEX, section);
+
         Collections.sort(sections);
-        modifyUpEnd(sections);
         return sections;
     }
 
-    private void modifyUpEnd(List<Section> sections) {
-        final Section lastSection = sections.get(sections.size() - 1);
-        final Station upStationOfLastSection = lastSection.getUpStation();
-        final boolean lastSectionShouldBeFirstSection = sections.stream()
-                .filter(section -> !section.isSameId(lastSection.getId()))
-                .noneMatch(section -> section.hasStationById(upStationOfLastSection.getId()));
-
-        if (lastSectionShouldBeFirstSection) {
-            sections.add(0, lastSection);
-            sections.remove(sections.size() - 1);
-        }
+    private Section findFirstSection(List<Section> sections) {
+        return sections.stream()
+                .filter(section ->
+                        sections.stream()
+                                .noneMatch(section::upStationIsSameToDownStation)
+                )
+                .findAny()
+                .orElseThrow(() -> new SubwayUnknownException("상행 종점을 탐색하는데 실패했습니다"));
     }
 }
