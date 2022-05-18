@@ -2,13 +2,14 @@ package wooteco.subway.service;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DuplicateNameException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.DuplicateNameException;
 
 @Service
 public class StationService {
@@ -19,12 +20,13 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationResponse create(String name) {
         try {
             Station newStation = stationDao.save(new Station(name));
             return new StationResponse(newStation.getId(), newStation.getName());
         } catch (DuplicateKeyException e) {
-            throw new DuplicateNameException("중복된 역 이름이 있습니다.");
+            throw new DuplicateNameException(name + "은 존재하는 역입니다.");
         }
     }
 
@@ -35,6 +37,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void delete(Long id) {
         stationDao.deleteById(id);
     }

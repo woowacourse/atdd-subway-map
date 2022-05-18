@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,11 +8,10 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
+import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
@@ -46,27 +46,22 @@ public class LineDao {
         };
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String SQL = "select * from line where id = ?;";
         try {
-            return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
+            return Optional.of(jdbcTemplate.queryForObject(SQL, rowMapper(), id));
         } catch (DataAccessException e) {
-            throw new NotFoundException(id + "id를 가진 지하철 노선을 찾을 수 없습니다.");
+            return Optional.empty();
         }
     }
 
     public void update(Line line) {
         String SQL = "update line set name = ?, color = ? where id = ?;";
-        if (jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId()) == 0) {
-            throw new NotFoundException(line.getId() + "id를 가진 지하철 노선을 찾을 수 없습니다.");
-        }
+        jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId());
     }
 
     public void delete(Long id) {
-        findById(id);
         String SQL = "delete from line where id = ?";
-        if (jdbcTemplate.update(SQL, id) == 0) {
-            throw new NotFoundException(id + "id를 가진 지하철 노선을 찾을 수 없습니다.");
-        }
+        jdbcTemplate.update(SQL, id);
     }
 }

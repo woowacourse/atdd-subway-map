@@ -1,33 +1,20 @@
 package wooteco.subway.dao;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.domain.Station;
-import wooteco.subway.exception.NotFoundException;
-
-import javax.sql.DataSource;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@JdbcTest
-class StationDaoTest {
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import wooteco.subway.controller.AcceptanceTest;
+import wooteco.subway.domain.Station;
+import wooteco.subway.exception.NotFoundException;
+
+class StationDaoTest extends AcceptanceTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private DataSource dataSource;
     private StationDao stationDao;
-
-    @BeforeEach
-    void setUp() {
-        stationDao = new StationDao(jdbcTemplate, dataSource);
-    }
 
     @DisplayName("역 정보를 저장한다.")
     @Test
@@ -59,14 +46,14 @@ class StationDaoTest {
         stationDao.deleteById(station.getId());
 
         assertThatThrownBy(() -> stationDao.deleteById(station.getId()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching(station.getId() + "id를 가진 지하철 역을 찾을 수 없습니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("역을 삭제할 때 id에 맞는 역이 없으면 예외를 발생시킨다.")
     @Test
     void deleteException() {
         assertThatThrownBy(() -> stationDao.deleteById(1L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("1에 해당하는 지하철 역을 찾을 수 없습니다.");
     }
 }

@@ -1,5 +1,7 @@
 package wooteco.subway.dao;
 
+import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -15,6 +17,7 @@ import java.util.List;
 @Repository
 public class StationDao {
 
+    private static final int UPDATE_QUERY_EMPTY_RESULT = 0;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -46,8 +49,21 @@ public class StationDao {
 
     public void deleteById(Long id) {
         String SQL = "delete from station where id = ?";
-        if(jdbcTemplate.update(SQL, id) == 0) {
-            throw new NotFoundException(id + "id를 가진 지하철 역을 찾을 수 없습니다.");
+        validateExistById(jdbcTemplate.update(SQL, id), id);
+    }
+
+    public Optional<Station> findById(Long stationId) {
+        String SQL = "select * from station where id = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(SQL, rowMapper(), stationId));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    private void validateExistById(int updateQueryResult, Long id) {
+        if (updateQueryResult == UPDATE_QUERY_EMPTY_RESULT) {
+            throw new NotFoundException(id + "에 해당하는 지하철 역을 찾을 수 없습니다.");
         }
     }
 }
