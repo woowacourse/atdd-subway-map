@@ -27,6 +27,10 @@ public class JdbcSectionRepository implements SectionRepository {
     public void save(Long lineId, Section section) {
         final Station upStation = section.getUpStation();
         final Station downStation = section.getDownStation();
+        final SectionEntity sectionEntity = new SectionEntity(lineId, upStation.getId(), downStation.getId(),
+                section.getDistance());
+
+        sectionDao.save(sectionEntity);
     }
 
     @Override

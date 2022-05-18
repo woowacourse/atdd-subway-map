@@ -78,25 +78,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 조회 시 응답코드는 OK이다")
     void getLines() {
         /// given
-        final ExtractableResponse<Response> createBoonDangLineResponse = post(LINES_URI, toJson(BOONDANGLINE_REQUEST));
-        final ExtractableResponse<Response> createSecondLineResponse = post(LINES_URI, toJson(SECONDLINE_REQUEST));
+        final ExtractableResponse<Response> firstLineCreate = post(LINES_URI, toJson(BOONDANGLINE_REQUEST));
+        final ExtractableResponse<Response> secondLineCreate = post(LINES_URI, toJson(SECONDLINE_REQUEST));
 
         // when
+        final Long firstId = Long.parseLong(firstLineCreate.header("Location").replace("/lines/", ""));
+        final Long secondId = Long.parseLong(secondLineCreate.header("Location").replace("/lines/", ""));
         final ExtractableResponse<Response> findAllLinesResponse = get(LINES_URI);
 
-        // then
-        List<Long> expectedLineIds = Stream.of(createBoonDangLineResponse, createSecondLineResponse)
-                .map(response -> Long.parseLong(response.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> actualLineIds = findAllLinesResponse.jsonPath().getList(".", LineResponse.class).stream()
+        List<Long> actualLineIds = findAllLinesResponse.jsonPath()
+                .getList(".", LineResponse.class)
+                .stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
+        // then
         assertAll(
-                () -> assertThat(createBoonDangLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(createSecondLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(firstLineCreate.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(secondLineCreate.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(findAllLinesResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actualLineIds).containsAll(expectedLineIds)
+                () -> assertThat(actualLineIds).containsAll(List.of(firstId, secondId))
         );
     }
 
