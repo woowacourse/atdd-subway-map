@@ -1,8 +1,6 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
-import wooteco.subway.exception.SectionDistanceExceedException;
-import wooteco.subway.exception.SubwayUnknownException;
 
 public class Section implements Comparable<Section> {
 
@@ -28,6 +26,10 @@ public class Section implements Comparable<Section> {
         this(null, null, upStation, downStation, distance);
     }
 
+    public boolean isSameId(Long id) {
+        return Objects.equals(this.id, id);
+    }
+
     public boolean isSameLineId(Long lineId) {
         return Objects.equals(this.lineId, lineId);
     }
@@ -44,39 +46,6 @@ public class Section implements Comparable<Section> {
         return hasSameUpStation(other) || hasSameDownStation(other);
     }
 
-    public SectionResult sync(Section input) {
-        // 상행 확장
-        if (Objects.equals(this.upStation, input.downStation)) {
-            return SectionResult.UP_EXTENDED;
-        }
-
-        // 하행 확장
-        if (Objects.equals(this.downStation, input.upStation)) {
-            return SectionResult.DOWN_EXTENDED;
-        }
-
-        // 거리 초과 검증
-        if (!isWider(input)) {
-            throw new SectionDistanceExceedException(input.getDistance());
-        }
-
-        // 상행역 기준으로 가운데 역 추가
-        if (this.hasSameUpStation(input)) {
-            this.upStation = input.downStation;
-            this.distance = this.distance - input.distance;
-            return SectionResult.MIDDLE_ADDED;
-        }
-
-        // 하행역 기준 가운데 역 추가
-        if (this.hasSameDownStation(input)) {
-            this.downStation = input.upStation;
-            this.distance = this.distance - input.distance;
-            return SectionResult.MIDDLE_ADDED;
-        }
-
-        throw new SubwayUnknownException("구간 확장 처리 중 예외가 발생했습니다");
-    }
-
     public boolean isWider(Section input) {
         return this.distance > input.distance;
     }
@@ -91,6 +60,16 @@ public class Section implements Comparable<Section> {
 
     public boolean hasStationById(Long stationId) {
         return upStation.isSameId(stationId) || downStation.isSameId(stationId);
+    }
+
+    public void shortenUpStation(Section input) {
+        this.upStation = input.downStation;
+        this.distance = this.distance - input.distance;
+    }
+
+    public void shortenDownStation(Section input) {
+        this.downStation = input.upStation;
+        this.distance = this.distance - input.distance;
     }
 
     public Long getId() {

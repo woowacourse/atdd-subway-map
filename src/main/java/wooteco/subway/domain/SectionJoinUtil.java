@@ -1,8 +1,8 @@
 package wooteco.subway.domain;
 
 import java.util.List;
-import wooteco.subway.exception.SectionDistanceExceedException;
 import wooteco.subway.exception.SubwayUnknownException;
+import wooteco.subway.exception.validation.SectionDistanceExceedException;
 
 final class SectionJoinUtil {
 
