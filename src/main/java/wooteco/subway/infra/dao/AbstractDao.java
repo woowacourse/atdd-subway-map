@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.infra.dao;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +19,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 
-@Repository
-public abstract class AbstractRepository<T, ID> {
+public abstract class AbstractDao<T, ID> {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -34,8 +33,8 @@ public abstract class AbstractRepository<T, ID> {
 
     // 클래스명은 XXEntity 여야만 한다
     // 테이블의 PK와 필드명은 "id" 여야만 한다
-    public AbstractRepository(JdbcTemplate jdbcTemplate, DataSource dataSource,
-                              NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public AbstractDao(JdbcTemplate jdbcTemplate, DataSource dataSource,
+                       NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         clazz = (Class<T>) getGenericClassType(0);
@@ -57,7 +56,6 @@ public abstract class AbstractRepository<T, ID> {
     }
 
     private Type getGenericClassType(int index) {
-
         Type type = getClass().getGenericSuperclass();
 
         while (!(type instanceof ParameterizedType)) {
@@ -73,6 +71,8 @@ public abstract class AbstractRepository<T, ID> {
 
     public T save(T t) {
         Map<String, Object> params = getParamsByT(t);
+        params.values().removeAll(Collections.singleton(null));
+
         final long generatedId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
         final Field idField = ReflectionUtils.findField(clazz, "id");
@@ -88,17 +88,43 @@ public abstract class AbstractRepository<T, ID> {
             found.setAccessible(true);
 
             final Method method = getters.stream()
-                    .filter(getter -> getter.getName().toLowerCase().contains(field))
+                    .filter(getter -> {
+                        final String name = getter.getName();
+                        if (name.startsWith("get")) {
+                            return name.replaceFirst("get", "").equalsIgnoreCase(field);
+                        }
+                        if (name.startsWith("has")) {
+                            return name.replaceFirst("has", "").equalsIgnoreCase(field);
+                        }
+                        if (name.startsWith("is")) {
+                            return name.replaceFirst("is", "").equalsIgnoreCase(field);
+                        }
+                        throw new NoSuchElementException("save를 위한 Entity 값 할당에 실패했습니다");
+                    })
                     .findAny()
                     .orElseThrow(NoSuchElementException::new);
 
             try {
-                params.put(field, method.invoke(t));
+                params.put(replaceField(field), method.invoke(t));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
         return params;
+    }
+
+    private String replaceField(String field) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        final char[] chars = field.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isUpperCase(chars[i])) {
+                stringBuilder.append("_");
+            }
+            stringBuilder.append(chars[i]);
+        }
+
+        return stringBuilder.toString();
     }
 
     public List<T> findAll() {
@@ -107,8 +133,9 @@ public abstract class AbstractRepository<T, ID> {
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             final T tEntity;
             try {
-                tEntity = clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                tEntity = clazz.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
             for (String field : fields) {

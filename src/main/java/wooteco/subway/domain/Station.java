@@ -18,6 +18,10 @@ public class Station {
         this.name = name;
     }
 
+    public boolean isSameId(Long id) {
+        return Objects.equals(this.id, id);
+    }
+
     public Long getId() {
         return id;
     }
@@ -31,7 +35,7 @@ public class Station {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Station)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         Station station = (Station) o;

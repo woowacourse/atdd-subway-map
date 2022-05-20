@@ -8,9 +8,6 @@ public class LineServiceRequest {
     private Long downStationId;
     private int distance;
 
-    private LineServiceRequest() {
-    }
-
     public LineServiceRequest(Long id, String name, String color, Long upStationId, Long downStationId, int distance) {
         this.id = id;
         this.name = name;
@@ -20,8 +17,8 @@ public class LineServiceRequest {
         this.distance = distance;
     }
 
-    public LineServiceRequest(String name, String color) {
-        this(null, name, color, null, null, 0);
+    public LineServiceRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+        this(null, name, color, upStationId, downStationId, distance);
     }
 
     public void setId(Long id) {

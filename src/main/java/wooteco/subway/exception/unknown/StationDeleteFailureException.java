@@ -1,6 +1,8 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.unknown;
 
-public class StationDeleteFailureException extends RuntimeException {
+import wooteco.subway.exception.SubwayUnknownException;
+
+public class StationDeleteFailureException extends SubwayUnknownException {
 
     private static final String DEFAULT_MESSAGE = "지하철역 삭제에 실패하였습니다";
 

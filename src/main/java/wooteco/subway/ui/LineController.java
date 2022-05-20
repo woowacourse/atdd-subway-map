@@ -3,7 +3,7 @@ package wooteco.subway.ui;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.http.MediaType;
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +18,7 @@ import wooteco.subway.service.LineService;
 import wooteco.subway.service.dto.LineServiceRequest;
 import wooteco.subway.ui.dto.LineRequest;
 import wooteco.subway.ui.dto.LineResponse;
+import wooteco.subway.ui.dto.StationResponse;
 
 @RestController
 @RequestMapping("/lines")
@@ -30,25 +31,21 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         Line newLine = lineService.save(getLineServiceRequest(lineRequest));
-        LineResponse lineResponse = getLineResponse(newLine);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(toLineResponse(newLine));
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(this::getLineResponse)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok().body(toLineResponses(lines));
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        return ResponseEntity.ok().body(getLineResponse(line));
+        return ResponseEntity.ok().body(toLineResponse(line));
     }
 
     @PutMapping("/{id}")
@@ -69,7 +66,20 @@ public class LineController {
                 lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
-    private LineResponse getLineResponse(Line it) {
-        return new LineResponse(it.getId(), it.getName(), it.getColor());
+    private List<LineResponse> toLineResponses(List<Line> lines) {
+        return lines.stream()
+                .map(this::toLineResponse)
+                .collect(Collectors.toList());
+    }
+
+    private LineResponse toLineResponse(Line line) {
+        if (line.emptyStations()) {
+            return new LineResponse(line.getId(), line.getName(), line.getColor());
+        }
+
+        final List<StationResponse> stationResponses = line.getStations().stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 }
