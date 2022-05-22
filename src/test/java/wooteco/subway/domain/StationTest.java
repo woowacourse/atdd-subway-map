@@ -12,7 +12,6 @@ class StationTest {
     void line_name_blank() {
         assertThatThrownBy(() -> new Station(""))
                 .isInstanceOf(IllegalArgumentException.class);
-
     }
 
     @Test
@@ -22,6 +21,5 @@ class StationTest {
 
         assertThatThrownBy(() -> new Station((oversizeName)))
                 .isInstanceOf(IllegalArgumentException.class);
-
     }
 }
